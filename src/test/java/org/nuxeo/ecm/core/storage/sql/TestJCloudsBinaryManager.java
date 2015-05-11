@@ -33,11 +33,10 @@ import org.jclouds.blobstore.domain.StorageMetadata;
 import org.jclouds.blobstore.options.ListContainerOptions;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.binary.LazyBinary;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -67,7 +66,7 @@ public class TestJCloudsBinaryManager extends NXRuntimeTestCase {
         properties.setProperty(JCloudsBinaryManager.BLOBSTORE_SECRET_KEY, "unused");
 
         binaryManager = new JCloudsBinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize("repo", Collections.emptyMap());
 
     }
 

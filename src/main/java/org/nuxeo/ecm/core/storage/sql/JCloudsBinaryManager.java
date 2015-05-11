@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -45,11 +46,10 @@ import org.jclouds.domain.Location;
 import org.jclouds.domain.LocationBuilder;
 import org.jclouds.domain.LocationScope;
 import org.nuxeo.common.Environment;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
-import org.nuxeo.ecm.core.storage.binary.FileStorage;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
+import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
 
 import com.google.common.hash.Hashing;
@@ -93,10 +93,11 @@ public class JCloudsBinaryManager extends CachingBinaryManager {
     protected BlobStore blobStore;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
-        super.initialize(binaryManagerDescriptor);
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        super.initialize(blobProviderId, properties);
 
         // Get settings from the configuration
+        // TODO parse properties too
         storeProvider = Framework.getProperty(BLOBSTORE_PROVIDER_KEY);
         if (isBlank(storeProvider)) {
             throw new RuntimeException("Missing conf: " + BLOBSTORE_PROVIDER_KEY);
