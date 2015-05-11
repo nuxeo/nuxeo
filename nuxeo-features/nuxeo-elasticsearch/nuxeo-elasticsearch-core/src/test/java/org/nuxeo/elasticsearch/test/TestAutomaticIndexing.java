@@ -373,8 +373,8 @@ public class TestAutomaticIndexing {
 
         // unpublish
         session.removeDocument(proxy.getRef());
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session) // .fetchFromElasticsearch()
-        .nxql("SELECT * FROM Document"));
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document"));
         Assert.assertEquals(4, docs.totalSize());
         TransactionHelper.commitOrRollbackTransaction();
         waitForCompletion();
@@ -385,6 +385,35 @@ public class TestAutomaticIndexing {
                 SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
         Assert.assertEquals(3, searchResponse.getHits().getTotalHits());
 
+    }
+
+    @Test
+    public void shouldIndexOnRePublishing() throws Exception {
+        startTransaction();
+        DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
+        folder = session.createDocument(folder);
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc.setPropertyValue("dc:description", "foo");
+        doc = session.createDocument(doc);
+        session.publishDocument(doc, folder);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document WHERE ecm:fulltext = 'foo' AND ecm:isVersion = 0"));
+        Assert.assertEquals(2, docs.totalSize());
+
+        doc.setPropertyValue("dc:description", "bar");
+        session.saveDocument(doc);
+        session.publishDocument(doc, folder);
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+        startTransaction();
+
+        docs = ess.query(new NxQueryBuilder(session)
+                .nxql("SELECT * FROM Document WHERE ecm:fulltext = 'bar' AND ecm:isVersion = 0"));
+        Assert.assertEquals(2, docs.totalSize());
     }
 
     @Test

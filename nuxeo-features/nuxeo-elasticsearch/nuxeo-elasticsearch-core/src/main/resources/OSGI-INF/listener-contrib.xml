@@ -20,6 +20,7 @@
       <event>documentCheckedIn</event>
       <event>binaryTextUpdated</event>
       <event>documentTagUpdated</event>
+      <event>documentProxyUpdated</event>
     </listener>
 
   </extension>
