@@ -18,12 +18,8 @@ package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
@@ -32,10 +28,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentXMLExporter;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryManager;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.DiffTestCase;
@@ -76,23 +68,6 @@ public class TestDocumentDiff extends DiffTestCase {
 
     @Inject
     protected DocumentXMLExporter docXMLExporter;
-
-    protected BinaryManager binaryManager;
-
-    @Before
-    public void setUp() throws ClientException {
-        binaryManager = new DefaultBinaryManager();
-        try {
-            binaryManager.initialize(new BinaryManagerDescriptor());
-        } catch (IOException ioe) {
-            throw new ClientException("Error while initializing binary manager", ioe);
-        }
-    }
-
-    @After
-    public void tearDown() {
-        binaryManager.close();
-    }
 
     /**
      * Tests doc diff.
@@ -517,16 +492,8 @@ public class TestDocumentDiff extends DiffTestCase {
     }
 
     protected final String getDigest(Blob blob) throws ClientException {
-        try {
-            Binary binary = binaryManager.getBinary(blob);
-            if (binary != null) {
-                return binary.getDigest();
-            }
-        } catch (IOException ioe) {
-            throw new ClientException(String.format("Error while retrieving binary for blob '%s'.", blob.toString()),
-                    ioe);
-        }
-        return null;
+        return blob.getDigest();
+
     }
 
 }
