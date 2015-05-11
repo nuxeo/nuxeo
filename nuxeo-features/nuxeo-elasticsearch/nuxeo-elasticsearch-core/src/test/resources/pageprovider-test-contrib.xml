@@ -22,6 +22,13 @@
       <sort column="dc:title" ascending="false"/>
     </genericPageProvider>
 
+    <genericPageProvider name="NXQL_PP_PATTERN2"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <pattern>SELECT * FROM Document</pattern>
+      <maxPageSize>0</maxPageSize>
+      <sort column="dc:title" ascending="false"/>
+    </genericPageProvider>
+
     <genericPageProvider name="nxql_search"
                          class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>

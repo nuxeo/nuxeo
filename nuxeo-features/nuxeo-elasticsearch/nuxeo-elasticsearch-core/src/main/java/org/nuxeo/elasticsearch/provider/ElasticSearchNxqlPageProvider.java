@@ -83,7 +83,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         ElasticSearchService ess = Framework.getLocalService(ElasticSearchService.class);
         try {
             NxQueryBuilder nxQuery = new NxQueryBuilder(getCoreSession()).nxql(query).offset(
-                    (int) getCurrentPageOffset()).limit((int) getMinMaxPageSize()).addAggregates(buildAggregates());
+                    (int) getCurrentPageOffset()).limit(getLimit()).addAggregates(buildAggregates());
             if (searchOnAllRepositories()) {
                 nxQuery.searchOnAllRepositories();
             }
@@ -99,6 +99,14 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             throw new ClientRuntimeException(e);
         }
         return currentPageDocuments;
+    }
+
+    protected int getLimit() {
+        int ret = (int) getMinMaxPageSize();
+        if (ret == 0) {
+            ret = -1;
+        }
+        return ret;
     }
 
     public QueryBuilder getCurrentQueryAsEsBuilder() {

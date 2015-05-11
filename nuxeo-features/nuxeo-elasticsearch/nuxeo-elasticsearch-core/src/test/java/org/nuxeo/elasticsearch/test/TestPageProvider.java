@@ -182,6 +182,19 @@ public class TestPageProvider {
         Assert.assertEquals(pageSize, p.size());
         doc = p.get((int) pageSize - 1);
         Assert.assertEquals("TestMe0", doc.getTitle());
+
+        pageSize = 0;
+        ppdef = pps.getPageProviderDefinition("NXQL_PP_PATTERN2");
+        Assert.assertNotNull(ppdef);
+        pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_PP_PATTERN2",
+                ppdef, null, null, pageSize, (long) 0, props);
+        Assert.assertNotNull(pp);
+        p = (List<DocumentModel>) pp.getCurrentPage();
+        Assert.assertEquals(10, pp.getResultsCount());
+        Assert.assertEquals(10, p.size());
+        doc = p.get(0);
+        Assert.assertEquals("TestMe9", doc.getTitle());
+
     }
 
     @Test
