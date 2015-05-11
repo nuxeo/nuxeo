@@ -526,7 +526,7 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
 
         URL url = getResource("schema/testExtension.xsd");
         assertNotNull(url);
-        Schema schema = reader.loadSchema("extension", "", url, "employee");
+        Schema schema = reader.loadSchema("extension", "prefix", url, "employee");
 
         assertNotNull(schema);
 
@@ -543,6 +543,11 @@ public class TestSchemaLoader extends NXRuntimeTestCase {
         assertTrue(schema.hasField("race"));
 
         assertEquals(6, schema.getFieldsCount());
+
+        // ensure the field are rebased
+        Field address = schema.getField("address");
+        assertEquals("prefix:address", address.getName().getPrefixedName());
+        assertEquals("extension", address.getDeclaringType().getName());
     }
 
 }
