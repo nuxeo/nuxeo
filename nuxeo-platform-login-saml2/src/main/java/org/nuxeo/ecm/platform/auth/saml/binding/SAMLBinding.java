@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.binding;
 
+import org.opensaml.common.binding.decoding.BaseSAMLMessageDecoder;
+import org.opensaml.common.binding.decoding.URIComparator;
+import org.opensaml.util.SimpleURLCanonicalizer;
 import org.opensaml.ws.message.MessageContext;
 import org.opensaml.ws.message.decoder.MessageDecoder;
 import org.opensaml.ws.message.decoder.MessageDecodingException;
@@ -35,9 +38,31 @@ public abstract class SAMLBinding {
 
     protected MessageEncoder encoder;
 
+    /**
+     * URIComparator that strips scheme to avoid issues with reverse proxies
+     */
+    public static final URIComparator uriComparator = new URIComparator() {
+        @Override
+        public boolean compare(String uri1, String uri2) {
+            if (uri1 == null && uri2 == null) {
+                return true;
+            } else if (uri1 == null || uri2 == null) {
+                return false;
+            } else {
+                String uri1Canon = SimpleURLCanonicalizer.canonicalize(uri1).replaceFirst("^(https:|http:)", "");
+                String uri2Canon = SimpleURLCanonicalizer.canonicalize(uri2).replaceFirst("^(https:|http:)", "");
+                return uri1Canon.equals(uri2Canon);
+            }
+        }
+    };
+
     public SAMLBinding(MessageDecoder decoder, MessageEncoder encoder) {
         this.decoder = decoder;
         this.encoder = encoder;
+        // NXP-17044: strips scheme to fix validity check with reverse proxies
+        if (decoder != null) {
+            ((BaseSAMLMessageDecoder) decoder).setURIComparator(uriComparator);
+        }
     }
 
     /**

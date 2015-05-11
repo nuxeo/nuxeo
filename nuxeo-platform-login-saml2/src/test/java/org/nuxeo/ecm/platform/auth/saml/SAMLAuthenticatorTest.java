@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
+import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -186,8 +187,14 @@ public class SAMLAuthenticatorTest {
         assertTrue(logoutURL.startsWith("http://dummy/SLORedirect"));
     }
 
-    protected HttpServletRequest getMockRequest(String messageFile,
-            String method, String url, String contentType) throws Exception {
+    // NXP17044: strips scheme to fix validity check with reverse proxies
+    @Test
+    public void testUriComparator() {
+        assertTrue(SAMLBinding.uriComparator.compare("https://dummy", "http://dummy"));
+    }
+
+    protected HttpServletRequest getMockRequest(String messageFile, String method, String url, String contentType)
+            throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         URL urlP = new URL(url);
         File file = new File(getClass().getResource(messageFile).toURI());
