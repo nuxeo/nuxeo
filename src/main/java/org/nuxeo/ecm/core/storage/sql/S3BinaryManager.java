@@ -31,6 +31,7 @@ import java.security.PublicKey;
 import java.security.cert.Certificate;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -38,11 +39,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.binary.CachingBinaryManager;
-import org.nuxeo.ecm.core.storage.binary.FileStorage;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.blob.binary.CachingBinaryManager;
+import org.nuxeo.ecm.core.blob.binary.FileStorage;
 import org.nuxeo.runtime.api.Framework;
 
 import com.amazonaws.AmazonClientException;
@@ -150,10 +150,11 @@ public class S3BinaryManager extends CachingBinaryManager {
     protected TransferManager transferManager;
 
     @Override
-    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
-        super.initialize(binaryManagerDescriptor);
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        super.initialize(blobProviderId, properties);
 
         // Get settings from the configuration
+        // TODO parse properties too
         bucketName = Framework.getProperty(BUCKET_NAME_KEY);
         bucketNamePrefix = Objects.firstNonNull(Framework.getProperty(BUCKET_PREFIX_KEY), StringUtils.EMPTY);
         String bucketRegion = Framework.getProperty(BUCKET_REGION_KEY);

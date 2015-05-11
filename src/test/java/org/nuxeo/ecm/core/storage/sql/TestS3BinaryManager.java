@@ -41,11 +41,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.binary.LazyBinary;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.blob.binary.LazyBinary;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -117,7 +116,7 @@ public class TestS3BinaryManager {
     @Before
     public void setUp() throws Exception {
         binaryManager = new S3BinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize("repo", Collections.emptyMap());
         removeObjects();
     }
 
@@ -266,7 +265,7 @@ public class TestS3BinaryManager {
         props.put(S3BinaryManager.CONNECTION_RETRY_KEY, "0");
         props.put(S3BinaryManager.CONNECTION_TIMEOUT_KEY, "5000"); // 5s
         binaryManager = new S3BinaryManager();
-        binaryManager.initialize(new BinaryManagerDescriptor());
+        binaryManager.initialize("repo", Collections.emptyMap());
 
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
