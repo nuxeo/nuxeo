@@ -26,12 +26,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ObjectParser;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
@@ -41,6 +43,7 @@ import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.CredentialFactory;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.ServiceAccountCredentialFactory;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.GenericUrl;
@@ -60,26 +63,55 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
 
     private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
 
+    public static final String PREFIX = "googledrive";
+
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
     private static final String FILE_CACHE_NAME = "googleDrive";
 
-    private final CredentialFactory credentialFactory;
+    // Service account details
+    public static final String SERVICE_ACCOUNT_ID_PROP = "serviceAccountId";
+
+    public static final String SERVICE_ACCOUNT_P12_PATH_PROP = "serviceAccountP12Path";
+
+    private CredentialFactory credentialFactory;
 
     /** {@link File} resource cache */
     private Cache fileCache;
 
-    public GoogleDriveBlobProvider(CredentialFactory credentialFactory) {
-        this.credentialFactory = credentialFactory;
+    @Override
+    public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
+        if (!PREFIX.equals(blobProviderId)) {
+            // TODO avoid this by passing a parameter to the GoogleDriveBlobUploader when constructed
+            throw new IllegalArgumentException("Must be registered for name: " + PREFIX + ", not: " + blobProviderId);
+        }
+        // Service account configuration
+        String serviceAccountId = properties.get(SERVICE_ACCOUNT_ID_PROP);
+        if (StringUtils.isBlank(serviceAccountId)) {
+            throw new NuxeoException("Missing value for property: " + SERVICE_ACCOUNT_ID_PROP);
+        }
+        String p12 = properties.get(SERVICE_ACCOUNT_P12_PATH_PROP);
+        if (StringUtils.isBlank(p12)) {
+            throw new NuxeoException("Missing value for property: " + SERVICE_ACCOUNT_P12_PATH_PROP);
+        }
+        java.io.File p12File = new java.io.File(p12);
+        if (!p12File.exists()) {
+            throw new NuxeoException("No such file: " + p12 + " for property: " + SERVICE_ACCOUNT_P12_PATH_PROP);
+        }
+        credentialFactory = new ServiceAccountCredentialFactory(serviceAccountId, p12File);
     }
 
     @Override
-    public Blob readBlob(BlobInfo blobInfo, Document doc) {
+    public void close() {
+    }
+
+    @Override
+    public Blob readBlob(BlobInfo blobInfo) {
         return new SimpleManagedBlob(blobInfo);
     }
 
     @Override
-    public BlobInfo writeBlob(Blob blob, Document doc) {
+    public String writeBlob(Blob blob, Document doc) {
         throw new UnsupportedOperationException("Writing a blob to Google Drive is not supported");
     }
 
@@ -167,7 +199,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         String user = getUser(fileInfo);
         String fileId = getFileId(fileInfo);
         File file = getFile(user, fileId);
-        String key = String.format("%s:%s:%s", GoogleDriveComponent.GOOGLE_DRIVE_PREFIX, user, fileId);
+        String key = String.format("%s:%s:%s", PREFIX, user, fileId);
         String filename = file.getOriginalFilename();
         if (filename == null) {
             filename = file.getTitle().replace("/", "-");
@@ -187,6 +219,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         return new SimpleManagedBlob(blobInfo);
     }
 
+    /** Removes the prefix from the key. */
     protected String getFileInfo(String key) {
         int colon = key.indexOf(':');
         if (colon < 0) {

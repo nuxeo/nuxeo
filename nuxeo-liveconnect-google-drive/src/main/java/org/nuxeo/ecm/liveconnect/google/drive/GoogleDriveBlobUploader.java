@@ -178,7 +178,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
     protected GoogleDriveBlobProvider getGoogleDriveBlobProvider() {
         return (GoogleDriveBlobProvider) Framework.getService(BlobManager.class)
-            .getBlobProvider(GoogleDriveComponent.GOOGLE_DRIVE_PREFIX);
+            .getBlobProvider(GoogleDriveBlobProvider.PREFIX);
     }
 
     protected String getGoogleDomain() {
