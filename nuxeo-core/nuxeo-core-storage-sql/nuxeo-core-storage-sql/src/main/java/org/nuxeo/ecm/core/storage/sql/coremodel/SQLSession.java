@@ -308,7 +308,7 @@ public class SQLSession implements Session {
                 name = m.group(1);
             }
             // add dot + unique digits
-            name += "." + System.currentTimeMillis();
+            name += "." + System.nanoTime();
         }
         return name;
     }
