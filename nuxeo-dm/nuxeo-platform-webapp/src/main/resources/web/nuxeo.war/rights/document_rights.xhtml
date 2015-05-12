@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<f:view contentType="text/html" />
+<h:head id="polymerHead">
+  <title>
+    <ui:insert name="page title">Page title</ui:insert>
+  </title>
+
+  <ui:insert name="imports"></ui:insert>
+
+  <meta name="viewport"
+        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes"></meta>
+  <script type="text/javascript"
+          src="#{baseURL}rights/components/webcomponents.js"></script>
+  <link rel="import" href="#{baseURL}rights/components/font-roboto/roboto.html"></link>
+  <link rel="import" href="#{baseURL}rights/polymer/polymer.html"></link>
+  <script>
+    HTMLImports.whenImportsReady = HTMLImports.whenReady;
+  </script>
+
+  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-connection.html"></link>
+  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-resource.html"></link>
+  <link rel="import" href="#{baseURL}rights/polymer/paper-button/paper-button.html"></link>
+  <link rel="import" href="#{baseURL}rights/polymer/hot-table/hot-table.html"></link>
+  <link rel="import" href="#{baseURL}rights/polymer/paper-input/paper-input.html"></link>
+
+  <style>
+
+    body {
+      margin: 0;
+      height: 100%;
+      font-family: 'RobotoDraft', sans-serif;
+    }
+
+    core-toolbar {
+      background: #03a9f4;
+      color: white;
+    }
+
+    .container {
+      width: 80%;
+      margin: 50px auto;
+    }
+    table {
+      width: 100%;
+    }
+    table th {
+      text-transform: uppercase;
+      font-size: 14px;
+      text-align: left;
+      padding-right: 40px;
+      border-bottom: 1px solid #eee;
+      font-weight: 500;
+      line-height: 48px;
+    }
+    table td {
+      padding: 0;
+      margin: 0;
+      vertical-align: top;
+      padding: 12px 12px 12px 0;
+    }
+
+    div {
+      padding: 0;
+      margin: 0;
+      vertical-align: top;
+      padding: 12px 12px 12px 0;
+    }
+
+    paper-button{
+      background: #00adff;
+      margin: 10px;
+      color: white;
+      width: 15%;
+    }
+
+    paper-input{
+      width: 30%;
+      margin-bottom: 10px;
+    }
+
+  </style>
+
+</h:head>
+<h:body unresolved="true">
+
+  <div fullbleed="fullbleed" vertical="vertical" layout="layout">
+
+    <nx-connection id="nx_connection"
+                   url="#{baseURL}"
+                   username="Administrator"
+                   password="Administrator">
+    </nx-connection>
+    <template is="auto-binding">
+
+      <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}"></nx-resource>
+
+      <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
+
+      <h2>Access rights for current document {{doc.title}}</h2>
+
+      <div>
+        <hot-table datarows="{{doc.facets}}" class="htLeft">
+          <hot-column width="100" header="Names"></hot-column>
+          <hot-column width="100" header="Rights"></hot-column>
+        </hot-table>
+      </div>
+      <template></template>
+      <div>
+        <paper-button raised="true">Extends Access Rights</paper-button>
+        <paper-button raised="true">Restrict Access Rights</paper-button>
+      </div>
+    </template>
+
+  </div>
+
+</h:body>
+</html>
