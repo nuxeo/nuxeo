@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.auth.saml.sso;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.nuxeo.ecm.platform.auth.saml.AbstractSAMLProfile;
+import org.nuxeo.ecm.platform.auth.saml.SAMLConfiguration;
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
@@ -209,7 +210,7 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         request.setAssertionConsumerServiceURL(getStartPageURL(httpRequest));
 
         Issuer issuer = build(Issuer.DEFAULT_ELEMENT_NAME);
-        issuer.setValue(getBaseURL(httpRequest));
+        issuer.setValue(SAMLConfiguration.getEntityId());
         request.setIssuer(issuer);
 
         NameIDPolicy nameIDPolicy = build(NameIDPolicy.DEFAULT_ELEMENT_NAME);

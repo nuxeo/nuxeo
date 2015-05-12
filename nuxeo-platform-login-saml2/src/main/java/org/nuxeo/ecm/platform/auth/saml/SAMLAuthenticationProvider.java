@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.auth.saml;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -215,14 +216,9 @@ public class SAMLAuthenticationProvider
         }
 
         // contribute icon and link to the Login Screen
-        if (parameters.containsKey("name")) {
-            LoginScreenHelper.registerLoginProvider(
-                    parameters.get("name"),
-                    parameters.get("icon"),
-                    null,
-                    parameters.get("label"),
-                    parameters.get("description"),
-                    this);
+        if (StringUtils.isNotBlank(parameters.get("name"))) {
+            LoginScreenHelper.registerLoginProvider(parameters.get("name"), parameters.get("icon"), null,
+                    parameters.get("label"), parameters.get("description"), this);
         }
     }
 
@@ -288,6 +284,7 @@ public class SAMLAuthenticationProvider
         String loginURL = sso.getEndpoint().getLocation();
         try {
             AuthnRequest authnRequest = sso.buildAuthRequest(request);
+            authnRequest.setDestination(sso.getEndpoint().getLocation());
             context.setOutboundSAMLMessage(authnRequest);
             loginURL = binding.buildRedirectURL(context, sso.getEndpoint().getLocation());
         } catch (SAMLException e) {
@@ -416,21 +413,22 @@ public class SAMLAuthenticationProvider
         }
 
         // Handle SSO
-        SAMLCredential credential = null;
+        SAMLCredential credential;
 
         try {
             credential = ((WebSSOProfile) processor)
                     .processAuthenticationResponse(context);
         } catch (Exception e) {
-            log.debug("Error processing SAML message", e);
+            log.error("Error processing SAML message", e);
+            sendError(request, "Failed to authenticate: \"" + e.getMessage() + "\".");
             return null;
         }
 
         String userId = userResolver.findNuxeoUser(credential);
 
         if (userId == null) {
-            sendError(request, "No user found with email: \"" +
-                    credential.getNameID().getValue() + "\".");
+            log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");
+            sendError(request, "No user found with NameId: \"" + credential.getNameID().getValue() + "\".");
             return null;
         }
 
@@ -480,13 +478,8 @@ public class SAMLAuthenticationProvider
 
     private void populateLocalContext(SAMLMessageContext context) {
         // Set local info
-        //context.setLocalEntityId(metadataProvider.getHostedSPName());
+        context.setLocalEntityId(SAMLConfiguration.getEntityId());
         context.setLocalEntityRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
-
-        // TODO - Generate SPSSO descriptor
-        //context.setLocalEntityMetadata(entityDescriptor);
-        //context.setLocalEntityRoleMetadata(roleDescriptor);
-
         context.setMetadataProvider(metadataProvider);
 
         // Set the signing key
