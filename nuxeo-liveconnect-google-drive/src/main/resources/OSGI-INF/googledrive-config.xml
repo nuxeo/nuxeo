@@ -8,8 +8,6 @@
     Management of Google Drive configuration.
   </documentation>
 
-  <implementation class="org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveComponent" />
-
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <provider name="googledrive">
       <class>org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider</class>
