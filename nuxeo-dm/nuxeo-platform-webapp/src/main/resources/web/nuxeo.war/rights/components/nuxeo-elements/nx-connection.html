@@ -1,0 +1,141 @@
+<!--
+(C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the GNU Lesser General Public License
+(LGPL) version 2.1 which accompanies this distribution, and is available at
+http://www.gnu.org/licenses/lgpl.html
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
+
+Contributors:
+  Nelson Silva <nelson.silva@inevo.pt>
+-->
+
+<!--
+@group Nuxeo Elements
+
+The `nx-connection` wraps a `nuxeo.Client`.
+
+    <nx-connection
+        id="nx_connection"
+        url="http://demo.nuxeo.com"
+        username="Administrator"
+        password="Administrator"></nx-connection>
+
+Note: Elements that depend on a connectionId use `nx_connection` as default.
+
+@element nx-connection
+@homepage http://www.nuxeo.org
+-->
+<link rel="import" href="../../polymer/polymer.html">
+<script src="jquery.min.js"></script>
+<script src="nuxeojs.js"></script>
+<script src="promise.min.js"></script>
+<polymer-element name="nx-connection" attributes="connectionId url username password">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+    </template>
+    <script>
+    (function() {
+        // A global map of clients with connectionId as key.
+        // This map is shared between all instances of nx-connection.
+        var nxClients = {};
+
+        Polymer('nx-connection', {
+            /**
+             * A unique identifier for this connection.
+             *
+             * @attribute connectionId
+             * @type string
+             * @default 'nx'
+             */
+            connectionId: 'nx',
+            /**
+             * The base URL of the Nuxeo server.
+             *
+             * @attribute url
+             * @type string
+             * @default ''
+             */
+            url: '',
+            /**
+             * The username.
+             *
+             * @attribute username
+             * @type string
+             * @default null
+             */
+            username: null,
+            /**
+             * The password.
+             *
+             * @attribute password
+             * @type string
+             * @default null
+             */
+            password: null,
+
+            observe: {
+                'url username password': 'connect',
+                'client.connected': 'handleConnected'
+            },
+
+            ready: function() {
+                this.connect();
+            },
+
+            connect: function() {
+              return new Promise(function (resolve, reject) {
+                // Create the client if needed
+                // If we already have a client with the same connection info just keep it
+                var id = (this.connectionId) ? this.connectionId : Object.keys(nxClients)[0];
+                this.client = nxClients[id];
+                if (this.client &&
+                  (!this.url || (this.client._baseURL === this.url)) &&
+                  (!this.username || (this.client._username === this.username)) &&
+                  (!this.password || (this.client._password === this.password))) {
+                  resolve(this);
+                  return;
+                }
+
+                nxClients[id] = this.client = new nuxeojs.Client({
+                  baseURL: this.url,
+                  auth: {
+                    username: this.username,
+                    password: this.password
+                  },
+                  schemas: '*'
+                });
+
+                this.client.connect(function (error, client) {
+                  if (error) {
+                    this.fire('error', {error: error});
+                    reject(error);
+                  }
+                  resolve(this);
+                }.bind(this));
+              }.bind(this));
+            },
+
+            get connected() {
+              return this.client && this.client.connected;
+            },
+
+            handleConnected: function() {
+              if (this.client.connected) {
+                this.fire('connected');
+              }
+            }
+
+        });
+    })();
+    </script>
+</polymer-element>

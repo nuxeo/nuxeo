@@ -1,0 +1,174 @@
+<!--
+(C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+
+All rights reserved. This program and the accompanying materials
+are made available under the terms of the GNU Lesser General Public License
+(LGPL) version 2.1 which accompanies this distribution, and is available at
+http://www.gnu.org/licenses/lgpl.html
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+Lesser General Public License for more details.
+
+Contributors:
+  Nelson Silva <nelson.silva@inevo.pt>
+-->
+
+<!--
+@group Nuxeo Elements
+
+The `nx-resource` allows managing REST on a Nuxeo server.
+
+    <nx-resource auto
+        path="Document.Query"
+        on-response="{{handleResponse}}"></nx-operation>
+
+With `auto` set to `true`, the GET method is executed whenever
+its `path` properties are changed.
+
+Note: The `params` attribute must be double quoted JSON.
+
+You can trigger a method explicitly by calling `get`, `post`, `put` or `delete` on the
+element.
+
+@element nx-resource
+@homepage http://www.nuxeo.org
+-->
+<link rel="import" href="../../polymer/polymer.html">
+<script src="nuxeojs.js"></script>
+<polymer-element name="nx-resource" attributes="connectionId auto path params data">
+    <template>
+        <style>
+            :host {
+                display: none;
+            }
+        </style>
+        <nx-connection id="nx" connectionId="{{connectionId}}"></nx-connection>
+    </template>
+    <script>
+        Polymer({
+            /**
+             * Fired when a response is received.
+             *
+             * @event response
+             */
+
+            /**
+             * The id of a nx-connection to use.
+             *
+             * @attribute connectionId
+             * @type string
+             * @default ''
+             */
+            connectionId: '',
+
+            /**
+             * The path of the resource.
+             *
+             * @attribute path
+             * @type string
+             * @default ''
+             */
+            path: '',
+
+            /**
+             * The parameters to send.
+             *
+             * @attribute params
+             * @type Object
+             * @default null
+             */
+            params: null,
+
+            /**
+             * If true, automatically execute the operation when either `path` or `params` changes.
+             *
+             * @attribute auto
+             * @type boolean
+             * @default false
+             */
+            auto: false,
+
+            /**
+             * The response from the server.
+             *
+             * @property data
+             * @type Object
+             * @default null
+             */
+            data: null,
+
+            /**
+             * The `entity-type` of the resource.
+             *
+             * @property type
+             * @type string
+             * @default ''
+             */
+            type: '',
+
+            observe: {
+                'path params': '_autoGet'
+            },
+
+            /**
+            * Executes the operation.
+            *
+            * @method execute
+            */
+            get: function(data) {
+              return this._execute('get', data);
+            },
+
+            post: function(data) {
+              return this._execute('post', data);
+            },
+
+            put: function(data) {
+              return this._execute('put', data);
+            },
+
+            remove: function(data) {
+              return this._execute('delete', data);
+            },
+
+            _autoGet: function() {
+                if (this.auto) {
+                    this.get();
+                }
+            },
+
+          _execute: function(method, data) {
+            method = method || 'get';
+            data = data || this.data;
+            var options = (data) ? {data: data} : {};
+            // add support for plain text responses
+            options.headers = {'Accept': 'text/plain,application/json'};
+            var params = (!this.params || (typeof this.params === 'object')) ? this.params : JSON.parse(this.params);
+            return this.$.nx.connect()
+              .then(function() {
+                return new Promise(function (resolve, reject) {
+                  return this.$.nx.client
+                    .request(this.path)
+                    .repositoryName(undefined)
+                    .query(params) [method](options, function (error, data) {
+                      if (error) {
+                        this.fire('error', error);
+                        reject(Error(error));
+                        return;
+                      }
+                      this.fire('response', {response: data});
+                      // if we're binding to the 'data' attribute, update it
+                      if (this.hasAttribute('data')) {
+                        this.data = data;
+                      }
+                      resolve(data);
+                  }.bind(this));
+                }.bind(this));
+              }.bind(this));
+          }
+
+        });
+    </script>
+</polymer-element>

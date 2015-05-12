@@ -1,0 +1,23 @@
+
+<!-- Handsontable itself -->
+<script src="handsontable.full.min.js"></script>
+
+<!-- Import Polymer -->
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="hot-column.html">
+
+<polymer-element name="hot-table">
+  <template>
+    <link rel="stylesheet" href="handsontable.full.min.css">
+    <style>
+      .handsontable td {
+        white-space: normal;
+      }
+    </style>
+    <div id="htContainer" style="clear: both"></div>
+    <content></content>
+  </template>
+  <script src="settings-parser.js"></script>
+  <script src="nested-tables.js"></script>
+  <script src="hot-table.js"></script>
+</polymer-element>
