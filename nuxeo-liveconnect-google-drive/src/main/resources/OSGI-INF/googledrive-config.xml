@@ -11,8 +11,8 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="googledrive">
       <class>org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider</class>
-      <property name="serviceAccountId">${nuxeo.google.serviceAccountId}</property>
-      <property name="serviceAccountP12Path">${nuxeo.google.serviceAccountP12Path}</property>
+      <property name="serviceAccountId">${nuxeo.google.serviceAccountId:=}</property>
+      <property name="serviceAccountP12Path">${nuxeo.google.serviceAccountP12Path:=}</property>
     </blobprovider>
   </extension>
 
