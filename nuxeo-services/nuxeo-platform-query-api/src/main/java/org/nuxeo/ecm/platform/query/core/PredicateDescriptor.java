@@ -57,6 +57,10 @@ public class PredicateDescriptor implements PredicateDefinition {
         this.operator = operator.toUpperCase();
     }
 
+    // @since 7.3
+    @XNode("@hint")
+    protected String hint;
+
     @Override
     public String getOperator() {
         return operator;
@@ -97,6 +101,16 @@ public class PredicateDescriptor implements PredicateDefinition {
         return operatorSchema;
     }
 
+    @Override
+    public String getHint() {
+        return hint;
+    }
+
+    @Override
+    public void setHint(String hint) {
+        this.hint = hint;
+    }
+
     /**
      * @since 5.6
      */
@@ -108,6 +122,7 @@ public class PredicateDescriptor implements PredicateDefinition {
         clone.operator = operator;
         clone.operatorField = operatorField;
         clone.operatorSchema = operatorSchema;
+        clone.hint = hint;
         if (values != null) {
             clone.values = new PredicateFieldDefinition[values.length];
             for (int i = 0; i < values.length; i++) {

@@ -474,6 +474,51 @@ public class TestPageProvider {
                 "}", esquery);
     }
 
+    @Test
+    public void testNxqlPredicateWithHintInParameter() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("NXQL_WITH_HINT_IN_PARAMETER");
+        Assert.assertNotNull(ppdef);
+        HashMap<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        long pageSize = 5;
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        model.setProperty("advanced_search", "fulltext_all", "you know");
+        model.setProperty("advanced_search", "description", "for search");
+        ElasticSearchNxqlPageProvider pp = (ElasticSearchNxqlPageProvider) pps.getPageProvider("NXQL_WITH_HINT", ppdef,
+                model, null, pageSize, (long) 0, props);
+        Assert.assertNotNull(pp);
+        pp.getCurrentPage(); // This is needed to build the nxql query
+        String esquery = pp.getCurrentQueryAsEsBuilder().toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"bool\" : {\n" + //
+                "    \"must\" : [ {\n" + //
+                "      \"constant_score\" : {\n" + //
+                "        \"filter\" : {\n" + //
+                "          \"term\" : {\n" + //
+                "            \"dc:title.fulltext\" : \"you know\"\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    }, {\n" + //
+                "      \"fuzzy\" : {\n" + //
+                "        \"my_field\" : {\n" + //
+                "          \"value\" : \"for search\"\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    }, {\n" + //
+                "      \"constant_score\" : {\n" + //
+                "        \"filter\" : {\n" + //
+                "          \"terms\" : {\n" + //
+                "            \"my_subject\" : [ \"foo\", \"bar\" ]\n" + //
+                "          }\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    } ]\n" + //
+                "  }\n" + //
+                "}", esquery);
+    }
+
     protected void assertEqualsEvenUnderWindows(String expected, String actual) {
         if (SystemUtils.IS_OS_WINDOWS) {
             // make tests pass under Windows

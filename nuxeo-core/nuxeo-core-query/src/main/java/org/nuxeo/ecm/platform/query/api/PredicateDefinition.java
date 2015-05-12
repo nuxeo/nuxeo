@@ -45,6 +45,16 @@ public interface PredicateDefinition {
     String getOperatorSchema();
 
     /**
+     * @since 7.3
+     */
+    String getHint();
+
+    /**
+     * @since 7.3
+     */
+    void setHint(String hint);
+
+    /**
      * @since 5.6
      */
     PredicateDefinition clone();

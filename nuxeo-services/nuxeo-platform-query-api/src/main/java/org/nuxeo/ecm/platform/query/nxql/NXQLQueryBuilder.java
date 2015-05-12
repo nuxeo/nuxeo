@@ -347,6 +347,10 @@ public class NXQLQueryBuilder {
         String operatorField = predicateDescriptor.getOperatorField();
         String operatorSchema = predicateDescriptor.getOperatorSchema();
         String parameter = predicateDescriptor.getParameter();
+        String hint = predicateDescriptor.getHint();
+        if (hint != null && ! hint.isEmpty()) {
+            parameter = String.format("/*+%s */ %s", hint.trim(), parameter);
+        }
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (operatorField != null && operatorSchema != null) {
             PredicateFieldDefinition operatorFieldDescriptor = new FieldDescriptor(operatorSchema, operatorField);
