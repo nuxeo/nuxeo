@@ -206,6 +206,22 @@
       class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
       <property name="coreSession">#{documentManager}</property>
       <whereClause docType="AdvancedSearch">
+        <predicate parameter="dc:title" operator="=" hint="ES: INDEX(dc:title.fulltext)">
+          <field schema="advanced_search" name="fulltext_all"/>
+        </predicate>
+        <predicate parameter="dc:description" operator="=" hint="ES: INDEX(my_field) ANALYZER(my_analyzer) OPERATOR(fuzzy)">
+          <field schema="advanced_search" name="description"/>
+        </predicate>
+        <fixedPart>
+          /*+ES: INDEX(my_subject) */ dc:subject IN ('foo', 'bar')
+        </fixedPart>
+      </whereClause>
+    </genericPageProvider>
+
+    <genericPageProvider name="NXQL_WITH_HINT_IN_PARAMETER"
+      class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause docType="AdvancedSearch">
         <predicate parameter="/*+ES: INDEX(dc:title.fulltext) */ dc:title" operator="=">
           <field schema="advanced_search" name="fulltext_all"/>
         </predicate>

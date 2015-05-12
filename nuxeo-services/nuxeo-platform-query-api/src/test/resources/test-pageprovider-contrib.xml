@@ -151,7 +151,15 @@
       </aggregates>
     </genericPageProvider>
 
-
+    <coreQueryPageProvider name="PREDICATE_WITH_HINT">
+      <property name="coreSession">#{documentManager}</property>
+      <whereClause docType="AdvancedSearch">
+        <predicate parameter="dc:title" operator="LIKE" hint="ES: INDEX(my:fulltext)">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <fixedPart statement="SELECT * FROM Note" />
+      </whereClause>
+    </coreQueryPageProvider>
   </extension>
 
 </component>

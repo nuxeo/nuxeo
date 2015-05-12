@@ -90,12 +90,12 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
         String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document WHERE dc:title IN ('foo', 'bar')", query);
 
-        model.setPropertyValue("dc:subjects", new String[] { "foo" });
+        model.setPropertyValue("dc:subjects", new String[]{"foo"});
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document WHERE dc:title = 'foo'", query);
 
         // criteria with no values are removed
-        model.setPropertyValue("dc:subjects", new String[] {});
+        model.setPropertyValue("dc:subjects", new String[]{});
         query = NXQLQueryBuilder.getQuery(model, whereClause, null);
         assertEquals("SELECT * FROM Document", query);
     }
@@ -179,6 +179,19 @@ public class TestNXQLQueryBuilder extends SQLRepositoryTestCase {
 
         String query = NXQLQueryBuilder.getQuery(model, whereClause, params);
         assertEquals("SELECT * FROM Note WHERE dc:title LIKE 'bar' AND (ecm:parentId = 'foo')", query);
+    }
+
+    // @Since 7.3
+    @Test
+    public void testPredicatesWithHint() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        assertNotNull(pps);
+        WhereClauseDefinition whereClause = pps.getPageProviderDefinition("PREDICATE_WITH_HINT").getWhereClause();
+        DocumentModel model = new DocumentModelImpl("/", "doc", "AdvancedSearch");
+        model.setPropertyValue("search:title", "bar");
+
+        String query = NXQLQueryBuilder.getQuery(model, whereClause, null);
+        assertEquals("SELECT * FROM Note WHERE /*+ES: INDEX(my:fulltext) */ dc:title LIKE 'bar'", query);
     }
 
     @Test
