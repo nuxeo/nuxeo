@@ -145,10 +145,13 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
     public void initPlugin(Map<String, String> parameters) {
 
         // Initialize the User Resolver
+        String userResolverClassname = parameters.get("userResolverClass");
         try {
-            userResolver = DEFAULT_USER_RESOLVER_CLASS.newInstance();
-        } catch (Exception e) {
-            log.error("Failed to instantiate UserResolver", e);
+            Class<? extends UserResolver> userResolverClass = StringUtils.isBlank(userResolverClassname) ?
+                DEFAULT_USER_RESOLVER_CLASS : Class.forName(userResolverClassname).asSubclass(UserResolver.class);
+            userResolver = userResolverClass.newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            log.error("Failed to initialize user resolver " + userResolverClassname);
         }
 
         // Initialize the OpenSAML library
@@ -202,9 +205,6 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
                         }
                     }
                 }
-
-                // TODO: Allow registering new profiles
-
             }
 
         } catch (MetadataProviderException e) {
