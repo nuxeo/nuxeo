@@ -113,6 +113,14 @@
       </properties>
     </action>
 
+    <action id="TAB_RIGHTS_WEB_COMPONENT" link="/rights/document_rights.xhtml"
+            order="50" label="action.view.rights" icon="/icons/file.gif">
+      <category>VIEW_ACTION_LIST</category>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+
     <action id="TAB_VIEW" link="/incl/tabs/document_view.xhtml" order="0"
       label="action.view.summary" icon="/icons/file.gif" accessKey="v"
       type="rest_document_link">
@@ -208,7 +216,7 @@
       </properties>
     </action>
 
-    <action id="TAB_RIGHTS" link="/rights/document_rights.xhtml"
+    <action id="TAB_RIGHTS" link="/incl/tabs/document_rights.xhtml"
       order="50" label="action.view.rights" icon="/icons/file.gif">
       <category>TAB_MANAGE_sub_tab</category>
       <filter-id>rights</filter-id>
