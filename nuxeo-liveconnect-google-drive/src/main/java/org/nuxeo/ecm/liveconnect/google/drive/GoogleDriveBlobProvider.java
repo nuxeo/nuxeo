@@ -149,8 +149,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
     protected InputStream getStream(String blobKey, URI uri) throws IOException {
         String info = getFileInfo(blobKey);
         String user = getUser(info);
-        HttpResponse resp = doGet(user, uri);
-        return resp.getContent();
+        return doGet(user, uri);
     }
 
     @Override
@@ -176,7 +175,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
     @Override
     public InputStream getStream(ManagedBlob blob) throws IOException {
         URI uri = getURI(blob, UsageHint.STREAM);
-        return getStream(blob.getKey(), uri);
+        return uri == null ? null : getStream(blob.getKey(), uri);
     }
 
     @Override
@@ -286,8 +285,9 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
     /**
      * Executes a GET request with the user's credentials.
      */
-    protected HttpResponse doGet(String user, URI url) throws IOException {
-        return getService(user).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+    protected InputStream doGet(String user, URI url) throws IOException {
+        HttpResponse response = getService(user).getRequestFactory().buildGetRequest(new GenericUrl(url)).execute();
+        return response.getContent();
     }
 
     /**
@@ -304,14 +304,14 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         }
     }
 
-    private Cache getFileCache() {
+    protected Cache getFileCache() {
         if (fileCache == null) {
             fileCache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
         }
         return fileCache;
     }
 
-    private File parseFile(String json) throws IOException {
+    protected File parseFile(String json) throws IOException {
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         ObjectParser parser = new JsonObjectParser(jsonFactory);
         return parser.parseAndClose(new StringReader(json), File.class);
