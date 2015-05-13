@@ -26,6 +26,13 @@ package org.nuxeo.ecm.platform.uidgen;
 public interface UIDSequencer {
 
     /**
+     * Init Sequencer
+     *
+     * @since 7.3
+     */
+    void init();
+
+    /**
      * For the given key returns the incremented UID which is also stored in the same sequence entry. This is a
      * "one time use" function for a document.
      *
@@ -33,5 +40,14 @@ public interface UIDSequencer {
      * @return
      */
     int getNext(String key);
+
+
+    /**
+     * Cleanup callback
+     *
+     * @since 7.3
+     */
+    void dispose();
+
 
 }

@@ -17,7 +17,7 @@
  * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
  */
 
-package org.nuxeo.ecm.platform.uidgen.ejb;
+package org.nuxeo.ecm.platform.uidgen.jpa;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

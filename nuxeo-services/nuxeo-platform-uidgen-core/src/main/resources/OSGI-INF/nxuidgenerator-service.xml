@@ -1,67 +1,88 @@
 <?xml version="1.0"?>
-
 <component name="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService">
-  <documentation>
-    Help to generate unique IDs needed in different situations. The principal
-    scope is to generate UIDs which are external references for Documents. The
-    UIDs formats are defined by extensions to this component and are based on a
-    unique number provided by this component on a specific key given by a
-    generator
+	<documentation>
+		Help to generate unique IDs needed in different situations. The
+		principal scope is to generate UIDs which are external references for Documents. 
+		The UIDs formats are defined by extensions to this component and are based
+		on a unique number provided by this component on a specific key given by a
+		generator
 
-    @version 1.0
-    @author <a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
-  </documentation>
+		@version 1.0
+		@author
+		<a href="mailto:dm@nuxeo.com">Dragos Mihalache</a>
+	</documentation>
 
-  <implementation
-    class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" />
+	<implementation
+		class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorComponent" />
 
-  <service>
-    <provide interface="org.nuxeo.ecm.platform.uidgen.UIDSequencer"/>
-  </service>
-
-
-  <extension-point name="sequencerFactory">
-    <documentation>
-      This extension point is deprecated and will be removed.
-      <code>
-        <className>org.nuxeo.ecm.platform.uidgen.ejb.EjbSequencerFactory</className>
-      </code>
-    </documentation>
-    <!-- no XObject, className is parsed using DOM calls -->
-  </extension-point>
-
-  <extension-point name="generators">
-    <documentation>
-      The extension point provided by this component gives the possibility to
-      register generators. A generator should be an implementation of
-      <pre>org.nuxeo.ecm.platform.uidgen.UIDGenerator</pre>
-      or a subclass of
-      <pre>org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator</pre>.
-    </documentation>
-
-    <object
-      class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorDescriptor" />
-  </extension-point>
+	<service>
+		<provide interface="org.nuxeo.ecm.platform.uidgen.UIDSequencer" />
+		<provide interface="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" />
+	</service>
 
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <documentation>
-     </documentation>
+	<extension-point name="sequencers">
+		<documentation>
+			Allow to contribute a new Sequencer.
+			
+			The sequencer is just a class implementing org.nuxeo.ecm.platform.uidgen.UIDSequencer.
+			A sequencer is registered using a "name" and a flag to mark it as default.
+			
+			The last sequencer to be registered as default will be the default.
+			
+		</documentation>
+		<object
+			class="org.nuxeo.ecm.platform.uidgen.service.UIDSequencerProviderDescriptor" />
+	</extension-point>
 
-    <listener name="uidlistener" async="false" postCommit="false" class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener" priority="10">
-      <event>documentCreated</event>
-    </listener>
-  </extension>
+	<extension-point name="generators">
+		<documentation>
+			"src/main/resources/OSGI-INF/nxuidgenerator-service.xml"
+			The extension point provided by this component gives the possibility to
+			register generators. A generator should be an implementation of
+			<pre>org.nuxeo.ecm.platform.uidgen.UIDGenerator</pre>
+			or a subclass of
+			<pre>org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator</pre>
+			.
+		</documentation>
+
+		<object class="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorDescriptor" />
+	</extension-point>
+
+	<extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService"
+		point="sequencers">
+		<documentation>
+			Contribute the Hibernate based sequencer as the default one
+		</documentation>
+
+		<sequencer name="hibernateSequencer"
+			class="org.nuxeo.ecm.platform.uidgen.jpa.JPAUIDSequencerImpl"
+			default="true"></sequencer>
+
+	</extension>
+
+	<extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+		point="listener">
+		<documentation>
+		  Listener to automatically generate UIDs for docs
+		</documentation>
+
+		<listener name="uidlistener" async="false" postCommit="false"
+			class="org.nuxeo.ecm.platform.uidgen.corelistener.DocUIDGeneratorListener"
+			priority="10">
+			<event>documentCreated</event>
+		</listener>
+	</extension>
 
 
-  <extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
-        point="hibernate">
-        <hibernateConfiguration name="NXUIDSequencer">
-            <datasource>nxuidsequencer</datasource>
-            <properties>
-                      <property name="hibernate.hbm2ddl.auto">update</property>
-            </properties>
-        </hibernateConfiguration>
-  </extension>
+	<extension target="org.nuxeo.ecm.core.persistence.PersistenceComponent"
+		point="hibernate">
+		<hibernateConfiguration name="NXUIDSequencer">
+			<datasource>nxuidsequencer</datasource>
+			<properties>
+				<property name="hibernate.hbm2ddl.auto">update</property>
+			</properties>
+		</hibernateConfiguration>
+	</extension>
 
 </component>

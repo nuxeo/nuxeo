@@ -2,12 +2,10 @@ package org.nuxeo.ecm.platform.uidgen;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
 import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -23,11 +21,7 @@ public abstract class UIDGeneratorTestCase {
     @Inject
     CoreSession session;
 
+    @Inject
     UIDGeneratorService service;
-
-    @Before
-    public void lookupService() {
-        service = ServiceHelper.getUIDGeneratorService();
-    }
 
 }

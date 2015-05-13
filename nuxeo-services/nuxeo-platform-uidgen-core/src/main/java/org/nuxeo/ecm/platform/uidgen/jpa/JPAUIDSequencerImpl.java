@@ -14,7 +14,7 @@
  * Contributors:
  *     bstefanescu
  */
-package org.nuxeo.ecm.platform.uidgen.service;
+package org.nuxeo.ecm.platform.uidgen.jpa;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
-import org.nuxeo.ecm.platform.uidgen.ejb.UIDSequenceBean;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -43,19 +42,26 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class UIDSequencerImpl implements UIDSequencer {
+public class JPAUIDSequencerImpl implements UIDSequencer {
 
     private static volatile PersistenceProvider persistenceProvider;
 
     protected ThreadPoolExecutor tpe = new ThreadPoolExecutor(1, 2, 10, TimeUnit.SECONDS,
             new LinkedBlockingQueue<Runnable>(1000));
 
-    public UIDSequencerImpl() {
+    public JPAUIDSequencerImpl() {
+    }
+
+
+    @Override
+    public void init() {
+        //NOP
     }
 
     /**
      * Must be called when the service is no longer needed
      */
+    @Override
     public void dispose() {
         deactivatePersistenceProvider();
         tpe.shutdownNow();
@@ -63,7 +69,7 @@ public class UIDSequencerImpl implements UIDSequencer {
 
     protected PersistenceProvider getOrCreatePersistenceProvider() {
         if (persistenceProvider == null) {
-            synchronized (UIDSequencerImpl.class) {
+            synchronized (JPAUIDSequencerImpl.class) {
                 if (persistenceProvider == null) {
                     activatePersistenceProvider();
                 }
@@ -87,7 +93,7 @@ public class UIDSequencerImpl implements UIDSequencer {
 
     private static void deactivatePersistenceProvider() {
         if (persistenceProvider != null) {
-            synchronized (UIDSequencerImpl.class) {
+            synchronized (JPAUIDSequencerImpl.class) {
                 if (persistenceProvider != null) {
                     persistenceProvider.closePersistenceUnit();
                     persistenceProvider = null;

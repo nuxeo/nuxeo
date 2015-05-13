@@ -30,13 +30,14 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.uidgen.service.ServiceHelper;
 import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
+import org.nuxeo.runtime.api.Framework;
 
 public class DocUIDGeneratorListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(DocUIDGeneratorListener.class);
 
+    @Override
     public void handleEvent(Event event) throws ClientException {
 
         if (!DOCUMENT_CREATED.equals(event.getName())) {
@@ -63,7 +64,7 @@ public class DocUIDGeneratorListener implements EventListener {
     }
 
     private static void addUIDtoDoc(DocumentModel doc) throws DocumentException {
-        UIDGeneratorService service = ServiceHelper.getUIDGeneratorService();
+        UIDGeneratorService service = Framework.getService(UIDGeneratorService.class);
         if (service == null) {
             log.error("<addUIDtoDoc> UIDGeneratorService service not found ... !");
             return;
