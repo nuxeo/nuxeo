@@ -18,6 +18,9 @@ package org.nuxeo.ecm.core.blob;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
 
 import javax.inject.Inject;
 
@@ -25,18 +28,23 @@ import org.apache.commons.io.IOUtils;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features(BlobManagerFeature.class)
+@Features({ BlobManagerFeature.class, MockitoFeature.class })
 @LocalDeploy("org.nuxeo.ecm.core:OSGI-INF/dummy-blob-provider.xml")
 public class TestBlobManager {
 
@@ -46,6 +54,15 @@ public class TestBlobManager {
 
     @Inject
     protected BlobManager blobManager;
+
+    @Mock
+    @RuntimeService
+    RepositoryManager repositoryManager;
+
+    @Before
+    public void mockRepositoryManager() throws Exception {
+        when(repositoryManager.getRepositoryNames()).thenReturn(Collections.emptyList());
+    }
 
     @Test
     public void testDummyRegistration() throws Exception {

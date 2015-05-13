@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -44,6 +45,15 @@ public interface BlobDispatcher {
      * Initializes this blob dispatcher.
      */
     void initialize(Map<String, String> properties);
+
+    /**
+     * Gets the provider ids to which this dispatcher can dispatch.
+     * <p>
+     * Blobs already having a provider id not listed here won't be touched on write.
+     *
+     * @return a collection containing the provider ids
+     */
+    Collection<String> getBlobProviderIds();
 
     /**
      * Decides which {@link BlobProvider} to use to read a blob from the given repository if no prefix is specified in

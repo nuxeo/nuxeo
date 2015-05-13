@@ -16,10 +16,13 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Default blob dispatcher, that uses the repository name as the blob provider.
@@ -30,6 +33,11 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
 
     @Override
     public void initialize(Map<String, String> properties) {
+    }
+
+    @Override
+    public Collection<String> getBlobProviderIds() {
+        return Framework.getService(RepositoryManager.class).getRepositoryNames();
     }
 
     @Override

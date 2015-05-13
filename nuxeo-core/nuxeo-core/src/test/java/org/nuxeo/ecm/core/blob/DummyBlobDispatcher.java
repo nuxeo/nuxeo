@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.core.blob;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +48,11 @@ public class DummyBlobDispatcher implements BlobDispatcher {
         }
         defaultProvider = providers[0];
         secondProvider = providers[1];
+    }
+
+    @Override
+    public Collection<String> getBlobProviderIds() {
+        return Arrays.asList(defaultProvider, secondProvider);
     }
 
     @Override

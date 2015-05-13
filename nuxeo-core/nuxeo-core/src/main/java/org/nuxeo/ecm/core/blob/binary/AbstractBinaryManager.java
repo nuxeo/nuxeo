@@ -58,7 +58,11 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     @Override
     public Binary getBinary(Blob blob) throws IOException {
         if (blob instanceof BinaryBlob) {
-            return ((BinaryBlob) blob).getBinary();
+            Binary binary = ((BinaryBlob) blob).getBinary();
+            if (binary.getBlobProviderId().equals(blobProviderId)) {
+                return binary;
+            }
+            // don't reuse the binary if it comes from another blob provider
         }
         try (InputStream stream = blob.getStream()) {
             return getBinary(stream);

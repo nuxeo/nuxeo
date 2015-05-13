@@ -240,18 +240,28 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
      */
     @Override
     public String writeBlob(Blob blob, Document doc) throws IOException {
-        BlobDispatch dispatch = getBlobDispatcher().getBlobProvider(blob, doc);
-        String providerId = dispatch.providerId;
+        BlobDispatcher blobDispatcher = getBlobDispatcher();
+        BlobDispatch dispatch = null;
         if (blob instanceof ManagedBlob) {
             ManagedBlob managedBlob = (ManagedBlob) blob;
-            if (providerId.equals(managedBlob.getProviderId())) {
+            String currentProviderId = managedBlob.getProviderId();
+            // is it something we don't have to dispatch?
+            if (!blobDispatcher.getBlobProviderIds().contains(currentProviderId)) {
+                // not something we have to dispatch, reuse the key
+                return managedBlob.getKey();
+            }
+            dispatch = blobDispatcher.getBlobProvider(blob, doc);
+            if (dispatch.providerId.equals(currentProviderId)) {
                 // same provider, just reuse the key
                 return managedBlob.getKey();
             }
         }
-        BlobProvider blobProvider = getBlobProvider(providerId);
+        if (dispatch == null) {
+            dispatch = blobDispatcher.getBlobProvider(blob, doc);
+        }
+        BlobProvider blobProvider = getBlobProvider(dispatch.providerId);
         if (blobProvider == null) {
-            throw new NuxeoException("No registered blob provider with id: " + providerId);
+            throw new NuxeoException("No registered blob provider with id: " + dispatch.providerId);
         }
         String key = blobProvider.writeBlob(blob, doc);
         if (dispatch.addPrefix) {

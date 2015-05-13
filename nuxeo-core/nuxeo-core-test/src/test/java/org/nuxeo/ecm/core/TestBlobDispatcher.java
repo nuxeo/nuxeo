@@ -12,6 +12,7 @@
 package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.io.Serializable;
@@ -25,7 +26,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -74,6 +77,51 @@ public class TestBlobDispatcher {
         try (InputStream in = blob2.getStream()) {
             assertEquals("bar", IOUtils.toString(in));
         }
+    }
+
+    @Test
+    public void testAlreadyManagedBlob() throws Exception {
+        // create a blob already managed and not corresponding to a dispatch target
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = "dummy:1234";
+        blobInfo.mimeType = "video/mp4";
+        Blob blob = new SimpleManagedBlob(blobInfo);
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // check that it wasn't dispatched even though the metadata would suggest it
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertTrue(blob.getClass().getName(), blob instanceof SimpleManagedBlob);
+        String key = ((ManagedBlob) blob).getKey();
+        assertEquals("dummy:1234", key);
+    }
+
+    @Test
+    public void testSwitchDispatch() throws Exception {
+        String foo = "foo";
+        String foo_test_key = "test:acbd18db4cc2f85cedef654fccc4a4d8";
+        String foo2_test_key = "test2:acbd18db4cc2f85cedef654fccc4a4d8";
+
+        // create a regular binary in the first blob provider
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        Blob blob = Blobs.createBlob(foo, "text/plain");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("file:content");
+        String key = ((ManagedBlob) blob).getKey();
+        assertEquals(foo_test_key, key);
+
+        // update the blob MIME type to change the dispatch target
+        blob.setMimeType("video/mp4");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.saveDocument(doc);
+
+        // check that it was dispatched on save to the second blob provider
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(foo2_test_key, ((ManagedBlob) blob).getKey());
     }
 
 }
