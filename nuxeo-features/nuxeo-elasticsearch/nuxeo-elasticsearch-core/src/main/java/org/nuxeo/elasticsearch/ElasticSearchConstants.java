@@ -102,4 +102,6 @@ final public class ElasticSearchConstants {
 
     public static final String ES_SYNC_INDEXING_FLAG = "ESSyncIndexing";
 
+    public static final String REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY = "elasticsearch.reindex.useChildrenTraversal";
+
 }

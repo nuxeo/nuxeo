@@ -47,23 +47,20 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     private static final String DEFAULT_BUCKET_SIZE = "50";
 
-    private final boolean isLast;
+    private final boolean warnAtEnd;
 
     private final int documentCount;
 
-    public BucketIndexingWorker(IndexingMonitor monitor, String repositoryName, List<String> docIds, boolean isLast) {
+    public BucketIndexingWorker(IndexingMonitor monitor, String repositoryName, List<String> docIds, boolean warnAtEnd) {
         super(monitor);
         setDocuments(repositoryName, docIds);
         documentCount = docIds.size();
-        this.isLast = isLast;
+        this.warnAtEnd = warnAtEnd;
     }
 
     @Override
     public String getTitle() {
         String title = " ElasticSearch bucket indexer size " + documentCount;
-        if (isLast) {
-            title = title + " last worker";
-        }
         return title;
     }
 
@@ -84,7 +81,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
             esi.indexNonRecursive(getIndexingCommands(session, ids));
             ids.clear();
         }
-        if (isLast) {
+        if (warnAtEnd) {
             log.warn(String.format("Re-indexing job: %s completed.", getSchedulePath().getParentPath()));
         }
     }

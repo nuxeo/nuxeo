@@ -47,6 +47,8 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     private static final String DEFAULT_BUCKET_SIZE = "500";
 
+    private static final long WARN_DOC_COUNT = 500;
+
     protected final String nxql;
 
     protected WorkManager workManager;
@@ -67,10 +69,13 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     @Override
     protected void doWork() {
         String jobName = getSchedulePath().getPath();
-        log.warn(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql, repositoryName));
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql, repositoryName));
+        }
         CoreSession session = initSession(repositoryName);
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
         int bucketCount = 0;
+        boolean warnAtEnd = false;
         try {
             Iterator<Map<String, Serializable>> it = res.iterator();
             int bucketSize = getBucketSize();
@@ -84,14 +89,24 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
                     bucketCount += 1;
                 }
             }
-            scheduleBucketWorker(ids, true);
+            if (documentCount > WARN_DOC_COUNT) {
+              warnAtEnd = true;
+            }
+            scheduleBucketWorker(ids, warnAtEnd);
             if (!ids.isEmpty()) {
                 bucketCount += 1;
             }
         } finally {
             res.close();
-            log.warn(String.format("Re-indexing job: %s has submited %d documents in %d bucket workers", jobName,
-                    documentCount, bucketCount));
+            if (warnAtEnd || log.isDebugEnabled()) {
+                String message = String.format("Re-indexing job: %s has submited %d documents in %d bucket workers",
+                        jobName, documentCount, bucketCount);
+                if (warnAtEnd) {
+                    log.warn(message);
+                } else {
+                    log.debug(message);
+                }
+            }
         }
     }
 
