@@ -76,6 +76,7 @@
       margin: 10px;
       color: white;
       width: 15%;
+      font-size: 10px;
     }
 
     paper-input{
@@ -99,21 +100,53 @@
 
       <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}"></nx-resource>
 
+      <nx-resource auto="auto" id="acls" path="/path#{currentDocument.pathAsString}/@acl" data="{{acls}}"></nx-resource>
+
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
 
-      <h2>Access rights for current document {{doc.title}}</h2>
+      <div>
+        <h2>Access rights defined explicitely on this folder or document {{doc.title}}</h2>
+        <paper-button raised="true">New Access Right</paper-button>
+      </div>
+      <template if="{{acls.acl[0]}}">
+        <div>
+          <hot-table id="local" datarows="{{acls.acl[0].ace}}" class="htLeft">
+            <hot-column value="username" header="Username">
+              <template data-hot-role="renderer"><span>{{username}}</span></template>
+            </hot-column>
+            <hot-column value="permission" header="Permission">
+              <template data-hot-role="renderer"><span>{{permission}}</span></template>
+            </hot-column>
+            <hot-column value="granted" header="Granted">
+              <template data-hot-role="renderer"><span>{{granted}}</span></template>
+            </hot-column>
+          </hot-table>
+        </div>
+      </template>
 
       <div>
-        <hot-table datarows="{{doc.facets}}" class="htLeft">
-          <hot-column width="100" header="Names"></hot-column>
-          <hot-column width="100" header="Rights"></hot-column>
-        </hot-table>
+        <h2>Access rights coming from upper folders in the hierarchy</h2>
+        <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
       </div>
-      <template></template>
-      <div>
-        <paper-button raised="true">Extends Access Rights</paper-button>
-        <paper-button raised="true">Restrict Access Rights</paper-button>
-      </div>
+      <template if="{{acls.acl[1]}}">
+        <div>
+          <hot-table id="inherited" datarows="{{acls.acl[1].ace}}" class="htLeft">
+            <hot-column value="username" header="Username">
+              <template data-hot-role="renderer"><span>{{username}}</span></template>
+            </hot-column>
+            <hot-column value="permission" header="Permission">
+              <template data-hot-role="renderer"><span>{{permission}}</span></template>
+            </hot-column>
+            <hot-column value="granted" header="Granted">
+              <template data-hot-role="renderer"><span>{{granted}}</span></template>
+            </hot-column>
+          </hot-table>
+        </div>
+      </template>
+
+      <h2>Temporary Access</h2>
+      <p>No temporary access was given</p>
+      <paper-button raised="true">Give a Temporary Access</paper-button>
     </template>
 
   </div>
