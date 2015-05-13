@@ -12,10 +12,13 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo
+ *     Delprat Thierry
+ *     Delbosc Benoit
  */
 
 package org.nuxeo.elasticsearch.work;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY;
 
 import java.util.List;
 
@@ -28,8 +31,6 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple Indexing Worker
- *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
@@ -47,13 +48,13 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
     protected boolean needRecurse(IndexingCommand cmd) {
         if (cmd.isRecurse()) {
             switch (cmd.getType()) {
-            case INSERT:
-            case UPDATE:
-            case UPDATE_SECURITY:
-                return true;
-            case DELETE:
-                // recurse deletion is done atomically
-                return false;
+                case INSERT:
+                case UPDATE:
+                case UPDATE_SECURITY:
+                    return true;
+                case DELETE:
+                    // recurse deletion is done atomically
+                    return false;
             }
         }
         return false;
@@ -65,7 +66,15 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (IndexingCommand cmd : cmds) {
             if (needRecurse(cmd)) {
-                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(monitor, cmd);
+                Work subWorker;
+                boolean useChildrenWorker = Boolean.parseBoolean(Framework.getProperty(REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY,
+                        "false"));
+                if (useChildrenWorker) {
+                    subWorker = new ChildrenIndexingWorker(monitor, cmd);
+                } else {
+                    subWorker = new ScrollingIndexingWorker(monitor, cmd.getRepositoryName(), String.format(
+                            "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", cmd.getTargetDocumentId()));
+                }
                 wm.schedule(subWorker);
             }
         }
