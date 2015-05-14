@@ -92,13 +92,13 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             entry.setProperty(SCHEMA, "clientId", clientId);
             entry.setProperty(SCHEMA, "clientSecret", clientSecret);
             entry.setProperty(SCHEMA, "scopes", StringUtils.join(scopes, ","));
-            if (clientId == null || clientSecret == null) {
+            boolean enabled = (clientId != null && clientSecret != null);
+            entry.setProperty(SCHEMA, "enabled", enabled);
+            if (!enabled) {
                 log.info("OAuth2 provider for " + serviceName
                     + " is disabled because clientId and/or clientSecret are empty");
-                entry.setProperty(SCHEMA, "enabled", false);
             }
             session.updateEntry(entry);
-
             return getProvider(serviceName);
         } finally {
             if (session != null) {
