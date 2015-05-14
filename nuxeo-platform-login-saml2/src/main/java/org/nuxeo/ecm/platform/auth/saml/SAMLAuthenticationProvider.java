@@ -20,6 +20,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPPostBinding;
 import org.nuxeo.ecm.platform.auth.saml.binding.HTTPRedirectBinding;
@@ -82,6 +83,7 @@ import org.opensaml.xml.util.Pair;
 import org.opensaml.xml.util.XMLHelper;
 import org.w3c.dom.Element;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -105,6 +107,10 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Log log = LogFactory.getLog(SAMLAuthenticationProvider.class);
+
+    private static final String ERROR_PAGE = "saml/error.jsp";
+    private static final String ERROR_AUTH = "error.saml.auth";
+    private static final String ERROR_USER = "error.saml.userMapping";
 
     // User Resolver
     private static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
@@ -303,11 +309,18 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest request, HttpServletResponse response, String baseURL) {
 
-        String loginURL = getSSOUrl(request, response);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Send redirect to " + loginURL);
+        String loginError = (String) request.getAttribute(LOGIN_ERROR);
+        if (loginError != null) {
+            try {
+                request.getRequestDispatcher(ERROR_PAGE).forward(request, response);
+                return true;
+            } catch (ServletException | IOException e) {
+                log.error("Failed to redirect to error page", e);
+                return false;
+            }
         }
+
+        String loginURL = getSSOUrl(request, response);
         try {
             response.sendRedirect(loginURL);
         } catch (IOException e) {
@@ -401,7 +414,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             credential = ((WebSSOProfile) processor).processAuthenticationResponse(context);
         } catch (Exception e) {
             log.error("Error processing SAML message", e);
-            sendError(request, "Failed to authenticate: \"" + e.getMessage() + "\".");
+            sendError(request, ERROR_AUTH);
             return null;
         }
 
@@ -409,7 +422,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         if (userId == null) {
             log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");
-            sendError(request, "No user found with NameId: \"" + credential.getNameID().getValue() + "\".");
+            sendError(request, ERROR_USER);
             return null;
         }
 
@@ -572,7 +585,8 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         return true;
     }
 
-    private void sendError(HttpServletRequest req, String msg) {
+    private void sendError(HttpServletRequest req, String key) {
+        String msg = I18NUtils.getMessageString("messages", key, null, req.getLocale());
         req.setAttribute(LOGIN_ERROR, msg);
     }
 
