@@ -27,6 +27,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -60,7 +62,12 @@ public class OAuth2Callback extends ModuleRoot {
                     "No service provider called: \"" + serviceProviderName + "\".").build();
         }
 
-        provider.handleAuthorizationCallback(request);
+        new UnrestrictedSessionRunner(ctx.getCoreSession()) {
+            @Override
+            public void run() throws ClientException {
+                provider.handleAuthorizationCallback(request);
+            }
+        }.runUnrestricted();
 
         return getView("index");
     }
