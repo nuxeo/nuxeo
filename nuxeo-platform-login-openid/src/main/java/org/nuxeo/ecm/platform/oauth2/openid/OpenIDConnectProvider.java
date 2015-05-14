@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
- *     Nuxeo
+ *     Nelson Silva
  */
 
 package org.nuxeo.ecm.platform.oauth2.openid;
@@ -34,6 +33,7 @@ import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDConnectAuthenticator;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
@@ -68,7 +68,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     private boolean enabled = true;
 
-    NuxeoOAuth2ServiceProvider oauth2Provider;
+    OAuth2ServiceProvider oauth2Provider;
 
     private String userInfoURL;
 
@@ -82,7 +82,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     private Class<? extends OpenIDUserInfo> openIdUserInfoClass;
 
-    public OpenIDConnectProvider(NuxeoOAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
+    public OpenIDConnectProvider(OAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
             Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
             RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass) {
         this.oauth2Provider = oauth2Provider;
@@ -132,7 +132,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     public String getAuthenticationUrl(HttpServletRequest req, String requestedUrl) {
         // redirect to the authorization flow
-        AuthorizationCodeFlow flow = oauth2Provider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
+        AuthorizationCodeFlow flow = ((NuxeoOAuth2ServiceProvider) oauth2Provider).getAuthorizationCodeFlow();
         AuthorizationCodeRequestUrl authorizationUrl = flow.newAuthorizationUrl(); // .setResponseTypes("token");
         authorizationUrl.setRedirectUri(getRedirectUri(req));
 
@@ -158,7 +158,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         HttpResponse response = null;
 
         try {
-            AuthorizationCodeFlow flow = oauth2Provider.getAuthorizationCodeFlow(HTTP_TRANSPORT, JSON_FACTORY);
+            AuthorizationCodeFlow flow = ((NuxeoOAuth2ServiceProvider) oauth2Provider).getAuthorizationCodeFlow();
 
             String redirectUri = getRedirectUri(req);
             response = flow.newTokenRequest(code).setRedirectUri(redirectUri).executeUnparsed();

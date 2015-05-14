@@ -12,8 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nelson Silva <nelson.silva@inevo.pt> - initial API and implementation
- *     Nuxeo
+ *     Nelson Silva
  */
 
 package org.nuxeo.ecm.platform.oauth2.openid;
@@ -27,7 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -111,7 +110,7 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
 
         if (oauth2ProviderRegistry != null) {
 
-            NuxeoOAuth2ServiceProvider oauth2Provider = oauth2ProviderRegistry.getProvider(provider.getName());
+            OAuth2ServiceProvider oauth2Provider = oauth2ProviderRegistry.getProvider(provider.getName());
 
             if (oauth2Provider == null) {
                 oauth2Provider = oauth2ProviderRegistry.addProvider(provider.getName(), provider.getTokenServerURL(),
