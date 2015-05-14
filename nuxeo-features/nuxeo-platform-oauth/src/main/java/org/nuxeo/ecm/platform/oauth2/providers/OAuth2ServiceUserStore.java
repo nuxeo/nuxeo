@@ -26,6 +26,7 @@ import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -40,10 +41,16 @@ public class OAuth2ServiceUserStore {
 
     public static final String DIRECTORY_NAME = "oauth2Tokens";
 
+    public static final String ENTRY_ID = "id";
+
     private String serviceName;
 
     public OAuth2ServiceUserStore(String serviceName) {
         this.serviceName = serviceName;
+    }
+
+    public String store(String nuxeoLogin) {
+        return store(nuxeoLogin, new HashMap<>());
     }
 
     public String store(String nuxeoLogin, Map<String, Object> fields) {
@@ -54,7 +61,7 @@ public class OAuth2ServiceUserStore {
             fields.put("nuxeoLogin", nuxeoLogin);
             fields.put("serviceName", serviceName);
             DocumentModel entry = session.createEntry(fields);
-            Long id = (Long) entry.getProperty(NuxeoOAuth2Token.SCHEMA, "id");
+            Long id = (Long) entry.getProperty(NuxeoOAuth2Token.SCHEMA, ENTRY_ID);
             return id.toString();
         } finally {
             if (session != null) {
@@ -66,14 +73,14 @@ public class OAuth2ServiceUserStore {
     public String find(Map<String, Serializable> filter) {
         filter.put("serviceName", serviceName);
         DocumentModelList entries = query(filter);
-        if (entries.size() == 0) {
+        if (entries == null || entries.size() == 0) {
             return null;
         }
         if (entries.size() > 1) {
             log.error("Found several tokens");
         }
-        DocumentModel entry =  entries.get(0);
-        return entry != null ? (String) entry.getProperty(NuxeoOAuth2Token.SCHEMA, "id") : null;
+        Long id = (Long) entries.get(0).getProperty(NuxeoOAuth2Token.SCHEMA, ENTRY_ID);
+        return id.toString();
     }
 
     protected DocumentModelList query(Map<String, Serializable> filter) {

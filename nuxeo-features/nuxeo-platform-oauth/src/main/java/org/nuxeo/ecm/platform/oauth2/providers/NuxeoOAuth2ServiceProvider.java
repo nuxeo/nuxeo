@@ -160,7 +160,7 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
         String nuxeoLogin = request.getUserPrincipal().getName();
         String userId = getServiceUserId(nuxeoLogin);
         if (userId == null) {
-            userId = getServiceUserStore().store(nuxeoLogin, Collections.emptyMap());
+            userId = getServiceUserStore().store(nuxeoLogin);
         }
         return userId;
     }
