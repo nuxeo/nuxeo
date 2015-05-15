@@ -98,7 +98,7 @@
     </nx-connection>
     <template is="auto-binding">
 
-      <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}"></nx-resource>
+      <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enricher="acls"></nx-resource>
 
       <nx-resource auto="auto" id="acls" path="/path#{currentDocument.pathAsString}/@acl" data="{{acls}}"></nx-resource>
 

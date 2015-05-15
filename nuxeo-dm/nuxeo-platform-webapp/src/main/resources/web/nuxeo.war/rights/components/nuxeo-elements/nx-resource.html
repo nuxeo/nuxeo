@@ -37,7 +37,7 @@ element.
 -->
 <link rel="import" href="../../polymer/polymer.html">
 <script src="nuxeojs.js"></script>
-<polymer-element name="nx-resource" attributes="connectionId auto path params data">
+<polymer-element name="nx-resource" attributes="connectionId auto path params data headers enricher">
     <template>
         <style>
             :host {
@@ -108,6 +108,25 @@ element.
              */
             type: '',
 
+            /**
+             * The headers of the request.
+             * 'Accept': 'text/plain,application/json' is already set by default.
+             *
+             * @property type
+             * @type Object
+             * @default {}
+             */
+            headers: null,
+
+            /**
+             * The `content enricher` of the resource.
+             *
+             * @property type
+             * @type string
+             * @default ''
+             */
+            enricher: '',
+
             observe: {
                 'path params': '_autoGet'
             },
@@ -143,8 +162,12 @@ element.
             method = method || 'get';
             data = data || this.data;
             var options = (data) ? {data: data} : {};
-            // add support for plain text responses
-            options.headers = {'Accept': 'text/plain,application/json'};
+            // Look up headers parameter
+            options.headers = (!this.headers || (typeof this.headers === 'object')) ? {} : JSON.parse(this.headers);
+            // add support for plain text responses by default
+            options.headers.accept = 'text/plain,application/json';
+            // Look up content enricher parameter
+            if(this.enricher) options.headers["X-NXenrichers.document"] = this.enricher;
             var params = (!this.params || (typeof this.params === 'object')) ? this.params : JSON.parse(this.params);
             return this.$.nx.connect()
               .then(function() {
