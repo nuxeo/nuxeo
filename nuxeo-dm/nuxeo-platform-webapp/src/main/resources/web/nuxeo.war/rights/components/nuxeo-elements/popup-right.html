@@ -1,0 +1,86 @@
+
+<link rel="import" href="../../polymer/paper-button/paper-button.html">
+<link rel="import" href="../../polymer/paper-input/paper-input.html">
+<link rel="import" href="../../polymer/core-menu/core-menu.html">
+<link rel="import" href="../../polymer/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../polymer/paper-item/paper-item.html">
+<link rel="import" href="../../polymer/paper-dropdown/paper-dropdown.html">
+<link rel="import" href="../../polymer/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../polymer/polymer-date-picker/polymer-date-picker.html">
+
+<polymer-element name="popup-right">
+  <template>
+    <paper-button raised="true" click="{{$.popupRight.toggle)}}">New Access Right</paper-button>  
+  	<paper-dialog id="popupRight" heading="Add new acl right" opened="false">
+	    <div>
+	    	<!-- Give acces to row -->
+		  	<div layout horizontal>
+		  		<div>Give acces to</div>
+		  		<div>
+					<paper-dropdown-menu label="Peoples">
+					    <paper-dropdown class="dropdown">
+					        <core-menu class="menu">
+				            	<paper-item>User</paper-item>
+				            	<paper-item>Test</paper-item>
+					        </core-menu>
+					    </paper-dropdown>
+					</paper-dropdown-menu>
+				</div>
+			</div>
+			<div layout horizontal>
+				<div two>From</div>
+				<div>
+					<paper-input
+						id="from" value="{{selectedFromDate}}" 
+ 						on-click="{{openCalendar}}"
+ 						readonly class="date" />
+				</div>
+			</div>
+			<div layout horizontal>
+				<div two>To</div>
+				<div>
+					<paper-input
+						id="to" value="{{selectedToDate}}" 
+ 						on-click="{{openCalendar}}"
+ 						readonly class="date" />
+				</div>
+			</div>
+	    	<!-- Allowed rights row -->
+		  	<div layout horizontal>
+			  	<div>Allowed rights</div>
+			  	<div>
+					<paper-dropdown-menu label="Rights">
+					    <paper-dropdown class="dropdown">
+					        <core-menu class="menu">
+					            <paper-item>User</paper-item>
+					            <paper-item>User2</paper-item>
+					        </core-menu>
+					    </paper-dropdown>
+					</paper-dropdown-menu>
+				</div>
+			</div>
+		</div>
+
+		<polymer-date-picker
+		  id="from-datepicker"
+		  selectedDate="{{selectedFromDate}}"
+		  relatedTarget="{{$.from}}"
+		  opened="false">
+		</polymer-date-picker>
+		<polymer-date-picker
+		  id="to-datepicker"
+		  selectedDate="{{selectedToDate}}"
+		  relatedTarget="{{$.to}}"
+		  opened="false">
+		</polymer-date-picker>
+	</paper-dialog>
+
+  </template>
+  <script>
+  	Polymer({
+  		openCalendar: function(e, len, elm) {
+  			this.$[elm.id + '-datepicker'].toggle();
+  		}
+   	});
+  </script>
+</polymer-element>

@@ -24,6 +24,7 @@
 
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-resource.html"></link>
+  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/popup-right.html"></link>
   <link rel="import" href="#{baseURL}rights/polymer/paper-button/paper-button.html"></link>
   <link rel="import" href="#{baseURL}rights/polymer/hot-table/hot-table.html"></link>
   <link rel="import" href="#{baseURL}rights/polymer/paper-input/paper-input.html"></link>
@@ -107,8 +108,8 @@
       <template if="{{acls.acl[0].name=='local'}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document</h2>
-          <template if="{{doc.contextParameters.acls}}">
-            <paper-button raised="true">New Access Right</paper-button>
+          <template if="{{doc.contextParameters.acls}}" id="new-access-right">
+            <popup-right></popup-right>
           </template>
         </div>
         <div>
@@ -175,6 +176,6 @@
     </template>
 
   </div>
-
+  
 </h:body>
 </html>
