@@ -388,6 +388,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                     PAGE_PROVIDERS.GET_TAGS_TO_COPY_FOR_DOCUMENT.name(),
                     session, srcDocId);
             if (srcTagsRes != null) {
+                boolean docCreated = false;
                 for (Map<String, Serializable> map : srcTagsRes) {
                     String key = String.format("%s/%s", map.get("tag:label"),
                             map.get("dc:creator"));
@@ -405,7 +406,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
                                 TagConstants.TAGGING_TARGET_FIELD,
                                 map.get("relation:target"));
                         session.createDocument(tagging);
+                        docCreated = true;
                     }
+                }
+                if (docCreated) {
+                    session.save();
                 }
             }
         }
