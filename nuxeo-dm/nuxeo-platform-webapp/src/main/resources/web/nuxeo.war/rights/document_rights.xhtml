@@ -104,11 +104,13 @@
 
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
 
-      <div>
-        <h2>Access rights defined explicitely on this folder or document {{doc.title}}</h2>
-        <paper-button raised="true">New Access Right</paper-button>
-      </div>
-      <template if="{{acls.acl[0]}}">
+      <template if="{{acls.acl[0].name=='local'}}">
+        <div>
+          <h2>Access rights defined explicitely on this folder or document</h2>
+          <template if="{{doc.contextParameters.acls}}">
+            <paper-button raised="true">New Access Right</paper-button>
+          </template>
+        </div>
         <div>
           <hot-table id="local" datarows="{{acls.acl[0].ace}}" class="htLeft">
             <hot-column value="username" header="Username">
@@ -122,15 +124,38 @@
             </hot-column>
           </hot-table>
         </div>
-      </template>
 
-      <div>
-        <h2>Access rights coming from upper folders in the hierarchy</h2>
-        <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
-      </div>
-      <template if="{{acls.acl[1]}}">
+        <div>
+          <h2>Access rights coming from upper folders in the hierarchy</h2>
+          <template if="{{doc.contextParameters.acls}}">
+            <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
+          </template>
+        </div>
         <div>
           <hot-table id="inherited" datarows="{{acls.acl[1].ace}}" class="htLeft">
+            <hot-column value="username" header="Username">
+              <template data-hot-role="renderer"><span>{{username}}</span></template>
+            </hot-column>
+            <hot-column value="permission" header="Permission">
+              <template data-hot-role="renderer"><span>{{permission}}</span></template>
+            </hot-column>
+            <hot-column value="granted" header="Granted">
+              <template data-hot-role="renderer"><span>{{granted}}</span></template>
+            </hot-column>
+          </hot-table>
+        </div>
+      </template>
+
+      <template if="{{acls.acl[0].name=='inherited'}}">
+        <div>
+          <h2>Access rights coming from upper folders in the hierarchy</h2>
+          <template if="{{doc.contextParameters.acls}}">
+            <paper-button raised="true">New Access Right</paper-button>
+            <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
+          </template>
+        </div>
+        <div>
+          <hot-table id="inherited" datarows="{{acls.acl[0].ace}}" class="htLeft">
             <hot-column value="username" header="Username">
               <template data-hot-role="renderer"><span>{{username}}</span></template>
             </hot-column>
