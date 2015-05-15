@@ -142,7 +142,6 @@ public class SAMLAuthenticatorTest {
         AuthnRequest auth = (AuthnRequest) message;
         assertEquals(SAMLVersion.VERSION_20, auth.getVersion());
         assertNotNull(auth.getID());
-        assertEquals(SAMLConstants.SAML2_POST_BINDING_URI, auth.getProtocolBinding());
     }
 
     @Test

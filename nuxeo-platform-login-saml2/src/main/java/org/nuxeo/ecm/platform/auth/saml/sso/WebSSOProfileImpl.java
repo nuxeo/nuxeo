@@ -25,9 +25,9 @@ import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.binding.SAMLMessageContext;
-import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.core.*;
-import org.opensaml.saml2.metadata.*;
+import org.opensaml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml2.metadata.SingleSignOnService;
 import org.opensaml.xml.encryption.DecryptionException;
 import org.opensaml.xml.signature.Signature;
 import org.opensaml.xml.validation.ValidationException;
@@ -192,7 +192,8 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
         request.setID(newUUID());
         request.setVersion(SAMLVersion.VERSION_20);
         request.setIssueInstant(new DateTime());
-        request.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
+        // Let the IdP pick a protocol binding
+        //request.setProtocolBinding(SAMLConstants.SAML2_POST_BINDING_URI);
 
         // Fill the assertion consumer URL
         request.setAssertionConsumerServiceURL(getStartPageURL(httpRequest));
