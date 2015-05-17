@@ -1,0 +1,102 @@
+
+<link rel="import" href="../core-icons/core-icons.html"/>
+<polymer-element name="polymer-date-picker-calendar" attributes="start end selectedDate startDate endDate">
+  <template>
+    <link rel="stylesheet" href="polymer-date-picker-calendar.css"/>
+    <div class="calendar">
+      <table>
+        <thead>
+          <tr>
+            <th on-click="{{backClicked}}">
+              <core-icon icon="arrow-back" size="20"></core-icon>
+            </th>
+            <th colspan="5">{{monthName}} {{yearMonth.year}}</th>
+            <th on-click="{{nextClicked}}">
+              <core-icon icon="arrow-forward" size="20"></core-icon>
+            </th>
+          </tr>
+          <tr>
+            <th template="template" repeat="{{dayOfWeek in daysOfWeek}}">{{dayOfWeek}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr template="template" repeat="{{row, r in calendar}}">
+            <td template="template" repeat="{{col, c in row}}" row="{{r}}" col="{{c}}" on-click="{{dateClicked}}" class="{{ {active: (col.identifier == selectedDate), disabled: (yearMonth.month != col.month), available: (yearMonth.month == col.month), 'start-date': (col.identifier == startDate), 'end-date': (col.identifier == endDate), 'in-range': (startDate &lt;= col.identifier) &amp;&amp; (endDate &gt;= col.identifier)} | tokenList}}">{{col.day}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </template>
+  <script>
+    Polymer("polymer-date-picker-calendar", {
+      ready: function() {
+        if (!this.selectedDate) this.selectedDate = moment().format("YYYY-MM-DD");
+        this.daysOfWeek = [0, 1, 2, 3, 4, 5, 6].map(function(n) {return moment().day(n).format("dd");});
+        this.calendar = [];
+      },
+      moveMonth: function(n) {
+        this.firstOfMonth.add(n, 'month');
+        this.rebuildYearMonth(this.firstOfMonth);
+      },
+      backClicked: function() {
+        this.moveMonth(-1);
+      },
+      nextClicked: function() {
+        this.moveMonth(1);
+      },
+      dateClicked: function(e) {
+        var element = e.originalTarget ? e.originalTarget : e.toElement;
+        var row = element.getAttribute("row");
+        var col = element.getAttribute("col");
+        this.selectedDate = this.calendar[row][col].identifier;
+      },
+      startDateChanged: function() {
+        if (this.start) this.selectedDate = this.startDate;
+      },
+      endDateChanged: function() {
+        if (this.end) this.selectedDate = this.endDate;
+      },
+      selectedDateChanged: function() {
+        if (this.start) this.startDate = this.selectedDate;
+        else if (this.end) this.endDate = this.selectedDate;
+        this.date = moment(this.selectedDate);
+      },
+      dateChanged: function(oldDate, newDate) {
+        this.rebuildYearMonth(newDate);
+      },
+      rebuildYearMonth: function(moment) {
+        this.yearMonth = {
+          year: moment.year(),
+          month: moment.month()
+        };
+      },
+      yearMonthChanged: function(oldYearMonth, newYearMonth) {
+        if (!oldYearMonth || oldYearMonth.year != newYearMonth.year || oldYearMonth.month != newYearMonth.month) {
+          this.rebuildCalendar();
+        }
+      },
+      rebuildCalendar: function() {
+        this.calendar = [];
+        this.firstOfMonth = moment([this.yearMonth.year, this.yearMonth.month, 1]);
+        this.monthName = this.firstOfMonth.format("MMMM");
+        this.firstDayOfMonthOffset = this.firstOfMonth.day();
+        var columns = [];
+    
+        for (var i = 0; i < 6 * 7; i++) {
+          var date =this.firstOfMonth.clone().add(i - this.firstDayOfMonthOffset, 'days') 
+          if (i % 7 == 0) {
+            columns = [];
+          }
+          columns.push({
+            date: date, 
+            year: date.year(), 
+            month: date.month(),
+            day: date.date(),
+            identifier: date.format("YYYY-MM-DD")
+          });
+          if ((i + 1) % 7 == 0) this.calendar.push(columns);
+        }
+      }
+    });
+  </script>
+</polymer-element>

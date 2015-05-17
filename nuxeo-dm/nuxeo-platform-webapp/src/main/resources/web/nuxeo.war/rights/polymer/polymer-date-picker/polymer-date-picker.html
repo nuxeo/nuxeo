@@ -1,0 +1,92 @@
+
+<link rel="import" href="../polymer.html"/>
+<link rel="import" href="../core-style/core-style.html"/>
+<link rel="import" href="polymer-date-picker-calendar.html"/>
+<link rel="import" href="polymer-date-picker-positioning.html"/>
+<script src="../moment/min/moment.min.js"></script>
+<script src="../moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+<polymer-element name="polymer-date-picker" extends="polymer-date-picker-positioning" attributes="range selectedDate startDate endDate opened halign relatedTarget selected showRanges timezone">
+  <template>
+    <link rel="stylesheet" href="polymer-date-picker.css"/>
+    <core-style ref="polymer-date-picker"></core-style>
+    <div id="target" class="daterangepicker opensright">
+      <template if="{{range != null}}">
+        <div hidden?="{{!showRanges}}" class="ranges">
+          <ul>
+            <li on-click="{{todayClicked}}" class="{{ {active: (selected == 'today') } | tokenList }}">Today</li>
+            <li on-click="{{yesterdayClicked}}" class="{{ {active: (selected == 'yesterday') } | tokenList }}">Yesterday</li>
+            <li on-click="{{last7DaysClicked}}" class="{{ {active: (selected == 'last7Days') } | tokenList }}">Last 7 Days</li>
+            <li on-click="{{last30DaysClicked}}" class="{{ {active: (selected == 'last30Days') } | tokenList }}">Last 30 Days</li>
+            <li on-click="{{thisMonthClicked}}" class="{{ {active: (selected == 'thisMonth') } | tokenList }}">This Month</li>
+            <li on-click="{{lastMonthClicked}}" class="{{ {active: (selected == 'lastMonth') } | tokenList }}">Last Month</li>
+            <li on-click="{{customClicked}}" class="{{ {active: (selected == 'custom') } | tokenList }}">Custom</li>
+          </ul>
+        </div>
+        <polymer-date-picker-calendar start="start" startDate="{{startDate}}" endDate="{{endDate}}" hidden?="{{selected != 'custom'}}"></polymer-date-picker-calendar>
+        <polymer-date-picker-calendar end="end" startDate="{{startDate}}" endDate="{{endDate}}" hidden?="{{selected != 'custom'}}"></polymer-date-picker-calendar>
+      </template>
+      <template if="{{range == null}}">
+        <polymer-date-picker-calendar selectedDate="{{selectedDate}}"></polymer-date-picker-calendar>
+      </template>
+    </div>
+  </template>
+  <script>
+    Polymer("polymer-date-picker", {
+      halign: 'middle',
+      selected: "",
+      ready: function() {
+        this.target = this.$.target;
+        this.super();
+      },
+      close: function() {
+        this.opened = false;
+      },
+      newMoment: function() {
+        if (this.timezone) return moment().tz(this.timezone);
+        else return moment();
+      },
+      todayClicked: function(e) {
+        this.startDate = this.format(this.newMoment());
+        this.endDate = this.format(this.newMoment());
+        this.selected = "today";
+        this.close();
+      },
+      yesterdayClicked: function() {
+        this.startDate = this.format(this.newMoment().subtract(1, "days"));
+        this.endDate = this.format(this.newMoment().subtract(1, "days"));
+        this.selected = "yesterday";
+        this.close();
+      },
+      last7DaysClicked: function() {
+        this.startDate = this.format(this.newMoment().subtract(6, "days"));
+        this.endDate = this.format(this.newMoment());
+        this.selected = "last7Days";
+        this.close();
+      },
+      last30DaysClicked: function() {
+        this.startDate = this.format(this.newMoment().subtract(30, "days"));
+        this.endDate = this.format(this.newMoment());
+        this.selected = "last30Days";
+        this.close();
+      },
+      thisMonthClicked: function() {
+        this.startDate = this.format(this.newMoment().startOf("month"));
+        this.endDate = this.format(this.newMoment().endOf("month"));
+        this.selected = "thisMonth";
+        this.close();
+      },
+      lastMonthClicked: function() {
+        this.startDate = this.format(this.newMoment().subtract(1, "months").startOf("month"));
+        this.endDate = this.format(this.newMoment().subtract(1, "months").endOf("month"));
+        this.selected = "lastMonth";
+        this.close();
+      },
+      customClicked: function() {
+        this.selected = "custom"
+      },
+      format: function(moment) {
+        return moment.tz(this.timezone).format("YYYY-MM-DD");
+      }
+    });
+  </script>
+</polymer-element>
