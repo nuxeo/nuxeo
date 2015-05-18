@@ -15,7 +15,7 @@
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *
  */
-package org.nuxeo.ftest.cap;
+package org.nuxeo.ftest.caprest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 @RunWith(FeaturesRunner.class)
 @Features(RemoteAutomationServerFeature.class)
-public class RemoteAutomationClientTCK {
+public class ITRemoteAutomationClientTCK {
 
     protected static String[] attachments = { "att1", "att2", "att3" };
 
