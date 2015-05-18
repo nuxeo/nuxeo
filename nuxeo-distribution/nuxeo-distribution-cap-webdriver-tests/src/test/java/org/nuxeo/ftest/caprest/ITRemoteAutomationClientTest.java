@@ -15,7 +15,7 @@
  *     Vladimir Pasquier <vpasquier@nuxeo.com>
  *
  */
-package org.nuxeo.ftest.cap;
+package org.nuxeo.ftest.caprest;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.test.AbstractAutomationClientTest;
@@ -31,6 +31,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features(RemoteAutomationServerFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-public class RemoteAutomationClientTest extends AbstractAutomationClientTest {
+public class ITRemoteAutomationClientTest extends AbstractAutomationClientTest {
 
 }
