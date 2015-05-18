@@ -120,12 +120,12 @@ public class NuxeoCmisErrorHelper {
     }
 
     /*
-     * A bit of a hack, we need a way to find the HTTP status from the exception. Convention: last param =
-     * "httpStatus=123"
+     * A bit of a hack, we need a way to find the HTTP status from the exception. We use the last parameter of the
+     * localized message for that.
      */
     public static int getHttpStatus(RecoverableClientException ex) {
         String[] params = ex.geLocalizedMessageParams(); // urgh, typo
-        int len = params.length;
+        int len = params == null ? 0 : params.length;
         String lastParam;
         if (len > 0 && NumberUtils.isDigits(lastParam = params[len - 1])) {
             try {
