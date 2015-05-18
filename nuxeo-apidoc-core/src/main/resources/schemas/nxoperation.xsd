@@ -34,6 +34,7 @@
   </xs:complexType>
 
   <xs:element name="name" type="xs:string" />
+  <xs:element name="aliases" type="nxs:stringList" />
   <xs:element name="version" type="xs:string" />
   <xs:element name="description" type="nxs:longString" />
   <xs:element name="signature" type="nxs:stringList" />
