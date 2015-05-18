@@ -66,7 +66,7 @@
       <filter id="canRemoveFromCollection" />
     </action>
 
-    <action id="addSelectedToCollectionAction" order="1000" label="label.addToCollection"
+    <action id="addSelectedToCollectionAction" order="40" label="label.addToCollection"
       type="fancybox" icon="/icons/add_to_collection.png" accessKey="j">
       <category>CURRENT_SELECTION_LIST</category>
       <filter-id>canAddSelectedToCollection</filter-id>

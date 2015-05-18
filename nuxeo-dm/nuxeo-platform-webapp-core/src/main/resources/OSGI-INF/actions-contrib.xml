@@ -304,7 +304,7 @@
 
     <action id="CURRENT_SELECTION_TRASH" link="#{deleteActions.deleteSelection}"
       label="command.trashDocs" icon="" help="comand.trashDocs.help"
-      confirm="if( !confirmDeleteDocuments() ) return false;" order="40">
+      confirm="if( !confirmDeleteDocuments() ) return false;" order="1000">
       <category>CURRENT_SELECTION_LIST</category>
       <category>ORDERABLE_CURRENT_SELECTION_LIST</category>
       <filter id="canDelete">
