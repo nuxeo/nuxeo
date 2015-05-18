@@ -1,24 +1,18 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.forms.layoutDemo.core.contrib">
-  <extension target="org.nuxeo.ecm.core.api.repository.RepositoryManager"
-    point="repositories">
-    <repository name="layoutDemo"
-      label="Layout demo repository (with a memory backend)" />
-  </extension>
   <extension target="org.nuxeo.ecm.core.repository.RepositoryService"
     point="repository">
     <repository name="layoutDemo"
+      label="Layout demo repository (with a memory backend)"
       factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
-      <repository>
-        <schema>
-          <field type="largetext">note</field>
-          <field type="largetext">relatedtext</field>
-        </schema>
-        <indexing>
-          <!-- no fulltext for memory databases -->
-          <fulltext disabled="true" />
-        </indexing>
-      </repository>
+      <schema>
+        <field type="largetext">note</field>
+        <field type="largetext">relatedtext</field>
+      </schema>
+      <indexing>
+        <!-- no fulltext for memory databases -->
+        <fulltext disabled="true" />
+      </indexing>
     </repository>
   </extension>
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
