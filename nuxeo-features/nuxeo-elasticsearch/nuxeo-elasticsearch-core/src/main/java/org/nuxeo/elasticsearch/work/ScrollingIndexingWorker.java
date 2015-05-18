@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work {
     private static final Log log = LogFactory.getLog(ScrollingIndexingWorker.class);
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4507677669419340384L;
 
     private static final String DEFAULT_BUCKET_SIZE = "500";
 
@@ -51,7 +51,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     protected final String nxql;
 
-    protected WorkManager workManager;
+    protected transient WorkManager workManager;
 
     protected long documentCount = 0;
 
@@ -70,7 +70,8 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
     protected void doWork() {
         String jobName = getSchedulePath().getPath();
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql, repositoryName));
+            log.debug(String.format("Re-indexing job: %s started, NXQL: %s on repository: %s", jobName, nxql,
+                    repositoryName));
         }
         CoreSession session = initSession(repositoryName);
         IterableQueryResult res = session.queryAndFetch(nxql, NXQL.NXQL);
@@ -90,7 +91,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
                 }
             }
             if (documentCount > WARN_DOC_COUNT) {
-              warnAtEnd = true;
+                warnAtEnd = true;
             }
             scheduleBucketWorker(ids, warnAtEnd);
             if (!ids.isEmpty()) {

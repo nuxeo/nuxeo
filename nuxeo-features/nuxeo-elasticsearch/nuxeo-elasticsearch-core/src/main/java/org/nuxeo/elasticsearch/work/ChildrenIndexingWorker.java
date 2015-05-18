@@ -37,7 +37,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Work {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 724369727479693496L;
 
     public ChildrenIndexingWorker(IndexingMonitor monitor,  IndexingCommand cmd) {
         super(monitor, cmd);
