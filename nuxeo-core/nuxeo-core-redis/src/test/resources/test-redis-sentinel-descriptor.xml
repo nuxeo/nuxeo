@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<sentinel>
+  <master>master</master>
+  <host name="localhost" port="26379" />
+  <host name="localhost2" port="26380" />
+  <password>secret</password>
+  <database>2</database>
+  <timeout>3000</timeout>
+</sentinel>

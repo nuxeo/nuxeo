@@ -36,10 +36,8 @@
       <code>
         <sentinel>
           <master>master</master>
-          <hosts>
-            <host name="localhost" port="26379"/>
-            <host name="localhost" port="26380"/>
-          </hosts>
+          <host name="localhost" port="26379"/>
+          <host name="localhost" port="26380"/>
           <password>secret</password>
           <database>0</database>
           <timeout>2000</timeout>

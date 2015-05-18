@@ -21,7 +21,7 @@ import redis.clients.jedis.JedisSentinelPool;
 @XObject("sentinel")
 public class RedisSentinelDescriptor extends RedisPoolDescriptor {
 
-    @XNodeList(value = "hosts", type = RedisHostDescriptor[].class, componentType = RedisHostDescriptor.class)
+    @XNodeList(value = "host", type = RedisHostDescriptor[].class, componentType = RedisHostDescriptor.class)
     public RedisHostDescriptor[] hosts = new RedisHostDescriptor[0];
 
     @XNode("master")

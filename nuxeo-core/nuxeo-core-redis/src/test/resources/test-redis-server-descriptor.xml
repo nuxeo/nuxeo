@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<server>
+  <host>localhost2</host>
+  <port>6380</port>
+  <password>secret</password>
+  <database>1</database>
+  <timeout>2500</timeout>
+</server>
