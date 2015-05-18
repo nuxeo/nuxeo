@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,6 +35,8 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
  * @since 6.0
  */
 public class VcsFetcher extends Fetcher {
+
+    private static final int CHUNK_SIZE = 100;
 
     public VcsFetcher(CoreSession session, SearchResponse response, Map<String, String> repoNames) {
         super(session, response, repoNames);
@@ -86,7 +87,31 @@ public class VcsFetcher extends Fetcher {
         return ret;
     }
 
-    private List<DocumentModel> fetchFromVcs(final List<String> ids, CoreSession session) throws ClientException {
+    private List<DocumentModel> fetchFromVcs(List<String> ids, CoreSession session) {
+        List<DocumentModel> ret = null;
+        int size = ids.size();
+        int start = 0;
+        int end = Math.min(CHUNK_SIZE, size);
+        boolean done = false;
+        while (!done) {
+            List<DocumentModel> docs = fetchFromVcsChunk(ids.subList(start, end), session);
+            if (ret == null) {
+                ret = docs;
+            } else {
+                ret.addAll(docs);
+            }
+            if (end >= ids.size()) {
+                done = true;
+            } else {
+                start = end;
+                end = Math.min(start + CHUNK_SIZE, size);
+            }
+        }
+        return ret;
+    }
+
+    private List<DocumentModel> fetchFromVcsChunk(final List<String> ids, CoreSession session)
+    {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM Document, Relation WHERE ecm:uuid IN (");
         for (int i = 0; i < ids.size(); i++) {
