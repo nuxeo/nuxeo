@@ -44,6 +44,7 @@ import org.nuxeo.elasticsearch.api.ElasticSearchService;
 import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.MetricRegistry;
@@ -56,6 +57,11 @@ import com.codahale.metrics.Timer.Context;
  */
 public class ElasticSearchServiceImpl implements ElasticSearchService {
     private static final Log log = LogFactory.getLog(ElasticSearchServiceImpl.class);
+
+    private static final java.lang.String LOG_MIN_DURATION_FETCH_KEY = "org.nuxeo.elasticsearch.core.log_min_duration_fetch_ms";
+
+    private static final long LOG_MIN_DURATION_FETCH_NS = Long.parseLong(Framework.getProperty(
+            LOG_MIN_DURATION_FETCH_KEY, "200")) * 1000000;
 
     // Metrics
     protected final MetricRegistry registry = SharedMetricRegistries.getOrCreate(MetricsService.class.getName());
@@ -120,10 +126,22 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         try {
             ret = fetcher.fetchDocuments();
         } finally {
-            stopWatch.stop();
+            logMinDurationFetch(stopWatch.stop(), totalSize);
         }
         ret.setTotalSize(totalSize);
         return ret;
+    }
+
+    private void logMinDurationFetch(long duration, long totalSize) {
+        if (log.isDebugEnabled() && (duration > LOG_MIN_DURATION_FETCH_NS)) {
+            String msg = String.format("Slow fetch duration_ms:\t%.2f\treturning:\t%d documents", duration / 1000000.0,
+                    totalSize);
+            if (log.isTraceEnabled()) {
+                log.trace(msg, new Throwable("Slow fetch document stack trace"));
+            } else {
+                log.debug(msg);
+            }
+        }
     }
 
     protected List<Aggregate> getAggregates(NxQueryBuilder queryBuilder, SearchResponse response) {
