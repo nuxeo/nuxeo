@@ -398,6 +398,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             Document srcDoc = resolveReference(src);
             if (name == null) {
                 name = srcDoc.getName();
+            } else {
+                PathRef.checkName(name);
             }
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -537,6 +539,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             String originalName = srcDocModel.getName();
             if (name == null) {
                 name = srcDocModel.getName();
+            } else {
+                PathRef.checkName(name);
             }
             Map<String, Serializable> options = getContextMapEventInfo(srcDocModel);
             // add the destination name, destination and source references in
@@ -2529,11 +2533,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             if (docModel.isProxy() || docModel.isVersion()) {
                 target = doc;
                 if (overwriteExistingProxy) {
-                    if (docModel.isVersion()){
+                    if (docModel.isVersion()) {
                         Document base = resolveReference(new IdRef(doc.getVersionSeriesId()));
                         proxy = updateExistingProxies(base, sec, target);
                     }
-                    if (proxy==null) {
+                    if (proxy == null) {
                         // remove previous
                         List<String> removedProxyIds = removeExistingProxies(doc, sec);
                         options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);

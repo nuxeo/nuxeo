@@ -954,4 +954,5 @@ public interface DocumentModel extends Serializable {
      * @since 7.1
      */
     PropertyObjectResolver getObjectResolver(String xpath);
+
 }
