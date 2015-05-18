@@ -6,7 +6,8 @@
   <extension target="org.nuxeo.runtime.datasource" point="datasources">
 <#if nuxeo.db.xaMode == "false">
     <datasource name="${nuxeo.db.commonds}" driverClassName="${nuxeo.db.driver}"
-      maxPoolSize="${nuxeo.db["max-pool-size"]}" minPoolSize="5" blockingTimeoutMillis="10000"
+      maxPoolSize="${nuxeo.db["max-pool-size"]}" minPoolSize="${nuxeo.db["min-pool-size"]}"
+      blockingTimeoutMillis="${nuxeo.db["blocking-timeout-millis"]}"
       url="${nuxeo.db.jdbc.url}" validationQuery="${nuxeo.db.validationQuery}"
       username="${nuxeo.db.user}" password="${nuxeo.db.password}"
       accessToUnderlyingConnectionAllowed="true" >
