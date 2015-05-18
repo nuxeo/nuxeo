@@ -6,85 +6,107 @@
 <link rel="import" href="../../polymer/paper-dropdown/paper-dropdown.html">
 <link rel="import" href="../../polymer/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../polymer/polymer-date-picker/polymer-date-picker.html">
+<link rel="import" href="../../polymer/paper-input/paper-autogrow-textarea.html">
+<link rel="import" href="../../polymer/paper-checkbox/paper-checkbox.html">
+
 
 <polymer-element name="popup-right">
-    <template>
-        <paper-button raised="true" click="{{$.popupRight.toggle)}}">New Access
-            Right
-        </paper-button>
-        <paper-dialog id="popupRight" heading="Add new acl right"
-                      opened="false">
-            <div>
-                <!-- Give acces to row -->
-                <div layout horizontal>
-                    <div>Give acces to</div>
-                    <div>
-                        <paper-dropdown-menu label="Peoples">
-                            <paper-dropdown class="dropdown">
-                                <core-menu class="menu">
-                                    <paper-item>User</paper-item>
-                                    <paper-item>Test</paper-item>
-                                </core-menu>
-                            </paper-dropdown>
-                        </paper-dropdown-menu>
-                    </div>
-                </div>
-                <div layout horizontal>
-                    <div two>From</div>
-                    <div>
-                        <paper-input
-                                id="from" value="{{selectedFromDate}}"
-                                on-click="{{openCalendar}}"
-                                readonly class="date">
-                        </paper-input>
-                    </div>
-                </div>
-                <div layout horizontal>
-                    <div two>To</div>
-                    <div>
-                        <paper-input
-                                id="to" value="{{selectedToDate}}"
-                                on-click="{{openCalendar}}"
-                                readonly class="date">
-                        </paper-input>
-                    </div>
-                </div>
-                <!-- Allowed rights row -->
-                <div layout horizontal>
-                    <div>Allowed rights</div>
-                    <div>
-                        <paper-dropdown-menu label="Rights">
-                            <paper-dropdown class="dropdown">
-                                <core-menu class="menu">
-                                    <paper-item>User</paper-item>
-                                    <paper-item>User2</paper-item>
-                                </core-menu>
-                            </paper-dropdown>
-                        </paper-dropdown-menu>
-                    </div>
-                </div>
-            </div>
+  <template>
+    <paper-button raised="true" on-click="{{togglePopup}}">New Access Right</paper-button>
 
-            <polymer-date-picker
-                    id="from-datepicker"
-                    selectedDate="{{selectedFromDate}}"
-                    relatedTarget="{{$.from}}"
-                    opened="false">
-            </polymer-date-picker>
-            <polymer-date-picker
-                    id="to-datepicker"
-                    selectedDate="{{selectedToDate}}"
-                    relatedTarget="{{$.to}}"
-                    opened="false">
-            </polymer-date-picker>
-        </paper-dialog>
+    <paper-dialog id="popupRight" heading="Add new acl right" opened="false">
+      <!-- Give acces to row -->
+      <div layout horizontal>
+        <div flex>Give access to</div>
+        <div flex two>
+        <paper-dropdown-menu label="Peoples">
+            <paper-dropdown class="dropdown">
+                <core-menu class="menu">
+                    <paper-item>User</paper-item>
+                    <paper-item>Test</paper-item>
+                </core-menu>
+            </paper-dropdown>
+        </paper-dropdown-menu>
+      </div>
+    </div>
+    <div layout horizontal>
+      <div flex>From</div>
+      <div flex two>
+        <paper-input
+          id="from" value="{{selectedFromDate}}" 
+          on-click="{{openCalendar}}"
+          readonly class="date" />
+      </div>
+    </div>
+    <div layout horizontal>
+      <div flex>To</div>
+      <div flex two>
+        <paper-input
+          id="to" value="{{selectedToDate}}"
+          on-click="{{openCalendar}}"
+          readonly class="date" />
+      </div>
+    </div>
+      <!-- Allowed rights row -->
+      <div layout horizontal>
+        <div flex>Allowed rights</div>
+        <div flex two>
+        <paper-dropdown-menu label="Rights">
+            <paper-dropdown class="dropdown">
+                <core-menu class="menu">
+                    <paper-item>User</paper-item>
+                    <paper-item>User2</paper-item>
+                </core-menu>
+            </paper-dropdown>
+        </paper-dropdown-menu>
+      </div>
+    </div>
+    <!-- Notification -->
+    <div layout horizontal>
+      <div layout vertical flex>
+        <div layout horizontal>
+          <paper-checkbox></paper-checkbox>
+          <div>
+            Send a notification ...
+          </div>
+        </div>
+        <div>
+          <paper-autogrow-textarea flex id="rights-textarea">
+            <textarea style="width: 98%" id="rights-textarea" rows="6"></textarea>
+          </paper-autogrow-textarea>
+        </div>
+      </div>
+    </div>
 
-    </template>
-    <script>
-        Polymer({
-            openCalendar: function (e, len, elm) {
-                this.$[elm.id + '-datepicker'].toggle();
-            }
-        });
-    </script>
+    <polymer-date-picker
+      id="from-datepicker"
+      selectedDate="{{selectedFromDate}}"
+      relatedTarget="{{$.from}}"
+      opened="false">
+    </polymer-date-picker>
+
+    <polymer-date-picker
+      id="to-datepicker"
+      selectedDate="{{selectedToDate}}"
+      relatedTarget="{{$.to}}"
+      opened="false">
+    </polymer-date-picker>
+
+    <paper-button dismissive  raised="true">Cancel</paper-button>
+    <paper-button affirmative raised="true">Confirm and add another</paper-button>
+    <paper-button affirmative autofocus raised="true">Confirm</paper-button>
+  </paper-dialog>
+
+  </template>
+  <script>
+    Polymer({
+      togglePopup: function() {
+        console.log('Show popup');
+       this.$.popupRight.toggle();
+      },
+      openCalendar: function(e, len, elm) {
+        this.$[elm.id + '-datepicker'].toggle();
+      }
+    });
+  </script>
 </polymer-element>

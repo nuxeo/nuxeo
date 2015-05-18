@@ -151,7 +151,8 @@
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
           <template if="{{doc.contextParameters.acls}}">
-            <paper-button raised="true">New Access Right</paper-button>
+            <!-- <paper-button raised="true">New Access Right</paper-button>-->
+            <popup-right></popup-right>
             <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
           </template>
         </div>
