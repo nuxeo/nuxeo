@@ -27,37 +27,41 @@
     <h:outputText value="#{messages['label.summary.relations.header']}" />
   </p>
 
-  <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}"
-    var="statement" styleClass="dataTableLine smallTable">
-    <nxu:column styleClass="labelColumn">
-      <nxdir:directoryEntryOutput
-      value="#{statement.predicate.uri}"
-      directoryName="predicates"
-      localize="true" />
-    </nxu:column>
-    <nxu:column styleClass="fieldColumn">
-    <ui:include src="/relation_node_template.xhtml">
-      <ui:param name="statement" value="#{statement}" />
-      <ui:param name="node" value="#{statement.objectInfo}" />
-    </ui:include>
-    </nxu:column>
-  </nxu:dataTable>
-
-  <nxu:dataTable value="#{relationActions.incomingStatementsInfo}"
-    var="statement" styleClass="dataTableLine smallTable">
-    <nxu:column styleClass="labelColumn">
-      <nxdir:directoryEntryOutput
+  <c:if test="#{!empty currentDocumentOutgoingRelations}">
+    <nxu:dataTable value="#{relationActions.outgoingStatementsInfo}"
+      var="statement" styleClass="dataTableLine smallTable">
+      <nxu:column styleClass="labelColumn">
+        <nxdir:directoryEntryOutput
         value="#{statement.predicate.uri}"
-        directoryName="inverse_predicates"
+        directoryName="predicates"
         localize="true" />
-    </nxu:column>
-    <nxu:column styleClass="fieldColumn">
-    <ui:include src="/relation_node_template.xhtml">
-      <ui:param name="statement" value="#{statement}" />
-      <ui:param name="node" value="#{statement.subjectInfo}" />
-    </ui:include>
-    </nxu:column>
-  </nxu:dataTable>
+      </nxu:column>
+      <nxu:column styleClass="fieldColumn">
+      <ui:include src="/relation_node_template.xhtml">
+        <ui:param name="statement" value="#{statement}" />
+        <ui:param name="node" value="#{statement.objectInfo}" />
+      </ui:include>
+      </nxu:column>
+    </nxu:dataTable>
+  </c:if>
+
+  <c:if test="#{!empty currentDocumentIncomingRelations}">
+    <nxu:dataTable value="#{relationActions.incomingStatementsInfo}"
+      var="statement" styleClass="dataTableLine smallTable">
+      <nxu:column styleClass="labelColumn">
+        <nxdir:directoryEntryOutput
+          value="#{statement.predicate.uri}"
+          directoryName="inverse_predicates"
+          localize="true" />
+      </nxu:column>
+      <nxu:column styleClass="fieldColumn">
+      <ui:include src="/relation_node_template.xhtml">
+        <ui:param name="statement" value="#{statement}" />
+        <ui:param name="node" value="#{statement.subjectInfo}" />
+      </ui:include>
+      </nxu:column>
+    </nxu:dataTable>
+  </c:if>
 
 </c:if>
 </div>
