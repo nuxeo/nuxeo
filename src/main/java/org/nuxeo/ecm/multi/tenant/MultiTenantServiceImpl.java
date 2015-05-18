@@ -299,7 +299,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements
             String extensionPoint, ComponentInstance contributor)
             throws Exception {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            if (configuration.equals(contribution)) {
+            if (contribution.equals(configuration)) {
                 configuration = null;
             }
         }
