@@ -1,29 +1,26 @@
 <html>
 <body>
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
-<br />
 <#if documentTitle != "">
-You have been invited to access <a href="${info['docUrl']}">${documentTitle}</a>.
+<p>You have been invited to access <a href="${info['docUrl']}">${documentTitle}</a>.</p>
 <#else>
-<p>You have been invited to access to Nuxeo.</p>
+<p>You have been invited to access ${productName}.</p>
 </#if>
 
-<br />
 <#if comment != "">
 <br/>
 <p>From the sender: </p>
 <p>${comment}</p>
 </#if>
 
-<p>Click on the following link to validate your invitation:</p>
-<br/>
-<a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">Validate my invitation</a>
-
-<br /><br />
 <#if !userAlreadyExists>
-<p>After you defined your password, you'll be able to log in to the application.</p>
-<p>Your username is: ${userinfo.login}</p>
+<p>Your username is ${userinfo.login} but you need to add a password now. <br />
+Click on the following link to validate your invitation by adding your password:</p>
 </#if>
+
+<a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">[Validate my invitation]</a>
+
+<p>Once validated, you'll be able to log in to the application then browse, create and share documents to your collaborators.</p>
 
 <#if userAlreadyExists>
 <p>Here are your login credentials:</p>
@@ -33,7 +30,6 @@ You have been invited to access <a href="${info['docUrl']}">${documentTitle}</a>
 </p>
 
 <br />
-
-Your administrator.
+The ${productName} Administrators team.
 </body>
 </html>

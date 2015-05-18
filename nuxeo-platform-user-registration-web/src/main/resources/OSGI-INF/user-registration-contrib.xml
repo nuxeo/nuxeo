@@ -34,7 +34,7 @@
         <title>Registration Requests Container</title>
       </container>
       <validationEmail>
-        <title>You are invited to access Nuxeo</title>
+        <title>Hi ${userinfo.firstName} ${userinfo.lastName}! You are invited to access ${productName}</title>
         <template>skin/views/userRegistration/EmailInviteDocTemplate.ftl</template>
       </validationEmail>
       <reviveEmail>
