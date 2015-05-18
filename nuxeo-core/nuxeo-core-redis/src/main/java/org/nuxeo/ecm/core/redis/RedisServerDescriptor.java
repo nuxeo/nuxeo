@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
@@ -38,7 +39,7 @@ public class RedisServerDescriptor extends RedisPoolDescriptor {
 
     private static final Log log = LogFactory.getLog(RedisServerDescriptor.class);
 
-    @XNode("hosts")
+    @XNodeList(value = "hap", type = RedisHostDescriptor[].class, componentType = RedisHostDescriptor.class)
     public RedisHostDescriptor[] hosts = new RedisHostDescriptor[0];
 
     @XNode("host")

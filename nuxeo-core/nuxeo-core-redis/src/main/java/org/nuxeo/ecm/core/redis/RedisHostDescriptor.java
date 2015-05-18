@@ -20,6 +20,10 @@ public class RedisHostDescriptor {
     @XNode("@port")
     public int port;
 
+    public RedisHostDescriptor() {
+       ;
+    }
+
     protected RedisHostDescriptor(String name, int port) {
         this.name = name;
         this.port = port;
