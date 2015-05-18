@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.tag.TagService;
 /**
  * @since 7.1 Remove document tags.
  */
-@Operation(id = RemoveDocumentTags.ID, category = Constants.CAT_SERVICES, label = "Tag Document", description = "Remove all document tags.", since = "7.1", addToStudio = true)
+@Operation(id = RemoveDocumentTags.ID, category = Constants.CAT_SERVICES, label = "Remove All Document Tags", description = "Remove all document tags.", since = "7.1", addToStudio = true)
 public class RemoveDocumentTags {
 
     public static final String ID = "Services.RemoveDocumentTags";
