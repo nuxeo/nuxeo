@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -5141471452954319812L;
 
     public IndexingWorker(IndexingMonitor monitor, String repositoryName, List<IndexingCommand> cmds) {
         super(monitor, repositoryName, cmds);

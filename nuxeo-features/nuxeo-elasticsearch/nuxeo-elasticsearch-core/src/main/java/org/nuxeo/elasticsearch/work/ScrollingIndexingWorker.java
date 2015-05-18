@@ -43,13 +43,13 @@ import org.nuxeo.runtime.api.Framework;
 public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work {
     private static final Log log = LogFactory.getLog(ScrollingIndexingWorker.class);
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4507677669419340384L;
 
     private static final String DEFAULT_BUCKET_SIZE = "500";
 
     protected final String nxql;
 
-    protected WorkManager workManager;
+    protected transient WorkManager workManager;
 
     protected long documentCount = 0;
 

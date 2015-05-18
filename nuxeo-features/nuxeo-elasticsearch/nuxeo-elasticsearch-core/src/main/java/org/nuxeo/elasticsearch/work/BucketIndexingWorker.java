@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
     private static final Log log = LogFactory.getLog(BucketIndexingWorker.class);
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -4665673026513796882L;
 
     private static final String DEFAULT_BUCKET_SIZE = "50";
 
