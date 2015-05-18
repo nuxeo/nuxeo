@@ -283,7 +283,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            if (configuration.equals(contribution)) {
+            if (contribution.equals(configuration)) {
                 configuration = null;
             }
         }
