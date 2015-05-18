@@ -566,7 +566,10 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             Document srcDoc = resolveReference(src);
             if (name == null) {
                 name = srcDoc.getName();
+            } else {
+                PathRef.checkName(name);
             }
+
 
             Map<String, Serializable> options = new HashMap<String, Serializable>();
 
@@ -723,6 +726,8 @@ public abstract class AbstractSession implements CoreSession, OperationHandler,
             DocumentModel srcDocModel = readModel(srcDoc);
             if (name == null) {
                 name = srcDocModel.getName();
+            } else {
+                PathRef.checkName(name);
             }
             Map<String, Serializable> options = getContextMapEventInfo(srcDocModel);
             // add the destination name, destination and source references in

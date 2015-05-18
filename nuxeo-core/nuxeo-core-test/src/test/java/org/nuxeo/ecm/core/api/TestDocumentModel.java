@@ -88,4 +88,23 @@ public class TestDocumentModel extends SQLRepositoryTestCase {
         }
     }
 
+    @Test(expected = ClientRuntimeException.class)
+    public void forbidSlashOnCreate() throws Exception {
+        session.createDocumentModel("/", "doc/doc", "File");
+    }
+
+    @Test(expected = ClientRuntimeException.class)
+    public void forbidSlashOnMove() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.move(doc.getRef(), new PathRef("/"), "toto/tata");
+    }
+
+    @Test(expected = ClientRuntimeException.class)
+    public void forbidSlashOnCopy() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        session.copy(doc.getRef(), new PathRef("/"), "toto/tata");
+    }
+
 }
