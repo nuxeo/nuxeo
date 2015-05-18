@@ -19,9 +19,11 @@ package org.nuxeo.ecm.user.invite;
 import java.io.File;
 import java.net.URL;
 
+import freemarker.template.Configuration;
 import org.nuxeo.ecm.platform.rendering.api.RenderingEngine;
 import org.nuxeo.ecm.platform.rendering.api.ResourceLocator;
 import org.nuxeo.ecm.platform.rendering.fm.FreemarkerEngine;
+
 
 public class RenderingHelper {
 
@@ -43,6 +45,10 @@ public class RenderingHelper {
             engine.setResourceLocator(new CLResourceLocator());
         }
         return engine;
+    }
+
+    public Configuration getEngineConfiguration() {
+        return ((FreemarkerEngine) engine).getConfiguration();
     }
 
 }

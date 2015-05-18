@@ -22,8 +22,11 @@ import static org.nuxeo.ecm.user.invite.RegistrationRules.FIELD_CONFIGURATION_NA
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod.EMAIL;
 import static org.nuxeo.ecm.user.invite.UserRegistrationConfiguration.DEFAULT_CONFIGURATION_NAME;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +42,9 @@ import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -452,6 +458,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         input.put("userinfo", (Serializable) userinfo);
         input.put("info", (Serializable) additionnalInfo);
         input.put("userAlreadyExists", checkUserFromRegistrationExistence(registrationDoc));
+        input.put("productName", Framework.getProperty("org.nuxeo.ecm.product.name"));
         StringWriter writer = new StringWriter();
 
         try {
@@ -459,6 +466,9 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         } catch (RenderingException e) {
             throw new ClientException("Error during rendering email", e);
         }
+
+        // render custom email subject
+        emailTitle = renderSubjectTemplate(emailTitle, input);
 
         String body = writer.getBuffer().toString();
         String copyTo = (String) registrationDoc.getPropertyValue("registration:copyTo");
@@ -471,7 +481,20 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         } else {
             testRendering = body;
         }
+    }
 
+    private String renderSubjectTemplate(String emailTitle, Map<String, Serializable> input) {
+        Configuration stringCfg = rh.getEngineConfiguration();
+        Writer out;
+        try {
+            Template templ = new Template("subjectTemplate", new StringReader(emailTitle), stringCfg);
+            out = new StringWriter();
+            templ.process(input, out);
+            out.flush();
+        } catch (IOException | TemplateException e) {
+            throw new ClientException("Error while rendering email subject: ", e);
+        }
+        return out.toString();
     }
 
     protected static boolean isTestModeSet() {
