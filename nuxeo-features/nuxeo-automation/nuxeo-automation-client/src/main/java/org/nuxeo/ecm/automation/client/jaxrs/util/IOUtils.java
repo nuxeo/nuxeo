@@ -55,12 +55,14 @@ public class IOUtils {
 
     public static File copyToTempFile(InputStream in) throws IOException {
         File file = File.createTempFile("nxautomation-", ".tmp");
+        file.deleteOnExit();
         copyToFile(in, file, true);
         return file;
     }
 
     public static File copyToTempFile(InputStream in, boolean closeIn) throws IOException {
         File file = File.createTempFile("nxautomation-", ".tmp");
+        file.deleteOnExit();
         copyToFile(in, file, closeIn);
         return file;
     }
