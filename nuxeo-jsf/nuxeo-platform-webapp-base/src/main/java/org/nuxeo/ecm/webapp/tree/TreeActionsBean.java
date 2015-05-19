@@ -93,6 +93,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
     // bypassing interceptors
     protected String firstAccessibleParentPath;
 
+    protected boolean showingGlobalRoot;
+
     @In(create = true)
     protected TreeInvalidatorBean treeInvalidator;
 
@@ -133,6 +135,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         List<DocumentTreeNode> currentTree = trees.get(treeName);
         if (currentTree == null) {
             currentTree = new ArrayList<DocumentTreeNode>();
+            DocumentModel globalRoot = null;
             DocumentModel firstAccessibleParent = null;
             if (currentDocument != null) {
 
@@ -153,25 +156,23 @@ public class TreeActionsBean implements TreeActions, Serializable {
                     }
 
                 }
+                if (showRoot
+                        && (firstAccessibleParent == null || !"/".equals(firstAccessibleParent.getPathAsString()))) {
+                    // also add the global root if we don't already show it and it's accessible
+                    if (documentManager.exists(new PathRef("/"))) {
+                        globalRoot = documentManager.getRootDocument();
+                    }
+                }
+            }
+            showingGlobalRoot = globalRoot != null;
+            if (showingGlobalRoot) {
+                DocumentTreeNode treeRoot = newDocumentTreeNode(globalRoot, treeName);
+                currentTree.add(treeRoot);
+                log.debug("Tree initialized with additional global root");
             }
             firstAccessibleParentPath = firstAccessibleParent == null ? null : firstAccessibleParent.getPathAsString();
             if (firstAccessibleParent != null) {
-                Filter filter = null;
-                Filter leafFilter = null;
-                Sorter sorter = null;
-                String pageProvider = null;
-                try {
-                    TreeManager treeManager = Framework.getService(TreeManager.class);
-                    filter = treeManager.getFilter(treeName);
-                    leafFilter = treeManager.getLeafFilter(treeName);
-                    sorter = treeManager.getSorter(treeName);
-                    pageProvider = treeManager.getPageProviderName(treeName);
-                } catch (Exception e) {
-                    log.error("Could not fetch filter or sorter for tree ", e);
-                }
-
-                DocumentTreeNode treeRoot = null;
-                treeRoot = new DocumentTreeNodeImpl(firstAccessibleParent, filter, leafFilter, sorter, pageProvider);
+                DocumentTreeNode treeRoot = newDocumentTreeNode(firstAccessibleParent, treeName);
                 currentTree.add(treeRoot);
                 log.debug("Tree initialized with document: " + firstAccessibleParent.getId());
             } else {
@@ -180,6 +181,15 @@ public class TreeActionsBean implements TreeActions, Serializable {
             trees.put(treeName, currentTree);
         }
         return trees.get(treeName);
+    }
+
+    protected DocumentTreeNode newDocumentTreeNode(DocumentModel doc, String treeName) {
+        TreeManager treeManager = Framework.getService(TreeManager.class);
+        Filter filter = treeManager.getFilter(treeName);
+        Filter leafFilter = treeManager.getLeafFilter(treeName);
+        Sorter sorter = treeManager.getSorter(treeName);
+        String pageProvider = treeManager.getPageProviderName(treeName);
+        return new DocumentTreeNodeImpl(doc, filter, leafFilter, sorter, pageProvider);
     }
 
     @Deprecated
@@ -251,6 +261,9 @@ public class TreeActionsBean implements TreeActions, Serializable {
         // detection if moving from one tree to another without using
         // UserWorkspace actions from user menu, which raise appropriate events
         DocumentModel currentDocument = (DocumentModel) Component.getInstance("currentDocument");
+        if (currentDocument != null && showingGlobalRoot) {
+            return true;
+        }
         if (currentDocument != null
                 && firstAccessibleParentPath != null
                 && currentDocument.getPathAsString() != null
