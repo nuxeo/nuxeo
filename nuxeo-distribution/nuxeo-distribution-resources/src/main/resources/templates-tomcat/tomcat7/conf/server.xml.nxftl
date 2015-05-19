@@ -76,7 +76,7 @@
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL HTTP/1.1 Connector on port ${nuxeo.server.http.port}
     -->
-    <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1"
+    <Connector port="${nuxeo.server.http.port}" protocol="HTTP/1.1" URIEncoding="UTF-8"
 <#if "${nuxeo.server.https.port}" == "0">
                address="${nuxeo.bind.address}"
 <#else>
