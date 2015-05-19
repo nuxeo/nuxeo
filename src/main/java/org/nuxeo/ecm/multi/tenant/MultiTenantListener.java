@@ -50,8 +50,7 @@ public class MultiTenantListener implements EventListener {
         }
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
-        if (DOCUMENT_CREATED.equals(event.getName())
-                || DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
+        if (DOCUMENT_CREATED.equals(event.getName()) || DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
             DocumentModel doc = docCtx.getSourceDocument();
             CoreSession session = docCtx.getCoreSession();
             if (tenantDocumentType.equals(doc.getType())) {

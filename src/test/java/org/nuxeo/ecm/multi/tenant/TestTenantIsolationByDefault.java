@@ -51,9 +51,9 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @RepositoryConfig
-@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login",
-        "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml","org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
+@Deploy({ "org.nuxeo.ecm.multi.tenant", "org.nuxeo.ecm.platform.login", "org.nuxeo.ecm.platform.web.common" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/userservice-config.xml",
+        "org.nuxeo.ecm.multi.tenant:multi-tenant-test-contrib.xml",
         "org.nuxeo.ecm.multi.tenant:multi-tenant-enabled-default-test-contrib.xml" })
 public class TestTenantIsolationByDefault {
 
@@ -69,12 +69,10 @@ public class TestTenantIsolationByDefault {
     @Test
     public void testTenantIsolationByDefault() throws ClientException {
         assertTrue(multiTenantService.isTenantIsolationEnabled(session));
-        DocumentModel domain = session.getDocument(new PathRef(
-                "/default-domain"));
+        DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
         assertNotNull(domain);
         assertTrue(domain.hasFacet(TENANT_CONFIG_FACET));
-        assertEquals("default-domain",
-                domain.getPropertyValue(TENANT_ID_PROPERTY));
+        assertEquals("default-domain", domain.getPropertyValue(TENANT_ID_PROPERTY));
 
         ACP acp = domain.getACP();
         ACL acl = acp.getOrCreateACL();
@@ -87,8 +85,7 @@ public class TestTenantIsolationByDefault {
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
-            assertEquals(domain.getTitle(),
-                    doc.getPropertyValue("tenant:label"));
+            assertEquals(domain.getTitle(), doc.getPropertyValue("tenant:label"));
         } finally {
             if (session != null) {
                 session.close();

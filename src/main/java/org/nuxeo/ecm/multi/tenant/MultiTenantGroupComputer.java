@@ -42,11 +42,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class MultiTenantGroupComputer extends AbstractGroupComputer {
 
     @Override
-    public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal)
-            throws Exception {
+    public List<String> getGroupsForUser(final NuxeoPrincipalImpl nuxeoPrincipal) throws Exception {
         final List<String> groups = new ArrayList<String>();
-        final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue(
-                "user:tenantId");
+        final String tenantId = (String) nuxeoPrincipal.getModel().getPropertyValue("user:tenantId");
         if (!StringUtils.isBlank(tenantId)) {
             String defaultRepositoryName = Framework.getLocalService(
                     RepositoryManager.class).getDefaultRepositoryName();
@@ -61,13 +59,13 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
                     @Override
                     public void run() throws ClientException {
 
-                        String query = String.format(
-                                "SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
+                        String query = String.format("SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
                                 tenantId);
                         List<DocumentModel> docs = session.query(query);
                         if (!docs.isEmpty()) {
                             DocumentModel tenant = docs.get(0);
-                            List<String> tenantAdministrators = (List<String>) tenant.getPropertyValue(TENANT_ADMINISTRATORS_PROPERTY);
+                            List<String> tenantAdministrators = (List<String>) tenant.getPropertyValue(
+                                    TENANT_ADMINISTRATORS_PROPERTY);
                             if (tenantAdministrators.contains(nuxeoPrincipal.getName())) {
                                 groups.add(computeTenantAdministratorsGroup(tenantId));
                                 groups.add(POWER_USERS_GROUP);
