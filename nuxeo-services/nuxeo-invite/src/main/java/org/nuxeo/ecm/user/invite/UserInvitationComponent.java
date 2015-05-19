@@ -251,13 +251,13 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     }
 
-    protected class RegistrationAcceptor extends UnrestrictedSessionRunner {
+    protected class RegistrationApprover extends UnrestrictedSessionRunner {
 
         protected String uuid;
 
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationAcceptor(String registrationUuid, Map<String, Serializable> additionnalInfo) {
+        public RegistrationApprover(String registrationUuid, Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
             this.uuid = registrationUuid;
             this.additionnalInfo = additionnalInfo;
@@ -275,8 +275,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             }
 
             doc.setPropertyValue("registration:accepted", true);
-            if (doc.getAllowedStateTransitions().contains("accept")) {
-                doc.followTransition("accept");
+            if (doc.getAllowedStateTransitions().contains("approve")) {
+                doc.followTransition("approve");
             }
             doc = session.saveDocument(doc);
             session.save();
@@ -313,7 +313,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
     }
 
-    protected class RegistrationValidator extends UnrestrictedSessionRunner {
+    protected class RegistrationAcceptator extends UnrestrictedSessionRunner {
 
         protected String uuid;
 
@@ -321,7 +321,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
         protected Map<String, Serializable> additionnalInfo;
 
-        public RegistrationValidator(String uuid, Map<String, Serializable> additionnalInfo) {
+        public RegistrationAcceptator(String uuid, Map<String, Serializable> additionnalInfo) {
             super(getTargetRepositoryName());
             this.uuid = uuid;
             this.additionnalInfo = additionnalInfo;
@@ -354,10 +354,10 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             }
 
             if (registrationDoc.getLifeCyclePolicy().equals("registrationRequest")) {
-                if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
-                    registrationDoc.followTransition("validate");
+                if (registrationDoc.getCurrentLifeCycleState().equals("approved")) {
+                    registrationDoc.followTransition("accept");
                 } else {
-                    if (registrationDoc.getCurrentLifeCycleState().equals("validated")) {
+                    if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
                         throw new AlreadyProcessedRegistrationException(
                                 "Registration request has already been processed.");
                     } else {
@@ -396,7 +396,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
             // Check if the request has not been already validated
             DocumentModel registrationDoc = session.getDocument(idRef);
-            if (registrationDoc.getCurrentLifeCycleState().equals("validated")) {
+            if (registrationDoc.getCurrentLifeCycleState().equals("accepted")) {
                 throw new AlreadyProcessedRegistrationException("Registration request has already been processed.");
             }
         }
@@ -536,7 +536,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     public void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo)
             throws ClientException, UserRegistrationException {
-        RegistrationAcceptor acceptor = new RegistrationAcceptor(requestId, additionnalInfo);
+        RegistrationApprover acceptor = new RegistrationApprover(requestId, additionnalInfo);
         acceptor.runUnrestricted();
 
     }
@@ -551,7 +551,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     public Map<String, Serializable> validateRegistration(String requestId, Map<String, Serializable> additionnalInfo)
             throws ClientException, UserRegistrationException {
-        RegistrationValidator validator = new RegistrationValidator(requestId, additionnalInfo);
+        RegistrationAcceptator validator = new RegistrationAcceptator(requestId, additionnalInfo);
         validator.runUnrestricted();
         return validator.getRegistrationData();
     }
