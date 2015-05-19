@@ -283,7 +283,7 @@ public class XSDLoader {
             // schema already defined
             log.info("Schema " + ns + " is already registered");
             if (!override) {
-                log.debug("Schema " + ns + " will not be overridden");
+                log.warn("Schema " + ns + " is redefined but will not be overridden");
                 return ecmSchema;
             }
         }
