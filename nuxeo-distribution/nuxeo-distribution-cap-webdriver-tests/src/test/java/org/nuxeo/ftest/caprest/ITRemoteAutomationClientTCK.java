@@ -17,18 +17,8 @@
  */
 package org.nuxeo.ftest.caprest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Inject;
-
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -43,17 +33,27 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
-import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
+import org.nuxeo.ecm.automation.core.operations.services
+        .DocumentPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.query
+        .DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import javax.inject.Inject;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * @since 5.7.2 Automation TCK Tests Suite
  */
-@Ignore("NXP-17067")
 @RunWith(FeaturesRunner.class)
 @Features(RemoteAutomationServerFeature.class)
 public class ITRemoteAutomationClientTCK {
@@ -65,6 +65,14 @@ public class ITRemoteAutomationClientTCK {
 
     @Inject
     HttpAutomationClient client;
+
+    private Document folder1;
+
+    private Document folder2;
+
+    private Document folder3;
+
+    private Document file;
 
     @Test
     public void testSuite() throws Exception {
@@ -103,11 +111,11 @@ public class ITRemoteAutomationClientTCK {
      * Create Read Update Delete
      */
     public void testCreateRoot() throws Exception {
-        Document folder = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
+        folder1 = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
                 "name", "TestFolder1").set("properties", "dc:title=Test Folder2\ndc:description=Simple container").execute();
-        assertNotNull(folder);
-        assertEquals("/TestFolder1", folder.getPath());
-        assertEquals("Test Folder2", folder.getTitle());
+        assertNotNull(folder1);
+        assertEquals("/TestFolder1", folder1.getPath());
+        assertEquals("Test Folder2", folder1.getTitle());
     }
 
     public void testCreateChild1() throws Exception {
@@ -146,9 +154,9 @@ public class ITRemoteAutomationClientTCK {
      */
 
     public void testCreateAnotherRoot() throws Exception {
-        Document folder = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
+        folder2 = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
                 "name", "TestFolder2").set("properties", "dc:title=Test Folder3\ndc:description=Simple container").execute();
-        assertNotNull(folder);
+        assertNotNull(folder2);
     }
 
     public void testCreateChild(String id) throws Exception {
@@ -191,14 +199,14 @@ public class ITRemoteAutomationClientTCK {
 
     // Create documents from Blob using muti-part encoding
     public void testCreateBlobText() throws Exception {
-        Document folder = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
+        folder3 = (Document) session.newRequest("Document.Create").setInput("/").set("type", "Folder").set(
                 "name", "FolderBlob").execute();
-        assertNotNull(folder);
-        assertEquals("/FolderBlob", folder.getPath());
+        assertNotNull(folder3);
+        assertEquals("/FolderBlob", folder3.getPath());
         File file = newFile("<doc>mydoc</doc>");
         FileBlob blob = new FileBlob(file);
         blob.setMimeType("text/xml");
-        session.newRequest("FileManager.Import").setInput(blob).setContextProperty("currentDocument", folder.getPath()).execute();
+        session.newRequest("FileManager.Import").setInput(blob).setContextProperty("currentDocument", folder3.getPath()).execute();
         Documents docs = (Documents) session.newRequest(DocumentPaginatedQuery.ID).setHeader(
                 Constants.HEADER_NX_SCHEMAS, "*").set("query",
                 "SELECT * from Document WHERE ecm:path STARTSWITH '/FolderBlob/'").execute();
@@ -220,7 +228,7 @@ public class ITRemoteAutomationClientTCK {
         // get the root
         Document root = (Document) session.newRequest("Document.Fetch").set("value", "/").execute();
         // create a file document
-        session.newRequest("Document.Create").setInput(root).set("type", "File").set("name", "myfile").set(
+        file = (Document) session.newRequest("Document.Create").setInput(root).set("type", "File").set("name", "myfile").set(
                 "properties", "dc:title=My File").execute();
         // upload file blob
         File fieldAsJsonFile = FileUtils.getResourceFileFromContext("creationFields.json");
@@ -307,5 +315,16 @@ public class ITRemoteAutomationClientTCK {
         note.setTitle("Update");
         note = (BusinessBean) session.newRequest("Business.BusinessUpdateOperation").setInput(note).execute();
         assertEquals("Update", note.getTitle());
+    }
+
+
+    @After
+    public void teardown() throws IOException {
+        Documents list = new Documents();
+        list.add(folder1);
+        list.add(folder2);
+        list.add(folder3);
+        list.add(file);
+        session.newRequest("Document.Delete").setInput(list).execute();
     }
 }
