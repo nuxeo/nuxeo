@@ -53,6 +53,8 @@ public class TestTagOperations {
 
     private static final String TAGS = TAG_1 + "," + TAG_2 + ", " + TAG_3;
 
+    private static final String TAGS_COMMA = TAG_1 + "," + TAG_2 + ", " + TAG_3 + ",";
+
     protected DocumentModel document;
 
     protected String docId;
@@ -73,16 +75,18 @@ public class TestTagOperations {
         document = session.createDocument(document);
         docId = document.getId();
 
-        testTagDocument();
+        testTagDocument(TAGS);
+        testRemoveTags();
+        testTagDocument(TAGS_COMMA);
         testUntagDocument();
         testRemoveTags();
     }
 
-    public void testTagDocument() throws Exception {
+    public void testTagDocument(String inputTags) throws Exception {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(document);
         Map<String, Object> params = new HashMap<>();
-        params.put("tags", TAGS);
+        params.put("tags", inputTags);
         automationService.run(ctx, TagDocument.ID, params);
         List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
         assertEquals(TAG_1, tags.get(0).getLabel());

@@ -29,6 +29,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.tag.TagService;
 
+import java.util.Collections;
+
 /**
  * @since 7.1 Tag a document with one or several 'tags'.
  */
@@ -50,6 +52,7 @@ public class TagDocument {
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel document) throws ClientException {
         if (tags != null) {
+            tags.removeAll(Collections.singleton(""));
             for (String tag : tags) {
                 tagService.tag(session, document.getId(), tag, session.getPrincipal().getName());
             }
