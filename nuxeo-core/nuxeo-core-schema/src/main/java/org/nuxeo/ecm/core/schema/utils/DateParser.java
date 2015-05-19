@@ -99,6 +99,21 @@ public class DateParser {
                 pad(cal.get(Calendar.MILLISECOND) / 10)).append('Z').toString();
     }
 
+    /**
+     * 2011-10-23T12:00:00.00Z
+     *
+     * @param calendar
+     * @return
+     *
+     * @since 7.3
+     */
+    public static String formatW3CDateTime(Calendar calendar) {
+        if (calendar == null) {
+            return null;
+        }
+        return formatW3CDateTime(calendar.getTime());
+    }
+
     private final static String pad(int i) {
         return i < 10 ? "0".concat(String.valueOf(i)) : String.valueOf(i);
     }
