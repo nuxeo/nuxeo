@@ -26,6 +26,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentManager;
 import org.nuxeo.runtime.model.ComponentName;
+import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class ComponentAliasTest extends NXRuntimeTestCase {
@@ -34,7 +35,7 @@ public class ComponentAliasTest extends NXRuntimeTestCase {
     public void testContributions() throws Exception {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp4.xml");
-        check();
+        check(3);
     }
 
     @Test
@@ -42,16 +43,25 @@ public class ComponentAliasTest extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp4.xml");
         // register the required one last
         deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
-        check();
+        check(3);
     }
 
-    protected void check() {
+    @Test
+    public void testContributionsPendingOnAliasWithoutRequire() throws Exception {
+        // contrib to an alias of the component, not using a require
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp4b.xml");
+        // the component itself
+        deployContrib("org.nuxeo.runtime.test.tests", "MyComp3.xml");
+        check(1);
+    }
+
+    protected void check(int ncontrib) {
         RuntimeService runtime = Framework.getRuntime();
 
-        ComponentManager mgr = runtime.getComponentManager();
+        ComponentManagerImpl mgr = (ComponentManagerImpl) runtime.getComponentManager();
         assertTrue(mgr.size() > 0);
-        Map<ComponentName, Set<ComponentName>> pending = mgr.getPendingRegistrations();
-        assertEquals(0, pending.size());
+        assertEquals(0, mgr.getPendingRegistrations().size());
+        assertEquals(0, mgr.getNeededRegistrations().size());
 
         ComponentInstance co = runtime.getComponentInstance("my.comp3");
         assertNotNull(co);
@@ -69,7 +79,7 @@ public class ComponentAliasTest extends NXRuntimeTestCase {
         ComponentWithXPoint c = (ComponentWithXPoint) runtime.getComponent(new ComponentName(
                 "my.comp3"));
         DummyContribution[] contribs = c.getContributions();
-        assertEquals(3, contribs.length);
+        assertEquals(ncontrib, contribs.length);
     }
 
 }

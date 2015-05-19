@@ -13,9 +13,11 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -382,9 +384,14 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         }
 
         // register pending extensions if any
-        ComponentManagerImpl mgr = manager;
-        Set<Extension> pendingExt = mgr.pendingExtensions.remove(name);
-        if (pendingExt != null) {
+        List<ComponentName> names = new ArrayList<>(1 + aliases.size());
+        names.add(name);
+        names.addAll(aliases);
+        for (ComponentName n : names) {
+            Set<Extension> pendingExt = manager.pendingExtensions.remove(n);
+            if (pendingExt == null) {
+                continue;
+            }
             for (Extension xt : pendingExt) {
                 ComponentManagerImpl.loadContributions(this, xt);
                 try {
