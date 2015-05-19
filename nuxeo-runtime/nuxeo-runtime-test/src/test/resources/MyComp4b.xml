@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="my.comp4">
+
+  <!-- don't do a <require> of the component -->
+
+  <!-- and then target an alias -->
+  <extension target="my.comp3.alias" point="xp">
+    <printer>
+      <message>Using Alias</message>
+    </printer>
+  </extension>
+
+</component>
