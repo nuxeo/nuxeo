@@ -413,6 +413,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void checkConstraints(CoreSession unrestrictedSession, final DocumentModel doc,
             final DocumentRef parentRef, final BlobSizeInfo bsi, final boolean checkWithTotalSize)
             throws ClientException {
+        if (parentRef == null) {
+            return;
+        }
 
         long addition = bsi.blobSizeDelta;
         if (checkWithTotalSize) {
