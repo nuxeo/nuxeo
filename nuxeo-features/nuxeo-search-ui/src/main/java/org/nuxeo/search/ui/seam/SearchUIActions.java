@@ -235,7 +235,7 @@ public class SearchUIActions implements Serializable {
         return currentSelectedSavedSearchId != null ? currentSelectedSavedSearchId : currentContentViewName;
     }
 
-    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId) throws ClientException {
+    public void setCurrentSelectedSavedSearchId(String selectedSavedSearchId) throws UnsupportedEncodingException, ClientException {
         resetCurrentContentViewWorkingList();
 
         for (ContentViewHeader contentViewHeader : contentViewHeaders) {
@@ -247,8 +247,7 @@ public class SearchUIActions implements Serializable {
             }
         }
         DocumentModel savedSearch = documentManager.getDocument(new IdRef(selectedSavedSearchId));
-        String contentViewName = (String) savedSearch.getPropertyValue("cvd:contentViewName");
-        loadSavedSearch(contentViewName, savedSearch);
+        loadSavedSearch(savedSearch);
     }
 
     protected void resetCurrentContentViewWorkingList() {
@@ -258,10 +257,12 @@ public class SearchUIActions implements Serializable {
         }
     }
 
-    public void loadSavedSearch(String contentViewName, DocumentModel searchDocument) throws ClientException {
-        ContentView contentView = contentViewActions.getContentView(contentViewName, searchDocument);
-        if (contentView != null) {
-            currentContentViewName = contentViewName;
+    public void loadSavedSearch(DocumentModel searchDocument) throws UnsupportedEncodingException, ClientException {
+        SearchUIService searchUIService = Framework.getService(SearchUIService.class);
+        ContentViewState contentViewState = searchUIService.loadSearch(searchDocument);
+        if (contentViewState != null) {
+            ContentView contentView = contentViewActions.restoreContentView(contentViewState);
+            currentContentViewName = contentView.getName();
             currentSelectedSavedSearchId = searchDocument.getId();
         }
     }
@@ -367,8 +368,9 @@ public class SearchUIActions implements Serializable {
     public String saveSearch() throws ClientException {
         ContentView contentView = contentViewActions.getContentView(getCurrentContentViewName());
         if (contentView != null) {
+            ContentViewState state = contentViewService.saveContentView(contentView);
             SearchUIService searchUIService = Framework.getService(SearchUIService.class);
-            DocumentModel savedSearch = searchUIService.saveSearch(documentManager, contentView, savedSearchTitle);
+            DocumentModel savedSearch = searchUIService.saveSearch(documentManager, state, savedSearchTitle);
             currentSelectedSavedSearchId = savedSearch.getId();
 
             savedSearchTitle = null;

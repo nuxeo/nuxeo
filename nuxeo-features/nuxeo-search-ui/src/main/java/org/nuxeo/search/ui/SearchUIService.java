@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Thomas Roger
+ *     Nelson Silva
  */
 
 package org.nuxeo.search.ui;
@@ -23,8 +24,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.ActionContext;
-import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
+import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
 
 /**
  * Service handling contributed searches and related saved searches.
@@ -47,11 +48,11 @@ public interface SearchUIService {
      * Save the current search in the user workspace with the given title.
      *
      * @param session the {@code CoreSession} to use
-     * @param searchContentView the search to save
+     * @param searchContentViewState the search to save
      * @param title the title of the being saved search
      * @return the saved search DocumentModel
      */
-    DocumentModel saveSearch(CoreSession session, ContentView searchContentView, String title) throws ClientException;
+    DocumentModel saveSearch(CoreSession session, ContentViewState searchContentViewState, String title) throws ClientException;
 
     /**
      * Returns the current user saved searches, located into its own user workspace.
@@ -63,4 +64,10 @@ public interface SearchUIService {
      */
     List<DocumentModel> getSharedSavedSearches(CoreSession session) throws ClientException;
 
+    /**
+     * Load the content view state for a given saved search.
+     *
+     * @since 7.3
+     */
+    ContentViewState loadSearch(DocumentModel savedSearch);
 }

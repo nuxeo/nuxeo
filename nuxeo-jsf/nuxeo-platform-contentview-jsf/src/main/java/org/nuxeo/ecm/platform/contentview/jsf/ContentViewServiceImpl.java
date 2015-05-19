@@ -325,38 +325,47 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         String name = contentViewState.getContentViewName();
         ContentView cv = getContentView(name);
         if (cv != null) {
-            // save some info directly on content view, they will be needed
-            // when re-building the provider
-            Long pageSize = contentViewState.getPageSize();
-            cv.setCurrentPageSize(pageSize);
-            DocumentModel searchDocument = contentViewState.getSearchDocumentModel();
-            cv.setSearchDocumentModel(searchDocument);
-            if (searchDocument != null) {
-                // check that restored doc type is still in sync with doc type
-                // set on content view
-                String searchType = cv.getSearchDocumentModelType();
-                if (!searchDocument.getType().equals(searchType)) {
-                    log.warn(String.format("Restored document type '%s' is different from "
-                            + "the one declared on content view with name '%s': should be '%s'",
-                            searchDocument.getType(), name, searchType));
-                }
-            }
-            Long currentPage = contentViewState.getCurrentPage();
-            Object[] params = contentViewState.getQueryParameters();
-            // init page provider
-            cv.getPageProvider(searchDocument, contentViewState.getSortInfos(), pageSize, currentPage, params);
-            // restore rendering info, unless bindings are present on content
-            // view configuration
-            if (!cv.hasResultLayoutBinding()) {
-                cv.setCurrentResultLayout(contentViewState.getResultLayout());
-            }
-            if (!cv.hasResultLayoutColumnsBinding()) {
-                cv.setCurrentResultLayoutColumns(contentViewState.getResultColumns());
-            }
+            restoreContentViewState(cv, contentViewState);
         } else {
             throw new ClientException(String.format("Unknown content view with name '%s'", name));
         }
         return cv;
+    }
+
+    @Override
+    public void restoreContentViewState(ContentView contentView, ContentViewState contentViewState) {
+        if (contentView == null || contentViewState == null) {
+            return;
+        }
+
+        // save some info directly on content view, they will be needed
+        // when re-building the provider
+        Long pageSize = contentViewState.getPageSize();
+        contentView.setCurrentPageSize(pageSize);
+        DocumentModel searchDocument = contentViewState.getSearchDocumentModel();
+        contentView.setSearchDocumentModel(searchDocument);
+        if (searchDocument != null) {
+            // check that restored doc type is still in sync with doc type
+            // set on content view
+            String searchType = contentView.getSearchDocumentModelType();
+            if (!searchDocument.getType().equals(searchType)) {
+                log.warn(String.format("Restored document type '%s' is different from "
+                        + "the one declared on content view with name '%s': should be '%s'",
+                    searchDocument.getType(), contentViewState.getContentViewName(), searchType));
+            }
+        }
+        Long currentPage = contentViewState.getCurrentPage();
+        Object[] params = contentViewState.getQueryParameters();
+        // init page provider
+        contentView.getPageProvider(searchDocument, contentViewState.getSortInfos(), pageSize, currentPage, params);
+        // restore rendering info, unless bindings are present on content
+        // view configuration
+        if (!contentView.hasResultLayoutBinding()) {
+            contentView.setCurrentResultLayout(contentViewState.getResultLayout());
+        }
+        if (!contentView.hasResultLayoutColumnsBinding()) {
+            contentView.setCurrentResultLayoutColumns(contentViewState.getResultColumns());
+        }
     }
 
     @Override

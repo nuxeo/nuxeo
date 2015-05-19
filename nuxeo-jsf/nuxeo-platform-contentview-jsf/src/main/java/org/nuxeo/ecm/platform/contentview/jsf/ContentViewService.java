@@ -23,7 +23,6 @@ import java.util.Set;
 import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -88,7 +87,7 @@ public interface ContentViewService extends Serializable {
      * <p>
      * This state can be used to restore the content view in another context.
      *
-     * @see #restoreContentView(ContentViewState, CoreSession)
+     * @see #restoreContentView(ContentViewState)
      * @since 5.4.2
      * @param contentView
      */
@@ -96,14 +95,18 @@ public interface ContentViewService extends Serializable {
 
     /**
      * Restores a content view given a state.
-     * <p>
-     * The core session is only useful when restoring a content view defining a page provider mapped to a document. It
-     * is used to initialize this document.
      *
      * @see #saveContentView(ContentView)
      * @since 5.4.2
      * @throws ClientException
      */
     ContentView restoreContentView(ContentViewState contentViewState) throws ClientException;
+
+    /**
+     * Restores a content view to a given state.
+     *
+     * @since 7.3
+     */
+    void restoreContentViewState(ContentView contentView, ContentViewState contentViewState);
 
 }
