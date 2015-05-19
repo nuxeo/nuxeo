@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.platform.picture.magick.utils;
 
+import static org.nuxeo.ecm.platform.picture.api.ImagingConvertConstants.JPEG_CONVERSATION_FORMAT;
+
 import java.io.File;
 
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
@@ -45,7 +47,12 @@ public class ImageResizer extends MagickExecutor {
         params.addNamedParameter("inputFilePath", inputFile);
         params.addNamedParameter("outputFilePath", outputFile);
         params.addNamedParameter("targetDepth", String.valueOf(targetDepth));
-        ExecResult res = execCommand("resizer", params);
+        String commandName = "resizer";
+        // hack to manage jpeg default background
+        if (outputFile.endsWith(JPEG_CONVERSATION_FORMAT)) {
+            commandName = "jpegResizer";
+        }
+        ExecResult res = execCommand(commandName, params);
         if (!res.isSuccessful()) {
             throw res.getError();
         }

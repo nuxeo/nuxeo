@@ -33,6 +33,13 @@
       <installationDirective>You need to install ImageMagick.</installationDirective>
     </command>
 
+    <command name="jpegResizer" enabled="true">
+      <commandLine>convert</commandLine>
+      <parameterString>-quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] jpg:- | convert - -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</parameterString>
+      <winParameterString>-quiet -background white -flatten -depth #{targetDepth} #{inputFilePath}[0] -resize #{targetWidth}x#{targetHeight} #{outputFilePath}</winParameterString>
+      <installationDirective>You need to install ImageMagick.</installationDirective>
+    </command>
+
     <command name="rotate" enabled="true">
       <commandLine>convert</commandLine>
       <parameterString>-quiet #{inputFilePath}[0] -rotate #{angle} #{outputFilePath}</parameterString>
