@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.liveconnect.google.drive.scheduler">
+
+  <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService"
+    point="schedule">
+    <schedule id="googleDriveUpdate">
+      <event>googleDriveUpdate</event>
+      <!-- cleanup every minute -->
+      <!--cronExpression>0/15 * * * * ?</cronExpression-->
+      <!-- every day at 11.59 PM -->
+      <cronExpression>0 59 23 * * ?</cronExpression>
+    </schedule>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="googleDriveUpdate"
+      class="org.nuxeo.ecm.liveconnect.google.drive.listener.UpdateGoogleDriveDocumentsListener">
+      <event>googleDriveUpdate</event>
+    </listener>
+  </extension>
+
+</component>

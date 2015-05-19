@@ -33,6 +33,7 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ObjectParser;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
@@ -52,9 +53,6 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import org.nuxeo.ecm.liveconnect.google.drive.credential.WebApplicationCredentialFactory;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
-import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -224,12 +222,24 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         blobInfo.filename = filename;
         blobInfo.length = file.getFileSize();
         // etag for native docs and md5 for everything else
+        String digest = getDigest(file);
+        blobInfo.digest = digest;
+        return new SimpleManagedBlob(blobInfo);
+    }
+
+    protected String getDigest(File file) {
         String digest = file.getMd5Checksum();
         if (digest == null) {
             digest = file.getEtag();
         }
-        blobInfo.digest = digest;
-        return new SimpleManagedBlob(blobInfo);
+        return digest;
+    }
+
+    protected boolean isDigestChanged(SimpleManagedBlob blob, File file) {
+        final String digest = blob.getDigest();
+        String md5CheckSum = file.getMd5Checksum();
+        String eTag = file.getEtag();
+        return md5CheckSum != digest || eTag != digest;
     }
 
     /** Removes the prefix from the key. */
@@ -349,5 +359,20 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
 
     private OAuth2ServiceProvider getOAuth2Provider() {
         return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
+    }
+
+    /**
+     * @param doc google drive document to be checked
+     * @return true if the document was updated, else false
+     * @throws IOException
+     */
+    public boolean updateBlob(DocumentModel doc) throws IOException {
+        final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
+        File file = getFile(blob);
+        if (isDigestChanged(blob, file)) {
+            doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob.getKey())));
+            return true;
+        }
+        return false;
     }
 }
