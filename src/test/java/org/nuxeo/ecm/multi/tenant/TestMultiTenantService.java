@@ -60,6 +60,7 @@ import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -98,6 +99,9 @@ public class TestMultiTenantService {
 
     @Inject
     protected UserManager userManager;
+
+    @Inject
+    protected TrashService trashService;
 
     @After
     public void deleteAllUsersAndGroups() throws ClientException {
@@ -221,6 +225,66 @@ public class TestMultiTenantService {
             if (session != null) {
                 session.close();
             }
+        }
+    }
+
+    @Test
+    public void shouldSkipTrashedTenantOnEnable() throws ClientException {
+        assertFalse(multiTenantService.isTenantIsolationEnabled(session));
+
+        // create and delete a domain
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
+        newDomain = session.createDocument(newDomain);
+        session.save();
+
+        // trash the domain, which incidentally changes its name
+        trashService.trashDocuments(Collections.singletonList(newDomain));
+
+        multiTenantService.enableTenantIsolation(session);
+
+        newDomain = session.getDocument(newDomain.getRef());
+        assertFalse(newDomain.hasFacet(TENANT_CONFIG_FACET));
+
+        Session dirSession = directoryService.open(TENANTS_DIRECTORY);
+        try {
+            DocumentModelList docs = dirSession.getEntries();
+            assertEquals(1, docs.size());
+        } finally {
+            dirSession.close();
+        }
+    }
+
+    @Test
+    public void shouldDisableTenantOnTrash() throws ClientException {
+        multiTenantService.enableTenantIsolation(session);
+
+        DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
+        newDomain = session.createDocument(newDomain);
+        session.save();
+        assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
+        assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
+
+        Session dirSession = directoryService.open(TENANTS_DIRECTORY);
+        try {
+            DocumentModelList docs = dirSession.getEntries();
+            assertEquals(2, docs.size());
+        } finally {
+            dirSession.close();
+        }
+
+        // trash the domain, which incidentally changes its name
+        trashService.trashDocuments(Collections.singletonList(newDomain));
+
+        // not considered a tenant anymore
+        newDomain = session.getDocument(newDomain.getRef());
+        assertFalse(newDomain.hasFacet(TENANT_CONFIG_FACET));
+
+        dirSession = directoryService.open(TENANTS_DIRECTORY);
+        try {
+            DocumentModelList docs = dirSession.getEntries();
+            assertEquals(1, docs.size());
+        } finally {
+            dirSession.close();
         }
     }
 

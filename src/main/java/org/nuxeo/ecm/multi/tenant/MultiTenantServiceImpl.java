@@ -38,12 +38,14 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -148,7 +150,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         try {
             session = directoryService.open(TENANTS_DIRECTORY);
             Map<String, Object> m = new HashMap<String, Object>();
-            m.put("id", doc.getName());
+            m.put("id", getTenantIdForTenant(doc));
             m.put("label", doc.getTitle());
             m.put("docId", doc.getId());
             return session.createEntry(m);
@@ -189,7 +191,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     private void removeTenantACL(DocumentModel doc) throws ClientException {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
-        String tenantId = doc.getName();
+        String tenantId = getTenantIdForTenant(doc);
 
         // remove only the ACEs we added
         String tenantAdministratorsGroup = computeTenantAdministratorsGroup(tenantId);
@@ -208,12 +210,29 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         Session session = null;
         try {
             session = directoryService.open(TENANTS_DIRECTORY);
-            session.deleteEntry(doc.getName());
+            session.deleteEntry(getTenantIdForTenant(doc));
         } finally {
             if (session != null) {
                 session.close();
             }
         }
+    }
+
+    /**
+     * Gets the tenant id for a tenant document (Domain).
+     * <p>
+     * Deals with the case where it's a trashed document, which has a mangled name.
+     *
+     * @param doc the tenant document
+     * @return the tenant id
+     * @since 7.3
+     */
+    protected String getTenantIdForTenant(DocumentModel doc) {
+        String name = doc.getName();
+        if (doc.getCurrentLifeCycleState().equals(LifeCycleConstants.DELETED_STATE)) {
+            name = Framework.getService(TrashService.class).unmangleName(doc);
+        }
+        return name;
     }
 
     @Override
