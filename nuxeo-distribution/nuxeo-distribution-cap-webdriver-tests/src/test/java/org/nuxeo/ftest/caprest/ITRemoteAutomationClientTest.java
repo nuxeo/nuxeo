@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ftest.caprest;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.server.test.AbstractAutomationClientTest;
 import org.nuxeo.ecm.automation.test.RemoteAutomationServerFeature;
@@ -28,6 +29,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @since 5.7.2
  */
+@Ignore("NXP-17067")
 @RunWith(FeaturesRunner.class)
 @Features(RemoteAutomationServerFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)

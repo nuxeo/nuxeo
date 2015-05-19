@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
@@ -52,6 +53,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @since 5.7.2 Automation TCK Tests Suite
  */
+@Ignore("NXP-17067")
 @RunWith(FeaturesRunner.class)
 @Features(RemoteAutomationServerFeature.class)
 public class ITRemoteAutomationClientTCK {
