@@ -117,6 +117,11 @@
       // custom operation, pass at least the query term
       temp.searchTerm = query.term;
     }
+    // append custom operation parameters if needed
+    if (params.additionalOperationParameters && params.additionalOperationParameters.length > 0){
+      additionalParamsFunction = eval(params.additionalOperationParameters);
+      temp = additionalParamsFunction(temp,params,query);
+    }
     if (restoreSeamCtx && typeof currentConversationId != 'undefined') {
       // Give needed info to restore Seam context
       op.addParameter("id", getOperationName(params));
