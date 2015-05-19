@@ -17,7 +17,7 @@
           </h:panelGroup>
           <h:panelGroup>
             <h:selectOneMenu value="#{publishActions.publicationParameters['renditionName']}">
-              <f:selectItem itemValue="" itemLabel="#{messages['label.none']}"/>
+              <f:selectItem itemValue="" itemLabel="#{messages['label.rendition.none']}"/>
               <c:forEach var="renditionDefinition" items="#{currentDocumentVisibleRenditionDefinitions}">
                 <f:selectItem itemValue="#{renditionDefinition.name}" itemLabel="#{messages[renditionDefinition.label]}"/>
               </c:forEach>
