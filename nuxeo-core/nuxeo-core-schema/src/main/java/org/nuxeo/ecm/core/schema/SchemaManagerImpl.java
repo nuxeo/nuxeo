@@ -305,7 +305,7 @@ public class SchemaManagerImpl implements SchemaManager {
             String name = sd.name;
             if (resolvedSchemas.containsKey(name)) {
                 if (!sd.override) {
-                    log.debug("Schema " + name + " will not be overridden");
+                    log.warn("Schema " + name + " is redefined but will not be overridden");
                     continue;
                 }
                 log.debug("Reregistering schema: " + name + " from " + sd.file);
