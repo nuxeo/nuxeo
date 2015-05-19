@@ -123,4 +123,22 @@ public interface TrashService {
      */
     DocumentModelList getDocuments(DocumentModel currentDoc);
 
+    /**
+     * Mangles the name of a document to avoid collisions with non-trashed documents when it's in the trash.
+     *
+     * @param doc the document
+     * @return
+     * @since 7.3
+     */
+    String mangleName(DocumentModel doc);
+
+    /**
+     * Unmangles the name of a document in the trash to find its un-trashed name.
+     *
+     * @param doc the trashed document
+     * @return the unmangled name
+     * @since 7.3
+     */
+    String unmangleName(DocumentModel doc);
+
 }

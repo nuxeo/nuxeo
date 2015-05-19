@@ -356,30 +356,48 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
      */
     protected static final Pattern COLLISION_PATTERN = Pattern.compile("(.*)\\.[0-9]{13,}");
 
-    protected void trashDocument(CoreSession session, DocumentModel doc) throws ClientException {
-        String name = doc.getName() + "._" + System.currentTimeMillis() + "_.trashed";
-        session.move(doc.getRef(), doc.getParentRef(), name);
-        session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
+    @Override
+    public String mangleName(DocumentModel doc) {
+        return doc.getName() + "._" + System.currentTimeMillis() + "_.trashed";
     }
 
-    protected void undeleteDocument(CoreSession session, DocumentModel doc) throws ClientException {
+    @Override
+    public String unmangleName(DocumentModel doc) {
         String name = doc.getName();
         Matcher matcher = TRASHED_PATTERN.matcher(name);
         if (matcher.matches() && matcher.group(1).length() > 0) {
             name = matcher.group(1);
             matcher = COLLISION_PATTERN.matcher(name);
             if (matcher.matches() && matcher.group(1).length() > 0) {
-                String orig = matcher.group(1);
-                String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
-                if (parentPath.equals("/")) {
-                    parentPath = ""; // root
-                }
-                String newPath = parentPath + "/" + orig;
-                if (!session.exists(new PathRef(newPath))) {
-                    name = orig;
+                @SuppressWarnings("resource")
+                CoreSession session = doc.getCoreSession();
+                if (session != null) {
+                    String orig = matcher.group(1);
+                    String parentPath = session.getDocument(doc.getParentRef()).getPathAsString();
+                    if (parentPath.equals("/")) {
+                        parentPath = ""; // root
+                    }
+                    String newPath = parentPath + "/" + orig;
+                    if (!session.exists(new PathRef(newPath))) {
+                        name = orig;
+                    }
                 }
             }
-            session.move(doc.getRef(), doc.getParentRef(), name);
+        }
+        return name;
+    }
+
+    protected void trashDocument(CoreSession session, DocumentModel doc) throws ClientException {
+        String name = mangleName(doc);
+        session.move(doc.getRef(), doc.getParentRef(), name);
+        session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
+    }
+
+    protected void undeleteDocument(CoreSession session, DocumentModel doc) throws ClientException {
+        String name = doc.getName();
+        String newName = unmangleName(doc);
+        if (!newName.equals(name)) {
+            session.move(doc.getRef(), doc.getParentRef(), newName);
         }
         session.followTransition(doc, LifeCycleConstants.UNDELETE_TRANSITION);
     }
@@ -390,10 +408,10 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     @Override
     public DocumentModelList getDocuments(DocumentModel currentDoc) {
         CoreSession session = currentDoc.getCoreSession();
-        DocumentModelList docs = session.query(String.format("SELECT * FROM " + "Document WHERE "
-                + "ecm:mixinType != 'HiddenInNavigation' AND "
-                + "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = " + "'deleted' AND ecm:parentId = '%s'",
-                currentDoc.getId()));
+        DocumentModelList docs = session.query(
+                String.format("SELECT * FROM " + "Document WHERE " + "ecm:mixinType != 'HiddenInNavigation' AND "
+                        + "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = "
+                        + "'deleted' AND ecm:parentId = '%s'", currentDoc.getId()));
         return docs;
     }
 }

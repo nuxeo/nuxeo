@@ -88,6 +88,23 @@ public class TestTrashService {
     }
 
     @Test
+    public void testNameMangling() throws Exception {
+        createDocuments();
+        String mangled = trashService.mangleName(doc1);
+        assertTrue(mangled, mangled.startsWith("doc1._"));
+        assertTrue(mangled, mangled.endsWith("_.trashed"));
+
+        trashService.trashDocuments(Collections.singletonList(doc1));
+        doc1 = session.getDocument(doc1.getRef());
+
+        mangled = doc1.getName();
+        assertTrue(mangled, mangled.startsWith("doc1._"));
+        assertTrue(mangled, mangled.endsWith("_.trashed"));
+
+        assertEquals("doc1", trashService.unmangleName(doc1));
+    }
+
+    @Test
     public void testBase() throws Exception {
         createDocuments();
         assertTrue(trashService.folderAllowsDelete(fold));
