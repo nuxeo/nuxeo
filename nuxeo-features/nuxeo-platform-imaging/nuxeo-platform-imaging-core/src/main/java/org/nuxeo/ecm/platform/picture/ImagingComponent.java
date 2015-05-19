@@ -193,7 +193,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         try {
             String ext = blob.getFilename() == null ? ".tmp" : "." + FilenameUtils.getExtension(blob.getFilename());
             try (CloseableFile cf = blob.getCloseableFile(ext)) {
-                imageInfo = ImageIdentifier.getInfo(cf.getFile().getAbsolutePath());
+                imageInfo = ImageIdentifier.getInfo(cf.getFile().getCanonicalPath());
             }
         } catch (CommandNotAvailable | CommandException e) {
             log.error("Failed to get ImageInfo for file " + blob.getFilename(), e);
