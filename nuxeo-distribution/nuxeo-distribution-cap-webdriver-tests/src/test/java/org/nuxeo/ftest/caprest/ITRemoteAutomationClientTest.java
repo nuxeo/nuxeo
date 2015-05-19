@@ -29,7 +29,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 /**
  * @since 5.7.2
  */
-@Ignore("NXP-17067")
 @RunWith(FeaturesRunner.class)
 @Features(RemoteAutomationServerFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
