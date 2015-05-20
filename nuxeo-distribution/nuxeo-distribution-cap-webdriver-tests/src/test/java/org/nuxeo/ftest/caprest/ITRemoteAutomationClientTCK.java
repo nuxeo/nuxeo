@@ -33,8 +33,6 @@ import org.nuxeo.ecm.automation.client.model.PathRef;
 import org.nuxeo.ecm.automation.client.model.PropertyList;
 import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
-import org.nuxeo.ecm.automation.core.operations.services
-        .DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query
         .DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
@@ -319,7 +317,7 @@ public class ITRemoteAutomationClientTCK {
 
 
     @After
-    public void teardown() throws IOException {
+    public void teardown() throws Exception {
         Documents list = new Documents();
         list.add(folder1);
         list.add(folder2);
