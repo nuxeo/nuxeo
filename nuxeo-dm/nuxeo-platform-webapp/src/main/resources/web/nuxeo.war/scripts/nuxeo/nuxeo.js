@@ -1,4 +1,4 @@
-var nuxeojs = (function(nuxeojs) {
+var nuxeo = (function(nuxeo) {
 
   if (typeof(log) === 'undefined') {
     log = function() {};
@@ -67,24 +67,24 @@ var nuxeojs = (function(nuxeojs) {
       headers: headers,
       xhrFields: this._xhrFields
     })
-      .done(function(data, textStatus, jqXHR) {
-        if (data['entity-type'] === 'login'
-          && (!self._auth.username || data['username'] === self._auth.username)) {
-          self.connected = true;
-          if (callback) {
-            callback(null, self)
+        .done(function(data, textStatus, jqXHR) {
+          if (data['entity-type'] === 'login'
+              && (!self._auth.username || data['username'] === self._auth.username)) {
+            self.connected = true;
+            if (callback) {
+              callback(null, self)
+            }
+          } else {
+            if (callback) {
+              callback(data, self)
+            }
           }
-        } else {
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
           if (callback) {
-            callback(data, self)
+            callback(errorThrown, self)
           }
-        }
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        if (callback) {
-          callback(errorThrown, self)
-        }
-      });
+        });
   };
   Client.prototype.header = function(name, value) {
     this._headers[name] = value;
@@ -127,16 +127,16 @@ var nuxeojs = (function(nuxeojs) {
       headers: headers,
       xhrFields: this._xhrFields
     })
-      .done(function(data, textStatus, jqXHR) {
-        if (callback) {
-          callback(null, data, jqXHR);
-        }
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        if (callback) {
-          callback(errorThrown, null, jqXHR);
-        }
-      });
+        .done(function(data, textStatus, jqXHR) {
+          if (callback) {
+            callback(null, data, jqXHR);
+          }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+          if (callback) {
+            callback(errorThrown, null, jqXHR);
+          }
+        });
   };
 
   Client.prototype.operation = function(id) {
@@ -182,7 +182,7 @@ var nuxeojs = (function(nuxeojs) {
     return new Uploader(options);
   };
 
-  nuxeojs.Client = Client;
+  nuxeo.Client = Client;
 
 
   var Operation = function(options) {
@@ -325,16 +325,16 @@ var nuxeojs = (function(nuxeojs) {
     }
 
     jQuery.ajax(xhrParams)
-      .done(function(data, textStatus, jqXHR) {
-        if (callback) {
-          callback(null, data, jqXHR)
-        }
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        if (callback) {
-          callback(errorThrown, null, jqXHR)
-        }
-      });
+        .done(function(data, textStatus, jqXHR) {
+          if (callback) {
+            callback(null, data, jqXHR)
+          }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+          if (callback) {
+            callback(errorThrown, null, jqXHR)
+          }
+        });
   };
 
   Operation.prototype.uploader = function(options) {
@@ -352,7 +352,7 @@ var nuxeojs = (function(nuxeojs) {
     return this._uploader;
   };
 
-  nuxeojs.Operation = Operation;
+  nuxeo.Operation = Operation;
 
 
   var Request = function(options) {
@@ -524,19 +524,19 @@ var nuxeojs = (function(nuxeojs) {
     };
 
     jQuery.ajax(xhrParams)
-      .done(function(data, textStatus, jqXHR) {
-        if (callback) {
-          callback(null, data, jqXHR)
-        }
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        if (callback) {
-          callback(errorThrown, null, jqXHR)
-        }
-      });
+        .done(function(data, textStatus, jqXHR) {
+          if (callback) {
+            callback(null, data, jqXHR)
+          }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+          if (callback) {
+            callback(errorThrown, null, jqXHR)
+          }
+        });
   };
 
-  nuxeojs.Request = Request;
+  nuxeo.Request = Request;
 
   var Document = function(options) {
     this._client = options.client;
@@ -613,7 +613,7 @@ var nuxeojs = (function(nuxeojs) {
     }
     var request = this._client.request(path);
     request.timeout(this._timeout).schemas(this._schemas).headers(this._headers)
-      .repositoryName(this.repository);
+        .repositoryName(this.repository);
     request.get(function(error, data, response) {
       if (data !== undefined && typeof data === 'object' && data['entity-type'] === 'document') {
         data = self._client.document(data);
@@ -632,7 +632,7 @@ var nuxeojs = (function(nuxeojs) {
     }
     var request = this._client.request(path);
     request.timeout(this._timeout).schemas(this._schemas).headers(this._headers)
-      .repositoryName(this.repository);
+        .repositoryName(this.repository);
     request.post({
       data: data
     }, function(error, data, response) {
@@ -649,8 +649,8 @@ var nuxeojs = (function(nuxeojs) {
     var self = this;
     var operation = this._client.operation('Document.Copy');
     operation.timeout(this._timeout).schemas(this._schemas).headers(this._headers)
-      .repositoryName(this.repository)
-      .input(this.uid).params(data);
+        .repositoryName(this.repository)
+        .input(this.uid).params(data);
     operation.execute(function(error, data, response) {
       if (data !== undefined && typeof data === 'object' && data['entity-type'] === 'document') {
         data = self._client.document(data);
@@ -665,8 +665,8 @@ var nuxeojs = (function(nuxeojs) {
     var self = this;
     var operation = this._client.operation('Document.Move');
     operation.timeout(this._timeout).schemas(this._schemas).headers(this._headers)
-      .repositoryName(this.repository)
-      .input(this.uid).params(data);
+        .repositoryName(this.repository)
+        .input(this.uid).params(data);
     operation.execute(function(error, data, response) {
       if (data !== undefined && typeof data === 'object' && data['entity-type'] === 'document') {
         data = self._client.document(data);
@@ -685,7 +685,7 @@ var nuxeojs = (function(nuxeojs) {
     }
     var request = this._client.request(path);
     request.timeout(this._timeout).schemas(this._schemas).headers(this._headers)
-      .repositoryName(this.repository);
+        .repositoryName(this.repository);
     request.put({
       data: data
     }, function(error, data, response) {
@@ -726,7 +726,7 @@ var nuxeojs = (function(nuxeojs) {
     path = join(path, '@children');
     var request = this._client.request(path);
     request.timeout(this._timeout).schemas(this._schemas).headers(this._headers)
-      .repositoryName(this.repository);
+        .repositoryName(this.repository);
     request.get(function(error, data, response) {
       if (data !== undefined && typeof data === 'object' && data['entity-type'] === 'document') {
         data = self._client.document(data);
@@ -741,7 +741,7 @@ var nuxeojs = (function(nuxeojs) {
     return this.facets.indexOf('Folderish') !== -1;
   };
 
-  nuxeojs.Document = Document;
+  nuxeo.Document = Document;
 
 
   var DEFAULT_UPLOADER_OPTIONS = {
@@ -941,16 +941,16 @@ var nuxeojs = (function(nuxeojs) {
     };
 
     jQuery.ajax(xhrParams)
-      .done(function(data, textStatus, jqXHR) {
-        if (callback) {
-          callback(null, data, jqXHR)
-        }
-      })
-      .fail(function(jqXHR, textStatus, errorThrown) {
-        if (callback) {
-          callback(errorThrown, null, jqXHR)
-        }
-      });
+        .done(function(data, textStatus, jqXHR) {
+          if (callback) {
+            callback(null, data, jqXHR)
+          }
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+          if (callback) {
+            callback(errorThrown, null, jqXHR)
+          }
+        });
   };
 
   Uploader.prototype._readyStateChange = function(xhr) {
@@ -977,11 +977,11 @@ var nuxeojs = (function(nuxeojs) {
     var now = new Date().getTime();
     var timeDiff = now - upload.downloadStartTime;
     this._uploadFinishedCallback(upload.fileIndex, upload.fileObj,
-      timeDiff);
+        timeDiff);
     log('upload of file ' + upload.fileIndex + ' completed');
     if (upload.callback) {
       upload.callback(upload.fileIndex, upload.fileObj,
-        timeDiff);
+          timeDiff);
     }
     this._nbUploadInProgress--;
     if (!this._sendingRequestsInProgress && this._uploadStack.length > 0 && this._nbUploadInProgress < this._numConcurrentUploads) {
@@ -1003,8 +1003,8 @@ var nuxeojs = (function(nuxeojs) {
 
         event.target.currentProgress = percentage;
         this._uploadProgressUpdatedCallback(
-          event.target.fileIndex, event.target.fileObj,
-          event.target.currentProgress);
+            event.target.fileIndex, event.target.fileObj,
+            event.target.currentProgress);
 
         var elapsed = new Date().getTime();
         var diffTime = elapsed - event.target.currentStart;
@@ -1013,7 +1013,7 @@ var nuxeojs = (function(nuxeojs) {
           var speed = diffData / diffTime; // in KB/sec
 
           this._uploadSpeedUpdatedCallback(event.target.fileIndex,
-            event.target.fileObj, speed);
+              event.target.fileObj, speed);
 
           event.target.startData = event.loaded;
           event.target.currentStart = elapsed;
@@ -1033,8 +1033,8 @@ var nuxeojs = (function(nuxeojs) {
     }
   };
 
-  nuxeojs.Uploader = Uploader;
+  nuxeo.Uploader = Uploader;
 
-  return nuxeojs;
+  return nuxeo;
 
-})(nuxeojs || {});
+})(nuxeo || {});

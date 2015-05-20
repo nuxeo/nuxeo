@@ -32,8 +32,6 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
 @homepage http://www.nuxeo.org
 -->
 <link rel="import" href="../../polymer/polymer.html">
-<script src="jquery.min.js"></script>
-<script src="nuxeojs.js"></script>
 <script src="promise.min.js"></script>
 <polymer-element name="nx-connection" attributes="connectionId url username password">
     <template>
@@ -106,7 +104,7 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
                   return;
                 }
 
-                nxClients[id] = this.client = new nuxeojs.Client({
+                nxClients[id] = this.client = new nuxeo.Client({
                   baseURL: this.url,
                   auth: {
                     username: this.username,
