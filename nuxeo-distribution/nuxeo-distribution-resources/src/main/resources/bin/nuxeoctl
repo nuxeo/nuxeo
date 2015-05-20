@@ -95,8 +95,11 @@ if [ -z "$JAVA_HOME" ]; then
 fi
 PATH="$JAVA_HOME/bin:$PATH"
 
-# Check Java version
+# Check Java
 : ${REQUIRED_JAVA_VERSION:=1.8}
+# Check 'java' bin
+which java >/dev/null 2>&1 || die "Nuxeo requires Java $REQUIRED_JAVA_VERSION+. No java command detected in the PATH (including JAVA_HOME)."
+# Check Java version
 JAVA_VERSION=`java -version 2>&1 | awk -F '"' '/version/{print $2}'`
 if [ "$JAVA_VERSION" \< "$REQUIRED_JAVA_VERSION" ]; then
   die "Nuxeo requires Java $REQUIRED_JAVA_VERSION+ (detected $JAVA_VERSION)"
