@@ -22,6 +22,7 @@
     HTMLImports.whenImportsReady = HTMLImports.whenReady;
   </script>
 
+  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-filters.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-resource.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/popup-right.html"></link>
@@ -72,7 +73,7 @@
       padding: 12px 12px 12px 0;
     }
 
-    paper-button{
+    paper-button, paper-button /deep/ button {
       background: #00adff;
       margin: 10px;
       color: white;
@@ -99,21 +100,21 @@
     </nx-connection>
     <template is="auto-binding">
 
-      <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enricher="acls"></nx-resource>
-
-      <nx-resource auto="auto" id="acls" path="/path#{currentDocument.pathAsString}/@acl" data="{{acls}}"></nx-resource>
+      <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enricher="acls, permissions"></nx-resource>
+      
+      <!-- <nx-resource auto="auto" id="acls" path="/path#{currentDocument.pathAsString}/@acl" data="{{acls}}" ></nx-resource>-->
 
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
 
-      <template if="{{acls.acl[0].name=='local'}}">
+      <template if="{{doc.contextParameters.acls[0].name=='local'}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document</h2>
           <template if="{{doc.contextParameters.acls}}" id="new-access-right">
-            <popup-right></popup-right>
+            <popup-right render="{{doc.contextParameters.permissions | has('Everything')}}"></popup-right>
           </template>
         </div>
         <div>
-          <hot-table id="local" datarows="{{acls.acl[0].ace}}" class="htLeft">
+          <hot-table id="local" datarows="{{doc.contextParameters.acls[0].ace}}" class="htLeft">
             <hot-column value="username" header="Username">
               <template data-hot-role="renderer"><span>{{username}}</span></template>
             </hot-column>
@@ -133,7 +134,7 @@
           </template>
         </div>
         <div>
-          <hot-table id="inherited" datarows="{{acls.acl[1].ace}}" class="htLeft">
+          <hot-table id="inherited" datarows="{{doc.contextParameters.acls[1].ace}}" class="htLeft">
             <hot-column value="username" header="Username">
               <template data-hot-role="renderer"><span>{{username}}</span></template>
             </hot-column>
@@ -147,17 +148,16 @@
         </div>
       </template>
 
-      <template if="{{acls.acl[0].name=='inherited'}}">
+      <template if="{{doc.contextParameters.acls[0].name=='inherited'}}">
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
           <template if="{{doc.contextParameters.acls}}">
-            <!-- <paper-button raised="true">New Access Right</paper-button>-->
-            <popup-right></popup-right>
+            <popup-right render="{{doc.contextParameters.permissions | has('Everything')}}"></popup-right>
             <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
           </template>
         </div>
         <div>
-          <hot-table id="inherited" datarows="{{acls.acl[0].ace}}" class="htLeft">
+          <hot-table id="inherited" datarows="{{doc.contextParameters.acls[0].ace}}" class="htLeft">
             <hot-column value="username" header="Username">
               <template data-hot-role="renderer"><span>{{username}}</span></template>
             </hot-column>

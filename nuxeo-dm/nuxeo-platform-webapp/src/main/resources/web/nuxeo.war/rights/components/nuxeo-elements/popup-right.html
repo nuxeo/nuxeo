@@ -10,8 +10,8 @@
 <link rel="import" href="../../polymer/paper-checkbox/paper-checkbox.html">
 
 
-<polymer-element name="popup-right">
-  <template>
+<polymer-element name="popup-right" attributes="render">
+  <template><template if="{{render}}">
     <paper-button raised="true" on-click="{{togglePopup}}">New Access Right</paper-button>
 
     <paper-dialog id="popupRight" heading="Add new acl right" opened="false">
@@ -62,19 +62,17 @@
       </div>
     </div>
     <!-- Notification -->
-    <div layout horizontal>
-      <div layout vertical flex>
-        <div layout horizontal>
-          <paper-checkbox></paper-checkbox>
-          <div>
-            Send a notification ...
-          </div>
-        </div>
+    <div layout vertical flex>
+      <div layout horizontal>
+        <paper-checkbox></paper-checkbox>
         <div>
-          <paper-autogrow-textarea flex id="rights-textarea">
-            <textarea style="width: 98%" id="rights-textarea" rows="6"></textarea>
-          </paper-autogrow-textarea>
+          Send a notification ...
         </div>
+      </div>
+      <div>
+        <paper-autogrow-textarea flex id="rights-textarea">
+          <textarea style="width: 98%" id="rights-textarea" rows="6"></textarea>
+        </paper-autogrow-textarea>
       </div>
     </div>
 
@@ -94,16 +92,21 @@
 
     <paper-button dismissive  raised="true">Cancel</paper-button>
     <paper-button affirmative raised="true">Confirm and add another</paper-button>
-    <paper-button affirmative autofocus raised="true">Confirm</paper-button>
+    <paper-button affirmative raised="true">Confirm</paper-button>
   </paper-dialog>
 
-  </template>
+  </template></template>
   <script>
     Polymer({
+      
+      publish: {
+        render: false
+      },
+     
       togglePopup: function() {
-        console.log('Show popup');
        this.$.popupRight.toggle();
       },
+
       openCalendar: function(e, len, elm) {
         this.$[elm.id + '-datepicker'].toggle();
       }

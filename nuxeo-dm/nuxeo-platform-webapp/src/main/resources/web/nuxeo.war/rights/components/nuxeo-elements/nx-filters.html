@@ -1,0 +1,11 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<script type="text/javascript">
+  PolymerExpressions.prototype.has = function(array, value) {
+    if (typeof array.indexOf === 'function') {
+      return array.indexOf(value) != -1;
+    } else {
+      return false;
+    }
+  };
+</script>
