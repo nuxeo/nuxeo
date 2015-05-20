@@ -32,6 +32,7 @@ import javax.transaction.SystemException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -106,11 +107,6 @@ public class SQLDirectory extends AbstractDirectory {
     public static final Log log = LogFactory.getLog(SQLDirectory.class);
 
     public static final String TENANT_ID_FIELD = "tenantId";
-
-    /**
-     * Maximum number of times we retry a connection if the server says it's overloaded.
-     */
-    public static final int MAX_CONNECTION_TRIES = 5;
 
     private final SQLDirectoryDescriptor config;
 
@@ -283,34 +279,7 @@ public class SQLDirectory extends AbstractDirectory {
      * @return the connection
      */
     protected Connection getConnection(DataSource dataSource) throws SQLException {
-        for (int tryNo = 0;; tryNo++) {
-            try {
-                return dataSource.getConnection();
-            } catch (SQLException e) {
-                if (tryNo >= MAX_CONNECTION_TRIES) {
-                    throw e;
-                }
-                if (e.getErrorCode() != 12519) {
-                    throw e;
-                }
-                // Oracle: Listener refused the connection with the
-                // following error: ORA-12519, TNS:no appropriate
-                // service handler found SQLState = "66000"
-                // Happens when connections are open too fast (unit tests)
-                // -> retry a few times after a small delay
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Connections open too fast, retrying in %ds: %s", Integer.valueOf(tryNo),
-                            e.getMessage().replace("\n", " ")));
-                }
-                try {
-                    Thread.sleep(1000 * tryNo);
-                } catch (InterruptedException ie) {
-                    // restore interrupted status
-                    Thread.currentThread().interrupt();
-                    throw new SQLException("interrupted");
-                }
-            }
-        }
+        return JDBCUtils.getConnection(dataSource);
     }
 
     @Override

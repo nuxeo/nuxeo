@@ -19,15 +19,13 @@ package org.nuxeo.ecm.directory.sql;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,13 +33,6 @@ import org.nuxeo.runtime.api.Framework;
  * name.
  */
 public class SimpleDataSource implements DataSource {
-
-    private static final Log log = LogFactory.getLog(SimpleDataSource.class);
-
-    /**
-     * Maximum number of time we retry a connection if the server says it's overloaded.
-     */
-    public static final int MAX_CONNECTION_TRIES = 5;
 
     private final String url;
 
@@ -66,35 +57,7 @@ public class SimpleDataSource implements DataSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        Connection con = null;
-        int tryNo = 0;
-        for (;;) {
-            try {
-                con = DriverManager.getConnection(url, user, password);
-                break;
-            } catch (SQLException e) {
-                if (++tryNo >= MAX_CONNECTION_TRIES) {
-                    throw e;
-                }
-                if (e.getErrorCode() != 12519) {
-                    throw e;
-                }
-                // Oracle: Listener refused the connection with the
-                // following error: ORA-12519, TNS:no appropriate
-                // service handler found
-                // SQLState = "66000"
-                // Happens when connections are open too fast (unit tests)
-                // -> retry a few times after a small delay
-                log.warn(String.format("Connections open too fast, retrying in %ds: %s", tryNo,
-                        e.getMessage().replace("\n", " ")));
-                try {
-                    Thread.sleep(1000 * tryNo);
-                } catch (InterruptedException ie) {
-                    // restore interrupted status
-                    Thread.currentThread().interrupt();
-                }
-            }
-        }
+        Connection con = JDBCUtils.getConnection(url, user, password);
         con.setAutoCommit(false);
         return con;
     }
