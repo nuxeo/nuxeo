@@ -22,6 +22,7 @@ import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
+import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
@@ -34,11 +35,6 @@ import org.nuxeo.runtime.datasource.ConnectionHelper;
  * Holds a connection to a JDBC database.
  */
 public class JDBCConnection {
-
-    /**
-     * Maximum number of time we retry a connection if the server says it's overloaded.
-     */
-    public static final int MAX_CONNECTION_TRIES = 5;
 
     /** The model used to do the mapping. */
     protected final Model model;
@@ -105,7 +101,7 @@ public class JDBCConnection {
 
     /**
      * for tests only
-     * 
+     *
      * @since 5.9.3
      */
     public JDBCConnection() {
@@ -144,34 +140,7 @@ public class JDBCConnection {
         connection = ConnectionHelper.getConnection(dataSourceName, noSharing);
         if (connection == null) {
             // standard XA mode
-            for (int tryNo = 1;; tryNo++) {
-                try {
-                    xaconnection = xadatasource.getXAConnection();
-                    break;
-                } catch (SQLException e) {
-                    if (tryNo >= MAX_CONNECTION_TRIES) {
-                        throw e;
-                    }
-                    if (e.getErrorCode() != 12519) {
-                        throw e;
-                    }
-                    // Oracle: Listener refused the connection with the
-                    // following error: ORA-12519, TNS:no appropriate
-                    // service handler found
-                    // SQLState = "66000"
-                    // Happens when connections are open too fast (unit tests)
-                    // -> retry a few times after a small delay
-                    logger.warn(String.format("Connections open too fast, retrying in %ds: %s", tryNo,
-                            e.getMessage().replace("\n", " ")));
-                    try {
-                        Thread.sleep(1000 * tryNo);
-                    } catch (InterruptedException ie) {
-                        // restore interrupted status
-                        Thread.currentThread().interrupt();
-                        throw new RuntimeException("interrupted");
-                    }
-                }
-            }
+            xaconnection = JDBCUtils.getXAConnection(xadatasource);
             connection = xaconnection.getConnection();
             xaresource = xaconnection.getXAResource();
         } else {
