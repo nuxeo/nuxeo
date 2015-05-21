@@ -95,16 +95,11 @@
 
   <div fullbleed="fullbleed" vertical="vertical" layout="layout">
 
-    <nx-connection id="nx_connection"
-      url="#{baseURL}"
-      username="Administrator"
-      password="Administrator">
-    </nx-connection>
+    <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
+
     <template is="auto-binding">
 
       <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enricher="acls, permissions"></nx-resource>
-
-      <!-- <nx-resource auto="auto" id="acls" path="/path#{currentDocument.pathAsString}/@acl" data="{{acls}}" ></nx-resource>-->
 
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
 
