@@ -265,6 +265,9 @@
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_additionalParam</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_dropdownOnArrow</widget>
                 </row>
               </rows>
@@ -426,6 +429,9 @@
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_additionalParam</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_separator</widget>

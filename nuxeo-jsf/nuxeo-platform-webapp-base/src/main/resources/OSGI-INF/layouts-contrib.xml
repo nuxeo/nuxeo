@@ -606,6 +606,26 @@
       </fields>
     </widget>
 
+    <widget name="select2_additionalParam" type="text">
+      <categories>
+        <category>widgetTypeConf</category>
+      </categories>
+      <labels>
+        <label mode="any">Additional Operation Parameters</label>
+      </labels>
+      <helpLabels>
+        <label mode="any">
+          Name of the JavaScript function that
+          will be
+          called by select2 to pass additional parameters to
+          the automation operation. See https://doc.nuxeo.com/x/iQhvAQ.
+        </label>
+      </helpLabels>
+      <fields>
+        <field>additionalParam</field>
+      </fields>
+    </widget>
+
     <widget name="select2_inlinejsDemoPreview" type="textarea">
       <categories>
         <category>widgetTypeConf</category>
@@ -1839,6 +1859,9 @@
                   </widget>
                 </row>
                 <row>
+                  <widget category="widgetTypeConf">select2_additionalParam</widget>
+                </row>
+                <row>
                   <widget category="widgetTypeConf">select2_separator</widget>
                 </row>
               </rows>
@@ -1953,6 +1976,9 @@
                 <row>
                   <widget category="widgetTypeConf">select2_suggestionFormatter
                   </widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">select2_additionalParam</widget>
                 </row>
                 <row>
                   <widget category="widgetTypeConf">select2_dropdownOnArrow</widget>
