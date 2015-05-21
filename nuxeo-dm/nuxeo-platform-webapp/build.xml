@@ -4,4 +4,10 @@
   <import file="../../build.xml" />
   <property file="build.properties" />
 
+  <target name="bower" description="Download all bower dependencies">
+    <exec executable="bower" failonerror="true">
+      <arg value="install" />
+    </exec>
+  </target>
+
 </project>

@@ -253,7 +253,7 @@
     </resource>
 
     <resource name="nuxeo.js">
-      <path>scripts/nuxeo/nuxeo.js</path>
+      <path>bower_components/nuxeo/lib/jquery/nuxeo.js</path>
     </resource>
   </extension>
 
