@@ -172,7 +172,7 @@ public class TestDocumentAuditPageProvider {
             assertEquals(startId + version1EntriesCount - 1, entries.get(0).getId());
         } else {
             // because update even may be 1ms behind checkin/created !
-            assertEquals(version1EntriesCount - 1, entries.size());
+            assertEquals(entries.toString(), version1EntriesCount - 1, entries.size());
         }
 
         // get version 2 history
