@@ -157,7 +157,6 @@ public class Request extends HashMap<String, String> {
     protected static Blob readBlob(String ctype, String fileName, InputStream in)
             throws Exception {
         File file = IOUtils.copyToTempFile(in);
-        file.deleteOnExit();
         FileBlob blob = new FileBlob(file);
         blob.setMimeType(ctype);
         if (fileName != null) {
