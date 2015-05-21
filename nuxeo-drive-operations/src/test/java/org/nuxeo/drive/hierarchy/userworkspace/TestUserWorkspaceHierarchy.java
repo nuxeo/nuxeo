@@ -126,6 +126,8 @@ public class TestUserWorkspaceHierarchy {
     @Inject
     protected HttpAutomationClient automationClient;
 
+    protected StorageConfiguration storageConfiguration;
+
     protected CoreSession session1;
 
     protected DocumentModel userWorkspace1;
@@ -166,6 +168,8 @@ public class TestUserWorkspaceHierarchy {
      */
     @Before
     public void init() throws Exception {
+
+        storageConfiguration = coreFeature.getStorageConfiguration();
 
         // Create test user
         createUser("user1", "user1");
@@ -242,6 +246,11 @@ public class TestUserWorkspaceHierarchy {
      */
     @Test
     public void testClientSideUser1() throws Exception {
+
+        // Temporarily ignore under MySQL waiting for https://jira.nuxeo.com/browse/NXP-15969 to be fixed
+        if (storageConfiguration.isVCSMySQL()) {
+            return;
+        }
 
         // ---------------------------------------------
         // Check active factories
@@ -505,7 +514,6 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected void waitIfMySQLOrSQLServer() throws InterruptedException {
-        StorageConfiguration storageConfiguration = coreFeature.getStorageConfiguration();
         if (storageConfiguration.isVCSMySQL() || storageConfiguration.isVCSSQLServer()) {
             Thread.sleep(1000);
         }
