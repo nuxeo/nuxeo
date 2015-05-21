@@ -33,7 +33,7 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
 -->
 <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html">
 <script src="promise.min.js"></script>
-<polymer-element name="nx-connection" attributes="connectionId url username password">
+<dom-module id="nx-connection">
     <template>
         <style>
             :host {
@@ -41,13 +41,22 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
             }
         </style>
     </template>
-    <script>
+</dom-module>
+<script>
     (function() {
         // A global map of clients with connectionId as key.
         // This map is shared between all instances of nx-connection.
         var nxClients = {};
 
-        Polymer('nx-connection', {
+        Polymer({is: "nx-connection",
+            properties: {
+                connectionId: { type: String },
+                url: { type: String},
+                username: { type: String},
+                password: { type: String}
+            }
+            ,
+
             /**
              * A unique identifier for this connection.
              *
@@ -81,59 +90,53 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
              */
             password: null,
 
-            observe: {
-                'url username password': 'connect',
-                'client.connected': 'handleConnected'
-            },
-
             ready: function() {
                 this.connect();
             },
 
             connect: function() {
-              return new Promise(function (resolve, reject) {
-                // Create the client if needed
-                // If we already have a client with the same connection info just keep it
-                var id = (this.connectionId) ? this.connectionId : Object.keys(nxClients)[0];
-                this.client = nxClients[id];
-                if (this.client &&
-                  (!this.url || (this.client._baseURL === this.url)) &&
-                  (!this.username || (this.client._username === this.username)) &&
-                  (!this.password || (this.client._password === this.password))) {
-                  resolve(this);
-                  return;
-                }
+                return new Promise(function (resolve, reject) {
+                    // Create the client if needed
+                    // If we already have a client with the same connection info just keep it
+                    var id = (this.connectionId) ? this.connectionId : Object.keys(nxClients)[0];
+                    this.client = nxClients[id];
+                    if (this.client &&
+                            (!this.url || (this.client._baseURL === this.url)) &&
+                            (!this.username || (this.client._username === this.username)) &&
+                            (!this.password || (this.client._password === this.password))) {
+                        resolve(this);
+                        return;
+                    }
 
-                nxClients[id] = this.client = new nuxeo.Client({
-                  baseURL: this.url,
-                  auth: {
-                    username: this.username,
-                    password: this.password
-                  },
-                  schemas: '*'
-                });
+                    nxClients[id] = this.client = new nuxeo.Client({
+                        baseURL: this.url,
+                        auth: {
+                            username: this.username,
+                            password: this.password
+                        },
+                        schemas: '*'
+                    });
 
-                this.client.connect(function (error, client) {
-                  if (error) {
-                    this.fire('error', {error: error});
-                    reject(error);
-                  }
-                  resolve(this);
+                    this.client.connect(function (error, client) {
+                        if (error) {
+                            this.fire('error', {error: error});
+                            reject(error);
+                        }
+                        resolve(this);
+                    }.bind(this));
                 }.bind(this));
-              }.bind(this));
             },
 
             get connected() {
-              return this.client && this.client.connected;
+                return this.client && this.client.connected;
             },
 
             handleConnected: function() {
-              if (this.client.connected) {
-                this.fire('connected');
-              }
+                if (this.client.connected) {
+                    this.fire('connected');
+                }
             }
 
         });
     })();
-    </script>
-</polymer-element>
+</script>

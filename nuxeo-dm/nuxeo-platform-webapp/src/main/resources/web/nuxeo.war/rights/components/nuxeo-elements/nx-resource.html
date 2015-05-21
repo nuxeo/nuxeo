@@ -36,7 +36,7 @@ element.
 @homepage http://www.nuxeo.org
 -->
 <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html">
-<polymer-element name="nx-resource" attributes="connectionId auto path params data headers enricher">
+<dom-module id="nx-resource">
     <template>
         <style>
             :host {
@@ -45,119 +45,131 @@ element.
         </style>
         <nx-connection id="nx" connectionId="{{connectionId}}"></nx-connection>
     </template>
-    <script>
-        Polymer({
-            /**
-             * Fired when a response is received.
-             *
-             * @event response
-             */
+</dom-module>
 
-            /**
-             * The id of a nx-connection to use.
-             *
-             * @attribute connectionId
-             * @type string
-             * @default ''
-             */
-            connectionId: '',
+<script>
+    Polymer({is: "nx-resource",
+        properties: {
+            connectionId: { type: String },
+            auto: { type: Boolean},
+            path: { type: String, observer: 'autoGet'},
+            params: { type: Object, observer: 'autoGet'},
+            data: { type: Object},
+            headers: { type: Object},
+            enrichers: { type: String}
+        }
+        ,
+        /**
+         * Fired when a response is received.
+         *
+         * @event response
+         */
 
-            /**
-             * The path of the resource.
-             *
-             * @attribute path
-             * @type string
-             * @default ''
-             */
-            path: '',
+        /**
+         * The id of a nx-connection to use.
+         *
+         * @attribute connectionId
+         * @type string
+         * @default ''
+         */
+        connectionId: '',
 
-            /**
-             * The parameters to send.
-             *
-             * @attribute params
-             * @type Object
-             * @default null
-             */
-            params: null,
+        /**
+         * The path of the resource.
+         *
+         * @attribute path
+         * @type string
+         * @default ''
+         */
+        path: '',
 
-            /**
-             * If true, automatically execute the operation when either `path` or `params` changes.
-             *
-             * @attribute auto
-             * @type boolean
-             * @default false
-             */
-            auto: false,
+        /**
+         * The parameters to send.
+         *
+         * @attribute params
+         * @type Object
+         * @default null
+         */
+        params: null,
 
-            /**
-             * The response from the server.
-             *
-             * @property data
-             * @type Object
-             * @default null
-             */
-            data: null,
+        /**
+         * If true, automatically execute the operation when either `path` or `params` changes.
+         *
+         * @attribute auto
+         * @type boolean
+         * @default false
+         */
+        auto: false,
 
-            /**
-             * The `entity-type` of the resource.
-             *
-             * @property type
-             * @type string
-             * @default ''
-             */
-            type: '',
+        /**
+         * The response from the server.
+         *
+         * @property data
+         * @type Object
+         * @default null
+         */
+        data: null,
 
-            /**
-             * The headers of the request.
-             * 'Accept': 'text/plain,application/json' is already set by default.
-             *
-             * @property type
-             * @type Object
-             * @default {}
-             */
-            headers: null,
+        /**
+         * The `entity-type` of the resource.
+         *
+         * @property type
+         * @type string
+         * @default ''
+         */
+        type: '',
 
-            /**
-             * The `content enricher` of the resource.
-             *
-             * @property type
-             * @type string
-             * @default ''
-             */
-            enricher: '',
+        /**
+         * The headers of the request.
+         * 'Accept': 'text/plain,application/json' is already set by default.
+         *
+         * @property type
+         * @type Object
+         * @default {}
+         */
+        headers: null,
 
-            observe: {
-                'path params': '_autoGet'
-            },
+        /**
+         * The `content enricher` of the resource.
+         *
+         * @property type
+         * @type string
+         * @default ''
+         */
+        enrichers: '',
 
-            /**
-            * Executes the operation.
-            *
-            * @method execute
-            */
-            get: function(data) {
-              return this._execute('get', data);
-            },
+        /**
+         * Executes the operation.
+         *
+         * @method execute
+         */
+        get: function(data) {
+            return this._execute('get', data);
+        },
 
-            post: function(data) {
-              return this._execute('post', data);
-            },
+        post: function(data) {
+            return this._execute('post', data);
+        },
 
-            put: function(data) {
-              return this._execute('put', data);
-            },
+        put: function(data) {
+            return this._execute('put', data);
+        },
 
-            remove: function(data) {
-              return this._execute('delete', data);
-            },
+        remove: function(data) {
+            return this._execute('delete', data);
+        },
 
-            _autoGet: function() {
-                if (this.auto) {
-                    this.get();
-                }
-            },
+        observers: {
+            'path params': 'autoGet'
+        },
 
-          _execute: function(method, data) {
+        autoGet: function() {
+            if (this.auto) {
+                this.get();
+            }
+        },
+
+        _execute: function(method, data) {
             method = method || 'get';
             data = data || this.data;
             var options = (data) ? {data: data} : {};
@@ -165,32 +177,31 @@ element.
             options.headers = (!this.headers || (typeof this.headers === 'object')) ? {} : JSON.parse(this.headers);
             // add support for plain text responses by default
             options.headers.accept = 'text/plain,application/json';
-            // Look up content enricher parameter
-            if(this.enricher) options.headers["X-NXenrichers.document"] = this.enricher;
+            // Look up content enrichers parameter
+            if(this.enrichers) options.headers["X-NXenrichers.document"] = this.enrichers;
             var params = (!this.params || (typeof this.params === 'object')) ? this.params : JSON.parse(this.params);
             return this.$.nx.connect()
-              .then(function() {
-                return new Promise(function (resolve, reject) {
-                  return this.$.nx.client
-                    .request(this.path)
-                    .repositoryName(undefined)
-                    .query(params) [method](options, function (error, data) {
-                      if (error) {
-                        this.fire('error', error);
-                        reject(Error(error));
-                        return;
-                      }
-                      this.fire('response', {response: data});
-                      // if we're binding to the 'data' attribute, update it
-                      if (this.hasAttribute('data')) {
-                        this.data = data;
-                      }
-                      resolve(data);
-                  }.bind(this));
-                }.bind(this));
-              }.bind(this));
-          }
+                    .then(function() {
+                        return new Promise(function (resolve, reject) {
+                            return this.$.nx.client
+                                    .request(this.path)
+                                    .repositoryName(undefined)
+                                    .query(params) [method](options, function (error, data) {
+                                if (error) {
+                                    this.fire('error', error);
+                                    reject(Error(error));
+                                    return;
+                                }
+                                this.fire('response', {response: data});
+                                // if we're binding to the 'data' attribute, update it
+                                if (this.hasAttribute('data')) {
+                                    this.data = data;
+                                }
+                                resolve(data);
+                            }.bind(this));
+                        }.bind(this));
+                    }.bind(this));
+        }
 
-        });
-    </script>
-</polymer-element>
+    });
+</script>

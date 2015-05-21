@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 <f:view contentType="text/html" />
 <h:head id="polymerHead">
   <title>
@@ -13,9 +13,9 @@
   <ui:insert name="imports"></ui:insert>
 
   <meta name="viewport"
-    content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes"></meta>
+        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes"></meta>
   <script type="text/javascript"
-    src="#{baseURL}bower_components/webcomponentsjs/webcomponents.js"></script>
+          src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="#{baseURL}bower_components/font-roboto/roboto.html"></link>
   <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
@@ -24,12 +24,10 @@
     HTMLImports.whenImportsReady = HTMLImports.whenReady;
   </script>
 
-  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-filters.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-resource.html"></link>
-  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/popup-right.html"></link>
+
   <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/hot-table/src/hot-table.html"></link>
   <link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html"></link>
 
   <style>
@@ -97,9 +95,9 @@
 
     <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-    <template is="auto-binding">
+    <template is="dom-bind">
 
-      <nx-resource auto="auto" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enricher="acls, permissions"></nx-resource>
+      <nx-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enrichers="acls, permissions"></nx-resource>
 
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
 
