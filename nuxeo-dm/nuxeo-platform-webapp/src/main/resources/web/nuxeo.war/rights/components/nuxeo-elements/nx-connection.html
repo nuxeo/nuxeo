@@ -43,58 +43,33 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
     </template>
 </dom-module>
 <script>
-    (function() {
+    (function () {
         // A global map of clients with connectionId as key.
         // This map is shared between all instances of nx-connection.
         var nxClients = {};
 
-        Polymer({is: "nx-connection",
+        Polymer({
+            is: "nx-connection",
             properties: {
-                connectionId: { type: String },
-                url: { type: String},
-                username: { type: String},
-                password: { type: String}
+                /* A unique identifier for this connection. */
+                connectionId: {type: String, value: 'nx'},
+
+                /* The base URL of the Nuxeo server. */
+                url: {type: String, value: ''},
+
+                /* The username. */
+                username: {type: String, value: null},
+
+                /* The password. */
+                password: {type: String, value: null}
             }
             ,
 
-            /**
-             * A unique identifier for this connection.
-             *
-             * @attribute connectionId
-             * @type string
-             * @default 'nx'
-             */
-            connectionId: 'nx',
-            /**
-             * The base URL of the Nuxeo server.
-             *
-             * @attribute url
-             * @type string
-             * @default ''
-             */
-            url: '',
-            /**
-             * The username.
-             *
-             * @attribute username
-             * @type string
-             * @default null
-             */
-            username: null,
-            /**
-             * The password.
-             *
-             * @attribute password
-             * @type string
-             * @default null
-             */
-            password: null,
-
-            ready: function() {
+            ready: function () {
                 this.connect();
             },
 
-            connect: function() {
+            connect: function () {
                 return new Promise(function (resolve, reject) {
                     // Create the client if needed
                     // If we already have a client with the same connection info just keep it
@@ -131,7 +106,7 @@ Note: Elements that depend on a connectionId use `nx_connection` as default.
                 return this.client && this.client.connected;
             },
 
-            handleConnected: function() {
+            handleConnected: function () {
                 if (this.client.connected) {
                     this.fire('connected');
                 }
