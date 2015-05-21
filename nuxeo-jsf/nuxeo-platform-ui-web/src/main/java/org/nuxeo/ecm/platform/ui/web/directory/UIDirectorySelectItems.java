@@ -162,7 +162,7 @@ public class UIDirectorySelectItems extends UISelectItems {
             }
 
             @Override
-            protected String retrieveSelectEntryId() {
+            protected String[] retrieveSelectEntryId() {
                 return UIDirectorySelectItems.this.retrieveSelectEntryId();
             }
 
@@ -188,7 +188,7 @@ public class UIDirectorySelectItems extends UISelectItems {
             items = f.createAllDirectorySelectItems();
         } else {
             Object value = getStateHelper().eval(PropertyKeys.value);
-            items = f.createDirectorySelectItems(value);
+            items = f.createDirectorySelectItems(value, getKeySeparator());
         }
 
         String ordering = getOrdering();
@@ -229,16 +229,16 @@ public class UIDirectorySelectItems extends UISelectItems {
                 isItemEscaped());
     }
 
-    protected String retrieveSelectEntryId() {
+    protected String[] retrieveSelectEntryId() {
         // assume option id and vocabulary entry id will match
         Object itemValue = getItemValue();
         String id = itemValue != null ? itemValue.toString() : null;
         String keySeparator = getKeySeparator();
         if (!StringUtils.isBlank(keySeparator)) {
             String[] split = id.split(keySeparator);
-            return split[split.length - 1];
+            return split;
         }
-        return id;
+        return new String[] {id};
     }
 
     protected String retrieveLabelFromEntry(DocumentModel docEntry) {
