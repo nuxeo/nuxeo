@@ -20,6 +20,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 
 /**
+ * File is deleted on JVM exit. You should delete it explicitly earlier if you know it won't be used anymore.
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class IOUtils {
