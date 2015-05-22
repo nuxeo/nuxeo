@@ -27,33 +27,14 @@ import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.BlobManagerFeature;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-@RunWith(FeaturesRunner.class)
-@Features(BlobManagerFeature.class)
-@Deploy({ "org.nuxeo.ecm.core.cache", //
-})
-@LocalDeploy({ "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/cache-config.xml",
-        "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/test-googledrive-config.xml" })
-public class TestGoogleDriveBlobProvider {
+public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
 
-    private static final String USERID = "tester@example.com";
-
-    private static final String FILEID_JPEG = "12341234";
-
-    private static final String FILEID_DOC = "56785678";
-
-    private static final int SIZE = 36830;
 
     @Inject
     protected RuntimeHarness harness;

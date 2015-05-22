@@ -47,7 +47,7 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
     }
 
     @Override
-    protected File getFile(String user, String fileId) throws IOException {
+    protected File getFile(String user, String fileId, Map<String, String> params) throws IOException {
         // ignore user
         String name = String.format(FILE_FMT, fileId);
         String json;

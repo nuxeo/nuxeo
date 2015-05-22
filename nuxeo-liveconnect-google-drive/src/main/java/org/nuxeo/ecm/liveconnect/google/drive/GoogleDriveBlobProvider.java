@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -322,15 +323,25 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         return getFile(user, fileId);
     }
 
+    protected File getFile(String user, String fileId) throws IOException {
+        return getFile(user, fileId, null);
+    }
+
     /**
      * Retrieves a {@link File} resource and caches the unparsed response.
      *
      * @return a {@link File} resource.
      */
-    protected File getFile(String user, String fileId) throws IOException {
+    protected File getFile(String user, String fileId, Map<String, String> params) throws IOException {
         String fileResource = (String) getFileCache().get(fileId);
         if (fileResource == null) {
-            HttpResponse response = getService(user).files().get(fileId).executeUnparsed();
+            Drive.Files.Get get = getService(user).files().get(fileId);
+            if (params != null) {
+                for (Entry<String, String> param : params.entrySet()) {
+                    get.set(param.getKey(), param.getValue());
+                }
+            }
+            HttpResponse response = get.executeUnparsed();
             if (!response.isSuccessStatusCode()) {
                 return null;
             }
@@ -393,12 +404,11 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             String fileInfo = getFileInfo(blob.getKey());
             String user = getUser(fileInfo);
             String fileId = getFileId(fileInfo);
-            Drive.Files.Get request;
             try {
-                request = getService(user).files().get(fileId).set("fields", "id,etag,md5Checksum");
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("fields", "id,etag,md5Checksum");
 
-                HttpResponse response = request.executeUnparsed();
-                File remote = parseFile(response.parseAsString());
+                File remote = getFile(user, fileId, params);
                 if (isDigestChanged(blob, remote)) {
                     doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob.getKey())));
                     getFileCache().invalidate(fileId);
@@ -425,6 +435,9 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
                 List<DocumentModel> nextDocumentsToBeUpdated;
                 do {
                     nextDocumentsToBeUpdated = getNextDocumentToBeUpdatedResults(session, offset);
+                    if (nextDocumentsToBeUpdated.isEmpty()) {
+                        break;
+                    }
                     List<String> docIds = new ArrayList<String>();
                     for (DocumentModel doc : nextDocumentsToBeUpdated) {
                         docIds.add(doc.getId());
@@ -444,7 +457,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         }
     }
 
-    public List<DocumentModel> getNextDocumentToBeUpdatedResults(CoreSession session, long offset)
+    private List<DocumentModel> getNextDocumentToBeUpdatedResults(CoreSession session, long offset)
             throws ClientException {
         List<DocumentModel> results;
         String query = NXQLQueryBuilder.getQuery(DOCUMENT_TO_BE_UPDATED_QUERY, null, false, false, null);
