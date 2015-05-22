@@ -1,14 +1,27 @@
-package org.nuxeo.targetplatforms.jaxrs;
+/*
+ * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ */
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+package org.nuxeo.targetplatforms.jaxrs;
 
 import java.io.IOException;
 
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.DetectThreadDeadlocksFeature;
@@ -29,6 +42,11 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 @RunWith(FeaturesRunner.class)
 @Features({ DetectThreadDeadlocksFeature.class, TransactionalFeature.class, WebEngineFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -40,6 +58,7 @@ public class TargetPlatformServiceTest {
 
     private static final int TIMEOUT = 2000;
 
+    @Ignore("NXP-17108")
     @Test
     public void ping() throws IOException {
         WebResource resource = getServiceFor("Administrator", "Administrator");
