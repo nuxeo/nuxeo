@@ -7,7 +7,7 @@
   <version>1.0.6012-SNAPSHOT</version>
   <properties>
     <nuxeo.targetplatforms.version>${project.version}</nuxeo.targetplatforms.version>
-    <nuxeo.distribution.version>6.0-HF13-SNAPSHOT</nuxeo.distribution.version>
+    <nuxeo.distribution.version>6.0-HF12-SNAPSHOT</nuxeo.distribution.version>
   </properties>
 
   <modules>
