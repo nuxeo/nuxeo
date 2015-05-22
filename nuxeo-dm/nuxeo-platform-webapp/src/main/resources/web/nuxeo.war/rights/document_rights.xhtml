@@ -101,10 +101,10 @@
 
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
 
-      <template if="{{doc.contextParameters.acls[0].name=='local'}}">
+      <template is="dom-if" if="{{doc.contextParameters.acls[0].name=='local'}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document</h2>
-          <template if="{{doc.contextParameters.acls}}" id="new-access-right">
+          <template is="dom-if" if="{{doc.contextParameters.acls}}" id="new-access-right">
             <popup-right render="{{doc.contextParameters.permissions | has('Everything')}}"></popup-right>
           </template>
         </div>
@@ -124,7 +124,7 @@
 
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template if="{{doc.contextParameters.acls}}">
+          <template is="dom-if" if="{{doc.contextParameters.acls}}">
             <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
           </template>
         </div>
@@ -143,10 +143,10 @@
         </div>
       </template>
 
-      <template if="{{doc.contextParameters.acls[0].name=='inherited'}}">
+      <template is="dom-if" if="{{doc.contextParameters.acls[0].name=='inherited'}}">
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template if="{{doc.contextParameters.acls}}">
+          <template is="dom-if" if="{{doc.contextParameters.acls}}">
             <popup-right render="{{doc.contextParameters.permissions | has('Everything')}}"></popup-right>
             <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
           </template>
