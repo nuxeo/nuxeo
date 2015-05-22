@@ -59,7 +59,7 @@ element.
       auto: {type: Boolean, value: false},
 
       /* The path of the resource. */
-      path: {type: String, value: '', observer: '_autoGet'},
+      path: {type: String, value: ''},
 
       /* The parameters to send. */
       params: {type: Object, value: null},
@@ -77,8 +77,11 @@ element.
 
       /* The `content enricher` of the resource. */
       enrichers: {type: String, value: ''}
-    }
-    ,
+    },
+
+    observers: [
+      "_autoGet(connectionId, auto, path, params, data, type, headers, enrichers)"
+    ],
 
     get: function (data) {
       return this._execute('get', data);
