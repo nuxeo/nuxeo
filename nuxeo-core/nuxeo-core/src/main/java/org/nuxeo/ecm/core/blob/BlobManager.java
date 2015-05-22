@@ -140,4 +140,12 @@ public interface BlobManager {
      */
     InputStream getConvertedStream(Blob blob, String mimeType) throws IOException;
 
+    /**
+     * Get the map of blob providers
+     *
+     * @return the list of blob providers
+     * @since 7.3
+     */
+    Map<String, BlobProvider> getBlobProviders();
+
 }

@@ -347,4 +347,9 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         return blobProvider.getConvertedStream(managedBlob, mimeType);
     }
 
+    @Override
+    public Map<String, BlobProvider> getBlobProviders() {
+        return blobProviders;
+    }
+
 }
