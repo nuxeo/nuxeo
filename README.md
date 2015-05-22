@@ -14,6 +14,16 @@ module according to Crowdin translation files. Note there is some
 [tooling used to handle this
 module](https://github.com/nuxeo/tools-nuxeo-crowdin/).
 
+## WARNING
+
+All properties files in this module are managed automatically: except
+on edge cases, you should never push changes to these files on GitHub,
+otherwise they may be lost at next automated synchronization.
+
+Note that only the master branch is handled by synchronization, manual
+changes are still needed on maintenance branches.
+
+
 ## How to add a new language?
 
 If your language is not on Crowdin, create it on Crowdin, and download
