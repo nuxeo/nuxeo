@@ -26,6 +26,7 @@
 
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-resource.html"></link>
+  <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/nx-doc-resource.html"></link>
 
   <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
   <link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html"></link>
@@ -97,16 +98,14 @@
 
     <template is="dom-bind">
 
-      <nx-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" enrichers="acls, permissions"></nx-resource>
+      <nx-doc-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions"></nx-doc-resource>
 
       <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
-
-      <template is="dom-if" if="{{doc.contextParameters.acls[0].name=='local'}}">
+      <template is="dom-if" if="{{hasLocalRights}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document</h2>
-          <template is="dom-if" if="{{doc.contextParameters.acls}}" id="new-access-right">
-            <popup-right render="{{doc.contextParameters.permissions | has('Everything')}}"></popup-right>
-          </template>
+          <span>{{doc.isCurrentUserHasEverything}}</span>
+          <popup-right render="{{doc.isCurrentUserHasEverything}}"></popup-right>
         </div>
         <div>
           <hot-table id="local" datarows="{{doc.contextParameters.acls[0].ace}}" class="htLeft">
