@@ -53,6 +53,9 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.WebApplicationCredentialFactory;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -239,7 +242,11 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         final String digest = blob.getDigest();
         String md5CheckSum = file.getMd5Checksum();
         String eTag = file.getEtag();
-        return md5CheckSum != digest || eTag != digest;
+        if (md5CheckSum != null) {
+            return !md5CheckSum.equals(digest);
+        } else {
+            return eTag != null && !eTag.equals(digest);
+        }
     }
 
     /** Removes the prefix from the key. */
@@ -366,13 +373,20 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
      * @return true if the document was updated, else false
      * @throws IOException
      */
-    public boolean updateBlob(DocumentModel doc) throws IOException {
+    public boolean checkChangesAndUpdateBlob(DocumentModel doc) throws IOException {
         final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
-        File file = getFile(blob);
-        if (isDigestChanged(blob, file)) {
+        String fileInfo = getFileInfo(blob.getKey());
+        String user = getUser(fileInfo);
+        String fileId = getFileId(fileInfo);
+        Drive.Files.Get request = getService(user).files().get(fileId).set("fields", "id,etag,md5Checksum");
+        HttpResponse response = request.executeUnparsed();
+        File remote = parseFile(response.parseAsString());
+        if (isDigestChanged(blob, remote)) {
             doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob.getKey())));
+            getFileCache().invalidate(fileId);
             return true;
         }
         return false;
     }
+
 }

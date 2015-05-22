@@ -76,7 +76,7 @@ public class UpdateGoogleDriveDocumentsWork extends AbstractWork {
         for (DocumentModel doc : getNextResults()) {
             log.trace("Updating " + doc.getTitle());
             try {
-                if (getGoogleDriveBlobProvider().updateBlob(doc)) {
+                if (getGoogleDriveBlobProvider().checkChangesAndUpdateBlob(doc)) {
                     session.saveDocument(doc);
                 }
             } catch (IOException e) {
