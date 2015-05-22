@@ -5,6 +5,7 @@ nuxeo.server.sdk=false
 nuxeo.server.http.port=8080
 nuxeo.server.ajp.port=8009
 nuxeo.server.https.port=0
+nuxeo.server.tomcat_admin.host=localhost
 nuxeo.server.tomcat_admin.port=8005
 nuxeo.server.jvmRoute=nuxeo
 NuxeoContainer.autoactivation=false
@@ -70,7 +71,7 @@ elasticsearch.reindex.bucketWriteSize=50
 elasticsearch.indexing.maxThreads=4
 # Time to keep the completed indexing worker states @since 6.0-HF02
 elasticsearch.indexing.clearCompletedAfterSeconds=90
-# Display Elasticsearch cluster and nodes information in the admin center @since 6.0-HF06, always true for embedded mode 
+# Display Elasticsearch cluster and nodes information in the admin center @since 6.0-HF06, always true for embedded mode
 elasticsearch.adminCenter.displayClusterInfo=false
 # Reindex the repository content on startup if the index is empty
 elastcisearch.reindex.onStartup=false
