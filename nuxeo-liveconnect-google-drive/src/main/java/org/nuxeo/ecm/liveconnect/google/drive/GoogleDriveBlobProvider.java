@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,8 +35,12 @@ import com.google.api.client.json.JsonObjectParser;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ObjectParser;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
@@ -43,6 +49,7 @@ import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.CredentialFactory;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.ServiceAccountCredentialFactory;
 
@@ -53,9 +60,13 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+
 import org.nuxeo.ecm.liveconnect.google.drive.credential.WebApplicationCredentialFactory;
+import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
+import org.nuxeo.ecm.liveconnect.update.worker.BlobProviderDocumentsUpdateWork;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,7 +74,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
+public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider {
 
     private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
 
@@ -80,6 +91,10 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
 
     // ClientId for the file picker auth
     public static final String CLIENT_ID_PROP = "clientId";
+
+    protected static final String DOCUMENT_TO_BE_UPDATED_QUERY = String.format(
+            "SELECT * FROM Document WHERE content/data LIKE '%s:%%' AND ecm:isVersion = 0 ORDER BY ecm:uuid ASC",
+            PREFIX);
 
     private String serviceAccountId;
 
@@ -280,7 +295,8 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
     }
 
     protected CredentialFactory getCredentialFactory() {
-        OAuth2ServiceProvider provider = Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
+        OAuth2ServiceProvider provider = Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(
+                PREFIX);
         if (provider != null && provider.isEnabled()) {
             // Web application configuration
             return new WebApplicationCredentialFactory(provider);
@@ -368,25 +384,72 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider {
         return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
     }
 
-    /**
-     * @param doc google drive document to be checked
-     * @return true if the document was updated, else false
-     * @throws IOException
-     */
-    public boolean checkChangesAndUpdateBlob(DocumentModel doc) throws IOException {
-        final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
-        String fileInfo = getFileInfo(blob.getKey());
-        String user = getUser(fileInfo);
-        String fileId = getFileId(fileInfo);
-        Drive.Files.Get request = getService(user).files().get(fileId).set("fields", "id,etag,md5Checksum");
-        HttpResponse response = request.executeUnparsed();
-        File remote = parseFile(response.parseAsString());
-        if (isDigestChanged(blob, remote)) {
-            doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob.getKey())));
-            getFileCache().invalidate(fileId);
-            return true;
+    @Override
+    public List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> docs) {
+        List<DocumentModel> changedDocuments = new ArrayList<DocumentModel>();
+        // TODO use google batch request here
+        for (DocumentModel doc : docs) {
+            final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
+            String fileInfo = getFileInfo(blob.getKey());
+            String user = getUser(fileInfo);
+            String fileId = getFileId(fileInfo);
+            Drive.Files.Get request;
+            try {
+                request = getService(user).files().get(fileId).set("fields", "id,etag,md5Checksum");
+
+                HttpResponse response = request.executeUnparsed();
+                File remote = parseFile(response.parseAsString());
+                if (isDigestChanged(blob, remote)) {
+                    doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob.getKey())));
+                    getFileCache().invalidate(fileId);
+                    changedDocuments.add(doc);
+                }
+            } catch (IOException e) {
+                log.error("Could not update google drive document " + doc.getTitle(), e);
+            }
+
         }
-        return false;
+        return changedDocuments;
+    }
+
+    @Override
+    public void processDocumentsUpdate() {
+        final RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
+        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        for (String repositoryName : repositoryManager.getRepositoryNames()) {
+            CoreSession session = null;
+            try {
+                session = CoreInstance.openCoreSessionSystem(repositoryName);
+
+                long offset = 0;
+                List<DocumentModel> nextDocumentsToBeUpdated;
+                do {
+                    nextDocumentsToBeUpdated = getNextDocumentToBeUpdatedResults(session, offset);
+                    List<String> docIds = new ArrayList<String>();
+                    for (DocumentModel doc : nextDocumentsToBeUpdated) {
+                        docIds.add(doc.getId());
+                    }
+                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
+                            "googledrive:" + repositoryName + ":" + offset, "googledrive");
+                    work.setDocuments(repositoryName, docIds);
+                    workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+                    offset += MAX_RESULT;
+                } while (nextDocumentsToBeUpdated.size() == MAX_RESULT);
+
+            } finally {
+                if (session != null) {
+                    session.close();
+                }
+            }
+        }
+    }
+
+    public List<DocumentModel> getNextDocumentToBeUpdatedResults(CoreSession session, long offset)
+            throws ClientException {
+        List<DocumentModel> results;
+        String query = NXQLQueryBuilder.getQuery(DOCUMENT_TO_BE_UPDATED_QUERY, null, false, false, null);
+        results = session.query(query, null, MAX_RESULT, offset, MAX_RESULT);
+        return results;
     }
 
 }
