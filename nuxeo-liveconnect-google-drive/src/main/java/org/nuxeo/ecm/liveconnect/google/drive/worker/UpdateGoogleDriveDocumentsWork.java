@@ -41,7 +41,7 @@ public class UpdateGoogleDriveDocumentsWork extends AbstractWork {
     protected static final String TITLE = "Update Google Drive Documents Work";
 
     protected static final String QUERY = String.format(
-            "SELECT * FROM Document WHERE content/data LIKE '%s:%%' ORDER BY ecm:uuid ASC",
+            "SELECT * FROM Document WHERE content/data LIKE '%s:%%' AND ecm:isVersion = 0 ORDER BY ecm:uuid ASC",
             GoogleDriveBlobProvider.PREFIX);
 
     protected long offset = 0;
