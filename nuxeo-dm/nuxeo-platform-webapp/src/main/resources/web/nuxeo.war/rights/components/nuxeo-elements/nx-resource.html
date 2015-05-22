@@ -65,7 +65,7 @@ element.
       params: {type: Object, value: null},
 
       /* The response from the server. */
-      data: {type: Object, value: null},
+      data: {type: Object, value: null, notify: true},
 
       /* The `entity-type` of the resource. */
       type: {type: String, value: ''},
@@ -80,7 +80,7 @@ element.
     },
 
     observers: [
-      "_autoGet(connectionId, auto, path, params, data, type, headers, enrichers)"
+      "_autoGet(connectionId, auto, path, params, type, enrichers)"
     ],
 
     get: function (data) {
@@ -117,26 +117,23 @@ element.
       if (this.enrichers) options.headers["X-NXenrichers.document"] = this.enrichers;
       var params = (!this.params || (typeof this.params === 'object')) ? this.params : JSON.parse(this.params);
       return this.$.nx.connect()
-        .then(function () {
-          return new Promise(function (resolve, reject) {
-            return this.$.nx.client
-              .request(this.path)
-              .repositoryName(undefined)
-              .query(params) [method](options, function (error, data) {
-              if (error) {
-                this.fire('error', error);
-                reject(Error(error));
-                return;
-              }
-              this.fire('response', {response: data});
-              // if we're binding to the 'data' attribute, update it
-              if (this.hasAttribute('data')) {
-                this.data = data;
-              }
-              resolve(data);
-            }.bind(this));
-          }.bind(this));
-        }.bind(this));
+              .then(function () {
+                return new Promise(function (resolve, reject) {
+                  return this.$.nx.client
+                          .request(this.path)
+                          .repositoryName(undefined)
+                          .query(params) [method](options, function (error, data) {
+                    if (error) {
+                      this.fire('error', error);
+                      reject(Error(error));
+                      return;
+                    }
+                    this.fire('response', {response: data});
+                    this.data = data;
+                    resolve(data);
+                  }.bind(this));
+                }.bind(this));
+              }.bind(this));
     }
 
   });
