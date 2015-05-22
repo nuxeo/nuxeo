@@ -1,36 +1,29 @@
-Nuxeo translation sandbox
-=========================
+# Nuxeo external translations
 
 This module contains community-created translations, as well as some basic
 tools to help manage these translations.
 
-How to update an existing translation?
---------------------------------------
+## How to update an existing translation?
 
 If you want to participate to the translation process, please read the
 [How to translate the Nuxeo Platform](http://doc.nuxeo.com/x/dAQz)
 page.
 
-The rest of this readme is for developers that are maintaining this
+The rest of this README is for developers that are maintaining this
 module according to Crowdin translation files. Note there is some
 [tooling used to handle this
 module](https://github.com/nuxeo/tools-nuxeo-crowdin/).
 
-How to add a new language?
----------------------------
+## How to add a new language?
 
-If your language is not on Crowdin and you cannot wait for the next
-Fast Track release, you'll have to do the following:
+If your language is not on Crowdin, create it on Crowdin, and download
+the corresponding file.
 
-1. Take the messages.properties file from a running Nuxeo server. It
-   should be located in:
+1. Set the new language as a new target language on Crowdin, and download
+   the corresponding file.
 
-    yourNuxeoServer/nxserver/nuxeo.war/WEB-INF/classes/messages.properties
-
-XXX Crowdin file should be the reference here
-
-and copy it to messages_xx_XX.properties where xx_XX is the 4 letters
-codename for your language.
+   Rename this translation file to messages_xx_XX.properties, where xx_XX is the 4 letters
+codename for your language, and reference it in the crowdin.ini file.
 
 2. Create a Nuxeo Bundle and put your file under
 
@@ -41,31 +34,29 @@ codename for your language.
     <?xml version="1.0"?>
     <fragment version="1">
       <require>org.nuxeo.ecm.platform.lang.ext</require>
-    
+
       <extension target="faces-config#APPLICATION_LOCALE">
         <locale-config>
           <supported-locale>xx_XX</supported-locale><!-- Your custom locale -->
         </locale-config>
       </extension>
-    
+
       <install>
         <!-- Unzip the contents of our nuxeo.war into the real nuxeo.war on the server -->
         <unzip from="${bundle.fileName}" to="/" prefix="web">
           <include>web/nuxeo.war/**</include>
         </unzip>
-    
-    
+
         <!-- Add fallback to two letters locale for browser compatibility if needed -->
         <copy from="nuxeo.war/WEB-INF/classes/messages_xx_XX.properties"
             to="nuxeo.war/WEB-INF/classes/messages_xx.properties"/>
-    
+
       </install>
-    
+
     </fragment>
 
 
-Where to add your existing translations?
----------------------------------------
+## Where to add your existing translations?
 
 Here's the resolving order when looking for a label in Brazilian for
 instance.
@@ -90,8 +81,7 @@ only here to have a two letter fallback when browsers language are set
 to a two letter format. So you are not suppose to modify them, ever.
 
 
-How to add custom translations to an existing language?
--------------------------------------------------------
+## How to add custom translations to an existing language?
 
 If you want to add your custom label translations to an existing
 language, you can contribute it to the main file holding all
@@ -125,12 +115,11 @@ translations.
 
         <delete path="${bundle.fileName}.tmp" />
       </install>
-    
+
     </fragment>
 
 
-How to override existing translations?
---------------------------------------
+## How to override existing translations?
 
 The same procedure as above can be used to override some existing
 translations. Just make sure you also require any bundle that would
