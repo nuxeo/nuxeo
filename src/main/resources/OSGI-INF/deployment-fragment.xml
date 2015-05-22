@@ -34,7 +34,7 @@
       <supported-locale>pt_BR</supported-locale><!-- Portuguese - Brazil -->
       <supported-locale>ru</supported-locale><!-- Russian - Russia -->
       <supported-locale>ru_RU</supported-locale><!-- Russian - Russia -->
-      <supported-locale>sr_RS</supported-locale><!-- Serbian(Cyrillic) - Serbia -->
+      <supported-locale>sr_SP</supported-locale><!-- Serbian(Cyrillic) - Serbia -->
       <supported-locale>tr_TR</supported-locale><!-- Turkish - Turkey -->
       <supported-locale>vi_VN</supported-locale><!-- Vietnamese - Vietnam -->
     </locale-config>
