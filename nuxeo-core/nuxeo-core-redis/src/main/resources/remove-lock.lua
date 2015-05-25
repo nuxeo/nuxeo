@@ -10,6 +10,6 @@ if ARGV[1] ~= '' then
     if ARGV[1] ~= string.sub(v, 1, i-1) then
       return v -- not owner
     end
-end          
-redis.call('DEL', KEYS) 
+end
+redis.call('DEL', KEYS)
 return v
