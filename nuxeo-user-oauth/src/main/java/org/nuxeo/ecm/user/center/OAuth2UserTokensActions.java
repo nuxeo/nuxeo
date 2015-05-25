@@ -29,7 +29,11 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
+import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
+import org.nuxeo.runtime.api.Framework;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -68,47 +72,56 @@ public class OAuth2UserTokensActions extends DirectoryBasedEditor implements Ser
         return filter;
     }
 
-    public DocumentModelList getProviderAccounts(String provider) {
-        filter.clear();
-        filter.put("serviceName", provider);
-        refresh();
+    public DocumentModelList getProviderAccounts(String provider, boolean includeShared) {
+
+        NuxeoOAuth2ServiceProvider serviceProvider = (NuxeoOAuth2ServiceProvider) Framework.getLocalService(
+            OAuth2ServiceProviderRegistry.class).getProvider(provider);
+        OAuth2TokenStore tokenStore = serviceProvider.getCredentialDataStore();
+
         DocumentModelList filteredEntries = new DocumentModelListImpl();
-        List<String> currentUserGroups = currentUser.getAllGroups();
 
-        for (DocumentModel entry : super.getEntries()) {
-            String tokenOwner = (String) entry.getProperty(getSchemaName(), "nuxeoLogin");
-            boolean isShared = (boolean) entry.getProperty(getSchemaName(), "isShared");
-            String sharedWith = (String) entry.getProperty(getSchemaName(), "sharedWith");
+        if (includeShared) {
+            DocumentModelList tokens = tokenStore.query();
+            List<String> currentUserGroups = currentUser.getAllGroups();
 
-            if (tokenOwner.equals(currentUser.getName()) || (isShared && sharedWith == null)) {
-                filteredEntries.add(entry);
-                continue;
-            }
+            for (DocumentModel entry : tokens) {
+                String tokenOwner = (String) entry.getProperty(getSchemaName(), "nuxeoLogin");
+                boolean isShared = (boolean) entry.getProperty(getSchemaName(), "isShared");
+                String sharedWith = (String) entry.getProperty(getSchemaName(), "sharedWith");
 
-            if (!isShared || (sharedWith == null)) {
-                continue;
-            }
-
-            List<String> sharedWithList = Arrays.asList(sharedWith.split(","));
-
-            // Iterate list of allowed groups/users
-            for (String item : sharedWithList) {
-                if (item.contains(NuxeoGroup.PREFIX)) {
-                    item = item.replace(NuxeoGroup.PREFIX, "");
-                    if (currentUserGroups.contains(item)) {
-                        filteredEntries.add(entry);
-                        break;
-                    }
+                if (tokenOwner.equals(currentUser.getName()) || (isShared && sharedWith == null)) {
+                    filteredEntries.add(entry);
+                    continue;
                 }
 
-                if (item.contains(NuxeoPrincipal.PREFIX)) {
-                    item = item.replace(NuxeoPrincipal.PREFIX, "");
-                    if (item.equals(currentUser.getName())) {
-                        filteredEntries.add(entry);
-                        break;
+                if (!isShared || (sharedWith == null)) {
+                    continue;
+                }
+
+                List<String> sharedWithList = Arrays.asList(sharedWith.split(","));
+
+                // Iterate list of allowed groups/users
+                for (String item : sharedWithList) {
+                    if (item.contains(NuxeoGroup.PREFIX)) {
+                        item = item.replace(NuxeoGroup.PREFIX, "");
+                        if (currentUserGroups.contains(item)) {
+                            filteredEntries.add(entry);
+                            break;
+                        }
+                    }
+
+                    if (item.contains(NuxeoPrincipal.PREFIX)) {
+                        item = item.replace(NuxeoPrincipal.PREFIX, "");
+                        if (item.equals(currentUser.getName())) {
+                            filteredEntries.add(entry);
+                            break;
+                        }
                     }
                 }
             }
+        } else {
+            filter.put("nuxeoLogin", currentUser.getName());
+            filteredEntries = tokenStore.query(filter);
         }
         return filteredEntries;
     }
