@@ -1486,10 +1486,14 @@ public class CMISQLQueryMaker implements QueryMaker {
             qual = canonicalQualifier.get(qual);
             // this is from the hierarchy table which is always present
             Column column = getSystemColumn(qual, PropertyIds.OBJECT_ID);
-            String sql = dialect.getInTreeSql(column.getFullQuotedName());
             String id = (String) super.walkString(paramNode);
-            whereBuf.append(sql);
-            whereBufParams.add(id);
+            String sql = dialect.getInTreeSql(column.getFullQuotedName(), id);
+            if (sql == null) {
+                whereBuf.append("0=1");
+            } else {
+                whereBuf.append(sql);
+                whereBufParams.add(id);
+            }
             return null;
         }
 
