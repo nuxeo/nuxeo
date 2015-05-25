@@ -34,7 +34,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/test-googledrive-config.xml" })
 public class GoogleDriveTestCase {
 
-    protected static final String USERID = "tester@example.com";
+    protected static final String USERNAME = "tester";
+
+    protected static final String USERID = USERNAME + "@example.com";
 
     protected static final String FILEID_JPEG = "12341234";
 

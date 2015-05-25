@@ -27,8 +27,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import com.google.api.services.drive.DriveRequest;
+import com.google.api.services.drive.model.App;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,8 @@ import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.ecm.core.blob.apps.AppLink;
+import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
@@ -61,12 +64,13 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import org.nuxeo.ecm.liveconnect.google.drive.credential.OAuth2CredentialFactory;
 
-import org.nuxeo.ecm.liveconnect.google.drive.credential.WebApplicationCredentialFactory;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.liveconnect.update.worker.BlobProviderDocumentsUpdateWork;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
@@ -75,7 +79,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.3
  */
-public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider {
+public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider, LinkedAppsProvider {
 
     private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
 
@@ -97,14 +101,16 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             "SELECT * FROM Document WHERE content/data LIKE '%s:%%' AND ecm:isVersion = 0 ORDER BY ecm:uuid ASC",
             PREFIX);
 
+    protected static final ObjectParser parser = new JsonObjectParser(JacksonFactory.getDefaultInstance());
+
     private String serviceAccountId;
 
     private java.io.File serviceAccountP12File;
 
     private String clientId;
 
-    /** {@link File} resource cache */
-    private Cache fileCache;
+    /** resource cache */
+    private Cache cache;
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
@@ -219,6 +225,71 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         return getStream(blob.getKey(), uri);
     }
 
+    @Override
+    public List<AppLink> getAppLinks(String username, ManagedBlob blob) throws IOException {
+        List<AppLink> appLinks = new ArrayList<>();
+
+        String fileInfo = getFileInfo(blob.getKey());
+        String fileId = getFileId(fileInfo);
+
+        // retrieve the service's user (email in this case) for this username
+        String user = getServiceUser(username);
+
+        // fetch a partial file response
+        File file = getPartialFile(user, fileId, "openWithLinks", "defaultOpenWithLink");
+        if (file.isEmpty()) {
+            return appLinks;
+        }
+
+        // build the list of AppLinks
+        String defaultLink = file.getDefaultOpenWithLink();
+        for (Map.Entry<String, String> entry : file.getOpenWithLinks().entrySet()) {
+            // build the AppLink
+            App app = getApp(user, entry.getKey());
+            AppLink appLink = new AppLink();
+            appLink.setAppName(app.getName());
+            appLink.setLink(asURI(entry.getValue()));
+
+            // pick an application icon
+            for (com.google.api.services.drive.model.App.Icons icon : app.getIcons()) {
+                if ("application".equals(icon.getCategory())) {
+                    appLink.setIcon(icon.getIconUrl());
+                    // break if we've got one with our preferred size
+                    if (icon.getSize() == PREFERRED_ICON_SIZE) {
+                        break;
+                    }
+                }
+            }
+
+            // add the default link first
+            if (defaultLink != null && defaultLink.equals(entry.getValue())) {
+                appLinks.add(0, appLink);
+            } else {
+                appLinks.add(appLink);
+            }
+        }
+        return appLinks;
+    }
+
+    protected String getServiceUser(String username) {
+        CredentialFactory credentialFactory = getCredentialFactory();
+        if (credentialFactory instanceof OAuth2CredentialFactory) {
+            OAuth2ServiceProvider provider = ((OAuth2CredentialFactory) credentialFactory).getProvider();
+            return ((GoogleOAuth2ServiceProvider) provider).getServiceUser(username);
+        } else {
+            UserManager userManager = Framework.getLocalService(UserManager.class);
+            DocumentModel user = userManager.getUserModel(username);
+            if (user == null) {
+                return null;
+            }
+            return (String) user.getPropertyValue(userManager.getUserEmailField());
+        }
+    }
+
+    protected App getApp(String user, String appId) throws IOException {
+        return executeRequest("app_" + appId, getService(user).apps().get(appId), App.class);
+    }
+
     /**
      * Gets the blob for a Google Drive file.
      *
@@ -300,7 +371,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
                 PREFIX);
         if (provider != null && provider.isEnabled()) {
             // Web application configuration
-            return new WebApplicationCredentialFactory(provider);
+            return new OAuth2CredentialFactory(provider);
         } else {
             // Service account configuration
             return new ServiceAccountCredentialFactory(serviceAccountId, serviceAccountP12File);
@@ -323,32 +394,32 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         return getFile(user, fileId);
     }
 
-    protected File getFile(String user, String fileId) throws IOException {
-        return getFile(user, fileId, null);
-    }
-
     /**
      * Retrieves a {@link File} resource and caches the unparsed response.
      *
      * @return a {@link File} resource.
      */
-    protected File getFile(String user, String fileId, Map<String, String> params) throws IOException {
-        String fileResource = (String) getFileCache().get(fileId);
-        if (fileResource == null) {
-            Drive.Files.Get get = getService(user).files().get(fileId);
-            if (params != null) {
-                for (Entry<String, String> param : params.entrySet()) {
-                    get.set(param.getKey(), param.getValue());
-                }
-            }
-            HttpResponse response = get.executeUnparsed();
+    protected File getFile(String user, String fileId) throws IOException {
+        return executeRequest("file_" + fileId, getService(user).files().get(fileId), File.class);
+    }
+
+    /**
+     * Executes a {@link DriveRequest} and caches the unparsed response.
+     */
+    private <T> T executeRequest(String cacheKey, DriveRequest<T> request, Class<T> aClass) throws IOException {
+        String resource = (String) getCache().get(cacheKey);
+
+        if (resource == null) {
+            HttpResponse response = request.executeUnparsed();
             if (!response.isSuccessStatusCode()) {
                 return null;
             }
-            fileResource = response.parseAsString();
-            getFileCache().put(fileId, fileResource);
+            resource = response.parseAsString();
+            if (cacheKey != null) {
+                getCache().put(cacheKey, resource);
+            }
         }
-        return parseFile(fileResource);
+        return parser.parseAndClose(new StringReader(resource), aClass);
     }
 
     /**
@@ -373,17 +444,11 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         }
     }
 
-    protected Cache getFileCache() {
-        if (fileCache == null) {
-            fileCache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
+    protected Cache getCache() {
+        if (cache == null) {
+            cache = Framework.getService(CacheService.class).getCache(FILE_CACHE_NAME);
         }
-        return fileCache;
-    }
-
-    protected File parseFile(String json) throws IOException {
-        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-        ObjectParser parser = new JsonObjectParser(jsonFactory);
-        return parser.parseAndClose(new StringReader(json), File.class);
+        return cache;
     }
 
     public String getClientId() {
@@ -397,7 +462,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
 
     @Override
     public List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> docs) {
-        List<DocumentModel> changedDocuments = new ArrayList<DocumentModel>();
+        List<DocumentModel> changedDocuments = new ArrayList<>();
         // TODO use google batch request here
         for (DocumentModel doc : docs) {
             final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
@@ -405,13 +470,10 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             String user = getUser(fileInfo);
             String fileId = getFileId(fileInfo);
             try {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("fields", "id,etag,md5Checksum");
-
-                File remote = getFile(user, fileId, params);
+                File remote = getPartialFile(user, fileId, "id", "etag", "md5Checksum");
                 if (isDigestChanged(blob, remote)) {
                     doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob.getKey())));
-                    getFileCache().invalidate(fileId);
+                    getCache().invalidate("file_" + fileId);
                     changedDocuments.add(doc);
                 }
             } catch (IOException e) {
@@ -420,6 +482,13 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
 
         }
         return changedDocuments;
+    }
+
+    /**
+     * Retrieve a partial {@link File} resource.
+     */
+    protected File getPartialFile(String user, String fileId, String... fields) throws IOException {
+        return getService(user).files().get(fileId).setFields(StringUtils.join(fields, ",")).execute();
     }
 
     @Override
@@ -438,7 +507,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
                     if (nextDocumentsToBeUpdated.isEmpty()) {
                         break;
                     }
-                    List<String> docIds = new ArrayList<String>();
+                    List<String> docIds = new ArrayList<>();
                     for (DocumentModel doc : nextDocumentsToBeUpdated) {
                         docIds.add(doc.getId());
                     }

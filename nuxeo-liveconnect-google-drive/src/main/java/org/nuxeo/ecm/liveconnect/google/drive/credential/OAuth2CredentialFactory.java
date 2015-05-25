@@ -21,20 +21,24 @@ import com.google.api.client.auth.oauth2.Credential;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 
 /**
- * Credential factory for Web Applications.
+ * Credential factory backed by a {@link OAuth2ServiceProvider}.
  *
  * @since 7.3
  */
-public class WebApplicationCredentialFactory implements CredentialFactory {
+public class OAuth2CredentialFactory implements CredentialFactory {
 
     private OAuth2ServiceProvider provider;
 
-    public WebApplicationCredentialFactory(OAuth2ServiceProvider provider) {
+    public OAuth2CredentialFactory(OAuth2ServiceProvider provider) {
         this.provider = provider;
     }
 
     @Override
     public Credential build(String user) {
         return provider.loadCredential(user);
+    }
+
+    public OAuth2ServiceProvider getProvider() {
+        return provider;
     }
 }

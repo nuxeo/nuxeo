@@ -79,5 +79,10 @@
    "originalFilename" : "testimage.jpg",
    "ownerNames" : [
       "Tester Tester"
-   ]
+   ],
+  "defaultOpenWithLink": "app1.com",
+  "openWithLinks": {
+    "22222222": "app2.com",
+    "11111111": "app1.com"
+  }
 }

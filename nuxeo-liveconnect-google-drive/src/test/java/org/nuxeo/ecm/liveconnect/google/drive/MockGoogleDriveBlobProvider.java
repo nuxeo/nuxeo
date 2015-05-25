@@ -18,11 +18,13 @@ package org.nuxeo.ecm.liveconnect.google.drive;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.net.URI;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.api.services.drive.model.App;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +38,8 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
 
     private static final Log log = LogFactory.getLog(MockGoogleDriveBlobProvider.class);
 
+    public static final String APP_FMT = "/OSGI-INF/data/app-%s.json";
+
     public static final String FILE_FMT = "/OSGI-INF/data/file-%s.json";
 
     public static final String DOWNLOAD_FMT = "/OSGI-INF/data/download-%s.bin";
@@ -47,17 +51,19 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
     }
 
     @Override
-    protected File getFile(String user, String fileId, Map<String, String> params) throws IOException {
+    protected App getApp(String user, String appId) throws IOException {
+        return getData(String.format(APP_FMT, appId), App.class);
+    }
+
+    @Override
+    protected File getFile(String user, String fileId) throws IOException {
         // ignore user
-        String name = String.format(FILE_FMT, fileId);
-        String json;
-        try (InputStream is = getClass().getResourceAsStream(name)) {
-            if (is == null) {
-                return null;
-            }
-            json = IOUtils.toString(is);
-        }
-        return parseFile(json);
+        return getData(String.format(FILE_FMT, fileId), File.class);
+    }
+
+    @Override
+    protected File getPartialFile(String user, String fileId, String... fields) throws IOException {
+        return getFile(user, fileId);
     }
 
     @Override
@@ -70,6 +76,22 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
         } else {
             throw new UnsupportedOperationException(uri.toString());
         }
+    }
+
+    @Override
+    protected String getServiceUser(String username) {
+        return username + "@example.com";
+    }
+
+    private <T> T getData(String name, Class<T> aClass) throws IOException {
+        String json;
+        try (InputStream is = getClass().getResourceAsStream(name)) {
+            if (is == null) {
+                return null;
+            }
+            json = IOUtils.toString(is);
+        }
+        return parser.parseAndClose(new StringReader(json), aClass);
     }
 
 }

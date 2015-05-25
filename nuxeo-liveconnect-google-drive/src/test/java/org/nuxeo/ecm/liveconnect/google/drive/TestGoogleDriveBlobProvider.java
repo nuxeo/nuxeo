@@ -21,7 +21,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.PREFIX;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -30,11 +32,13 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.ecm.core.blob.apps.AppLink;
+import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
-
 
     @Inject
     protected RuntimeHarness harness;
@@ -64,4 +68,21 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         }
     }
 
+    @Test
+    public void testAppLinks() throws IOException {
+        BlobInfo blobInfo = new BlobInfo();
+        blobInfo.key = PREFIX + ":" + USERID + ":" + FILEID_JPEG;
+        ManagedBlob blob = new SimpleManagedBlob(blobInfo);
+
+        LinkedAppsProvider provider = (LinkedAppsProvider) blobManager.getBlobProvider(GoogleDriveBlobProvider.PREFIX);
+        List<AppLink> appLinks = provider.getAppLinks(USERNAME, blob);
+
+        assertEquals(2, appLinks.size());
+
+        AppLink app = appLinks.get(0);
+        assertEquals("App #1", app.getAppName());
+        assertEquals("editor_16.png", app.getIcon());
+
+        assertEquals("App #2", appLinks.get(1).getAppName());
+    }
 }
