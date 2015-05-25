@@ -492,12 +492,28 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
-    public String getInTreeSql(String idColumnName) {
-        if (pathOptimizationsEnabled) {
-            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
-                    idColumnName);
+    public String getInTreeSql(String idColumnName, String id) {
+        String idParam;
+        switch (idType) {
+        case VARCHAR:
+            idParam = "?";
+            break;
+        case SEQUENCE:
+            // check that it's really an integer
+            if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
+                return null;
+            }
+            idParam = "CONVERT(BIGINT, ?)";
+            break;
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
         }
-        return String.format("%s IN (SELECT * FROM dbo.nx_children(?))", idColumnName);
+
+        if (pathOptimizationsEnabled) {
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = %s)",
+                    idColumnName, idParam);
+        }
+        return String.format("%s IN (SELECT * FROM dbo.nx_children(%s))", idColumnName, idParam);
     }
 
     @Override

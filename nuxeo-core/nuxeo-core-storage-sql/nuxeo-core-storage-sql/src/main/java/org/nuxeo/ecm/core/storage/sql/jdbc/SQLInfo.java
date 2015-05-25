@@ -677,7 +677,7 @@ public class SQLInfo {
                     + proxyTable.getColumn(model.MAIN_KEY).getFullQuotedName();
         }
         select.setFrom(from);
-        String where = dialect.getInTreeSql(mainColumn.getFullQuotedName());
+        String where = dialect.getInTreeSql(mainColumn.getFullQuotedName(), null);
         where += getSoftDeleteClause(model.HIER_TABLE_NAME);
         select.setWhere(where);
         selectDescendantsInfoSql = select.getStatement();

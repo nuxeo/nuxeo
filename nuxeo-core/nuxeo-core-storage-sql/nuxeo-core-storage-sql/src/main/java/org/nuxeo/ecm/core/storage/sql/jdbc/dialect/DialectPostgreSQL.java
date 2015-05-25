@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -779,10 +780,34 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public String getInTreeSql(String idColumnName) {
+    public String getInTreeSql(String idColumnName, String id) {
         if (pathOptimizationsEnabled) {
-            // TODO SEQUENCE
-            String cast = idType == DialectIdType.UUID ? "::uuid[]" : "";
+            String cast;
+            switch (idType) {
+            case VARCHAR:
+                cast = "";
+                break;
+            case UUID:
+                // check that it's really a uuid
+                if (id != null) {
+                    try {
+                        UUID.fromString(id);
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                }
+                cast = "::uuid[]";
+                break;
+            case SEQUENCE:
+                // check that it's really an integer
+                if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
+                    return null;
+                }
+                cast = "::bigint[]";
+                break;
+            default:
+                throw new AssertionError("Unknown id type: " + idType);
+            }
             return String.format("EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
                     idColumnName, cast);
         } else {

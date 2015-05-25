@@ -243,7 +243,7 @@ public class DialectDerby extends Dialect {
     }
 
     @Override
-    public String getInTreeSql(String idColumnName) {
+    public String getInTreeSql(String idColumnName, String id) {
         return String.format("NX_IN_TREE(%s, ?) = 1", idColumnName);
     }
 

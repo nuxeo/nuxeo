@@ -1902,7 +1902,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 // tree
                 buf.append("0=1");
             } else {
-                buf.append(dialect.getInTreeSql(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                // id is always valid, no need to pass it as argument to getInTreeSql
+                buf.append(dialect.getInTreeSql(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName(), null));
                 whereParams.add(id);
             }
         }
@@ -1966,8 +1967,13 @@ public class NXQLQueryMaker implements QueryMaker {
             if (not) {
                 buf.append("(NOT (");
             }
-            buf.append(dialect.getInTreeSql(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName()));
-            whereParams.add(id);
+            String sql = dialect.getInTreeSql(hierTable.getColumn(model.MAIN_KEY).getFullQuotedName(), id);
+            if (sql == null) {
+                buf.append("0=1");
+            } else {
+                buf.append(sql);
+                whereParams.add(id);
+            }
             if (not) {
                 buf.append("))");
             }
