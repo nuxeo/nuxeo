@@ -3893,6 +3893,31 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    public void testQueryAncestorId() throws Exception {
+        Session session = repository.getConnection();
+        Node root = session.getRootNode();
+        Node folder1 = session.addChildNode(root, "folder1", null, "Folder", false);
+        Node folder2 = session.addChildNode(folder1, "folder2", null, "Folder", false);
+        session.addChildNode(folder2, "doc", null, "File", false);
+        session.save();
+
+        String query = "SELECT * FROM Document WHERE ecm:ancestorId = '%s'";
+        PartialList<Serializable> res;
+
+        res = session.query(String.format(query, "nosuchid"), QueryFilter.EMPTY, false);
+        assertEquals(0, res.list.size());
+
+        res = session.query(String.format(query, root.getId()), QueryFilter.EMPTY, false);
+        assertEquals(3, res.list.size());
+
+        res = session.query(String.format(query, folder1.getId()), QueryFilter.EMPTY, false);
+        assertEquals(2, res.list.size());
+
+        res = session.query(String.format(query, folder2.getId()), QueryFilter.EMPTY, false);
+        assertEquals(1, res.list.size());
+    }
+
+    @Test
     public void testPath() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();

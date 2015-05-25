@@ -837,9 +837,11 @@ public abstract class Dialect {
      * Gets the expression to use to check tree membership.
      *
      * @param idColumnName the quoted name of the id column to use
-     * @return an SQL expression with one parameters for the based id that is true if the document is under base id
+     * @param id the id, to check syntax with respect to specialized id column types
+     * @return an SQL expression with one parameters for the based id that is true if the document is under base id, or
+     *         {@code null} if the query cannot match
      */
-    public abstract String getInTreeSql(String idColumnName);
+    public abstract String getInTreeSql(String idColumnName, String id);
 
     /**
      * Does the dialect support passing ARRAY values (to stored procedures mostly).

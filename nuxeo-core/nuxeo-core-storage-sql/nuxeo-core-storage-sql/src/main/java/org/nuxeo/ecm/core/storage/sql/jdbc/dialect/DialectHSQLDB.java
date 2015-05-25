@@ -229,7 +229,7 @@ public class DialectHSQLDB extends Dialect {
     }
 
     @Override
-    public String getInTreeSql(String idColumnName) {
+    public String getInTreeSql(String idColumnName, String id) {
         throw new UnsupportedOperationException();
     }
 

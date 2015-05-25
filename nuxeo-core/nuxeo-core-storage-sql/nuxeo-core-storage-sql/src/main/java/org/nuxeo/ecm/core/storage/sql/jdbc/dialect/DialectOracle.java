@@ -533,19 +533,35 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
-    public String getInTreeSql(String idColumnName) {
+    public String getInTreeSql(String idColumnName, String id) {
+        String idParam;
+        switch (idType) {
+        case VARCHAR:
+            idParam = "?";
+            break;
+        case SEQUENCE:
+            // check that it's really an integer
+            if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
+                return null;
+            }
+            idParam = "CAST(? AS NUMBER(10,0))";
+            break;
+        default:
+            throw new AssertionError("Unknown id type: " + idType);
+        }
+
         if (pathOptimizationsVersion == 2) {
-            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = ?)",
-                    idColumnName);
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ancestor = %s)",
+                    idColumnName, idParam);
         } else if (pathOptimizationsVersion == 1) {
             // using nested table optim
-            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND ? MEMBER OF ancestors)",
-                    idColumnName);
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE hierarchy_id = %s AND %s MEMBER OF ancestors)",
+                    idColumnName, idParam);
         } else {
             // no optimization
             return String.format(
-                    "%s in (SELECT id FROM hierarchy WHERE LEVEL>1 AND isproperty = 0 START WITH id=? CONNECT BY PRIOR id = parentid)",
-                    idColumnName);
+                    "%s in (SELECT id FROM hierarchy WHERE LEVEL>1 AND isproperty = 0 START WITH id = %s CONNECT BY PRIOR id = parentid)",
+                    idColumnName, idParam);
         }
     }
 

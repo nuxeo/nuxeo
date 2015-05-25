@@ -271,7 +271,7 @@ public class DialectH2 extends Dialect {
     }
 
     @Override
-    public String getInTreeSql(String idColumnName) {
+    public String getInTreeSql(String idColumnName, String id) {
         return String.format("NX_IN_TREE(%s, ?)", idColumnName);
     }
 
