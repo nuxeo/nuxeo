@@ -63,15 +63,22 @@ public class RedisEmbeddedLuaLibrary extends TwoArgFunction {
         @Override
         public LuaValue call(LuaValue luaOpcode, LuaValue luaKey) {
             String opcode = (String) CoerceLuaToJava.coerce(luaOpcode, String.class);
-            String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
             switch (opcode.toLowerCase()) {
             case "get": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
                 return valueOfOrFalse(connection.get(key));
             }
             case "del": {
-                return valueOfOrFalse(connection.del((String[]) CoerceLuaToJava.coerce(luaKey, String[].class)));
+                if (luaKey.istable() || luaKey.touserdata() instanceof Object[]) {
+                    String[] keys = (String[]) CoerceLuaToJava.coerce(luaKey, String[].class);
+                    return valueOfOrFalse(connection.del(keys));
+                } else {
+                    String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
+                    return valueOfOrFalse(connection.del(key));
+                }
             }
             case "keys": {
+                String key = (String) CoerceLuaToJava.coerce(luaKey, String.class);
                 LuaTable table = LuaValue.tableOf();
                 int i = 0;
                 for (String value : connection.keys(key)) {
