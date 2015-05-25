@@ -83,7 +83,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
             List<String> ids = new ArrayList<>(bucketSize);
             while (it.hasNext()) {
                 documentCount += 1;
-                ids.add((String) it.next().get(NXQL.ECM_UUID));
+                ids.add(String.valueOf(it.next().get(NXQL.ECM_UUID)));
                 if (ids.size() == bucketSize) {
                     scheduleBucketWorker(ids, false);
                     ids = new ArrayList<>(bucketSize);
