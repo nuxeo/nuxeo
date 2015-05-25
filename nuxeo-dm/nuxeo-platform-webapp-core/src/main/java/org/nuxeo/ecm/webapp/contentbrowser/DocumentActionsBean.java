@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -56,6 +57,10 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ManagedBlob;
+import org.nuxeo.ecm.core.blob.apps.AppLink;
+import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
@@ -466,6 +471,41 @@ public class DocumentActionsBean extends InputController implements DocumentActi
             documentManager.followTransition(changedDocument.getRef(), transitionToFollow);
             documentManager.save();
         }
+    }
+
+    /**
+     * @since 7.3
+     */
+    public List<AppLink> getAppLinks(DocumentModel doc) throws ClientException {
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        if (bh == null) {
+            return null;
+        }
+
+        Blob blob = bh.getBlob();
+        if (blob == null || !(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(managedBlob.getProviderId());
+        if (blobProvider == null) {
+            log.error("No registered blob provider for key: " + managedBlob.getKey());
+            return null;
+        }
+        if (!(blobProvider instanceof LinkedAppsProvider)) {
+            return null;
+        }
+
+        String user = documentManager.getPrincipal().getName();
+
+        try {
+            return ((LinkedAppsProvider) blobProvider).getAppLinks(user, managedBlob);
+        } catch (IOException e) {
+            log.error("Failed to retrieve application links", e);
+        }
+        return null;
     }
 
 }

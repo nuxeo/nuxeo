@@ -42,6 +42,9 @@
     <c:set var="blobLength" value="#{currentDocumentAsBlobHolder.blob.length}" />
     <c:set var="fileUrl"
            value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}" />
+    <c:set var="appLinks"
+           value="#{documentActions.getAppLinks(currentDocument)}"
+           scope="request" />
     <div class="dropzone dropContent" context="mainBlob" id="mainBlobDropZone">
     <table class="smallTable">
       <tbody>
@@ -68,6 +71,15 @@
             <nxl:widgetType name="documentActions"
               widgetProperty_category="DRIVE_EDIT" value="#{currentDocument}"
               mode="view" actionsDisplay="icons" overallDisplay="horizontal_block" />
+            <c:if test="#{not empty appLinks}">
+              <c:forEach var="appLink" items="#{appLinks}">
+                <h:outputLink value="#{appLink.link}" target="_blank">
+                  <h:graphicImage value="#{appLink.icon}"
+                    alt="#{nxu:translate('label.document.appLink', appLink.appName)}"
+                    title="#{nxu:translate('label.document.appLink', appLink.appName)}"/>
+                </h:outputLink>
+              </c:forEach>
+            </c:if>
             <nxu:methodResult name="editable"
               value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
               <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
