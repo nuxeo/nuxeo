@@ -11,5 +11,5 @@ if ARGV[1] ~= '' then
       return v -- not owner
     end
 end
-redis.call('DEL', KEYS)
+redis.call('DEL', KEYS[1])
 return v
