@@ -143,7 +143,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
         provider.setClientId((String) entry.getProperty(SCHEMA, "clientId"));
         provider.setClientSecret((String) entry.getProperty(SCHEMA, "clientSecret"));
         String scopes = (String) entry.getProperty(SCHEMA, "scopes");
-        provider.setScopes(scopes.split(","));
+        provider.setScopes(StringUtils.split(scopes, ","));
         provider.setEnabled((Boolean) entry.getProperty(SCHEMA, "enabled"));
         return provider;
     }

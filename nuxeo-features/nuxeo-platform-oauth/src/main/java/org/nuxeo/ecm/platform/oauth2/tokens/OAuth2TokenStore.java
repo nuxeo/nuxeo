@@ -60,7 +60,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     @Override
     public DataStore<StoredCredential> set(String key, StoredCredential credential) throws IOException {
-        Map<String, Serializable> filter = getFilter();
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put(ENTRY_ID, key);
         DocumentModel entry = find(filter);
 
@@ -96,7 +96,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     @Override
     public StoredCredential get(String key) throws IOException {
-        Map<String, Serializable> filter = getFilter();
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put(ENTRY_ID, key);
         DocumentModel entry = find(filter);
         return entry != null ? NuxeoOAuth2Token.asCredential(entry) : null;
@@ -228,7 +228,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
      * Retrieve an entry by it's accessToken
      */
     public NuxeoOAuth2Token getToken(String token) throws ClientException {
-        Map<String, Serializable> filter = getFilter();
+        Map<String, Serializable> filter = new HashMap<>();
         filter.put("accessToken", token);
 
         DocumentModelList entries = query(filter);
@@ -239,6 +239,24 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
             log.error("Found several tokens");
         }
         return getTokenFromDirectoryEntry(entries.get(0));
+    }
+
+    public DocumentModelList query() {
+        return query(new HashMap<>());
+    }
+
+    public DocumentModelList query(Map<String, Serializable> filter) {
+        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
+        Session session = null;
+        try {
+            session = ds.open(DIRECTORY_NAME);
+            filter.put("serviceName", serviceName);
+            return session.query(filter);
+        } finally {
+            if (session != null) {
+                session.close();
+            }
+        }
     }
 
     protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
@@ -260,16 +278,6 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         }
     }
 
-    protected Map<String, Serializable> getFilter() {
-        Map<String, Serializable> filter = new HashMap<>();
-        filter.put("serviceName", serviceName);
-        return filter;
-    }
-
-    protected DocumentModelList query() throws ClientException {
-        return query(getFilter());
-    }
-
     protected DocumentModel find(Map<String, Serializable> filter) {
         DocumentModelList entries = query(filter);
         if (entries.size() == 0) {
@@ -279,18 +287,5 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
             log.error("Found several tokens");
         }
         return entries.get(0);
-    }
-
-    protected DocumentModelList query(Map<String, Serializable> filter) {
-        DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
-            return session.query(filter);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
-        }
     }
 }

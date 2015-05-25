@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.oauth2.providers;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,14 +115,14 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
             String redirectUri = getCallbackUrl(request);
 
-            TokenResponse tokenResponse = flow.newTokenRequest(code).setRedirectUri(redirectUri).execute();
+            TokenResponse tokenResponse = flow.newTokenRequest(code)
+                .setScopes(scopes.isEmpty() ? null : scopes) // some providers do not support the 'scopes' param
+                .setRedirectUri(redirectUri).execute();
 
             // Create a unique userId to use with the credential store
             String userId = getOrCreateServiceUser(request, tokenResponse.getAccessToken());
 
-            Credential credential = flow.createAndStoreCredential(tokenResponse, userId);
-
-            return credential;
+            return flow.createAndStoreCredential(tokenResponse, userId);
         } catch (IOException e) {
             throw new ClientException("Failed to retrieve credential", e);
         }
@@ -134,9 +133,9 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
      */
     @Override
     public Credential loadCredential(String user) {
+        String userId = getServiceUserId(user);
         try {
-            String userId = getServiceUserId(user);
-            return getAuthorizationCodeFlow().loadCredential(userId);
+            return userId != null ? getAuthorizationCodeFlow().loadCredential(userId) : null;
         } catch (IOException e) {
             throw new ClientException("Failed to load credential for " + user, e);
         }
@@ -185,7 +184,7 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
         return serviceUserStore;
     }
 
-    protected OAuth2TokenStore getCredentialDataStore() {
+    public OAuth2TokenStore getCredentialDataStore() {
         if (tokenStore == null) {
             tokenStore = new OAuth2TokenStore(serviceName);
         }
