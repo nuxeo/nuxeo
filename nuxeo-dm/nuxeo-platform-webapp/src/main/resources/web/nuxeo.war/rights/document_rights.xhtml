@@ -87,6 +87,15 @@
       margin-bottom: 10px;
     }
 
+    tr.tmp-tab {
+      border: 1px solid #00adff;
+    }
+
+    th.tmp-tab {
+      background-color: #00adff;
+      color: white;
+    }
+
   </style>
 
 </h:head>
@@ -98,70 +107,75 @@
 
     <template is="dom-bind">
 
-      <nx-doc-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions"></nx-doc-resource>
+      <nx-doc-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}"></nx-doc-resource>
 
-      <paper-input floatingLabel="true" label="Users, Groups"></paper-input>
       <template is="dom-if" if="{{hasLocalRights}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document</h2>
-          <span>{{doc.isCurrentUserHasEverything}}</span>
           <popup-right render="{{doc.isCurrentUserHasEverything}}"></popup-right>
         </div>
         <div>
-          <hot-table id="local" datarows="{{doc.contextParameters.acls[0].ace}}" class="htLeft">
-            <hot-column value="username" header="Username">
-              <template data-hot-role="renderer"><span>{{username}}</span></template>
-            </hot-column>
-            <hot-column value="permission" header="Permission">
-              <template data-hot-role="renderer"><span>{{permission}}</span></template>
-            </hot-column>
-            <hot-column value="granted" header="Granted">
-              <template data-hot-role="renderer"><span>{{granted}}</span></template>
-            </hot-column>
-          </hot-table>
+          <table class="tmp-tab">
+            <tr class="tmp-tab">
+              <th class="tmp-tab">Username</th>
+              <th class="tmp-tab">Permission</th>
+              <th class="tmp-tab">Granted</th>
+            </tr>
+            <template is="dom-repeat" items="{{localRights}}">
+              <tr>
+                <td><span>{{item.username}}</span></td>
+                <td><span>{{item.permission}}</span></td>
+                <td><span>{{item.granted}}</span></td>
+              </tr>
+            </template>
+          </table>
         </div>
 
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template is="dom-if" if="{{doc.contextParameters.acls}}">
+          <template is="dom-if" if="{{doc.isCurrentUserHasEverything}}">
             <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
           </template>
         </div>
         <div>
-          <hot-table id="inherited" datarows="{{doc.contextParameters.acls[1].ace}}" class="htLeft">
-            <hot-column value="username" header="Username">
-              <template data-hot-role="renderer"><span>{{username}}</span></template>
-            </hot-column>
-            <hot-column value="permission" header="Permission">
-              <template data-hot-role="renderer"><span>{{permission}}</span></template>
-            </hot-column>
-            <hot-column value="granted" header="Granted">
-              <template data-hot-role="renderer"><span>{{granted}}</span></template>
-            </hot-column>
-          </hot-table>
+          <table>
+            <tr class="tmp-tab">
+              <th class="tmp-tab">Username</th>
+              <th class="tmp-tab">Permission</th>
+              <th class="tmp-tab">Granted</th>
+            </tr>
+            <template is="dom-repeat" items="{{inheritedRights}}">
+              <tr>
+                <td><span>{{item.username}}</span></td>
+                <td><span>{{item.permission}}</span></td>
+                <td><span>{{item.granted}}</span></td>
+              </tr>
+            </template>
+          </table>
         </div>
       </template>
 
-      <template is="dom-if" if="{{doc.contextParameters.acls[0].name=='inherited'}}">
+      <template is="dom-if" if="{{!hasLocalRights}}">
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template is="dom-if" if="{{doc.contextParameters.acls}}">
-            <popup-right render="{{doc.contextParameters.permissions | has('Everything')}}"></popup-right>
-            <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
-          </template>
+          <popup-right render="{{doc.isCurrentUserHasEverything}}"></popup-right>
+          <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
         </div>
         <div>
-          <hot-table id="inherited" datarows="{{doc.contextParameters.acls[0].ace}}" class="htLeft">
-            <hot-column value="username" header="Username">
-              <template data-hot-role="renderer"><span>{{username}}</span></template>
-            </hot-column>
-            <hot-column value="permission" header="Permission">
-              <template data-hot-role="renderer"><span>{{permission}}</span></template>
-            </hot-column>
-            <hot-column value="granted" header="Granted">
-              <template data-hot-role="renderer"><span>{{granted}}</span></template>
-            </hot-column>
-          </hot-table>
+          <table class="tmp-tab">
+            <tr class="tmp-tab">
+              <th class="tmp-tab">Username</th>
+              <th class="tmp-tab">Permission</th>
+              <th class="tmp-tab">Granted</th>
+            </tr>
+            <template is="dom-repeat" items="{{inheritedRights}}">
+              <tr>
+                <td><span>{{item.username}}</span></td>
+                <td><span>{{item.permission}}</span></td>
+                <td><span>{{item.granted}}</span></td>
+              </tr>
+            </template>
+          </table>
         </div>
       </template>
 

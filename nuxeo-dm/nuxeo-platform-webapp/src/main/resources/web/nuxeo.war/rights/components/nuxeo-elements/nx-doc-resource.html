@@ -71,6 +71,34 @@ Contributors:
                 value: false,
                 notify: true,
                 computed: 'hasLocalRightsFunction(data)'
+            },
+            localrights: {
+                type: Array,
+                value: [],
+                notify: true,
+                computed: 'localRights(data)'
+            },
+            inheritedrights: {
+                type: Array,
+                value: [],
+                notify: true,
+                computed: 'inheritedRights(data)'
+            }
+        },
+
+        localRights: function (data) {
+            if(this.hasLocalRightsFunction(data)){
+                return data.contextParameters.acls[0].ace;
+            }
+        },
+
+        inheritedRights: function (data) {
+            if(data){
+                if(!this.hasLocalRightsFunction(data)){
+                    return data.contextParameters.acls[0].ace;
+                }else{
+                    return data.contextParameters.acls[1].ace;
+                }
             }
         },
 
