@@ -1,115 +1,91 @@
-<link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html">
-<link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html">
-<link rel="import" href="#{baseURL}bower_components/core-menu/core-menu.html">
-<link rel="import" href="#{baseURL}bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="#{baseURL}bower_components/paper-item/paper-item.html">
-<link rel="import" href="#{baseURL}bower_components/paper-dropdown/paper-dropdown.html">
-<link rel="import" href="#{baseURL}bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="#{baseURL}bower_components/polymer-date-picker/polymer-date-picker.html">
-<link rel="import" href="#{baseURL}bower_components/paper-input/paper-autogrow-textarea.html">
-<link rel="import" href="#{baseURL}bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 
 
-<polymer-element name="popup-right" attributes="render">
-  <template><template if="{{render}}">
-    <paper-button raised="true" on-click="{{togglePopup}}">New Access Right</paper-button>
+<dom-module id="popup-right">
+  <template><template is="dom-if" if="{{render}}">
+    <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
+    <paper-dialog id="popupRight">
+      <h2>Add new acl right</h2>
 
-    <paper-dialog id="popupRight" heading="Add new acl right" opened="false">
-      <!-- Give acces to row -->
-      <div layout horizontal>
-        <div flex>Give access to</div>
-        <div flex two>
-        <paper-dropdown-menu label="Peoples">
-            <paper-dropdown class="dropdown">
-                <core-menu class="menu">
-                    <paper-item>User</paper-item>
-                    <paper-item>Test</paper-item>
-                </core-menu>
-            </paper-dropdown>
-        </paper-dropdown-menu>
-      </div>
-    </div>
-    <div layout horizontal>
-      <div flex>From</div>
-      <div flex two>
-        <paper-input
-          id="from" value="{{selectedFromDate}}"
-          on-click="{{openCalendar}}"
-          readonly class="date" />
-      </div>
-    </div>
-    <div layout horizontal>
-      <div flex>To</div>
-      <div flex two>
-        <paper-input
-          id="to" value="{{selectedToDate}}"
-          on-click="{{openCalendar}}"
-          readonly class="date" />
-      </div>
-    </div>
-      <!-- Allowed rights row -->
-      <div layout horizontal>
-        <div flex>Allowed rights</div>
-        <div flex two>
-        <paper-dropdown-menu label="Rights">
-            <paper-dropdown class="dropdown">
-                <core-menu class="menu">
-                    <paper-item>User</paper-item>
-                    <paper-item>User2</paper-item>
-                </core-menu>
-            </paper-dropdown>
-        </paper-dropdown-menu>
-      </div>
-    </div>
-    <!-- Notification -->
-    <div layout vertical flex>
-      <div layout horizontal>
-        <paper-checkbox></paper-checkbox>
+      <paper-dialog-scrollable>
+        <!-- Give acces to row -->
         <div>
-          Send a notification ...
+          <div>Give access to</div>
+          <div>
+            <select flex two>
+              <option>User</option>
+            </select>
+          </div>
         </div>
+        <div>
+          <div>From</div>
+          <div>
+            <paper-input
+              id="from"
+              value="{{from}}"
+              readonly>
+            </paper-input>
+          </div>
+        </div>
+        <div>
+          <div>To</div>
+          <div>
+            <paper-input
+              id="to" value="{{selectedToDate}}"
+              readonly class="date">
+            </paper-input>
+          </div>
+        </div>
+        <!-- Allowed rights row -->
+        <div layout horizontal>
+          <div>Allowed rights</div>
+          <select flex two>
+            <option>Right</option>
+          </select>
+        </div>
+        <!-- Notification -->
+        <div layout horizontal>
+          <paper-checkbox></paper-checkbox>
+          <span>Send a notification ...</span>
+        </div>
+        <div>
+          <iron-autogrow-textarea value="{{val}}">
+            <textarea rows="4" value="{{val}}"></textarea>
+          </iron-autogrow-textarea>
+        </div>
+      </paper-dialog-scrollable>
+
+      <div class="buttons">
+        <paper-button dialog-dismissive  raised="true">Cancel</paper-button>
+        <paper-button dialog-affirmative raised="true">Confirm and add another</paper-button>
+        <paper-button dialog-affirmative raised="true">Confirm</paper-button>
       </div>
-      <div>
-        <paper-autogrow-textarea flex id="rights-textarea">
-          <textarea style="width: 98%" id="rights-textarea" rows="6"></textarea>
-        </paper-autogrow-textarea>
-      </div>
-    </div>
-
-    <polymer-date-picker
-      id="from-datepicker"
-      selectedDate="{{selectedFromDate}}"
-      relatedTarget="{{$.from}}"
-      opened="false">
-    </polymer-date-picker>
-
-    <polymer-date-picker
-      id="to-datepicker"
-      selectedDate="{{selectedToDate}}"
-      relatedTarget="{{$.to}}"
-      opened="false">
-    </polymer-date-picker>
-
-    <paper-button dismissive  raised="true">Cancel</paper-button>
-    <paper-button affirmative raised="true">Confirm and add another</paper-button>
-    <paper-button affirmative raised="true">Confirm</paper-button>
-  </paper-dialog>
-
+    </paper-dialog>
   </template></template>
-  <script>
-    Polymer({
+</dom-module>
 
-      publish: {
-        render: false
-      },
+<script>
+  Polymer({
+    is: 'popup-right',
 
-      togglePopup: function() {
-       this.$.popupRight.toggle();
-      },
-
-      openCalendar: function(e, len, elm) {
-        this.$[elm.id + '-datepicker'].toggle();
+    properties: {
+      render: {
+        type: Boolean,
+        value: true
       }
-    });
-  </script>
-</polymer-element>
+    },
+
+    togglePopup: function() {
+      var popupRight = Polymer.dom(this.root).querySelector('#popupRight');
+      popupRight.toggle();
+    }
+  });
+</script>
