@@ -27,7 +27,7 @@ public class AppLink {
 
     private String icon;
 
-    private URI link;
+    private String link;
 
     public String getAppName() {
         return appName;
@@ -45,11 +45,11 @@ public class AppLink {
         this.icon = icon;
     }
 
-    public URI getLink() {
+    public String getLink() {
         return link;
     }
 
-    public void setLink(URI link) {
+    public void setLink(String link) {
         this.link = link;
     }
 }

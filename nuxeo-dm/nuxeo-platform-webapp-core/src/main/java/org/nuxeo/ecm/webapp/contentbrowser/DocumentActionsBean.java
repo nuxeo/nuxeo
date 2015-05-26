@@ -39,6 +39,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
@@ -48,6 +49,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -478,8 +481,10 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     /**
      * @since 7.3
      */
-    public List<AppLink> getAppLinks(DocumentModel doc, String blobXPath) throws ClientException {
-
+    @WebRemote
+    public List<AppLink> getAppLinks(String docId, String blobXPath) throws ClientException {
+        DocumentRef docRef = new IdRef(docId);
+        DocumentModel doc = documentManager.getDocument(docRef);
         Serializable value = doc.getPropertyValue(blobXPath);
 
         if (value == null || !(value instanceof ManagedBlob)) {
