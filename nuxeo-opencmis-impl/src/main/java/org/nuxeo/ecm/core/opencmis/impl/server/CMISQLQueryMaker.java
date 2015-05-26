@@ -1065,6 +1065,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             int i = 1;
             for (SqlColumn rc : realColumns) {
                 Serializable value = rc.column.getFromResultSet(rs, i++);
+                String key = rc.column.getKey();
                 // type conversion to CMIS values
                 if (value instanceof Long) {
                     value = BigInteger.valueOf(((Long) value).longValue());
@@ -1074,10 +1075,13 @@ public class CMISQLQueryMaker implements QueryMaker {
                     value = BigDecimal.valueOf(((Double) value).doubleValue());
                 } else if (value == null) {
                     // special handling of some columns where NULL means FALSE
-                    String column = rc.column.getTable().getRealTable().getKey() + " " + rc.column.getKey();
+                    String column = rc.column.getTable().getRealTable().getKey() + " " + key;
                     if (NULL_IS_FALSE_COLUMNS.contains(column)) {
                         value = Boolean.FALSE;
                     }
+                }
+                if (Model.MAIN_KEY.equals(key) || Model.HIER_PARENT_KEY.equals(key)) {
+                    value = String.valueOf(value); // idToString
                 }
                 map.put(rc.key, value);
             }
@@ -1476,7 +1480,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             whereBuf.append(column.getFullQuotedName());
             whereBuf.append(" = ?");
             String id = (String) super.walkString(paramNode);
-            whereBufParams.add(id);
+            whereBufParams.add(model.idFromString(id));
             return null;
         }
 
@@ -1492,7 +1496,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                 whereBuf.append("0=1");
             } else {
                 whereBuf.append(sql);
-                whereBufParams.add(id);
+                whereBufParams.add(model.idFromString(id));
             }
             return null;
         }
