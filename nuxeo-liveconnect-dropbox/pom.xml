@@ -7,7 +7,6 @@
     <version>7.3-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.ecm</groupId>
   <artifactId>nuxeo-liveconnect-dropbox</artifactId>
   <name>Nuxeo Live Connect for Dropbox</name>
 
@@ -48,17 +47,11 @@
       <artifactId>nuxeo-platform-oauth</artifactId>
     </dependency>
 
-    <!-- Google API libraries -->
+    <!-- Dropbox API library -->
 
     <dependency>
       <groupId>com.dropbox.core</groupId>
       <artifactId>dropbox-core-sdk</artifactId>
-      <version>[1.7,1.8]</version>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.apis</groupId>
-      <artifactId>google-api-services-drive</artifactId>
     </dependency>
 
     <!-- other libraries -->
@@ -77,6 +70,18 @@
     </dependency>
 
     <!-- test -->
+
+    <dependency>
+      <groupId>org.nuxeo.runtime</groupId>
+      <artifactId>nuxeo-runtime-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core</artifactId>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>junit</groupId>
