@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -1034,6 +1035,9 @@ public class SQLInfo {
             for (Column column : columns) {
                 String key = keys.get(i - 1);
                 Serializable value = column.getFromResultSet(rs, i++);
+                if (NXQL.ECM_UUID.equals(key) || NXQL.ECM_PARENTID.equals(key)) {
+                    value = String.valueOf(value); // idToString
+                }
                 map.put(key, value);
             }
             return map;

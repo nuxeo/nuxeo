@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -267,6 +268,10 @@ public class Model {
 
     /** Specified in ext. point to use CLOB array instead of collection table. */
     public static final String FIELD_TYPE_ARRAY_LARGETEXT = "array_largetext";
+
+    // some random long that's not in the database
+    // first half of md5 of "nosuchlongid"
+    public static final Long NO_SUCH_LONG_ID = Long.valueOf(0x3153147dd69fcea4L);
 
     protected final boolean softDeleteEnabled;
 
@@ -511,7 +516,12 @@ public class Model {
         case STRING:
             return id;
         case LONG:
-            return Long.valueOf(id);
+            // use isNumeric instead of try/catch for efficiency
+            if (StringUtils.isNumeric(id)) {
+                return Long.valueOf(id);
+            } else {
+                return NO_SUCH_LONG_ID;
+            }
         default:
             throw new AssertionError(idType.toString());
         }
