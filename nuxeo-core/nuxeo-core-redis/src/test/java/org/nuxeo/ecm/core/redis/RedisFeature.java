@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.cache.CacheFeature;
 import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedGuessConnectionError;
 import org.nuxeo.ecm.core.redis.embedded.RedisEmbeddedPool;
@@ -52,30 +53,80 @@ public class RedisFeature extends SimpleFeature {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Config {
-        Mode mode() default Mode.embedded;
+        Mode mode() default Mode.undefined;
 
-        String host() default "localhost";
+        String host() default "";
 
-        int port() default Protocol.DEFAULT_PORT;
+        int port() default 0;
 
         Class<? extends RedisEmbeddedGuessConnectionError> guessError() default RedisEmbeddedGuessConnectionError.NoError.class;
     }
 
+    public static final String PROP_MODE = "nuxeo.test.redis.mode";
+
+    public static final String PROP_HOST = "nuxeo.test.redis.host";
+
+    public static final String PROP_PORT= "nuxeo.test.redis.port";
+
+    public static final Mode DEFAULT_MODE = Mode.embedded;
+
+    public static final String DEFAULT_HOST = "localhost";
+
+    public static final int DEFAULT_PORT = Protocol.DEFAULT_PORT;
+
     public enum Mode {
-        disabled, embedded, server, sentinel
+        undefined, disabled, embedded, server, sentinel
     }
 
+    protected Mode getMode() {
+        Mode mode = config.mode();
+        if (mode == Mode.undefined) {
+            String modeProp = System.getProperty(PROP_MODE);
+            if (StringUtils.isBlank(modeProp)) {
+                mode = DEFAULT_MODE;
+            } else {
+                mode = Mode.valueOf(modeProp);
+            }
+        }
+        return mode;
+    }
+
+    protected String getHost() {
+        String host = config.host();
+        if (StringUtils.isEmpty(host)) {
+            String hostProp = System.getProperty(PROP_HOST);
+            if (StringUtils.isBlank(hostProp)) {
+                host = DEFAULT_HOST;
+            } else {
+                host = hostProp;
+            }
+        }
+        return host;
+    }
+
+    protected int getPort() {
+        int port = config.port();
+        if (port == 0) {
+            String portProp = System.getProperty(PROP_PORT);
+            if (StringUtils.isBlank(portProp)) {
+                port = DEFAULT_PORT;
+            } else {
+                port = Integer.parseInt(portProp);
+            }
+        }
+   return port;
+    }
     protected RedisServerDescriptor newRedisServerDescriptor() {
         RedisServerDescriptor desc = new RedisServerDescriptor();
-        desc.host = config.host();
-        desc.port = config.port();
+        desc.host = getHost();
+        desc.port = getPort();
         return desc;
     }
 
     protected RedisSentinelDescriptor newRedisSentinelDescriptor() {
         RedisSentinelDescriptor desc = new RedisSentinelDescriptor();
         desc.master = "mymaster";
-        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(config.host(), config.port()) };
+        desc.hosts = new RedisHostDescriptor[] { new RedisHostDescriptor(getHost(), getPort()) };
         return desc;
     }
 
@@ -89,7 +140,8 @@ public class RedisFeature extends SimpleFeature {
     }
 
     protected boolean setupMe(RuntimeHarness harness) throws Exception {
-        if (Mode.disabled.equals(config.mode())) {
+        Mode mode = getMode();
+        if (Mode.disabled.equals(mode)) {
             return false;
         }
         if (harness.getOSGiAdapter().getBundle("org.nuxeo.ecm.core.event") == null) {
@@ -106,14 +158,14 @@ public class RedisFeature extends SimpleFeature {
 
         RedisComponent component = (RedisComponent) Framework.getRuntime().getComponent(
                 RedisComponent.class.getPackage().getName());
-        if (Mode.embedded.equals(config.mode())) {
+        if (Mode.embedded.equals(mode)) {
             RedisExecutor executor = new RedisPoolExecutor(new RedisEmbeddedPool());
             executor = new RedisEmbeddedTraceExecutor(executor);
             executor = new RedisEmbeddedSynchronizedExecutor(executor);
             executor = new RedisFailoverExecutor(10, executor);
             component.handleNewExecutor(executor);
         } else {
-            component.registerRedisPoolDescriptor(getDescriptor(config));
+            component.registerRedisPoolDescriptor(getDescriptor(mode));
             component.handleNewExecutor(component.getConfig().newExecutor());
         }
 
@@ -121,8 +173,8 @@ public class RedisFeature extends SimpleFeature {
         return true;
     }
 
-    protected RedisPoolDescriptor getDescriptor(Config config) {
-        switch (config.mode()) {
+    protected RedisPoolDescriptor getDescriptor(Mode mode) {
+        switch (mode) {
         case sentinel:
             return newRedisSentinelDescriptor();
         case server:
