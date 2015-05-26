@@ -236,9 +236,12 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             String tagId = null;
             if (label != null) {
                 // Find tag
-                List<Map<String, Serializable>> res = getItems(PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(), session,
-                        label);
-                tagId = (res != null && !res.isEmpty()) ? String.valueOf(res.get(0).get(NXQL.ECM_UUID)) : null;
+                List<Map<String, Serializable>> res = getItems(
+                        PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(),
+                        session, label);
+                tagId = (res != null && !res.isEmpty()) ? (String) res.get(0).get(
+                        NXQL.ECM_UUID)
+                        : null;
                 if (tagId == null) {
                     // tag not found
                     return;
@@ -257,7 +260,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             IterableQueryResult res = session.queryAndFetch(query, NXQL.NXQL);
             try {
                 for (Map<String, Serializable> map : res) {
-                    taggingIds.add(String.valueOf(map.get(NXQL.ECM_UUID)));
+                    taggingIds.add((String) map.get(NXQL.ECM_UUID));
                 }
             } finally {
                 res.close();
