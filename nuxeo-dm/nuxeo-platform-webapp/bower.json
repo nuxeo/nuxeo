@@ -8,10 +8,10 @@
     "font-roboto": "Polymer/font-roboto#^0.5",
     "paper-button": "PolymerElements/paper-button#^0.9.0",
     "paper-input": "PolymerElements/paper-input#^0.9.0",
-    "paper-menu": "PolymerElements/paper-menu#~0.9.0",
-    "paper-checkbox": "PolymerElements/paper-checkbox#~0.9.0",
-    "paper-dialog": "PolymerElements/paper-dialog#~0.9.0",
-    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#~0.9.0",
-    "paper-item": "PolymerElements/paper-item#~0.9.0"    
+    "paper-menu": "PolymerElements/paper-menu#^0.9.0",
+    "paper-checkbox": "PolymerElements/paper-checkbox#^0.9.0",
+    "paper-dialog": "PolymerElements/paper-dialog#^0.9.0",
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^0.9.0",
+    "paper-item": "PolymerElements/paper-item#^0.9.0"
   }
 }
