@@ -438,15 +438,15 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             log.warn("Layout creation computed in a null facelet context: expressions "
                     + "found in the layout definition will not be evaluated");
         }
-        LayoutDefinition layoutDef = layoutDefinition.clone();
+        LayoutDefinition lDef = layoutDefinition.clone();
         if (lctx != null && !StringUtils.isBlank(conversionCat)) {
             List<LayoutDefinitionConverter> lcs = getLayoutStore().getLayoutConverters(conversionCat);
             for (LayoutDefinitionConverter lc : lcs) {
-                layoutDef = lc.getLayoutDefinition(layoutDef, lctx);
+                lDef = lc.getLayoutDefinition(lDef, lctx);
             }
         }
-        String layoutName = layoutDef.getName();
-        LayoutRowDefinition[] rowsDef = layoutDef.getRows();
+        String layoutName = lDef.getName();
+        LayoutRowDefinition[] rowsDef = lDef.getRows();
         List<LayoutRow> rows = new ArrayList<LayoutRow>();
         Set<String> foundRowNames = new HashSet<String>();
         int rowIndex = -1;
@@ -481,13 +481,13 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 if (StringUtils.isBlank(cat)) {
                     cat = getDefaultStoreCategory();
                 }
-                WidgetDefinition wDef = lookupWidget(layoutDef, new WidgetReferenceImpl(cat, widgetName));
+                WidgetDefinition wDef = lookupWidget(lDef, new WidgetReferenceImpl(cat, widgetName));
                 if (wDef == null) {
                     log.error(String.format("Widget '%s' not found in layout %s", widgetName, layoutName));
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, lctx, conversionCat, layoutName, layoutDef, wDef, cat, mode, valueName, 0);
+                Widget widget = getWidget(ctx, lctx, conversionCat, layoutName, lDef, wDef, cat, mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }
@@ -509,10 +509,10 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             }
         }
 
-        String layoutTypeCategory = layoutDef.getTypeCategory();
+        String layoutTypeCategory = lDef.getTypeCategory();
         String actualLayoutTypeCategory = getStoreCategory(layoutTypeCategory);
         LayoutTypeDefinition layoutTypeDef = null;
-        String layoutType = layoutDef.getType();
+        String layoutType = lDef.getType();
         if (!StringUtils.isBlank(layoutType)) {
             // retrieve type for templates and props mapping
             layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(actualLayoutTypeCategory, layoutType);
@@ -521,7 +521,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             }
         }
 
-        String template = layoutDef.getTemplate(mode);
+        String template = lDef.getTemplate(mode);
         Map<String, Serializable> props = new HashMap<>();
         if (layoutTypeDef != null) {
             if (StringUtils.isEmpty(template)) {
@@ -535,20 +535,20 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 }
             }
         }
-        Map<String, Serializable> lprops = layoutDef.getProperties(mode);
+        Map<String, Serializable> lprops = lDef.getProperties(mode);
         if (lprops != null) {
             props.putAll(lprops);
         }
-        LayoutImpl layout = new LayoutImpl(layoutDef.getName(), mode, template, rows, layoutDef.getColumns(), props,
-                LayoutFunctions.computeLayoutDefinitionId(layoutDef));
+        LayoutImpl layout = new LayoutImpl(lDef.getName(), mode, template, rows, lDef.getColumns(), props,
+                LayoutFunctions.computeLayoutDefinitionId(lDef));
         layout.setValueName(valueName);
         layout.setType(layoutType);
         layout.setTypeCategory(actualLayoutTypeCategory);
         if (Framework.isDevModeSet()) {
-            layout.setDefinition(layoutDef);
+            layout.setDefinition(lDef);
             // resolve template in "dev" mode, avoiding default lookup on "any"
             // mode
-            Map<String, String> templates = layoutDef.getTemplates();
+            Map<String, String> templates = lDef.getTemplates();
             String devTemplate = templates != null ? templates.get(BuiltinModes.DEV) : null;
             if (layoutTypeDef != null && StringUtils.isEmpty(devTemplate)) {
                 Map<String, String> typeTemplates = layoutTypeDef.getTemplates();
