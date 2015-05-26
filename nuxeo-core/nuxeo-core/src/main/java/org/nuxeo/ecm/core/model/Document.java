@@ -85,20 +85,49 @@ public interface Document {
     String getPath() throws DocumentException;
 
     /**
-     * Sets a property value.
+     * Sets a simple property value.
+     * <p>
+     * For more generic properties described by an xpath, use {@link #setValue} instead.
      *
      * @param name the name of the property to set
      * @param value the value to set
+     * @see #setValue
      */
     void setPropertyValue(String name, Serializable value) throws DocumentException;
 
     /**
-     * Gets a property value.
+     * Sets a property value.
+     * <p>
+     * The xpath may point to a partial path, in which case the value may be a complex {@link List} or {@link Map}.
+     *
+     * @param xpath the xpath of the property to set
+     * @param value the value to set
+     * @throws PropertyException if the property does not exist or the value is of the wrong type
+     * @since 7.3
+     */
+    void setValue(String xpath, Object value) throws PropertyException, DocumentException;
+
+    /**
+     * Gets a simple property value.
+     * <p>
+     * For more generic properties described by an xpath, use {@link #getValue} instead.
      *
      * @param name the name of the property to get
      * @return the property value or {@code null} if the property is not set
+     * @see #getValue
      */
     Serializable getPropertyValue(String name) throws DocumentException;
+
+    /**
+     * Gets a property value.
+     * <p>
+     * The xpath may point to a partial path, in which case the value may be a complex {@link List} or {@link Map}.
+     *
+     * @param xpath the xpath of the property to set
+     * @return the property value or {@code null} if the property is not set
+     * @throws PropertyException if the property does not exist
+     */
+    Object getValue(String xpath) throws PropertyException, DocumentException;
 
     /**
      * Checks whether this document is a folder.

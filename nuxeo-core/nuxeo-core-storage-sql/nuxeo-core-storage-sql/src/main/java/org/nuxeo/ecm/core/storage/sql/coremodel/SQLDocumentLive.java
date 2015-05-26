@@ -35,14 +35,16 @@ import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.runtime.api.Framework;
 
-public class SQLDocumentLive implements SQLDocument {
+public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     protected final Node node;
 
@@ -142,6 +144,11 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
+    protected List<Schema> getProxySchemas() {
+        return proxySchemas;
+    }
+
+    @Override
     public void remove() throws DocumentException {
         session.remove(getNode());
     }
@@ -155,7 +162,8 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
+            throws PropertyException {
         return session.readPrefetch(getNode(), complexType, xpaths, this);
     }
 
@@ -175,6 +183,69 @@ public class SQLDocumentLive implements SQLDocument {
             }
         }
         property.clearDirtyFlags();
+    }
+
+    @Override
+    protected Node getChild(Node node, String name, Type type) throws PropertyException {
+        try {
+            return session.getChildProperty(node, name, type.getName());
+        } catch (StorageException e) {
+            throw new PropertyException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    protected List<Node> getChildAsList(Node node, String name) throws PropertyException {
+        try {
+            return session.getComplexList(node, name);
+        } catch (DocumentException e) {
+            throw new PropertyException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    protected void updateList(Node node, String name, List<Object> values, Field field) throws PropertyException {
+        List<Node> childNodes = getChildAsList(node, name);
+        int oldSize = childNodes.size();
+        int newSize = values.size();
+        // remove extra list elements
+        if (oldSize > newSize) {
+            for (int i = oldSize - 1; i >= newSize; i--) {
+                try {
+                    session.removeProperty(childNodes.remove(i));
+                } catch (DocumentException e) {
+                    throw new PropertyException(e.getMessage(), e);
+                }
+            }
+        }
+        // add new list elements
+        if (oldSize < newSize) {
+            for (int i = oldSize; i < newSize; i++) {
+                Node childNode;
+                try {
+                    childNode = session.addChildProperty(node, name, Long.valueOf(i), field.getType().getName());
+                } catch (DocumentException e) {
+                    throw new PropertyException(e.getMessage(), e);
+                }
+                childNodes.add(childNode);
+            }
+        }
+        // write values
+        int i = 0;
+        for (Object v : values) {
+            Node childNode = childNodes.get(i++);
+            setValueComplex(childNode, field, v);
+        }
+    }
+
+    @Override
+    public Object getValue(String xpath) throws PropertyException {
+        return getValueObject(getNode(), xpath);
+    }
+
+    @Override
+    public void setValue(String xpath, Object value) throws PropertyException {
+        setValueObject(getNode(), xpath, value);
     }
 
     @Override
@@ -582,4 +653,3 @@ public class SQLDocumentLive implements SQLDocument {
     }
 
 }
-

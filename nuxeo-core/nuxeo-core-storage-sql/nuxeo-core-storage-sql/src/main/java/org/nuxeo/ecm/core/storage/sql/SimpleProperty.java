@@ -65,7 +65,7 @@ public class SimpleProperty extends BaseProperty {
 
     // ----- setters -----
 
-    public void setValue(Serializable value) throws StorageException {
+    public void setValue(Object value) throws StorageException {
         checkWritable();
         fragment.put(key, type.normalize(value));
         // mark fragment dirty!

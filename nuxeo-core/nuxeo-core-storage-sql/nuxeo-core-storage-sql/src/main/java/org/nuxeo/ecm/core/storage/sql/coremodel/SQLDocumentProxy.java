@@ -174,7 +174,8 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
+            throws PropertyException {
         if (isSchemaForProxy(complexType.getName())) {
             return proxy.readPrefetch(complexType, xpaths);
         } else {
@@ -432,10 +433,6 @@ public class SQLDocumentProxy implements SQLDocument {
         this.target = target;
     }
 
-    /*
-     * ----- PropertyContainer -----
-     */
-
     @Override
     public Serializable getPropertyValue(String name) throws DocumentException {
         if (isPropertyForProxy(name)) {
@@ -451,6 +448,24 @@ public class SQLDocumentProxy implements SQLDocument {
             proxy.setPropertyValue(name, value);
         } else {
             target.setPropertyValue(name, value);
+        }
+    }
+
+    @Override
+    public Object getValue(String xpath) throws PropertyException, DocumentException {
+        if (isPropertyForProxy(xpath)) {
+            return proxy.getValue(xpath);
+        } else {
+            return target.getValue(xpath);
+        }
+    }
+
+    @Override
+    public void setValue(String xpath, Object value) throws PropertyException, DocumentException {
+        if (isPropertyForProxy(xpath)) {
+            proxy.setValue(xpath, value);
+        } else {
+            target.setValue(xpath, value);
         }
     }
 

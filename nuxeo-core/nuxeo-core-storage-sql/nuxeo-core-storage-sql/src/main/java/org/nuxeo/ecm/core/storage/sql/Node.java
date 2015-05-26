@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,12 +19,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
+import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.storage.StateAccessor;
 import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@code Node} implementation. The actual data is stored in contained objects that are {@link Fragment}s.
  */
-public class Node {
+public class Node implements StateAccessor {
 
     /** The persistence context used. */
     private final PersistenceContext context;
@@ -309,12 +311,12 @@ public class Node {
         return null;
     }
 
-    public void setSimpleProperty(String name, Serializable value) throws StorageException {
+    public void setSimpleProperty(String name, Object value) throws StorageException {
         SimpleProperty property = getSimpleProperty(name);
         property.setValue(value);
     }
 
-    public void setCollectionProperty(String name, Serializable[] value) throws StorageException {
+    public void setCollectionProperty(String name, Object[] value) throws StorageException {
         CollectionProperty property = getCollectionProperty(name);
         property.setValue(value);
     }
@@ -359,6 +361,42 @@ public class Node {
     public String toString() {
         return getClass().getSimpleName() + "(uuid=" + getId() + ", name=" + getName() + ", primaryType="
                 + getPrimaryType() + ", parentId=" + getParentId() + ")";
+    }
+
+    @Override
+    public Object getSingle(String name) throws PropertyException {
+        try {
+            return getSimpleProperty(name).getValue();
+        } catch (StorageException e) {
+            throw new PropertyException(name, e);
+        }
+    }
+
+    @Override
+    public Object[] getArray(String name) throws PropertyException {
+        try {
+            return getCollectionProperty(name).getValue();
+        } catch (StorageException e) {
+            throw new PropertyException(name, e);
+        }
+    }
+
+    @Override
+    public void setSingle(String name, Object value) throws PropertyException {
+        try {
+            getSimpleProperty(name).setValue(value);
+        } catch (StorageException e) {
+            throw new PropertyException(name, e);
+        }
+    }
+
+    @Override
+    public void setArray(String name, Object[] value) throws PropertyException {
+        try {
+            getCollectionProperty(name).setValue(value);
+        } catch (StorageException e) {
+            throw new PropertyException(name, e);
+        }
     }
 
 }

@@ -24,6 +24,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManagerComponent;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -41,6 +45,8 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
     protected int initialOpenSessions;
 
     protected int initialSingleConnections;
+
+    protected BlobProviderDescriptor blobProviderDescriptor;
 
     @Override
     @Before
@@ -76,9 +82,16 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         repositoryFactory.init(repositoryName);
         Repository repository = new Repository(repositoryName, repositoryName, null, repositoryFactory);
         repositoryManager.addRepository(repository);
+        blobProviderDescriptor = new BlobProviderDescriptor();
+        blobProviderDescriptor.name = repositoryName;
+        blobProviderDescriptor.klass = DefaultBinaryManager.class;
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.registerBlobProvider(blobProviderDescriptor);
     }
 
     protected void closeRepository() {
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.unregisterBlobProvider(blobProviderDescriptor);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         repositoryManager.removeRepository(repositoryName);
     }

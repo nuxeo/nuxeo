@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.model.Delta;
  *
  * @since 5.9.5
  */
-public class State implements Serializable {
+public class State implements StateAccessor, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -352,6 +352,26 @@ public class State implements Serializable {
         } else {
             buf.append(value);
         }
+    }
+
+    @Override
+    public Object getSingle(String name) {
+        return get(name);
+    }
+
+    @Override
+    public Object[] getArray(String name) {
+        return (Object[]) get(name);
+    }
+
+    @Override
+    public void setSingle(String name, Object value) {
+        put(name, (Serializable) value);
+    }
+
+    @Override
+    public void setArray(String name, Object[] value) {
+        put(name, value);
     }
 
 }

@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.storage.dbs;
 
 import static java.lang.Boolean.TRUE;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -67,9 +65,9 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
+import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
-import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -88,7 +86,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 5.9.4
  */
-public class DBSDocument implements Document {
+public class DBSDocument extends BaseDocument<State> {
 
     private static final Long ZERO = Long.valueOf(0);
 
@@ -198,6 +196,8 @@ public class DBSDocument implements Document {
 
     protected final DocumentType type;
 
+    protected final List<Schema> proxySchemas;
+
     protected final DBSSession session;
 
     protected boolean readonly;
@@ -217,6 +217,12 @@ public class DBSDocument implements Document {
         this.docState = docState;
         this.type = type;
         this.session = session;
+        if (isProxy()) {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            proxySchemas = schemaManager.getProxySchemas(type.getName());
+        } else {
+            proxySchemas = null;
+        }
         this.readonly = readonly;
     }
 
@@ -233,6 +239,11 @@ public class DBSDocument implements Document {
     @Override
     public String getRepositoryName() {
         return session.getRepositoryName();
+    }
+
+    @Override
+    protected List<Schema> getProxySchemas() {
+        return proxySchemas;
     }
 
     @Override
@@ -367,6 +378,52 @@ public class DBSDocument implements Document {
     public void setPropertyValue(String name, Serializable value) throws DocumentException {
         DBSDocumentState docState = getStateMaybeProxyTarget(name);
         docState.put(name, value);
+    }
+
+    // helpers for getValue / setValue
+
+    @Override
+    protected State getChild(State state, String name, Type type) {
+        State child = (State) state.get(name);
+        if (child == null) {
+            state.put(name, child = new State());
+        }
+        return child;
+    }
+
+    @Override
+    protected List<State> getChildAsList(State state, String name) {
+        @SuppressWarnings("unchecked")
+        List<State> list = (List<State>) state.get(name);
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
+
+    @Override
+    protected void updateList(State state, String name, List<Object> values, Field field) {
+        List<State> childStates = new ArrayList<>(values.size());
+        for (Object v : values) {
+            State childState = new State();
+            setValueComplex(childState, field, v);
+            childStates.add(childState);
+        }
+        state.put(name, (Serializable) childStates);
+    }
+
+    @Override
+    public Object getValue(String xpath) throws PropertyException, DocumentException {
+        DBSDocumentState docState = getStateMaybeProxyTarget(xpath);
+        return getValueObject(docState.getState(), xpath);
+    }
+
+    @Override
+    public void setValue(String xpath, Object value) throws PropertyException, DocumentException {
+        DBSDocumentState docState = getStateMaybeProxyTarget(xpath);
+        // markDirty has to be called *before* we change the state
+        docState.markDirty();
+        setValueObject(docState.getState(), xpath, value);
     }
 
     @Override
@@ -730,7 +787,7 @@ public class DBSDocument implements Document {
             return;
         }
         if (complexProperty instanceof BlobProperty) {
-            Blob blob = readBlob(state);
+            Blob blob = getValueBlob(state);
             complexProperty.init((Serializable) blob);
             return;
         }
@@ -811,61 +868,9 @@ public class DBSDocument implements Document {
         return copy;
     }
 
-    protected Blob readBlob(State state) throws PropertyException {
-        BlobInfo blobInfo = new BlobInfo();
-        blobInfo.filename = (String) state.get(KEY_BLOB_NAME);
-        blobInfo.mimeType = (String) state.get(KEY_BLOB_MIME_TYPE);
-        blobInfo.encoding = (String) state.get(KEY_BLOB_ENCODING);
-        blobInfo.digest = (String) state.get(KEY_BLOB_DIGEST);
-        blobInfo.length = (Long) state.get(KEY_BLOB_LENGTH);
-        blobInfo.key = (String) state.get(KEY_BLOB_DATA);
-        try {
-            return session.getBlobManager().readBlob(blobInfo, getRepositoryName());
-        } catch (IOException e) {
-            throw new PropertyException("Cannot read property", e);
-        }
-    }
-
-    protected void writeBlobProperty(BlobProperty blobProperty, State state) throws PropertyException {
-        Serializable value = blobProperty.getValueForWrite();
-        String key;
-        String filename;
-        String mimeType;
-        String encoding;
-        String digest;
-        Long length;
-        if (value == null) {
-            key = null;
-            filename = null;
-            mimeType = null;
-            encoding = null;
-            digest = null;
-            length = null;
-        } else if (value instanceof Blob) {
-            Blob blob = (Blob) value;
-            try {
-                key = session.getBlobManager().writeBlob(blob, this);
-            } catch (IOException e) {
-                throw new PropertyException("Cannot get blob info for: " + value, e);
-            }
-            filename = blob.getFilename();
-            mimeType = blob.getMimeType();
-            encoding = blob.getEncoding();
-            digest = blob.getDigest();
-            length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
-        } else {
-            throw new PropertyException("Cannot write a non-Blob value: " + value);
-        }
-        state.put(KEY_BLOB_DATA, key);
-        state.put(KEY_BLOB_NAME, filename);
-        state.put(KEY_BLOB_MIME_TYPE, mimeType);
-        state.put(KEY_BLOB_ENCODING, encoding);
-        state.put(KEY_BLOB_DIGEST, digest);
-        state.put(KEY_BLOB_LENGTH, length);
-    }
-
     @Override
-    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException {
+    public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
+            throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(complexType);
         Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
         for (String xpath : xpaths) {
@@ -952,7 +957,11 @@ public class DBSDocument implements Document {
     protected void writeComplexProperty(ComplexProperty complexProperty, State state, Runnable markDirty)
             throws PropertyException {
         if (complexProperty instanceof BlobProperty) {
-            writeBlobProperty((BlobProperty) complexProperty, state);
+            Serializable value = ((BlobProperty) complexProperty).getValueForWrite();
+            if (value != null && !(value instanceof Blob)) {
+                throw new PropertyException("Cannot write a non-Blob value: " + value);
+            }
+            setValueBlob(state, (Blob) value);
             return;
         }
         for (Property property : complexProperty) {

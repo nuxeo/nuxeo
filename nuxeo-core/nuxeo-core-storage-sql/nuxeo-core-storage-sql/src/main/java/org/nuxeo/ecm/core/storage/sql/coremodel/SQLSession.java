@@ -736,6 +736,14 @@ public class SQLSession implements Session {
         }
     }
 
+    protected Node addChildProperty(Node parent, String name, Long pos, String typeName) throws DocumentException {
+        try {
+            return session.addChildNode(parent, name, pos, typeName, true);
+        } catch (StorageException e) {
+            throw new DocumentException(e);
+        }
+    }
+
     protected Document importChild(String uuid, Node parent, String name, Long pos, String typeName,
             Map<String, Serializable> props) throws DocumentException {
         try {
