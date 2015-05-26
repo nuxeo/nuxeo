@@ -16,7 +16,6 @@ included in the default full build). Thus they are not deprecated.</description>
 
   <modules>
     <module>nuxeo-platform-jbpm</module>
-    <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-platform-splitpane</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>

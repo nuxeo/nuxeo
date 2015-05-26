@@ -118,6 +118,7 @@
     <module>nuxeo-box-api</module>
     <module>nuxeo-platform-importer</module>
     <module>nuxeo-easyshare</module>
+    <module>nuxeo-platform-audit-web-access</module>
     <module>nuxeo-duoweb-authentication</module>
     <module>nuxeo-sample-project</module>
     <module>nuxeo-logs-viewer</module>
