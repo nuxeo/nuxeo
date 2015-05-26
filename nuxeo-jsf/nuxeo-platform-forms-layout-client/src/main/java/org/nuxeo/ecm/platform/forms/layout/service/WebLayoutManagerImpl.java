@@ -72,6 +72,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
+import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
@@ -178,12 +179,18 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             return null;
         }
         WidgetTypeHandler handler;
-        try {
-            // Thread context loader is not working in isolated EARs
-            handler = (WidgetTypeHandler) type.getWidgetTypeClass().newInstance();
-        } catch (ReflectiveOperationException e) {
-            log.error("Caught error when instanciating widget type handler", e);
-            return null;
+        Class<?> klass = type.getWidgetTypeClass();
+        if (klass == null) {
+            // implicit handler is the "template" one
+            handler = new TemplateWidgetTypeHandler();
+        } else {
+            try {
+                // Thread context loader is not working in isolated EARs
+                handler = (WidgetTypeHandler) klass.newInstance();
+            } catch (ReflectiveOperationException e) {
+                log.error("Caught error when instanciating widget type handler", e);
+                return null;
+            }
         }
         // set properties
         handler.setProperties(type.getProperties());

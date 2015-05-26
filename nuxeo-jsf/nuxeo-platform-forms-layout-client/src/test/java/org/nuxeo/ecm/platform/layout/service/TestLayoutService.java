@@ -126,7 +126,7 @@ public class TestLayoutService extends NXRuntimeTestCase {
 
         List<WidgetTypeDefinition> wTypeDefs = service.getWidgetTypeDefinitions();
         assertNotNull(wTypeDefs);
-        assertEquals(1, wTypeDefs.size());
+        assertEquals(2, wTypeDefs.size());
         assertEquals(wTypeDef, wTypeDefs.get(0));
     }
 

@@ -19,11 +19,6 @@
 
 package org.nuxeo.ecm.platform.layout.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +34,12 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test layout service API
@@ -137,10 +138,23 @@ public class TestLayoutStoreService extends NXRuntimeTestCase {
 
         List<WidgetTypeDefinition> wTypeDefs = service.getWidgetTypeDefinitions("testCategory");
         assertNotNull(wTypeDefs);
-        assertEquals(2, wTypeDefs.size());
+        assertEquals(3, wTypeDefs.size());
         assertEquals(wTypeDef, wTypeDefs.get(0));
         // same contribs (aliases)
         assertEquals(wTypeDef, wTypeDefs.get(1));
+    }
+
+    /**
+     * Checks that "template" widget type is the implicit one when no class is declared.
+     *
+     * @since 7.3
+     */
+    @Test
+    public void testWidgetTypeNullHandler() throws Exception {
+        WidgetType wType = service.getWidgetType("testCategory", "complex");
+        assertNotNull(wType);
+        assertEquals("complex", wType.getName());
+        assertNull(wType.getWidgetTypeClass());
     }
 
 }

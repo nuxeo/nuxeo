@@ -99,6 +99,14 @@
         </properties>
       </configuration>
     </widgetType>
+
+    <!-- sample conf without a handler class -->
+    <widgetType name="complex">
+      <property name="template">
+        /widgets/complex_widget_template.xhtml
+      </property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.LayoutStore"
@@ -120,6 +128,16 @@
           </defaultValues>
         </properties>
       </configuration>
+    </widgetType>
+
+    <!-- sample conf without a handler class, defined on the layout store -->
+    <widgetType name="complexFromStore">
+      <categories>
+        <category>testCategory</category>
+      </categories>
+      <property name="template">
+        /widgets/complex_widget_template.xhtml
+      </property>
     </widgetType>
 
   </extension>

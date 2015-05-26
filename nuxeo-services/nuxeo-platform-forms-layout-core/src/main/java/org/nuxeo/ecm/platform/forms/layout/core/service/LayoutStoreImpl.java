@@ -257,16 +257,14 @@ public class LayoutStoreImpl extends DefaultComponent implements LayoutStore {
     public void registerWidgetType(String category, WidgetTypeDefinition desc) {
         String name = desc.getName();
         String className = desc.getHandlerClassName();
-        if (className == null) {
-            log.error("Handler class missing " + "for widget type " + name);
-            return;
-        }
-        Class<?> widgetTypeClass;
-        try {
-            widgetTypeClass = LayoutStoreImpl.class.getClassLoader().loadClass(className);
-        } catch (ReflectiveOperationException e) {
-            log.error("Caught error when instantiating widget type handler", e);
-            return;
+        Class<?> widgetTypeClass = null;
+        if (className != null) {
+            try {
+                widgetTypeClass = LayoutStoreImpl.class.getClassLoader().loadClass(className);
+            } catch (ReflectiveOperationException e) {
+                log.error("Caught error when instantiating widget type handler", e);
+                return;
+            }
         }
 
         // override only if handler class was resolved correctly
