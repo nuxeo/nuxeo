@@ -556,6 +556,7 @@ public class WidgetDefinitionImpl implements WidgetDefinition {
         }
         WidgetDefinitionImpl clone = new WidgetDefinitionImpl(name, type, clabels, chelpLabels, translated, cmodes,
                 cfieldDefinitions, cprops, cwidgetProps, csubWidgets, cselectOptions);
+        clone.setTypeCategory(typeCategory);
         clone.setRenderingInfos(crenderingInfos);
         clone.setSubWidgetReferences(csubWidgetRefs);
         clone.setHandlingLabels(handlingLabels);

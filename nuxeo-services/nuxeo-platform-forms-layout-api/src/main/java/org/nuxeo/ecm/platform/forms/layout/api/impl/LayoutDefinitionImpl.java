@@ -305,7 +305,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         Map<String, WidgetDefinition> cwidgets = null;
         if (widgets != null) {
             cwidgets = new HashMap<String, WidgetDefinition>();
-            for (Map.Entry<String, WidgetDefinition> entry : cwidgets.entrySet()) {
+            for (Map.Entry<String, WidgetDefinition> entry : widgets.entrySet()) {
                 WidgetDefinition w = entry.getValue();
                 if (w != null) {
                     w = w.clone();
