@@ -2305,4 +2305,21 @@ public class TestSQLRepositoryQuery {
         assertEquals(new HashSet<String>(Arrays.asList(expected)), set);
     }
 
+    /**
+     * Make sure that even when we use a sequence, the id is a String, for compat with the rest of the framework.
+     */
+    @Test
+    public void testIdType() throws Exception {
+        createDocs();
+        IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM File", NXQL.NXQL);
+        assertEquals(3, res.size());
+        for (Map<String, Serializable> map : res) {
+            Serializable id = map.get(NXQL.ECM_UUID);
+            assertTrue(id.getClass().getName(), id instanceof String);
+            Serializable parentId = map.get(NXQL.ECM_PARENTID);
+            assertTrue(parentId.getClass().getName(), parentId instanceof String);
+        }
+        res.close();
+    }
+
 }
