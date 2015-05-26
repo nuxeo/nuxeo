@@ -17,8 +17,11 @@
 package org.nuxeo.ecm.core.storage;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -103,8 +106,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      * @param values the values
      * @param field the list element type
      */
-    protected abstract void updateList(T state, String name, List<Object> values, Field field)
-            throws PropertyException;
+    protected abstract void updateList(T state, String name, List<Object> values, Field field) throws PropertyException;
 
     protected BlobInfo getBlobInfo(T state) throws PropertyException {
         BlobInfo blobInfo = new BlobInfo();
@@ -443,6 +445,115 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             blobInfo.length = blob.getLength() == -1 ? null : Long.valueOf(blob.getLength());
         }
         setBlobInfo(state, blobInfo);
+    }
+
+    protected static final Runnable NO_DIRTY = () -> {
+    };
+
+    protected class StateBlobAccessor implements BlobAccessor {
+
+        protected final Collection<String> path;
+
+        protected final T state;
+
+        protected final Runnable markDirty;
+
+        public StateBlobAccessor(Collection<String> path, T state, Runnable markDirty) {
+            this.path = path;
+            this.state = state;
+            this.markDirty = markDirty;
+        }
+
+        @Override
+        public String getXPath() {
+            return StringUtils.join(path, "/");
+        }
+
+        @Override
+        public Blob getBlob() throws PropertyException {
+            return getValueBlob(state);
+        }
+
+        @Override
+        public void setBlob(Blob blob) throws PropertyException {
+            markDirty.run();
+            setValueBlob(state, blob);
+        }
+
+    }
+
+    protected void visitBlobs(T state, BlobVisitor blobVisitor, Runnable markDirty) throws PropertyException {
+        Visit visit = new Visit(blobVisitor, markDirty);
+        // structural type
+        visit.visitBlobsComplex(state, getType());
+        // dynamic facets
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        for (String facet : getFacets()) {
+            CompositeType facetType = schemaManager.getFacet(facet);
+            visit.visitBlobsComplex(state, facetType);
+        }
+        // proxy schemas
+        if (getProxySchemas() != null) {
+            for (Schema schema : getProxySchemas()) {
+                visit.visitBlobsComplex(state, schema);
+            }
+        }
+    }
+
+    protected class Visit {
+
+        protected final BlobVisitor blobVisitor;
+
+        protected final Runnable markDirty;
+
+        protected final Deque<String> path;
+
+        public Visit(BlobVisitor blobVisitor, Runnable markDirty) {
+            this.blobVisitor = blobVisitor;
+            this.markDirty = markDirty;
+            path = new ArrayDeque<>();
+        }
+
+        public void visitBlobsComplex(T state, ComplexType complexType) throws PropertyException {
+            if (TypeConstants.isContentType(complexType)) {
+                blobVisitor.accept(new StateBlobAccessor(path, state, markDirty));
+                return;
+            }
+            for (Field field : complexType.getFields()) {
+                visitBlobsField(state, field);
+            }
+        }
+
+        protected void visitBlobsField(T state, Field field) throws PropertyException {
+            Type type = field.getType();
+            if (type.isSimpleType()) {
+                // scalar
+            } else if (type.isComplexType()) {
+                // complex property
+                String name = field.getName().getPrefixedName();
+                T childState = getChild(state, name, type);
+                path.addLast(name);
+                visitBlobsComplex(childState, (ComplexType) type);
+                path.removeLast();
+            } else {
+                // array or list
+                Type fieldType = ((ListType) type).getFieldType();
+                if (fieldType.isSimpleType()) {
+                    // array
+                } else {
+                    // complex list
+                    String name = field.getName().getPrefixedName();
+                    path.addLast(name);
+                    int i = 0;
+                    for (T childState : getChildAsList(state, name)) {
+                        path.addLast(String.valueOf(i++));
+                        visitBlobsComplex(childState, (ComplexType) fieldType);
+                        path.removeLast();
+                    }
+                    path.removeLast();
+                }
+            }
+        }
     }
 
 }

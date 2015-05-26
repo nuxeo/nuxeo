@@ -469,6 +469,13 @@ public class SQLDocumentProxy implements SQLDocument {
         }
     }
 
+    @Override
+    public void visitBlobs(BlobVisitor blobVisitor) throws PropertyException, DocumentException {
+        // visit all blobs from the proxy AND the target
+        proxy.visitBlobs(blobVisitor);
+        target.visitBlobs(blobVisitor);
+    }
+
     /*
      * ----- toString/equals/hashcode -----
      */

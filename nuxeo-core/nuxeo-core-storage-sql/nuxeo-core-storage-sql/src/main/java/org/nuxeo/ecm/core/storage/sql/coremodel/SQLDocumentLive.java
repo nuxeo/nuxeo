@@ -249,6 +249,11 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
+    public void visitBlobs(BlobVisitor blobVisitor) throws PropertyException {
+        visitBlobs(getNode(), blobVisitor, NO_DIRTY);
+    }
+
+    @Override
     public Serializable getPropertyValue(String name) throws DocumentException {
         try {
             return getNode().getSimpleProperty(name).getValue();

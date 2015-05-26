@@ -49,6 +49,7 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.model.Document.BlobVisitor;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -424,6 +425,16 @@ public class DBSDocument extends BaseDocument<State> {
         // markDirty has to be called *before* we change the state
         docState.markDirty();
         setValueObject(docState.getState(), xpath, value);
+    }
+
+    @Override
+    public void visitBlobs(BlobVisitor blobVisitor) throws PropertyException, DocumentException {
+        if (isProxy()) {
+            ((DBSDocument) getTargetDocument()).visitBlobs(blobVisitor);
+            // fall through for proxy schemas
+        }
+        Runnable markDirty = () -> docState.markDirty();
+        visitBlobs(docState.getState(), blobVisitor, markDirty);
     }
 
     @Override

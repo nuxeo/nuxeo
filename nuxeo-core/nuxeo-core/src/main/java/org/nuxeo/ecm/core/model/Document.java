@@ -16,11 +16,12 @@ package org.nuxeo.ecm.core.model;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -128,6 +129,39 @@ public interface Document {
      * @throws PropertyException if the property does not exist
      */
     Object getValue(String xpath) throws PropertyException, DocumentException;
+
+    /**
+     * An accessor that can read or write a blob and know its xpath.
+     *
+     * @since 7.3
+     */
+    interface BlobAccessor {
+        /** Gets the blob's xpath. */
+        String getXPath();
+
+        /** Gets the blob. */
+        Blob getBlob();
+
+        /** Sets the blob. */
+        void setBlob(Blob blob);
+    }
+
+    /**
+     * A visitor of blobs, that is passed a {@link BlobAccessor} on each visit so that the visitor may read or write the
+     * blob and know its xpath.
+     *
+     * @since 7.3
+     */
+    @FunctionalInterface
+    interface BlobVisitor extends Consumer<BlobAccessor> {
+    }
+
+    /**
+     * Visits all the blobs of this document and calls the passed blob visitor on each one.
+     *
+     * @since 7.3
+     */
+    void visitBlobs(BlobVisitor blobVisitor) throws PropertyException, DocumentException;
 
     /**
      * Checks whether this document is a folder.

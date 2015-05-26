@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +47,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.ecm.core.model.Document.BlobVisitor;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
@@ -349,6 +352,56 @@ public class TestDocument {
         session.save();
 
         assertEquals("proxyinfo", proxy.getValue("info:info"));
+    }
+
+    @Test
+    public void testBlobsVisitor() throws Exception {
+        Document root = session.getRootDocument();
+        Document doc = root.addChild("doc", "ComplexDoc");
+
+        Blob blob1 = Blobs.createBlob("content1", "text/plain");
+        Blob blob2 = Blobs.createBlob("content2", "text/html");
+
+        List<Map<String, Object>> vignettes = new ArrayList<>();
+        vignettes.add(Collections.singletonMap("content", blob1));
+        vignettes.add(Collections.singletonMap("content", blob2));
+        Map<String, Object> attachedFile = new HashMap<>();
+        attachedFile.put("vignettes", vignettes);
+        doc.setValue("cmpf:attachedFile", attachedFile);
+
+        // list the paths
+        List<String> paths = new ArrayList<>();
+        doc.visitBlobs(accessor -> paths.add(accessor.getXPath()));
+        assertEquals(Arrays.asList("cmpf:attachedFile/vignettes/0/content", "cmpf:attachedFile/vignettes/1/content"),
+                paths);
+
+        // get the MIME types
+        List<String> mimeTypes = new ArrayList<>();
+        doc.visitBlobs(accessor -> mimeTypes.add(accessor.getBlob().getMimeType()));
+        assertEquals(Arrays.asList("text/plain", "text/html"), mimeTypes);
+
+        // set the file names
+        doc.visitBlobs(accessor -> {
+            Blob blob = accessor.getBlob();
+            blob.setFilename("myfile-" + blob.getMimeType());
+            accessor.setBlob(blob);
+        });
+        assertEquals("myfile-text/plain", doc.getValue("cmpf:attachedFile/vignettes/0/content/name"));
+        assertEquals("myfile-text/html", doc.getValue("cmpf:attachedFile/vignettes/1/content/name"));
+
+        // upload new blobs
+        doc.visitBlobs(accessor -> {
+            try {
+                String c = accessor.getBlob().getString();
+                accessor.setBlob(Blobs.createBlob(c + "-updated"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        Blob b1 = (Blob) doc.getValue("cmpf:attachedFile/vignettes/0/content");
+        assertEquals("content1-updated", b1.getString());
+        Blob b2 = (Blob) doc.getValue("cmpf:attachedFile/vignettes/1/content");
+        assertEquals("content2-updated", b2.getString());
     }
 
 }
