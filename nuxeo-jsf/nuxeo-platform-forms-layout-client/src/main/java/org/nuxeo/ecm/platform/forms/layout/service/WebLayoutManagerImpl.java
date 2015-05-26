@@ -54,6 +54,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.WidgetReference;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetType;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeConfiguration;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContext;
+import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutDefinitionConverter;
+import org.nuxeo.ecm.platform.forms.layout.api.converters.WidgetDefinitionConverter;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.LayoutException;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutImpl;
@@ -264,19 +267,20 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             String valueName, String layoutName) {
         WidgetReference widgetRef = new WidgetReferenceImpl(widgetCategory, widgetName);
         WidgetDefinition wDef = lookupWidget(widgetRef);
-        if (wDef != null) {
-            return getWidget(ctx, layoutName, null, wDef, widgetCategory, layoutMode, valueName, 0);
-        }
-        return null;
+        return getWidget(ctx, null, null, layoutName, null, wDef, widgetCategory, layoutMode, valueName, 0);
     }
 
     @Override
     public Widget getWidget(FaceletContext ctx, WidgetDefinition wDef, String layoutMode, String valueName,
             String layoutName) {
-        if (wDef != null) {
-            return getWidget(ctx, layoutName, null, wDef, getDefaultStoreCategory(), layoutMode, valueName, 0);
-        }
-        return null;
+        return getWidget(ctx, null, null, layoutName, null, wDef, getDefaultStoreCategory(), layoutMode, valueName, 0);
+    }
+
+    @Override
+    public Widget getWidget(FaceletContext ctx, LayoutConversionContext lctx, String conversionCat,
+            WidgetDefinition widgetDef, String layoutMode, String valueName, String layoutName) {
+        return getWidget(ctx, null, null, layoutName, null, widgetDef, getDefaultStoreCategory(), layoutMode,
+                valueName, 0);
     }
 
     /**
@@ -287,8 +291,19 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
      * Sub widgets are also computed recursively.
      */
     @SuppressWarnings("deprecation")
-    protected Widget getWidget(FaceletContext context, String layoutName, LayoutDefinition layoutDef,
-            WidgetDefinition wDef, String widgetCategory, String layoutMode, String valueName, int level) {
+    protected Widget getWidget(FaceletContext context, LayoutConversionContext lctx, String conversionCat,
+            String layoutName, LayoutDefinition layoutDef, WidgetDefinition widgetDefinition, String widgetCategory,
+            String layoutMode, String valueName, int level) {
+        if (widgetDefinition == null) {
+            return null;
+        }
+        WidgetDefinition wDef = widgetDefinition.clone();
+        if (lctx != null && !StringUtils.isBlank(conversionCat)) {
+            List<WidgetDefinitionConverter> lcs = getLayoutStore().getWidgetConverters(conversionCat);
+            for (WidgetDefinitionConverter wc : lcs) {
+                wDef = wc.getWidgetDefinition(wDef, lctx);
+            }
+        }
         VariableMapper orig = null;
         // avoid variable mapper changes if context is null for tests
         if (context != null) {
@@ -313,8 +328,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         WidgetDefinition[] swDefs = wDef.getSubWidgetDefinitions();
         if (swDefs != null) {
             for (WidgetDefinition swDef : swDefs) {
-                Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, widgetCategory, wMode, valueName,
-                        level + 1);
+                Widget subWidget = getWidget(context, lctx, conversionCat, layoutName, layoutDef, swDef,
+                        widgetCategory, wMode, valueName, level + 1);
                 if (subWidget != null) {
                     subWidgets.add(subWidget);
                 }
@@ -332,8 +347,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 if (swDef == null) {
                     log.error(String.format("Widget '%s' not found in layout %s", swRef.getName(), layoutName));
                 } else {
-                    Widget subWidget = getWidget(context, layoutName, layoutDef, swDef, cat, wMode, valueName,
-                            level + 1);
+                    Widget subWidget = getWidget(context, lctx, conversionCat, layoutName, layoutDef, swDef, cat,
+                            wMode, valueName, level + 1);
                     if (subWidget != null) {
                         subWidgets.add(subWidget);
                     }
@@ -408,13 +423,27 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
     @Override
     public Layout getLayout(FaceletContext ctx, LayoutDefinition layoutDef, String mode, String valueName,
             List<String> selectedRows, boolean selectAllRowsByDefault) {
-        if (layoutDef == null) {
+        return getLayout(ctx, null, null, layoutDef, mode, valueName, selectedRows, selectAllRowsByDefault);
+    }
+
+    @Override
+    public Layout getLayout(FaceletContext ctx, LayoutConversionContext lctx, String conversionCat,
+            LayoutDefinition layoutDefinition, String mode, String valueName, List<String> selectedRows,
+            boolean selectAllRowsByDefault) {
+        if (layoutDefinition == null) {
             log.debug("Layout definition is null");
             return null;
         }
         if (ctx == null) {
             log.warn("Layout creation computed in a null facelet context: expressions "
                     + "found in the layout definition will not be evaluated");
+        }
+        LayoutDefinition layoutDef = layoutDefinition.clone();
+        if (lctx != null && !StringUtils.isBlank(conversionCat)) {
+            List<LayoutDefinitionConverter> lcs = getLayoutStore().getLayoutConverters(conversionCat);
+            for (LayoutDefinitionConverter lc : lcs) {
+                layoutDef = lc.getLayoutDefinition(layoutDef, lctx);
+            }
         }
         String layoutName = layoutDef.getName();
         LayoutRowDefinition[] rowsDef = layoutDef.getRows();
@@ -458,7 +487,7 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                     widgets.add(null);
                     continue;
                 }
-                Widget widget = getWidget(ctx, layoutName, layoutDef, wDef, cat, mode, valueName, 0);
+                Widget widget = getWidget(ctx, lctx, conversionCat, layoutName, layoutDef, wDef, cat, mode, valueName, 0);
                 if (widget != null) {
                     emptyRow = false;
                 }

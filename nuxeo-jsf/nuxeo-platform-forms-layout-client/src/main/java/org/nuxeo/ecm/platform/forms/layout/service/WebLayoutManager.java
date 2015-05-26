@@ -32,6 +32,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.converters.LayoutConversionContext;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutManager;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
@@ -133,6 +134,15 @@ public interface WebLayoutManager extends LayoutManager {
             List<String> selectedRows, boolean selectAllRowsByDefault);
 
     /**
+     * Returns a layout with conversion.
+     *
+     * @since 7.3
+     */
+    Layout getLayout(FaceletContext ctx, LayoutConversionContext lctx, String conversionCat,
+            LayoutDefinition layoutDef, String mode, String valueName, List<String> selectedRows,
+            boolean selectAllRowsByDefault);
+
+    /**
      * Returns a widget instance given a name and a category, as it would be computed when defined within a layout.
      *
      * @since 5.6
@@ -162,6 +172,14 @@ public interface WebLayoutManager extends LayoutManager {
      */
     Widget getWidget(FaceletContext ctx, WidgetDefinition widgetDef, String layoutMode, String valueName,
             String layoutName);
+
+    /**
+     * Returns a widget with conversion.
+     *
+     * @since 7.3
+     */
+    Widget getWidget(FaceletContext ctx, LayoutConversionContext lctx, String conversionCat,
+            WidgetDefinition widgetDef, String layoutMode, String valueName, String layoutName);
 
     /**
      * Returns the facelet handler for given widget.
