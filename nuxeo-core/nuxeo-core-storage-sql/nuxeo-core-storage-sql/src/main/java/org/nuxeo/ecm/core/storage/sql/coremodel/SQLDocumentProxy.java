@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
@@ -470,7 +471,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void visitBlobs(BlobVisitor blobVisitor) throws PropertyException, DocumentException {
+    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException, DocumentException {
         // visit all blobs from the proxy AND the target
         proxy.visitBlobs(blobVisitor);
         target.visitBlobs(blobVisitor);

@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -482,7 +483,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     }
 
-    protected void visitBlobs(T state, BlobVisitor blobVisitor, Runnable markDirty) throws PropertyException {
+    protected void visitBlobs(T state, Consumer<BlobAccessor> blobVisitor, Runnable markDirty) throws PropertyException {
         Visit visit = new Visit(blobVisitor, markDirty);
         // structural type
         visit.visitBlobsComplex(state, getType());
@@ -502,13 +503,13 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     protected class Visit {
 
-        protected final BlobVisitor blobVisitor;
+        protected final Consumer<BlobAccessor> blobVisitor;
 
         protected final Runnable markDirty;
 
         protected final Deque<String> path;
 
-        public Visit(BlobVisitor blobVisitor, Runnable markDirty) {
+        public Visit(Consumer<BlobAccessor> blobVisitor, Runnable markDirty) {
             this.blobVisitor = blobVisitor;
             this.markDirty = markDirty;
             path = new ArrayDeque<>();

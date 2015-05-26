@@ -147,21 +147,11 @@ public interface Document {
     }
 
     /**
-     * A visitor of blobs, that is passed a {@link BlobAccessor} on each visit so that the visitor may read or write the
-     * blob and know its xpath.
-     *
-     * @since 7.3
-     */
-    @FunctionalInterface
-    interface BlobVisitor extends Consumer<BlobAccessor> {
-    }
-
-    /**
      * Visits all the blobs of this document and calls the passed blob visitor on each one.
      *
      * @since 7.3
      */
-    void visitBlobs(BlobVisitor blobVisitor) throws PropertyException, DocumentException;
+    void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException, DocumentException;
 
     /**
      * Checks whether this document is a folder.

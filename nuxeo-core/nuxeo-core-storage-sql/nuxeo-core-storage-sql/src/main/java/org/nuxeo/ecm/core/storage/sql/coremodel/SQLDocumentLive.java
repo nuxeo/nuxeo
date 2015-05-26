@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -249,7 +250,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public void visitBlobs(BlobVisitor blobVisitor) throws PropertyException {
+    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException {
         visitBlobs(getNode(), blobVisitor, NO_DIRTY);
     }
 

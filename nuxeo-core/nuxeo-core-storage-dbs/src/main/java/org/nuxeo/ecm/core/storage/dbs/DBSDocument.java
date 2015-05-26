@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
@@ -49,7 +50,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.model.Document.BlobVisitor;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -428,7 +428,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void visitBlobs(BlobVisitor blobVisitor) throws PropertyException, DocumentException {
+    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException, DocumentException {
         if (isProxy()) {
             ((DBSDocument) getTargetDocument()).visitBlobs(blobVisitor);
             // fall through for proxy schemas
