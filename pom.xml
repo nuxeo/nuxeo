@@ -125,6 +125,7 @@
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
+    <module>nuxeo-liveconnect</module>
   </modules>
 
   <dependencyManagement>
@@ -958,6 +959,14 @@
         <artifactId>nuxeo-segmentio-connector</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+
+      <!-- Live Connect -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
