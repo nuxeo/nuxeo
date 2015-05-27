@@ -35,7 +35,7 @@ import org.nuxeo.ecm.liveconnect.update.listener.BlobProviderDocumentsUpdateList
  * {@link #checkChangesAndUpdateBlob(List)}.
  * <p>
  * Note that it is recommended to schedule many workers dealing with a smaller amount of documents (using
- * {@link #MAX_RESULT}) than a single one processing all document brought by the provider.
+ * {@link #MAX_RESULT}) rather than a single one processing all document brought by the provider.
  *
  * @since 7.3
  */

@@ -36,7 +36,7 @@ public class BlobProviderDocumentsUpdateWork extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected static final String TITLE = "Update Google Drive Documents Work";
+    protected static final String TITLE = "Live Connect Update Documents Work";
 
     public static final String CATEGORY = "blobProviderDocumentsUpdate";
 
