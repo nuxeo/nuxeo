@@ -345,4 +345,13 @@ public class TestScriptRunnerInfrastructure {
         assertEquals("workflow", result.getPropertyValue("dc:title"));
         assertEquals("node", result.getPropertyValue("dc:description"));
     }
+
+    @Test
+    public void canUseChainWithDashes() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        ctx.setInput(root);
+        DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes", null);
+        assertNotNull(result);
+    }
 }

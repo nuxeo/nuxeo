@@ -5,6 +5,7 @@
              point="operations">
   <operation
           class="org.nuxeo.automation.scripting.test.operations.ContextModificationTest" />
+    <operation class="org.nuxeo.automation.scripting.test.operations.Operation1"/>
   </extension>
 
   <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
@@ -244,6 +245,20 @@
       ]]></script>
     </scriptedOperation>
 
+    <scriptedOperation id="Scripting.TestChainWithDashes">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+
+            var document = my_chain_with_dashes(input, {});
+
+            return document;
+        }
+      ]]></script>
+    </scriptedOperation>
+
   </extension>
 
   <extension point="chains"
@@ -255,6 +270,12 @@
       </operation>
       <operation id="Scripting.HelloWorld">
         <param type="string" name="lang">en</param>
+      </operation>
+    </chain>
+
+    <chain id="my-chain-with-dashes">
+      <operation id="o1">
+        <param type="string" name="message">Hello 1!</param>
       </operation>
     </chain>
 

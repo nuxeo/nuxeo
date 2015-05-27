@@ -198,14 +198,22 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     }
 
     protected void generateFunction(StringBuffer sb, String opId) {
-        sb.append("\n" + opId + " = function(input,params) {");
+        sb.append("\n" + replaceDashByUnderscore(opId) + " = function(input,params) {");
         sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
         sb.append("\n};");
     }
 
     protected void generateFlatFunction(StringBuffer sb, String opId) {
-        sb.append("\nvar " + opId + " = function(input,params) {");
+        sb.append("\nvar " + replaceDashByUnderscore(opId) + " = function(input,params) {");
         sb.append("\nreturn automation.executeOperation('" + opId + "', input , params);");
         sb.append("\n};");
+    }
+
+    /**
+     * Prevents dashes in operation/chain ids. Only used to avoid javascript issues.
+     * @since 7.3
+     */
+    public static String replaceDashByUnderscore(String id) {
+        return id.replaceAll("[\\s\\-()]", "_");
     }
 }
