@@ -12,11 +12,15 @@
 package org.nuxeo.ecm.automation.core.scripting;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.mvel2.MVEL;
 import org.mvel2.compiler.BlankLiteral;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.Constants;
+import org.nuxeo.ecm.automation.core.trace.TracerFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -38,7 +42,26 @@ public class MvelExpression implements Expression {
         if (compiled == null) {
             compiled = MVEL.compileExpression(expr);
         }
-        Object result = MVEL.executeExpression(compiled, getBindings(ctx));
+        Object result;
+
+        // Get and/or Store mvel results in operation context in case when trace mode enabled
+        TracerFactory factory = Framework.getService(TracerFactory.class);
+        if (factory.getRecordingState()) {
+            HashMap<String, Object> mvelResults = (HashMap<String, Object>) ctx.get(Constants.MVEL_RESULTS);
+            if (mvelResults == null) {
+                mvelResults = new HashMap<>();
+            }
+            if (mvelResults.get(expr) != null) {
+                result = mvelResults.get(expr);
+            } else {
+                result = MVEL.executeExpression(compiled, getBindings(ctx));
+                mvelResults.put(expr, result);
+                ctx.put(Constants.MVEL_RESULTS, mvelResults);
+            }
+        } else {
+            result = MVEL.executeExpression(compiled, getBindings(ctx));
+        }
+
         return result != null && result.getClass().isAssignableFrom(BlankLiteral.class) ? "" : result;
     }
 
