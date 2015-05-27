@@ -1,0 +1,28 @@
+{
+ "kind": "drive#revision",
+ "etag": "\"nSQrdfHkt2_XVlBRtdjY7G0Omdg/airx6Hl8jfc0q9imaAZdoLbjp1M\"",
+ "id": "4551",
+ "selfLink": "https://www.googleapis.com/drive/v2/files/56785678/revisions/4551",
+ "mimeType": "application/vnd.google-apps.document",
+ "modifiedDate": "2012-11-23T16:23:07.639Z",
+ "published": false,
+ "exportLinks": {
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=docx",
+  "application/vnd.oasis.opendocument.text": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=odt",
+  "application/rtf": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=rtf",
+  "text/html": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=html",
+  "text/plain": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=txt",
+  "application/pdf": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=pdf"
+ },
+ "lastModifyingUserName": "Tester Tester",
+ "lastModifyingUser": {
+  "kind": "drive#user",
+  "displayName": "Tester Tester",
+  "picture": {
+   "url": "http://example.com/picture/tester@example.com/photo.jpg"
+  },
+  "isAuthenticatedUser": true,
+  "permissionId": "18093776961422815682",
+  "emailAddress": "tester@example.com"
+ }
+}

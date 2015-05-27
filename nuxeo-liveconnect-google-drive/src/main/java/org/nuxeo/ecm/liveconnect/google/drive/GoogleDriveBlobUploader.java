@@ -27,18 +27,20 @@ import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-import com.google.api.client.auth.oauth2.Credential;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.FileInfo;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileInfo;
 import org.nuxeo.ecm.platform.ui.web.component.file.JSFBlobUploader;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.api.client.auth.oauth2.Credential;
 
 /**
  * JSF Blob Upload based on Google Drive blobs.
@@ -141,15 +143,13 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         }
         HtmlInputText inputText = (HtmlInputText) facet;
         Object value = inputText.getSubmittedValue();
-        String string;
-        if (value == null || value instanceof String) {
-            string = (String) value;
-        } else {
+        if (value != null && !(value instanceof String)) {
             ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidSpecialBlob");
             parent.setValid(false);
             return;
         }
-        if (StringUtils.isBlank(string)) {
+        String string = (String) value;
+        if (StringUtils.isBlank(string) || string.indexOf(':') < 0) {
             String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
                     : InputFileInfo.INVALID_FILE_MESSAGE;
             ComponentUtils.addErrorMessage(context, parent, message);
@@ -157,8 +157,12 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             return;
         }
 
+        // micro parse the string (user:fileId)
+        String[] parts = string.split(":");
+        String user = parts[0];
+        String fileId = parts[1];
+
         // check if we can get an access token
-        String user = getUser(string);
         String accessToken = getAccessToken(user);
         if (accessToken == null) {
             ComponentUtils.addErrorMessage(context, parent, "error.inputFile.accessToken", new Object[] { user });
@@ -166,7 +170,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             return;
         }
 
-        Blob blob = createBlob(string);
+        Blob blob = createBlob(new FileInfo(user, fileId, null)); // no revisionId
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
         submitted.setMimeType(blob.getMimeType());
@@ -178,7 +182,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
      * @param fileInfo the Google Drive file info
      * @return the blob
      */
-    protected Blob createBlob(String fileInfo) {
+    protected Blob createBlob(FileInfo fileInfo) {
         try {
             return getGoogleDriveBlobProvider().getBlob(fileInfo);
         } catch (IOException e) {
@@ -199,10 +203,6 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     protected String getClientId() {
         String clientId = getGoogleDriveBlobProvider().getClientId();
         return (clientId != null) ? clientId : "";
-    }
-
-    protected String getUser(String fileInfo) {
-        return getGoogleDriveBlobProvider().getUser(fileInfo);
     }
 
     protected String getAccessToken(String user) {

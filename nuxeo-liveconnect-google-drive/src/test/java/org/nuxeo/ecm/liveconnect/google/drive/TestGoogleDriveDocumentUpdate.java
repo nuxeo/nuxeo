@@ -33,20 +33,12 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobManagerFeature;
-import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
+import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- * @since 7.3
- */
-@Features({ BlobManagerFeature.class, TransactionalFeature.class, PlatformFeature.class })
 public class TestGoogleDriveDocumentUpdate extends GoogleDriveTestCase {
 
     private static final String TEST_FILE_NAME = "GoogleDriveFile";
@@ -63,15 +55,13 @@ public class TestGoogleDriveDocumentUpdate extends GoogleDriveTestCase {
     @Test
     public void testDocumentUpdate() throws Exception {
         // Create test document
-        DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
-                "Workspace");
+        DocumentModel testWorkspace = session.createDocumentModel("/", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         List<DocumentModel> testFiles = new ArrayList<DocumentModel>();
         for (int i = 0; i < GoogleDriveBlobProvider.MAX_RESULT + 10; i++) {
-            DocumentModel testFile = session.createDocumentModel(testWorkspace.getPathAsString(), TEST_FILE_NAME + i,
-                    "File");
+            DocumentModel testFile = session.createDocumentModel("/testWorkspace", TEST_FILE_NAME + i, "File");
             BlobInfo blobInfo = new BlobInfo();
-            blobInfo.key = PREFIX + ":" + USERID + ":" + FILEID_JPEG;
+            blobInfo.key = PREFIX + ":" + USERID + ":" + JPEG_FILEID;
             blobInfo.digest = "pouet";
             SimpleManagedBlob blob = new SimpleManagedBlob(blobInfo);
             testFile.setPropertyValue("content", blob);

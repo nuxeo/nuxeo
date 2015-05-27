@@ -24,25 +24,27 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.api.services.drive.model.App;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
+import com.google.api.services.drive.model.App;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.Revision;
+import com.google.api.services.drive.model.RevisionList;
 
 /**
  * @since 7.3
  */
 public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
 
-    private static final Log log = LogFactory.getLog(MockGoogleDriveBlobProvider.class);
-
     public static final String APP_FMT = "/OSGI-INF/data/app-%s.json";
 
     public static final String FILE_FMT = "/OSGI-INF/data/file-%s.json";
 
     public static final String DOWNLOAD_FMT = "/OSGI-INF/data/download-%s.bin";
+
+    public static final String REV_FMT = "/OSGI-INF/data/revision-%s-%s.json";
+
+    public static final String REVS_FMT = "/OSGI-INF/data/revisions-%s.json";
 
     public static final Pattern DOWNLOAD_PAT = Pattern.compile("http://example.com/download/(.*)");
 
@@ -56,14 +58,29 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
     }
 
     @Override
-    protected File getFile(String user, String fileId) throws IOException {
-        // ignore user
-        return getData(String.format(FILE_FMT, fileId), File.class);
+    protected File getPartialFile(String user, String fileId, String... fields) throws IOException {
+        // ignore fields, return everything
+        return getFile(new FileInfo(user, fileId, null)); // no revisionId
     }
 
     @Override
-    protected File getPartialFile(String user, String fileId, String... fields) throws IOException {
-        return getFile(user, fileId);
+    protected File getFile(FileInfo fileInfo) throws IOException {
+        // ignore user
+        // TODO revisionId
+        return getData(String.format(FILE_FMT, fileInfo.fileId), File.class);
+    }
+
+    @Override
+    protected Revision getRevision(FileInfo fileInfo) throws IOException {
+        if (fileInfo.revisionId == null) {
+            throw new NullPointerException("null revisionId for " + fileInfo.fileId);
+        }
+        return getData(String.format(REV_FMT, fileInfo.fileId, fileInfo.revisionId), Revision.class);
+    }
+
+    @Override
+    protected RevisionList getRevisionList(FileInfo fileInfo) throws IOException {
+        return getData(String.format(REVS_FMT, fileInfo.fileId), RevisionList.class);
     }
 
     @Override
@@ -83,7 +100,7 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
         return username + "@example.com";
     }
 
-    private <T> T getData(String name, Class<T> aClass) throws IOException {
+    private <T> T getData(String name, Class<T> klass) throws IOException {
         String json;
         try (InputStream is = getClass().getResourceAsStream(name)) {
             if (is == null) {
@@ -91,7 +108,7 @@ public class MockGoogleDriveBlobProvider extends GoogleDriveBlobProvider {
             }
             json = IOUtils.toString(is);
         }
-        return parser.parseAndClose(new StringReader(json), aClass);
+        return (T) JSON_PARSER.parseAndClose(new StringReader(json), klass);
     }
 
 }

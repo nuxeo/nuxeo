@@ -158,6 +158,11 @@ public class DropboxBlobProvider implements ExtendedBlobProvider {
         return getStream(uri);
     }
 
+    @Override
+    public ManagedBlob freezeVersion(ManagedBlob blob) throws IOException {
+        return null;
+    }
+
     /**
      * Gets the blob for a Dropbox file.
      *

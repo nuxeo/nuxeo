@@ -18,15 +18,18 @@
 
 package org.nuxeo.ecm.liveconnect.google.drive;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.blob.BlobManagerFeature;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+@Ignore
 @RunWith(FeaturesRunner.class)
-@Features(BlobManagerFeature.class)
+@Features({ TransactionalFeature.class, CoreFeature.class })
 @Deploy({ "org.nuxeo.ecm.core.cache", //
 })
 @LocalDeploy({ "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/cache-config.xml",
@@ -38,10 +41,16 @@ public class GoogleDriveTestCase {
 
     protected static final String USERID = USERNAME + "@example.com";
 
-    protected static final String FILEID_JPEG = "12341234";
+    protected static final String JPEG_FILEID = "12341234";
 
-    protected static final String FILEID_DOC = "56785678";
+    protected static final String JPEG_REVID = "v1abcd";
 
-    protected static final int SIZE = 36830;
+    protected static final int JPEG_SIZE = 36830;
+
+    protected static final int JPEG_REV_SIZE = 18581;
+
+    protected static final String GOOGLEDOC_FILEID = "56785678";
+
+    protected static final String GOOGLEDOC_REVID = "4551";
 
 }

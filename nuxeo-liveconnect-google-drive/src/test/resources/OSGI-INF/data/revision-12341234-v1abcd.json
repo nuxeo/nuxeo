@@ -1,0 +1,25 @@
+{
+ "kind": "drive#revision",
+ "etag": "\"ULTBkNKmycdCqkp_rFmHqVG1eVs/lECh9xSUPkF_5bwd1BTB7rsyM4g\"",
+ "id": "v1abcd",
+ "selfLink": "https://www.googleapis.com/drive/v2/files/12341234/revisions/v1abcd",
+ "mimeType": "image/jpeg",
+ "modifiedDate": "2015-05-21T11:59:40.478Z",
+ "pinned": true,
+ "published": false,
+ "downloadUrl" : "http://example.com/download/12341234-v1abcd",
+ "lastModifyingUserName": "Tester Tester",
+ "lastModifyingUser": {
+  "kind": "drive#user",
+  "displayName": "Tester Tester",
+  "picture": {
+   "url": "http://example.com/picture/tester@example.com/photo.jpg"
+  },
+  "isAuthenticatedUser": true,
+  "permissionId": "18093776961422815682",
+  "emailAddress": "tester@example.com"
+ },
+ "originalFilename": "panda-chair.jpg",
+ "md5Checksum": "47b6b326a9e2fd65749ced3f1233c6a5",
+ "fileSize": "45281"
+}
