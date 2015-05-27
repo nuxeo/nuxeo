@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:ui="http://java.sun.com/jsf/facelets">
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 <f:view contentType="text/html" />
 <h:head id="polymerHead">
   <title>
@@ -13,9 +13,9 @@
   <ui:insert name="imports"></ui:insert>
 
   <meta name="viewport"
-        content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes"></meta>
+    content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes"></meta>
   <script type="text/javascript"
-          src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="#{baseURL}bower_components/font-roboto/roboto.html"></link>
   <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
@@ -28,6 +28,7 @@
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-resource.html"></link>
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-doc-resource.html"></link>
   <link rel="import" href="#{baseURL}rights/components/nuxeo-elements/popup-right.html"></link>
+  <link rel="import" href="#{baseURL}rights/components/add-right-form/add-right-form.html"></link>
 
   <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
   <link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html"></link>
@@ -104,16 +105,16 @@
 
   <div fullbleed="fullbleed" vertical="vertical" layout="layout">
 
-    <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
+    <template id="document-rights" is="dom-bind">
 
-    <template is="dom-bind">
+      <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
       <nx-doc-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}"></nx-doc-resource>
 
       <template is="dom-if" if="{{hasLocalRights}}">
         <div>
-          <h2>Access rights defined explicitely on this folder or document</h2>
-          <popup-right render="{{doc.isCurrentUserHasEverything}}"></popup-right>
+          <h2>Access rights defined explicitely on this folder or document #{currentDocument.id}</h2>
+          <popup-right doc-id="#{currentDocument.id}" render="{{hasLocalRights}}" on-aclcreated="handleAclCreated"></popup-right>
         </div>
         <div>
           <table class="tmp-tab">
@@ -183,8 +184,17 @@
       <h2>Temporary Access</h2>
       <p>No temporary access was given</p>
       <paper-button raised="true">Give a Temporary Access</paper-button>
+
     </template>
 
+    <script>
+      (function() {
+        var t = document.querySelector('#document-rights');
+        t.handleAclCreated = function() {
+          document.querySelector('#doc').get();
+        }
+      })();
+    </script>
   </div>
 
 </h:body>

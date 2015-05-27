@@ -7,69 +7,46 @@
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+<link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
 
 
 <dom-module id="popup-right">
-  <template><template is="dom-if" if="{{render}}">
+  <template>
+
+    <nx-operation id="op" op="Document.AddACL" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+
     <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
     <paper-dialog id="popupRight">
       <h2>Add new acl right</h2>
 
-      <paper-dialog-scrollable>
-        <!-- Give acces to row -->
+      <!-- <paper-dialog-scrollable> -->
+      <!-- Give acces to row -->
+      <div>
+        <div>Give access to</div>
         <div>
-          <div>Give access to</div>
-          <div>
-            <select flex two>
-              <option>User</option>
-            </select>
-          </div>
+          <paper-input
+            id="user"
+            value="{{params.user}}">
+          </paper-input>
         </div>
-        <div>
-          <div>From</div>
-          <div>
-            <paper-input
-              id="from"
-              value="{{from}}"
-              readonly>
-            </paper-input>
-          </div>
-        </div>
-        <div>
-          <div>To</div>
-          <div>
-            <paper-input
-              id="to" value="{{selectedToDate}}"
-              readonly class="date">
-            </paper-input>
-          </div>
-        </div>
-        <!-- Allowed rights row -->
-        <div layout horizontal>
-          <div>Allowed rights</div>
-          <select flex two>
-            <option>Right</option>
-          </select>
-        </div>
-        <!-- Notification -->
-        <div layout horizontal>
-          <paper-checkbox></paper-checkbox>
-          <span>Send a notification ...</span>
-        </div>
-        <div>
-          <iron-autogrow-textarea value="{{val}}">
-            <textarea rows="4" value="{{val}}"></textarea>
-          </iron-autogrow-textarea>
-        </div>
-      </paper-dialog-scrollable>
+      </div>
+      <!-- Allowed rights row -->
+      <div layout horizontal>
+        <div>Allowed rights</div>
+        <select flex two value="{{params.permission}}">
+          <option value="READ">Read</option>
+          <option value="WRITE">Write</option>
+          <option value="EVERYTHING">Everything</option>
+        </select>
+      </div>
+      <!-- </paper-dialog-scrollable> -->
 
       <div class="buttons">
         <paper-button dialog-dismissive  raised="true">Cancel</paper-button>
-        <paper-button dialog-affirmative raised="true">Confirm and add another</paper-button>
-        <paper-button dialog-affirmative raised="true">Confirm</paper-button>
+        <paper-button dialog-affirmative raised="true" on-tap="doSend">Confirm</paper-button>
       </div>
     </paper-dialog>
-  </template></template>
+  </template>
 </dom-module>
 
 <script>
@@ -80,12 +57,38 @@
       render: {
         type: Boolean,
         value: true
+      },
+      docId: {
+        type: String,
+        value: ''
+      },
+      params: {
+        type: Object,
+        value: function() {
+          return {
+            user: '',
+            permission: 'READ'
+          }
+        }
       }
     },
 
+    ready: function() {
+      console.log(this.docId);
+    },
+
     togglePopup: function() {
-      var popupRight = Polymer.dom(this.root).querySelector('#popupRight');
-      popupRight.toggle();
+      this.$.popupRight.toggle();
+    },
+
+    doSend: function() {
+      this.$.op.execute();
+    },
+
+    handleResponse: function() {
+      // close the popup
+      this.$.popupRight.toggle();
+      this.fire('aclcreated');
     }
   });
 </script>
