@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.schema.Namespace;
 import org.nuxeo.ecm.core.schema.SchemaNames;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
 
 /**
  * The implementation of a Schema
@@ -33,8 +34,7 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
      * {@link #registerType}.
      */
     public SchemaImpl(String name, Namespace ns) {
-        super(null, SchemaNames.SCHEMAS, name,
-                ns == null ? Namespace.DEFAULT_NS : ns);
+        super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
     }
 
     /**
@@ -48,16 +48,15 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
      * @param ns
      */
     public SchemaImpl(ComplexType complexType, String name, Namespace ns) {
-        super(null, SchemaNames.SCHEMAS, name,
-                ns == null ? Namespace.DEFAULT_NS : ns);
+        super(null, SchemaNames.SCHEMAS, name, ns == null ? Namespace.DEFAULT_NS : ns);
         if (complexType != null) {
             for (Field field : complexType.getFields()) {
                 QName fieldname = QName.valueOf(field.getName().getLocalName(), ns.prefix);
                 Type type = field.getType();
                 String defaultValue = type.encode(field.getDefaultValue());
-                FieldImpl newField = new FieldImpl(fieldname, this, type, defaultValue, 0);
+                Set<Constraint> constraint = field.getConstraints();
+                FieldImpl newField = new FieldImpl(fieldname, this, type, defaultValue, 0, constraint);
                 newField.setConstant(field.isConstant());
-                newField.setNillable(field.isNillable());
                 addField(newField);
             }
         }
@@ -81,6 +80,11 @@ public class SchemaImpl extends ComplexTypeImpl implements Schema {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + name + ')';
+    }
+
+    @Override
+    public Schema getSchema() {
+        return this;
     }
 
 }

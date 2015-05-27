@@ -12,6 +12,16 @@
  */
 package org.nuxeo.ecm.core.schema.types;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
+import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
+
 /**
  * The implementation for a field, which is the association of a type, a name,
  * and default values.
@@ -36,17 +46,27 @@ public class FieldImpl implements Field {
 
     private int maxLength = -1;
 
-    public FieldImpl(QName name, Type declaringType, Type type,
-            String defaultValue, int flags) {
+    private Set<Constraint> constraints;
+
+    public FieldImpl(QName name, Type declaringType, Type type, String defaultValue, int flags,
+            Collection<Constraint> constraints) {
         this.name = name;
         this.type = type;
         this.declaringType = declaringType;
         this.defaultValue = defaultValue;
         this.flags = flags;
+        this.constraints = new HashSet<Constraint>();
+        if (constraints != null) {
+            this.constraints.addAll(constraints);
+        }
     }
 
     public FieldImpl(QName name, Type declaringType, Type type) {
-        this(name, declaringType, type, null, 0);
+        this(name, declaringType, type, null, 0, new ArrayList<Constraint>());
+    }
+
+    public FieldImpl(QName name, Type declaringType, Type type, String defaultValue, int flags) {
+        this(name, declaringType, type, defaultValue, flags, new ArrayList<Constraint>());
     }
 
     @Override
@@ -71,7 +91,7 @@ public class FieldImpl implements Field {
 
     @Override
     public boolean isNillable() {
-        return (flags & NILLABLE) != 0;
+        return ConstraintUtils.getConstraint(constraints, NotNullConstraint.class) == null;
     }
 
     @Override
@@ -135,6 +155,11 @@ public class FieldImpl implements Field {
     @Override
     public String toString() {
         return name + " [" + type.getName() + ']';
+    }
+
+    @Override
+    public Set<Constraint> getConstraints() {
+        return Collections.unmodifiableSet(constraints);
     }
 
 }

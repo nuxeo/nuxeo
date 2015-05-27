@@ -9,8 +9,14 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types;
+
+import java.util.HashSet;
+
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * Implementation of a simple type that is not primitive (and therefore has
@@ -20,26 +26,16 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
 
     private static final long serialVersionUID = 1L;
 
-    protected Constraint[] constraints;
+    private ObjectResolver resolver;
 
-    private SimpleType primitiveType;
+    private PrimitiveType primitiveType;
 
     public SimpleTypeImpl(SimpleType superType, String schema, String name) {
         super(superType, schema, name);
         // simple types must have a not null super type
         // for example a primitive type or another simple type
         assert superType != null;
-    }
-
-    protected boolean validateConstraints(Object object) {
-        if (constraints != null) {
-            for (Constraint constraint : constraints) {
-                if (!constraint.validate(object)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        constraints = new HashSet<Constraint>();
     }
 
     @Override
@@ -53,16 +49,8 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
         return false;
     }
 
-    public void setConstraints(Constraint[] constraints) {
-        this.constraints = constraints;
-    }
-
-    public Constraint[] getConstraints() {
-        return constraints;
-    }
-
     @Override
-    public SimpleType getPrimitiveType() {
+    public PrimitiveType getPrimitiveType() {
         if (primitiveType == null) {
             primitiveType = ((SimpleType) getSuperType()).getPrimitiveType();
         }
@@ -77,6 +65,15 @@ public class SimpleTypeImpl extends AbstractType implements SimpleType {
     @Override
     public boolean isSimpleType() {
         return true;
+    }
+
+    public void setResolver(ObjectResolver resolver) {
+        this.resolver = resolver;
+    }
+
+    @Override
+    public ObjectResolver getObjectResolver() {
+        return resolver;
     }
 
     @Override

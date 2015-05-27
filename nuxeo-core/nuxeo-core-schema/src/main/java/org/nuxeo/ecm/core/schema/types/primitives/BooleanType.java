@@ -9,11 +9,17 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 
 /**
  * The Boolean type.
@@ -40,8 +46,7 @@ public final class BooleanType extends PrimitiveType {
         if (value instanceof Boolean) {
             return value;
         } else if (value instanceof Number) {
-            return ((Number) value).intValue() != 0 ? Boolean.TRUE
-                    : Boolean.FALSE;
+            return ((Number) value).intValue() != 0 ? Boolean.TRUE : Boolean.FALSE;
         } else {
             return Boolean.valueOf((String) value);
         }
@@ -61,8 +66,7 @@ public final class BooleanType extends PrimitiveType {
         if (value instanceof Boolean) {
             return value.toString();
         } else if (value instanceof Number) {
-            return ((Number) value).intValue() != 0 ? Boolean.TRUE.toString()
-                    : Boolean.FALSE.toString();
+            return ((Number) value).intValue() != 0 ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
         } else {
             return value != null ? (String) value : "";
         }
@@ -75,6 +79,20 @@ public final class BooleanType extends PrimitiveType {
 
     protected Object readResolve() {
         return INSTANCE;
+    }
+
+    public List<Class<? extends Constraint>> getRelevantConstraints() {
+        List<Class<? extends Constraint>> classes = new ArrayList<Class<? extends Constraint>>();
+        classes.add(NotNullConstraint.class);
+        return classes;
+    }
+
+    @Override
+    public boolean support(Class<? extends Constraint> constraint) {
+        if (NotNullConstraint.class.equals(constraint)) {
+            return true;
+        }
+        return false;
     }
 
 }

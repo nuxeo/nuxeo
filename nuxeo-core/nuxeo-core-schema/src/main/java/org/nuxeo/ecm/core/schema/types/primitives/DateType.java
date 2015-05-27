@@ -9,6 +9,7 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
@@ -16,6 +17,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.DateIntervalConstraint;
+import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
@@ -72,12 +76,23 @@ public class DateType extends PrimitiveType {
         } else if (object instanceof Calendar) {
             return DateParser.formatW3CDateTime(((Calendar) object).getTime());
         } else {
-           return null;
+            return null;
         }
     }
 
     protected Object readResolve() {
         return INSTANCE;
+    }
+
+    @Override
+    public boolean support(Class<? extends Constraint> constraint) {
+        if (NotNullConstraint.class.equals(constraint)) {
+            return true;
+        }
+        if (DateIntervalConstraint.class.equals(constraint)) {
+            return true;
+        }
+        return false;
     }
 
 }

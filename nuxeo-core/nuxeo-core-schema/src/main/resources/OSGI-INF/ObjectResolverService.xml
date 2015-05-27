@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.schema.ObjectResolverService" version="1.0.0">
+  <documentation>
+    This components allows to extend XSD field definition by providing a way to resolve simple type as
+    external entity references.
+  </documentation>
+
+  <service>
+    <provide interface="org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService" />
+  </service>
+
+  <implementation class="org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverServiceImpl" />
+
+  <extension-point name="resolvers">
+
+    <documentation>
+      Extension Point to register an external entity resolver. You must provide an XSD type derived from xs:string and
+      registered under namespace http://www.nuxeo.org/ecm/schemas/core/external-references/. The resolver class must
+      implement org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver.
+      Example :
+      <resolver type="productReference" class="org.mycompany.product.ProductNuxeoResolver" />
+    </documentation>
+
+    <object class="org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverDescriptor" />
+
+  </extension-point>
+
+</component>

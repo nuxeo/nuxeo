@@ -9,10 +9,12 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
+ *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types.primitives;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,6 +22,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.PrimitiveType;
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
 
 /**
  * The binary type handles values of type InputStream.
@@ -76,12 +80,20 @@ public final class BinaryType extends PrimitiveType {
         if (object instanceof InputStream) {
             try {
                 return FileUtils.read((InputStream) object);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error(e, e);
                 return null;
             }
         }
         return object.toString();
+    }
+
+    @Override
+    public boolean support(Class<? extends Constraint> constraint) {
+        if (NotNullConstraint.class.equals(constraint)) {
+            return true;
+        }
+        return false;
     }
 
 }

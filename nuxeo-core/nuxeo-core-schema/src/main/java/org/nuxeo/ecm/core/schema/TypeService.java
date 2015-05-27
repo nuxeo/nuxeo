@@ -32,8 +32,7 @@ public class TypeService extends DefaultComponent {
      * @deprecated since 5.7 (unused)
      */
     @Deprecated
-    public static final ComponentName NAME = new ComponentName(
-            "org.nuxeo.ecm.core.schema.TypeService");
+    public static final ComponentName NAME = new ComponentName("org.nuxeo.ecm.core.schema.TypeService");
 
     private static final Log log = LogFactory.getLog(TypeService.class);
 
@@ -100,15 +99,11 @@ public class TypeService extends DefaultComponent {
         } else if (XP_SCHEMA.equals(xp)) {
             Object[] contribs = extension.getContributions();
             for (Object contrib : contribs) {
-                try {
-                    // use the context of the bundle contributing the extension
-                    // to load schemas
-                    SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
-                    sbd.context = extension.getContext();
-                    schemaManager.registerSchema(sbd);
-                } catch (Exception e) {
-                    log.error(e, e);
-                }
+                // use the context of the bundle contributing the extension
+                // to load schemas
+                SchemaBindingDescriptor sbd = (SchemaBindingDescriptor) contrib;
+                sbd.context = extension.getContext();
+                schemaManager.registerSchema(sbd);
             }
         } else if (XP_CONFIGURATION.equals(xp)) {
             Object[] contribs = extension.getContributions();
@@ -157,7 +152,7 @@ public class TypeService extends DefaultComponent {
     }
 
     @Override
-    public void applicationStarted(ComponentContext context) throws Exception {
+    public void applicationStarted(ComponentContext context) {
         schemaManager.flushPendingsRegistration();
     }
 

@@ -13,6 +13,10 @@
 package org.nuxeo.ecm.core.schema.types;
 
 import java.io.Serializable;
+import java.util.Set;
+
+import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
+import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * A Type object is used to describe some ECM content.
@@ -37,7 +41,6 @@ import java.io.Serializable;
  * <li> complex types - structured types that can be expressed as a tree like
  * structure of other primitive, simple or complex types.
  * </ul>
- *
  * The typing system is mainly inspired from XML schemas.
  * <p>
  * There is a root type called <code>ANY</code> type. <br>
@@ -204,5 +207,19 @@ public interface Type extends Serializable {
      * @throws TypeException if the value to convert is not compatible with the associated type
      */
     Object convert(Object value) throws TypeException;
+
+    /**
+     * @return this type's constraints
+     * @since 7.1
+     */
+    Set<Constraint> getConstraints();
+
+    /**
+     * Provides a {@link ObjectResolver} if this type is a reference to an external entity.
+     *
+     * @return a resolver if available, null otherwise.
+     * @since 7.1
+     */
+    ObjectResolver getObjectResolver();
 
 }
