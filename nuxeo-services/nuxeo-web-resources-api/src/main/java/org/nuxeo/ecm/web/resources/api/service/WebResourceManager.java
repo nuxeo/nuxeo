@@ -22,7 +22,6 @@ import org.nuxeo.ecm.web.resources.api.Processor;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 import org.nuxeo.ecm.web.resources.api.ResourceContext;
-import org.nuxeo.ecm.web.resources.api.ResourceType;
 
 /**
  * Service for web resources retrieval.

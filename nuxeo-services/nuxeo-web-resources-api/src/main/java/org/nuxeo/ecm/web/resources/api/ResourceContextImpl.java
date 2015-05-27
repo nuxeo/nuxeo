@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.web.resources.api;
 
 /**
+ * Resource context, only declaring a current flavor for now.
+ *
  * @since 7.3
  */
 public class ResourceContextImpl implements ResourceContext {

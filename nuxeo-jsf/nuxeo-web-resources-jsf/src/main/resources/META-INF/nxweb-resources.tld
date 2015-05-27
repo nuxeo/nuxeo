@@ -1,0 +1,236 @@
+<!-- (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors. All rights 
+  reserved. This program and the accompanying materials are made available under the 
+  terms of the GNU Lesser General Public License (LGPL) version 2.1 which accompanies 
+  this distribution, and is available at http://www.gnu.org/licenses/lgpl-2.1.html 
+  This library is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+  PURPOSE. See the GNU Lesser General Public License for more details. Contributors: 
+  Anahide Tchertchian -->
+
+<!DOCTYPE taglib
+  PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN"
+  "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+
+<taglib>
+
+  <tlib-version>1.0</tlib-version>
+  <jsp-version>1.2</jsp-version>
+  <short-name>nxr</short-name>
+  <uri>http://nuxeo.org/nxweb/resources</uri>
+  <description>
+    <![CDATA[
+    <p>Tags for Web Resources management.</p>
+    <p>
+      Defines helpers tags to display CSS and JS imports of resources and/or
+      resource bundles, as well as HTML imports of HTML resources.
+    </p>
+    ]]>
+  </description>
+
+  <tag>
+    <name>resource</name>
+    <tag-class>None</tag-class>
+    <body-content>empty</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of JavaScript resources declared on the
+        WebResourceManager service.
+      </p>
+      <p>
+       TODO: check behavior, and if useful.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource as registered on the service, can also
+        be the name of the JSF resource as an alternative.
+      </description>
+    </attribute>
+    <attribute>
+      <name>library</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The library name for this resource, if registered as a JSF
+        resource.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxr:resource name="myresource.js" target="head" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>resourceBundle</name>
+    <tag-class>None</tag-class>
+    <body-content>empty</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of resource bundles declared on the
+        WebResourceManager service.
+      </p>
+      <p>
+        This tag will generate multiple HTML tags depending on resources
+        inside the bundle (JavaScript, CSS, HTML) and will respect dependencies
+        between resources, but will place CSS aggregated resources first, then
+        JavaScript aggregated resources, then HTML imports (not aggregated).
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource bundle as registered on the service.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxr:resourceBundle name="myresourceBundle" target="head" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>import</name>
+    <tag-class>None</tag-class>
+    <body-content>empty</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing HTML import.
+      </p>
+      <p>
+        This tag will generate an "import" link, similarly to the
+        h:outputLink tag behavior that generates a "a" HTML tag, for instance.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>src</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Path to the resource to import, will lookup a local resource
+        if it does
+        not start with a slash
+      </description>
+    </attribute>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource of registered as a JSF resource.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxwebr:import name="webc/font-roboto/roboto.html" target="head" />
+<nxwebr:import src="/components/nuxeo-elements/nx-connection.html" target="head" />
+      ]]>
+    </example>
+  </tag>
+
+  <tag>
+    <name>importResource</name>
+    <tag-class>None</tag-class>
+    <body-content>empty</body-content>
+    <description>
+      <![CDATA[
+      <p>
+        Tag handler managing import of HTML resources declared on the
+        WebResourceManager service.
+      </p>
+      <p>
+       TODO: check behavior, and if useful.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>true</required>
+      <type>java.lang.String</type>
+      <description>
+        Name of the resource as registered on the service, can also
+        be the name of the JSF resource as an alternative.
+      </description>
+    </attribute>
+    <attribute>
+      <name>library</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The library name for this resource, if registered as a JSF
+        resource.
+      </description>
+    </attribute>
+    <attribute>
+      <name>target</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>
+        The target area for which this resource will be rendered. For
+        example, target="head" would cause the resource to be rendered within
+        the head element. If no value is specified, the script element is
+        rendered at the same point in the view where the tag is located.
+        Currently supported values for this attribute are "head", "body", and
+        "form".
+      </description>
+    </attribute>
+    <example>
+      <![CDATA[
+<nxr:resource name="myresource.html" target="head" />
+      ]]>
+    </example>
+  </tag>
+
+</taglib>
