@@ -21,8 +21,13 @@ import javax.faces.application.ResourceHandlerWrapper;
 import javax.faces.application.ViewResource;
 import javax.faces.context.FacesContext;
 
+import org.nuxeo.ecm.web.resources.api.Resource;
+import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
+import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
+
 /**
- * Custom resource handler for error management of unknown resources.
+ * Custom resource handler resolving resources thanks to {@link WebResourceManager} service, and handling error
+ * management of unknown resources.
  *
  * @since 6.0
  */
@@ -38,6 +43,14 @@ public class NuxeoResourceHandler extends ResourceHandlerWrapper {
     public ViewResource createViewResource(FacesContext facesContext, String resourceName) {
         if (resourceName.startsWith(NuxeoUnknownResource.MARKER)) {
             return new NuxeoUnknownResource(resourceName.substring(NuxeoUnknownResource.MARKER.length()));
+        } else if (resourceName.startsWith(NuxeoUriLocator.PREFIX)) {
+            // XX prefer references to service
+            Resource resource = NuxeoUriLocator.getResource(resourceName);
+            if (resource == null) {
+                return new NuxeoUnknownResource(resourceName);
+            } else {
+                return wrapped.createViewResource(facesContext, resource.getURI());
+            }
         }
         ViewResource res = wrapped.createViewResource(facesContext, resourceName);
         if (res == null) {

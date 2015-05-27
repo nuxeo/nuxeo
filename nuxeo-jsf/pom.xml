@@ -24,6 +24,7 @@
     <module>nuxeo-theme-jsf</module>
     <module>nuxeo-platform-contentview-jsf</module>
     <module>nuxeo-platform-seam-debug</module>
+    <module>nuxeo-web-resources-jsf</module>
   </modules>
 
   <dependencies>

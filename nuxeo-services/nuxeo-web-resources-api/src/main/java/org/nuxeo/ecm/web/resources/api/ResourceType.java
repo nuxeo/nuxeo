@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum ResourceType {
 
-    any, unknown, css, js;
+    any, unknown, css, js, bundle, html;
 
     public static final ResourceType parse(String type) {
         for (ResourceType item : values()) {

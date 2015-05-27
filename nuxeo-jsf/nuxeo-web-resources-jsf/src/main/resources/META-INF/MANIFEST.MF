@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: Nuxeo Web Resources JSF
+Bundle-SymbolicName: org.nuxeo.web.resources.jsf;singleton:=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
