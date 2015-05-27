@@ -160,8 +160,6 @@ body {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   border-radius: 3px;
-  filter: alpha(opacity = 90);
-  opacity: .9;
   padding: 1.5em 1em 1em;
   width: 300px }
 
