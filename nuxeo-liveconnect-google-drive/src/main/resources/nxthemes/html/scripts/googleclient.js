@@ -16,12 +16,25 @@ nuxeo.utils.GoogleDrivePicker = function(clientId, pickId, authId, inputId, info
     this.inputId = inputId;
     this.infoId = infoId;
     this.domain = domain;
-    gapi.load('picker', {
-        'callback' : this.init.bind(this)
-    });
+
+    if (window.gapi) {
+      this.load();
+    } else {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src = "https://apis.google.com/js/client.js";
+      script.onload = this.load.bind(this);
+      document.head.appendChild(script);
+    }
 };
 
 nuxeo.utils.GoogleDrivePicker.prototype = {
+
+    load: function() {
+      gapi.load('picker', {
+        'callback' : this.init.bind(this)
+      });
+    },
 
     init : function() {
         // try immediate first. if it fails, ask user to re-click the button

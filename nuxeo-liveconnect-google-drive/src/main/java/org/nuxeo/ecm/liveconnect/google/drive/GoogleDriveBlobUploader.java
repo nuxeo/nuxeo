@@ -51,8 +51,6 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
     public static final String UPLOAD_GOOGLE_DRIVE_FACET_NAME = "uploadGoogleDrive";
 
-    public static final String GOOGLE_API_CLIENT_JS_URL = "https://apis.google.com/js/client.js";
-
     // restrict sign-in to accounts at this domain
     public static final String GOOGLE_DOMAIN_PROP = "nuxeo.google.domain";
 
@@ -129,10 +127,6 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         writer.writeAttribute("id", infoId, null);
         writer.write("no file selected"); // TODO i18n
         writer.endElement("span");
-
-        writer.startElement("script", parent);
-        writer.writeAttribute("src", GOOGLE_API_CLIENT_JS_URL, null);
-        writer.endElement("script");
 
         inputText.setLocalValueSet(false);
         inputText.setStyle("display:none"); // hidden
