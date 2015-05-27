@@ -19,21 +19,42 @@ package org.nuxeo.ecm.core.blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeConstants;
+import org.nuxeo.ecm.core.schema.TypeProvider;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -270,10 +291,14 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         return key;
     }
 
-    protected ExtendedBlobProvider getExtendedBlobProvider(ManagedBlob blob) {
-        BlobProvider blobProvider = getBlobProvider(blob.getProviderId());
+    protected ExtendedBlobProvider getExtendedBlobProvider(Blob blob) {
+        if (!(blob instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) blob;
+        BlobProvider blobProvider = getBlobProvider(managedBlob.getProviderId());
         if (blobProvider == null) {
-            log.error("No registered blob provider for key: " + blob.getKey());
+            log.error("No registered blob provider for key: " + managedBlob.getKey());
             return null;
         }
         if (!(blobProvider instanceof ExtendedBlobProvider)) {
@@ -284,72 +309,74 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
 
     @Override
     public InputStream getStream(Blob blob) throws IOException {
-        if (!(blob instanceof ManagedBlob)) {
-            return null;
-        }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(managedBlob);
+        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
-        return blobProvider.getStream(managedBlob);
+        return blobProvider.getStream((ManagedBlob) blob);
     }
 
     @Override
     public InputStream getThumbnail(Blob blob) throws IOException {
-        if (!(blob instanceof ManagedBlob)) {
-            return null;
-        }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(managedBlob);
+        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
-        return blobProvider.getThumbnail(managedBlob);
+        return blobProvider.getThumbnail((ManagedBlob) blob);
     }
 
     @Override
     public URI getURI(Blob blob, UsageHint hint) throws IOException {
-        if (!(blob instanceof ManagedBlob)) {
-            return null;
-        }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(managedBlob);
+        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
-        return blobProvider.getURI(managedBlob, hint);
+        return blobProvider.getURI((ManagedBlob) blob, hint);
     }
 
     @Override
     public Map<String, URI> getAvailableConversions(Blob blob, UsageHint hint) throws IOException {
-        if (!(blob instanceof ManagedBlob)) {
-            return Collections.emptyMap();
-        }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(managedBlob);
+        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return Collections.emptyMap();
         }
-        return blobProvider.getAvailableConversions(managedBlob, hint);
+        return blobProvider.getAvailableConversions((ManagedBlob) blob, hint);
     }
 
     @Override
     public InputStream getConvertedStream(Blob blob, String mimeType) throws IOException {
-        if (!(blob instanceof ManagedBlob)) {
-            return null;
-        }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
-        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(managedBlob);
+        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
-        return blobProvider.getConvertedStream(managedBlob, mimeType);
+        return blobProvider.getConvertedStream((ManagedBlob) blob, mimeType);
+    }
+
+    protected void freezeVersion(BlobAccessor accessor) {
+        Blob blob = accessor.getBlob();
+        ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
+        if (blobProvider == null) {
+            return;
+        }
+        try {
+            Blob newBlob = blobProvider.freezeVersion((ManagedBlob) blob);
+            if (newBlob != null) {
+                accessor.setBlob(newBlob);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Map<String, BlobProvider> getBlobProviders() {
         return blobProviders;
+    }
+
+    @Override
+    public void freezeVersion(Document doc) throws DocumentException {
+        // finds all blobs, then ask their providers if there's anything to do on check in
+        doc.visitBlobs(this::freezeVersion);
     }
 
 }

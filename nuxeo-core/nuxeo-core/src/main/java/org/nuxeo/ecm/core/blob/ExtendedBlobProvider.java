@@ -81,4 +81,13 @@ public interface ExtendedBlobProvider extends BlobProvider {
      */
     InputStream getConvertedStream(ManagedBlob blob, String mimeType) throws IOException;
 
+    /**
+     * Returns a new managed blob pointing to a fixed version of the original blob.
+     * <p>
+     *
+     * @param blob the original managed blob
+     * @return a managed blob with fixed version, or {@code null} if no change is needed
+     */
+    ManagedBlob freezeVersion(ManagedBlob blob) throws IOException;
+
 }

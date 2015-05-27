@@ -45,6 +45,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
@@ -444,7 +445,9 @@ public class DBSDocument extends BaseDocument<State> {
         } else if (isVersion()) {
             throw new VersionNotModifiableException();
         } else {
-            return session.checkIn(id, label, checkinComment);
+            Document version = session.checkIn(id, label, checkinComment);
+            Framework.getService(BlobManager.class).freezeVersion(version);
+            return version;
         }
     }
 

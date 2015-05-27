@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -147,5 +148,13 @@ public interface BlobManager {
      * @since 7.3
      */
     Map<String, BlobProvider> getBlobProviders();
+
+    /**
+     * Freezes the blobs' versions on a document version when it is created via a check in.
+     *
+     * @param doc the new document version
+     * @since 7.3
+     */
+    void freezeVersion(Document doc) throws DocumentException;
 
 }
