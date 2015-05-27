@@ -56,7 +56,11 @@ public class ITSearchTabTest extends AbstractTest {
 
     public final static String[] SUBJECTS = { "Comics", "Religion", "Education" };
 
+    public final static String[] FULL_PATH_SUBJECTS = { "Art/Comics", "Society/Religion", "Society/Education" };
+
     public final static String COVERAGE = "France";
+
+    public final static String FULL_PATH_COVERAGE = "Europe/France";
 
     @Before
     public void setup() throws UserNotConnectedException, IOException {
@@ -125,17 +129,17 @@ public class ITSearchTabTest extends AbstractTest {
         // Test aggregates
         Map<String, Integer> coverageAgg = searchLayoutSubPage.getAvailableCoverageAggregate();
         assertEquals(1, coverageAgg.size());
-        assertEquals(new Integer(1), coverageAgg.get(COVERAGE));
+        assertEquals(new Integer(1), coverageAgg.get(FULL_PATH_COVERAGE));
         Map<String, Integer> subjectsAgg = searchLayoutSubPage.getAvailableSubjectsAggregate();
         assertEquals(3, subjectsAgg.size());
-        for (String subject : SUBJECTS) {
+        for (String subject : FULL_PATH_SUBJECTS) {
             assertEquals(new Integer(1), subjectsAgg.get(subject));
         }
         // Select and unselect France
-        searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
+        searchPage = searchLayoutSubPage.selectCoverageAggregate(FULL_PATH_COVERAGE);
         resultPanelSubPage = searchPage.getSearchResultsSubPage();
         assertEquals(1, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
-        searchPage = searchLayoutSubPage.selectCoverageAggregate(COVERAGE);
+        searchPage = searchLayoutSubPage.selectCoverageAggregate(FULL_PATH_COVERAGE);
         assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         // Test select path widget
