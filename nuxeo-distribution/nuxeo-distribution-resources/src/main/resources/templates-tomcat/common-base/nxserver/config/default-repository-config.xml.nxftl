@@ -23,7 +23,8 @@
       <idType>${nuxeo.vcs.idtype}</idType>
       <indexing>
 <#if "${nuxeo.db.type}" == "postgresql">
-        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}" analyzer="english">
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}"
+                  analyzer="${nuxeo.vcs.fulltext.analyzer.language}">
           <index name="default">
             <!-- all props implied -->
           </index>
@@ -54,7 +55,8 @@
           http://download.oracle.com/docs/cd/B19306_01/text.102/b14218/cdatadic.htm
         -->
 <#elseif "${nuxeo.db.type}" == "mssql">
-        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}" analyzer="english">
+        <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}"
+                  analyzer="${nuxeo.vcs.fulltext.analyzer.language}">
           <index name="default">
             <!-- all props implied -->
           </index>
