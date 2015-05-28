@@ -106,6 +106,15 @@ public class SQLSession implements Session {
      */
     public static final String ALLOW_NEGATIVE_ACL_PROPERTY = "nuxeo.security.allowNegativeACL";
 
+    /**
+     * Framework property to disabled free-name collision detection. This is useful when constraints have been added to
+     * the database to detect collisions at the database level and raise a ConcurrentUpdateException, thus letting the
+     * high-level application deal with collisions.
+     *
+     * @since 7.3
+     */
+    public static final String FINDFREENAME_DISABLED_PROP = "nuxeo.vcs.findFreeName.disabled";
+
     public static final String BLOB_NAME = "name";
 
     public static final String BLOB_MIME_TYPE = "mime-type";
@@ -152,6 +161,8 @@ public class SQLSession implements Session {
 
     private final boolean negativeAclAllowed;
 
+    private final boolean findFreeNameDisabled;
+
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session, Repository repository, String sessionId)
             throws DocumentException {
         this.session = session;
@@ -166,6 +177,7 @@ public class SQLSession implements Session {
         this.sessionId = sessionId;
         root = newDocument(rootNode);
         negativeAclAllowed = Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
+        findFreeNameDisabled = Framework.isBooleanPropertyTrue(FINDFREENAME_DISABLED_PROP);
     }
 
     /*
@@ -300,6 +312,9 @@ public class SQLSession implements Session {
     private static final Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
     protected String findFreeName(Node parentNode, String name) throws StorageException {
+        if (findFreeNameDisabled) {
+            return name;
+        }
         if (session.hasChildNode(parentNode, name, false)) {
             Matcher m = dotDigitsPattern.matcher(name);
             if (m.matches()) {
