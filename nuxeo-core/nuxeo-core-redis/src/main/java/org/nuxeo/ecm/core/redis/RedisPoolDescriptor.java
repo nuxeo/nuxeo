@@ -33,5 +33,8 @@ public abstract class RedisPoolDescriptor {
     @XNode("timeout")
     public int timeout = Protocol.DEFAULT_TIMEOUT;
 
+    @XNode("prefix")
+    public String prefix;
+
     protected abstract RedisExecutor newExecutor();
 }
