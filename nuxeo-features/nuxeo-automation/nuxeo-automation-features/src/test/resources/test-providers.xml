@@ -101,6 +101,14 @@
       <pageSize>2</pageSize>
     </coreQueryPageProvider>
 
+    <genericPageProvider class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider" name="testPP">
+      <property name="searchAllRepositories">true</property>
+      <pattern quoteParameters="false">
+        SELECT * FROM Document WHERE dc:created &gt; :mydate
+      </pattern>
+      <pageSize>50</pageSize>
+    </genericPageProvider>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">

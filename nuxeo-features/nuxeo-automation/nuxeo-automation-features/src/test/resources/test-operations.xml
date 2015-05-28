@@ -32,5 +32,13 @@
         <param type="boolean" name="isolate">false</param>
       </operation>
     </chain>
+    <chain id="dateWrapper">
+      <operation id="Repository.PageProvider">
+        <param type="string" name="language">NXQL</param>
+        <param type="properties" name="namedParameters">expr:mydate=@{CurrentDate}</param>
+        <param type="string" name="providerName">testPP</param>
+        <param type="string" name="sortOrder">ASC</param>
+      </operation>
+    </chain>
   </extension>
 </component>

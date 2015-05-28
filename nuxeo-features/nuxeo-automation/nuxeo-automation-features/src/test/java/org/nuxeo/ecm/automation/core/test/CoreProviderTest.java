@@ -415,4 +415,14 @@ public class CoreProviderTest {
         assertEquals(2, result.getNumberOfPages());
         assertEquals(2, result.size());
     }
+
+    /**
+     * @since 7.3
+     */
+    @Test
+    public void canUseDateWrapperIntoNamedParameter() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx, "dateWrapper", null);
+        assertNotNull(result);
+    }
 }
