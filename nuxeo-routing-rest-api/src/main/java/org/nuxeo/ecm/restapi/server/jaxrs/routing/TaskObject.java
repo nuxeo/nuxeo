@@ -55,6 +55,26 @@ public class TaskObject extends DefaultObject {
             TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE);
 
     @PUT
+    @Path("{taskId}/reassign")
+    @Consumes
+    public Response reassignTask(@PathParam("taskId") String taskId, @QueryParam("actors") List<String> actors,
+            @QueryParam("comment") String comment) {
+        Framework.getLocalService(DocumentRoutingService.class).reassignTask(getContext().getCoreSession(), taskId,
+                actors, comment);
+        return Response.ok().status(Status.OK).build();
+    }
+
+    @PUT
+    @Path("{taskId}/delegate")
+    @Consumes
+    public Response delegateTask(@PathParam("taskId") String taskId, @QueryParam("delegatedActors") List<String> delegatedActors,
+            @QueryParam("comment") String comment) {
+        Framework.getLocalService(DocumentRoutingService.class).delegateTask(getContext().getCoreSession(), taskId,
+                delegatedActors, comment);
+        return Response.ok().status(Status.OK).build();
+    }
+
+    @PUT
     @Path("{taskId}/{taskAction}")
     @Consumes({ MediaType.APPLICATION_JSON, "application/json+nxentity" })
     @Produces(MediaType.APPLICATION_JSON)

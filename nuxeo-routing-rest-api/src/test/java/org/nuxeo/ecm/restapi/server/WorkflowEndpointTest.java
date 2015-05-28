@@ -470,4 +470,88 @@ public class WorkflowEndpointTest extends BaseTest {
         assertEquals(1, node.get("entries").size());
     }
 
+    @Test
+    public void testDelegateTask() throws IOException {
+        // Start SerialDocumentReview on Note 0
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(
+                RequestType.POST,
+                "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
+                        Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        // Complete first task
+        String taskId = getCurrentTask(createdWorflowInstanceId);
+        String out = getBodyForStartReviewTaskCompletion(taskId);
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Delegate
+        taskId = getCurrentTask(createdWorflowInstanceId);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("actors", Arrays.asList(new String[] { "members" }));
+        queryParams.put("comment", Arrays.asList(new String[] { "A comment" }));
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/delegate", null, queryParams, null, null);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+    }
+
+    @Test
+    public void testReassignTask() throws IOException {
+     // Start SerialDocumentReview on Note 0
+        DocumentModel note = RestServerInit.getNote(0, session);
+        ClientResponse response = getResponse(
+                RequestType.POST,
+                "/workflow",
+                getCreateAndStartWorkflowBodyContent("ParallelDocumentReview",
+                        Arrays.asList(new String[] { note.getId() })));
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+
+        JsonNode node = mapper.readTree(response.getEntityInputStream());
+        final String createdWorflowInstanceId = node.get("id").getTextValue();
+
+        // Complete first task
+        String taskId = getCurrentTask(createdWorflowInstanceId);
+        String out = getBodyForStartReviewTaskCompletion(taskId);
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
+        // Missing required variables
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        // Reassign
+        response = getResponse(RequestType.GET, "/task", null, null, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        node = elements.next();
+        assertActorIs("user:Administrator", node);
+        taskId = node.get("id").getTextValue();
+
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("actors", Arrays.asList(new String[] { "members" }));
+        queryParams.put("comment", Arrays.asList(new String[] { "A comment" }));
+        response = getResponse(RequestType.PUT, "/task/" + taskId + "/reassign", null, queryParams, null, null);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        node = node.get("entries").getElements().next();
+        assertActorIs("members", node);
+    }
+
+    protected static void assertActorIs(String expectedActor, JsonNode taskNode) {
+        Iterator<JsonNode> actorNode = taskNode.get("actors").getElements();
+        List<String> actors = new ArrayList<String>();
+        while (actorNode.hasNext()) {
+            actors.add(actorNode.next().get("id").getTextValue());
+        }
+        assertEquals(1, actors.size());
+        assertEquals(expectedActor, actors.get(0));
+    }
+
 }

@@ -50,6 +50,36 @@
 
     },
     {
+      "path": "/task/{taskId}/reassign",
+      "description": "Reassign task",
+      "operations" : [
+        {
+          "method":"PUT",
+          "nickname":"reassignTask",
+          <@params names = ["taskId", "actors", "comment"]/>,
+          "summary":"Reassign a task",
+          "notes": "See https://doc.nuxeo.com/x/1YcZAQ",
+          <#include "views/doc/errorresponses.ftl"/>
+        }
+      ]
+
+    },
+    {
+      "path": "/task/{taskId}/delegate",
+      "description": "Delegate task",
+      "operations" : [
+        {
+          "method":"PUT",
+          "nickname":"delegateTask",
+          <@params names = ["taskId", "delegatedActors", "comment"]/>,
+          "summary":"Delegate a task",
+          "notes": "See https://doc.nuxeo.com/x/34z1",
+          <#include "views/doc/errorresponses.ftl"/>
+        }
+      ]
+
+    },
+    {
       "path": "/id/{docId}/@task",
       "description": "Task adapter",
       "operations" : [
