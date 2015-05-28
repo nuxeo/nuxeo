@@ -194,7 +194,8 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public String namespace(String... names) {
-        String prefix = getConfig().prefix;
+        RedisPoolDescriptor config = getConfig();
+        String prefix = config == null ? null : config.prefix;
         if (StringUtils.isBlank(prefix)) {
             prefix = DEFAULT_PREFIX;
         }
