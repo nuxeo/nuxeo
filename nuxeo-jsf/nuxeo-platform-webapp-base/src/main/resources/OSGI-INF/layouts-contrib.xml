@@ -3433,7 +3433,6 @@
                 </fields>
                 <properties mode="any">
                   <property name="resourceName">layouts</property>
-                  <property name="required">true</property>
                 </properties>
               </widget>
               <widget name="template" type="selectOneResource">
