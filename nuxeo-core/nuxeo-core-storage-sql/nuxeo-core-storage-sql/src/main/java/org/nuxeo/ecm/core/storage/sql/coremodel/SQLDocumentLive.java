@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.BaseDocument;
@@ -160,13 +161,13 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
      */
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
-        session.readComplexProperty((ComplexProperty) dp, getNode(), this);
+        readComplexProperty(getNode(), (ComplexProperty) dp);
     }
 
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
             throws PropertyException {
-        return session.readPrefetch(getNode(), complexType, xpaths, this);
+        return readPrefetch(getNode(), complexType, xpaths);
     }
 
     /**
@@ -174,17 +175,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
      */
     @Override
     public void writeDocumentPart(DocumentPart dp) throws PropertyException {
-        session.writeComplexProperty((ComplexProperty) dp, getNode(), this);
+        writeComplexProperty(getNode(), (ComplexProperty) dp);
         clearDirtyFlags(dp);
-    }
-
-    protected static void clearDirtyFlags(Property property) {
-        if (property.isContainer()) {
-            for (Property p : property) {
-                clearDirtyFlags(p);
-            }
-        }
-        property.clearDirtyFlags();
     }
 
     @Override
@@ -222,14 +214,14 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         }
         // add new list elements
         if (oldSize < newSize) {
+            String typeName = field.getType().getName();
             for (int i = oldSize; i < newSize; i++) {
-                Node childNode;
                 try {
-                    childNode = session.addChildProperty(node, name, Long.valueOf(i), field.getType().getName());
+                    Node childNode = session.addChildProperty(node, name, Long.valueOf(i), typeName);
+                    childNodes.add(childNode);
                 } catch (DocumentException e) {
                     throw new PropertyException(e.getMessage(), e);
                 }
-                childNodes.add(childNode);
             }
         }
         // write values
@@ -238,6 +230,47 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             Node childNode = childNodes.get(i++);
             setValueComplex(childNode, field, v);
         }
+    }
+
+    @Override
+    protected void updateList(Node node, String name, Property property) throws PropertyException {
+        Collection<Property> properties = property.getChildren();
+        List<Node> childNodes = getChildAsList(node, name);
+        int oldSize = childNodes.size();
+        int newSize = properties.size();
+        // remove extra list elements
+        if (oldSize > newSize) {
+            for (int i = oldSize - 1; i >= newSize; i--) {
+                try {
+                    session.removeProperty(childNodes.remove(i));
+                } catch (DocumentException e) {
+                    throw new PropertyException(e.getMessage(), e);
+                }
+            }
+        }
+        // add new list elements
+        if (oldSize < newSize) {
+            String typeName = ((ListType) property.getType()).getFieldType().getName();
+            for (int i = oldSize; i < newSize; i++) {
+                try {
+                    Node childNode = session.addChildProperty(node, name, Long.valueOf(i), typeName);
+                    childNodes.add(childNode);
+                } catch (DocumentException e) {
+                    throw new PropertyException(e.getMessage(), e);
+                }
+            }
+        }
+        // write values
+        int i = 0;
+        for (Property childProperty : properties) {
+            Node childNode = childNodes.get(i++);
+            writeComplexProperty(childNode, (ComplexProperty) childProperty);
+        }
+    }
+
+    @Override
+    protected String internalName(String name) {
+        return name;
     }
 
     @Override

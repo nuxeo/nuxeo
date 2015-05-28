@@ -17,8 +17,12 @@
 package org.nuxeo.ecm.core.storage;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -30,10 +34,16 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
+import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
+import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.model.Document;
@@ -44,7 +54,15 @@ import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
+import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.schema.types.primitives.DateType;
+import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
+import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
+import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -56,6 +74,8 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 public abstract class BaseDocument<T extends StateAccessor> implements Document {
+
+    public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     public static final String BLOB_NAME = "name";
 
@@ -69,9 +89,46 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
     public static final String BLOB_DATA = "data";
 
+    public static final String DC_PREFIX = "dc:";
+
+    public static final String DC_ISSUED = "dc:issued";
+
+    public static final String RELATED_TEXT_RESOURCES = "relatedtextresources";
+
+    public static final String RELATED_TEXT_ID = "relatedtextid";
+
+    public static final String RELATED_TEXT = "relatedtext";
+
+    public static final String FULLTEXT_JOBID_PROP = "ecm:fulltextJobId";
+
+    public static final String FULLTEXT_SIMPLETEXT_PROP = "ecm:simpleText";
+
+    public static final String FULLTEXT_BINARYTEXT_PROP = "ecm:binaryText";
+
+    public static final String MISC_LIFECYCLE_STATE_PROP = "ecm:lifeCycleState";
+
+    public static final String LOCK_OWNER_PROP = "ecm:lockOwner";
+
+    public static final String LOCK_CREATED_PROP = "ecm:lockCreated";
+
+    public static final Set<String> VERSION_WRITABLE_PROPS = new HashSet<String>(Arrays.asList( //
+            FULLTEXT_JOBID_PROP, //
+            FULLTEXT_BINARYTEXT_PROP, //
+            MISC_LIFECYCLE_STATE_PROP, //
+            LOCK_OWNER_PROP, //
+            LOCK_CREATED_PROP, //
+            DC_ISSUED, //
+            RELATED_TEXT_RESOURCES, //
+            RELATED_TEXT_ID, //
+            RELATED_TEXT //
+    ));
+
     protected final static Pattern NON_CANONICAL_INDEX = Pattern.compile("[^/\\[\\]]+" // name
             + "\\[(\\d+)\\]" // index in brackets
     );
+
+    protected static final Runnable NO_DIRTY = () -> {
+    };
 
     /**
      * Gets the list of proxy schemas, if this is a proxy.
@@ -109,6 +166,114 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      */
     protected abstract void updateList(T state, String name, List<Object> values, Field field) throws PropertyException;
 
+    /**
+     * Update a list.
+     *
+     * @param state the parent state
+     * @param name the child name
+     * @param property the property
+     */
+    protected abstract void updateList(T state, String name, Property property) throws PropertyException;
+
+    /**
+     * Finds the internal name to use to refer to this property.
+     */
+    protected abstract String internalName(String name);
+
+    /**
+     * Canonicalizes a Nuxeo xpath.
+     * <p>
+     * Replaces {@code a/foo[123]/b} with {@code a/123/b}
+     *
+     * @param xpath the xpath
+     * @return the canonicalized xpath.
+     */
+    protected static String canonicalXPath(String xpath) {
+        if (xpath.indexOf('[') > 0) {
+            xpath = NON_CANONICAL_INDEX.matcher(xpath).replaceAll("$1");
+        }
+        return xpath;
+    }
+
+    /** Copies the array with an appropriate class depending on the type. */
+    protected static Object[] typedArray(Type type, Object[] array) {
+        if (array == null) {
+            array = EMPTY_STRING_ARRAY;
+        }
+        Class<?> klass;
+        if (type instanceof StringType) {
+            klass = String.class;
+        } else if (type instanceof BooleanType) {
+            klass = Boolean.class;
+        } else if (type instanceof LongType) {
+            klass = Long.class;
+        } else if (type instanceof DoubleType) {
+            klass = Double.class;
+        } else if (type instanceof DateType) {
+            klass = Calendar.class;
+        } else if (type instanceof BinaryType) {
+            klass = String.class;
+        } else if (type instanceof IntegerType) {
+            throw new RuntimeException("Unimplemented primitive type: " + type.getClass().getName());
+        } else if (type instanceof SimpleTypeImpl) {
+            // simple type with constraints -- ignore constraints XXX
+            return typedArray(type.getSuperType(), array);
+        } else {
+            throw new RuntimeException("Invalid primitive type: " + type.getClass().getName());
+        }
+        int len = array.length;
+        Object[] copy = (Object[]) Array.newInstance(klass, len);
+        System.arraycopy(array, 0, copy, 0, len);
+        return copy;
+    }
+
+    protected static boolean isVersionWritableProperty(String name) {
+        return VERSION_WRITABLE_PROPS.contains(name) //
+                || name.startsWith(FULLTEXT_BINARYTEXT_PROP) //
+                || name.startsWith(FULLTEXT_SIMPLETEXT_PROP);
+    }
+
+    protected static void clearDirtyFlags(Property property) {
+        if (property.isContainer()) {
+            for (Property p : property) {
+                clearDirtyFlags(p);
+            }
+        }
+        property.clearDirtyFlags();
+    }
+
+    /**
+     * Checks for ignored writes. May throw.
+     */
+    protected boolean checkReadOnlyIgnoredWrite(Property property, T state) throws PropertyException {
+        String name = property.getField().getName().getPrefixedName();
+        if (!isReadOnly() || isVersionWritableProperty(name)) {
+            // do write
+            return false;
+        }
+        if (!isVersion()) {
+            throw new PropertyException("Cannot write readonly property: " + name);
+        }
+        if (!name.startsWith(DC_PREFIX)) {
+            throw new PropertyException("Cannot set property on a version: " + name);
+        }
+        // ignore if value is unchanged (only for dublincore)
+        // dublincore contains only scalars and arrays
+        Object value = property.getValueForWrite();
+        Object oldValue;
+        if (property.getType().isSimpleType()) {
+            oldValue = state.getSingle(name);
+        } else {
+            oldValue = state.getArray(name);
+        }
+        if (!ArrayUtils.isEquals(value, oldValue)) {
+            // do write
+            return false;
+        }
+        // ignore attempt to write identical value
+        return true;
+    }
+
     protected BlobInfo getBlobInfo(T state) throws PropertyException {
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = (String) state.getSingle(BLOB_DATA);
@@ -130,20 +295,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     }
 
     /**
-     * Canonicalizes a Nuxeo xpath.
-     * <p>
-     * Replaces {@code a/foo[123]/b} with {@code a/123/b}
-     *
-     * @param xpath the xpath
-     * @return the canonicalized xpath.
+     * Gets a value (may be complex/list) from the document at the given xpath.
      */
-    protected static String canonicalXPath(String xpath) {
-        if (xpath.indexOf('[') > 0) {
-            xpath = NON_CANONICAL_INDEX.matcher(xpath).replaceAll("$1");
-        }
-        return xpath;
-    }
-
     protected Object getValueObject(T state, String xpath) throws PropertyException {
         xpath = canonicalXPath(xpath);
         String[] segments = xpath.split("/");
@@ -232,6 +385,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     protected Object getValueField(T state, Field field) throws PropertyException {
         Type type = field.getType();
         String name = field.getName().getPrefixedName();
+        name = internalName(name);
         if (type.isSimpleType()) {
             // scalar
             return state.getSingle(name);
@@ -281,6 +435,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
     }
 
+    /**
+     * Sets a value (may be complex/list) into the document at the given xpath.
+     */
     protected void setValueObject(T state, String xpath, Object value) throws PropertyException {
         xpath = canonicalXPath(xpath);
         String[] segments = xpath.split("/");
@@ -369,6 +526,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
     protected void setValueField(T state, Field field, Object value) throws PropertyException {
         Type type = field.getType();
         String name = field.getName().getPrefixedName(); // normalize from map key
+        name = internalName(name);
         // TODO we could check for read-only here
         if (type.isSimpleType()) {
             // scalar
@@ -448,8 +606,214 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         setBlobInfo(state, blobInfo);
     }
 
-    protected static final Runnable NO_DIRTY = () -> {
-    };
+    /**
+     * Reads state into a complex property.
+     */
+    protected void readComplexProperty(T state, ComplexProperty complexProperty) throws PropertyException {
+        if (state == null) {
+            complexProperty.init(null);
+            return;
+        }
+        if (complexProperty instanceof BlobProperty) {
+            Blob blob = getValueBlob(state);
+            complexProperty.init((Serializable) blob);
+            return;
+        }
+        for (Property property : complexProperty) {
+            String name = property.getField().getName().getPrefixedName();
+            name = internalName(name);
+            Type type = property.getType();
+            if (type.isSimpleType()) {
+                // simple property
+                Object value = state.getSingle(name);
+                if (value instanceof Delta) {
+                    value = ((Delta) value).getFullValue();
+                }
+                property.init((Serializable) value);
+            } else if (type.isComplexType()) {
+                // complex property
+                T childState = getChild(state, name, type);
+                readComplexProperty(childState, (ComplexProperty) property);
+                ((ComplexProperty) property).removePhantomFlag();
+            } else {
+                ListType listType = (ListType) type;
+                if (listType.getFieldType().isSimpleType()) {
+                    // array
+                    Object[] array = state.getArray(name);
+                    array = typedArray(listType.getFieldType(), array);
+                    property.init(array);
+                } else {
+                    // complex list
+                    // get
+
+                    Field listField = listType.getField();
+                    List<T> childStates = getChildAsList(state, name);
+                    // TODO property.init(null) if null children in DBS
+                    List<Object> list = new ArrayList<>(childStates.size());
+                    for (T childState : childStates) {
+                        ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
+                                listField, 0);
+                        readComplexProperty(childState, p);
+                        list.add(p.getValue());
+                    }
+                    property.init((Serializable) list);
+                }
+            }
+        }
+    }
+
+    /**
+     * Writes state from a complex property.
+     */
+    protected void writeComplexProperty(T state, ComplexProperty complexProperty) throws PropertyException {
+        if (complexProperty instanceof BlobProperty) {
+            Serializable value = ((BlobProperty) complexProperty).getValueForWrite();
+            if (value != null && !(value instanceof Blob)) {
+                throw new PropertyException("Cannot write a non-Blob value: " + value);
+            }
+            setValueBlob(state, (Blob) value);
+            return;
+        }
+        for (Property property : complexProperty) {
+            String name = property.getField().getName().getPrefixedName();
+            name = internalName(name);
+            if (checkReadOnlyIgnoredWrite(property, state)) {
+                continue;
+            }
+            Type type = property.getType();
+            if (type.isSimpleType()) {
+                // simple property
+                Serializable value = property.getValueForWrite();
+                state.setSingle(name, value);
+                if (value instanceof Delta) {
+                    value = ((Delta) value).getFullValue();
+                    ((ScalarProperty) property).internalSetValue(value);
+                }
+                // TODO VersionNotModifiableException
+            } else if (type.isComplexType()) {
+                // complex property
+                T childState = getChild(state, name, type);
+                writeComplexProperty(childState, (ComplexProperty) property);
+            } else {
+                ListType listType = (ListType) type;
+                if (listType.getFieldType().isSimpleType()) {
+                    // array
+                    Serializable value = property.getValueForWrite();
+                    if (value instanceof List) {
+                        value = ((List<?>) value).toArray(new Object[0]);
+                    } else if (!(value == null || value instanceof Object[])) {
+                        throw new IllegalStateException(value.toString());
+                    }
+                    state.setArray(name, (Object[]) value);
+                } else {
+                    // complex list
+                    updateList(state, name, property);
+                }
+            }
+        }
+    }
+
+    /**
+     * Reads prefetched values.
+     */
+    protected Map<String, Serializable> readPrefetch(T state, ComplexType complexType, Set<String> xpaths)
+            throws PropertyException {
+        // augment xpaths with all prefixes, to cut short recursive search
+        Set<String> prefixes = new HashSet<>();
+        for (String xpath : xpaths) {
+            for (;;) {
+                // add as prefix
+                if (!prefixes.add(xpath)) {
+                    // already present, we can stop
+                    break;
+                }
+                // loop with its prefix
+                int i = xpath.lastIndexOf('/');
+                if (i == -1) {
+                    break;
+                }
+                xpath = xpath.substring(0, i);
+            }
+        }
+        Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
+        readPrefetch(state, complexType, null, null, prefixes, prefetch);
+        return prefetch;
+    }
+
+    protected void readPrefetch(T state, ComplexType complexType, String xpathGeneric, String xpath,
+            Set<String> prefixes, Map<String, Serializable> prefetch) throws PropertyException {
+        if (TypeConstants.isContentType(complexType)) {
+            if (!prefixes.contains(xpathGeneric)) {
+                return;
+            }
+            Blob blob = getValueBlob(state);
+            prefetch.put(xpath, (Serializable) blob);
+            return;
+        }
+        for (Field field : complexType.getFields()) {
+            readPrefetchField(state, field, xpathGeneric, xpath, prefixes, prefetch);
+        }
+    }
+
+    protected void readPrefetchField(T state, Field field, String xpathGeneric, String xpath, Set<String> prefixes,
+            Map<String, Serializable> prefetch) {
+        String name = field.getName().getPrefixedName();
+        Type type = field.getType();
+        xpathGeneric = xpathGeneric == null ? name : xpathGeneric + '/' + name;
+        xpath = xpath == null ? name : xpath + '/' + name;
+        if (!prefixes.contains(xpathGeneric)) {
+            return;
+        }
+        if (type.isSimpleType()) {
+            // scalar
+            Object value = state.getSingle(name);
+            prefetch.put(xpath, (Serializable) value);
+        } else if (type.isComplexType()) {
+            // complex property
+            T childState = getChild(state, name, type);
+            readPrefetch(childState, (ComplexType) type, xpathGeneric, xpath, prefixes, prefetch);
+        } else {
+            // array or list
+            ListType listType = (ListType) type;
+            if (listType.getFieldType().isSimpleType()) {
+                // array
+                Object[] value = state.getArray(name);
+                prefetch.put(xpath, value);
+            } else {
+                // complex list
+                List<T> childStates = getChildAsList(state, name);
+                Field listField = listType.getField();
+                xpathGeneric += "/*";
+                int i = 0;
+                for (T childState : childStates) {
+                    readPrefetch(childState, (ComplexType) listField.getType(), xpathGeneric, xpath + '/' + i++,
+                            prefixes, prefetch);
+                }
+            }
+        }
+    }
+
+    /**
+     * Visits all the blobs of this document and calls the passed blob visitor on each one.
+     */
+    protected void visitBlobs(T state, Consumer<BlobAccessor> blobVisitor, Runnable markDirty)
+            throws PropertyException {
+        Visit visit = new Visit(blobVisitor, markDirty);
+        // structural type
+        visit.visitBlobsComplex(state, getType());
+        // dynamic facets
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        for (String facet : getFacets()) {
+            CompositeType facetType = schemaManager.getFacet(facet);
+            visit.visitBlobsComplex(state, facetType);
+        }
+        // proxy schemas
+        if (getProxySchemas() != null) {
+            for (Schema schema : getProxySchemas()) {
+                visit.visitBlobsComplex(state, schema);
+            }
+        }
+    }
 
     protected class StateBlobAccessor implements BlobAccessor {
 
@@ -479,25 +843,6 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         public void setBlob(Blob blob) throws PropertyException {
             markDirty.run();
             setValueBlob(state, blob);
-        }
-
-    }
-
-    protected void visitBlobs(T state, Consumer<BlobAccessor> blobVisitor, Runnable markDirty) throws PropertyException {
-        Visit visit = new Visit(blobVisitor, markDirty);
-        // structural type
-        visit.visitBlobsComplex(state, getType());
-        // dynamic facets
-        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
-        for (String facet : getFacets()) {
-            CompositeType facetType = schemaManager.getFacet(facet);
-            visit.visitBlobsComplex(state, facetType);
-        }
-        // proxy schemas
-        if (getProxySchemas() != null) {
-            for (Schema schema : getProxySchemas()) {
-                visit.visitBlobsComplex(state, schema);
-            }
         }
     }
 

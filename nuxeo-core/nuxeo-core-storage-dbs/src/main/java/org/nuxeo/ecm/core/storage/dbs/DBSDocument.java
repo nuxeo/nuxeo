@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.storage.dbs;
 import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,16 +34,12 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
-import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
-import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
@@ -56,17 +51,8 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.ecm.core.schema.types.primitives.BinaryType;
-import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
-import org.nuxeo.ecm.core.schema.types.primitives.DateType;
-import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
-import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
-import org.nuxeo.ecm.core.schema.types.primitives.LongType;
-import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
@@ -190,8 +176,6 @@ public class DBSDocument extends BaseDocument<State> {
 
     public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-
     protected final String id;
 
     protected final DBSDocumentState docState;
@@ -219,7 +203,7 @@ public class DBSDocument extends BaseDocument<State> {
         this.docState = docState;
         this.type = type;
         this.session = session;
-        if (isProxy()) {
+        if (docState != null && isProxy()) {
             SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             proxySchemas = schemaManager.getProxySchemas(type.getName());
         } else {
@@ -409,6 +393,18 @@ public class DBSDocument extends BaseDocument<State> {
         for (Object v : values) {
             State childState = new State();
             setValueComplex(childState, field, v);
+            childStates.add(childState);
+        }
+        state.put(name, (Serializable) childStates);
+    }
+
+    @Override
+    protected void updateList(State state, String name, Property property) throws PropertyException {
+        Collection<Property> properties = property.getChildren();
+        List<State> childStates = new ArrayList<>(properties.size());
+        for (Property childProperty : properties) {
+            State childState = new State();
+            writeComplexProperty(childState, (ComplexProperty) childProperty);
             childStates.add(childState);
         }
         state.put(name, (Serializable) childStates);
@@ -717,6 +713,7 @@ public class DBSDocument extends BaseDocument<State> {
         setPropertyValue(propertyName, value);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
         String propertyName = systemPropNameMap.get(name);
@@ -782,9 +779,10 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public void readDocumentPart(DocumentPart dp) throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
-        readComplexProperty((ComplexProperty) dp, docState.getState());
+        readComplexProperty(docState.getState(), (ComplexProperty) dp);
     }
 
+    @Override
     protected String internalName(String name) {
         switch (name) {
         case "major_version":
@@ -795,241 +793,20 @@ public class DBSDocument extends BaseDocument<State> {
         return name;
     }
 
-    protected void readComplexProperty(ComplexProperty complexProperty, State state) throws PropertyException {
-        if (state == null) {
-            complexProperty.init(null);
-            return;
-        }
-        if (complexProperty instanceof BlobProperty) {
-            Blob blob = getValueBlob(state);
-            complexProperty.init((Serializable) blob);
-            return;
-        }
-        for (Property property : complexProperty) {
-            String name = property.getField().getName().getPrefixedName();
-            name = internalName(name);
-            Type type = property.getType();
-            if (type.isSimpleType()) {
-                // simple property
-                Serializable value = state.get(name);
-                if (value instanceof Delta) {
-                    value = ((Delta) value).getFullValue();
-                }
-                property.init(value);
-            } else if (type.isListType()) {
-                ListType listType = (ListType) type;
-                if (listType.getFieldType().isSimpleType()) {
-                    // array
-                    Object[] array = (Object[]) state.get(name);
-                    array = typedArray(listType.getFieldType(), array);
-                    property.init(array);
-                } else {
-                    // complex list
-                    @SuppressWarnings("unchecked")
-                    List<Serializable> list = (List<Serializable>) state.get(name);
-                    if (list == null) {
-                        property.init(null);
-                    } else {
-                        Field listField = listType.getField();
-                        List<Serializable> value = new ArrayList<Serializable>(list.size());
-                        for (Serializable subMapSer : list) {
-                            State childMap = (State) subMapSer;
-                            ComplexProperty p = (ComplexProperty) complexProperty.getRoot().createProperty(property,
-                                    listField, 0);
-                            readComplexProperty(p, childMap);
-                            value.add(p.getValue());
-                        }
-                        property.init((Serializable) value);
-                    }
-                }
-            } else {
-                // complex property
-                State childMap = (State) state.get(name);
-                readComplexProperty((ComplexProperty) property, childMap);
-                ((ComplexProperty) property).removePhantomFlag();
-            }
-        }
-    }
-
-    protected static Object[] typedArray(Type type, Object[] array) {
-        if (array == null) {
-            array = EMPTY_STRING_ARRAY;
-        }
-        Class<?> klass;
-        if (type instanceof StringType) {
-            klass = String.class;
-        } else if (type instanceof BooleanType) {
-            klass = Boolean.class;
-        } else if (type instanceof LongType) {
-            klass = Long.class;
-        } else if (type instanceof DoubleType) {
-            klass = Double.class;
-        } else if (type instanceof DateType) {
-            klass = Calendar.class;
-        } else if (type instanceof BinaryType) {
-            klass = String.class;
-        } else if (type instanceof IntegerType) {
-            throw new RuntimeException("Unimplemented primitive type: " + type.getClass().getName());
-        } else if (type instanceof SimpleTypeImpl) {
-            // simple type with constraints -- ignore constraints XXX
-            return typedArray(type.getSuperType(), array);
-        } else {
-            throw new RuntimeException("Invalid primitive type: " + type.getClass().getName());
-        }
-        int len = array.length;
-        Object[] copy = (Object[]) Array.newInstance(klass, len);
-        System.arraycopy(array, 0, copy, 0, len);
-        return copy;
-    }
-
     @Override
     public Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths)
             throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(complexType);
-        Map<String, Serializable> prefetch = new HashMap<String, Serializable>();
-        for (String xpath : xpaths) {
-            try {
-                readPrefetch(complexType, docState.getState(), xpath, 0, prefetch);
-            } catch (IllegalStateException e) {
-                throw new IllegalStateException(e.getMessage() + " xpath=" + xpath + ", data=" + docState, e);
-            }
-        }
-        return prefetch;
-    }
-
-    protected static void readPrefetch(ComplexType type, State state, String xpath, int start,
-            Map<String, Serializable> prefetch) {
-        int i = xpath.indexOf('/', start);
-        boolean last = i == -1;
-        String prop = xpath.substring(start, last ? xpath.length() : i);
-        Serializable v = state == null ? null : state.get(prop);
-        Field propType = type.getField(prop);
-        if (last) {
-            if (v instanceof State || v instanceof List) {
-                throw new IllegalStateException("xpath=" + xpath + " start=" + start + " last element is not scalar");
-            }
-            if (v instanceof Object[]) {
-                // convert to typed array
-                Type lt = ((ListType) propType.getType()).getFieldType();
-                v = typedArray(lt, (Object[]) v);
-            }
-            prefetch.put(xpath, v);
-        } else {
-            int len = xpath.length();
-            if (i + 3 < len && xpath.charAt(i + 1) == '*' && xpath.charAt(i + 2) == '/') {
-                // list
-                if (v != null && !(v instanceof List)) {
-                    throw new IllegalStateException("xpath=" + xpath + " start=" + start + " not a List");
-                }
-                List<?> list = v == null ? Collections.emptyList() : (List<?>) v;
-                String base = xpath.substring(0, i + 1);
-                for (int n = 0; n < list.size(); n++) {
-                    String xp = base + n;
-                    Object elem = list.get(n);
-                    if (!(elem instanceof State)) {
-                        throw new IllegalStateException("xp=" + xp + " not a Map");
-                    }
-                    State subMap = (State) elem;
-                    Type lt = ((ListType) propType.getType()).getFieldType();
-                    readPrefetch((ComplexType) lt, subMap, xp, i + 3, prefetch);
-                }
-            } else {
-                // map
-                if (v != null && !(v instanceof State)) {
-                    throw new IllegalStateException("xpath=" + xpath + " start=" + start + " not a Map");
-                }
-                State subMap = (State) v;
-                readPrefetch((ComplexType) propType.getType(), subMap, xpath, i + 1, prefetch);
-            }
-        }
+        return readPrefetch(docState.getState(), complexType, xpaths);
     }
 
     @Override
     public void writeDocumentPart(DocumentPart dp) throws PropertyException {
         final DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
-        // markDirty callback, which has to be called *before*
-        // we change the state
-        Runnable markDirty = new Runnable() {
-            @Override
-            public void run() {
-                docState.markDirty();
-            }
-        };
-        writeComplexProperty((ComplexProperty) dp, docState.getState(), markDirty);
+        // markDirty has to be called *before* we change the state
+        docState.markDirty();
+        writeComplexProperty(docState.getState(), (ComplexProperty) dp);
         clearDirtyFlags(dp);
-    }
-
-    protected static void clearDirtyFlags(Property property) {
-        if (property.isContainer()) {
-            for (Property p : property) {
-                clearDirtyFlags(p);
-            }
-        }
-        property.clearDirtyFlags();
-    }
-
-    protected void writeComplexProperty(ComplexProperty complexProperty, State state, Runnable markDirty)
-            throws PropertyException {
-        if (complexProperty instanceof BlobProperty) {
-            Serializable value = ((BlobProperty) complexProperty).getValueForWrite();
-            if (value != null && !(value instanceof Blob)) {
-                throw new PropertyException("Cannot write a non-Blob value: " + value);
-            }
-            setValueBlob(state, (Blob) value);
-            return;
-        }
-        for (Property property : complexProperty) {
-            String name = property.getField().getName().getPrefixedName();
-            name = internalName(name);
-            // TODO XXX
-            // if (checkReadOnlyIgnoredWrite(doc, property, map)) {
-            // continue;
-            // }
-            Type type = property.getType();
-            if (type.isSimpleType()) {
-                // simple property
-                Serializable value = property.getValueForWrite();
-                markDirty.run();
-                state.put(name, value);
-                if (value instanceof Delta) {
-                    value = ((Delta) value).getFullValue();
-                    ((ScalarProperty) property).internalSetValue(value);
-                }
-            } else if (type.isListType()) {
-                ListType listType = (ListType) type;
-                if (listType.getFieldType().isSimpleType()) {
-                    // array
-                    Serializable value = property.getValueForWrite();
-                    if (value instanceof List) {
-                        value = ((List<?>) value).toArray(new Object[0]);
-                    } else if (!(value == null || value instanceof Object[])) {
-                        throw new IllegalStateException(value.toString());
-                    }
-                    markDirty.run();
-                    state.put(name, value);
-                } else {
-                    // complex list
-                    Collection<Property> children = property.getChildren();
-                    List<Serializable> childMaps = new ArrayList<Serializable>(children.size());
-                    for (Property childProperty : children) {
-                        State childMap = new State();
-                        writeComplexProperty((ComplexProperty) childProperty, childMap, markDirty);
-                        childMaps.add(childMap);
-                    }
-                    markDirty.run();
-                    state.put(name, (Serializable) childMaps);
-                }
-            } else {
-                // complex property
-                State childMap = (State) state.get(name);
-                if (childMap == null) {
-                    childMap = new State();
-                    markDirty.run();
-                    state.put(name, childMap);
-                }
-                writeComplexProperty((ComplexProperty) property, childMap, markDirty);
-            }
-        }
     }
 
     @Override

@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -951,8 +951,8 @@ public class TestSQLRepositoryVersioning {
         try {
             session.saveDocument(ver);
             fail("Should not allow version write");
-        } catch (VersionNotModifiableException e) {
-            // ok
+        } catch (PropertyException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Cannot set property on a version"));
         }
 
         // with proper option, it's allowed

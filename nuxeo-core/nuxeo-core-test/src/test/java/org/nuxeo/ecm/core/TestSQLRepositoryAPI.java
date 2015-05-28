@@ -205,8 +205,8 @@ public class TestSQLRepositoryAPI {
         child = session.getDocument(child.getRef());
         Object s = child.getProperty("testList", "strings");
         assertTrue(s.getClass().isArray());
-        // Objet[] has been normalized to Serializable[] when re-fetched from mapper cache
-        assertEquals(Serializable.class, s.getClass().getComponentType());
+        // Objet[] has been normalized to String[] when re-fetched from mapper cache
+        assertEquals(String.class, s.getClass().getComponentType());
 
         // ----- new session -----
         reopenSession();

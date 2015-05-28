@@ -213,7 +213,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     protected boolean isReadOnlyProperty(String name) {
-        return isReadOnly() && !SQLSession.isVersionWritableProperty(name);
+        return isReadOnly() && !isVersionWritableProperty(name);
     }
 
     /*
