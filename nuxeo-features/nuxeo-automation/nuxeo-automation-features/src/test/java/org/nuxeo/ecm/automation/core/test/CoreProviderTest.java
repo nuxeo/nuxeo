@@ -33,6 +33,7 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationParameters;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.util.Properties;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,6 +63,7 @@ public class CoreProviderTest {
     public void initRepo() throws Exception {
         DocumentModel ws1 = session.createDocumentModel("/", "ws1", "Workspace");
         ws1.setPropertyValue("dc:title", "WS1");
+        ws1.setPropertyValue("dc:subjects", new Object[] { "Art/Culture" });
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 2007);
         cal.set(Calendar.MONTH, 1); // 0-based
@@ -414,6 +416,22 @@ public class CoreProviderTest {
         assertEquals(2, result.getPageSize());
         assertEquals(2, result.getNumberOfPages());
         assertEquals(2, result.size());
+    }
+
+    /**
+     * @since 7.3
+     */
+    @Test
+    public void canUseINOperatorWithQueryParams() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("providerName", "searchWithInOperatorAndQueryParams");
+        StringList list = new StringList();
+        list.add("\"Art/Architecture\", \"Art/Culture\"");
+        params.put("queryParams", list);
+        PaginableDocumentModelListImpl result = (PaginableDocumentModelListImpl) service.run(ctx,
+                DocumentPageProviderOperation.ID, params);
+        assertEquals(1, result.size());
     }
 
     /**

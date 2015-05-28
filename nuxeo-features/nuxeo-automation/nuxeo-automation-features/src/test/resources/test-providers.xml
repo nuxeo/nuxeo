@@ -109,6 +109,17 @@
       <pageSize>50</pageSize>
     </genericPageProvider>
 
+    <genericPageProvider class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider"
+                         name="searchWithInOperatorAndQueryParams">
+      <property name="searchAllRepositories">true</property>
+      <pattern quoteParameters="false">
+        SELECT * FROM Document WHERE ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:isCheckedInVersion = 0
+        AND ecm:currentLifeCycleState != 'deleted'
+        AND dc:subjects IN (?)
+      </pattern>
+      <pageSize>50</pageSize>
+    </genericPageProvider>
   </extension>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
