@@ -16,6 +16,7 @@
       <password>${nuxeo.redis.password}</password>
       <database>${nuxeo.redis.database}</database>
       <timeout>${nuxeo.redis.timeout}</timeout>
+      <prefix>${nuxeo.redis.prefix}</prefix>
     </sentinel>
 <#else>
     <server>
@@ -24,6 +25,7 @@
       <password>${nuxeo.redis.password}</password>
       <database>${nuxeo.redis.database}</database>
       <timeout>${nuxeo.redis.timeout}</timeout>
+      <prefix>${nuxeo.redis.prefix}</prefix>
     </server>
 </#if>
   </extension>
