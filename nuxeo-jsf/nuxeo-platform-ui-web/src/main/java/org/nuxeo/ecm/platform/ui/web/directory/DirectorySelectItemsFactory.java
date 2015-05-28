@@ -117,7 +117,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
 
     @SuppressWarnings("boxing")
     public List<DirectorySelectItem> createAllDirectorySelectItems() {
-        return createAllDirectorySelectItems(" ");
+        return createAllDirectorySelectItems(ChainSelect.DEFAULT_KEY_SEPARATOR);
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
     }
 
     protected DirectorySelectItem createSelectItemForEntry(Object itemValue, DocumentModel ... entries) {
-        return createSelectItemForEntry(itemValue, " ", entries);
+        return createSelectItemForEntry(itemValue, ChainSelect.DEFAULT_KEY_SEPARATOR, entries);
     }
 
     /**
@@ -223,7 +223,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
     }
 
     protected DirectorySelectItem createSelectItemFrom(Session session, Object entry) {
-        return createSelectItemFrom(session, " ", entry);
+        return createSelectItemFrom(session, ChainSelect.DEFAULT_KEY_SEPARATOR, entry);
     }
 
     /**
