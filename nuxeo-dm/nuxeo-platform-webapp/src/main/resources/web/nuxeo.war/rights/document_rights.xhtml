@@ -160,7 +160,7 @@
       <template is="dom-if" if="{{!hasLocalRights}}">
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <popup-right render="{{doc.isCurrentUserHasEverything}}"></popup-right>
+          <popup-right doc-id="#{currentDocument.id}" render="{{doc.isCurrentUserHasEverything}}" on-aclcreated="handleAclCreated"></popup-right
           <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
         </div>
         <div>
