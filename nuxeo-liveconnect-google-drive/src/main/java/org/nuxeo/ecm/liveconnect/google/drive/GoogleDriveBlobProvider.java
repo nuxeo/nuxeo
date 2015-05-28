@@ -21,6 +21,7 @@ import static java.lang.Boolean.TRUE;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -34,7 +35,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -58,7 +58,9 @@ import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.liveconnect.update.worker.BlobProviderDocumentsUpdateWork;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -116,10 +118,6 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
 
     // ClientId for the file picker auth
     public static final String CLIENT_ID_PROP = "clientId";
-
-    protected static final String DOCUMENT_TO_BE_UPDATED_QUERY = String.format(
-            "SELECT * FROM Document WHERE content/data LIKE '%s:%%' AND ecm:isVersion = 0 ORDER BY ecm:uuid ASC",
-            PREFIX);
 
     protected static final ObjectParser JSON_PARSER = new JsonObjectParser(JacksonFactory.getDefaultInstance());
 
@@ -655,8 +653,18 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
 
                 long offset = 0;
                 List<DocumentModel> nextDocumentsToBeUpdated;
+                PageProviderService ppService = Framework.getService(PageProviderService.class);
+                Map<String, Serializable> props = new HashMap<String, Serializable>();
+                props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+                @SuppressWarnings("unchecked")
+                PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                        "googledrive_document_to_be_updated", null, null, null, props);
+                final long maxResult = pp.getPageSize();
                 do {
-                    nextDocumentsToBeUpdated = getNextDocumentToBeUpdatedResults(session, offset);
+                    pp.setCurrentPageOffset(offset);
+                    pp.refresh();
+                    nextDocumentsToBeUpdated = pp.getCurrentPage();
+
                     if (nextDocumentsToBeUpdated.isEmpty()) {
                         break;
                     }
@@ -668,8 +676,8 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
                             "googledrive:" + repositoryName + ":" + offset, "googledrive");
                     work.setDocuments(repositoryName, docIds);
                     workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
-                    offset += MAX_RESULT;
-                } while (nextDocumentsToBeUpdated.size() == MAX_RESULT);
+                    offset += maxResult;
+                } while (nextDocumentsToBeUpdated.size() == maxResult);
 
             } finally {
                 if (session != null) {
@@ -677,14 +685,6 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
                 }
             }
         }
-    }
-
-    private List<DocumentModel> getNextDocumentToBeUpdatedResults(CoreSession session, long offset)
-            throws ClientException {
-        List<DocumentModel> results;
-        String query = NXQLQueryBuilder.getQuery(DOCUMENT_TO_BE_UPDATED_QUERY, null, false, false, null);
-        results = session.query(query, null, MAX_RESULT, offset, MAX_RESULT);
-        return results;
     }
 
 }
