@@ -57,7 +57,7 @@ public class UIDirectorySelectItems extends UISelectItems {
     }
 
     public String getKeySeparator() {
-        return (String) getStateHelper().eval(DirPropertyKeys.keySeparator, "/");
+        return (String) getStateHelper().eval(DirPropertyKeys.keySeparator, ChainSelect.DEFAULT_KEY_SEPARATOR);
     }
 
     public void setKeySeparator(String keySeparator) {
