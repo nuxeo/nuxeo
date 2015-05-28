@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrBuilder;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.work.WorkManagerImpl;
@@ -43,6 +44,8 @@ import redis.clients.jedis.Jedis;
  * @since 5.8
  */
 public class RedisComponent extends DefaultComponent implements RedisAdmin {
+
+    private static final String DEFAULT_PREFIX = "nuxeo:";
 
     protected volatile RedisExecutor executor = RedisExecutor.NOOP;
 
@@ -159,7 +162,11 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
 
     @Override
     public String namespace(String... names) {
-        StringBuilder builder = new StringBuilder("nuxeo:");
+        String prefix = config.prefix;
+        if (StringUtils.isBlank(prefix)) {
+            prefix = DEFAULT_PREFIX;
+        }
+        StringBuilder builder = new StringBuilder(prefix);
         for (String name : names) {
             builder.append(name).append(":");
         }
