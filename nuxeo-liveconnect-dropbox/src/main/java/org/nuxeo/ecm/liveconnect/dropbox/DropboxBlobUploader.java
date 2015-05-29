@@ -38,6 +38,7 @@ import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -85,20 +86,24 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         // not ours to close
         @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
+        DocumentModelList tokens = getDropboxBlobProvider().getOAuth2Provider().getCredentialDataStore().query();
 
         String inputId = facet.getClientId(context);
         String prefix = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR;
         String pickId = prefix + "DropboxPickMsg";
         String infoId = prefix + "DropboxInfo";
 
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String authorizationUrl = tokens.isEmpty() ? getDropboxBlobProvider().getOAuth2Provider().getAuthorizationUrl(request) : "";
+
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
-        writer.writeAttribute("class", "button DropxboxPickerButton", null);
+        writer.writeAttribute("class", "button", null);
 
         String onButtonClick = onClick
             + ";"
-            + String.format("new nuxeo.utils.DropboxPicker('%s','%s','%s')",
-            pickId, inputId, infoId);
+            + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s')",
+            inputId, infoId, authorizationUrl);
         writer.writeAttribute("onclick", onButtonClick, null);
 
         writer.startElement("span", parent);

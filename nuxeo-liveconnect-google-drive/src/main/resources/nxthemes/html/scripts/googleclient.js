@@ -9,13 +9,15 @@ nuxeo.utils = nuxeo.utils || {};
 // inputId: element id of input fields to save the doc id
 // infoId: element id of span to fill with doc info
 // domain: limit account picker to this domain
-nuxeo.utils.GoogleDrivePicker = function(clientId, pickId, authId, inputId, infoId, domain) {
+// authorizationUrl: OAuth flow url
+nuxeo.utils.GoogleDrivePicker = function(clientId, pickId, authId, inputId, infoId, domain, authorizationUrl) {
     this.clientId = clientId;
     this.pickId = pickId;
     this.authId = authId;
     this.inputId = inputId;
     this.infoId = infoId;
     this.domain = domain;
+    this.url = authorizationUrl;
 
     if (window.gapi) {
       this.load();
@@ -47,19 +49,18 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
     },
 
     checkAuth : function() {
-        var token = gapi.auth.getToken();
-        if (token) {
-            if (this.isAskingForAuth()) {
-                // re-display regular label
-                document.getElementById(this.pickId).style.display = "";
-                document.getElementById(this.authId).style.display = "none";
-            }
-            this.onAuth(token);
+        if (!(this.url == "" || nuxeo.utils.GoogleDrivePicker.ignoreOAuthPopup == true)) {
+          openPopup(this.url, {
+            onMessageReceive: this.parseMessage.bind(this),
+            onClose: this.onOAuthPopupClose.bind(this)
+          });
         } else {
-            // ask the user for a second click,
-            // this is needed to work with popup blockers
-            document.getElementById(this.pickId).style.display = "none";
-            document.getElementById(this.authId).style.display = "";
+          var token = gapi.auth.getToken();
+          if (token) {
+            this.onAuth(token.access_token);
+          } else {
+            this.doAuth(false, this.checkAuth.bind(this));
+          }
         }
     },
 
@@ -72,22 +73,22 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
         }, callback);
     },
 
-    onAuth : function(token) {
+    onAuth : function(accessToken) {
       // retrieve the account's email
-      jQuery.getJSON("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= " + token.access_token)
+      jQuery.getJSON("https://www.googleapis.com/oauth2/v1/tokeninfo?access_token= " + accessToken)
           .done(function(info) {
             this.email = info.email;
             // display the picker
-            this.showPicker();
+            this.showPicker(accessToken);
           }.bind(this));
     },
 
-    showPicker : function() {
+    showPicker : function(accessToken) {
         var view = new google.picker.DocsView();
         view.setIncludeFolders(true);
         new google.picker.PickerBuilder() //
         // .enableFeature(google.picker.Feature.MINE_ONLY) //
-        .setOAuthToken(gapi.auth.getToken().access_token) //
+        .setOAuthToken(accessToken) //
         .setAppId(this.clientId) //
         .addView(view) //
         .setCallback(this.pickerCallback.bind(this)) //
@@ -107,6 +108,18 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
                         + '"/> ' + doc[google.picker.Document.NAME];
             }
         }
+    },
+
+    parseMessage: function(event) {
+      var data = JSON.parse(event.data);
+      this.accessToken = data.token;
+    },
+
+    onOAuthPopupClose : function() {
+      if (this.accessToken) {
+        this.onAuth(this.accessToken);
+        nuxeo.utils.GoogleDrivePicker.ignoreOAuthPopup = true;
+      }
     }
 
 };

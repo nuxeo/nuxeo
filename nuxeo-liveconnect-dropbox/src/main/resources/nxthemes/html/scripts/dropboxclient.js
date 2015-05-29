@@ -1,19 +1,52 @@
 var nuxeo = nuxeo || {};
 nuxeo.utils = nuxeo.utils || {};
 
-nuxeo.utils.DropboxPicker = function(pickId, inputId, infoId) {
+// picks a doc from Dropbox
+// parameters:
+// inputId: element id of input fields to save the doc path
+// infoId: element id of span to fill with doc info
+// authorizationUrl: OAuth flow url
+nuxeo.utils.DropboxPicker = function(inputId, infoId, url) {
+  this.inputId = inputId;
+  this.infoId = infoId;
+  this.url = url;
 
+  if (this.url == "" || nuxeo.utils.DropboxPicker.ignoreOAuthPopup == true) {
+    this.showPicker.call(this);
+  } else {
+    openPopup(this.url, {
+      onMessageReceive: this.parseMessage.bind(this),
+      onClose: this.onOAuthPopupClose.bind(this)
+    });
+  }
+};
+
+nuxeo.utils.DropboxPicker.prototype = {
+
+  onOAuthPopupClose : function() {
+    if (this.token) {
+      this.showPicker.call(this);
+      nuxeo.utils.DropboxPicker.ignoreOAuthPopup = true;
+    }
+  },
+
+  parseMessage: function(event) {
+    var data = JSON.parse(event.data);
+    this.token = data.token;
+  },
+
+  showPicker: function () {
     var options = {
       success: function(files) {
         var doc = files[0];
-        if (inputId) {
-          document.getElementById(inputId).value = doc.link ;
+        if (this.inputId) {
+          document.getElementById(this.inputId).value = doc.link ;
         }
-        if (infoId) {
-          document.getElementById(infoId).innerHTML = '<img width="16" height="16" src="' + doc.icon
+        if (this.infoId) {
+          document.getElementById(this.infoId).innerHTML = '<img width="16" height="16" src="' + doc.icon
               + '"/> ' + doc.name;
         }
-      },
+      }.bind(this),
 
       cancel: function() {
       },
@@ -25,4 +58,6 @@ nuxeo.utils.DropboxPicker = function(pickId, inputId, infoId) {
 
     // open picker
     Dropbox.choose(options);
+  }
+
 };

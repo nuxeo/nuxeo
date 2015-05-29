@@ -601,7 +601,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         return (provider != null && provider.isEnabled()) ? provider.getClientId() : clientId;
     }
 
-    private OAuth2ServiceProvider getOAuth2Provider() {
+    protected OAuth2ServiceProvider getOAuth2Provider() {
         return Framework.getLocalService(OAuth2ServiceProviderRegistry.class).getProvider(PREFIX);
     }
 

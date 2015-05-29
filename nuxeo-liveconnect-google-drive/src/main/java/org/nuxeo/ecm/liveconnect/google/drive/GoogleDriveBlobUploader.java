@@ -26,11 +26,13 @@ import javax.faces.component.UIInput;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.FileInfo;
@@ -93,12 +95,16 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         // not ours to close
         @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
+        DocumentModelList tokens = ((GoogleOAuth2ServiceProvider) getGoogleDriveBlobProvider().getOAuth2Provider()).getCredentialDataStore().query();
 
         String inputId = facet.getClientId(context);
         String prefix = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR;
         String pickId = prefix + "GoogleDrivePickMsg";
         String authId = prefix + "GoogleDriveAuthMsg";
         String infoId = prefix + "GoogleDriveInfo";
+
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String authorizationUrl = tokens.isEmpty() ? getGoogleDriveBlobProvider().getOAuth2Provider().getAuthorizationUrl(request) : "";
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
@@ -107,8 +113,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         // TODO pass existing access token
         String onButtonClick = onClick
                 + ";"
-                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s')",
-            getClientId(), pickId, authId, inputId, infoId, getGoogleDomain());
+                + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s', '%s')",
+            getClientId(), pickId, authId, inputId, infoId, getGoogleDomain(), authorizationUrl);
         writer.writeAttribute("onclick", onButtonClick, null);
 
         writer.startElement("span", parent);
