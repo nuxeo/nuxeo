@@ -91,7 +91,7 @@
 
       <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-      <nx-doc-resource auto="true" id="doc" path="/path#{currentDocument.pathAsString}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}"></nx-doc-resource>
+      <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}"></nx-doc-resource>
 
       <template is="dom-if" if="{{hasLocalRights}}">
         <div>
@@ -196,6 +196,8 @@
         t.handleAclCreated = function() {
           this.refresh();
         };
+
+        t.currentDocumentPath = "/path" + currentDocumentPath;
       })();
     </script>
   </div>
