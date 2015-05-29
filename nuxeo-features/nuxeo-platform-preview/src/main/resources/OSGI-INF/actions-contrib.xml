@@ -36,6 +36,12 @@
       </properties>
     </action>
 
+    <action id="blobPreview" link="#{previewActions.getViewerURL(document, blobXPath)}" type="bare_link"
+            label="label.document.preview" icon="/icons/contextual_menu/preview.png" order="150">
+      <category>BLOB_ACTIONS</category>
+      <filter-id>hasPDFPreview</filter-id>
+    </action>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -56,6 +62,13 @@
     <filter id="popup_view_preview">
       <rule grant="true">
         <condition>#{previewActions.documentHasPreview(document)}</condition>
+      </rule>
+    </filter>
+
+    <filter id="hasPDFPreview">
+      <rule grant="true">
+        <condition>#{conversionActions.isExportableToPDF(blob)}</condition>
+        <condition>#{conversionActions.isPDF(blob)}</condition>
       </rule>
     </filter>
 

@@ -50,6 +50,9 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletRequest;
+
 /**
  * Seam Action bean to handle the preview tabs and associated actions.
  *
@@ -164,6 +167,15 @@ public class PreviewActionBean implements Serializable {
             log.error(e, e);
             return "";
         }
+    }
+
+    /**
+     * @since 7.3
+     */
+    public String getViewerURL(DocumentModel doc, String field) {
+        ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
+        return PreviewHelper.getViewerURL(doc, protectField(field), baseURL);
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)

@@ -2,54 +2,46 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxdir="http://nuxeo.org/nxdirectory"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
   id="#{widget.id}">
 
-  <c:if test="#{widget.mode != 'create' and widget.mode != 'edit' and field_0 != null}">
+  <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
+    <nxu:set var="document" value="#{empty widgetProperty_document ? value : widgetProperty_document}">
+    <nxu:set var="blobXPath"
+             value="#{empty widgetProperty_blobXPath ? widget.fieldDefinitions[0].fieldName : widgetProperty_blobXPath}">
+    <c:set var="blob" value="#{field_0}" />
+    <c:set var="filename" value="#{empty field_1 ? blob.filename : field_1}" />
+    <c:set var="blobLength" value="#{blob.length}" />
+    <c:set var="fileUrl" value="#{nxd:fileUrl('downloadFile', document, xpath, filename)}" />
 
-    <nxh:outputLink
-      value="#{nxd:fileUrl('downloadFile', value, widget.fieldDefinitions[0].propertyName, field_1)}">
-      <nxh:graphicImage value="#{nxd:fileIconPath(field_0)}" />
-      <nxh:outputText value="#{field_1}" />
+    <nxu:set var="actions"
+             value="#{documentActions.getBlobActions(document, blobXPath)}"
+             cache="true">
+    <nxh:graphicImage value="#{nxd:fileIconPath(blob)}"
+                      rendered="#{! empty nxd:fileIconPath(blob)}" />
+    <nxh:outputLink value="#{fileUrl}">
+      <h:outputText value="#{filename}"/>
     </nxh:outputLink>
+    <c:if test="#{blobLength >= 0}">
+      <h:outputText styleClass="detail" value="#{nxu:printFileSize(blobLength)}"/>
+    </c:if>
 
-    <nxu:set var="document"
-      value="#{nxu:test(empty widgetProperty_document, value, widgetProperty_document)}">
-      <nxl:widgetType name="documentActions"
-        widgetProperty_category="DRIVE_EDIT" value="#{document}"
-        mode="view" actionsDisplay="icons" overallDisplay="horizontal_block" />
-      <h:panelGroup
-        rendered="#{liveEditHelper.isLiveEditable(document, field_0)}">
-        <h:outputText value=" | " />
-        <h:outputLink
-          value="#{nxd:liveEditUrl(document, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, widget.fieldDefinitions[1].fieldName)}">
-          <h:outputText value="#{messages['label.document.directEdit']}" />
-        </h:outputLink>
-      </h:panelGroup>
+    <div class="actionsColumn">
+      <nxl:widgetType name="actions"
+                      mode="view"
+                      actions="#{actions}"
+                      actionsDisplay="icons"
+                      overallDisplay="horizontal_block" />
+    </div>
     </nxu:set>
-
-    <nxu:methodResult name="hasPDFCapabilities"
-      value="#{conversionActions.isExportableToPDF(field_0)}">
-      <h:panelGroup rendered="#{hasPDFCapabilities}">
-        <h:outputText value=" | " />
-        <h:commandLink action="#{conversionActions.generatePdfFile}">
-          <f:param name="fileFieldFullName"
-            value="#{widget.fieldDefinitions[0].propertyName}" />
-          <f:param name="docRef" value="#{layoutValue.id}" />
-          <f:param name="filename" value="#{field_1}" />
-          <h:outputText value="#{messages['label.document.generatePdf']}" />
-        </h:commandLink>
-      </h:panelGroup>
-    </nxu:methodResult>
-
+    </nxu:set>
+    </nxu:set>
   </c:if>
 
-  <c:if test="#{widget.mode == 'create' or widget.mode == 'edit'}">
+  <c:if test="#{nxl:isBoundToEditMode(widget.mode)}">
 
     <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
       filename="#{field_1}" required="#{widgetProperty_required}" editFilename="false"

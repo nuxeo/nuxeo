@@ -48,7 +48,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
@@ -62,6 +61,8 @@ import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -73,6 +74,7 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.codec.DocumentFileCodec;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.action.DeleteActions;
 import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
@@ -102,6 +104,8 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     public static final String LIFE_CYCLE_TRANSITION_KEY = "lifeCycleTransition";
 
+    public static final String BLOB_ACTIONS_CATEGORY = "BLOB_ACTIONS";
+
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
@@ -122,6 +126,9 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     @In(create = true)
     protected transient DeleteActions deleteActions;
+
+    @In(create = true, required = false)
+    protected transient ActionContextProvider actionContextProvider;
 
     /**
      * Boolean request parameter used to restore current tabs (current tab and subtab) after edition.
@@ -460,17 +467,29 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     /**
      * @since 7.3
      */
-    public List<AppLink> getAppLinks(DocumentModel doc) throws ClientException {
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh == null) {
-            return null;
-        }
+    public List<Action> getBlobActions(DocumentModel doc, String blobXPath) {
+        Serializable blob = doc.getPropertyValue(blobXPath);
 
-        Blob blob = bh.getBlob();
-        if (blob == null || !(blob instanceof ManagedBlob)) {
+        if (blob == null || !(blob instanceof Blob)) {
             return null;
         }
-        ManagedBlob managedBlob = (ManagedBlob) blob;
+        ActionContext ctx = actionContextProvider.createActionContext();
+        ctx.putLocalVariable("blob", blob);
+        ctx.putLocalVariable("blobXPath", blobXPath);
+        return webActions.getActionsList(BLOB_ACTIONS_CATEGORY, ctx, true);
+    }
+
+    /**
+     * @since 7.3
+     */
+    public List<AppLink> getAppLinks(DocumentModel doc, String blobXPath) throws ClientException {
+
+        Serializable value = doc.getPropertyValue(blobXPath);
+
+        if (value == null || !(value instanceof ManagedBlob)) {
+            return null;
+        }
+        ManagedBlob managedBlob = (ManagedBlob) value;
 
         BlobManager blobManager = Framework.getService(BlobManager.class);
         BlobProvider blobProvider = blobManager.getBlobProvider(managedBlob.getProviderId());

@@ -1,11 +1,7 @@
 <div class="content_block"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxh="http://nuxeo.org/nxweb/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout">
 
   <c:set var="canHaveMainBlob" value="#{!empty currentDocumentAsBlobHolder}" />
@@ -39,144 +35,40 @@
     </div>
   </c:if>
   <c:if test="#{hasMainBlob}">
-    <c:set var="blobLength" value="#{currentDocumentAsBlobHolder.blob.length}" />
-    <c:set var="fileUrl"
-           value="#{nxd:fileUrl('downloadFile', currentDocument, 'blobholder:0', currentDocumentAsBlobHolder.blob.filename)}" />
-    <c:set var="appLinks"
-           value="#{documentActions.getAppLinks(currentDocument)}"
-           scope="request" />
     <div class="dropzone dropContent" context="mainBlob" id="mainBlobDropZone">
-    <table class="smallTable">
-      <tbody>
-        <tr>
-          <td class="labelColumn">
-            <h:outputText value="#{messages['label.summary.download.file']}" />
-          </td>
-          <td class="fieldColumn" docRef="#{currentDocument.id}">
-            <div class="dropout"
-              downloadUrl="#{fileUrl}"
-              fileName="#{currentDocumentAsBlobHolder.blob.filename}"
-              mimetype="#{currentDocumentAsBlobHolder.blob.mimeType}">
-              <nxh:graphicImage value="#{nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}"
-                rendered="#{! empty nxd:fileIconPath(currentDocumentAsBlobHolder.blob)}" />
-              <nxh:outputLink value="#{fileUrl}">
-                  <h:outputText value="#{currentDocumentAsBlobHolder.blob.filename}"/>
-              </nxh:outputLink>
-              <c:if test="#{blobLength >= 0}">
-                  <h:outputText styleClass="detail" value="#{nxu:printFileSize(currentDocumentAsBlobHolder.blob.length)}"/>
-              </c:if>
-            </div>
-          </td>
-          <td class="actionsColumn">
-            <nxl:widgetType name="documentActions"
-              widgetProperty_category="DRIVE_EDIT" value="#{currentDocument}"
-              mode="view" actionsDisplay="icons" overallDisplay="horizontal_block" />
-            <c:if test="#{not empty appLinks}">
-              <c:forEach var="appLink" items="#{appLinks}">
-                <h:outputLink value="#{appLink.link}" target="_blank">
-                  <h:graphicImage value="#{appLink.icon}"
-                    alt="#{nxu:translate('label.document.appLink', appLink.appName)}"
-                    title="#{nxu:translate('label.document.appLink', appLink.appName)}"/>
-                </h:outputLink>
-              </c:forEach>
-            </c:if>
-            <nxu:methodResult name="editable"
-              value="#{liveEditHelper.isDocumentLiveEditable(currentDocument, 'file', 'content')}">
-              <h:outputLink value="#{nxd:liveEditUrl(currentDocument, 'file', 'content', 'filename')}"
-                rendered="#{editable}">
-                <h:graphicImage value="/icons/application_form_edit.png"
-                  alt="#{messages['label.document.directEdit']}"
-                  title="#{messages['label.document.directEdit']}"/>
-              </h:outputLink>
-            </nxu:methodResult>
-            <nxu:set var="hasPDFCapabilities"
-              value="#{conversionActions.isExportableToPDF(currentDocumentAsBlobHolder)}">
-              <nxu:set var="isPDF"
-                value="#{conversionActions.isPDF(currentDocumentAsBlobHolder)}">
-                <h:panelGroup rendered="#{hasPDFCapabilities or isPDF}">
-                  <!-- TODO: migrate to real action, see NXP-16986 -->
-                  <nxu:set var="urlConvertPart" value="#{nxu:test(isPDF, '', '/@convert?format=pdf')}">
-                    <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
-                      <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@blob/blobholder:0#{urlConvertPart}" />
-                      <h:graphicImage value="/icons/contextual_menu/preview.png"
-                        alt="#{messages['label.document.preview']}"
-                        title="#{messages['label.document.preview']}"/>
-                    </h:outputLink>
-                  </nxu:set>
-                </h:panelGroup>
-                <h:panelGroup rendered="#{hasPDFCapabilities}">
-                  <nxh:commandLink
-                    action="#{conversionActions.generatePdfFileFromBlobHolder(currentDocumentAsBlobHolder)}">
-                    <nxh:graphicImage
-                      value="/icons/pdf.png"
-                      title="#{messages['label.document.generatePdf']}"
-                      alt="#{messages['label.document.generatePdf']}"/>
-                  </nxh:commandLink>
-                </h:panelGroup>
-              </nxu:set>
-            </nxu:set>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <table class="smallTable">
+        <tbody>
+          <tr>
+            <td class="labelColumn">
+              <h:outputText value="#{messages['label.summary.download.file']}" />
+            </td>
+            <td class="fieldColumn" docRef="#{currentDocument.id}">
+              <nxl:widgetType name="extendedFile" mode="view" value="#{currentDocument}" field="file:content"/>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </c:if>
 
   <c:if test="#{hasOtherBlobs}">
-  <div class="dropzone dropAttachments" context="otherBlobs" id="otherBlobsDropZone">
-    <table class="smallTable">
-      <tbody>
-        <nxu:inputList value="#{currentDocument.files.files}"  id="files_input" model="model">
-          <tr>
-            <td class="labelColumn">
-              <h:outputText value=" #{messages['label.summary.download.attachments']}"
-                rendered="#{model.rowIndex == 0}" />
-            </td>
-            <td class="fieldColumn">
-              <nxh:graphicImage
-                value="#{nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}"
-                rendered="#{! empty nxd:fileIconPath(currentDocument.files.files[model.rowIndex].file)}" />
-              <nxh:outputLink
-                value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[model.rowIndex].filename)}">
-                <h:outputText value="#{currentDocument.files.files[model.rowIndex].filename}"/>
-              </nxh:outputLink>
-              <h:outputText styleClass="detail"
-                value=" #{nxu:printFileSize(currentDocument.files.files[model.rowIndex].file.length)}"/>
-            </td>
-            <td class="actionsColumn">
-              <nxu:set var="hasPDFCapabilities"
-                value="#{conversionActions.isExportableToPDF(currentDocument.files.files[model.rowIndex].file)}">
-                <nxu:set var="isPDF"
-                  value="#{conversionActions.isPDF(currentDocument.files.files[model.rowIndex].file)}">
-                  <h:panelGroup rendered="#{hasPDFCapabilities or isPDF}">
-                    <!-- TODO: migrate to real action, see NXP-16986 -->
-                    <nxu:set var="urlConvertPart" value="#{nxu:test(isPDF, '', '/@convert?format=pdf')}">
-                      <h:outputLink value="#{baseURL}viewer/web/viewer.html" target="_blank">
-                        <f:param name="file" value="#{baseURL}api/v1/id/#{currentDocument.id}/@blob/#{nxd:propertyPath('files:files', model.rowIndex, 'file')}#{urlConvertPart}" />
-                        <h:graphicImage value="/icons/contextual_menu/preview.png"
-                          alt="#{messages['label.document.preview']}"
-                          title="#{messages['label.document.preview']}"/>
-                      </h:outputLink>
-                    </nxu:set>
-                  </h:panelGroup>
-                  <h:panelGroup rendered="#{hasPDFCapabilities}">
-                    <h:commandLink action="#{conversionActions.generatePdfFile}">
-                      <f:param name="fileFieldFullName"
-                        value="#{nxd:propertyPath('files:files', model.rowIndex, 'file')}" />
-                      <f:param name="filename" value="#{currentDocument.files.files[model.rowIndex].filename}" />
-                      <nxh:graphicImage value="/icons/pdf.png"
-                        title="#{messages['label.document.generatePdf']}"
-                        alt="#{messages['label.document.generatePdf']}"/>
-                    </h:commandLink>
-                  </h:panelGroup>
-                </nxu:set>
-              </nxu:set>
-            </td>
-          </tr>
-        </nxu:inputList>
-      </tbody>
-    </table>
-  </div>
+    <div class="dropzone dropAttachments" context="otherBlobs" id="otherBlobsDropZone">
+      <table class="smallTable">
+        <tbody>
+          <c:forEach items="#{currentDocument.files.files}" varStatus="loop">
+            <tr>
+              <td class="labelColumn">
+                <h:outputText value=" #{messages['label.summary.download.attachments']}" rendered="#{loop.index == 0}" />
+              </td>
+              <td class="fieldColumn">
+                <nxl:widgetType name="extendedFile" mode="view" value="#{currentDocument}"
+                                field="files:files/#{loop.index}/file" />
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+    </div>
   </c:if>
 
 </div>

@@ -135,4 +135,10 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
         return blobList;
     }
 
+    /**
+     * @since 7.3
+     */
+    public String getXpath() {
+        return xPath;
+    }
 }

@@ -227,6 +227,10 @@ table.noHover tr:hover {
 .actionsColumn .smallButton {
   margin: 0 .2em;
   padding: .2em .3em }
+div.actionsColumn {
+  display: inline-block;
+  float: right;
+}
 
 .dataTableNoHeader th {
   background-color: transparent }

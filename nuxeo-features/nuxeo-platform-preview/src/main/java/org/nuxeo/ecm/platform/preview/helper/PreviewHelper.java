@@ -15,12 +15,16 @@
 
 package org.nuxeo.ecm.platform.preview.helper;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
@@ -29,6 +33,10 @@ public class PreviewHelper {
     public static final String PREVIEWURL_PREFIX = "restAPI/preview/";
 
     public static final String PREVIEWURL_DEFAULTXPATH = "default";
+
+    protected static final String PDF_MIMETYPE = "application/pdf";
+
+    protected static final String PDF_EXTENSION = ".pdf";
 
     protected static final Map<String, Boolean> hasPreviewByType = new ConcurrentHashMap<String, Boolean>();
 
@@ -98,4 +106,47 @@ public class PreviewHelper {
         return adapter == null ? false : adapter.hasBlobToPreview();
     }
 
+    /**
+     * @since 7.3
+     */
+    public static String getViewerURL(DocumentModel doc, String xpath, String baseURL) {
+        Blob blob;
+        try {
+            Serializable value = doc.getPropertyValue(xpath);
+            if (value == null || !(value instanceof Blob)) {
+                return null;
+            }
+            blob = (Blob) value;
+        } catch (PropertyNotFoundException e) {
+            return null;
+        }
+
+        baseURL = baseURL.endsWith("/") ? baseURL.substring(0, baseURL.length() - 1) : baseURL;
+        String fileURL = String.format("%s/api/v1/id/%s/@blob/%s", baseURL, doc.getId(), xpath);
+        StringBuilder sb = new StringBuilder();
+        sb.append("viewer/web/viewer.html?file=");
+        sb.append(fileURL);
+        if (!isPDF(blob)) {
+            sb.append("/@convert?format=pdf");
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * @since 7.3
+     */
+    public static boolean isPDF(Blob blob) {
+        String mimeType = blob.getMimeType();
+        if (StringUtils.isNotBlank(mimeType) && PDF_MIMETYPE.equals(mimeType)) {
+            return true;
+        } else {
+            String filename = blob.getFilename();
+            if (StringUtils.isNotBlank(filename) && filename.endsWith(PDF_EXTENSION)) {
+                // assume it's a pdf file
+                return true;
+            }
+        }
+        return false;
+    }
 }

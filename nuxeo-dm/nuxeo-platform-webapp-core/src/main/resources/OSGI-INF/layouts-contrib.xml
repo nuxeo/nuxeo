@@ -31,6 +31,72 @@
       </property>
     </widgetType>
 
+    <widgetType name="extendedFile">
+      <configuration>
+        <sinceVersion>7.3</sinceVersion>
+        <title>Extended File</title>
+        <description>
+          <p>
+            The file widget displays a file uploader/editor in create or edit
+            mode, with additional message tag for errors, and a link to the file
+            in other modes.
+          </p>
+          <p>
+            Widgets using this type can provide properties accepted on a
+            &lt;nxu:inputFile /&gt; tag in create or edit mode, and properties
+            accepted on a &lt;nxu:outputFile /&gt; tag in other modes.
+          </p>
+        </description>
+        <categories>
+          <category>document</category>
+        </categories>
+        <supportedModes>
+          <mode>edit</mode>
+          <mode>view</mode>
+        </supportedModes>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <supportedTypes>
+            <type>blob</type>
+          </supportedTypes>
+          <defaultTypes>
+            <type>blob</type>
+          </defaultTypes>
+        </fields>
+        <properties>
+          <layouts mode="view">
+            <layout name="file_widget_type_properties_view">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">file_downloadLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">file_iconRendered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+          <layouts mode="edit">
+            <layout name="file_widget_type_properties_edit">
+              <rows>
+                <row>
+                  <widget category="widgetTypeConf">required</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">file_downloadLabel</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">file_iconRendered</widget>
+                </row>
+              </rows>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <property name="template">/widgets/extended_file_widget.xhtml</property>
+    </widgetType>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
@@ -325,7 +391,7 @@
       </properties>
     </widget>
 
-    <widget name="file" type="template">
+    <widget name="file" type="extendedFile">
       <labels>
         <label mode="any">label.file.content</label>
       </labels>
@@ -334,9 +400,6 @@
         <field>file:content</field>
         <field>file:filename</field>
       </fields>
-      <properties mode="any">
-        <property name="template">/widgets/extended_file_widget.xhtml</property>
-      </properties>
     </widget>
 
     <widget name="note" type="richtext_with_mimetype">
