@@ -23,6 +23,7 @@ import java.util.Map;
 import org.nuxeo.theme.services.ThemeService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.Page;
 
 /**
  * Service handling the mapping between a theme page and its resources (styling and flavors)
@@ -86,6 +87,15 @@ public interface ThemeStylingService {
      * @param flavor
      */
     Logo getLogo(String flavor);
+
+    /**
+     * Returns the page for given name.
+     * <p>
+     * Resources and bundles declared for all pages will also be attached to returned page.
+     *
+     * @since 7.3
+     */
+    Page getPage(String name);
 
     /**
      * Hook to notify the service that a theme has been registered

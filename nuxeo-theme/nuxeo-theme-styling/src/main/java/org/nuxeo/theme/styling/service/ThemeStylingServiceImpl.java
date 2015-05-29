@@ -724,6 +724,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     }
 
     @Override
+    public Page getPage(String name) {
+        return pageReg.getPage(name);
+    }
+
+    @Override
     public void themeRegistered(String themeName) {
         if (themeName == null) {
             return;
