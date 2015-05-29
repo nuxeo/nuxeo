@@ -111,16 +111,13 @@
     <resource name="static-styles.css">
       <uri>/css/static-styles.css</uri>
     </resource>
-
     <resource name="screen.css">
       <uri>/css/screen.css</uri>
     </resource>
-
     <resource name="foldable-box.js">
       <uri>/scripts/foldable-box.js</uri>
       <require>effects.js</require>
     </resource>
-
     <resource name="window.js">
       <uri>/scripts/window.js</uri>
     </resource>
@@ -243,10 +240,131 @@
     <resource name="fixmultipartajax.js">
       <uri>/scripts/fixmultipartajax.js</uri>
     </resource>
-
     <resource name="nuxeo.js">
-      <path>bower_components/nuxeo/lib/jquery/nuxeo.js</path>
+      <uri>/bower_components/nuxeo/lib/jquery/nuxeo.js</uri>
     </resource>
+    <!-- end of "static" resources declaration -->
+
+    <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
+    <!-- Global styles -->
+    <resource name="breadcrumb.css">
+      <path>themes/css/breadcrumb.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="buttons_and_actions.css">
+      <path>themes/css/buttons_and_actions.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="basics.css">
+      <path>themes/css/basics.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="body.css">
+      <path>themes/css/body.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="drag_and_drop.css">
+      <path>themes/css/drag_and_drop.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="foldable_boxes.css">
+      <path>themes/css/foldable_boxes.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="forms.css">
+      <path>themes/css/forms.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="grids_and_widgets.css">
+      <path>themes/css/grids_and_widgets.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="messages_and_tooltips.css">
+      <path>themes/css/messages_and_tooltips.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="navigation.css">
+      <path>themes/css/navigation.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="popups.css">
+      <path>themes/css/popups.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="richfaces_components.css">
+      <path>themes/css/richfaces_components.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="tables.css">
+      <path>themes/css/tables.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="tabs_content.css">
+      <path>themes/css/tabs_content.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="helpers.css">
+      <path>themes/css/helpers.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <!-- Header and Footer -->
+    <resource name="header.css">
+      <path>themes/css/header.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="footer.css">
+      <path>themes/css/footer.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <!-- Specific to pages -->
+    <resource name="nuxeo_dm_specific.css">
+      <path>themes/css/nuxeo_dm_specific.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="print_generic.css">
+      <path>themes/css/print_generic.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <!-- end of flavor resources declaration -->
+
   </extension>
 
   <!-- Register mapping between theme pages and resources -->
@@ -396,128 +514,6 @@
       </palettePreview>
     </flavor>
 
-  </extension>
-
-  <!-- Register style resources (contain indirect references to flavor names, i.e. 
-    "__FLAVOR__") -->
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
-    <!-- Global styles -->
-    <resource name="breadcrumb.css">
-      <path>themes/css/breadcrumb.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="buttons_and_actions.css">
-      <path>themes/css/buttons_and_actions.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="basics.css">
-      <path>themes/css/basics.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="body.css">
-      <path>themes/css/body.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="drag_and_drop.css">
-      <path>themes/css/drag_and_drop.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="foldable_boxes.css">
-      <path>themes/css/foldable_boxes.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="forms.css">
-      <path>themes/css/forms.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="grids_and_widgets.css">
-      <path>themes/css/grids_and_widgets.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="messages_and_tooltips.css">
-      <path>themes/css/messages_and_tooltips.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="navigation.css">
-      <path>themes/css/navigation.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="popups.css">
-      <path>themes/css/popups.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="richfaces_components.css">
-      <path>themes/css/richfaces_components.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="tables.css">
-      <path>themes/css/tables.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="tabs_content.css">
-      <path>themes/css/tabs_content.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="helpers.css">
-      <path>themes/css/helpers.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <!-- Header and Footer -->
-    <resource name="header.css">
-      <path>themes/css/header.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="footer.css">
-      <path>themes/css/footer.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <!-- Specific to pages -->
-    <resource name="nuxeo_dm_specific.css">
-      <path>themes/css/nuxeo_dm_specific.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
-    <resource name="print_generic.css">
-      <path>themes/css/print_generic.css</path>
-      <processors>
-        <processor>flavor</processor>
-      </processors>
-    </resource>
   </extension>
 
   <!-- application settings -->
