@@ -114,7 +114,7 @@
       <template is="dom-if" if="{{hasLocalRights}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document #{currentDocument.id}</h2>
-          <popup-right doc-id="#{currentDocument.id}" render="{{hasLocalRights}}" on-aclcreated="handleAclCreated"></popup-right>
+          <popup-right doc-id="#{currentDocument.id}" render="{{doc.isCurrentUserHasEverything}}" on-aclcreated="handleAclCreated"></popup-right>
         </div>
         <div>
           <table class="tmp-tab">
@@ -122,12 +122,16 @@
               <th class="tmp-tab">Username</th>
               <th class="tmp-tab">Permission</th>
               <th class="tmp-tab">Granted</th>
+              <th class="tmp-tab">Actions</th>
             </tr>
             <template is="dom-repeat" items="{{localRights}}">
               <tr>
                 <td><span>{{item.username}}</span></td>
                 <td><span>{{item.permission}}</span></td>
                 <td><span>{{item.granted}}</span></td>
+                <td>
+                  <paper-button on-click="localRightsDel">delete</paper-button>
+                </td>
               </tr>
             </template>
           </table>
@@ -160,7 +164,7 @@
       <template is="dom-if" if="{{!hasLocalRights}}">
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <popup-right doc-id="#{currentDocument.id}" render="{{doc.isCurrentUserHasEverything}}" on-aclcreated="handleAclCreated"></popup-right
+          <popup-right doc-id="#{currentDocument.id}" render="{{doc.isCurrentUserHasEverything}}" on-aclcreated="handleAclCreated"></popup-right>
           <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
         </div>
         <div>
@@ -185,14 +189,31 @@
       <p>No temporary access was given</p>
       <paper-button raised="true">Give a Temporary Access</paper-button>
 
+      <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
     </template>
 
     <script>
       (function() {
         var t = document.querySelector('#document-rights');
-        t.handleAclCreated = function() {
+        t.localRightsDel = function(e, i) {
+          var model = e.model;
+          var acl = this.localRights[model.index];
+
+          this.$.rmPermission.params = {user: acl.username};
+          this.$.rmPermission.execute();
+        };
+
+        t.refresh = function() {
           document.querySelector('#doc').get();
-        }
+        };
+
+        t.handleAclDeleted = function() {
+          this.refresh();
+        };
+
+        t.handleAclCreated = function() {
+          this.refresh();
+        };
       })();
     </script>
   </div>
