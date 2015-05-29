@@ -57,7 +57,6 @@
       <resource>hideableAdminMessage.js</resource>
       <resource>accessKey.js</resource>
       <resource>jquery.nuxeo.doubleclickshield.js</resource>
-      <!--resource>jquery.nuxeo.tipsy.js</resource-->
       <resource>jquery.ambiance.js</resource>
       <resource>jquery.ambiance.css</resource>
       <resource>jquery.nuxeo.dropdown.js</resource>
@@ -106,149 +105,143 @@
 
   </extension>
 
-
   <!-- resources -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
     <resource name="static-styles.css">
-      <path>css/static-styles.css</path>
+      <uri>/css/static-styles.css</uri>
     </resource>
 
     <resource name="screen.css">
-      <path>css/screen.css</path>
+      <uri>/css/screen.css</uri>
     </resource>
 
     <resource name="foldable-box.js">
-      <path>scripts/foldable-box.js</path>
+      <uri>/scripts/foldable-box.js</uri>
       <require>effects.js</require>
     </resource>
 
     <resource name="window.js">
-      <path>scripts/window.js</path>
+      <uri>/scripts/window.js</uri>
     </resource>
     <resource name="window_effects.js">
-      <path>scripts/window_effects.js</path>
+      <uri>/scripts/window_effects.js</uri>
     </resource>
     <resource name="waitdlg.js">
-      <path>waitdialog/waitdlg.js</path>
+      <uri>/waitdialog/waitdlg.js</uri>
     </resource>
     <resource name="utils.js">
-      <path>scripts/utils.js</path>
+      <uri>/scripts/utils.js</uri>
     </resource>
     <resource name="tableSelections.js">
-      <path>scripts/tableSelections.js</path>
+      <uri>/scripts/tableSelections.js</uri>
     </resource>
     <resource name="contextmenu.js">
-      <path>scripts/contextmenu.js</path>
+      <uri>/scripts/contextmenu.js</uri>
     </resource>
     <resource name="DragAndDrop.js">
-      <path>scripts/DragAndDrop.js</path>
+      <uri>/scripts/DragAndDrop.js</uri>
     </resource>
     <resource name="hideableAdminMessage.js">
-      <path>scripts/hideableAdminMessage.js</path>
+      <uri>/scripts/hideableAdminMessage.js</uri>
     </resource>
     <!-- jquery cookie plugin -->
     <resource name="jquery.tools.cookie.js">
-      <path>scripts/jquery/cookie.js</path>
+      <uri>/scripts/jquery/cookie.js</uri>
     </resource>
     <!-- Fancybox -->
     <resource name="jquery.fancybox.js">
-      <!-- useful for debug -->
-      <!--
-        <path>scripts/jquery/jquery.fancybox.js</path>
-        <shrinkable>false</shrinkable>
-      -->
-      <path>scripts/jquery/jquery.fancybox.pack.js</path>
+      <uri>/scripts/jquery/jquery.fancybox.js</uri>
     </resource>
     <resource name="jquery.fancybox.style.css">
-      <path>css/jquery.fancybox.css</path>
+      <uri>/css/jquery.fancybox.css</uri>
     </resource>
     <resource name="fancybox-popup-utils.js">
-      <path>scripts/fancybox-popup-utils.js</path>
+      <uri>/scripts/fancybox-popup-utils.js</uri>
     </resource>
     <!-- Hotkeys (e.g. used to focus the search box using '/') -->
     <resource name="jquery.hotkeys.js">
-      <path>scripts/jquery/jquery.hotkeys.js</path>
+      <uri>/scripts/jquery/jquery.hotkeys.js</uri>
     </resource>
     <!-- Helpers for focus on first input of a form -->
     <resource name="jquery.tools.focusfirst.js">
-      <path>scripts/jquery/jquery.tools.focusfirst.js</path>
+      <uri>/scripts/jquery/jquery.tools.focusfirst.js</uri>
     </resource>
     <!-- Workaround for jQuery and Sarissa library conflict on IE -->
     <resource name="sarissa-ie-workaround.js">
-      <path>scripts/sarissa-ie-workaround.js</path>
+      <uri>/scripts/sarissa-ie-workaround.js</uri>
     </resource>
     <!-- Mustache -->
     <resource name="mustache.js">
-      <path>scripts/mustache/mustache.js</path>
+      <uri>/scripts/mustache/mustache.js</uri>
     </resource>
     <!-- Simple Access Key helper -->
     <resource name="accessKey.js">
-      <path>scripts/accessKey.js</path>
+      <uri>/scripts/accessKey.js</uri>
     </resource>
     <!-- Moment.js -->
     <resource name="moment.js">
-      <path>scripts/moment.min-1.5.0nx.js</path>
+      <uri>/scripts/moment.min-1.5.0nx.js</uri>
     </resource>
     <!-- jquery-ui resources: order plugins according to their dependencies. -->
     <resource name="jquery.ui.core.js">
-      <path>scripts/jquery/jquery.ui.core.js</path>
+      <uri>/scripts/jquery/jquery.ui.core.js</uri>
     </resource>
     <resource name="jquery.ui.widget.js">
-      <path>scripts/jquery/jquery.ui.widget.js</path>
+      <uri>/scripts/jquery/jquery.ui.widget.js</uri>
     </resource>
     <resource name="jquery.ui.mouse.js">
-      <path>scripts/jquery/jquery.ui.mouse.js</path>
+      <uri>/scripts/jquery/jquery.ui.mouse.js</uri>
     </resource>
     <resource name="jquery.ui.sortable.js">
-      <path>scripts/jquery/jquery.ui.sortable.js</path>
+      <uri>/scripts/jquery/jquery.ui.sortable.js</uri>
       <require>jquery.ui.core.js</require>
       <require>jquery.ui.widget.js</require>
       <require>jquery.ui.mouse.js</require>
     </resource>
     <!-- Double click shield -->
     <resource name="jquery.nuxeo.doubleclickshield.js">
-      <path>scripts/jquery.nuxeo.doubleclickshield.js</path>
+      <uri>/scripts/jquery.nuxeo.doubleclickshield.js</uri>
     </resource>
     <!-- jQuery Ambiance -->
     <resource name="jquery.ambiance.js">
-      <path>scripts/jquery/jquery.ambiance.js</path>
+      <uri>/scripts/jquery/jquery.ambiance.js</uri>
     </resource>
     <resource name="jquery.ambiance.css">
-      <path>css/jquery.ambiance.css</path>
+      <uri>/css/jquery.ambiance.css</uri>
     </resource>
     <resource name="jquery.nuxeo.dropdown.js">
-      <path>scripts/jquery/jquery.nuxeo.dropdown.js</path>
+      <uri>/scripts/jquery/jquery.nuxeo.dropdown.js</uri>
     </resource>
     <resource name="jquery.tipsy.js">
-      <path>scripts/jquery/jquery.tipsy.js</path>
+      <uri>/scripts/jquery/jquery.tipsy.js</uri>
     </resource>
     <resource name="tipsy.css">
-      <path>css/tipsy.css</path>
+      <uri>/css/tipsy.css</uri>
     </resource>
     <resource name="jquery.nuxeo.tipsy.js">
-      <path>scripts/jquery.nuxeo.tipsy.js</path>
+      <uri>/scripts/jquery.nuxeo.tipsy.js</uri>
       <require>jquery.tipsy.js</require>
     </resource>
     <resource name="jquery.magnific-popup.js">
-      <path>scripts/jquery/jquery.magnific-popup.js</path>
+      <uri>/scripts/jquery/jquery.magnific-popup.js</uri>
     </resource>
-     <resource name="magnific-popup.css">
-      <path>css/magnific-popup.css</path>
+    <resource name="magnific-popup.css">
+      <uri>/css/magnific-popup.css</uri>
     </resource>
     <resource name="nuxeo-lightbox.js">
-      <path>scripts/nuxeo-lightbox.js</path>
+      <uri>/scripts/nuxeo-lightbox.js</uri>
     </resource>
     <resource name="jquery.nuxeo.cv-lightbox.js">
-      <path>scripts/jquery.nuxeo.cv-lightbox.js</path>
+      <uri>/scripts/jquery.nuxeo.cv-lightbox.js</uri>
       <require>jquery.magnific-popup.js</require>
       <require>nuxeo-lightbox.js</require>
     </resource>
     <resource name="nuxeo-documents-import.js">
-      <path>scripts/nuxeo-documents-import.js</path>
+      <uri>/scripts/nuxeo-documents-import.js</uri>
     </resource>
     <resource name="fixmultipartajax.js">
-      <path>scripts/fixmultipartajax.js</path>
+      <uri>/scripts/fixmultipartajax.js</uri>
     </resource>
 
     <resource name="nuxeo.js">
@@ -405,69 +398,126 @@
 
   </extension>
 
-  <!-- Register style resources (contain indirect references to flavor names, i.e.
+  <!-- Register style resources (contain indirect references to flavor names, i.e. 
     "__FLAVOR__") -->
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
     <!-- Global styles -->
-    <style name="breadcrumb">
-      <src>themes/css/breadcrumb.css</src>
-    </style>
-    <style name="buttons_and_actions">
-      <src>themes/css/buttons_and_actions.css</src>
-    </style>
-    <style name="basics">
-      <src>themes/css/basics.css</src>
-    </style>
-    <style name="body">
-      <src>themes/css/body.css</src>
-    </style>
-    <style name="drag_and_drop">
-      <src>themes/css/drag_and_drop.css</src>
-    </style>
-    <style name="foldable_boxes">
-      <src>themes/css/foldable_boxes.css</src>
-    </style>
-    <style name="forms">
-      <src>themes/css/forms.css</src>
-    </style>
-    <style name="grids_and_widgets">
-      <src>themes/css/grids_and_widgets.css</src>
-    </style>
-    <style name="messages_and_tooltips">
-      <src>themes/css/messages_and_tooltips.css</src>
-    </style>
-    <style name="navigation">
-      <src>themes/css/navigation.css</src>
-    </style>
-    <style name="popups">
-      <src>themes/css/popups.css</src>
-    </style>
-    <style name="richfaces_components">
-      <src>themes/css/richfaces_components.css</src>
-    </style>
-    <style name="tables">
-      <src>themes/css/tables.css</src>
-    </style>
-    <style name="tabs_content">
-      <src>themes/css/tabs_content.css</src>
-    </style>
-    <style name="helpers">
-      <src>themes/css/helpers.css</src>
-    </style>
+    <resource name="breadcrumb.css">
+      <path>themes/css/breadcrumb.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="buttons_and_actions.css">
+      <path>themes/css/buttons_and_actions.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="basics.css">
+      <path>themes/css/basics.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="body.css">
+      <path>themes/css/body.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="drag_and_drop.css">
+      <path>themes/css/drag_and_drop.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="foldable_boxes.css">
+      <path>themes/css/foldable_boxes.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="forms.css">
+      <path>themes/css/forms.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="grids_and_widgets.css">
+      <path>themes/css/grids_and_widgets.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="messages_and_tooltips.css">
+      <path>themes/css/messages_and_tooltips.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="navigation.css">
+      <path>themes/css/navigation.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="popups.css">
+      <path>themes/css/popups.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="richfaces_components.css">
+      <path>themes/css/richfaces_components.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="tables.css">
+      <path>themes/css/tables.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="tabs_content.css">
+      <path>themes/css/tabs_content.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="helpers.css">
+      <path>themes/css/helpers.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
     <!-- Header and Footer -->
-    <style name="header">
-      <src>themes/css/header.css</src>
-    </style>
-    <style name="footer">
-      <src>themes/css/footer.css</src>
-    </style>
+    <resource name="header.css">
+      <path>themes/css/header.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="footer.css">
+      <path>themes/css/footer.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
     <!-- Specific to pages -->
-    <style name="nuxeo_dm_specific">
-      <src>themes/css/nuxeo_dm_specific.css</src>
-    </style>
-    <style name="print_generic">
-      <src>themes/css/print_generic.css</src>
-    </style>
+    <resource name="nuxeo_dm_specific.css">
+      <path>themes/css/nuxeo_dm_specific.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
+    <resource name="print_generic.css">
+      <path>themes/css/print_generic.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
   </extension>
 
   <!-- application settings -->
