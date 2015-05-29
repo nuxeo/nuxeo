@@ -36,6 +36,7 @@
     <view name="nuxeo5 includes" template-engine="jsf-facelets">
       <format-type>widget</format-type>
       <template>incl/includes.xhtml</template>
+      <!-- future bundle: nuxeo_includes -->
       <resource>dragdrop.js</resource>
       <resource>seam-remote.js</resource>
       <resource>foldable-box.js</resource>
@@ -367,10 +368,93 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+
+    <!-- main bundle with all basic includes -->
+    <resourceBundle name="nuxeo_includes">
+      <resources>
+        <resource>dragdrop.js</resource>
+        <resource>seam-remote.js</resource>
+        <resource>foldable-box.js</resource>
+        <resource>window.js</resource>
+        <resource>window_effects.js</resource>
+        <resource>waitdlg.js</resource>
+        <!-- include JS used for D&D and tableSelection -->
+        <resource>utils.js</resource>
+        <!-- include JS for contextual menu -->
+        <resource>jquery.fancybox.js</resource>
+        <resource>jquery.fancybox.style.css</resource>
+        <resource>jquery.tools.cookie.js</resource>
+        <resource>fancybox-popup-utils.js</resource>
+        <resource>contextmenu.js</resource>
+        <resource>jquery.tools.focusfirst.js</resource>
+        <resource>jquery.hotkeys.js</resource>
+        <resource>sarissa-ie-workaround.js</resource>
+        <resource>static-styles.css</resource>
+        <resource>hideableAdminMessage.js</resource>
+        <resource>accessKey.js</resource>
+        <resource>jquery.nuxeo.doubleclickshield.js</resource>
+        <resource>jquery.ambiance.js</resource>
+        <resource>jquery.ambiance.css</resource>
+        <resource>jquery.nuxeo.dropdown.js</resource>
+        <resource>jquery.tipsy.js</resource>
+        <resource>tipsy.css</resource>
+        <resource>jquery.magnific-popup.js</resource>
+        <resource>magnific-popup.css</resource>
+        <resource>nuxeo-lightbox.js</resource>
+        <resource>jquery.nuxeo.cv-lightbox.js</resource>
+        <resource>nuxeo-documents-import.js</resource>
+        <resource>fixmultipartajax.js</resource>
+      </resources>
+    </resourceBundle>
+
+    <!-- styling common to all basic pages -->
+    <resourceBundle name="nuxeo_base">
+      <resources>
+        <resource>basics.css</resource>
+        <resource>buttons_and_actions.css</resource>
+        <resource>body.css</resource>
+        <resource>grids_and_widgets.css</resource>
+        <resource>navigation.css</resource>
+        <resource>forms.css</resource>
+        <resource>messages_and_tooltips.css</resource>
+        <resource>foldable_boxes.css</resource>
+        <resource>tabs_content.css</resource>
+        <resource>helpers.css</resource>
+        <!-- TODO: check if these are generic enough -->
+        <resource>tables.css</resource>
+        <resource>richfaces_components.css</resource>
+        <resource>popups.css</resource>
+      </resources>
+    </resourceBundle>
+
+    <!-- resources for all pages including nuxeo header and footer -->
+    <resourceBundle name="nuxeo_header_footer">
+      <resources>
+        <resource>header.css</resource>
+        <resource>footer.css</resource>
+      </resources>
+    </resourceBundle>
+
+    <resourceBundle name="nuxeo_dm">
+      <resources>
+        <resource>nuxeo_dm_specific.css</resource>
+      </resources>
+    </resourceBundle>
+
+    <resourceBundle name="nuxeo_dm_default">
+      <resources>
+        <resource>breadcrumb.css</resource>
+        <resource>drag_and_drop.css</resource>
+      </resources>
+    </resourceBundle>
+
+  </extension>
+
   <!-- Register mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
-    <themePage name="galaxy/print">
+    <page name="galaxy/print">
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -378,74 +462,41 @@
       <flavors>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>header</style>
-        <style>body</style>
-        <style>footer</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>forms</style>
-        <style>messages_and_tooltips</style>
-        <style>foldable_boxes</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-        <style>print_generic</style>
-      </styles>
-    </themePage>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_header_footer</bundle>
+        <resource>print_generic.css</resource>
+      </resources>
+    </page>
 
-    <themePage name="galaxy/popup">
+    <page name="galaxy/popup">
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>body</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>tables</style>
-        <style>forms</style>
-        <style>popups</style>
-        <style>messages_and_tooltips</style>
-        <style>foldable_boxes</style>
-        <style>richfaces_components</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-        <style>nuxeo_dm_specific</style>
-      </styles>
-    </themePage>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_dm</bundle>
+        <resource>popups.css</resource>
+      </resources>
+    </page>
 
-    <themePage name="galaxy/default">
+    <page name="galaxy/default">
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>header</style>
-        <style>body</style>
-        <style>footer</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>tables</style>
-        <style>forms</style>
-        <style>popups</style>
-        <style>breadcrumb</style>
-        <style>messages_and_tooltips</style>
-        <style>foldable_boxes</style>
-        <style>drag_and_drop</style>
-        <style>richfaces_components</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-        <style>nuxeo_dm_specific</style>
-      </styles>
-    </themePage>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_header_footer</bundle>
+        <bundle>nuxeo_dm</bundle>
+      </resources>
+    </page>
 
   </extension>
 
