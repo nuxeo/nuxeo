@@ -11,6 +11,7 @@
 
   <extension-point name="pages">
     <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
+    <object class="org.nuxeo.theme.styling.service.descriptors.Page" />
   </extension-point>
 
   <extension-point name="styles">

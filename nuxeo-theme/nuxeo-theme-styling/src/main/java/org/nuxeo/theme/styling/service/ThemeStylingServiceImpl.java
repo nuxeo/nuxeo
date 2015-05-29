@@ -48,6 +48,7 @@ import org.nuxeo.theme.resources.ResourceType;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.Page;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.descriptors.ThemePage;
@@ -102,8 +103,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             log.info(String.format("Register style '%s'", style.getName()));
             registerStyle(style, contributor.getContext());
             log.info(String.format("Done registering style '%s'", style.getName()));
-        } else if (contribution instanceof ThemePage) {
-            ThemePage themePage = (ThemePage) contribution;
+        } else if (contribution instanceof Page) {
+            Page themePage = (Page) contribution;
             log.info(String.format("Register page '%s'", themePage.getName()));
             registerPage(themePage);
             log.info(String.format("Done registering page '%s'", themePage.getName()));
@@ -152,10 +153,10 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 // reload theme styles in case style content changed
                 postRegisterAllThemePageResources();
             }
-        } else if (contribution instanceof ThemePage) {
-            ThemePage themePage = (ThemePage) contribution;
+        } else if (contribution instanceof Page) {
+            Page themePage = (Page) contribution;
             pageReg.removeContribution(themePage);
-            ThemePage newThemePage = pageReg.getThemePage(themePage.getName());
+            Page newThemePage = pageReg.getPage(themePage.getName());
             if (newThemePage == null) {
                 try {
                     unRegisterThemePageResources(themePage);
@@ -179,9 +180,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         }
     }
 
-    protected void registerPage(ThemePage themePage) {
+    protected void registerPage(Page themePage) {
         String themePageName = themePage.getName();
-        ThemePage existingPage = pageReg.getThemePage(themePageName);
+        Page existingPage = pageReg.getPage(themePageName);
         pageReg.addContribution(themePage);
         if (existingPage != null && existingPage.isLoaded()) {
             if ("*".equals(themePageName)) {
@@ -189,7 +190,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 postRegisterAllThemePageResources();
             } else {
                 // reload this page
-                ThemePage newPage = pageReg.getThemePage(themePageName);
+                Page newPage = pageReg.getPage(themePageName);
                 try {
                     postRegisterThemePageResources(newPage);
                 } catch (ThemeException e) {
@@ -376,7 +377,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
      */
     protected void postRegisterAllThemePageResources() {
         if (pageReg != null) {
-            for (ThemePage res : pageReg.getThemePages()) {
+            for (Page res : pageReg.getPages()) {
                 if (res.isLoaded()) {
                     try {
                         postRegisterThemePageResources(res);
@@ -393,16 +394,16 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     /**
      * Register link between page and style after theme has been registered
      */
-    protected void postRegisterThemePageResources(ThemePage page) throws ThemeException {
+    protected void postRegisterThemePageResources(Page page) throws ThemeException {
         String pageName = page.getName();
         if (!"*".equals(pageName)) {
             // include page conf for all themes
-            ThemePage forAllPage = pageReg.getConfigurationApplyingToAllThemes();
+            Page forAllPage = pageReg.getConfigurationApplyingToAll();
             postRegisterThemePageResources(pageName, page, forAllPage);
         }
     }
 
-    protected void postRegisterThemePageResources(String themePageName, ThemePage page, ThemePage pageApplyingToAll)
+    protected void postRegisterThemePageResources(String themePageName, Page page, Page pageApplyingToAll)
             throws ThemeException {
         String themeName = ThemePage.getThemeName(themePageName);
         ThemeManager themeManager = Manager.getThemeManager();
@@ -482,14 +483,14 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         }
     }
 
-    protected void unRegisterThemePageResources(ThemePage page) throws ThemeException {
+    protected void unRegisterThemePageResources(Page page) throws ThemeException {
         String pageName = page.getName();
         if (!"*".equals(pageName)) {
             unRegisterThemePageResources(pageName, page);
         }
     }
 
-    protected void unRegisterThemePageResources(String themePageName, ThemePage page) throws ThemeException {
+    protected void unRegisterThemePageResources(String themePageName, Page page) throws ThemeException {
         ThemeManager themeManager = Manager.getThemeManager();
         String themeName = ThemePage.getThemeName(themePageName);
         ThemeDescriptor themeDescriptor = ThemeManager.getThemeDescriptorByThemeName(themeName);
@@ -521,7 +522,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     @Override
     public String getDefaultFlavorName(String themePageName) {
         if (pageReg != null) {
-            ThemePage themePage = pageReg.getThemePage(themePageName);
+            Page themePage = pageReg.getPage(themePageName);
             if (themePage != null) {
                 return themePage.getDefaultFlavor();
             }
@@ -622,7 +623,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     @Override
     public List<String> getFlavorNames(String themePageName) {
         if (pageReg != null) {
-            ThemePage themePage = pageReg.getThemePage(themePageName);
+            Page themePage = pageReg.getPage(themePageName);
             if (themePage != null) {
                 List<String> flavors = new ArrayList<String>();
                 List<String> localFlavors = themePage.getFlavors();
@@ -630,7 +631,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                     flavors.addAll(localFlavors);
                 }
                 // add flavors from theme for all pages
-                ThemePage forAllPage = pageReg.getConfigurationApplyingToAllThemes();
+                Page forAllPage = pageReg.getConfigurationApplyingToAllThemes();
                 if (forAllPage != null) {
                     localFlavors = forAllPage.getFlavors();
                     if (localFlavors != null) {
@@ -728,7 +729,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             return;
         }
         if (pageReg != null) {
-            for (ThemePage res : pageReg.getThemePages()) {
+            for (Page res : pageReg.getPages()) {
                 String name = ThemePage.getThemeName(res.getName());
                 if (themeName.equals(name)) {
                     try {
@@ -746,14 +747,14 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         // get all resources for given theme url and add them to the
         // ResourceManager instance
         String themePageName = ThemeManager.getPagePathByUrl(themeUrl);
-        ThemePage themePage = pageReg.getThemePage(themePageName);
+        Page themePage = pageReg.getPage(themePageName);
         if (themePage != null) {
             List<String> resources = new ArrayList<String>();
             List<String> localResources = themePage.getResources();
             if (localResources != null) {
                 resources.addAll(localResources);
             }
-            ThemePage forAllPage = pageReg.getConfigurationApplyingToAllThemes();
+            Page forAllPage = pageReg.getConfigurationApplyingToAllThemes();
             if (forAllPage != null) {
                 localResources = forAllPage.getResources();
                 if (localResources != null) {
