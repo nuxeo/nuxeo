@@ -233,6 +233,9 @@ public class UIDirectorySelectItems extends UISelectItems {
         // assume option id and vocabulary entry id will match
         Object itemValue = getItemValue();
         String id = itemValue != null ? itemValue.toString() : null;
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
         String keySeparator = getKeySeparator();
         if (!StringUtils.isBlank(keySeparator)) {
             String[] split = id.split(keySeparator);
