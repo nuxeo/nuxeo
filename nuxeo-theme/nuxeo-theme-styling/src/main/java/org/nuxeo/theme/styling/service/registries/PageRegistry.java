@@ -31,7 +31,7 @@ import org.nuxeo.theme.styling.service.descriptors.Page;
  */
 public class PageRegistry extends ContributionFragmentRegistry<Page> {
 
-    protected Map<String, Page> themePageResources = new HashMap<String, Page>();
+    protected Map<String, Page> pageResources = new HashMap<String, Page>();
 
     @Override
     public String getContributionId(Page contrib) {
@@ -40,12 +40,12 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
 
     @Override
     public void contributionUpdated(String id, Page contrib, Page newOrigContrib) {
-        themePageResources.put(id, contrib);
+        pageResources.put(id, contrib);
     }
 
     @Override
     public void contributionRemoved(String id, Page origContrib) {
-        themePageResources.remove(id);
+        pageResources.remove(id);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     public Page getPage(String id) {
-        return themePageResources.get(id);
+        return pageResources.get(id);
     }
 
     /**
@@ -158,7 +158,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
 
     public List<Page> getPages() {
         List<Page> res = new ArrayList<Page>();
-        for (Page page : themePageResources.values()) {
+        for (Page page : pageResources.values()) {
             if (page != null) {
                 res.add(page);
             }
@@ -175,7 +175,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     public Page getConfigurationApplyingToAll() {
-        return themePageResources.get("*");
+        return pageResources.get("*");
     }
 
     /**
