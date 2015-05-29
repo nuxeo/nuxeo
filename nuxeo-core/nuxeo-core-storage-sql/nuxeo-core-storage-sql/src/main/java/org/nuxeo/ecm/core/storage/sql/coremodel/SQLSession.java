@@ -90,13 +90,13 @@ public class SQLSession implements Session {
     public static final String ALLOW_NEGATIVE_ACL_PROPERTY = "nuxeo.security.allowNegativeACL";
 
     /**
-     * Framework property to disabled free-name collision detection. This is useful when constraints have been added to
-     * the database to detect collisions at the database level and raise a ConcurrentUpdateException, thus letting the
-     * high-level application deal with collisions.
+     * Framework property to disabled free-name collision detection for copy. This is useful when constraints have been
+     * added to the database to detect collisions at the database level and raise a ConcurrentUpdateException, thus
+     * letting the high-level application deal with collisions.
      *
      * @since 7.3
      */
-    public static final String FINDFREENAME_DISABLED_PROP = "nuxeo.vcs.findFreeName.disabled";
+    public static final String COPY_FINDFREENAME_DISABLED_PROP = "nuxeo.vcs.copy.findFreeName.disabled";
 
     private final Repository repository;
 
@@ -108,7 +108,7 @@ public class SQLSession implements Session {
 
     private final boolean negativeAclAllowed;
 
-    private final boolean findFreeNameDisabled;
+    private final boolean copyFindFreeNameDisabled;
 
     public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session, Repository repository, String sessionId)
             throws DocumentException {
@@ -123,7 +123,7 @@ public class SQLSession implements Session {
         this.sessionId = sessionId;
         root = newDocument(rootNode);
         negativeAclAllowed = Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
-        findFreeNameDisabled = Framework.isBooleanPropertyTrue(FINDFREENAME_DISABLED_PROP);
+        copyFindFreeNameDisabled = Framework.isBooleanPropertyTrue(COPY_FINDFREENAME_DISABLED_PROP);
     }
 
     /*
@@ -258,9 +258,6 @@ public class SQLSession implements Session {
     private static final Pattern dotDigitsPattern = Pattern.compile("(.*)\\.[0-9]+$");
 
     protected String findFreeName(Node parentNode, String name) throws StorageException {
-        if (findFreeNameDisabled) {
-            return name;
-        }
         if (session.hasChildNode(parentNode, name, false)) {
             Matcher m = dotDigitsPattern.matcher(name);
             if (m.matches()) {
@@ -282,7 +279,9 @@ public class SQLSession implements Session {
                 name = source.getName();
             }
             Node parentNode = ((SQLDocument) parent).getNode();
-            name = findFreeName(parentNode, name);
+            if (!copyFindFreeNameDisabled) {
+                name = findFreeName(parentNode, name);
+            }
             Node copy = session.copy(((SQLDocument) source).getNode(), parentNode, name);
             return newDocument(copy);
         } catch (StorageException e) {
