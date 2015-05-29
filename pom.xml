@@ -5494,6 +5494,7 @@
             <artifactId>maven-javadoc-plugin</artifactId>
             <configuration>
               <show>public</show>
+              <additionalparam>-Xdoclint:none</additionalparam>
             </configuration>
             <executions>
               <execution>
