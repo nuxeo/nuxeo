@@ -22,35 +22,35 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-import org.nuxeo.theme.styling.service.descriptors.ThemePage;
+import org.nuxeo.theme.styling.service.descriptors.Page;
 
 /**
- * Registry for theme page resources, handling merge of registered {@link ThemePage} elements.
+ * Registry for theme page resources, handling merge of registered {@link Page} elements.
  *
  * @since 5.5
  */
-public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
+public class PageRegistry extends ContributionFragmentRegistry<Page> {
 
-    protected Map<String, ThemePage> themePageResources = new HashMap<String, ThemePage>();
+    protected Map<String, Page> themePageResources = new HashMap<String, Page>();
 
     @Override
-    public String getContributionId(ThemePage contrib) {
+    public String getContributionId(Page contrib) {
         return contrib.getName();
     }
 
     @Override
-    public void contributionUpdated(String id, ThemePage contrib, ThemePage newOrigContrib) {
+    public void contributionUpdated(String id, Page contrib, Page newOrigContrib) {
         themePageResources.put(id, contrib);
     }
 
     @Override
-    public void contributionRemoved(String id, ThemePage origContrib) {
+    public void contributionRemoved(String id, Page origContrib) {
         themePageResources.remove(id);
     }
 
     @Override
-    public ThemePage clone(ThemePage orig) {
-        ThemePage clone = new ThemePage();
+    public Page clone(Page orig) {
+        Page clone = new Page();
         clone.setName(orig.getName());
         clone.setDefaultFlavor(orig.getDefaultFlavor());
         clone.setAppendStyles(orig.getAppendStyles());
@@ -68,12 +68,16 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         if (resources != null) {
             clone.setResources(new ArrayList<String>(resources));
         }
+        List<String> bundles = orig.getResourceBundles();
+        if (bundles != null) {
+            clone.setResourceBundles(new ArrayList<String>(bundles));
+        }
         clone.setLoaded(orig.isLoaded());
         return clone;
     }
 
     @Override
-    public void merge(ThemePage src, ThemePage dst) {
+    public void merge(Page src, Page dst) {
         String newFlavor = src.getDefaultFlavor();
         if (newFlavor != null) {
             dst.setDefaultFlavor(newFlavor);
@@ -123,15 +127,38 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
             }
             dst.setResources(merged);
         }
+
+        List<String> newBundles = src.getResourceBundles();
+        if (newBundles != null) {
+            List<String> merged = new ArrayList<String>();
+            merged.addAll(newBundles);
+            boolean keepOld = src.getAppendResources() || (newBundles.isEmpty() && !src.getAppendResources());
+            if (keepOld) {
+                // add back old contributions
+                List<String> oldBundles = dst.getResourceBundles();
+                if (oldBundles != null) {
+                    merged.addAll(0, oldBundles);
+                }
+            }
+            dst.setResourceBundles(merged);
+        }
     }
 
-    public ThemePage getThemePage(String id) {
+    public Page getPage(String id) {
         return themePageResources.get(id);
     }
 
-    public List<ThemePage> getThemePages() {
-        List<ThemePage> res = new ArrayList<ThemePage>();
-        for (ThemePage page : themePageResources.values()) {
+    /**
+     * @deprecated since 7.3: use {@link #getPage(String)} instead.
+     */
+    @Deprecated
+    public Page getThemePage(String id) {
+        return getPage(id);
+    }
+
+    public List<Page> getPages() {
+        List<Page> res = new ArrayList<Page>();
+        for (Page page : themePageResources.values()) {
             if (page != null) {
                 res.add(page);
             }
@@ -139,8 +166,23 @@ public class PageRegistry extends ContributionFragmentRegistry<ThemePage> {
         return res;
     }
 
-    public ThemePage getConfigurationApplyingToAllThemes() {
+    /**
+     * @deprecated since 7.3: use {@link #getPages()} instead.
+     */
+    @Deprecated
+    public List<Page> getThemePages() {
+        return getPages();
+    }
+
+    public Page getConfigurationApplyingToAll() {
         return themePageResources.get("*");
+    }
+
+    /**
+     * @deprecated since 7.3: use {@link #getConfigurationApplyingToAll()} instead.
+     */
+    public Page getConfigurationApplyingToAllThemes() {
+        return getConfigurationApplyingToAll();
     }
 
 }
