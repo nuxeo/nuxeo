@@ -33,7 +33,7 @@
       <!-- Allowed rights row -->
       <div layout horizontal>
         <div>Allowed rights</div>
-        <select flex two value="{{params.permission}}">
+        <select flex two id="allowedRights">
           <option value="READ">Read</option>
           <option value="WRITE">Write</option>
           <option value="EVERYTHING">Everything</option>
@@ -82,6 +82,7 @@
     },
 
     doSend: function() {
+      this.params.permission = this.$.allowedRights.value;
       this.$.op.execute();
     },
 
