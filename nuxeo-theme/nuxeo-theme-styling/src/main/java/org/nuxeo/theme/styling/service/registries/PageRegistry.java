@@ -145,6 +145,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     public Page getPage(String id) {
+        // TODO: merge with potential configurations applying to all pages
         return pageResources.get(id);
     }
 
