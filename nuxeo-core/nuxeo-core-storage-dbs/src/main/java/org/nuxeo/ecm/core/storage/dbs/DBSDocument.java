@@ -399,15 +399,14 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    protected void updateList(State state, String name, Property property) throws PropertyException {
+    protected List<State> updateList(State state, String name, Property property) throws PropertyException {
         Collection<Property> properties = property.getChildren();
         List<State> childStates = new ArrayList<>(properties.size());
-        for (Property childProperty : properties) {
-            State childState = new State();
-            writeComplexProperty(childState, (ComplexProperty) childProperty);
-            childStates.add(childState);
+        for (int i = 0; i < properties.size(); i++) {
+            childStates.add(new State());
         }
         state.put(name, (Serializable) childStates);
+        return childStates;
     }
 
     @Override
@@ -801,12 +800,13 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void writeDocumentPart(DocumentPart dp) throws PropertyException {
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
         final DBSDocumentState docState = getStateMaybeProxyTarget(dp.getType());
         // markDirty has to be called *before* we change the state
         docState.markDirty();
-        writeComplexProperty(docState.getState(), (ComplexProperty) dp);
+        boolean changed = writeComplexProperty(docState.getState(), (ComplexProperty) dp, writeContext);
         clearDirtyFlags(dp);
+        return changed;
     }
 
     @Override

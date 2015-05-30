@@ -18,9 +18,9 @@ package org.nuxeo.ecm.core.blob;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -68,10 +68,19 @@ public interface BlobDispatcher {
      * Decides which {@link BlobProvider} to use to write the given blob, and whether the provider id should be added as
      * prefix to the managed blob key.
      *
-     * @param blob the blob
      * @param doc the document containing the blob
+     * @param blob the blob
      * @return the blob provider id and whether it should be added as prefix
      */
-    BlobDispatch getBlobProvider(Blob blob, Document doc);
+    BlobDispatch getBlobProvider(Document doc, Blob blob);
+
+    /**
+     * Notifies the blob dispatcher that a set of xpaths have changed on a document.
+     *
+     * @param doc the document
+     * @param xpaths the set of changed xpaths
+     * @since 7.3
+     */
+    void notifyChanges(Document doc, Set<String> xpaths);
 
 }

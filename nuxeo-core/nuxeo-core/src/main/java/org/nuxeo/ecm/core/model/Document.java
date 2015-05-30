@@ -264,11 +264,39 @@ public interface Document {
     Map<String, Serializable> readPrefetch(ComplexType complexType, Set<String> xpaths) throws PropertyException;
 
     /**
+     * Context passed to write operations to optionally record things to do at {@link #flush} time.
+     *
+     * @since 7.3
+     */
+    interface WriteContext {
+        /**
+         * Gets the recorded changed xpaths.
+         */
+        Set<String> getChanges();
+
+        /**
+         * Flushes recorded write operations.
+         *
+         * @param doc the base document being written
+         */
+        void flush(Document doc);
+    }
+
+    /**
+     * Gets a write context for the current document.
+     *
+     * @since 7.3
+     */
+    WriteContext getWriteContext();
+
+    /**
      * Writes a {@link DocumentPart} to storage.
      * <p>
      * Writing data is done by {@link DocumentPart} because of per-proxy schemas.
+     *
+     * @return {@code true} if something changed
      */
-    void writeDocumentPart(DocumentPart dp) throws PropertyException;
+    boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException;
 
     /**
      * Gets the facets available on this document (from the type and the instance facets).

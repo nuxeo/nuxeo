@@ -170,13 +170,11 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         return readPrefetch(getNode(), complexType, xpaths);
     }
 
-    /**
-     * Writes into this {@link SQLDocument} the values from the {@link DocumentPart}.
-     */
     @Override
-    public void writeDocumentPart(DocumentPart dp) throws PropertyException {
-        writeComplexProperty(getNode(), (ComplexProperty) dp);
+    public boolean writeDocumentPart(DocumentPart dp, WriteContext writeContext) throws PropertyException {
+        boolean changed = writeComplexProperty(getNode(), (ComplexProperty) dp, writeContext);
         clearDirtyFlags(dp);
+        return changed;
     }
 
     @Override
@@ -233,7 +231,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    protected void updateList(Node node, String name, Property property) throws PropertyException {
+    protected List<Node> updateList(Node node, String name, Property property) throws PropertyException {
         Collection<Property> properties = property.getChildren();
         List<Node> childNodes = getChildAsList(node, name);
         int oldSize = childNodes.size();
@@ -260,12 +258,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
                 }
             }
         }
-        // write values
-        int i = 0;
-        for (Property childProperty : properties) {
-            Node childNode = childNodes.get(i++);
-            writeComplexProperty(childNode, (ComplexProperty) childProperty);
-        }
+        return childNodes;
     }
 
     @Override

@@ -19,42 +19,23 @@ package org.nuxeo.ecm.core.blob;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
-import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.TypeConstants;
-import org.nuxeo.ecm.core.schema.TypeProvider;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.schema.types.CompositeType;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.ListType;
-import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.schema.types.Type;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -271,14 +252,14 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
                 // not something we have to dispatch, reuse the key
                 return managedBlob.getKey();
             }
-            dispatch = blobDispatcher.getBlobProvider(blob, doc);
+            dispatch = blobDispatcher.getBlobProvider(doc, blob);
             if (dispatch.providerId.equals(currentProviderId)) {
                 // same provider, just reuse the key
                 return managedBlob.getKey();
             }
         }
         if (dispatch == null) {
-            dispatch = blobDispatcher.getBlobProvider(blob, doc);
+            dispatch = blobDispatcher.getBlobProvider(doc, blob);
         }
         BlobProvider blobProvider = getBlobProvider(dispatch.providerId);
         if (blobProvider == null) {
@@ -377,6 +358,11 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     public void freezeVersion(Document doc) throws DocumentException {
         // finds all blobs, then ask their providers if there's anything to do on check in
         doc.visitBlobs(this::freezeVersion);
+    }
+
+    @Override
+    public void notifyChanges(Document doc, Set<String> xpaths) {
+        getBlobDispatcher().notifyChanges(doc, xpaths);
     }
 
 }

@@ -26,6 +26,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
@@ -33,6 +34,7 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -81,10 +83,15 @@ public class TestBlobDispatcher {
 
     @Test
     public void testAlreadyManagedBlob() throws Exception {
+        // register blob in provider by hand
+        Blob b = Blobs.createBlob("foo", "video/mp4");
+        String key = Framework.getService(BlobManager.class).getBlobProvider("dummy").writeBlob(b, null);
+        key = "dummy:" + key;
+
         // create a blob already managed and not corresponding to a dispatch target
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         BlobInfo blobInfo = new BlobInfo();
-        blobInfo.key = "dummy:1234";
+        blobInfo.key = key;
         blobInfo.mimeType = "video/mp4";
         Blob blob = new SimpleManagedBlob(blobInfo);
         doc.setPropertyValue("file:content", (Serializable) blob);
@@ -93,8 +100,8 @@ public class TestBlobDispatcher {
         // check that it wasn't dispatched even though the metadata would suggest it
         blob = (Blob) doc.getPropertyValue("file:content");
         assertTrue(blob.getClass().getName(), blob instanceof SimpleManagedBlob);
-        String key = ((ManagedBlob) blob).getKey();
-        assertEquals("dummy:1234", key);
+        String key2 = ((ManagedBlob) blob).getKey();
+        assertEquals(key, key2);
     }
 
     @Test
@@ -117,6 +124,32 @@ public class TestBlobDispatcher {
         // update the blob MIME type to change the dispatch target
         blob.setMimeType("video/mp4");
         doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.saveDocument(doc);
+
+        // check that it was dispatched on save to the second blob provider
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(foo2_test_key, ((ManagedBlob) blob).getKey());
+    }
+
+    @Test
+    public void testSwitchDispatchOnChange() throws Exception {
+        String foo = "foo";
+        String foo_test_key = "test:acbd18db4cc2f85cedef654fccc4a4d8";
+        String foo2_test_key = "test2:acbd18db4cc2f85cedef654fccc4a4d8";
+
+        // create a regular binary in the first blob provider
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        Blob blob = Blobs.createBlob(foo, "text/plain");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("file:content");
+        String key = ((ManagedBlob) blob).getKey();
+        assertEquals(foo_test_key, key);
+
+        // update the dc:format to change the dispatch target
+        doc.setPropertyValue("dc:format", "video");
         doc = session.saveDocument(doc);
 
         // check that it was dispatched on save to the second blob provider

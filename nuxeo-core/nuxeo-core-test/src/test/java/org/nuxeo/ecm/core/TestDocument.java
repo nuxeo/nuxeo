@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -42,10 +44,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -398,6 +404,67 @@ public class TestDocument {
         assertEquals("content1-updated", b1.getString());
         Blob b2 = (Blob) doc.getValue("cmpf:attachedFile/vignettes/1/content");
         assertEquals("content2-updated", b2.getString());
+    }
+
+    @Test
+    public void testGetChanges() throws Exception {
+        Document root = session.getRootDocument();
+        Document doc = root.addChild("doc", "ComplexDoc");
+
+        Blob blob1 = Blobs.createBlob("My content");
+        Blob blob2 = Blobs.createBlob("My content 2");
+        Long size1 = Long.valueOf(123);
+        Long size2 = Long.valueOf(456);
+
+        Map<String, Object> attachedFile = new HashMap<>();
+        List<Map<String, Object>> vignettes = new ArrayList<>();
+        attachedFile.put("vignettes", vignettes);
+        Map<String, Object> vignette = new HashMap<>();
+        vignette.put("width", size1);
+        vignette.put("content", blob1);
+        vignettes.add(vignette); // 0
+        vignette = new HashMap<>();
+        vignette.put("width", size2);
+        vignette.put("content", blob2);
+        vignettes.add(vignette); // 1
+        doc.setValue("cmpf:attachedFile", attachedFile);
+
+        // write changes through a Property
+
+        // change to dc:title
+        Schema schema = doc.getType().getSchema("dublincore");
+        DocumentPart dp = new DocumentPartImpl(schema);
+        dp.setValue("dc:title", "foo");
+        WriteContext writeContext = doc.getWriteContext();
+        boolean changed = doc.writeDocumentPart(dp, writeContext);
+        assertTrue(changed);
+        Set<String> changes = writeContext.getChanges();
+        assertEquals(Collections.singleton("dc:title"), changes);
+
+        // change to complex prop
+        schema = doc.getType().getSchema("complexschema");
+        dp = new DocumentPartImpl(schema);
+        doc.readDocumentPart(dp); // read whole state to get existing values, needed for list
+        dp.setValue("cmpf:attachedFile/vignettes/item[1]/width", Long.valueOf(789));
+        writeContext = doc.getWriteContext();
+        changed = doc.writeDocumentPart(dp, writeContext);
+        assertTrue(changed);
+        changes = writeContext.getChanges();
+        // check that we don't have cmpf:attachedFile/vignettes/0 in the list
+        assertEquals(new HashSet<>(Arrays.asList("cmpf:attachedFile", "cmpf:attachedFile/vignettes",
+                "cmpf:attachedFile/vignettes/1", "cmpf:attachedFile/vignettes/1/width")), changes);
+
+        // change to blob
+        dp = new DocumentPartImpl(schema);
+        doc.readDocumentPart(dp); // read whole state to get existing values, needed for list
+        dp.setValue("cmpf:attachedFile/vignettes/item[1]/content", blob1);
+        writeContext = doc.getWriteContext();
+        changed = doc.writeDocumentPart(dp, writeContext);
+        assertTrue(changed);
+        changes = writeContext.getChanges();
+        // check that we don't have cmpf:attachedFile/vignettes/0 in the list
+        assertEquals(new HashSet<>(Arrays.asList("cmpf:attachedFile", "cmpf:attachedFile/vignettes",
+                "cmpf:attachedFile/vignettes/1", "cmpf:attachedFile/vignettes/1/content")), changes);
     }
 
 }

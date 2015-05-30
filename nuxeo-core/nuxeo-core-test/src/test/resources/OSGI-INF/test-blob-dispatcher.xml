@@ -2,8 +2,10 @@
 <component name="org.nuxeo.ecm.core.blob.test-blob-dispatcher" version="1.0.0">
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobdispatcher>
-      <class>org.nuxeo.ecm.core.DummyBlobDispatcher</class>
-      <property name="providers">test test2</property>
+      <class>org.nuxeo.ecm.core.blob.DefaultBlobDispatcher</class>
+      <property name="dc:format=video">test2</property>
+      <property name="blob:mime-type=video/mp4">test2</property>
+      <property name="default">test</property>
     </blobdispatcher>
     <blobprovider name="test2">
       <class>org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager</class>

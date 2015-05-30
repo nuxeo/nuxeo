@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.Prefetch;
@@ -254,13 +255,15 @@ public class DocumentModelFactory {
 
         // write data models
         // check only the loaded ones to find the dirty ones
+        WriteContext writeContext = doc.getWriteContext();
         for (DataModel dm : docModel.getDataModelsCollection()) { // only loaded
             if (dm.isDirty()) {
                 DocumentPart part = ((DataModelImpl) dm).getDocumentPart();
-                doc.writeDocumentPart(part);
-                changed = true;
+                changed = doc.writeDocumentPart(part, writeContext) || changed;
             }
         }
+        // write the blobs last, so that blob providers have access to the new doc state
+        writeContext.flush(doc);
 
         if (!changed) {
             return docModel;

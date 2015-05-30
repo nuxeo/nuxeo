@@ -30,12 +30,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -172,8 +174,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      * @param state the parent state
      * @param name the child name
      * @param property the property
+     * @return the list of states to write
      */
-    protected abstract void updateList(T state, String name, Property property) throws PropertyException;
+    protected abstract List<T> updateList(T state, String name, Property property) throws PropertyException;
 
     /**
      * Finds the internal name to use to refer to this property.
@@ -644,8 +647,6 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     property.init(array);
                 } else {
                     // complex list
-                    // get
-
                     Field listField = listType.getField();
                     List<T> childStates = getChildAsList(state, name);
                     // TODO property.init(null) if null children in DBS
@@ -662,24 +663,101 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
     }
 
+    protected static class BlobWriteContext<T extends StateAccessor> implements WriteContext {
+
+        public final Map<BaseDocument<T>, List<Pair<T, Blob>>> blobWriteInfosPerDoc = new HashMap<>();
+
+        public final Set<String> xpaths = new HashSet<>();
+
+        /**
+         * Records a change to a given xpath.
+         */
+        public void recordChange(String xpath) {
+            xpaths.add(xpath);
+        }
+
+        /**
+         * Records a blob update.
+         */
+        public void recordBlob(T state, Blob blob, BaseDocument<T> doc) {
+            List<Pair<T, Blob>> list = blobWriteInfosPerDoc.get(doc);
+            if (list == null) {
+                blobWriteInfosPerDoc.put(doc, list = new ArrayList<>());
+            }
+            list.add(Pair.of(state, blob));
+        }
+
+        @Override
+        public Set<String> getChanges() {
+            return xpaths;
+        }
+
+        // note, in the proxy case baseDoc may be different from the doc in the map
+        @Override
+        public void flush(Document baseDoc) {
+            // first, write all updated blobs
+            for (Entry<BaseDocument<T>, List<Pair<T, Blob>>> en : blobWriteInfosPerDoc.entrySet()) {
+                BaseDocument<T> doc = en.getKey();
+                for (Pair<T, Blob> pair : en.getValue()) {
+                    T state = pair.getLeft();
+                    Blob blob = pair.getRight();
+                    doc.setValueBlob(state, blob);
+                }
+            }
+            // then inform the blob manager about the changed xpaths
+            BlobManager blobManager = Framework.getService(BlobManager.class);
+            blobManager.notifyChanges(baseDoc, xpaths);
+        }
+    }
+
+    @Override
+    public WriteContext getWriteContext() {
+        return new BlobWriteContext<T>();
+    }
+
     /**
      * Writes state from a complex property.
+     *
+     * @return {@code true} if something changed
      */
-    protected void writeComplexProperty(T state, ComplexProperty complexProperty) throws PropertyException {
+    protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, WriteContext writeContext)
+            throws PropertyException {
+        return writeComplexProperty(state, complexProperty, null, writeContext);
+    }
+
+    /**
+     * Writes state from a complex property.
+     * <p>
+     * Writes only properties that are dirty.
+     *
+     * @return {@code true} if something changed
+     */
+    protected boolean writeComplexProperty(T state, ComplexProperty complexProperty, String xpath, WriteContext wc)
+            throws PropertyException {
+        @SuppressWarnings("unchecked")
+        BlobWriteContext<T> writeContext = (BlobWriteContext<T>) wc;
         if (complexProperty instanceof BlobProperty) {
             Serializable value = ((BlobProperty) complexProperty).getValueForWrite();
             if (value != null && !(value instanceof Blob)) {
                 throw new PropertyException("Cannot write a non-Blob value: " + value);
             }
-            setValueBlob(state, (Blob) value);
-            return;
+            writeContext.recordBlob(state, (Blob) value, this);
+            return true;
         }
+        boolean changed = false;
         for (Property property : complexProperty) {
+            if (!property.isDirty()) {
+                continue;
+            }
             String name = property.getField().getName().getPrefixedName();
             name = internalName(name);
             if (checkReadOnlyIgnoredWrite(property, state)) {
                 continue;
             }
+            String xp = xpath == null ? name : xpath + '/' + name;
+            writeContext.recordChange(xp);
+            changed = true;
+
             Type type = property.getType();
             if (type.isSimpleType()) {
                 // simple property
@@ -689,11 +767,10 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     value = ((Delta) value).getFullValue();
                     ((ScalarProperty) property).internalSetValue(value);
                 }
-                // TODO VersionNotModifiableException
             } else if (type.isComplexType()) {
                 // complex property
                 T childState = getChild(state, name, type);
-                writeComplexProperty(childState, (ComplexProperty) property);
+                writeComplexProperty(childState, (ComplexProperty) property, xp, writeContext);
             } else {
                 ListType listType = (ListType) type;
                 if (listType.getFieldType().isSimpleType()) {
@@ -707,10 +784,24 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     state.setArray(name, (Object[]) value);
                 } else {
                     // complex list
-                    updateList(state, name, property);
+                    // update it
+                    List<T> childStates = updateList(state, name, property);
+                    // write values
+                    int i = 0;
+                    for (Property childProperty : property.getChildren()) {
+                        T childState = childStates.get(i);
+                        String xpi = xp + '/' + i;
+                        boolean c = writeComplexProperty(childState, (ComplexProperty) childProperty, xpi,
+                                writeContext);
+                        if (c) {
+                            writeContext.recordChange(xpi);
+                        }
+                        i++;
+                    }
                 }
             }
         }
+        return changed;
     }
 
     /**

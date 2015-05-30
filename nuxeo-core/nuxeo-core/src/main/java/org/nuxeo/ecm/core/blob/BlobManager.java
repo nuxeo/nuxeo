@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentException;
@@ -58,13 +59,13 @@ public interface BlobManager {
      */
     enum UsageHint {
         /** Obtaining an {@link InputStream}. */
-        STREAM,
+        STREAM, //
         /** Downloading. */
-        DOWNLOAD,
+        DOWNLOAD, //
         /** Viewing. */
-        VIEW,
+        VIEW, //
         /** Editing. */
-        EDIT,
+        EDIT, //
         /** Embedding / previewing. */
         EMBED
     }
@@ -156,5 +157,14 @@ public interface BlobManager {
      * @since 7.3
      */
     void freezeVersion(Document doc) throws DocumentException;
+
+    /**
+     * Notifies the blob manager that a set of xpaths have changed on a document.
+     *
+     * @param doc the document
+     * @param xpaths the set of changed xpaths
+     * @since 7.3
+     */
+    void notifyChanges(Document doc, Set<String> xpaths);
 
 }

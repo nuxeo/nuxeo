@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.blob;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -61,9 +62,13 @@ public class DummyBlobDispatcher implements BlobDispatcher {
     }
 
     @Override
-    public BlobDispatch getBlobProvider(Blob blob, Document doc) {
+    public BlobDispatch getBlobProvider(Document doc, Blob blob) {
         String provider = blob.getMimeType().startsWith("video/") ? secondProvider : defaultProvider;
         return new BlobDispatch(provider, true);
+    }
+
+    @Override
+    public void notifyChanges(Document doc, Set<String> xpaths) {
     }
 
 }
