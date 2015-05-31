@@ -65,6 +65,14 @@ public class TestDocumentAuditPageProvider  {
 
         List<DocumentModel> versions;
 
+        protected static void sleep(long millis) {
+            try {
+                Thread.sleep(millis);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         @Override
         public void populate(CoreSession session) throws ClientException {
 
@@ -77,6 +85,7 @@ public class TestDocumentAuditPageProvider  {
 
             // create the doc
             doc = session.createDocument(doc);
+            sleep(10);
 
             // do some updates
             for (int i = 0; i < 5; i++) {
@@ -84,6 +93,7 @@ public class TestDocumentAuditPageProvider  {
                 doc.getContextData().put("comment", "Update " + i);
                 doc = session.saveDocument(doc);
                 session.save();
+                sleep(10);
             }
 
             // create a version
@@ -91,6 +101,7 @@ public class TestDocumentAuditPageProvider  {
                     VersioningOption.MINOR);
             doc = session.saveDocument(doc);
             session.save();
+            sleep(10);
 
             // do some more updates
             for (int i = 5; i < 10; i++) {
@@ -98,11 +109,13 @@ public class TestDocumentAuditPageProvider  {
                 doc.getContextData().put("comment", "Update " + i);
                 doc = session.saveDocument(doc);
                 session.save();
+                sleep(10);
             }
 
 
             proxy = session.publishDocument(doc, section);
             session.save();
+            sleep(10);
 
 
             // do some more updates
@@ -111,6 +124,7 @@ public class TestDocumentAuditPageProvider  {
                 doc.getContextData().put("comment", "Update " + i);
                 doc = session.saveDocument(doc);
                 session.save();
+                sleep(10);
             }
 
             versions = session.getVersions(doc.getRef());
