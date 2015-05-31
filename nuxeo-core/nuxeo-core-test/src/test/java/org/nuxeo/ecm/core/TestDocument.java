@@ -44,6 +44,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -75,6 +77,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestDocument {
 
     @Inject
+    protected RepositorySettings repositorySettings;
+
+    @Inject
     protected CoreSession coreSession;
 
     protected Session session;
@@ -82,6 +87,11 @@ public class TestDocument {
     @Before
     public void setUp() {
         session = ((AbstractSession) coreSession).getSession();
+    }
+
+    protected void reopenSession() {
+        repositorySettings.reopenSession();
+        setUp();
     }
 
     @FunctionalInterface
@@ -465,6 +475,32 @@ public class TestDocument {
         // check that we don't have cmpf:attachedFile/vignettes/0 in the list
         assertEquals(new HashSet<>(Arrays.asList("cmpf:attachedFile", "cmpf:attachedFile/vignettes",
                 "cmpf:attachedFile/vignettes/1", "cmpf:attachedFile/vignettes/1/content")), changes);
+    }
+
+    @Test
+    public void testDeltaAfterPhantomNull() throws Exception {
+        Document root = session.getRootDocument();
+        Document doc = root.addChild("doc", "MyDocType");
+
+        // change to dc:title
+        Schema schema = doc.getType().getSchema("myschema");
+        DocumentPart dp = new DocumentPartImpl(schema);
+        doc.readDocumentPart(dp);
+        // change unrelated prop, it should initialize all phantom properties to non-null as well
+        dp.setValue("my:string", "foo");
+        assertTrue(dp.get("my:testDefaultLong").isPhantom());
+        WriteContext writeContext = doc.getWriteContext();
+        doc.writeDocumentPart(dp, writeContext);
+        session.save();
+        // then write a delta, the database-level increment must work on 0 and not null
+        dp.setValue("my:testDefaultLong", new DeltaLong(0, 10));
+        writeContext = doc.getWriteContext();
+        doc.writeDocumentPart(dp, writeContext);
+
+        reopenSession();
+        root = session.getRootDocument();
+        doc = root.getChild("doc");
+        assertEquals(Long.valueOf(10), doc.getValue("my:testDefaultLong"));
     }
 
 }

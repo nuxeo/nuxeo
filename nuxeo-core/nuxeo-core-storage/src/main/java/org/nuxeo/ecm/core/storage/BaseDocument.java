@@ -746,7 +746,11 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         }
         boolean changed = false;
         for (Property property : complexProperty) {
-            if (!property.isDirty()) {
+            // write dirty properties, but also phantoms with non-null default values
+            // this is critical for DeltaLong updates to work, they need a non-null initial value
+            if (property.isDirty() || (property.isPhantom() && property.getField().getDefaultValue() != null)) {
+                // do the write
+            } else {
                 continue;
             }
             String name = property.getField().getName().getPrefixedName();

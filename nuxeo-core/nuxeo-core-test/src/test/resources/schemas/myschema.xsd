@@ -18,6 +18,7 @@
   <xs:element name="name" type="nxs:Name"/>
 
   <xs:element name="testDefault" type="xs:string" default="the default value"/>
+  <xs:element name="testDefaultLong" type="xs:long" default="0"/>
 
 </xs:schema>
 
