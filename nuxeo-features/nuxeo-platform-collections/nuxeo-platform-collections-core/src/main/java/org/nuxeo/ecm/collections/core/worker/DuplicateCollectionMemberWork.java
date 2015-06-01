@@ -40,7 +40,8 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
 
     public DuplicateCollectionMemberWork(final String repoName, final String newCollectionId,
             final List<String> collectionMemberIds, final int offset) {
-        super(repoName + ":" + newCollectionId + ":" + offset);
+        super(CATEGORY + ":" + repoName + ":" + newCollectionId + ":" + offset);
+        this.repositoryName = repoName;
         this.newCollectionId = newCollectionId;
         this.repositoryName = repoName;
         this.collectionMemberIds = collectionMemberIds;
