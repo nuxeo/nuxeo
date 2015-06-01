@@ -36,32 +36,18 @@
   <!-- Register mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
-    <themePage name="layoutDemo/default">
+    <page name="layoutDemo/default">
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>header</style>
-        <style>body</style>
-        <style>footer</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>tables</style>
-        <style>forms</style>
-        <style>popups</style>
-        <style>breadcrumb</style>
-        <style>messages_and_tooltips</style>
-        <style>drag_and_drop</style>
-        <style>foldable_boxes</style>
-        <style>richfaces_components</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-      </styles>
-    </themePage>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_header_footer</bundle>
+      </resources>
+    </page>
 
     <themePage name="layoutDemo/frame">
       <defaultFlavor>default</defaultFlavor>
@@ -69,25 +55,11 @@
         <flavor>default</flavor>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>header</style>
-        <style>body</style>
-        <style>footer</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>tables</style>
-        <style>forms</style>
-        <style>popups</style>
-        <style>breadcrumb</style>
-        <style>messages_and_tooltips</style>
-        <style>drag_and_drop</style>
-        <style>foldable_boxes</style>
-        <style>richfaces_components</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-      </styles>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_header_footer</bundle>
+      </resources>
     </themePage>
 
   </extension>
