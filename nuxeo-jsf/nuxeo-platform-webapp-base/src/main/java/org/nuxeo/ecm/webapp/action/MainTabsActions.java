@@ -19,6 +19,7 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -161,6 +162,13 @@ public class MainTabsActions implements Serializable {
             documentsByMainTabs.put(mainTabId, defaultDocument);
             doc = null;
         }
+
+        if (doc != null && !documentManager.exists(new PathRef(doc.getPathAsString()))) {
+            // path has changed, refresh the document to have a correct URL
+            doc = documentManager.getDocument(doc.getRef());
+            documentsByMainTabs.put(mainTabId, doc);
+        }
+
         return doc != null ? doc : defaultDocument;
     }
 
