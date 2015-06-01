@@ -145,13 +145,11 @@ BEGIN
 END;
 
 
-# For Oracle running on Amazon RDS, stored procedures and functions are not allowed
-# to access GV$SESSION, so the cluster nodeid has to be passed in.
 #IF: clusteringEnabled
-CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(i ${idTypeParam}, f VARCHAR2, k INTEGER, nid VARCHAR)
+CREATE OR REPLACE PROCEDURE NX_CLUSTER_INVAL(n VARCHAR2, i ${idTypeParam}, f VARCHAR2, k INTEGER)
 IS
 BEGIN
-  FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> nid) LOOP
+  FOR c IN (SELECT nodeid FROM cluster_nodes WHERE nodeid <> n) LOOP
     INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (c.nodeid, i, f, k);
   END LOOP;
 END;
@@ -1218,41 +1216,6 @@ END;
 {CALL nx_upgrade_versions}
 
 DROP PROCEDURE nx_upgrade_versions
-
-
-############################################################
-
-
-#CATEGORY: addClusterNode
-
-# delete nodes for sessions that don't exist anymore
-# NOTE this needs permissions on SYS.GV_$SESSION (aliased GV$SESSION)
-# i.e. GRANT SELECT ON SYS.GV_$SESSION TO someuser;
-#      SELECT * FROM DBA_TAB_PRIVS WHERE TABLE_NAME = 'GV_$SESSION';
-DELETE FROM "CLUSTER_NODES" N WHERE
-  NOT EXISTS (SELECT S.SID FROM GV$SESSION S WHERE N.NODEID = S.SID || ',' || S.SERIAL#)
-
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN
-  (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
-
-INSERT INTO "CLUSTER_NODES" (NODEID, CREATED) VALUES
-  ((SELECT SYS_CONTEXT('USERENV', 'SID') || ',' || SERIAL#
-     FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID')
-     AND INST_ID = SYS_CONTEXT('USERENV', 'INSTANCE')),
-   CURRENT_TIMESTAMP)
-
-
-#CATEGORY: removeClusterNode
-
-DELETE FROM "CLUSTER_NODES" WHERE NODEID =
- (SELECT SYS_CONTEXT('USERENV', 'SID') || ',' || SERIAL#
-   FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID')
-   AND INST_ID = SYS_CONTEXT('USERENV', 'INSTANCE'))
-
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS i WHERE i.NODEID NOT IN
-  (SELECT NODEID FROM CLUSTER_NODES n WHERE n.NODEID = i.NODEID)
 
 
 ############################################################

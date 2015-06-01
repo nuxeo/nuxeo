@@ -16,7 +16,7 @@
       factory="org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory">
       <pool minPoolSize="${nuxeo.vcs["min-pool-size"]}" maxPoolSize="${nuxeo.vcs["max-pool-size"]}"
         blockingTimeoutMillis="${nuxeo.vcs["blocking-timeout-millis"]}" idleTimeoutMinutes="${nuxeo.vcs["idle-timeout-minutes"]}" />
-      <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
+      <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
       <aclOptimizations enabled="true"/>
       <pathOptimizations enabled="true"/>

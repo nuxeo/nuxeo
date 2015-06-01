@@ -124,39 +124,6 @@ CALL NX_UPGRADE_VERSIONS();
 ############################################################
 
 
-#CATEGORY: addClusterNode
-
-# delete nodes for sessions that don't exist anymore, and old node for this
-# session (session ids are recycled)
-DELETE FROM cluster_nodes N WHERE
-  NOT EXISTS(SELECT * FROM INFORMATION_SCHEMA.SESSIONS S WHERE N.nodeid = S.ID)
-  OR N.nodeid = SESSION_ID()
-
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS WHERE NODEID IN (
-  SELECT DISTINCT CLUSTER_INVALS.NODEID
-    FROM CLUSTER_INVALS LEFT JOIN CLUSTER_NODES ON CLUSTER_INVALS.NODEID = CLUSTER_NODES.NODEID
-    WHERE CLUSTER_NODES.NODEID IS NULL
-)
-
-INSERT INTO cluster_nodes (nodeid, created) VALUES (SESSION_ID(), CURRENT_TIMESTAMP);
-
-
-#CATEGORY: removeClusterNode
-
-DELETE FROM cluster_nodes WHERE nodeid = SESSION_ID();
-
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS WHERE NODEID IN (
-  SELECT DISTINCT CLUSTER_INVALS.NODEID
-    FROM CLUSTER_INVALS LEFT JOIN CLUSTER_NODES ON CLUSTER_INVALS.NODEID = CLUSTER_NODES.NODEID
-    WHERE CLUSTER_NODES.NODEID IS NULL
-)
-
-
-############################################################
-
-
 #CATEGORY: upgradeLastContributor
 
 CALL NX_UPGRADE_LASTCONTRIBUTOR();

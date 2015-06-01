@@ -188,14 +188,14 @@ IF OBJECT_ID('dbo.NX_CLUSTER_INVAL', 'P') IS NOT NULL
   DROP PROCEDURE dbo.NX_CLUSTER_INVAL;
 
 #IF: clusteringEnabled
-CREATE PROCEDURE NX_CLUSTER_INVAL(@i ${idType}, @f NVARCHAR(4000), @k TINYINT)
+CREATE PROCEDURE NX_CLUSTER_INVAL(@n SMALLINT, @i ${idType}, @f NVARCHAR(4000), @k TINYINT)
 AS
 BEGIN
   SET NOCOUNT ON;
   DECLARE @nid SMALLINT;
   DECLARE @cur CURSOR;
   SET @cur = CURSOR FAST_FORWARD FOR
-    SELECT [nodeid] FROM [cluster_nodes] WHERE [nodeid] <> @@SPID;
+    SELECT [nodeid] FROM [cluster_nodes] WHERE [nodeid] <> @n;
   OPEN @cur;
   FETCH FROM @cur INTO @nid;
   WHILE @@FETCH_STATUS = 0 BEGIN
@@ -1335,40 +1335,6 @@ END;
 EXEC NX_UPGRADE_VERSIONS
 
 DROP PROCEDURE dbo.NX_UPGRADE_VERSIONS;
-
-############################################################
-
-
-#CATEGORY: addClusterNode
-
-# -- delete nodes for sessions that don't exist anymore
-DELETE FROM N FROM [cluster_nodes] N WHERE
-  HAS_PERMS_BY_NAME(null, null, 'VIEW SERVER STATE') = 1
-  AND NOT EXISTS(
-    SELECT 1 FROM sys.dm_exec_sessions S WHERE
-      S.is_user_process = 1 AND N.nodeid = S.session_id);
-
-# Remove orphan invalidations
-DELETE FROM [cluster_invals] WHERE [nodeid] IN (
-  SELECT DISTINCT [cluster_invals].[nodeid]
-    FROM [cluster_invals] LEFT JOIN [cluster_nodes] ON [cluster_invals].[nodeid] = [cluster_nodes].[nodeid]
-    WHERE [cluster_nodes].[nodeid] IS NULL
-)
-
-INSERT INTO [cluster_nodes] (nodeid, created) VALUES (@@SPID, CURRENT_TIMESTAMP);
-
-
-#CATEGORY: removeClusterNode
-
-DELETE FROM [cluster_nodes] WHERE nodeid = @@SPID;
-
-# Remove orphan invalidations
-DELETE FROM [cluster_invals] WHERE [nodeid] IN (
-  SELECT DISTINCT [cluster_invals].[nodeid]
-    FROM [cluster_invals] LEFT JOIN [cluster_nodes] ON [cluster_invals].[nodeid] = [cluster_nodes].[nodeid]
-    WHERE [cluster_nodes].[nodeid] IS NULL
-)
-
 
 ############################################################
 

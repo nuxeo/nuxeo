@@ -361,61 +361,79 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public String createClusterNode() throws StorageException {
-        Statement st = null;
+    public int getClusterNodeIdType() {
+        return sqlInfo.getClusterNodeIdType();
+    }
+
+    @Override
+    public void createClusterNode(Serializable nodeId) throws StorageException {
+        Calendar now = Calendar.getInstance();
         try {
-            // get the cluster node id from the database, if necessary
-            String sql = dialect.getClusterNodeIdSql();
-            String nodeId;
-            if (sql == null) {
-                nodeId = null;
-            } else {
-                st = connection.createStatement();
+            String sql = sqlInfo.getCreateClusterNodeSql();
+            List<Column> columns = sqlInfo.getCreateClusterNodeColumns();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
                 if (logger.isLogEnabled()) {
-                    logger.log(sql);
+                    logger.logSQL(sql, Arrays.asList(nodeId, now));
                 }
-                ResultSet rs = st.executeQuery(sql);
-                if (!rs.next()) {
-                    throw new StorageException("Cannot get cluster node id");
-                }
-                nodeId = rs.getString(1);
-                if (logger.isLogEnabled()) {
-                    logger.log("  -> cluster node id: " + nodeId);
-                }
+                columns.get(0).setToPreparedStatement(ps, 1, nodeId);
+                columns.get(1).setToPreparedStatement(ps, 2, now);
+                ps.execute();
+            } finally {
+                closeStatement(ps);
             }
-            // add the cluster node
-            sqlInfo.executeSQLStatements("addClusterNode", this);
-            return nodeId;
         } catch (SQLException e) {
             checkConnectionReset(e);
             throw new StorageException(e);
+        }
+    }
+
+    @Override
+    public void removeClusterNode(Serializable nodeId) throws StorageException {
+        try {
+            // delete from cluster_nodes
+            String sql = sqlInfo.getDeleteClusterNodeSql();
+            Column column = sqlInfo.getDeleteClusterNodeColumn();
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                if (logger.isLogEnabled()) {
+                    logger.logSQL(sql, Arrays.asList(nodeId));
+                }
+                column.setToPreparedStatement(ps, 1, nodeId);
+                ps.execute();
+            } finally {
+                closeStatement(ps);
+            }
+            // delete un-processed invals from cluster_invals
+            deleteClusterInvals(nodeId);
+        } catch (SQLException e) {
+            checkConnectionReset(e);
+            throw new StorageException(e);
+        }
+    }
+
+    protected void deleteClusterInvals(Serializable nodeId) throws SQLException {
+        String sql = sqlInfo.getDeleteClusterInvalsSql();
+        Column column = sqlInfo.getDeleteClusterInvalsColumn();
+        PreparedStatement ps = connection.prepareStatement(sql);
+        try {
+            if (logger.isLogEnabled()) {
+                logger.logSQL(sql, Arrays.asList(nodeId));
+            }
+            column.setToPreparedStatement(ps, 1, nodeId);
+            int n = ps.executeUpdate();
+            countExecute();
+            if (logger.isLogEnabled()) {
+                logger.logCount(n);
+            }
         } finally {
-            if (st != null) {
-                try {
-                    closeStatement(st);
-                } catch (SQLException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
+            closeStatement(ps);
         }
     }
 
     @Override
-    public void removeClusterNode() throws StorageException {
-        try {
-            sqlInfo.executeSQLStatements("removeClusterNode", this);
-        } catch (SQLException e) {
-            checkConnectionReset(e);
-            throw new StorageException(e);
-        }
-    }
-
-    @Override
-    public void insertClusterInvalidations(Invalidations invalidations, String nodeId) throws StorageException {
+    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) throws StorageException {
         String sql = dialect.getClusterInsertInvalidations();
-        if (nodeId != null) {
-            sql = String.format(sql, nodeId);
-        }
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         PreparedStatement ps = null;
         try {
@@ -439,17 +457,18 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     Serializable id = en.getKey();
                     String fragments = join(en.getValue(), ' ');
                     if (logger.isLogEnabled()) {
-                        logger.logSQL(sql, Arrays.<Serializable> asList(id, fragments, Long.valueOf(kind)));
+                        logger.logSQL(sql, Arrays.<Serializable> asList(nodeId, id, fragments, Long.valueOf(kind)));
                     }
                     Serializable frags;
-                    if (dialect.supportsArrays() && columns.get(1).getJdbcType() == Types.ARRAY) {
+                    if (dialect.supportsArrays() && columns.get(2).getJdbcType() == Types.ARRAY) {
                         frags = fragments.split(" ");
                     } else {
                         frags = fragments;
                     }
-                    columns.get(0).setToPreparedStatement(ps, 1, id);
-                    columns.get(1).setToPreparedStatement(ps, 2, frags);
-                    columns.get(2).setToPreparedStatement(ps, 3, Long.valueOf(kind));
+                    columns.get(0).setToPreparedStatement(ps, 1, nodeId);
+                    columns.get(1).setToPreparedStatement(ps, 2, id);
+                    columns.get(2).setToPreparedStatement(ps, 3, frags);
+                    columns.get(3).setToPreparedStatement(ps, 4, Long.valueOf(kind));
                     ps.execute();
                     countExecute();
                 }
@@ -495,63 +514,46 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Invalidations getClusterInvalidations(String nodeId) throws StorageException {
+    public Invalidations getClusterInvalidations(Serializable nodeId) throws StorageException {
         Invalidations invalidations = new Invalidations();
         String sql = dialect.getClusterGetInvalidations();
-        String sqldel = dialect.getClusterDeleteInvalidations();
-        if (nodeId != null) {
-            sql = String.format(sql, nodeId);
-            sqldel = String.format(sqldel, nodeId);
-        }
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
-        Statement st = null;
         try {
-            st = connection.createStatement();
             if (logger.isLogEnabled()) {
-                logger.log(sql);
+                logger.logSQL(sql, Arrays.asList(nodeId));
             }
-            ResultSet rs = st.executeQuery(sql);
-            countExecute();
-            int n = 0;
-            while (rs.next()) {
-                n++;
-                Serializable id = columns.get(0).getFromResultSet(rs, 1);
-                Serializable frags = columns.get(1).getFromResultSet(rs, 2);
-                int kind = ((Long) columns.get(2).getFromResultSet(rs, 3)).intValue();
-                String[] fragments;
-                if (dialect.supportsArrays() && frags instanceof String[]) {
-                    fragments = (String[]) frags;
-                } else {
-                    fragments = ((String) frags).split(" ");
+            PreparedStatement ps = connection.prepareStatement(sql);
+            try {
+                setToPreparedStatement(ps, 1, nodeId);
+                ResultSet rs = ps.executeQuery();
+                countExecute();
+                while (rs.next()) {
+                    // first column ignored, it's the node id
+                    Serializable id = columns.get(1).getFromResultSet(rs, 1);
+                    Serializable frags = columns.get(2).getFromResultSet(rs, 2);
+                    int kind = ((Long) columns.get(3).getFromResultSet(rs, 3)).intValue();
+                    String[] fragments;
+                    if (dialect.supportsArrays() && frags instanceof String[]) {
+                        fragments = (String[]) frags;
+                    } else {
+                        fragments = ((String) frags).split(" ");
+                    }
+                    invalidations.add(id, fragments, kind);
                 }
-                invalidations.add(id, fragments, kind);
+            } finally {
+                closeStatement(ps);
             }
             if (logger.isLogEnabled()) {
                 // logCount(n);
                 logger.log("  -> " + invalidations);
             }
             if (dialect.isClusteringDeleteNeeded()) {
-                if (logger.isLogEnabled()) {
-                    logger.log(sqldel);
-                }
-                n = st.executeUpdate(sqldel);
-                countExecute();
-                if (logger.isLogEnabled()) {
-                    logger.logCount(n);
-                }
+                deleteClusterInvals(nodeId);
             }
             return invalidations;
         } catch (SQLException e) {
             checkConnectionReset(e, true);
             throw new StorageException("Could not invalidate", e);
-        } finally {
-            if (st != null) {
-                try {
-                    closeStatement(st);
-                } catch (SQLException e) {
-                    log.error(e.getMessage(), e);
-                }
-            }
         }
     }
 

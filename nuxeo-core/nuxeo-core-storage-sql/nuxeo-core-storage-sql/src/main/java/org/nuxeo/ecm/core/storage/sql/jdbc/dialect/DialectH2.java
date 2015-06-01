@@ -351,12 +351,12 @@ public class DialectH2 extends Dialect {
 
     @Override
     public String getClusterInsertInvalidations() {
-        return "CALL NX_CLUSTER_INVAL(?, ?, ?)";
+        return "CALL NX_CLUSTER_INVAL(?, ?, ?, ?)";
     }
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT * FROM NX_CLUSTER_GET_INVALS()";
+        return "SELECT * FROM NX_CLUSTER_GET_INVALS(?)";
     }
 
     @Override

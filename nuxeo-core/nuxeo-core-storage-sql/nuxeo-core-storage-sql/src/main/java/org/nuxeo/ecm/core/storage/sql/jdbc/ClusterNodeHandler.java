@@ -12,6 +12,11 @@
 
 package org.nuxeo.ecm.core.storage.sql.jdbc;
 
+import java.io.Serializable;
+import java.sql.Types;
+import java.util.Random;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
@@ -31,6 +36,8 @@ public class ClusterNodeHandler {
 
     private static final Log log = LogFactory.getLog(ClusterNodeHandler.class);
 
+    protected static final Random RANDOM = new Random();
+
     /** Cluster node mapper. Used synchronized. */
     private final Mapper clusterNodeMapper;
 
@@ -42,13 +49,29 @@ public class ClusterNodeHandler {
     /** Propagator of invalidations to the cluster node's mappers. */
     private final InvalidationsPropagator propagator;
 
-    /** Cluster node id, needed at the Java level for some databases. */
-    private String nodeId;
+    /** Cluster node id. */
+    private Serializable nodeId;
 
     public ClusterNodeHandler(Mapper clusterNodeMapper, RepositoryDescriptor repositoryDescriptor)
             throws StorageException {
         this.clusterNodeMapper = clusterNodeMapper;
-        nodeId = clusterNodeMapper.createClusterNode();
+
+        String nodeIdString = repositoryDescriptor.getClusterNodeId();
+        if (StringUtils.isBlank(nodeIdString)) {
+            // need a smallish int because of SQL Server legacy node ids
+            nodeIdString = String.valueOf(RANDOM.nextInt(32768));
+            log.warn(
+                    "Missing cluster node id configuration, please define it explicitly (usually through repository.clustering.id). "
+                            + "Using random cluster node id instead: " + nodeIdString);
+        }
+        int type = clusterNodeMapper.getClusterNodeIdType(); // sql type
+        if (type == Types.VARCHAR) {
+            nodeId = nodeIdString.trim();
+        } else {
+            nodeId = Long.valueOf(nodeIdString);
+        }
+        log.info("Initializing cluster node: " + nodeId);
+        clusterNodeMapper.createClusterNode(nodeId);
         clusteringDelay = repositoryDescriptor.getClusteringDelay();
         processClusterInvalidationsNext();
         propagator = new InvalidationsPropagator("cluster-" + this);
@@ -61,7 +84,7 @@ public class ClusterNodeHandler {
     public void close() throws StorageException {
         synchronized (clusterNodeMapper) {
             try {
-                clusterNodeMapper.removeClusterNode();
+                clusterNodeMapper.removeClusterNode(nodeId);
             } catch (StorageException e) {
                 log.error(e.getMessage(), e);
             }
@@ -71,10 +94,8 @@ public class ClusterNodeHandler {
 
     public void connectionWasReset() throws StorageException {
         synchronized (clusterNodeMapper) {
-            // cannot remove, old connection is gone
-            // create should do a cleanup anyway
-            nodeId = clusterNodeMapper.createClusterNode();
-            // but all invalidations queued for us have been lost
+            // TODO needed?
+            // all invalidations queued for us have been lost
             // so reset all
             propagator.propagateInvalidations(new Invalidations(true), null);
         }
@@ -111,8 +132,10 @@ public class ClusterNodeHandler {
      */
     public Invalidations receiveClusterInvalidations() throws StorageException {
         synchronized (clusterNodeMapper) {
-            if (clusterNodeLastInvalidationTimeMillis + clusteringDelay > System.currentTimeMillis()) {
+            long remaining = clusterNodeLastInvalidationTimeMillis + clusteringDelay - System.currentTimeMillis();
+            if (remaining > 0) {
                 // delay hasn't expired
+                log.trace("Not fetching invalidations, remaining time: " + remaining + "ms");
                 return null;
             }
             Invalidations invalidations;
@@ -135,7 +158,7 @@ public class ClusterNodeHandler {
             return;
         }
         synchronized (clusterNodeMapper) {
-            clusterNodeMapper.insertClusterInvalidations(invalidations, nodeId);
+            clusterNodeMapper.insertClusterInvalidations(nodeId, invalidations);
         }
     }
 

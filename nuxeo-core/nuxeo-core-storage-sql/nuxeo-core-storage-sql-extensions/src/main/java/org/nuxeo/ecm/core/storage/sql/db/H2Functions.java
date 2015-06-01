@@ -67,16 +67,17 @@ public class H2Functions extends EmbeddedFunctions {
      * Adds an invalidation from this cluster node to the invalidations list.
      */
     @SuppressWarnings("boxing")
-    public static void clusterInvalidateString(Connection conn, String id, String fragments, int kind)
+    public static void clusterInvalidateString(Connection conn, long nodeId, String id, String fragments, int kind)
             throws SQLException {
         PreparedStatement ps = null;
         try {
             // find other node ids
-            String sql = "SELECT \"NODEID\" FROM \"CLUSTER_NODES\" " + "WHERE \"NODEID\" <> SESSION_ID()";
+            String sql = "SELECT \"NODEID\" FROM \"CLUSTER_NODES\" WHERE \"NODEID\" <> ?";
             if (isLogEnabled()) {
-                logDebug(sql);
+                logDebug(sql, nodeId);
             }
             ps = conn.prepareStatement(sql);
+            ps.setLong(1, nodeId);
             List<Long> nodeIds = new LinkedList<Long>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -88,12 +89,12 @@ public class H2Functions extends EmbeddedFunctions {
             // invalidate
             sql = "INSERT INTO \"CLUSTER_INVALS\" " + "(\"NODEID\", \"ID\", \"FRAGMENTS\", \"KIND\") "
                     + "VALUES (?, ?, ?, ?)";
-            for (Long nodeId : nodeIds) {
+            for (Long nid : nodeIds) {
                 if (isLogEnabled()) {
-                    logDebug(sql, nodeId, id, fragments, kind);
+                    logDebug(sql, nid, id, fragments, kind);
                 }
                 ps = conn.prepareStatement(sql);
-                ps.setLong(1, nodeId);
+                ps.setLong(1, nid);
                 ps.setObject(2, id);
                 ps.setString(3, fragments);
                 ps.setInt(4, kind);
@@ -111,7 +112,7 @@ public class H2Functions extends EmbeddedFunctions {
      *
      * @return a result set with columns id, fragments, kind
      */
-    public static ResultSet getClusterInvalidationsString(Connection conn) throws SQLException {
+    public static ResultSet getClusterInvalidationsString(Connection conn, long nodeId) throws SQLException {
         DatabaseMetaData meta = conn.getMetaData();
         SimpleResultSet result = new SimpleResultSet();
         result.addColumn("ID", Types.VARCHAR, 0, 0); // String id
@@ -123,14 +124,14 @@ public class H2Functions extends EmbeddedFunctions {
         }
 
         PreparedStatement ps = null;
-        Statement st = null;
         try {
             String sql = "SELECT \"ID\", \"FRAGMENTS\", \"KIND\" FROM \"CLUSTER_INVALS\" "
-                    + "WHERE \"NODEID\" = SESSION_ID()";
+                    + "WHERE \"NODEID\" = ?";
             if (isLogEnabled()) {
-                logDebug(sql);
+                logDebug(sql, nodeId);
             }
             ps = conn.prepareStatement(sql);
+            ps.setLong(1, nodeId);
             ResultSet rs = ps.executeQuery();
             List<Serializable> debugValues = null;
             if (isLogEnabled()) {
@@ -150,21 +151,20 @@ public class H2Functions extends EmbeddedFunctions {
             }
 
             // remove processed invalidations
-            sql = "DELETE FROM \"CLUSTER_INVALS\" WHERE \"NODEID\" = SESSION_ID()";
+            sql = "DELETE FROM \"CLUSTER_INVALS\" WHERE \"NODEID\" = ?";
             if (isLogEnabled()) {
                 logDebug(sql);
             }
-            st = conn.createStatement();
-            st.execute(sql);
+            ps.close();
+            ps = conn.prepareStatement(sql);
+            ps.setLong(1, nodeId);
+            ps.execute();
 
             // return invalidations
             return result;
         } finally {
             if (ps != null) {
                 ps.close();
-            }
-            if (st != null) {
-                st.close();
             }
         }
     }

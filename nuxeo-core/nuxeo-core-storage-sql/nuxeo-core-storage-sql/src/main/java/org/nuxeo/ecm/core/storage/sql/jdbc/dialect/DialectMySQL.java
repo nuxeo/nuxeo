@@ -422,17 +422,12 @@ public class DialectMySQL extends Dialect {
 
     @Override
     public String getClusterInsertInvalidations() {
-        return "CALL NX_CLUSTER_INVAL(?, ?, ?)";
+        return "CALL NX_CLUSTER_INVAL(?, ?, ?, ?)";
     }
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = @@PSEUDO_THREAD_ID";
-    }
-
-    @Override
-    public String getClusterDeleteInvalidations() {
-        return "DELETE FROM cluster_invals WHERE nodeid = @@PSEUDO_THREAD_ID";
+        return "SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = ?";
     }
 
     @Override

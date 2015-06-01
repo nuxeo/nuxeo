@@ -990,15 +990,7 @@ public abstract class Dialect {
     }
 
     /**
-     * Returns the cluster node id, for some databases where this info is needed at the Java level.
-     */
-    public String getClusterNodeIdSql() {
-        return null;
-    }
-
-    /**
-     * Does clustering fetch of invalidations ( {@link #getClusterGetInvalidations}) need a separate delete for them (
-     * {@link #getClusterDeleteInvalidations}).
+     * Does clustering fetch of invalidations ( {@link #getClusterGetInvalidations}) need a separate delete for them.
      */
     public boolean isClusteringDeleteNeeded() {
         return false;
@@ -1007,7 +999,7 @@ public abstract class Dialect {
     /**
      * Gets the SQL to send an invalidation to the cluster.
      *
-     * @return an SQL statement with parameters for: id, fragments, kind
+     * @return an SQL statement with parameters for: nodeId, id, fragments, kind
      */
     public String getClusterInsertInvalidations() {
         return null;
@@ -1019,15 +1011,6 @@ public abstract class Dialect {
      * @return an SQL statement returning a result set
      */
     public String getClusterGetInvalidations() {
-        return null;
-    }
-
-    /**
-     * Gets the SQL to delete invalidations for this cluster node.
-     *
-     * @return an SQL statement returning a result set
-     */
-    public String getClusterDeleteInvalidations() {
         return null;
     }
 

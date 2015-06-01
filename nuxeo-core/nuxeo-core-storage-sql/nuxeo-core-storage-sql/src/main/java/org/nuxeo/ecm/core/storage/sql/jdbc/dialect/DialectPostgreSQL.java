@@ -1162,12 +1162,12 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getClusterInsertInvalidations() {
-        return "SELECT NX_CLUSTER_INVAL(?, ?, ?)";
+        return "SELECT NX_CLUSTER_INVAL(?, ?, ?, ?)";
     }
 
     @Override
     public String getClusterGetInvalidations() {
-        return "DELETE FROM cluster_invals WHERE nodeid = pg_backend_pid()" + " RETURNING id, fragments, kind";
+        return "DELETE FROM cluster_invals WHERE nodeid = ? RETURNING id, fragments, kind";
     }
 
     @Override

@@ -111,22 +111,27 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public String createClusterNode() throws StorageException {
-        return mapper.createClusterNode();
+    public int getClusterNodeIdType() {
+        return mapper.getClusterNodeIdType();
     }
 
     @Override
-    public void removeClusterNode() throws StorageException {
-        mapper.removeClusterNode();
+    public void createClusterNode(Serializable nodeId) throws StorageException {
+        mapper.createClusterNode(nodeId);
     }
 
     @Override
-    public void insertClusterInvalidations(Invalidations invalidations, String nodeId) throws StorageException {
-        mapper.insertClusterInvalidations(invalidations, nodeId);
+    public void removeClusterNode(Serializable nodeId) throws StorageException {
+        mapper.removeClusterNode(nodeId);
     }
 
     @Override
-    public Invalidations getClusterInvalidations(String nodeId) throws StorageException {
+    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) throws StorageException {
+        mapper.insertClusterInvalidations(nodeId, invalidations);
+    }
+
+    @Override
+    public Invalidations getClusterInvalidations(Serializable nodeId) throws StorageException {
         return mapper.getClusterInvalidations(nodeId);
     }
 

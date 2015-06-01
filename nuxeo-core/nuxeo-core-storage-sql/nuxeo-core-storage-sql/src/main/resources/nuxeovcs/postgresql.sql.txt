@@ -98,13 +98,13 @@ STABLE
 COST 500;
 
 #IF: clusteringEnabled
-CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL(i ${idType}, f varchar[], k int)
+CREATE OR REPLACE FUNCTION NX_CLUSTER_INVAL(n bigint, i ${idType}, f varchar[], k int)
 RETURNS VOID
 AS $$
 DECLARE
   nid int;
 BEGIN
-  FOR nid IN SELECT nodeid FROM cluster_nodes WHERE nodeid <> pg_backend_pid() LOOP
+  FOR nid IN SELECT nodeid FROM cluster_nodes WHERE nodeid <> n LOOP
     INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (nid, i, f, k);
   END LOOP;
 END $$
@@ -1126,49 +1126,6 @@ LANGUAGE plpgsql;
 SELECT nx_upgrade_versions();
 
 DROP FUNCTION nx_upgrade_versions();
-
-############################################################
-
-
-#CATEGORY: addClusterNode
-
-# delete nodes for sessions that don't exist anymore
-
-# PostgreSQL 9.2 renamed pg_stat_activity.procpid to pg_stat_activity.pid
-# so we must use conditions
-
-#TEST:
-SELECT attname FROM pg_attribute
-  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
-    AND attname = 'pid';
-
-#IF: ! emptyResult
-DELETE FROM cluster_nodes N WHERE
-  NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.pid);
-
-#TEST:
-SELECT attname FROM pg_attribute
-  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'pg_stat_activity')
-    AND attname = 'procpid';
-
-#IF: ! emptyResult
-DELETE FROM cluster_nodes N WHERE
-  NOT EXISTS(SELECT * FROM pg_stat_activity S WHERE N.nodeid = S.procpid);
-
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS i
-  WHERE i.NODEID NOT IN (SELECT n.NODEID FROM CLUSTER_NODES n)
-
-INSERT INTO cluster_nodes (nodeid, created) VALUES (pg_backend_pid(), CURRENT_TIMESTAMP);
-
-
-#CATEGORY: removeClusterNode
-
-DELETE FROM cluster_nodes WHERE nodeid = pg_backend_pid();
-
-# Remove orphan invalidations
-DELETE FROM CLUSTER_INVALS i
-  WHERE i.NODEID NOT IN (SELECT n.NODEID FROM CLUSTER_NODES n)
 
 
 ############################################################
