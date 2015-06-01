@@ -38,9 +38,10 @@ public class DuplicateCollectionMemberWork extends AbstractWork {
 
     private static final Log log = LogFactory.getLog(DuplicateCollectionMemberWork.class);
 
-    public DuplicateCollectionMemberWork(final String repoName,
-            final String newCollectionId, final List<String> collectionMemberIds, final int offset) {
-        super(repoName + ":" + newCollectionId + ":" + offset);
+    public DuplicateCollectionMemberWork(final String repoName, final String newCollectionId,
+            final List<String> collectionMemberIds, final int offset) {
+        super(CATEGORY + ":" + repoName + ":" + newCollectionId + ":" + offset);
+        this.repositoryName = repoName;
         this.newCollectionId = newCollectionId;
         this.repositoryName = repoName;
         this.collectionMemberIds = collectionMemberIds;
