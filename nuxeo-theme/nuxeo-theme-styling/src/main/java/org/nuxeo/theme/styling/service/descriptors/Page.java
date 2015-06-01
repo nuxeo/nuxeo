@@ -17,10 +17,13 @@
 package org.nuxeo.theme.styling.service.descriptors;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.services.ThemeService;
 
@@ -34,6 +37,18 @@ public class Page {
 
     @XNode("@name")
     String name;
+
+    /**
+     * @since 7.3
+     */
+    @XNode("@charset")
+    String charset;
+
+    /**
+     * @since 7.3
+     */
+    @XNodeMap(value = "links/icon", key = "@name", type = HashMap.class, componentType = String.class)
+    Map<String, String> favicons = new HashMap<String, String>();
 
     @XNode("defaultFlavor")
     String defaultFlavor;
@@ -165,6 +180,144 @@ public class Page {
 
     public void setAppendResources(boolean appendResources) {
         this.appendResources = appendResources;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public String getCharset() {
+        return charset;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public Map<String, String> getFavicons() {
+        return favicons;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public void setFavicons(Map<String, String> favicons) {
+        this.favicons = favicons;
+    }
+
+    public void merge(Page src) {
+        String newFlavor = src.getDefaultFlavor();
+        if (newFlavor != null) {
+            setDefaultFlavor(newFlavor);
+        }
+
+        String newCharset = src.getCharset();
+        if (newCharset != null) {
+            setCharset(newCharset);
+        }
+
+        Map<String, String> newFavicons = src.getFavicons();
+        if (newFavicons != null && !newFavicons.isEmpty()) {
+            setFavicons(newFavicons);
+        }
+
+        List<String> newStyles = src.getStyles();
+        if (newStyles != null) {
+            List<String> merged = new ArrayList<String>();
+            merged.addAll(newStyles);
+            boolean keepOld = src.getAppendStyles() || (newStyles.isEmpty() && !src.getAppendStyles());
+            if (keepOld) {
+                // add back old contributions
+                List<String> oldStyles = getStyles();
+                if (oldStyles != null) {
+                    merged.addAll(0, oldStyles);
+                }
+            }
+            setStyles(merged);
+        }
+
+        List<String> newFlavors = src.getFlavors();
+        if (newFlavors != null) {
+            List<String> merged = new ArrayList<String>();
+            merged.addAll(newFlavors);
+            boolean keepOld = src.getAppendFlavors() || (newFlavors.isEmpty() && !src.getAppendFlavors());
+            if (keepOld) {
+                // add back old contributions
+                List<String> oldFlavors = getFlavors();
+                if (oldFlavors != null) {
+                    merged.addAll(0, oldFlavors);
+                }
+            }
+            setFlavors(merged);
+        }
+
+        List<String> newResources = src.getResources();
+        if (newResources != null) {
+            List<String> merged = new ArrayList<String>();
+            merged.addAll(newResources);
+            boolean keepOld = src.getAppendResources() || (newResources.isEmpty() && !src.getAppendResources());
+            if (keepOld) {
+                // add back old contributions
+                List<String> oldResources = getResources();
+                if (oldResources != null) {
+                    merged.addAll(0, oldResources);
+                }
+            }
+            setResources(merged);
+        }
+
+        List<String> newBundles = src.getResourceBundles();
+        if (newBundles != null) {
+            List<String> merged = new ArrayList<String>();
+            merged.addAll(newBundles);
+            boolean keepOld = src.getAppendResources() || (newBundles.isEmpty() && !src.getAppendResources());
+            if (keepOld) {
+                // add back old contributions
+                List<String> oldBundles = getResourceBundles();
+                if (oldBundles != null) {
+                    merged.addAll(0, oldBundles);
+                }
+            }
+            setResourceBundles(merged);
+        }
+    }
+
+    @Override
+    public Page clone() {
+        Page clone = new Page();
+        clone.setName(getName());
+        clone.setCharset(getCharset());
+        Map<String, String> favicons = new HashMap<String, String>();
+        if (favicons != null) {
+            clone.setFavicons(new HashMap<>(favicons));
+        }
+        clone.setDefaultFlavor(getDefaultFlavor());
+        clone.setAppendStyles(getAppendStyles());
+        List<String> styles = getStyles();
+        if (styles != null) {
+            clone.setStyles(new ArrayList<String>(styles));
+        }
+        clone.setAppendFlavors(getAppendFlavors());
+        List<String> flavors = getFlavors();
+        if (flavors != null) {
+            clone.setFlavors(new ArrayList<String>(flavors));
+        }
+        clone.setAppendResources(getAppendResources());
+        List<String> resources = getResources();
+        if (resources != null) {
+            clone.setResources(new ArrayList<String>(resources));
+        }
+        List<String> bundles = getResourceBundles();
+        if (bundles != null) {
+            clone.setResourceBundles(new ArrayList<String>(bundles));
+        }
+        clone.setLoaded(isLoaded());
+        return clone;
     }
 
 }

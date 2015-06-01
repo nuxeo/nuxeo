@@ -454,7 +454,11 @@
   <!-- Register mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
-    <page name="galaxy/print">
+    <page name="galaxy/print" charset="utf-8">
+      <links>
+        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
+      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -470,7 +474,11 @@
       </resources>
     </page>
 
-    <page name="galaxy/popup">
+    <page name="galaxy/popup" charset="utf-8">
+      <favorites>
+        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
+      </favorites>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -484,7 +492,11 @@
       </resources>
     </page>
 
-    <page name="galaxy/default">
+    <page name="galaxy/default" charset="utf-8">
+      <favorites>
+        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
+      </favorites>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
