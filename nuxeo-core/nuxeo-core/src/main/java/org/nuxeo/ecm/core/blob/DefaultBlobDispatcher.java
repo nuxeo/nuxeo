@@ -43,22 +43,26 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Default blob dispatcher, that uses the repository name as the blob provider.
  * <p>
- * It can be configured through properties to dispatch to a blob provider based on document properties instead of the
- * repository name.
+ * Alternatively, it can be configured through properties to dispatch to a blob provider based on document properties
+ * instead of the repository name.
  * <p>
- * The property name can be an document xpath or {@code blob:name}, {@code blob:mime-type}, {@code blob:encoding},
- * {@code blob:digest} or {@code blob:length} to match the current blob being dispatched. The special name
- * {@code default} defines the default provider, and must be present.
+ * The property name is a list of comma-separated clauses, with each clause consisting of a property, an operator and a
+ * value. The property can be a {@link Document} xpath, {@code ecm:repositoryName}, or, to match the current blob being
+ * dispatched, {@code blob:name}, {@code blob:mime-type}, {@code blob:encoding}, {@code blob:digest} or
+ * {@code blob:length}. Comma-separated clauses are ANDed together. The special name {@code default} defines the default
+ * provider, and must be present.
  * <p>
- * Available operators between property and value are =, !=, &lt, >.
+ * Available operators between property and value are =, !=, &lt, and >.
  * <p>
- * For example, to dispatch to the "first" provider if dc:format is "video" and to the "second" provider if the blob's
- * MIME type is "video/mp4", and otherwise to the "third" provider:
+ * For example, to dispatch to the "first" provider if dc:format is "video", to the "second" provider if the blob's MIME
+ * type is "video/mp4", to the "third" provider if the lifecycle state is "approved" and the document is in the default
+ * repository, and otherwise to the "fourth" provider:
  *
  * <pre>
  * &lt;property name="dc:format=video">first&lt;/property>
  * &lt;property name="blob:mime-type=video/mp4">second&lt;/property>
- * &lt;property name="default">third&lt;/property>
+ * &lt;property name="ecm:repositoryName=default,ecm:lifeCycleState=approved">third2&lt;/property>
+ * &lt;property name="default">fourth&lt;/property>
  * </pre>
  *
  * @since 7.3
@@ -70,6 +74,9 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
     protected static final String NAME_DEFAULT = "default";
 
     protected static final Pattern NAME_PATTERN = Pattern.compile("(.*)(=|!=|<|>)(.*)");
+
+    /** Pseudo-property for the repository name. */
+    protected static final String REPOSITORY_NAME = "ecm:repositoryName";
 
     protected static final String BLOB_PREFIX = "blob:";
 
@@ -87,19 +94,27 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         EQ, NEQ, LT, GT;
     }
 
-    protected static class Rule {
+    protected static class Clause {
         public final String xpath;
 
         public final Op op;
 
         public final Object value;
 
-        public final String providerId;
-
-        public Rule(String xpath, Op op, Object value, String providerId) {
+        public Clause(String xpath, Op op, Object value) {
             this.xpath = xpath;
             this.op = op;
             this.value = value;
+        }
+    }
+
+    protected static class Rule {
+        public final List<Clause> clauses;
+
+        public final String providerId;
+
+        public Rule(List<Clause> clauses, String providerId) {
+            this.clauses = clauses;
             this.providerId = providerId;
         }
     }
@@ -121,41 +136,45 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         rulesXPaths = new HashSet<>();
         rules = new ArrayList<>();
         for (Entry<String, String> en : properties.entrySet()) {
-            String name = en.getKey();
+            String clausesString = en.getKey();
             String providerId = en.getValue();
             providerIds.add(providerId);
-            if (name.equals(NAME_DEFAULT)) {
+            if (clausesString.equals(NAME_DEFAULT)) {
                 defaultProviderId = providerId;
             } else {
-                Matcher m = NAME_PATTERN.matcher(name);
-                if (m.matches()) {
-                    String xpath = m.group(1);
-                    String ops = m.group(2);
-                    Object value = m.group(3);
-                    Op op;
-                    switch (ops) {
-                    case "=":
-                        op = Op.EQ;
-                        break;
-                    case "!=":
-                        op = Op.NEQ;
-                        break;
-                    case "<":
-                        op = Op.LT;
-                        value = Long.valueOf((String) value);
-                        break;
-                    case ">":
-                        op = Op.GT;
-                        value = Long.valueOf((String) value);
-                        break;
-                    default:
-                        log.error("Invalid dispatcher configuration operator: " + ops);
-                        continue;
+                List<Clause> clauses = new ArrayList<Clause>(2);
+                for (String name : clausesString.split(",")) {
+                    Matcher m = NAME_PATTERN.matcher(name);
+                    if (m.matches()) {
+                        String xpath = m.group(1);
+                        String ops = m.group(2);
+                        Object value = m.group(3);
+                        Op op;
+                        switch (ops) {
+                        case "=":
+                            op = Op.EQ;
+                            break;
+                        case "!=":
+                            op = Op.NEQ;
+                            break;
+                        case "<":
+                            op = Op.LT;
+                            value = Long.valueOf((String) value);
+                            break;
+                        case ">":
+                            op = Op.GT;
+                            value = Long.valueOf((String) value);
+                            break;
+                        default:
+                            log.error("Invalid dispatcher configuration operator: " + ops);
+                            continue;
+                        }
+                        clauses.add(new Clause(xpath, op, value));
+                        rulesXPaths.add(xpath);
+                    } else {
+                        log.error("Invalid dispatcher configuration property name: " + name);
                     }
-                    rules.add(new Rule(xpath, op, value, providerId));
-                    rulesXPaths.add(xpath);
-                } else {
-                    log.error("Invalid dispatcher configuration property name: " + name);
+                    rules.add(new Rule(clauses, providerId));
                 }
             }
         }
@@ -179,64 +198,73 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             return doc.getRepositoryName();
         }
         for (Rule rule : rules) {
-            String xpath = rule.xpath;
-            Object value;
-            if (xpath.startsWith(BLOB_PREFIX)) {
-                switch (xpath.substring(BLOB_PREFIX.length())) {
-                case BLOB_NAME:
-                    value = blob.getFilename();
-                    break;
-                case BLOB_MIME_TYPE:
-                    value = blob.getMimeType();
-                    break;
-                case BLOB_ENCODING:
-                    value = blob.getEncoding();
-                    break;
-                case BLOB_DIGEST:
-                    value = blob.getDigest();
-                    break;
-                case BLOB_LENGTH:
-                    value = Long.valueOf(blob.getLength());
-                    break;
-                default:
-                    log.error("Invalid dispatcher configuration property name: " + xpath);
-                    continue;
-                }
-            } else {
-                try {
-                    value = doc.getValue(xpath);
-                } catch (PropertyNotFoundException e) {
-                    try {
-                        value = doc.getPropertyValue(xpath);
-                    } catch (IllegalArgumentException e2) {
+            boolean allClausesMatch = true;
+            for (Clause clause : rule.clauses) {
+                String xpath = clause.xpath;
+                Object value;
+                if (xpath.equals(REPOSITORY_NAME)) {
+                    value = doc.getRepositoryName();
+                } else if (xpath.startsWith(BLOB_PREFIX)) {
+                    switch (xpath.substring(BLOB_PREFIX.length())) {
+                    case BLOB_NAME:
+                        value = blob.getFilename();
+                        break;
+                    case BLOB_MIME_TYPE:
+                        value = blob.getMimeType();
+                        break;
+                    case BLOB_ENCODING:
+                        value = blob.getEncoding();
+                        break;
+                    case BLOB_DIGEST:
+                        value = blob.getDigest();
+                        break;
+                    case BLOB_LENGTH:
+                        value = Long.valueOf(blob.getLength());
+                        break;
+                    default:
+                        log.error("Invalid dispatcher configuration property name: " + xpath);
                         continue;
                     }
+                } else {
+                    try {
+                        value = doc.getValue(xpath);
+                    } catch (PropertyNotFoundException e) {
+                        try {
+                            value = doc.getPropertyValue(xpath);
+                        } catch (IllegalArgumentException e2) {
+                            continue;
+                        }
+                    }
+                }
+                boolean match;
+                switch (clause.op) {
+                case EQ:
+                    match = String.valueOf(value).equals(clause.value);
+                    break;
+                case NEQ:
+                    match = !String.valueOf(value).equals(clause.value);
+                    break;
+                case LT:
+                    if (value == null) {
+                        value = Long.valueOf(0);
+                    }
+                    match = ((Long) value).compareTo((Long) clause.value) < 0;
+                    break;
+                case GT:
+                    if (value == null) {
+                        value = Long.valueOf(0);
+                    }
+                    match = ((Long) value).compareTo((Long) clause.value) > 0;
+                    break;
+                default:
+                    throw new AssertionError("notreached");
+                }
+                allClausesMatch = allClausesMatch && match;
+                if (!allClausesMatch) {
+                    break;
                 }
             }
-            boolean match;
-            switch (rule.op) {
-            case EQ:
-                match = rule.value.equals(String.valueOf(value));
-                break;
-            case NEQ:
-                match = !rule.value.equals(String.valueOf(value));
-                break;
-            case LT:
-                if (value == null) {
-                    value = Long.valueOf(0);
-                }
-                match = ((Long) rule.value).compareTo((Long) value) < 0;
-                break;
-            case GT:
-                if (value == null) {
-                    value = Long.valueOf(0);
-                }
-                match = ((Long) rule.value).compareTo((Long) value) > 0;
-                break;
-            default:
-                throw new AssertionError("notreached");
-            }
-            if (match) {
+            if (allClausesMatch) {
                 return rule.providerId;
             }
         }
