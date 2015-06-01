@@ -12,14 +12,12 @@
 
 <dom-module id="popup-right">
   <template>
-
     <nx-operation id="op" op="Document.AddACL" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
 
     <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
     <paper-dialog id="popupRight">
       <h2>Add new acl right</h2>
 
-      <!-- <paper-dialog-scrollable> -->
       <!-- Give acces to row -->
       <div>
         <div>Give access to</div>
@@ -39,10 +37,9 @@
           <option value="EVERYTHING">Everything</option>
         </select>
       </div>
-      <!-- </paper-dialog-scrollable> -->
 
       <div class="buttons">
-        <paper-button dialog-dismissive  raised="true">Cancel</paper-button>
+        <paper-button dialog-dismissive raised="true">Cancel</paper-button>
         <paper-button dialog-affirmative raised="true" on-tap="doSend">Confirm</paper-button>
       </div>
     </paper-dialog>
@@ -54,10 +51,6 @@
     is: 'popup-right',
 
     properties: {
-      render: {
-        type: Boolean,
-        value: true
-      },
       docId: {
         type: String,
         value: ''

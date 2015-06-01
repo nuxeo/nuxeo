@@ -91,12 +91,14 @@
 
       <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-      <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}"></nx-doc-resource>
+      <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
       <template is="dom-if" if="{{hasLocalRights}}">
         <div>
           <h2>Access rights defined explicitely on this folder or document #{currentDocument.id}</h2>
-          <popup-right doc-id="#{currentDocument.id}" render="{{doc.isCurrentUserHasEverything}}" on-aclcreated="handleAclCreated"></popup-right>
+          <template is="dom-if" if="{{hasEverythingRight}}">
+            <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
+          </template>
         </div>
         <div>
           <table class="tmp-tab">
@@ -121,7 +123,7 @@
 
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template is="dom-if" if="{{doc.isCurrentUserHasEverything}}">
+          <template is="dom-if" if="{{hasEverythingRight}}">
             <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
           </template>
         </div>
@@ -146,7 +148,9 @@
       <template is="dom-if" if="{{!hasLocalRights}}">
         <div>
           <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <popup-right doc-id="#{currentDocument.id}" render="{{doc.isCurrentUserHasEverything}}" on-aclcreated="handleAclCreated"></popup-right>
+          <template is="dom-if" if="{{hasEverythingRight}}">
+            <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
+          </template>
           <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
         </div>
         <div>
