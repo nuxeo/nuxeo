@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -21,8 +21,9 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -30,16 +31,13 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * Event handler to duplicate the collection members of a duplicated collection. The handler is synchronous because it
- * is important to capture the collection member ids of the duplicated collection at the exact moment of duplication. We
- * don't want to duplicate a collection member that was indeed added to the duplicated collection after the duplication.
- * The handler will then launch asynchronous tasks to duplicate the collection members.
+ * Event handler to restored the collection members of a restored version of a collection.
  *
- * @since 5.9.3
+ * @since 7.3
  */
-public class DuplicatedCollectionListener implements EventListener {
+public class RestoredCollectionListener implements EventListener {
 
-    private static final Log log = LogFactory.getLog(DuplicatedCollectionListener.class);
+    private static final Log log = LogFactory.getLog(RestoredCollectionListener.class);
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -51,33 +49,26 @@ public class DuplicatedCollectionListener implements EventListener {
         final String eventId = event.getName();
 
         final DocumentEventContext docCxt = (DocumentEventContext) event.getContext();
+        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
 
         DocumentModel doc = null;
-        if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY)) {
+        DocumentModel version = null;
+        if (eventId.equals(DocumentEventTypes.BEFORE_DOC_RESTORE)) {
             doc = docCxt.getSourceDocument();
-        } else if (eventId.equals(DocumentEventTypes.DOCUMENT_CHECKEDIN)) {
-            DocumentRef checkedInVersionRef = (DocumentRef) ctx.getProperties().get("checkedInVersionRef");
-            doc = ctx.getCoreSession().getDocument(checkedInVersionRef);
-            if (!doc.isVersion()) {
+            final String versionRefId = (String) docCxt.getProperties().get(
+                    VersioningDocument.RESTORED_VERSION_UUID_KEY);
+            version = docCxt.getCoreSession().getDocument(new IdRef(versionRefId));
+            if (!collectionManager.isCollection(doc)) {
                 return;
             }
         } else {
             return;
         }
 
-        final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
+        log.trace(String.format("Collection %s restored", doc.getId()));
 
-        if (collectionManager.isCollection(doc)) {
+        collectionManager.processRestoredCollection(doc, version);
 
-            if (eventId.equals(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY)) {
-                log.trace(String.format("Collection %s copied", doc.getId()));
-            } else if (eventId.equals(DocumentEventTypes.DOCUMENT_CHECKEDIN)) {
-                log.trace(String.format("Collection %s checked in", doc.getId()));
-            }
-
-            collectionManager.processCopiedCollection(doc);
-
-        }
     }
 
 }

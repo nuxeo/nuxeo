@@ -194,6 +194,17 @@ public interface CollectionManager {
     void processRemovedCollectionMember(final DocumentModel collectionMember);
 
     /**
+     * Restore the collection members of the version.
+     *
+     * @param collection the collection
+     * @param collection the version
+     * @throws ClientException
+     *
+     * @since 7.3
+     */
+    void processRestoredCollection(final DocumentModel collection, final DocumentModel version) throws ClientException;
+
+    /**
      * Remove a list of document from a given collection.
      *
      * @param collection the collection

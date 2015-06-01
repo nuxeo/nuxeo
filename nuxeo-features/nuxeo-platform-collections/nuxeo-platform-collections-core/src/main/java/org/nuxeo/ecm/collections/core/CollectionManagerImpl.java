@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
@@ -32,6 +34,7 @@ import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
 import org.nuxeo.ecm.collections.core.worker.DuplicateCollectionMemberWork;
+import org.nuxeo.ecm.collections.core.worker.RemoveFromCollectionWork;
 import org.nuxeo.ecm.collections.core.worker.RemovedAbstractWork;
 import org.nuxeo.ecm.collections.core.worker.RemovedCollectionMemberWork;
 import org.nuxeo.ecm.collections.core.worker.RemovedCollectionWork;
@@ -73,7 +76,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     private static final String PERMISSION_ERROR_MESSAGE = "Privilege '%s' is not granted to '%s'";
 
-    protected static void disableEvents(final DocumentModel doc) {
+    public static void disableEvents(final DocumentModel doc) {
         doc.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
         doc.putContextData(NotificationConstants.DISABLE_NOTIFICATION_SERVICE, true);
         doc.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
@@ -329,6 +332,40 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         final RemovedAbstractWork work = new RemovedCollectionMemberWork();
         work.setDocument(collectionMember.getRepositoryName(), collectionMember.getId());
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+    }
+
+    @Override
+    public void processRestoredCollection(DocumentModel collection, DocumentModel version) throws ClientException {
+        final Set<String> collectionMemberIdsToBeRemoved = new TreeSet<String>(
+                collection.getAdapter(Collection.class).getCollectedDocumentIds());
+        collectionMemberIdsToBeRemoved.removeAll(version.getAdapter(Collection.class).getCollectedDocumentIds());
+
+        final Set<String> collectionMemberIdsToBeAdded = new TreeSet<String>(
+                version.getAdapter(Collection.class).getCollectedDocumentIds());
+        collectionMemberIdsToBeAdded.removeAll(collection.getAdapter(Collection.class).getCollectedDocumentIds());
+
+        int i = 0;
+        while (i < collectionMemberIdsToBeRemoved.size()) {
+            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > collectionMemberIdsToBeRemoved.size())
+                    ? collectionMemberIdsToBeRemoved.size() : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
+            RemoveFromCollectionWork work = new RemoveFromCollectionWork(collection.getRepositoryName(),
+                    collection.getId(), new ArrayList<String>(collectionMemberIdsToBeRemoved).subList(i, limit), i);
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+
+            i = limit;
+        }
+        i = 0;
+        while (i < collectionMemberIdsToBeAdded.size()) {
+            int limit = (int) (((i + CollectionAsynchrnonousQuery.MAX_RESULT) > collectionMemberIdsToBeAdded.size())
+                    ? collectionMemberIdsToBeAdded.size() : (i + CollectionAsynchrnonousQuery.MAX_RESULT));
+            DuplicateCollectionMemberWork work = new DuplicateCollectionMemberWork(collection.getRepositoryName(),
+                    collection.getId(), new ArrayList<String>(collectionMemberIdsToBeAdded).subList(i, limit), i);
+            WorkManager workManager = Framework.getLocalService(WorkManager.class);
+            workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
+
+            i = limit;
+        }
     }
 
     @Override
