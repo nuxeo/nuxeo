@@ -46,9 +46,8 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
         updateCollectionMemberOnCollectionDuplicated(createTestFiles(session, 1));
     }
 
-    protected void updateCollectionMemberOnCollectionDuplicated(
-            final List<DocumentModel> docs) throws ClientException,
-            InterruptedException {
+    protected void updateCollectionMemberOnCollectionDuplicated(final List<DocumentModel> docs)
+            throws ClientException, InterruptedException {
         List<DocumentModel> files = docs;
 
         collectionManager.addToNewCollection(COLLECTION_NAME,
@@ -81,16 +80,13 @@ public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
                     newCollectionId));
         }
 
-        session.copy(newlyCreatedCollection.getRef(), new PathRef(
-                COLLECTION_FOLDER_PATH), COLLECTION_NAME + "_BIS");
+        DocumentRef newCollectionRefBis = null;
+        session.copy(newlyCreatedCollection.getRef(), new PathRef(COLLECTION_FOLDER_PATH), COLLECTION_NAME + "_BIS");
 
         awaitCollectionWorks();
 
-        final String newlyCreatedCollectionPathBis = COLLECTION_FOLDER_PATH
-                + "/" + COLLECTION_NAME + "_BIS";
-
-        final DocumentRef newCollectionRefBis = new PathRef(
-                newlyCreatedCollectionPathBis);
+        final String newlyCreatedCollectionPathBis = COLLECTION_FOLDER_PATH + "/" + COLLECTION_NAME + "_BIS";
+        newCollectionRefBis = new PathRef(newlyCreatedCollectionPathBis);
 
         DocumentModel newlyCreatedCollectionBis = session.getDocument(newCollectionRefBis);
 

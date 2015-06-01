@@ -4,10 +4,15 @@
     <listener name="duplicatedCollectionListener"
       class="org.nuxeo.ecm.collections.core.listener.DuplicatedCollectionListener">
       <event>documentCreatedByCopy</event>
+      <event>documentCheckedIn</event>
     </listener>
     <listener name="removedCollectionListener"
       class="org.nuxeo.ecm.collections.core.listener.RemovedCollectionListener">
       <event>documentRemoved</event>
+    </listener>
+    <listener name="restoredCollectionListener"
+      class="org.nuxeo.ecm.collections.core.listener.RestoredCollectionListener">
+      <event>beforeRestoringDocument</event>
     </listener>
   </extension>
 </component>

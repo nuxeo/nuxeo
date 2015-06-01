@@ -26,6 +26,8 @@
     </facet>
 
     <doctype name="Collection" extends="Document">
+      <schema name="uid"/>
+      <facet name="Versionable"/>
       <facet name="Collection" />
       <facet name="NotCollectionMember" />
       <schema name="dublincore" />
