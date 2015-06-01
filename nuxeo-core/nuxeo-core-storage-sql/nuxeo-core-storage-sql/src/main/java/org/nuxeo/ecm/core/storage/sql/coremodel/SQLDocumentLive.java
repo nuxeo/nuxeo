@@ -357,6 +357,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
         try {
             setPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
+            BlobManager blobManager = Framework.getService(BlobManager.class);
+            blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_POLICY_PROP));
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to set policy", e);
         }
@@ -375,6 +377,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     public void setCurrentLifeCycleState(String state) throws LifeCycleException {
         try {
             setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
+            BlobManager blobManager = Framework.getService(BlobManager.class);
+            blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_STATE_PROP));
         } catch (DocumentException e) {
             throw new LifeCycleException("Failed to set state", e);
         }

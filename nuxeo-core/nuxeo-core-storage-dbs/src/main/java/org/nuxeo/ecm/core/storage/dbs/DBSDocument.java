@@ -666,6 +666,8 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public void setCurrentLifeCycleState(String lifeCycleState) throws LifeCycleException {
         docState.put(KEY_LIFECYCLE_STATE, lifeCycleState);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_STATE));
     }
 
     @Override
@@ -676,6 +678,8 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public void setLifeCyclePolicy(String policy) throws LifeCycleException {
         docState.put(KEY_LIFECYCLE_POLICY, policy);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        blobManager.notifyChanges(this, Collections.singleton(KEY_LIFECYCLE_POLICY));
     }
 
     // TODO generic

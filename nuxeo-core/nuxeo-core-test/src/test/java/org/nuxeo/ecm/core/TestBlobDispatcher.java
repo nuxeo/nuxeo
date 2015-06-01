@@ -157,4 +157,30 @@ public class TestBlobDispatcher {
         assertEquals(foo2_test_key, ((ManagedBlob) blob).getKey());
     }
 
+    @Test
+    public void testSwitchDispatchOnLifeCycle() throws Exception {
+        String foo = "foo";
+        String foo_test_key = "test:acbd18db4cc2f85cedef654fccc4a4d8";
+        String foo2_test_key = "test2:acbd18db4cc2f85cedef654fccc4a4d8";
+
+        // create a regular binary in the first blob provider
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        Blob blob = Blobs.createBlob(foo, "text/plain");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        doc = session.createDocument(doc);
+
+        // check binary key
+        blob = (Blob) doc.getPropertyValue("file:content");
+        String key = ((ManagedBlob) blob).getKey();
+        assertEquals(foo_test_key, key);
+
+        // change lifecycle to change the dispatch target
+        doc.followTransition("approve");
+        doc = session.saveDocument(doc);
+
+        // check that it was dispatched on save to the second blob provider
+        blob = (Blob) doc.getPropertyValue("file:content");
+        assertEquals(foo2_test_key, ((ManagedBlob) blob).getKey());
+    }
+
 }
