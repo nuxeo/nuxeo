@@ -50,98 +50,15 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
 
     @Override
     public Page clone(Page orig) {
-        Page clone = new Page();
-        clone.setName(orig.getName());
-        clone.setDefaultFlavor(orig.getDefaultFlavor());
-        clone.setAppendStyles(orig.getAppendStyles());
-        List<String> styles = orig.getStyles();
-        if (styles != null) {
-            clone.setStyles(new ArrayList<String>(styles));
+        if (orig == null) {
+            return null;
         }
-        clone.setAppendFlavors(orig.getAppendFlavors());
-        List<String> flavors = orig.getFlavors();
-        if (flavors != null) {
-            clone.setFlavors(new ArrayList<String>(flavors));
-        }
-        clone.setAppendResources(orig.getAppendResources());
-        List<String> resources = orig.getResources();
-        if (resources != null) {
-            clone.setResources(new ArrayList<String>(resources));
-        }
-        List<String> bundles = orig.getResourceBundles();
-        if (bundles != null) {
-            clone.setResourceBundles(new ArrayList<String>(bundles));
-        }
-        clone.setLoaded(orig.isLoaded());
-        return clone;
+        return orig.clone();
     }
 
     @Override
     public void merge(Page src, Page dst) {
-        String newFlavor = src.getDefaultFlavor();
-        if (newFlavor != null) {
-            dst.setDefaultFlavor(newFlavor);
-        }
-
-        List<String> newStyles = src.getStyles();
-        if (newStyles != null) {
-            List<String> merged = new ArrayList<String>();
-            merged.addAll(newStyles);
-            boolean keepOld = src.getAppendStyles() || (newStyles.isEmpty() && !src.getAppendStyles());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldStyles = dst.getStyles();
-                if (oldStyles != null) {
-                    merged.addAll(0, oldStyles);
-                }
-            }
-            dst.setStyles(merged);
-        }
-
-        List<String> newFlavors = src.getFlavors();
-        if (newFlavors != null) {
-            List<String> merged = new ArrayList<String>();
-            merged.addAll(newFlavors);
-            boolean keepOld = src.getAppendFlavors() || (newFlavors.isEmpty() && !src.getAppendFlavors());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldFlavors = dst.getFlavors();
-                if (oldFlavors != null) {
-                    merged.addAll(0, oldFlavors);
-                }
-            }
-            dst.setFlavors(merged);
-        }
-
-        List<String> newResources = src.getResources();
-        if (newResources != null) {
-            List<String> merged = new ArrayList<String>();
-            merged.addAll(newResources);
-            boolean keepOld = src.getAppendResources() || (newResources.isEmpty() && !src.getAppendResources());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldResources = dst.getResources();
-                if (oldResources != null) {
-                    merged.addAll(0, oldResources);
-                }
-            }
-            dst.setResources(merged);
-        }
-
-        List<String> newBundles = src.getResourceBundles();
-        if (newBundles != null) {
-            List<String> merged = new ArrayList<String>();
-            merged.addAll(newBundles);
-            boolean keepOld = src.getAppendResources() || (newBundles.isEmpty() && !src.getAppendResources());
-            if (keepOld) {
-                // add back old contributions
-                List<String> oldBundles = dst.getResourceBundles();
-                if (oldBundles != null) {
-                    merged.addAll(0, oldBundles);
-                }
-            }
-            dst.setResourceBundles(merged);
-        }
+        dst.merge(src);
     }
 
     public Page getPage(String id) {

@@ -24,9 +24,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
-import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
-import org.nuxeo.theme.styling.service.descriptors.Logo;
-import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 
 /**
  * Registry for theme flavors, handling merge of registered {@link Flavor} elements.
@@ -62,55 +59,7 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
 
     @Override
     public void merge(Flavor src, Flavor dst) {
-        String newExtend = src.getExtendsFlavor();
-        if (newExtend != null) {
-            dst.setExtendsFlavor(newExtend);
-        }
-        String newLabel = src.getLabel();
-        if (newLabel != null) {
-            dst.setLabel(newLabel);
-        }
-        Logo logo = src.getLogo();
-        if (logo != null) {
-            Logo newLogo = dst.getLogo();
-            if (newLogo == null) {
-                newLogo = logo.clone();
-            } else {
-                // merge logo info
-                if (logo.getHeight() != null) {
-                    newLogo.setHeight(logo.getHeight());
-                }
-                if (logo.getWidth() != null) {
-                    newLogo.setWidth(logo.getWidth());
-                }
-                if (logo.getTitle() != null) {
-                    newLogo.setTitle(logo.getTitle());
-                }
-                if (logo.getPath() != null) {
-                    newLogo.setPath(logo.getPath());
-                }
-            }
-            dst.setLogo(newLogo);
-        }
-        PalettePreview pp = src.getPalettePreview();
-        if (pp != null) {
-            dst.setPalettePreview(pp);
-        }
-
-        List<FlavorPresets> newPresets = src.getPresets();
-        if (newPresets != null) {
-            List<FlavorPresets> merged = new ArrayList<FlavorPresets>();
-            merged.addAll(newPresets);
-            boolean keepOld = src.getAppendPresets() || (newPresets.isEmpty() && !src.getAppendPresets());
-            if (keepOld) {
-                // add back old contributions
-                List<FlavorPresets> oldPresets = dst.getPresets();
-                if (oldPresets != null) {
-                    merged.addAll(0, oldPresets);
-                }
-            }
-            dst.setPresets(merged);
-        }
+        dst.merge(src);
     }
 
     public Flavor getFlavor(String id) {
