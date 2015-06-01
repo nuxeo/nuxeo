@@ -275,6 +275,13 @@ public class RepositoryDescriptor {
     @XNode("idType")
     public String idType; // "varchar", "uuid", "sequence"
 
+    @XNode("clustering@id")
+    private String clusterNodeId;
+
+    public String getClusterNodeId() {
+        return clusterNodeId;
+    }
+
     @XNode("clustering@enabled")
     private Boolean clusteringEnabled;
 
@@ -443,6 +450,7 @@ public class RepositoryDescriptor {
         schemaFields = FieldDescriptor.copyList(other.schemaFields);
         arrayColumns = other.arrayColumns;
         idType = other.idType;
+        clusterNodeId = other.clusterNodeId;
         clusteringEnabled = other.clusteringEnabled;
         clusteringDelay = other.clusteringDelay;
         fulltextDisabled = other.fulltextDisabled;
@@ -505,6 +513,9 @@ public class RepositoryDescriptor {
         }
         if (other.idType != null) {
             idType = other.idType;
+        }
+        if (other.clusterNodeId != null) {
+            clusterNodeId = other.clusterNodeId;
         }
         if (other.clusteringEnabled != null) {
             clusteringEnabled = other.clusteringEnabled;

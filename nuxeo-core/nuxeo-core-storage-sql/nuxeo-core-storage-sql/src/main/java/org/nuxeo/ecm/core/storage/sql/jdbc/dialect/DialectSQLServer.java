@@ -322,6 +322,7 @@ public class DialectSQLServer extends Dialect {
             ps.setBoolean(index, ((Boolean) value).booleanValue());
             return;
         case Types.TINYINT:
+        case Types.SMALLINT:
         case Types.INTEGER:
         case Types.BIGINT:
             ps.setLong(index, ((Number) value).longValue());
@@ -610,17 +611,12 @@ public class DialectSQLServer extends Dialect {
 
     @Override
     public String getClusterInsertInvalidations() {
-        return "EXEC dbo.NX_CLUSTER_INVAL ?, ?, ?";
+        return "EXEC dbo.NX_CLUSTER_INVAL ?, ?, ?, ?";
     }
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT [id], [fragments], [kind] FROM [cluster_invals]" + " WHERE [nodeid] = @@SPID";
-    }
-
-    @Override
-    public String getClusterDeleteInvalidations() {
-        return "DELETE FROM [cluster_invals] WHERE [nodeid] = @@SPID";
+        return "SELECT [id], [fragments], [kind] FROM [cluster_invals] WHERE [nodeid] = ?";
     }
 
     @Override

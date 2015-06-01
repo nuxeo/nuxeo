@@ -93,20 +93,20 @@ END;
 DROP PROCEDURE IF EXISTS NX_CLUSTER_INVAL;
 
 #IF: clusteringEnabled
-CREATE PROCEDURE NX_CLUSTER_INVAL(i ${idType}, f TEXT, k TINYINT)
+CREATE PROCEDURE NX_CLUSTER_INVAL(n BIGINT, i ${idType}, f TEXT, k TINYINT)
 LANGUAGE SQL
 MODIFIES SQL DATA
 BEGIN
-  DECLARE n BIGINT;
+  DECLARE nid BIGINT;
   DECLARE done BOOLEAN DEFAULT FALSE;
   DECLARE cur CURSOR FOR
-    SELECT nodeid FROM cluster_nodes WHERE nodeid <> @@PSEUDO_THREAD_ID;
+    SELECT nodeid FROM cluster_nodes WHERE nodeid <> n;
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
   OPEN cur;
   REPEAT
-    FETCH cur INTO n;
+    FETCH cur INTO nid;
     IF NOT done THEN
-      INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (n, i, f, k);
+      INSERT INTO cluster_invals (nodeid, id, fragments, kind) VALUES (nid, i, f, k);
     END IF;
   UNTIL done END REPEAT;
   CLOSE cur;
@@ -221,28 +221,6 @@ END;
 CALL nx_upgrade_versions();
 
 DROP PROCEDURE nx_upgrade_versions;
-
-
-############################################################
-
-
-#CATEGORY: addClusterNode
-
-DELETE N FROM cluster_nodes N WHERE
-  NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.PROCESSLIST P WHERE N.nodeid = P.id);
-
-# Remove orphan invalidations
-DELETE i FROM cluster_invals i LEFT JOIN cluster_nodes n ON i.NODEID=n.NODEID WHERE n.NODEID IS NULL
-
-INSERT INTO cluster_nodes (nodeid, created) VALUES (@@PSEUDO_THREAD_ID, CURRENT_TIMESTAMP);
-
-
-#CATEGORY: removeClusterNode
-
-DELETE FROM cluster_nodes WHERE nodeid = @@PSEUDO_THREAD_ID;
-
-# Remove orphan invalidations
-DELETE i FROM cluster_invals i LEFT JOIN cluster_nodes n ON i.NODEID=n.NODEID WHERE n.NODEID IS NULL
 
 
 ############################################################

@@ -575,13 +575,6 @@ public class DialectOracle extends Dialect {
         return true;
     }
 
-    @Override
-    public String getClusterNodeIdSql() {
-        return "SELECT SYS_CONTEXT('USERENV', 'SID') || ',' || SERIAL# "
-                + "FROM GV$SESSION WHERE SID = SYS_CONTEXT('USERENV', 'SID') "
-                + "AND INST_ID = SYS_CONTEXT('USERENV', 'INSTANCE')";
-    }
-
     /*
      * For Oracle we don't use a function to return values and delete them at the same time, because pipelined functions
      * that need to do DML have to do it in an autonomous transaction which could cause consistency issues.
@@ -593,17 +586,12 @@ public class DialectOracle extends Dialect {
 
     @Override
     public String getClusterInsertInvalidations() {
-        return "{CALL NX_CLUSTER_INVAL(?, ?, ?, '%s')}";
+        return "{CALL NX_CLUSTER_INVAL(?, ?, ?, ?)}";
     }
 
     @Override
     public String getClusterGetInvalidations() {
-        return "SELECT id, fragments, kind FROM cluster_invals " + "WHERE nodeid = '%s'";
-    }
-
-    @Override
-    public String getClusterDeleteInvalidations() {
-        return "DELETE FROM cluster_invals WHERE nodeid = '%s'";
+        return "SELECT id, fragments, kind FROM cluster_invals WHERE nodeid = ?";
     }
 
     @Override

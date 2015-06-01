@@ -169,27 +169,27 @@ public interface Mapper extends RowMapper, XAResource {
      * ----- Clustering -----
      */
 
+    int getClusterNodeIdType();
+
     /**
      * Informs the cluster that this node exists.
-     *
-     * @return the cluster node id, if relevant for this database
      */
-    String createClusterNode() throws StorageException;
+    void createClusterNode(Serializable nodeId) throws StorageException;
 
     /**
      * Removes this node from the cluster.
      */
-    void removeClusterNode() throws StorageException;
+    void removeClusterNode(Serializable nodeId) throws StorageException;
 
     /**
      * Inserts the invalidation rows for the other cluster nodes.
      */
-    void insertClusterInvalidations(Invalidations invalidations, String nodeId) throws StorageException;
+    void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) throws StorageException;
 
     /**
      * Gets the invalidations from other cluster nodes.
      */
-    Invalidations getClusterInvalidations(String nodeId) throws StorageException;
+    Invalidations getClusterInvalidations(Serializable nodeId) throws StorageException;
 
     /*
      * ----- Locking -----

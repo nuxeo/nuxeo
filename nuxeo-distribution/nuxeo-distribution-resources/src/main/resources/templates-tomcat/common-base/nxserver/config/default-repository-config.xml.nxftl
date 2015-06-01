@@ -11,7 +11,7 @@
 <#if "${nuxeo.core.binarymanager}" != "" >
       <binaryManager class="${nuxeo.core.binarymanager}" key="${nuxeo.core.binarymanager_key}" />
 </#if>
-      <clustering enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
+      <clustering id="${repository.clustering.id}" enabled="${repository.clustering.enabled}" delay="${repository.clustering.delay}" />
       <binaryStore path="${repository.binary.store}" />
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
       <aclOptimizations enabled="true"/>

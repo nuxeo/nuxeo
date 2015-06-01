@@ -98,6 +98,18 @@ public class SQLInfo {
 
     protected final Map<String, SQLInfoSelect> selectFragmentById;
 
+    protected String createClusterNodeSql;
+
+    protected List<Column> createClusterNodeColumns;
+
+    protected String deleteClusterNodeSql;
+
+    protected Column deleteClusterNodeColumn;
+
+    protected String deleteClusterInvalsSql;
+
+    protected Column deleteClusterInvalsColumn;
+
     protected List<Column> clusterInvalidationsColumns;
 
     protected Map<String, List<SQLStatement>> sqlStatements;
@@ -199,6 +211,34 @@ public class SQLInfo {
     }
 
     // ----- cluster -----
+
+    public String getCreateClusterNodeSql() {
+        return createClusterNodeSql;
+    }
+
+    public List<Column> getCreateClusterNodeColumns() {
+        return createClusterNodeColumns;
+    }
+
+    public String getDeleteClusterNodeSql() {
+        return deleteClusterNodeSql;
+    }
+
+    public Column getDeleteClusterNodeColumn() {
+        return deleteClusterNodeColumn;
+    }
+
+    public String getDeleteClusterInvalsSql() {
+        return deleteClusterInvalsSql;
+    }
+
+    public Column getDeleteClusterInvalsColumn() {
+        return deleteClusterInvalsColumn;
+    }
+
+    public int getClusterNodeIdType() {
+        return dialect.getJDBCTypeAndString(ColumnType.CLUSTERNODE).jdbcType;
+    }
 
     public List<Column> getClusterInvalidationsColumns() {
         return clusterInvalidationsColumns;
@@ -601,6 +641,7 @@ public class SQLInfo {
         TableMaker maker = new TableMaker(model.CLUSTER_NODES_TABLE_NAME);
         maker.newColumn(model.CLUSTER_NODES_NODEID_KEY, ColumnType.CLUSTERNODE);
         maker.newColumn(model.CLUSTER_NODES_CREATED_KEY, ColumnType.TIMESTAMP);
+        maker.postProcessClusterNodes();
 
         maker = new TableMaker(model.CLUSTER_INVALS_TABLE_NAME);
         maker.newColumn(model.CLUSTER_INVALS_NODEID_KEY, ColumnType.CLUSTERNODE);
@@ -776,9 +817,34 @@ public class SQLInfo {
 
         // ----------------------- post processing -----------------------
 
+        protected void postProcessClusterNodes() {
+            Collection<Column> columns = table.getColumns();
+            List<Column> insertColumns = new ArrayList<Column>(columns.size());
+            Insert insert = new Insert(table);
+            for (Column column : columns) {
+                insertColumns.add(column);
+                insert.addColumn(column);
+            }
+            createClusterNodeSql = insert.getStatement();
+            createClusterNodeColumns = new ArrayList<>(columns);
+
+            Delete delete = new Delete(table);
+            Column column = table.getColumn(model.CLUSTER_NODES_NODEID_KEY);
+            delete.setWhere(column.getQuotedName() + " = ?");
+            deleteClusterNodeSql = delete.getStatement();
+            deleteClusterNodeColumn = column;
+        }
+
         protected void postProcessClusterInvalidations() {
-            clusterInvalidationsColumns = Arrays.asList(table.getColumn(model.CLUSTER_INVALS_ID_KEY),
-                    table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY), table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+            clusterInvalidationsColumns = Arrays.asList(table.getColumn(model.CLUSTER_INVALS_NODEID_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_ID_KEY), table.getColumn(model.CLUSTER_INVALS_FRAGMENTS_KEY),
+                    table.getColumn(model.CLUSTER_INVALS_KIND_KEY));
+
+            Delete delete = new Delete(table);
+            Column column = table.getColumn(model.CLUSTER_INVALS_NODEID_KEY);
+            delete.setWhere(column.getQuotedName() + " = ?");
+            deleteClusterInvalsSql = delete.getStatement();
+            deleteClusterInvalsColumn = column;
         }
 
         protected void postProcessRepository() {
