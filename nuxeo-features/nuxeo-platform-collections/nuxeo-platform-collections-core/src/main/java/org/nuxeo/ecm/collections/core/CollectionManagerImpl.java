@@ -255,7 +255,10 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
             DocumentRef documentRef = new IdRef(collectionId);
             if (session.exists(documentRef) && session.hasPermission(documentRef, SecurityConstants.READ)
                     && !LifeCycleConstants.DELETED_STATE.equals(session.getCurrentLifeCycleState(documentRef))) {
-                result.add(session.getDocument(documentRef));
+                DocumentModel collection = session.getDocument(documentRef);
+                if (!collection.isVersion()) {
+                    result.add(collection);
+                }
             }
         }
         return result;

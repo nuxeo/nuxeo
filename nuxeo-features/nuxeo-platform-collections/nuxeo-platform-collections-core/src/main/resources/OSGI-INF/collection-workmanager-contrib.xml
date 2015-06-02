@@ -7,7 +7,6 @@
       <category>duplicateCollectionMember</category>
       <category>removedCollectionMember</category>
       <category>removedCollection</category>
-      <category>addToCollection</category>
       <category>removeFromCollection</category>
     </queue>
   </extension>
