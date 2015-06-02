@@ -93,13 +93,14 @@
 
       <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
+
+      <div>
+        <h2>Access rights defined explicitely on this folder</h2>
+        <template is="dom-if" if="{{hasEverythingRight}}">
+          <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
+        </template>
+      </div>
       <template is="dom-if" if="{{hasLocalRights}}">
-        <div>
-          <h2>Access rights defined explicitely on this folder or document #{currentDocument.id}</h2>
-          <template is="dom-if" if="{{hasEverythingRight}}">
-            <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
-          </template>
-        </div>
         <div>
           <table class="tmp-tab">
             <tr class="tmp-tab">
@@ -120,60 +121,31 @@
             </template>
           </table>
         </div>
-
-        <div>
-          <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template is="dom-if" if="{{hasEverythingRight}}">
-            <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
-          </template>
-        </div>
-        <div>
-          <table>
-            <tr class="tmp-tab">
-              <th class="tmp-tab">Username</th>
-              <th class="tmp-tab">Permission</th>
-              <th class="tmp-tab">Granted</th>
-            </tr>
-            <template is="dom-repeat" items="{{inheritedRights}}">
-              <tr>
-                <td><span>{{item.username}}</span></td>
-                <td><span>{{item.permission}}</span></td>
-                <td><span>{{item.granted}}</span></td>
-              </tr>
-            </template>
-          </table>
-        </div>
       </template>
+
+      <div>
+        <h2>Access rights coming from upper folders in the hierarchy</h2>
+      </div>
+      <div>
+        <table>
+          <tr class="tmp-tab">
+            <th class="tmp-tab">Username</th>
+            <th class="tmp-tab">Permission</th>
+            <th class="tmp-tab">Granted</th>
+          </tr>
+          <template is="dom-repeat" items="{{inheritedRights}}">
+            <tr>
+              <td><span>{{item.username}}</span></td>
+              <td><span>{{item.permission}}</span></td>
+              <td><span>{{item.granted}}</span></td>
+            </tr>
+          </template>
+        </table>
+      </div>
 
       <template is="dom-if" if="{{!hasLocalRights}}">
-        <div>
-          <h2>Access rights coming from upper folders in the hierarchy</h2>
-          <template is="dom-if" if="{{hasEverythingRight}}">
-            <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
-          </template>
-          <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
-        </div>
-        <div>
-          <table class="tmp-tab">
-            <tr class="tmp-tab">
-              <th class="tmp-tab">Username</th>
-              <th class="tmp-tab">Permission</th>
-              <th class="tmp-tab">Granted</th>
-            </tr>
-            <template is="dom-repeat" items="{{inheritedRights}}">
-              <tr>
-                <td><span>{{item.username}}</span></td>
-                <td><span>{{item.permission}}</span></td>
-                <td><span>{{item.granted}}</span></td>
-              </tr>
-            </template>
-          </table>
-        </div>
+        <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
       </template>
-
-      <h2>Temporary Access</h2>
-      <p>No temporary access was given</p>
-      <paper-button raised="true">Give a Temporary Access</paper-button>
 
       <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
     </template>
