@@ -1,11 +1,15 @@
 <?xml version="1.0"?>
 <project name="nuxeo webapp" default="web-tomcat" basedir=".">
 
-  <import file="../../build.xml" />
   <property file="build.properties" />
 
+  <!-- set executable names based on OS family -->
+  <condition property="cmd.bower" value="bower.cmd" else="bower">
+    <os family="windows"/>
+  </condition>
+
   <target name="bower" description="Download all bower dependencies">
-    <exec executable="bower" failonerror="true">
+    <exec executable="${cmd.bower}" failonerror="true">
       <arg value="install" />
     </exec>
   </target>
