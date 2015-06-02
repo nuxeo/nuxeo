@@ -31,7 +31,7 @@ public class CollectionMemberAdapterFactory implements DocumentAdapterFactory {
         if (doc.hasSchema(CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME)) {
             return new CollectionMember(doc);
         }
-        throw new ClientRuntimeException(String.format("The document %s does not have the %s facet",
+        throw new ClientRuntimeException(String.format("The document %s does not have the %s schema",
                 doc.getPath().toString(), CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME));
     }
 

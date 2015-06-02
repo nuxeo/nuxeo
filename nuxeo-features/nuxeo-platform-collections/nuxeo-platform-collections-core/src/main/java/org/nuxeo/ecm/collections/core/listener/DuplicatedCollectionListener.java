@@ -18,7 +18,9 @@ package org.nuxeo.ecm.collections.core.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
+import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -77,6 +79,10 @@ public class DuplicatedCollectionListener implements EventListener {
 
             collectionManager.processCopiedCollection(doc);
 
+        } else if (collectionManager.isCollected(doc)) {
+            doc.getAdapter(CollectionMember.class).setCollectionIds(null);
+            ctx.getCoreSession().saveDocument(doc);
+            doc.removeFacet(CollectionConstants.COLLECTABLE_FACET);
         }
     }
 
