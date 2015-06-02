@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -242,6 +241,11 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
                             + doc.getPath() + ")");
                 }
                 trashDocument(session, doc);
+            } else if (session.getCurrentLifeCycleState(docRef).equals(LifeCycleConstants.DELETED_STATE)) {
+                log.warn("Document " + doc.getId() + " of type " + doc.getType() + " in state "
+                        + doc.getCurrentLifeCycleState() + " is already in state "
+                        + LifeCycleConstants.DELETED_STATE + ", nothing to do");
+                return;
             } else {
                 log.warn("Document " + doc.getId() + " of type " + doc.getType() + " in state "
                         + doc.getCurrentLifeCycleState() + " does not support transition "

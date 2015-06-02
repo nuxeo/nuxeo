@@ -22,9 +22,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -257,6 +259,19 @@ public class TestTrashService {
         assertTrue(trashService.canDelete(Collections.singletonList(proxy), principal, false));
         assertFalse(trashService.canDelete(Collections.singletonList(proxy), principal, true));
         assertFalse(trashService.canPurgeOrUndelete(Collections.singletonList(proxy), principal));
+    }
+
+    /**
+     * @since 7.3
+     */
+    @Test
+    public void testDeleteTwice() throws Exception {
+        createDocuments();
+        List<DocumentModel> dd = new ArrayList<DocumentModel>();
+        dd.add(doc1);
+        trashService.trashDocuments(dd);
+        trashService.trashDocuments(dd);
+        assertTrue(session.exists(doc1.getRef()));
     }
 
 }

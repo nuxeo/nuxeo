@@ -92,6 +92,8 @@ public interface TrashService {
     /**
      * Moves documents to the trash, or directly deletes them if their lifecycle does not allow trash use.
      *
+     * Do nothing if the document current state is deleted.
+     *
      * @param docs the documents to trash
      */
     void trashDocuments(List<DocumentModel> docs) throws ClientException;
