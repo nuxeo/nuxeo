@@ -253,6 +253,11 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
                                     + doc.getId() + " (" + doc.getPath() + ")");
                 }
                 trashDocument(session, doc);
+            } else if (session.getCurrentLifeCycleState(docRef).equals(LifeCycleConstants.DELETED_STATE)) {
+                log.warn("Document " + doc.getId() + " of type " + doc.getType() + " in state "
+                        + doc.getCurrentLifeCycleState() + " is already in state "
+                        + LifeCycleConstants.DELETED_STATE + ", nothing to do");
+                return;
             } else {
                 log.warn("Document " + doc.getId() + " of type "
                         + doc.getType() + " in state "
