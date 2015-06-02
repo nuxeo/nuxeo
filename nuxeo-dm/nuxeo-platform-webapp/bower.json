@@ -4,7 +4,7 @@
   "dependencies": {
     "nuxeo": "~0.4.2",
     "polymer": "Polymer/polymer#^1.0.0",
-    "nuxeo-elements": "nuxeo/nuxeo-elements#upgrade-0.9",
+    "nuxeo-elements": "nuxeo/nuxeo-elements#upgrade-1.0",
     "paper-button": "PolymerElements/paper-button#^1.0.0",
     "paper-input": "PolymerElements/paper-input#^1.0.0",
     "paper-menu": "PolymerElements/paper-menu#^1.0.0",
