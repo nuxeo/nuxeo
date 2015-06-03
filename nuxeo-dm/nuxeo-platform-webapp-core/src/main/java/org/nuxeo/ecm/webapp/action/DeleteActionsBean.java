@@ -67,8 +67,6 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
 
     private static final Log log = LogFactory.getLog(DeleteActionsBean.class);
 
-    public static final String DELETE_OUTCOME = "after_delete";
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
