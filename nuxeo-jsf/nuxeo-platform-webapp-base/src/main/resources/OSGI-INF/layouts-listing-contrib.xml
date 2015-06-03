@@ -655,8 +655,7 @@
 
     </widgetType>
 
-    <!-- Deprecated since NXP-6825 is fixed but still useful
-      for Studio configuration -->
+    <!-- Deprecated since NXP-6825 is fixed but still useful for Studio configuration -->
     <widgetType name="listing_lifecycle">
       <configuration>
         <sinceVersion>5.4.0</sinceVersion>
@@ -1320,7 +1319,9 @@
         <column name="livedit_link">
           <properties mode="any">
             <property name="columnStyleClass">iconColumn</property>
-            <property name="label">label.selection.column.livedit_link</property>
+            <property name="label">
+              label.selection.column.livedit_link
+            </property>
           </properties>
           <properties mode="csv">
             <property name="isHidden">true</property>
@@ -1483,7 +1484,9 @@
         </column>
         <column name="size_and_format">
           <properties mode="any">
-            <property name="label">label.selection.column.size_and_format</property>
+            <property name="label">
+              label.selection.column.size_and_format
+            </property>
           </properties>
           <widget>listing_size_and_format</widget>
         </column>
@@ -1687,7 +1690,9 @@
         <property name="display">table_2_columns</property>
       </properties>
       <templates>
-        <template mode="any">/layouts/layout_listing_template.xhtml</template>
+        <template mode="any">
+          /layouts/layout_listing_template.xhtml
+        </template>
         <template mode="csv">
           /layouts/layout_listing_csv_template.xhtml
         </template>
