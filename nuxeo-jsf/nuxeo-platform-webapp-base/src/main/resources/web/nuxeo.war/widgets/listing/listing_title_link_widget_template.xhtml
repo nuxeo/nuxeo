@@ -17,6 +17,7 @@
 
     <nxd:restDocumentLink document="#{field_0}"
       tab="#{widgetProperty_tab}" subTab="#{widgetProperty_subTab}"
+      tabs="#{widgetProperty_tabs}"
       target="#{widgetProperty_target}">
       <span id="title_#{field_1}" title="#{label}" class="documentTitle">
        <c:if test="#{widgetProperty_localize}">
@@ -32,7 +33,8 @@
       <nxd:restDocumentLink document="#{field_0}"
         newConversation="true" target="_blank"
         tab="#{widgetProperty_tab}"
-        subTab="#{widgetProperty_subTab}">
+        subTab="#{widgetProperty_subTab}"
+        tabs="#{widgetProperty_tabs}">
         <nxu:graphicImage value="/icons/external.gif"
           style="vertical-align:middle"
           alt="#{messages['permalink.newTab']}"
