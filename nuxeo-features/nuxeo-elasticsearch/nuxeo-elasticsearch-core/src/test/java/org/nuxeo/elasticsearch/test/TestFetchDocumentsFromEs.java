@@ -16,6 +16,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
@@ -98,4 +99,27 @@ public class TestFetchDocumentsFromEs {
 
     }
 
+    @Test
+    public void checkNotFetch() throws Exception {
+        buildAndIndexTree();
+        // onlyElasticsearchResponse is useless on query aPI
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
+        Assert.assertNull(docs);
+        docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch().onlyElasticsearchResponse());
+        Assert.assertNull(docs);
+
+        // using queryAndAggregate we can have the original Elasticsearch response
+        EsResult result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document").limit(20).onlyElasticsearchResponse());
+        Assert.assertNull(result.getDocuments());
+        Assert.assertNull(result.getAggregates());
+        Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
+        // System.out.println(result.getElasticsearchResponse());
+
+        result = ess.queryAndAggregate(new NxQueryBuilder(session).nxql("select * from Document").limit(20).fetchFromElasticsearch().onlyElasticsearchResponse());
+        Assert.assertNull(result.getDocuments());
+        Assert.assertNull(result.getAggregates());
+        Assert.assertEquals(10, result.getElasticsearchResponse().getHits().getTotalHits());
+        //System.out.println(result.getElasticsearchResponse());
+
+    }
 }

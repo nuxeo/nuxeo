@@ -48,6 +48,7 @@ import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.Bucket;
 import org.nuxeo.elasticsearch.ElasticSearchConstants;
 import org.nuxeo.elasticsearch.aggregate.AggregateEsBase;
+import org.nuxeo.elasticsearch.api.EsResult;
 import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
@@ -89,6 +90,8 @@ public class NxQueryBuilder {
     private Map<String, Type> selectFieldsAndTypes;
 
     private boolean returnsDocuments = true;
+
+    private boolean esOnly = false;
 
     public NxQueryBuilder(CoreSession coreSession) {
         session = coreSession;
@@ -146,15 +149,15 @@ public class NxQueryBuilder {
      */
     public NxQueryBuilder esQuery(QueryBuilder queryBuilder) {
         this.esQueryBuilder = queryBuilder;
-        this.nxql = null;
+        nxql = null;
         return this;
     }
 
     /**
-     * Fetch the documents from the Elasticsearch _source field.
+     * Ask for the Elasticsearch _source field, use it to build documents.
      */
     public NxQueryBuilder fetchFromElasticsearch() {
-        this.fetchFromElasticsearch = true;
+        fetchFromElasticsearch = true;
         return this;
     }
 
@@ -162,7 +165,18 @@ public class NxQueryBuilder {
      * Fetch the documents using VCS (database) engine. This is done by default
      */
     public NxQueryBuilder fetchFromDatabase() {
-        this.fetchFromElasticsearch = false;
+        fetchFromElasticsearch = false;
+        return this;
+    }
+
+    /**
+     * Don't return document model list, aggregates or rows, only the original Elasticsearch response is accessible from
+     * {@link EsResult#getElasticsearchResponse()}
+     *
+     * @since 7.3
+     */
+    public NxQueryBuilder onlyElasticsearchResponse() {
+        esOnly = true;
         return this;
     }
 
@@ -398,6 +412,16 @@ public class NxQueryBuilder {
      * @since 7.2
      */
     public boolean returnsDocuments() {
+        if (esOnly) {
+            return false;
+        }
         return returnsDocuments;
+    }
+
+    public boolean returnsRows() {
+        if (esOnly) {
+            return false;
+        }
+        return !returnsDocuments;
     }
 }

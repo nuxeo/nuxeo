@@ -106,11 +106,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         List<Aggregate> aggs = getAggregates(queryBuilder, response);
         if (queryBuilder.returnsDocuments()) {
             DocumentModelListImpl docs = getDocumentModels(queryBuilder, response);
-            return new EsResult(docs, aggs);
-        } else {
+            return new EsResult(docs, aggs, response);
+        } else if (queryBuilder.returnsRows()) {
             IterableQueryResult rows = getRows(queryBuilder, response);
-            return new EsResult(rows, aggs);
+            return new EsResult(rows, aggs, response);
         }
+        return new EsResult(response);
     }
 
     protected DocumentModelListImpl getDocumentModels(NxQueryBuilder queryBuilder, SearchResponse response) {
