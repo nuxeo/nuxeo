@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.By;
+import org.openqa.selenium.InvalidSelectorException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -487,4 +488,25 @@ public class Locator {
         waitUntilURLContainsOrNot(string, false);
     }
 
+    /**
+     * Return parent element with given tag name.
+     * <p>
+     * Throws a {@link NoSuchElementException} error if no element found.
+     *
+     * @since 7.3
+     */
+    public static WebElement findParentTag(WebElement elt, String tagName) {
+        try {
+            By parentBy = By.xpath("..");
+            WebElement p = elt.findElement(parentBy);
+            while (p != null) {
+                if (tagName.equals(p.getTagName())) {
+                    return p;
+                }
+                p = p.findElement(parentBy);
+            }
+        } catch (InvalidSelectorException e) {
+        }
+        throw new NoSuchElementException(String.format("No parent element found with tag %s.", tagName));
+    }
 }
