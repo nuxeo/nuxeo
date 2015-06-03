@@ -43,6 +43,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -56,6 +57,8 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
+import org.nuxeo.ecm.platform.types.TypeManager;
+import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
@@ -63,7 +66,6 @@ import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListDescriptor;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.helpers.EventManager;
@@ -81,11 +83,14 @@ import static org.jboss.seam.ScopeType.SESSION;
  */
 @Name("clipboardActions")
 @Scope(SESSION)
-public class ClipboardActionsBean extends InputController implements ClipboardActions, Serializable {
+public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     private static final long serialVersionUID = -2407222456116573225L;
 
     private static final Log log = LogFactory.getLog(ClipboardActionsBean.class);
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
     @In(create = true)
     protected Map<String, String> messages;
@@ -95,6 +100,12 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
 
     @In(create = true)
     protected transient DocumentsListsManager documentsListsManager;
+
+    @In(create = true)
+    protected TypeManager typeManager;
+
+    @In(create = true)
+    protected NavigationContext navigationContext;
 
     @In(create = true)
     protected transient WebActions webActions; // it is serializable
@@ -867,7 +878,7 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
             File tmpFile = zipExporter.exportWorklistAsZip(documents, documentManager, exportAllBlobs);
             if (tmpFile == null) {
                 // empty zip file, do nothing
-                setFacesMessage("label.clipboard.emptyDocuments");
+                facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.clipboard.emptyDocuments"));
                 return null;
             } else {
                 if (tmpFile.length() > Functions.getBigFileSizeLimit()) {
