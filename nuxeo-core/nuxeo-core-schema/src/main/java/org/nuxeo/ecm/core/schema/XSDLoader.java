@@ -11,35 +11,22 @@
  *     Wojciech Sulejman
  *     Florent Guillaume
  *     Thierry Delprat
- *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema;
 
-import static com.sun.xml.xsom.XSFacet.FACET_ENUMERATION;
-import static com.sun.xml.xsom.XSFacet.FACET_LENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXINCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MAXLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_MINEXCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MININCLUSIVE;
-import static com.sun.xml.xsom.XSFacet.FACET_MINLENGTH;
-import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
-
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ComplexTypeImpl;
+import org.nuxeo.ecm.core.schema.types.Constraint;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.ListTypeImpl;
@@ -50,25 +37,14 @@ import org.nuxeo.ecm.core.schema.types.SimpleTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeBindingException;
 import org.nuxeo.ecm.core.schema.types.TypeException;
-import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ConstraintUtils;
-import org.nuxeo.ecm.core.schema.types.constraints.DateIntervalConstraint;
 import org.nuxeo.ecm.core.schema.types.constraints.EnumConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.LengthConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.NotNullConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.NumericIntervalConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.ObjectResolverConstraint;
-import org.nuxeo.ecm.core.schema.types.constraints.PatternConstraint;
-import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
-import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolverService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.schema.types.constraints.StringLengthConstraint;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import com.sun.xml.xsom.ForeignAttributes;
 import com.sun.xml.xsom.XSAttributeDecl;
 import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSComplexType;
@@ -91,15 +67,9 @@ import com.sun.xml.xsom.parser.XSOMParser;
  */
 public class XSDLoader {
 
-    private static final String ATTR_CORE_EXTERNAL_REFERENCES = "resolver";
-
     private static final Log log = LogFactory.getLog(XSDLoader.class);
 
     private static final String ANONYMOUS_TYPE_SUFFIX = "#anonymousType";
-
-    private static final String NAMESPACE_CORE_VALIDATION = "http://www.nuxeo.org/ecm/schemas/core/validation/";
-
-    private static final String NAMESPACE_CORE_EXTERNAL_REFERENCES = "http://www.nuxeo.org/ecm/schemas/core/external-references/";
 
     private static final String NS_XSD = "http://www.w3.org/2001/XMLSchema";
 
@@ -111,15 +81,6 @@ public class XSDLoader {
 
     protected SchemaBindingDescriptor sd;
 
-    private ObjectResolverService referenceService;
-
-    protected ObjectResolverService getObjectResolverService() {
-        if (referenceService == null) {
-            referenceService = Framework.getService(ObjectResolverService.class);
-        }
-        return referenceService;
-    }
-
     public XSDLoader(SchemaManagerImpl schemaManager) {
         this.schemaManager = schemaManager;
     }
@@ -129,9 +90,14 @@ public class XSDLoader {
         this.sd = sd;
     }
 
-    public XSDLoader(SchemaManagerImpl schemaManager, boolean collectReferencedXSD) {
+    public XSDLoader(SchemaManagerImpl schemaManager,
+            boolean collectReferencedXSD) {
         this.schemaManager = schemaManager;
         this.collectReferencedXSD = collectReferencedXSD;
+    }
+
+    protected Schema getSchema(String name) {
+        return schemaManager.getSchemaInternal(name);
     }
 
     protected void registerSchema(Schema schema) {
@@ -158,21 +124,25 @@ public class XSDLoader {
 
         protected SchemaBindingDescriptor sd;
 
-        NXSchemaResolver(SchemaManagerImpl schemaManager, SchemaBindingDescriptor sd) {
+        NXSchemaResolver(SchemaManagerImpl schemaManager,
+                SchemaBindingDescriptor sd) {
             this.schemaManager = schemaManager;
             this.sd = sd;
         }
 
         @Override
-        public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+        public InputSource resolveEntity(String publicId, String systemId)
+                throws SAXException, IOException {
 
-            String[] parts = systemId.split("/" + SchemaManagerImpl.SCHEMAS_DIR_NAME + "/");
+            String[] parts = systemId.split("/"
+                    + SchemaManagerImpl.SCHEMAS_DIR_NAME + "/");
             String importXSDSubPath = parts[1];
 
             File xsd = new File(schemaManager.getSchemasDir(), importXSDSubPath);
             if (!xsd.exists()) {
                 int idx = sd.src.lastIndexOf("/");
-                importXSDSubPath = sd.src.substring(0, idx + 1) + importXSDSubPath;
+                importXSDSubPath = sd.src.substring(0, idx + 1)
+                        + importXSDSubPath;
                 URL url = sd.context.getLocalResource(importXSDSubPath);
                 if (url == null) {
                     // try asking the class loader
@@ -208,13 +178,15 @@ public class XSDLoader {
     }
 
     // called by SchemaManagerImpl
-    public Schema loadSchema(String name, String prefix, File file) throws SAXException, IOException, TypeException {
-        return loadSchema(name, prefix, file, null);
+    public Schema loadSchema(String name, String prefix, File file,
+            boolean override) throws SAXException, IOException, TypeException {
+        return loadSchema(name, prefix, file, override, null);
     }
 
     // called by SchemaManagerImpl
     // @since 5.7
-    public Schema loadSchema(String name, String prefix, File file, String xsdElement) throws SAXException,
+    public Schema loadSchema(String name, String prefix, File file,
+            boolean override, String xsdElement) throws SAXException,
             IOException, TypeException {
         XSOMParser parser = getParser();
         String systemId = file.toURI().toURL().toExternalForm();
@@ -226,17 +198,13 @@ public class XSDLoader {
             // a File object inside Xerces)
             systemId = systemId.replace("file://", "file:////");
         }
-        try {
-            parser.parse(systemId);
-        } catch (SAXParseException e) {
-            throw new SAXException("Error parsing schema: " + systemId, e);
-        }
+        parser.parse(systemId);
 
         XSSchemaSet xsSchemas = parser.getResult();
         if (collectReferencedXSD) {
             collectReferencedXSD(xsSchemas);
         }
-        return loadSchema(name, prefix, xsSchemas, xsdElement);
+        return loadSchema(name, prefix, xsSchemas, override, xsdElement);
     }
 
     protected void collectReferencedXSD(XSSchemaSet xsSchemas) {
@@ -261,32 +229,38 @@ public class XSDLoader {
     }
 
     /**
-     * Create Nuxeo schema from a XSD resource. If xsdElement is non null and correspont to the name of a complex
-     * element, the schema is created from the target complex type instead of from the global schema
-     *
+     * Create Nuxeo schema from a XSD resource. If xsdElement is non null and
+     * correspont to the name of a complex element, the schema is created from
+     * the target complex type instead of from the global schema
+     * 
      * @since 5.7
+     * 
      * @param name schema name
      * @param prefix schema prefix
      * @param url url to load the XSD resource
-     * @param xsdElement name of the complex element to use as root of the schema
+     * @param xsdElement name of the complex element to use as root of the
+     *            schema
      * @return
      * @throws SAXException
      * @throws TypeException
      * @since 5.7
      */
-    public Schema loadSchema(String name, String prefix, URL url, String xsdElement) throws SAXException, TypeException {
+    public Schema loadSchema(String name, String prefix, URL url,
+            String xsdElement) throws SAXException, TypeException {
         XSOMParser parser = getParser();
         parser.parse(url);
         XSSchemaSet xsSchemas = parser.getResult();
-        return loadSchema(name, prefix, xsSchemas, xsdElement);
+        return loadSchema(name, prefix, xsSchemas, false, xsdElement);
     }
 
     // called by tests
-    public Schema loadSchema(String name, String prefix, URL url) throws SAXException, TypeException {
+    public Schema loadSchema(String name, String prefix, URL url)
+            throws SAXException, TypeException {
         return loadSchema(name, prefix, url, null);
     }
 
-    protected Schema loadSchema(String name, String prefix, XSSchemaSet schemaSet, String xsdElement)
+    protected Schema loadSchema(String name, String prefix,
+            XSSchemaSet schemaSet, boolean override, String xsdElement)
             throws SAXException, TypeException {
         if (schemaSet == null) {
             return null;
@@ -304,7 +278,16 @@ public class XSDLoader {
         if (schema == null) {
             return null;
         }
-        Schema ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
+        Schema ecmSchema = getSchema(name);
+        if (ecmSchema != null) {
+            // schema already defined
+            log.info("Schema " + ns + " is already registered");
+            if (!override) {
+                log.warn("Schema " + ns + " is redefined but will not be overridden");
+                return ecmSchema;
+            }
+        }
+        ecmSchema = new SchemaImpl(name, new Namespace(ns, prefix));
 
         // load elements
         Collection<XSElementDecl> elements = schema.getElementDecls().values();
@@ -315,7 +298,8 @@ public class XSDLoader {
                 // add the field to the schema
                 createField(ecmSchema, el, ecmType);
             } else {
-                log.warn("Failed to load field " + el.getName() + " : " + el.getType());
+                log.warn("Failed to load field " + el.getName() + " : "
+                        + el.getType());
             }
         }
 
@@ -326,22 +310,26 @@ public class XSDLoader {
             Type ecmType = loadType(ecmSchema, att.getType(), att.getName());
             if (ecmType != null) {
                 // add the field to the schema
-                createField(ecmSchema, att, ecmType, true);
+                createField(ecmSchema, att, ecmType);
             } else {
-                log.warn("Failed to load field from attribute " + att.getName() + " : " + att.getType());
+                log.warn("Failed to load field from attribute " + att.getName()
+                        + " : " + att.getType());
             }
         }
 
         if (xsdElement != null) {
             Field singleComplexField = ecmSchema.getField(xsdElement);
             if (singleComplexField == null) {
-                log.warn("Unable to find element " + xsdElement + " to rebase schema " + name);
+                log.warn("Unable to find element " + xsdElement
+                        + " to rebase schema " + name);
             } else {
                 if (singleComplexField.getType().isComplexType()) {
                     ComplexType singleComplexFieldType = (ComplexType) singleComplexField.getType();
-                    ecmSchema = new SchemaImpl(singleComplexFieldType, name, new Namespace(ns, prefix));
+                    ecmSchema = new SchemaImpl(singleComplexFieldType, name,
+                            new Namespace(ns, prefix));
                 } else {
-                    log.warn("can not rebase schema " + name + " on " + xsdElement + " that is not a complex type");
+                    log.warn("can not rebase schema " + name + " on "
+                            + xsdElement + " that is not a complex type");
                 }
             }
         }
@@ -350,7 +338,8 @@ public class XSDLoader {
         return ecmSchema;
     }
 
-    protected Type loadType(Schema schema, XSType type, String fieldName) throws TypeBindingException {
+    protected Type loadType(Schema schema, XSType type, String fieldName)
+            throws TypeBindingException {
         String name;
         if (type.getName() == null || type.isLocal()) {
             name = getAnonymousTypeName(type, fieldName);
@@ -381,7 +370,7 @@ public class XSDLoader {
         }
         if (type.isSimpleType()) {
             if (type instanceof XSListSimpleType) {
-                ecmType = loadListType(schema, (XSListSimpleType) type, fieldName);
+                ecmType = loadListType(schema, (XSListSimpleType) type);
             } else {
                 ecmType = loadSimpleType(schema, type, fieldName);
             }
@@ -391,17 +380,20 @@ public class XSDLoader {
         if (ecmType != null) {
             schema.registerType(ecmType);
         } else {
-            log.warn("loadType for " + fieldName + " of " + type + " returns null");
+            log.warn("loadType for " + fieldName + " of " + type
+                    + " returns null");
         }
         return ecmType;
     }
 
     /**
-     * @param name the type name (note, the type may have a null name if an anonymous type)
+     * @param name the type name (note, the type may have a null name if an
+     *            anonymous type)
      * @param type
      * @return
      */
-    protected Type loadComplexType(Schema schema, String name, XSType type) throws TypeBindingException {
+    protected Type loadComplexType(Schema schema, String name, XSType type)
+            throws TypeBindingException {
         XSType baseType = type.getBaseType();
         ComplexType superType = null;
         // the anyType is the basetype of itself
@@ -419,7 +411,8 @@ public class XSDLoader {
         if (content == null) {
             content = xsct.getContentType();
         }
-        Type ret = createComplexType(schema, superType, name, content, xsct.isAbstract());
+        Type ret = createComplexType(schema, superType, name, content,
+                xsct.isAbstract());
         if (ret != null && ret instanceof ComplexType) {
             // load attributes if any
             loadAttributes(schema, xsct, (ComplexType) ret);
@@ -428,19 +421,22 @@ public class XSDLoader {
         return ret;
     }
 
-    protected void loadAttributes(Schema schema, XSComplexType xsct, ComplexType ct) throws TypeBindingException {
+    protected void loadAttributes(Schema schema, XSComplexType xsct,
+            ComplexType ct) throws TypeBindingException {
         Collection<? extends XSAttributeUse> attrs = xsct.getAttributeUses();
         for (XSAttributeUse attr : attrs) {
             XSAttributeDecl at = attr.getDecl();
             Type fieldType = loadType(schema, at.getType(), at.getName());
             if (fieldType == null) {
-                throw new TypeBindingException("Cannot add type for '" + at.getName() + "'");
+                throw new TypeBindingException("Cannot add type for '"
+                        + at.getName() + "'");
             }
-            createField(ct, at, fieldType, !attr.isRequired());
+            createField(ct, at, fieldType);
         }
     }
 
-    protected SimpleType loadSimpleType(Schema schema, XSType type, String fieldName) throws TypeBindingException {
+    protected SimpleType loadSimpleType(Schema schema, XSType type,
+            String fieldName) throws TypeBindingException {
         String name = type.getName();
         if (name == null) {
             // probably a local type
@@ -452,183 +448,53 @@ public class XSDLoader {
             // have a base type
             superType = (SimpleType) loadType(schema, baseType, fieldName);
         }
-        SimpleTypeImpl simpleType = new SimpleTypeImpl(superType, schema.getName(), name);
+        SimpleTypeImpl simpleType = new SimpleTypeImpl(superType,
+                schema.getName(), name);
 
         // add constraints/restrictions to the simple type
         if (type instanceof RestrictionSimpleTypeImpl) {
             RestrictionSimpleTypeImpl restrictionType = (RestrictionSimpleTypeImpl) type;
-
             List<Constraint> constraints = new ArrayList<Constraint>();
-
-            // pattern
-            XSFacet patternFacet = restrictionType.getFacet(FACET_PATTERN);
-            if (patternFacet != null) {
-                if (simpleType.getPrimitiveType().support(PatternConstraint.class)) {
-                    // String pattern
-                    String pattern = patternFacet.getValue().toString();
-                    Constraint constraint = new PatternConstraint(pattern);
-                    constraints.add(constraint);
-                } else {
-                    logUnsupportedFacetRestriction(schema, fieldName, simpleType, FACET_PATTERN);
-                }
+            XSFacet maxLength = restrictionType.getFacet("maxLength");
+            if (maxLength != null) {
+                int min = 0; // for now
+                int max = Integer.parseInt(maxLength.getValue().toString());
+                Constraint constraint = new StringLengthConstraint(min, max);
+                constraints.add(constraint);
             }
 
-            // length
-            XSFacet minLengthFacet = restrictionType.getFacet(FACET_MINLENGTH);
-            XSFacet maxLengthFacet = restrictionType.getFacet(FACET_MAXLENGTH);
-            XSFacet lengthFacet = restrictionType.getFacet(FACET_LENGTH);
-            if (maxLengthFacet != null || minLengthFacet != null || lengthFacet != null) {
-                if (simpleType.getPrimitiveType().support(LengthConstraint.class)) {
-                    // String Length
-                    Object min = null, max = null;
-                    if (lengthFacet != null) {
-                        min = lengthFacet.getValue().toString();
-                        max = min;
-                    } else {
-                        if (minLengthFacet != null) {
-                            min = minLengthFacet.getValue();
-                        }
-                        if (maxLengthFacet != null) {
-                            max = maxLengthFacet.getValue();
-                        }
-                    }
-                    Constraint constraint = new LengthConstraint(min, max);
-                    constraints.add(constraint);
-                } else {
-                    logUnsupportedFacetRestriction(schema, fieldName, simpleType, FACET_MINLENGTH, FACET_MAXLENGTH,
-                            FACET_LENGTH);
-                }
-            }
-
-            // Intervals
-            XSFacet minExclusiveFacet = restrictionType.getFacet(FACET_MINEXCLUSIVE);
-            XSFacet minInclusiveFacet = restrictionType.getFacet(FACET_MININCLUSIVE);
-            XSFacet maxExclusiveFacet = restrictionType.getFacet(FACET_MAXEXCLUSIVE);
-            XSFacet maxInclusiveFacet = restrictionType.getFacet(FACET_MAXINCLUSIVE);
-            if (minExclusiveFacet != null || minInclusiveFacet != null || maxExclusiveFacet != null
-                    || maxInclusiveFacet != null) {
-                if (simpleType.getPrimitiveType().support(NumericIntervalConstraint.class)) {
-                    // Numeric Interval
-                    Object min = null, max = null;
-                    boolean includingMin = true, includingMax = true;
-                    if (minExclusiveFacet != null) {
-                        min = minExclusiveFacet.getValue();
-                        includingMin = false;
-                    } else if (minInclusiveFacet != null) {
-                        min = minInclusiveFacet.getValue();
-                        includingMin = true;
-                    }
-                    if (maxExclusiveFacet != null) {
-                        max = maxExclusiveFacet.getValue();
-                        includingMax = false;
-                    } else if (maxInclusiveFacet != null) {
-                        max = maxInclusiveFacet.getValue();
-                        includingMax = true;
-                    }
-                    Constraint constraint = new NumericIntervalConstraint(min, includingMin, max, includingMax);
-                    constraints.add(constraint);
-                } else if (simpleType.getPrimitiveType().support(DateIntervalConstraint.class)) {
-                    // Date Interval
-                    Object min = null, max = null;
-                    boolean includingMin = true, includingMax = true;
-                    if (minExclusiveFacet != null) {
-                        min = minExclusiveFacet.getValue();
-                        includingMin = false;
-                    }
-                    if (minInclusiveFacet != null) {
-                        min = minInclusiveFacet.getValue();
-                        includingMin = true;
-                    }
-                    if (maxExclusiveFacet != null) {
-                        max = maxExclusiveFacet.getValue();
-                        includingMax = false;
-                    }
-                    if (maxInclusiveFacet != null) {
-                        max = maxInclusiveFacet.getValue();
-                        includingMax = true;
-                    }
-                    Constraint constraint = new DateIntervalConstraint(min, includingMin, max, includingMax);
-                    constraints.add(constraint);
-                } else {
-                    logUnsupportedFacetRestriction(schema, fieldName, simpleType, FACET_MINEXCLUSIVE,
-                            FACET_MININCLUSIVE, FACET_MAXEXCLUSIVE, FACET_MAXINCLUSIVE);
-                }
-            }
-
-            // Enumeration
             List<XSFacet> enumFacets = restrictionType.getFacets("enumeration");
             if (enumFacets != null && enumFacets.size() > 0) {
-                if (simpleType.getPrimitiveType().support(EnumConstraint.class)) {
-                    // string enumeration
-                    List<String> enumValues = new ArrayList<String>();
-                    for (XSFacet enumFacet : enumFacets) {
-                        enumValues.add(enumFacet.getValue().toString());
-                    }
-                    Constraint constraint = new EnumConstraint(enumValues);
-                    constraints.add(constraint);
-                } else {
-                    logUnsupportedFacetRestriction(schema, fieldName, simpleType, FACET_ENUMERATION);
+                List<String> enumValues = new ArrayList<String>();
+                for (XSFacet enumFacet : enumFacets) {
+                    enumValues.add(enumFacet.getValue().toString());
                 }
+                Constraint constraint = new EnumConstraint(enumValues);
+                constraints.add(constraint);
             }
 
-            String refName = restrictionType.getForeignAttribute(NAMESPACE_CORE_EXTERNAL_REFERENCES,
-                    ATTR_CORE_EXTERNAL_REFERENCES);
-            Map<String, String> refParameters = new HashMap<String, String>();
-            for (ForeignAttributes attr : restrictionType.getForeignAttributes()) {
-                for (int index = 0; index < attr.getLength(); index++) {
-                    String attrNS = attr.getURI(index);
-                    String attrName = attr.getLocalName(index);
-                    String attrValue = attr.getValue(index);
-                    if (NAMESPACE_CORE_EXTERNAL_REFERENCES.equals(attrNS)) {
-                        if (!ATTR_CORE_EXTERNAL_REFERENCES.equals(attrName)) {
-                            refParameters.put(attrName, attrValue);
-                        }
-                    }
-                }
-            }
-            if (refName != null) {
-                ObjectResolver resolver = getObjectResolverService().getResolver(refName, refParameters);
-                if (resolver != null) {
-                    simpleType.setResolver(resolver);
-                    constraints.add(new ObjectResolverConstraint(resolver));
-                } else {
-                    log.info("type of " + fieldName + "|" + type.getName()
-                            + " targets ObjectResolver namespace but has no matching resolver registered "
-                            + "(please contribute to component : org.nuxeo.ecm.core.schema.ObjectResolverService)");
-                }
-            }
-
-            simpleType.addConstraints(constraints);
+            simpleType.setConstraints(constraints.toArray(new Constraint[0]));
         }
 
         return simpleType;
     }
 
-    private void logUnsupportedFacetRestriction(Schema schema, String fieldName, SimpleTypeImpl simpleType,
-            String... facetNames) {
-        StringBuilder msg = new StringBuilder();
-        msg.append("schema|field|type : ").append(schema.getName());
-        msg.append("|").append(fieldName);
-        msg.append("|").append(simpleType.getPrimitiveType());
-        msg.append(" following restriction facet are not handled by constraints API for this type :");
-        for (String facetName : facetNames) {
-            msg.append(facetName).append(" ");
-        }
-        log.warn(msg.toString());
-    }
-
-    protected ListType loadListType(Schema schema, XSListSimpleType type, String fieldName) throws TypeBindingException {
+    protected ListType loadListType(Schema schema, XSListSimpleType type) {
         String name = type.getName();
         if (name == null) {
-            // probably a local type
-            name = fieldName + ANONYMOUS_TYPE_SUFFIX;
+            // probably a local type -> ignore it
+            return null;
         }
         XSType xsItemType = type.getItemType();
         Type itemType;
         if (xsItemType.getTargetNamespace().equals(NS_XSD)) {
             itemType = XSDTypes.getType(xsItemType.getName());
         } else {
-            itemType = loadSimpleType(schema, xsItemType != null ? xsItemType : type.getSimpleBaseType(), null);
+            // itemType = loadType(schema, type);
+            // TODO: type must be already defined - use a dependency manager or
+            // something to
+            // support types that are not yet defined
+            itemType = getType(xsItemType.getName());
         }
         if (itemType == null) {
             log.error("list item type was not defined -> you should define first the item type");
@@ -637,8 +503,9 @@ public class XSDLoader {
         return new ListTypeImpl(schema.getName(), name, itemType);
     }
 
-    protected Type createComplexType(Schema schema, ComplexType superType, String name, XSContentType content,
-            boolean abstractType) throws TypeBindingException {
+    protected Type createComplexType(Schema schema, ComplexType superType,
+            String name, XSContentType content, boolean abstractType)
+            throws TypeBindingException {
 
         ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
 
@@ -659,8 +526,8 @@ public class XSDLoader {
         return processModelGroup(schema, superType, name, ct, mg, abstractType);
     }
 
-    protected Type createFakeComplexType(Schema schema, ComplexType superType, String name, XSModelGroup mg)
-            throws TypeBindingException {
+    protected Type createFakeComplexType(Schema schema, ComplexType superType,
+            String name, XSModelGroup mg) throws TypeBindingException {
 
         ComplexType ct = new ComplexTypeImpl(superType, schema.getName(), name);
         // -------- Workaround - we register now the complex type - to fix
@@ -670,8 +537,9 @@ public class XSDLoader {
         return processModelGroup(schema, superType, name, ct, mg, false);
     }
 
-    protected Type processModelGroup(Schema schema, ComplexType superType, String name, ComplexType ct,
-            XSModelGroup mg, boolean abstractType) throws TypeBindingException {
+    protected Type processModelGroup(Schema schema, ComplexType superType,
+            String name, ComplexType ct, XSModelGroup mg, boolean abstractType)
+            throws TypeBindingException {
         if (mg == null) {
             // TODO don't know how to handle this for now
             throw new TypeBindingException("unsupported complex type");
@@ -701,25 +569,29 @@ public class XSDLoader {
                     // means this is a list
                     //
                     // first create a fake complex type
-                    Type fakeType = createFakeComplexType(schema, superType, name + "#anonymousListItem",
-                            term.asModelGroup());
+                    Type fakeType = createFakeComplexType(schema, superType,
+                            name + "#anonymousListItem", term.asModelGroup());
                     // wrap it as a list
-                    ListType listType = createListType(schema, name + "#anonymousListType", fakeType, 0, maxOccur);
+                    ListType listType = createListType(schema, name
+                            + "#anonymousListType", fakeType, 0, maxOccur);
                     // add the listfield to the current CT
                     String fieldName = ct.getName() + "#anonymousList";
-                    ct.addField(fieldName, listType, null, 0, null);
+                    ct.addField(fieldName, listType, null, 0);
                 } else {
-                    processModelGroup(schema, superType, name, ct, term.asModelGroup(), abstractType);
+                    processModelGroup(schema, superType, name, ct,
+                            term.asModelGroup(), abstractType);
                 }
             } else {
                 if (maxOccur < 0 || maxOccur > 1) {
-                    Type fieldType = loadType(schema, element.getType(), element.getName());
+                    Type fieldType = loadType(schema, element.getType(),
+                            element.getName());
                     if (fieldType != null) {
-                        ListType listType = createListType(schema, element.getName() + "#anonymousListType", fieldType,
-                                0, maxOccur);
+                        ListType listType = createListType(schema,
+                                element.getName() + "#anonymousListType",
+                                fieldType, 0, maxOccur);
                         // add the listfield to the current CT
                         String fieldName = element.getName();
-                        ct.addField(fieldName, listType, null, 0, null);
+                        ct.addField(fieldName, listType, null, 0);
                     }
                 } else {
                     loadComplexTypeElement(schema, ct, element);
@@ -730,64 +602,46 @@ public class XSDLoader {
         // add fields from Parent
         if (superType != null && superType.isComplexType()) {
             for (Field parentField : superType.getFields()) {
-                ct.addField(parentField.getName().getLocalName(), parentField.getType(),
-                        (String) parentField.getDefaultValue(), 0, null);
+                ct.addField(parentField.getName().getLocalName(),
+                        parentField.getType(),
+                        (String) parentField.getDefaultValue(), 0);
             }
         }
         return ct;
     }
 
-    protected ListType createListType(Schema schema, String name, XSParticle particle) throws TypeBindingException {
+    protected ListType createListType(Schema schema, String name,
+            XSParticle particle) throws TypeBindingException {
         XSElementDecl element = particle.getTerm().asElementDecl();
         if (element == null) {
             log.warn("Ignoring " + name + " unsupported list type");
             return null;
         }
-        Type type = loadType(schema, element.getType(), element.getName());
-        if (type == null) {
-            log.warn("Unable to find type for " + element.getName());
-            return null;
-        }
-
         XmlString dv = element.getDefaultValue();
         String defValue = null;
         if (dv != null) {
             defValue = dv.value;
         }
-        int flags = 0;
-        if (defValue == null) {
-            dv = element.getFixedValue();
-            if (dv != null) {
-                defValue = dv.value;
-                flags |= Field.CONSTANT;
-            }
+        Type type = loadType(schema, element.getType(), element.getName());
+        if (type == null) {
+            log.warn("Unable to find type for " + element.getName());
+            return null;
+        } else {
+            return new ListTypeImpl(schema.getName(), name, type,
+                    element.getName(), defValue, particle.getMinOccurs(),
+                    particle.getMaxOccurs());
         }
-        boolean computedNillable = isNillable(element);
-        if (computedNillable) {
-            flags |= Field.NILLABLE;
-        }
-
-        Set<Constraint> constraints = new HashSet<Constraint>();
-        if (!computedNillable) {
-            constraints.add(NotNullConstraint.get());
-        }
-        if (type instanceof SimpleType) {
-            SimpleType st = (SimpleType) type;
-            constraints.addAll(st.getConstraints());
-        }
-
-        return new ListTypeImpl(schema.getName(), name, type, element.getName(), defValue, flags, constraints,
-                particle.getMinOccurs(), particle.getMaxOccurs());
     }
 
-    protected static ListType createListType(Schema schema, String name, Type itemType, int min, int max)
-            throws TypeBindingException {
+    protected static ListType createListType(Schema schema, String name,
+            Type itemType, int min, int max) throws TypeBindingException {
         String elementName = name + "#item";
-        return new ListTypeImpl(schema.getName(), name, itemType, elementName, null, min, max);
+        return new ListTypeImpl(schema.getName(), name, itemType, elementName,
+                null, min, max);
     }
 
-    protected void loadComplexTypeElement(Schema schema, ComplexType type, XSElementDecl element)
-            throws TypeBindingException {
+    protected void loadComplexTypeElement(Schema schema, ComplexType type,
+            XSElementDecl element) throws TypeBindingException {
         XSType elementType = element.getType();
 
         Type fieldType = loadType(schema, elementType, element.getName());
@@ -796,7 +650,8 @@ public class XSDLoader {
         }
     }
 
-    protected static Field createField(ComplexType type, XSElementDecl element, Type fieldType) {
+    protected static Field createField(ComplexType type, XSElementDecl element,
+            Type fieldType) {
         String elementName = element.getName();
         XmlString dv = element.getDefaultValue();
         String defValue = null;
@@ -812,34 +667,27 @@ public class XSDLoader {
             }
         }
 
-        boolean computedNillable = isNillable(element);
-
-        if (computedNillable) {
+        if (element.isNillable()) {
             flags |= Field.NILLABLE;
         }
 
-        Set<Constraint> constraints = new HashSet<Constraint>();
-        if (!computedNillable) {
-            constraints.add(NotNullConstraint.get());
-        }
-        if (fieldType instanceof SimpleType) {
-            SimpleType st = (SimpleType) fieldType;
-            constraints.addAll(st.getConstraints());
-        }
-        Field field = type.addField(elementName, fieldType, defValue, flags, constraints);
+        Field field = type.addField(elementName, fieldType, defValue, flags);
 
         // set the max field length from the constraints
         if (fieldType instanceof SimpleTypeImpl) {
-            LengthConstraint lc = ConstraintUtils.getConstraint(field.getConstraints(), LengthConstraint.class);
-            if (lc != null && lc.getMax() != null) {
-                field.setMaxLength(lc.getMax().intValue());
+            for (Constraint constraint : ((SimpleTypeImpl) fieldType).getConstraints()) {
+                if (constraint instanceof StringLengthConstraint) {
+                    StringLengthConstraint slc = (StringLengthConstraint) constraint;
+                    field.setMaxLength(slc.getMax());
+                }
             }
         }
 
         return field;
     }
 
-    protected static Field createField(ComplexType type, XSAttributeDecl element, Type fieldType, boolean isNillable) {
+    protected static Field createField(ComplexType type,
+            XSAttributeDecl element, Type fieldType) {
         String elementName = element.getName();
         XmlString dv = element.getDefaultValue();
         String defValue = null;
@@ -854,14 +702,7 @@ public class XSDLoader {
                 flags |= Field.CONSTANT;
             }
         }
-        Set<Constraint> constraints = new HashSet<Constraint>();
-        if (!isNillable) {
-            constraints.add(NotNullConstraint.get());
-        }
-        if (fieldType.isSimpleType()) {
-            constraints.addAll(((SimpleType) fieldType).getConstraints());
-        }
-        return type.addField(elementName, fieldType, defValue, flags, constraints);
+        return type.addField(elementName, fieldType, defValue, flags);
     }
 
     protected static String getAnonymousTypeName(XSType type, String fieldName) {
@@ -876,24 +717,6 @@ public class XSDLoader {
 
     public List<String> getReferencedXSD() {
         return referencedXSD;
-    }
-
-    /**
-     * ignore case where xsd:nillable is recognized as false by xsom (we don't know if it's not specified and we want to
-     * preserve a default value to true. Therefore, we provide a custom attribute nxs:nillable to force nillable as
-     * false) NB: if xsd:nillable is present and sets to true, deducted value will be true even if nxs:nillable is false
-     *
-     * @since 7.1
-     */
-    protected static boolean isNillable(XSElementDecl element) {
-        boolean computedNillable;
-        String value = element.getForeignAttribute(NAMESPACE_CORE_VALIDATION, "nillable");
-        if (!element.isNillable() && value != null && !Boolean.valueOf(value)) {
-            computedNillable = false;
-        } else {
-            computedNillable = true;
-        }
-        return computedNillable;
     }
 
 }

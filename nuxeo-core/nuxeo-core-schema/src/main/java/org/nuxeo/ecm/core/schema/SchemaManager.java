@@ -24,16 +24,12 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 public interface SchemaManager extends TypeProvider {
 
     /**
-     * Returns the field with given xpath, or null if not found.
-     */
-    Field getField(String xpath);
-
-    /**
-     * Returns the field with given parent field and sub name, or null if not found.
+     * Gets the field given a prefixed name.
      *
-     * @since 7.2
+     * @param prefixedName
+     * @return the field or null if none
      */
-    Field getField(Field field, String subFieldName);
+    Field getField(String prefixedName);
 
     Schema getSchemaFromPrefix(String schemaPrefix);
 

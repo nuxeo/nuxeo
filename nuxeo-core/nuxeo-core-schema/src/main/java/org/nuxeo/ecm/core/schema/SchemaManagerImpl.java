@@ -35,11 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.AnyType;
-import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.CompositeTypeImpl;
 import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
@@ -122,16 +120,7 @@ public class SchemaManagerImpl implements SchemaManager {
         if (!schemaDir.isDirectory()) {
             schemaDir.mkdirs();
         }
-        clearSchemaDir();
         registerBuiltinTypes();
-    }
-
-    protected void clearSchemaDir() {
-        try {
-            org.apache.commons.io.FileUtils.cleanDirectory(schemaDir);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public File getSchemasDir() {
@@ -240,9 +229,11 @@ public class SchemaManagerImpl implements SchemaManager {
     public synchronized void unregisterProxies(ProxiesDescriptor pd) {
         if (allProxies.remove(pd)) {
             dirty = true;
-            log.info("Unregistered proxies descriptor for schemas: " + pd.getSchemas());
+            log.info("Unregistered proxies descriptor for schemas: "
+                    + pd.getSchemas());
         } else {
-            log.error("Unregistering unknown proxies descriptor for schemas: " + pd.getSchemas());
+            log.error("Unregistering unknown proxies descriptor for schemas: "
+                    + pd.getSchemas());
         }
     }
 
@@ -299,34 +290,25 @@ public class SchemaManagerImpl implements SchemaManager {
         uriToSchema.clear();
         prefixToSchema.clear();
         RuntimeException errors = new RuntimeException("Cannot load schemas");
-        // on reload, don't take confuse already-copied schemas with those contributed
-        clearSchemaDir();
-        // resolve which schemas to actually load depending on overrides
-        Map<String, SchemaBindingDescriptor> resolvedSchemas = new LinkedHashMap<>();
         for (SchemaBindingDescriptor sd : allSchemas) {
-            String name = sd.name;
-            if (resolvedSchemas.containsKey(name)) {
-                if (!sd.override) {
-                    log.warn("Schema " + name + " is redefined but will not be overridden");
-                    continue;
-                }
-                log.debug("Reregistering schema: " + name + " from " + sd.file);
-            } else {
-                log.debug("Registering schema: " + name + " from " + sd.file);
-            }
-            resolvedSchemas.put(name, sd);
-        }
-        for (SchemaBindingDescriptor sd : resolvedSchemas.values()) {
             try {
                 copySchema(sd);
-            } catch (IOException | SAXException | TypeException error) {
+            } catch (Exception error) {
+                if (error instanceof InterruptedException) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
+                }
                 errors.addSuppressed(error);
             }
         }
-        for (SchemaBindingDescriptor sd : resolvedSchemas.values()) {
+        for (SchemaBindingDescriptor sd : allSchemas) {
             try {
                 loadSchema(sd);
-            } catch (IOException | SAXException | TypeException error) {
+            } catch (Exception error) {
+                if (error instanceof InterruptedException) {
+                    // restore interrupted status
+                    Thread.currentThread().interrupt();
+                }
                 errors.addSuppressed(error);
             }
         }
@@ -365,10 +347,23 @@ public class SchemaManagerImpl implements SchemaManager {
             // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
             return;
         }
-        // loadSchema calls this.registerSchema
-        XSDLoader schemaLoader = new XSDLoader(this, sd);
-        schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.xsdRootElement);
-        log.info("Registered schema: " + sd.name + " from " + sd.file);
+            // loadSchema calls this.registerSchema
+            XSDLoader schemaLoader = new XSDLoader(this, sd);
+            Schema oldschema = schemas.get(sd.name);
+            schemaLoader.loadSchema(sd.name, sd.prefix, sd.file, sd.override,
+                    sd.xsdRootElement);
+            if (oldschema == null) {
+                log.info("Registered schema: " + sd.name + " from "
+                        + sd.file);
+            } else {
+                log.info("Reregistered schema: " + sd.name);
+            }
+
+    }
+
+    // called from XSDLoader, does not do the checkDirty call
+    protected Schema getSchemaInternal(String name) {
+        return schemas.get(name);
     }
 
     // called from XSDLoader
@@ -689,90 +684,26 @@ public class SchemaManagerImpl implements SchemaManager {
      */
 
     @Override
-    public Field getField(String xpath) {
+    public Field getField(String prefixedName) {
         checkDirty();
-        Field field = null;
-        if (xpath != null && xpath.contains("/")) {
-            // need to resolve subfields
-            String[] properties = xpath.split("/");
-            Field resolvedField = getField(properties[0]);
-            for (int x = 1; x < properties.length; x++) {
-                if (resolvedField == null) {
-                    break;
-                }
-                resolvedField = getField(resolvedField, properties[x], x == properties.length - 1);
+        Field field = fields.get(prefixedName);
+        if (field == null) {
+            QName qname = QName.valueOf(prefixedName);
+            String prefix = qname.getPrefix();
+            Schema schema = getSchemaFromPrefix(prefix);
+            if (schema == null) {
+                // try using the name
+                schema = getSchema(prefix);
             }
-            if (resolvedField != null) {
-                field = resolvedField;
-            }
-        } else {
-            field = fields.get(xpath);
-            if (field == null) {
-                QName qname = QName.valueOf(xpath);
-                String prefix = qname.getPrefix();
-                Schema schema = getSchemaFromPrefix(prefix);
-                if (schema == null) {
-                    // try using the name
-                    schema = getSchema(prefix);
-                }
-                if (schema != null) {
-                    field = schema.getField(qname.getLocalName());
-                    if (field != null) {
-                        // map is concurrent so parallelism is ok
-                        fields.put(xpath, field);
-                    }
+            if (schema != null) {
+                field = schema.getField(qname.getLocalName());
+                if (field != null) {
+                    // map is concurrent so parallelism is ok
+                    fields.put(prefixedName, field);
                 }
             }
         }
         return field;
-    }
-
-    @Override
-    public Field getField(Field parent, String subFieldName) {
-        return getField(parent, subFieldName, true);
-    }
-
-    protected Field getField(Field parent, String subFieldName, boolean finalCall) {
-        if (parent != null) {
-            Type type = parent.getType();
-            if (type.isListType()) {
-                ListType listType = (ListType) type;
-                // remove indexes in case of multiple values
-                if ("*".equals(subFieldName)) {
-                    if (!finalCall) {
-                        return parent;
-                    } else {
-                        return resolveSubField(listType, null, true);
-                    }
-                }
-                try {
-                    Integer.valueOf(subFieldName);
-                    if (!finalCall) {
-                        return parent;
-                    } else {
-                        return resolveSubField(listType, null, true);
-                    }
-                } catch (NumberFormatException e) {
-                    return resolveSubField(listType, subFieldName, false);
-                }
-            } else if (type.isComplexType()) {
-                return ((ComplexType) type).getField(subFieldName);
-            }
-        }
-        return null;
-    }
-
-    protected Field resolveSubField(ListType listType, String subName, boolean fallbackOnSubElement) {
-        Type itemType = listType.getFieldType();
-        if (itemType.isComplexType() && subName != null) {
-            ComplexType complexType = (ComplexType) itemType;
-            Field subField = complexType.getField(subName);
-            return subField;
-        }
-        if (fallbackOnSubElement) {
-            return listType.getField();
-        }
-        return null;
     }
 
     public void flushPendingsRegistration() {

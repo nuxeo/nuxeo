@@ -9,17 +9,10 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
- *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.nuxeo.ecm.core.schema.SchemaNames;
-import org.nuxeo.ecm.core.schema.types.constraints.Constraint;
-import org.nuxeo.ecm.core.schema.types.constraints.TypeConstraint;
-import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
  * Primitive type (basic types like long, string, boolean, etc.).
@@ -34,11 +27,6 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
 
     @Override
     public abstract boolean validate(Object object);
-
-    @Override
-    public ObjectResolver getObjectResolver() {
-        return null;
-    }
 
     @Override
     public Type getSuperType() {
@@ -62,21 +50,8 @@ public abstract class PrimitiveType extends AbstractType implements SimpleType {
     }
 
     @Override
-    public PrimitiveType getPrimitiveType() {
+    public SimpleType getPrimitiveType() {
         return this;
-    }
-
-    /**
-     * @return true if this primitive types supports this constraints, false otherwise.
-     * @since 7.1
-     */
-    public abstract boolean support(Class<? extends Constraint> constraint);
-
-    @Override
-    public Set<Constraint> getConstraints() {
-        Set<Constraint> constraints = new HashSet<Constraint>();
-        constraints.add(new TypeConstraint(this));
-        return constraints;
     }
 
 }

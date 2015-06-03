@@ -9,7 +9,6 @@
  * Contributors:
  *     Bogdan Stefanescu
  *     Florent Guillaume
- *     Nicolas Chapurlat <nchapurlat@nuxeo.com>
  */
 package org.nuxeo.ecm.core.schema.types;
 
@@ -28,6 +27,6 @@ public interface SimpleType extends Type {
      */
     boolean isPrimitive();
 
-    PrimitiveType getPrimitiveType();
+    SimpleType getPrimitiveType();
 
 }
