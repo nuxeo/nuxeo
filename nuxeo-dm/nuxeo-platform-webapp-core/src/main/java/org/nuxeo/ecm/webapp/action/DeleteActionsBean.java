@@ -312,7 +312,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
         Object[] params = { Integer.valueOf(info.docs.size()) };
         facesMessages.add(StatusMessage.Severity.INFO, "#0 " + resourcesAccessor.getMessages().get(msgid), params);
 
-        return computeOutcome(DELETE_OUTCOME);
+        return null;
     }
 
     @Override
