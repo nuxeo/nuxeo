@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.oauth2.providers;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -279,6 +280,6 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
     @Override
     public void setScopes(String... scopes) {
-        this.scopes = Arrays.asList(scopes);
+        this.scopes = (scopes == null) ? Collections.emptyList() : Arrays.asList(scopes);
     }
 }
