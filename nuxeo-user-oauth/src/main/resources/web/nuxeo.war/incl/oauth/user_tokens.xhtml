@@ -16,7 +16,7 @@
 
   <c:if test="#{oauthUserTokens.editableEntry == null}">
     <div style="margin-top: 10px">
-      <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.entries}">
+      <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.getEnabledProviders()}">
         <h:outputLink value="#"
                       styleClass="button smallButton"
                       onclick="openPopup('#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}', reRenderDirectory);
