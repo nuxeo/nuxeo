@@ -28,6 +28,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -38,6 +39,7 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
+import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -66,6 +68,12 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
     private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DeleteActionsBean.class);
+
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
+
+    @In(create = true)
+    protected Map<String, String> messages;
 
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
@@ -308,7 +316,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
             facesMessages.add(StatusMessage.Severity.WARN, "can_not_delete_proxies");
         }
         Object[] params = { Integer.valueOf(info.docs.size()) };
-        facesMessages.add(StatusMessage.Severity.INFO, "#0 " + resourcesAccessor.getMessages().get(msgid), params);
+        facesMessages.add(StatusMessage.Severity.INFO, "#0 " + messages.get(msgid), params);
 
         return null;
     }
@@ -319,7 +327,7 @@ public class DeleteActionsBean extends InputController implements DeleteActions,
     }
 
     public List<Action> getActionsForTrashSelection() {
-        return webActions.getUnfiltredActionsList(CURRENT_DOCUMENT_TRASH_SELECTION + "_LIST");
+        return webActions.getActionsList(CURRENT_DOCUMENT_TRASH_SELECTION + "_LIST", false);
     }
 
     @Override
