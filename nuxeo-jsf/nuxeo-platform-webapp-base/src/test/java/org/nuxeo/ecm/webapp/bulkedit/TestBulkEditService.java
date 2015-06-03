@@ -119,14 +119,14 @@ public class TestBulkEditService {
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
 
-            assertTrue(doc.isCheckedOut());
-            assertEquals("0.1+", doc.getVersionLabel());
+            assertFalse(doc.isCheckedOut());
+            assertEquals("0.1", doc.getVersionLabel());
 
             DocumentModel version = session.getLastDocumentVersion(doc.getRef());
-            assertTrue(((String) version.getPropertyValue("dc:title")).startsWith("doc"));
-            assertNull(version.getPropertyValue("dc:creator"));
-            assertNull(version.getPropertyValue("dc:description"));
-            assertNull(version.getPropertyValue("dc:source"));
+            assertEquals("new title", version.getPropertyValue("dc:title"));
+            assertEquals("new creator", version.getProperty("dc:creator").getValue());
+            assertFalse("new description".equals(version.getPropertyValue("dc:description")));
+            assertFalse("new source".equals(version.getPropertyValue("dc:source")));
             assertEquals("0.1", version.getVersionLabel());
         }
     }
@@ -170,14 +170,14 @@ public class TestBulkEditService {
             assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
             assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
 
-            assertTrue(doc.isCheckedOut());
-            assertEquals("1.0+", doc.getVersionLabel());
+            assertFalse(doc.isCheckedOut());
+            assertEquals("1.0", doc.getVersionLabel());
 
             DocumentModel version = session.getLastDocumentVersion(doc.getRef());
-            assertTrue(((String) version.getPropertyValue("dc:title")).startsWith("doc"));
-            assertNull(version.getPropertyValue("dc:creator"));
-            assertNull(version.getPropertyValue("dc:description"));
-            assertNull(version.getPropertyValue("dc:source"));
+            assertEquals("new title", doc.getPropertyValue("dc:title"));
+            assertEquals("new creator", doc.getProperty("dc:creator").getValue());
+            assertFalse("new description".equals(doc.getPropertyValue("dc:description")));
+            assertFalse("new source".equals(doc.getPropertyValue("dc:source")));
             assertEquals("1.0", version.getVersionLabel());
         }
     }

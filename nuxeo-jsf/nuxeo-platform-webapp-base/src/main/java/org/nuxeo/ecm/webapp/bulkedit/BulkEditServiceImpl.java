@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -61,15 +62,15 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
 
             for (String propertyToCopy : propertiesToCopy) {
                 try {
-                    checkIn(targetDoc);
                     targetDoc.setPropertyValue(propertyToCopy, sourceDoc.getPropertyValue(propertyToCopy));
                 } catch (PropertyNotFoundException e) {
                     String message = "%s property does not exist on %s";
                     log.warn(String.format(message, propertyToCopy, targetDoc));
                 }
             }
+            targetDoc.putContextData(VersioningService.VERSIONING_OPTION, defaultVersioningOption);
+            session.saveDocument(targetDoc);
         }
-        session.saveDocuments(targetDocs.toArray(new DocumentModel[targetDocs.size()]));
     }
 
     /**
@@ -96,6 +97,10 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
         return propertiesToCopy;
     }
 
+    /**
+     * @deprecated since 7.3. The option is passed to the CoreSession#saveDocument method.
+     */
+    @Deprecated
     protected void checkIn(DocumentModel doc) throws ClientException {
         if (defaultVersioningOption != null && defaultVersioningOption != VersioningOption.NONE) {
             if (doc.isCheckedOut()) {
