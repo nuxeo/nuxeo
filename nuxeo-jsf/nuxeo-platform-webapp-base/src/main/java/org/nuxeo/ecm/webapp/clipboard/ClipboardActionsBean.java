@@ -87,8 +87,6 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
 
     private static final Log log = LogFactory.getLog(ClipboardActionsBean.class);
 
-    private static final String PASTE_OUTCOME = "after_paste";
-
     @In(create = true)
     protected Map<String, String> messages;
 
@@ -281,7 +279,7 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
             log.debug("No docPaste to process paste on...");
         }
 
-        return computeOutcome(PASTE_OUTCOME);
+        return null;
     }
 
     public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException {
@@ -791,7 +789,7 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
     }
 
     public List<Action> getActionsForSelection() {
-        return webActions.getUnfiltredActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST");
+        return webActions.getActionsList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION + "_LIST", false);
     }
 
     private void autoSelectCurrentList(String listName) {
