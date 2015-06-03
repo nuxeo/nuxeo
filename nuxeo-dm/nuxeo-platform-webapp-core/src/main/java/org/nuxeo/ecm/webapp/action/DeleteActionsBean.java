@@ -18,11 +18,6 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
-import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
-import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
-
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -54,16 +49,20 @@ import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
-import org.nuxeo.ecm.webapp.base.InputController;
 import org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
 import org.nuxeo.ecm.webapp.trashManagement.TrashManager;
 import org.nuxeo.runtime.api.Framework;
 
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_SELECTION;
+import static org.nuxeo.ecm.webapp.documentsLists.DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION;
+import static org.nuxeo.ecm.webapp.helpers.EventNames.DOCUMENT_CHILDREN_CHANGED;
+
 @Name("deleteActions")
 @Scope(ScopeType.EVENT)
 @Install(precedence = Install.FRAMEWORK)
-public class DeleteActionsBean extends InputController implements DeleteActions, Serializable {
+public class DeleteActionsBean implements DeleteActions, Serializable {
 
     private static final long serialVersionUID = 1L;
 
