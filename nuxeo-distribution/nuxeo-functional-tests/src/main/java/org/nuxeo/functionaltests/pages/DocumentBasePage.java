@@ -17,8 +17,6 @@
  */
 package org.nuxeo.functionaltests.pages;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +44,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * The nuxeo main document base page
@@ -359,6 +359,20 @@ public class DocumentBasePage extends AbstractPage {
     public SearchPage goToSearchPage() {
         searchPageLink.click();
         return asPage(SearchPage.class);
+    }
+
+    /**
+     * Returns true if given element representing a main tab is selected in UI.
+     *
+     * @since 7.3
+     */
+    public boolean isMainTabSelected(WebElement tab) {
+        WebElement elt = Locator.findParentTag(tab, "li");
+        String css = elt.getAttribute("class");
+        if (css != null && css.contains("selected")) {
+            return true;
+        }
+        return false;
     }
 
 }
