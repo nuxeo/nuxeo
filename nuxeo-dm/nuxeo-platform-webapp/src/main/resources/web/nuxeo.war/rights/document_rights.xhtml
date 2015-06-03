@@ -27,6 +27,7 @@
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-resource.html"></link>
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-doc-resource.html"></link>
+  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/popup-confirm.html"></link>
   <link rel="import" href="#{baseURL}rights/components/popup-right/popup-right.html"></link>
 
   <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
@@ -93,7 +94,6 @@
 
       <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
-
       <div>
         <h2>Access rights defined explicitely on this folder</h2>
         <template is="dom-if" if="{{hasEverythingRight}}">
@@ -109,13 +109,15 @@
               <th class="tmp-tab">Granted</th>
               <th class="tmp-tab">Actions</th>
             </tr>
-            <template is="dom-repeat" items="{{localRights}}">
+            <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
               <tr>
                 <td><span>{{item.username}}</span></td>
                 <td><span>{{item.permission}}</span></td>
                 <td><span>{{item.granted}}</span></td>
                 <td>
-                  <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
+                  <template id="actions-tpl" is="dom-if" if="{{hasEverythingRight}}">
+                    <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
+                  </template>
                 </td>
               </tr>
             </template>
@@ -147,6 +149,10 @@
         <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
       </template>
 
+      <popup-confirm id="confirmation">
+        <h2>Confirm ACE deletion ?</h2>
+      </popup-confirm>
+
       <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
     </template>
 
@@ -154,11 +160,15 @@
       (function() {
         var t = document.querySelector('#document-rights');
         t.localRightsDel = function(e, i) {
-          var model = e.model;
-          var acl = this.localRights[model.index];
-
-          this.$.rmPermission.params = {user: acl.username};
-          this.$.rmPermission.execute();
+          var self = this;
+          this.$.confirmation.toggle(function() {
+            // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
+            var item = e.model.dataHost.dataHost.item;
+            self.$.rmPermission.params = {
+              user: item.username
+            };
+            self.$.rmPermission.execute();
+          });
         };
 
         t.refresh = function() {
