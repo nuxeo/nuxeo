@@ -84,6 +84,15 @@ public interface ActionContext extends Serializable {
     Object getLocalVariable(String key);
 
     /**
+     * Returns the map of local variables.
+     * <p>
+     * Useful to feed another context.
+     *
+     * @since 7.3
+     */
+    Map<String, Object> getLocalVariables();
+
+    /**
      * Returns the number of local variables
      */
     int size();

@@ -21,9 +21,12 @@ package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
@@ -66,6 +69,11 @@ public class SetTagHandler extends AliasTagHandler {
     protected final TagAttribute resolveTwice;
 
     /**
+     * @since 7.3
+     */
+    protected final TagAttribute vars;
+
+    /**
      * @since 5.6
      */
     protected final TagAttribute blockPatterns;
@@ -77,8 +85,12 @@ public class SetTagHandler extends AliasTagHandler {
 
     public SetTagHandler(ComponentConfig config) {
         super(config, null);
-        var = getRequiredAttribute("var");
+        var = getAttribute("var");
         value = getAttribute("value");
+        vars = getAttribute("vars");
+        if (var == null && vars == null) {
+            throw new TagException(this.tag, "At least one of attributes 'var' or 'vars' is required");
+        }
         resolveTwice = getAttribute("resolveTwice");
         blockPatterns = getAttribute("blockPatterns");
         blockMerge = getAttribute("blockMerge");
@@ -130,39 +142,57 @@ public class SetTagHandler extends AliasTagHandler {
     }
 
     public FaceletHandler getAliasVariableMapper(FaceletContext ctx, AliasVariableMapper target) {
-        String varStr = var.getValue(ctx);
-        // avoid overriding variable already in the mapper
-        if (target.hasVariables(varStr)) {
-            return nextHandler;
-        }
-
-        // handle variable expression
-        boolean cacheValue = false;
-        if (cache != null) {
-            cacheValue = cache.getBoolean(ctx);
-        }
-        boolean resolveTwiceBool = false;
-        if (resolveTwice != null) {
-            resolveTwiceBool = resolveTwice.getBoolean(ctx);
-        }
-
-        ValueExpression ve;
-        if (cacheValue) {
-            // resolve value and put it as is in variable mapper
-            Object res = value.getObject(ctx);
-            if (resolveTwiceBool && res instanceof String && ComponentTagUtils.isValueReference((String) res)) {
-                ve = ctx.getExpressionFactory().createValueExpression(ctx, (String) res, Object.class);
-                res = ve.getValue(ctx);
+        Map<String, ValueExpression> allVars = new HashMap<>();
+        if (var != null) {
+            String varStr = var.getValue(ctx);
+            // avoid overriding variable already in the mapper
+            if (target.hasVariable(varStr)) {
+                return nextHandler;
             }
-            ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
-        } else {
-            ve = value.getValueExpression(ctx, Object.class);
-            if (resolveTwiceBool) {
-                ve = new MetaValueExpression(ve);
+
+            // handle variable expression
+            boolean cacheValue = false;
+            if (cache != null) {
+                cacheValue = cache.getBoolean(ctx);
             }
+            boolean resolveTwiceBool = false;
+            if (resolveTwice != null) {
+                resolveTwiceBool = resolveTwice.getBoolean(ctx);
+            }
+
+            ValueExpression ve;
+            if (cacheValue) {
+                // resolve value and put it as is in variable mapper
+                Object res = value.getObject(ctx);
+                if (resolveTwiceBool && res instanceof String && ComponentTagUtils.isValueReference((String) res)) {
+                    ve = ctx.getExpressionFactory().createValueExpression(ctx, (String) res, Object.class);
+                    res = ve.getValue(ctx);
+                }
+                ve = ctx.getExpressionFactory().createValueExpression(res, Object.class);
+            } else {
+                ve = value.getValueExpression(ctx, Object.class);
+                if (resolveTwiceBool) {
+                    ve = new MetaValueExpression(ve);
+                }
+            }
+
+            target.setVariable(varStr, ve);
+            allVars.put(varStr, ve);
         }
 
-        target.setVariable(varStr, ve);
+        // handle resolved map if any
+        if (vars != null) {
+            Object varsValue = vars.getObject(ctx);
+            ExpressionFactory ef = ctx.getExpressionFactory();
+            if (varsValue instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> varsResolved = (Map<String, Object>) varsValue;
+                for (Map.Entry<String, Object> var : varsResolved.entrySet()) {
+                    ValueExpression ve = ef.createValueExpression(var.getValue(), Object.class);
+                    target.setVariable(var.getKey(), ve);
+                }
+            }
+        }
 
         if (blockPatterns != null) {
             String blockedValue = blockPatterns.getValue(ctx);
@@ -178,7 +208,9 @@ public class SetTagHandler extends AliasTagHandler {
             SetTagHandler next = (SetTagHandler) nextHandler;
             if (next.isAcceptingMerge(ctx)) {
                 // make sure referenced vars will be resolved in this context
-                ctx.getVariableMapper().setVariable(varStr, ve);
+                for (Map.Entry<String, ValueExpression> var : allVars.entrySet()) {
+                    ctx.getVariableMapper().setVariable(var.getKey(), var.getValue());
+                }
                 try {
                     AliasVariableMapper.exposeAliasesToRequest(ctx.getFacesContext(), target);
                     nextHandler = next.getAliasVariableMapper(ctx, target);

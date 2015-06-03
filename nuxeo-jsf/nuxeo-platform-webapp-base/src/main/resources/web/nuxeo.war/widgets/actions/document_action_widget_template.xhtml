@@ -7,13 +7,19 @@
 <nxu:set var="actionContextDocument"
   value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
   cache="true">
-<nxu:set var="widgetProperty_action"
-  value="#{webActions.getActionForDocument(widgetProperty_actionId, actionContextDocument, not widgetProperty_disableFiltered)}"
+<nxu:set var="actionContext"
+  value="#{actionContextProvider.createActionContext(actionContextDocument)}"
   cache="true">
+<nxu:set var="widgetProperty_action"
+  value="#{webActions.getAction(widgetProperty_actionId, actionContext, not widgetProperty_disableFiltered)}"
+  cache="true">
+<nxu:set vars="#{actionContext.localVariables}">
 <nxu:set var="widgetProperty_addForm"
   value="false"
   cache="true">
   <ui:include src="/widgets/actions/action_widget_template.xhtml" />
+</nxu:set>
+</nxu:set>
 </nxu:set>
 </nxu:set>
 </nxu:set>

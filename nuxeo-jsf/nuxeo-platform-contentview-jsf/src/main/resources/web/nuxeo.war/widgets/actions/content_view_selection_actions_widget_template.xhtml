@@ -6,9 +6,14 @@
   test="true">
 
 <c:forEach var="actionCategory" items="#{contentView.actionsCategories}" varStatus="status">
-  <nxu:set var="actions"
-    value="#{documentContentViewActions.getSelectionActions(actionCategory, contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}"
+
+  <nxu:set var="actionContext"
+    value="#{documentContentViewActions.getSelectionActionsContext(contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}"
     cache="true">
+  <nxu:set var="actions"
+    value="#{webActions.getActionsList(actionCategory, actionContext)}"
+    cache="true">
+  <nxu:set vars="#{actionContext.localVariables}">
     <c:if test="#{not status.first and not empty actions}">
       <br />
     </c:if>
@@ -22,6 +27,8 @@
       actionsDisplay="buttons"
       ignoreTemplateProperty="true"
       addForm="true" />
+  </nxu:set>
+  </nxu:set>
   </nxu:set>
 </c:forEach>
 

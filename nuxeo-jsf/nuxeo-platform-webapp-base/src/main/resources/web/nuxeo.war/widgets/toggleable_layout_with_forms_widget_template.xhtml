@@ -184,6 +184,7 @@
                     <nxu:set var="actions"
                       value="#{webActions.getActionsList(allActionCategories)}"
                       cache="true">
+                    <nxu:set vars="#{currentActionContext.localVariables}">
                       <c:forEach var="action" items="#{actions}">
                         <c:if test="#{useAjaxForm}">
                           <nxu:set var="addForm" value="false" cache="true">
@@ -210,6 +211,7 @@
                           </nxu:set>
                         </c:if>
                       </c:forEach>
+                    </nxu:set>
                     </nxu:set>
                     </nxu:set>
 
