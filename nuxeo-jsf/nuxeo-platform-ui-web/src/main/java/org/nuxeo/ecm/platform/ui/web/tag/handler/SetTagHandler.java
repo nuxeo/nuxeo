@@ -172,7 +172,7 @@ public class SetTagHandler extends AliasTagHandler {
             } else {
                 ve = value.getValueExpression(ctx, Object.class);
                 if (resolveTwiceBool) {
-                    ve = new MetaValueExpression(ve);
+                    ve = new MetaValueExpression(ve, ctx.getFunctionMapper(), ctx.getVariableMapper());
                 }
             }
 

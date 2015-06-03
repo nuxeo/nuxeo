@@ -65,7 +65,8 @@ public class MetaValueHolderRule extends MetaRule {
         @Override
         public void applyMetadata(FaceletContext ctx, Object instance) {
             ValueExpression originalExpression = attr.getValueExpression(ctx, Object.class);
-            ((UIComponent) instance).setValueExpression("value", new MetaValueExpression(originalExpression));
+            ((UIComponent) instance).setValueExpression("value",
+                    new MetaValueExpression(originalExpression, ctx.getFunctionMapper(), ctx.getVariableMapper()));
         }
     }
 

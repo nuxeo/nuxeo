@@ -27,7 +27,9 @@ import java.io.Serializable;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
+import javax.el.FunctionMapper;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.application.Application;
 import javax.faces.context.FacesContext;
 
@@ -48,8 +50,19 @@ public class MetaValueExpression extends ValueExpression implements Serializable
 
     private ValueExpression originalValueExpression;
 
+    private FunctionMapper fnMapper;
+
+    private VariableMapper varMapper;
+
     public MetaValueExpression(ValueExpression originalValueExpression) {
+        this(originalValueExpression, null, null);
+    }
+
+    public MetaValueExpression(ValueExpression originalValueExpression, FunctionMapper fnMapper,
+            VariableMapper varMapper) {
         this.originalValueExpression = originalValueExpression;
+        this.fnMapper = fnMapper;
+        this.varMapper = varMapper;
     }
 
     // Expression interface
@@ -90,26 +103,32 @@ public class MetaValueExpression extends ValueExpression implements Serializable
         return originalValueExpression.getExpectedType();
     }
 
+    private ELContext getLocalContext(ELContext context) {
+        return new org.nuxeo.ecm.platform.ui.web.binding.EvaluationContext(context, fnMapper, varMapper);
+    }
+
     @Override
     public Class<?> getType(ELContext context) {
-        // XXX should invoke first
-        return originalValueExpression.getType(context);
+        ELContext nxcontext = getLocalContext(context);
+        // XXX should invoke first...
+        return originalValueExpression.getType(nxcontext);
     }
 
     @Override
     public Object getValue(ELContext context) {
+        ELContext nxcontext = getLocalContext(context);
         Object res = null;
         if (originalValueExpression != null) {
-            res = originalValueExpression.getValue(context);
+            res = originalValueExpression.getValue(nxcontext);
             if (res instanceof String) {
                 String expression = (String) res;
                 if (ComponentTagUtils.isValueReference(expression)) {
                     FacesContext faces = FacesContext.getCurrentInstance();
                     Application app = faces.getApplication();
                     ExpressionFactory factory = app.getExpressionFactory();
-                    ValueExpression newExpr = factory.createValueExpression(context, expression, Object.class);
+                    ValueExpression newExpr = factory.createValueExpression(nxcontext, expression, Object.class);
                     try {
-                        res = newExpr.getValue(context);
+                        res = newExpr.getValue(nxcontext);
                     } catch (ELException err) {
                         log.error(String.format("Error processing expression %s: %s", expression, err));
                         res = null;
