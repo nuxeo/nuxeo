@@ -432,6 +432,9 @@
                   <widget>subTab</widget>
                 </row>
                 <row>
+                  <widget>tabs</widget>
+                </row>
+                <row>
                   <widget>target</widget>
                 </row>
                 <row>
@@ -472,6 +475,22 @@
                   <field>subTab</field>
                 </fields>
               </widget>
+              <widget name="Tabs" type="text">
+                <labels>
+                  <label mode="any">Tabs</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Combination of tabs to select when clicking
+                    on the
+                    document link. Sample value: MAIN_TABS:document.
+                    Available since 7.3.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tabs</field>
+                </fields>
+              </widget>
               <widget name="target" type="text">
                 <labels>
                   <label mode="any">Target</label>
@@ -479,7 +498,8 @@
                 <helpLabels>
                   <label mode="any">
                     Available since 6.0. The target attribute
-                    of the link.
+                    of
+                    the link.
                   </label>
                 </helpLabels>
                 <fields>
@@ -989,6 +1009,7 @@
         <field>data.file.content.filename</field>
       </fields>
       <properties mode="any">
+        <property name="tabs">MAIN_TABS:documents</property>
         <property name="file_property_name">file:content</property>
         <property name="file_schema">file</property>
       </properties>
