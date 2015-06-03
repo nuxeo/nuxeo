@@ -277,6 +277,17 @@
       </description>
     </attribute>
     <attribute>
+      <name>vars</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+      <type>java.util.Map</type>
+      <description>
+        Alternative map of variables to put in context. When set, a
+        resolved map is expected, and resolveTwice and cache attributes are
+        ignored. Available since 7.3.
+      </description>
+    </attribute>
+    <attribute>
       <name>blockPatterns</name>
       <required>false</required>
       <rtexprvalue>false</rtexprvalue>
