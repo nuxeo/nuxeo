@@ -89,12 +89,6 @@ public class ClipboardActionsBean extends InputController implements ClipboardAc
 
     private static final String PASTE_OUTCOME = "after_paste";
 
-    /**
-     * @deprecated use {@link LifeCycleConstants#DELETED_STATE}
-     */
-    @Deprecated
-    public static final String DELETED_LIFECYCLE_STATE = "deleted";
-
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
