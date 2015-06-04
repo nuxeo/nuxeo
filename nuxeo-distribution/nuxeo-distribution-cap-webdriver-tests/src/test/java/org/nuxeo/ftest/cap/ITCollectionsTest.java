@@ -190,7 +190,9 @@ public class ITCollectionsTest extends AbstractTest {
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // Check copy/paste collection
-        contentTabSubPage = collectionContentTabSubPage.switchToPersonalWorkspace().getContentTab();
+        // navigate back to user workspace root
+        contentTabSubPage = collectionContentTabSubPage.switchToDocumentBase().getContentTab();
+        contentTabSubPage = contentTabSubPage.switchToPersonalWorkspace().getContentTab();
 
         contentTabSubPage = contentTabSubPage.goToDocument(
                 isEnglish ? MY_COLLECTIONS_EN_LABEL : MY_COLLECTIONS_FR_LABEL).getContentTab();
