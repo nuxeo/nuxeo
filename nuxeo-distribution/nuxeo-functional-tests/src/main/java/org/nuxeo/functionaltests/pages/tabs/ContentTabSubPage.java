@@ -18,15 +18,10 @@
  */
 package org.nuxeo.functionaltests.pages.tabs;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
@@ -40,20 +35,21 @@ import org.openqa.selenium.support.FindBy;
 
 import com.google.common.base.Function;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 /**
  * The content tab sub page. Most of the time available for folderish documents and displaying the current document's
  * children.
  */
 public class ContentTabSubPage extends DocumentBasePage {
 
-    private static final Log log = LogFactory.getLog(ContentTabSubPage.class);
-
     private static final String COPY_BUTTON_XPATH = "//input[@value=\"Copy\"]";
 
-    private static final String PAST_BUTTON_XPATH = "//input[@value=\"Paste\"]";
+    private static final String PASTE_BUTTON_XPATH = "//input[@value=\"Paste\"]";
 
     private static final String DELETE_BUTTON_XPATH = "//input[@value=\"Delete\"]";
-    
+
     private static final String ADD_TO_WORKLIST_BUTTON_XPATH = "//input[@value=\"Add to worklist\"]";
 
     private static final String SELECT_ALL_BUTTON_XPATH = "//input[@type=\"checkbox\" and @title=\"Select all / deselect all\"]";
@@ -143,13 +139,13 @@ public class ContentTabSubPage extends DocumentBasePage {
         assertEquals("Delete selected document(s)?", alert.getText());
         alert.accept();
     }
-    
+
     public DocumentBasePage addToWorkList(String documentTitle) {
         // get all table item and if the link has the documents title, click
         // (enable) checkbox
 
-    	selectDocumentByTitles(documentTitle);
-    	findElementWaitUntilEnabledAndClick(By.xpath(ADD_TO_WORKLIST_BUTTON_XPATH));
+        selectDocumentByTitles(documentTitle);
+        findElementWaitUntilEnabledAndClick(By.xpath(ADD_TO_WORKLIST_BUTTON_XPATH));
 
         return asPage(DocumentBasePage.class);
     }
@@ -289,7 +285,7 @@ public class ContentTabSubPage extends DocumentBasePage {
      * @since 5.7.8
      */
     public ContentTabSubPage paste() {
-        findElementWaitUntilEnabledAndClick(By.xpath(PAST_BUTTON_XPATH));
+        findElementWaitUntilEnabledAndClick(By.xpath(PASTE_BUTTON_XPATH));
         return asPage(ContentTabSubPage.class);
     }
 
