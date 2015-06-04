@@ -11,6 +11,10 @@
 <%@ page import="org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService"%>
 <%
 Principal principal = request.getUserPrincipal();
+if (principal == null) {
+    response.sendError(HttpStatus.SC_UNAUTHORIZED);
+    return;
+}
 
 // Don't provide token for anonymous user unless 'allowAnonymous' parameter is explicitly set to true in
 // the authentication plugin configuration
