@@ -47,7 +47,7 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
         // reload page
         page = asPage(DocumentBasePage.class);
         checkMainTabs();
-        page = page.swithToPersonalWorkspace();
+        page = page.switchToPersonalWorkspace();
         checkMainTabs();
         // check tree shows personal workspace
         getTreeExplorer().findElement(By.linkText("Administrator"));
@@ -56,7 +56,7 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
         getTreeExplorer().findElement(By.linkText("Default domain"));
         checkMainTabs();
         // check we can still navigate to personal workspace
-        page = page.swithToPersonalWorkspace();
+        page = page.switchToPersonalWorkspace();
         checkMainTabs();
         // check tree shows personal workspace
         getTreeExplorer().findElement(By.linkText("Administrator"));
@@ -69,15 +69,15 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
     public void testNavigationBetweenHomeAndPersonalWorkspace() throws Exception {
         DocumentBasePage page = login();
         checkMainTabs();
-        page = page.swithToPersonalWorkspace();
+        page = page.switchToPersonalWorkspace();
         // check tree shows personal workspace
         getTreeExplorer().findElement(By.linkText("Administrator"));
         page = page.goToHomePage();
-        page = page.getDocumentManagement();
+        page = page.goToWorkspaces();
         checkMainTabs();
         // check tree shows personal workspace
         getTreeExplorer().findElement(By.linkText("Administrator"));
-        page = page.swithToDocumentBase();
+        page = page.switchToDocumentBase();
         // check tree shows document base
         getTreeExplorer().findElement(By.linkText("Default domain"));
     }

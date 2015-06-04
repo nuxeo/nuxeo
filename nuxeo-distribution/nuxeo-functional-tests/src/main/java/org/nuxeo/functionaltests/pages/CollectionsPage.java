@@ -52,7 +52,7 @@ public class CollectionsPage extends HomePage {
         return result;
     }
 
-    public CollectionContentTabSubPage gotToCollection(final String collectionName) {
+    public CollectionContentTabSubPage goToCollection(final String collectionName) {
         Locator.findElementWithTimeout(By.linkText(collectionName), collectionContentView).click();
         return asPage(CollectionContentTabSubPage.class);
     }

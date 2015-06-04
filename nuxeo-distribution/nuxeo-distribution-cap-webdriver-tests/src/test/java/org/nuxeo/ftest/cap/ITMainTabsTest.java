@@ -35,8 +35,6 @@ public class ITMainTabsTest extends AbstractTest {
 
     /**
      * Non-regression test for NXP-17207
-     *
-     * @since TODO
      */
     @Test
     public void testSearchTabSelection() throws Exception {

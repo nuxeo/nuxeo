@@ -207,9 +207,11 @@ public class DocumentBasePage extends AbstractPage {
         return stateLabels;
     }
 
+    /**
+     * @deprecated since 7.3: use {@link #goToWorkspaces()} instead
+     */
     public DocumentBasePage getDocumentManagement() {
-        documentManagementLink.click();
-        return asPage(DocumentBasePage.class);
+        return goToWorkspaces();
     }
 
     public EditTabSubPage getEditTab() {
@@ -330,7 +332,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * @since 5.9.3
      */
-    public DocumentBasePage swithToPersonalWorkspace() {
+    public DocumentBasePage switchToPersonalWorkspace() {
         popupUserMenuActions();
         driver.findElement(By.linkText("Personal Workspace")).click();
         return asPage(DocumentBasePage.class);
@@ -339,7 +341,7 @@ public class DocumentBasePage extends AbstractPage {
     /**
      * @since 5.9.3
      */
-    public DocumentBasePage swithToDocumentBase() {
+    public DocumentBasePage switchToDocumentBase() {
         popupUserMenuActions();
         driver.findElement(By.linkText("Back to document base")).click();
         return asPage(DocumentBasePage.class);
@@ -359,6 +361,14 @@ public class DocumentBasePage extends AbstractPage {
     public SearchPage goToSearchPage() {
         searchPageLink.click();
         return asPage(SearchPage.class);
+    }
+
+    /**
+     * @since 7.3
+     */
+    public DocumentBasePage goToWorkspaces() {
+        documentManagementLink.click();
+        return asPage(DocumentBasePage.class);
     }
 
     /**
