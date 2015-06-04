@@ -29,16 +29,20 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIForm;
 import javax.faces.component.UIInput;
+import javax.faces.component.UpdateModelException;
 import javax.faces.component.visit.VisitCallback;
 import javax.faces.component.visit.VisitContext;
 import javax.faces.component.visit.VisitHint;
 import javax.faces.component.visit.VisitResult;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ExceptionQueuedEvent;
+import javax.faces.event.ExceptionQueuedEventContext;
 import javax.faces.event.FacesEvent;
 import javax.faces.event.PhaseId;
 
@@ -57,6 +61,7 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
+import com.sun.faces.util.MessageFactory;
 
 /**
  * Editable table component.
@@ -1083,6 +1088,67 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
         }
     }
 
+    /**
+     * Overridden to handle diff boolean value, see NXP-16515.
+     */
+    public void updateModel(FacesContext context) {
+
+        if (context == null) {
+            throw new NullPointerException();
+        }
+
+        if (!isValid() || !isLocalValueSet()) {
+            return;
+        }
+        ValueExpression ve = getValueExpression("value");
+        if (ve != null) {
+            Throwable caught = null;
+            FacesMessage message = null;
+            try {
+                Boolean setDiff = getDiff();
+                if (setDiff) {
+                    // set list diff instead of the whole list
+                    EditableModel model = getEditableModel();
+                    ve.setValue(context.getELContext(), model.getListDiff());
+                } else {
+                    ve.setValue(context.getELContext(), getLocalValue());
+                }
+                setValue(null);
+                setLocalValueSet(false);
+            } catch (ELException e) {
+                caught = e;
+                String messageStr = e.getMessage();
+                Throwable result = e.getCause();
+                while (null != result && result.getClass().isAssignableFrom(ELException.class)) {
+                    messageStr = result.getMessage();
+                    result = result.getCause();
+                }
+                if (null == messageStr) {
+                    message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID,
+                            MessageFactory.getLabel(context, this));
+                } else {
+                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR, messageStr, messageStr);
+                }
+                setValid(false);
+            } catch (Exception e) {
+                caught = e;
+                message = MessageFactory.getMessage(context, UPDATE_MESSAGE_ID, MessageFactory.getLabel(context, this));
+                setValid(false);
+            }
+            if (caught != null) {
+                assert (message != null);
+                // PENDING(edburns): verify this is in the spec.
+                @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
+                UpdateModelException toQueue = new UpdateModelException(message, caught);
+                ExceptionQueuedEventContext eventContext = new ExceptionQueuedEventContext(context, toQueue, this,
+                        PhaseId.UPDATE_MODEL_VALUES);
+                context.getApplication().publishEvent(context, ExceptionQueuedEvent.class, eventContext);
+
+            }
+
+        }
+    }
+
     protected void processFacetsAndChildren(final FacesContext context, final PhaseId phaseId) {
         List<UIComponent> stamps = getChildren();
         int oldIndex = getRowIndex();
@@ -1161,16 +1227,6 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                             model.removeValue(i);
                         }
                     }
-                }
-            }
-
-            // FIXME NXP-16515: component is not validated yes so this code will never be called, move this in code
-            // overriding behaviour in #updateModel
-            if (isValid() && isLocalValueSet()) {
-                Boolean setDiff = getDiff();
-                if (setDiff) {
-                    // set list diff instead of the whole list
-                    setValue(model.getListDiff());
                 }
             }
 
