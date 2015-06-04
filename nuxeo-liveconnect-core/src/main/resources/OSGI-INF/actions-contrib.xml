@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.ecm.liveconnect.action">
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+    <action id="blobAppLinks" type="template">
+      <category>BLOB_ACTIONS</category>
+      <properties>
+        <property name="template">/incl/action/app_links_action_template.xhtml</property>
+      </properties>
+    </action>
+  </extension>
+</component>
