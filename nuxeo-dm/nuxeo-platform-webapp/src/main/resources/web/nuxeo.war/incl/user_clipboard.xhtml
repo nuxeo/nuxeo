@@ -12,7 +12,7 @@
 
 <c:if test="#{clipboardActions.initialized and not currentUser.anonymous}">
 
-<h:form>
+<h:form id="clipboardForm">
 <s:cache key="#{clipboardActions.cacheKey}" enabled="false">
 
   <h:panelGroup id="ClipboardListView">
@@ -95,7 +95,7 @@
             </div>
           </nxu:dataList>
         </div>
-    
+
       </div>
 
     </div>
