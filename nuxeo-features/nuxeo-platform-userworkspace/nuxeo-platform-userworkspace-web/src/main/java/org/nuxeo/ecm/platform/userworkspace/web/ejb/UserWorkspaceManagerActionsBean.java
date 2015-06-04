@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.userworkspace.web.ejb;
 
 import static org.jboss.seam.ScopeType.SESSION;
 
+import java.security.Principal;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -80,6 +82,9 @@ public class UserWorkspaceManagerActionsBean implements
     // Rux INA-252: another cause of passivation error
     @In(required = true)
     protected transient NavigationContext navigationContext;
+
+    @In(create = true)
+    protected transient Principal currentUser;
 
     @In(required = false, create = true)
     protected transient CoreSession documentManager;
@@ -207,9 +212,11 @@ public class UserWorkspaceManagerActionsBean implements
                 return false;
             }
 
-            String secondSegment = currentDoc.getPath().segment(1);
-            showingPersonalWorkspace = secondSegment != null
-                    && secondSegment.startsWith(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
+            String rootChild = currentDoc.getPath().segment(1);
+            String wsName = currentDoc.getPath().segment(2);
+            showingPersonalWorkspace = rootChild != null
+                    && rootChild.startsWith(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT) && wsName != null
+                    && wsName.equals(currentUser.getName());
         }
         return showingPersonalWorkspace;
     }
