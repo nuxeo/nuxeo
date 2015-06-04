@@ -497,9 +497,7 @@
           </field>
         </fields>
         <properties widgetMode="any">
-          <property name="actionId">#{webActions.getActionForDocument("go_back_to_tasks_view",null,
-            false)}
-          </property>
+          <property name="actionId">go_back_to_tasks_view</property>
           <property name="actionStyleClass">smallButton</property>
           <property name="actionsDisplay">buttons</property>
           <property name="useAjaxForm">true</property>
@@ -515,9 +513,7 @@
           </field>
         </fields>
         <properties widgetMode="any">
-          <property name="actionId">#{webActions.getActionForDocument("reassignTask",null,
-            false)}
-          </property>
+          <property name="actionId">reassignTask</property>
           <property name="actionStyleClass">smallButton</property>
           <property name="actionsDisplay">buttons</property>
           <property name="useAjaxForm">true</property>
@@ -537,9 +533,7 @@
           </field>
         </fields>
         <properties widgetMode="any">
-          <property name="actionId">#{webActions.getActionForDocument("delegateTask",null,
-            false)}
-          </property>
+          <property name="actionId">delegateTask</property>
           <property name="actionStyleClass">smallButton</property>
           <property name="actionsDisplay">buttons</property>
           <property name="useAjaxForm">true</property>
