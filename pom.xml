@@ -767,6 +767,18 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-core</artifactId>
+        <version>${nuxeo.drive.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-drive-elasticsearch</artifactId>
+        <version>${nuxeo.drive.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-drive-jsf</artifactId>
         <version>${nuxeo.drive.version}</version>
       </dependency>
@@ -914,14 +926,35 @@
 
       <!-- Elasticsearch -->
       <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.elasticsearch</groupId>
         <artifactId>nuxeo-elasticsearch-core</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.elasticsearch</groupId>
         <artifactId>nuxeo-elasticsearch-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-seqgen</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.elasticsearch</groupId>
+        <artifactId>nuxeo-elasticsearch-audit</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
