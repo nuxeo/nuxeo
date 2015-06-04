@@ -61,16 +61,16 @@
         <c:forEach id="files_input" items="#{currentDocument.files.files}" var="file" varStatus="counter">
           <div class="simpleBox">
             <a4j:commandLink immediate="true"
-              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[counter.count - 1].filename)}')) return false;"
+              onclick="if( !confirmRemoveFiles('#{nxu:javaScriptEscape(currentDocument.files.files[counter.index].filename)}')) return false;"
               actionListener="#{FileManageActions.performAction}"
               id="files_delete" render="document_files_edit"
               bypassUpdates="true">
               <h:graphicImage value="/icons/delete.png" alt="#{messages['command.remove.file']}" />
-              <f:param name="index" value="#{counter.count - 1}" />
+              <f:param name="index" value="#{counter.index}" />
             </a4j:commandLink>
 
-            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', counter.index, 'file', currentDocument.files.files[counter.count - 1].filename)}">
-              <nxh:outputText value="#{currentDocument.files.files[counter.count - 1].filename}" />
+            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', counter.index, 'file', currentDocument.files.files[counter.index].filename)}">
+              <nxh:outputText value="#{currentDocument.files.files[counter.index].filename}" />
             </nxh:outputLink>
           </div>
         </c:forEach>
