@@ -85,7 +85,7 @@ public class ITCollectionsTest extends AbstractTest {
             documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument(
                     "Workspaces");
         }
-        ContentTabSubPage contentTabSubPage = documentBasePage.swithToPersonalWorkspace().getContentTab();
+        ContentTabSubPage contentTabSubPage = documentBasePage.switchToPersonalWorkspace().getContentTab();
         contentTabSubPage = contentTabSubPage.removeAllDocuments();
         ManageTabSubPage manageTabSubPage = contentTabSubPage.getManageTab();
         manageTabSubPage.getTrashSubTab().purgeAllDocuments();
@@ -163,7 +163,7 @@ public class ITCollectionsTest extends AbstractTest {
         assertEquals(COLLECTION_NAME_1, collectionNames.get(0));
         assertEquals(COLLECTION_NAME_2, collectionNames.get(1));
 
-        ContentTabSubPage contentTabSubPage = workspaceContentTab.swithToPersonalWorkspace().getContentTab();
+        ContentTabSubPage contentTabSubPage = workspaceContentTab.switchToPersonalWorkspace().getContentTab();
 
         // Check Collection are stored in Personal Workspace
         List<WebElement> personalWorkspaceRootDocs = contentTabSubPage.getChildDocumentRows();
@@ -177,20 +177,20 @@ public class ITCollectionsTest extends AbstractTest {
         final String myFavoritesDocName = personalWorkspaceRootDocs.get(1).findElement(By.xpath("td[3]")).getText();
         assertEquals(isEnglish ? MY_FAVORITES_EN_LABEL : MY_FAVORITES_FR_LABEL, myFavoritesDocName);
 
-        contentTabSubPage.swithToDocumentBase();
+        contentTabSubPage.switchToDocumentBase();
 
-        CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage().goToCollections().gotToCollection(
+        CollectionContentTabSubPage collectionContentTabSubPage = contentTabSubPage.goToHomePage().goToCollections().goToCollection(
                 COLLECTION_NAME_1);
 
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
-        collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage().goToCollections().gotToCollection(
+        collectionContentTabSubPage = collectionContentTabSubPage.goToHomePage().goToCollections().goToCollection(
                 COLLECTION_NAME_2);
 
         assertEquals(2, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // Check copy/paste collection
-        contentTabSubPage = collectionContentTabSubPage.swithToPersonalWorkspace().getContentTab();
+        contentTabSubPage = collectionContentTabSubPage.switchToPersonalWorkspace().getContentTab();
 
         contentTabSubPage = contentTabSubPage.goToDocument(
                 isEnglish ? MY_COLLECTIONS_EN_LABEL : MY_COLLECTIONS_FR_LABEL).getContentTab();
@@ -230,7 +230,7 @@ public class ITCollectionsTest extends AbstractTest {
         documentBasePage = usersTab.exitAdminCenter().getHeaderLinks().getNavigationSubPage().goToDocument("Workspaces");
 
         // Create 2 collections in "My Collections" container
-        documentBasePage = documentBasePage.swithToPersonalWorkspace();
+        documentBasePage = documentBasePage.switchToPersonalWorkspace();
         DocumentBasePage workspacePage = documentBasePage.getNavigationSubPage().goToDocument("Administrator");
         // Add a file to this collection that test user can't see
         FileDocumentBasePage fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description",
@@ -261,11 +261,11 @@ public class ITCollectionsTest extends AbstractTest {
         assertTrue(COLLECTION_NAME_2.equals(collections.get(0)));
 
         // Check that I can't see the file Admin added
-        CollectionContentTabSubPage collectionContentTabSubPage = collectionsPage.gotToCollection(COLLECTION_NAME_2);
+        CollectionContentTabSubPage collectionContentTabSubPage = collectionsPage.goToCollection(COLLECTION_NAME_2);
         assertEquals(0, collectionContentTabSubPage.getChildDocumentRows().size());
 
         // Create a file in test user workspace and add it to the collection
-        documentBasePage = collectionContentTabSubPage.swithToPersonalWorkspace();
+        documentBasePage = collectionContentTabSubPage.switchToPersonalWorkspace();
         fileDocumentBasePage = createFile(workspacePage, TEST_FILE_NAME, "Test File description", false, null, null,
                 null);
         addToCollectionForm = fileDocumentBasePage.getAddToCollectionPopup();
@@ -274,7 +274,7 @@ public class ITCollectionsTest extends AbstractTest {
 
         // Check now the collection has one file
         collectionsPage = documentBasePage.goToHomePage().goToCollections();
-        collectionContentTabSubPage = collectionsPage.gotToCollection(COLLECTION_NAME_2);
+        collectionContentTabSubPage = collectionsPage.goToCollection(COLLECTION_NAME_2);
         assertEquals(1, collectionContentTabSubPage.getChildDocumentRows().size());
 
         logout();
