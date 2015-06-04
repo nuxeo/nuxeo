@@ -69,7 +69,7 @@
               <f:param name="index" value="#{counter.count - 1}" />
             </a4j:commandLink>
 
-            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', model.rowIndex, 'file', currentDocument.files.files[counter.count - 1].filename)}">
+            <nxh:outputLink value="#{nxd:complexFileUrl('downloadFile', currentDocument, 'files:files', counter.index, 'file', currentDocument.files.files[counter.count - 1].filename)}">
               <nxh:outputText value="#{currentDocument.files.files[counter.count - 1].filename}" />
             </nxh:outputLink>
           </div>
