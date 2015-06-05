@@ -1235,6 +1235,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     n++;
                     String digest = (String) col.getFromResultSet(rs, 1);
                     if (digest != null) {
+                        int c = digest.indexOf(':');
+                        if (c > 0) {
+                            // if the digest is in the "providerId:digest" format, keep only the real digest
+                            digest = digest.substring(c + 1);
+                        }
                         gc.mark(digest);
                     }
                 }
