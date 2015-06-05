@@ -4,10 +4,9 @@
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="processors">
 
-    <processor name="cssUrlRewriting" type="wroPre" order="10" />
-    <!-- 
-      <processor name="cssImport" type="wroPre" order="20" />
-     -->
+    <processor name="nuxeoCssUrlRewriting" type="wroPre" order="10">
+      <class>org.nuxeo.ecm.web.resources.wro.processor.CssUrlRewritingProcessor</class>
+    </processor>
     <processor name="cssMin" type="wroPre" order="30" />
 
     <processor name="jsMin" type="wroPost" order="10">
