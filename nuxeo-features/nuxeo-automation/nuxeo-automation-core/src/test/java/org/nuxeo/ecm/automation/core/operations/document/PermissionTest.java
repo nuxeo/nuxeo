@@ -188,6 +188,33 @@ public class PermissionTest {
     }
 
     @Test
+    public void itCanRemovePermissionGivenItsId() throws Exception {
+        // Given an ACP
+        ACP acp = new ACPImpl();
+        String jack = "jack";
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("john", READ_WRITE, true));
+        acl.add(new ACE(jack, READ_WRITE, true));
+        acl.add(new ACE(jack, "comment", true));
+        ACE ace = new ACE("jerry", READ_WRITE, true);
+        acl.add(ace);
+
+        assertEquals(Access.GRANT, acp.getAccess("jack", READ_WRITE));
+        assertEquals(Access.GRANT, acp.getAccess("jerry", READ_WRITE));
+        assertEquals(4, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+
+        // When i call the removePermission operation
+        boolean hasChanged = DocumentPermissionHelper.removePermission(acp, ACL.LOCAL_ACL, ace.hashCode());
+
+        // Then the user doesn't have any permission anymore
+        assertTrue(hasChanged);
+        assertEquals(Access.GRANT, acp.getAccess("jack", READ_WRITE));
+        assertEquals(Access.GRANT, acp.getAccess("jack", "comment"));
+        assertEquals(Access.UNKNOWN, acp.getAccess("jerry", READ_WRITE));
+        assertEquals(3, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+    }
+
+    @Test
     public void testMultipleNewPermissionsWithBlockInheritance() {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
@@ -213,9 +240,6 @@ public class PermissionTest {
 
     }
 
-    /**
-     * @return
-     */
     private ACP getInheritedReadWriteACP() {
         ACP acp = new ACPImpl();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);

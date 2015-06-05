@@ -28,13 +28,14 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 
 /**
  * Operation that removes all permissions on a given ACL for a given user.
  *
  * @since 5.8
  */
-@Operation(id = RemovePermission.ID, category = Constants.CAT_DOCUMENT, label = "Remove Permission", description = "Remove permissions for a given user on the input document(s). Returns the document(s).")
+@Operation(id = RemovePermission.ID, category = Constants.CAT_DOCUMENT, label = "Remove Permission", description = "Remove a permission given its id or all permissions for a given user on the input document(s). Parameter 'id' or 'user' must be set. Returns the document(s).")
 public class RemovePermission {
 
     public static final String ID = "Document.RemovePermission";
@@ -42,7 +43,13 @@ public class RemovePermission {
     @Context
     protected CoreSession session;
 
-    @Param(name = "user")
+    /**
+     * @since 7.3
+     */
+    @Param(name = "id", required = false)
+    protected String id;
+
+    @Param(name = "user", required = false)
     protected String user;
 
     @Param(name = "acl", required = false)
@@ -62,12 +69,22 @@ public class RemovePermission {
     }
 
     protected void removePermission(DocumentModel doc) {
+        if (id == null && user == null) {
+            throw new IllegalParameterException("'id' or 'user' parameter must be set");
+        }
+
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
-        boolean permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, user);
+        boolean permissionChanged = false;
+        if (user != null) {
+            permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, user);
+
+        } else if (id != null) {
+            permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, Integer.valueOf(id));
+        }
+
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
-
     }
 
 }

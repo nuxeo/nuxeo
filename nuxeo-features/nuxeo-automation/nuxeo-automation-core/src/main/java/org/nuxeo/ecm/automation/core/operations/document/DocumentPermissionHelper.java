@@ -18,6 +18,7 @@ package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -111,8 +112,6 @@ public final class DocumentPermissionHelper {
 
     /**
      * Return a list of ACE giving everything permission to admin groups.
-     *
-     * @return
      */
     private static List<ACE> getAdminEverythingACES() {
         List<ACE> result = new ArrayList<>();
@@ -127,9 +126,6 @@ public final class DocumentPermissionHelper {
 
     /**
      * Return a mutable list of ACE.
-     *
-     * @param acEs
-     * @return
      */
     private static List<ACE> getACEAsList(ACE[] acEs) {
         List<ACE> aces = new ArrayList<>();
@@ -165,6 +161,34 @@ public final class DocumentPermissionHelper {
             acp.addACL(acl);
         }
 
+        return securityHasChanged;
+    }
+
+    /**
+     * Removes an ACE given its id.
+     *
+     * @param acp The ACP to modify
+     * @param aclName the name of the ACL to target
+     * @param id the id of the ACE
+     * @return true if something has changed on the document security
+     * @since 7.3
+     */
+    public static boolean removePermission(ACP acp, String aclName, int id) {
+        ACL acl = acp.getACL(aclName);
+
+        boolean securityHasChanged = false;
+        for (Iterator<ACE> it = acl.iterator(); it.hasNext();) {
+            ACE ace = it.next();
+            if (ace.hashCode() == id) {
+                it.remove();
+                securityHasChanged = true;
+            }
+        }
+
+        // in order to clear the cache
+        if (securityHasChanged) {
+            acp.addACL(acl);
+        }
         return securityHasChanged;
     }
 
