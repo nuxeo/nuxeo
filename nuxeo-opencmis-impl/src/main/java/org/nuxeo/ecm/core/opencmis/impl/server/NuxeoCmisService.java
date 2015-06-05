@@ -133,6 +133,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils;
 import org.nuxeo.ecm.core.opencmis.impl.util.ListUtils.BatchedList;
 import org.nuxeo.ecm.core.opencmis.impl.util.SimpleImageInfo;
@@ -927,6 +928,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             }
         }
         String filename = filenameWithExt(doc.getTitle(), ext);
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        downloadService.logDownload(doc, null, filename, "cmisRendition",
+                Collections.singletonMap("rendition", renditionName));
         return new ContentStreamImpl(filename, BigInteger.valueOf(blob.getLength()), blob.getMimeType(), stream);
     }
 

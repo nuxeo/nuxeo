@@ -70,6 +70,7 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -292,6 +293,8 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        downloadService.logDownload(doc, "blobholder:0", blob.getFilename(), "cmis", null);
         return new NuxeoContentStream(blob, lastModified);
     }
 
