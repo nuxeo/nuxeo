@@ -90,4 +90,13 @@ public interface ExtendedBlobProvider extends BlobProvider {
      */
     ManagedBlob freezeVersion(ManagedBlob blob) throws IOException;
 
+    /**
+     * Returns true if version of the blob is a version.
+     * <p>
+     *
+     * @param blob the managed blob
+     * @return true if the blob is a version or a revision
+     */
+    boolean isVersion(ManagedBlob blob);
+
 }
