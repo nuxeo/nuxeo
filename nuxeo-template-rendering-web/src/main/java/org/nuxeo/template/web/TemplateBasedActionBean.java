@@ -3,7 +3,6 @@ package org.nuxeo.template.web;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 import org.jboss.seam.ScopeType;
@@ -180,8 +179,8 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         try {
             Blob rendition = doc.renderWithTemplate(templateName);
             String filename = rendition.getFilename();
-            FacesContext context = FacesContext.getCurrentInstance();
-            return ComponentUtils.download(context, rendition, filename);
+            ComponentUtils.download(currentDocument, null, rendition, filename, "templateRendition");
+            return null;
         } catch (Exception e) {
             log.error("Unable to render template ", e);
             facesMessages.add(StatusMessage.Severity.ERROR,
