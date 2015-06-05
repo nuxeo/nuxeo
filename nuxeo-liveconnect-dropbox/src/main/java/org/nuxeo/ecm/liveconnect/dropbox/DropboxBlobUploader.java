@@ -92,9 +92,7 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         String prefix = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR;
         String pickId = prefix + "DropboxPickMsg";
         String infoId = prefix + "DropboxInfo";
-
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String authorizationUrl = tokens.isEmpty() ? getDropboxBlobProvider().getOAuth2Provider().getAuthorizationUrl(request) : "";
+        String authorizationUrl = tokens.isEmpty() ? getOAuthAuthorizationUrl() : "";
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
@@ -165,7 +163,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         String serviceUserId = getServiceUserId(filePath,
             FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal());
         if (StringUtils.isBlank(serviceUserId)) {
-            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions");
+            String link = String.format("<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.", getOAuthAuthorizationUrl());
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidPermissions", new Object[] { link });
             parent.setValid(false);
             return;
         }
@@ -255,5 +254,11 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         } catch (DbxException | IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }
+    }
+
+    private String getOAuthAuthorizationUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        DropboxOAuth2ServiceProvider provider = getDropboxBlobProvider().getOAuth2Provider();
+        return (provider != null && provider.getClientId() != null) ? provider.getAuthorizationUrl(request) : "";
     }
 }

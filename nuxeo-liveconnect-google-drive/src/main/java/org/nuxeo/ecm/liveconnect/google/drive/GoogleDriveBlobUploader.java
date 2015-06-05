@@ -102,9 +102,7 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         String pickId = prefix + "GoogleDrivePickMsg";
         String authId = prefix + "GoogleDriveAuthMsg";
         String infoId = prefix + "GoogleDriveInfo";
-
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String authorizationUrl = tokens.isEmpty() ? getGoogleDriveBlobProvider().getOAuth2Provider().getAuthorizationUrl(request) : "";
+        String authorizationUrl = tokens.isEmpty() ? getOAuthAuthorizationUrl() : "";
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
@@ -171,7 +169,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         // check if we can get an access token
         String accessToken = getAccessToken(user);
         if (accessToken == null) {
-            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.accessToken", new Object[] { user });
+            String link = String.format("<a href='#' onclick=\"openPopup('%s'); return false;\">Register a new token</a> and try again.", getOAuthAuthorizationUrl());
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.accessToken", new Object[] { user, link });
             parent.setValid(false);
             return;
         }
@@ -224,5 +223,11 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             log.error("Failed to get access token for " + user, e);
         }
         return null;
+    }
+
+    private String getOAuthAuthorizationUrl() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        GoogleOAuth2ServiceProvider provider = (GoogleOAuth2ServiceProvider) getGoogleDriveBlobProvider().getOAuth2Provider();
+        return (provider != null && provider.getClientId() != null) ? provider.getAuthorizationUrl(request) : "";
     }
 }
