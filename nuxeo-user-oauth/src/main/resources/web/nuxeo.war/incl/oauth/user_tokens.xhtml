@@ -19,7 +19,7 @@
       <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.getEnabledProviders()}">
         <h:outputLink value="#"
                       styleClass="button smallButton"
-                      onclick="openPopup('#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}', reRenderDirectory);
+                      onclick="openOAuthAuthorizationPopup('#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}');
                                    return false;">
           Add a new #{entry.oauth2ServiceProvider.serviceName} token
         </h:outputLink>
@@ -30,4 +30,13 @@
   <a4j:jsFunction name="reRenderDirectory"
                   render="directoryEditor">
   </a4j:jsFunction>
+
+  <script>
+    function openOAuthAuthorizationPopup(url) {
+      var options = {
+        onClose: reRenderDirectory
+      };
+      openPopup(url, options);
+    }
+  </script>
 </div>
