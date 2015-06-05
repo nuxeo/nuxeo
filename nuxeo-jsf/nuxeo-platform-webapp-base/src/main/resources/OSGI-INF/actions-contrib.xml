@@ -132,13 +132,7 @@
       <filter-id>restoreVersionDisplay</filter-id>
     </action>
 
-    <action id="blobLiveEdit" link="#{nxd:liveEditUrl(document, widget.fieldDefinitions[0].schemaName, widget.fieldDefinitions[0].fieldName, 'filename')}"
-      order="100" label="label.document.directEdit" icon="/icons/application_form_edit.png">
-      <category>BLOB_ACTIONS</category>
-      <filter-id>isLiveEditable</filter-id>
-    </action>
-
-    <action id="blobToPDF" link="#{conversionActions.generatePdfFileFromBlobHolder(blobHolderGenerator.getBlobHolder(document))}"
+    <action id="blobToPDF" link="#{conversionActions.generatePdfFileFromBlobHolder(document, blobHolderGenerator.getBlobHolder(document))}"
             order="200" label="label.document.generatePdf" icon="/icons/pdf.png">
       <category>BLOB_ACTIONS</category>
       <filter-id>isMainBlob</filter-id>
@@ -256,12 +250,6 @@
         <condition>
           document.getCurrentLifeCycleState().equals("deleted")
         </condition>
-      </rule>
-    </filter>
-
-    <filter id="isLiveEditable">
-      <rule grant="true">
-        <condition>#{liveEditHelper.isDocumentLiveEditable(document, "file", "content")}</condition>
       </rule>
     </filter>
 
