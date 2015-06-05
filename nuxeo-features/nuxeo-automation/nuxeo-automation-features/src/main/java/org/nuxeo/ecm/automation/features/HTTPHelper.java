@@ -17,6 +17,7 @@
  */
 package org.nuxeo.ecm.automation.features;
 
+import java.io.IOException;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
@@ -25,6 +26,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 
 import com.sun.jersey.api.client.Client;
@@ -45,40 +47,42 @@ public class HTTPHelper implements ContextHelper {
 
     private static final Integer TIMEOUT = 1000 * 60 * 5; // 5min
 
-    public static Blob call(String username, String password, String requestType, String path) {
+    public static Blob call(String username, String password, String requestType, String path) throws IOException {
         return call(username, password, requestType, path, null, null, null, null);
     }
 
     public static Blob call(String username, String password, String requestType, String path,
-            Map<String, String> headers) {
+            Map<String, String> headers) throws IOException {
         return call(username, password, requestType, path, null, null, null, headers);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, MultiPart mp) {
+    public static Blob call(String username, String password, String requestType, String path, MultiPart mp)
+            throws IOException {
         return call(username, password, requestType, path, null, null, mp, null);
     }
 
     public static Blob call(String username, String password, String requestType, String path, MultiPart mp,
-            Map<String, String> headers) {
+            Map<String, String> headers) throws IOException {
         return call(username, password, requestType, path, null, null, mp, headers);
     }
 
     public static Blob call(String username, String password, String requestType, String path,
-            MultivaluedMap<String, String> queryParams) {
+            MultivaluedMap<String, String> queryParams) throws IOException {
         return call(username, password, requestType, path, null, queryParams, null, null);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, String data) {
+    public static Blob call(String username, String password, String requestType, String path, Object data)
+            throws IOException {
         return call(username, password, requestType, path, data, null, null, null);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, String data,
-            Map<String, String> headers) {
+    public static Blob call(String username, String password, String requestType, String path, Object data,
+            Map<String, String> headers) throws IOException {
         return call(username, password, requestType, path, data, null, null, headers);
     }
 
-    public static Blob call(String username, String password, String requestType, String url, String data,
-            MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) {
+    public static Blob call(String username, String password, String requestType, String url, Object data,
+            MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) throws IOException {
         ClientConfig config = new DefaultClientConfig();
         config.getClasses().add(MultiPartWriter.class);
         Client client = Client.create(config);
@@ -136,7 +140,7 @@ public class HTTPHelper implements ContextHelper {
             throw new RuntimeException(e);
         }
         if (response != null && response.getStatus() >= 200 && response.getStatus() < 300) {
-            return new StringBlob(response.getEntity(String.class), "text/plain", "UTF-8");
+            return Blobs.createBlob(response.getEntityInputStream());
         } else {
             return new StringBlob(response.getStatusInfo() != null ? response.getStatusInfo().toString() : "error");
         }

@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.automation.core.context;
 
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -91,7 +92,7 @@ public class TestHttpHelpers {
     }
 
     @Test
-    public void canUseHttpHelperGETBlob() throws OperationException, IOException {
+    public void canUseHttpHelperGETStringBlob() throws OperationException, IOException {
         Map<String, Object> params = new HashMap<>();
         params.put(
                 "script",
@@ -101,6 +102,19 @@ public class TestHttpHelpers {
         String result = ((Blob) ctx.get("result")).getString();
         assertNotEquals("Internal Server Error", result);
         assertTrue(result.contains("one"));
+    }
+
+    @Test
+    public void canUseHttpHelperGETBlob() throws OperationException, IOException {
+        Map<String, Object> params = new HashMap<>();
+        params.put(
+                "script",
+                "Context.result = HTTP.call(\"Administrator\",\"Administrator\",\"GET\", \"http://localhost:18090/api/v1/path/testBlob2/@blob/file:content\");");
+        OperationContext ctx = new OperationContext(session);
+        automationService.run(ctx, "RunScript", params);
+        Blob result = ((Blob) ctx.get("result"));
+        assertNotNull(result);
+        assertTrue(result.getLength() > 0);
     }
 
 }
