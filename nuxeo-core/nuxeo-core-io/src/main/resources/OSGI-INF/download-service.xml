@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.io.download.DownloadService">
+  <implementation class="org.nuxeo.ecm.core.io.download.DownloadServiceImpl" />
+  <service>
+    <provide interface="org.nuxeo.ecm.core.io.download.DownloadService" />
+  </service>
+</component>

@@ -27,7 +27,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Produces;
@@ -39,8 +38,8 @@ import javax.ws.rs.ext.Provider;
 
 import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
+import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -65,20 +64,16 @@ public class BlobWriter implements MessageBodyWriter<Blob> {
     private ServletContext servletContext;
 
     @Override
-    public void writeTo(Blob t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+    public void writeTo(Blob blob, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException {
         // Ensure transaction is committed before writing blob to response
         commitAndReopenTransaction();
         if (Framework.isTestModeSet()) {
-            transferBlob(t, entityStream);
+            transferBlob(blob, entityStream);
         } else {
-            try {
-                DownloadServlet.downloadBlob(request, response, t, t.getFilename());
-            } catch (ServletException e) {
-                log.error("Error while downloading blob", e);
-            }
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            downloadService.downloadBlob(request, response, null, null, blob, blob.getFilename(), "webengine");
         }
-
     }
 
     protected void commitAndReopenTransaction() {

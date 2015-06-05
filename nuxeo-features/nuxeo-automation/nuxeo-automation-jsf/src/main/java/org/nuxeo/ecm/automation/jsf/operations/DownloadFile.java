@@ -14,6 +14,7 @@ package org.nuxeo.ecm.automation.jsf.operations;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,12 +52,12 @@ public class DownloadFile {
             throw new OperationException("there is no file content available");
         }
 
-        FacesContext faces = FacesContext.getCurrentInstance();
         String filename = blob.getFilename();
         if (blob.getLength() > Functions.getBigFileSizeLimit()) {
 
-            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
+            HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+            HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
 
             String sid = UUID.randomUUID().toString();
             request.getSession(true).setAttribute(sid, blob);
@@ -80,7 +81,7 @@ public class DownloadFile {
                 log.error("Error while redirecting for big blob downloader", e);
             }
         } else {
-            ComponentUtils.download(faces, blob, filename);
+            ComponentUtils.download(null, null, blob, filename, "operation");
         }
     }
 

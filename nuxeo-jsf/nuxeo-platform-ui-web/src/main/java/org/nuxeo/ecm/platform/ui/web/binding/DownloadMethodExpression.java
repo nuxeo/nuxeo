@@ -25,7 +25,6 @@ import javax.el.ELContext;
 import javax.el.MethodExpression;
 import javax.el.MethodInfo;
 import javax.el.ValueExpression;
-import javax.faces.context.FacesContext;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -99,10 +98,10 @@ public class DownloadMethodExpression extends MethodExpression implements Serial
 
     @Override
     public Object invoke(ELContext context, Object[] params) {
-        FacesContext faces = FacesContext.getCurrentInstance();
         Blob blob = getBlob(context);
         String filename = getFilename(context);
-        return ComponentUtils.download(faces, blob, filename);
+        ComponentUtils.download(null, null, blob, filename, "el");
+        return null;
     }
 
     protected String getFilename(ELContext context) {

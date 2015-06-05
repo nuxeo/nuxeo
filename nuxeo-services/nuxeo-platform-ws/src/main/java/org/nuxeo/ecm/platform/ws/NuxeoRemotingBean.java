@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.api.ws.DocumentBlob;
 import org.nuxeo.ecm.platform.api.ws.DocumentDescriptor;
 import org.nuxeo.ecm.platform.api.ws.DocumentLoader;
@@ -431,24 +432,9 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
     }
 
     protected String getDownloadUrl(String repoName, String docId, String schemaName, String xPath, String fileName) {
-        // String downloadUrl =
-        // "/nxbigfile/default/1f4f31c4-9b07-4709-9563-7d60a96f63ed/file:content/preview.pdf";
-        schemaName = getSchemaPrefix(schemaName);
-
-        StringBuilder sb = new StringBuilder();
-        // if (xPath.startsWith(schemaName + "/"))
-        // xPath = xPath.replace(schemaName + "/", "");
-        sb.append("/nxbigfile/");
-        sb.append(repoName);
-        sb.append("/");
-        sb.append(docId);
-        sb.append("/");
-        sb.append(schemaName);
-        sb.append(":");
-        sb.append(xPath);
-        sb.append("/");
-        sb.append(fileName);
-        return sb.toString();
+        String xpath = schemaName + ':' + xPath;
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        return "/" + downloadService.getDownloadUrl(repoName, docId, xpath, fileName);
     }
 
     @Override

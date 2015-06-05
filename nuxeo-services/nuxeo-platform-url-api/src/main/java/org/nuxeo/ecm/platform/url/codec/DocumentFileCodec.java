@@ -32,13 +32,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.utils.DocumentModelUtils;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
@@ -158,53 +155,12 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         return null;
     }
 
-    public static String getBlobPropertyName(DocumentView docView) {
-        return docView.getParameter(FILE_PROPERTY_PATH_KEY);
-    }
-
-    public static Blob getBlob(DocumentModel doc, DocumentView docView) {
-        Blob blob = null;
-        String propertyName = getBlobPropertyName(docView);
-        if (propertyName != null) {
-            if (propertyName.startsWith("blobholder")) {
-                blob = getBlobViaBlobHolder(doc, propertyName);
-            } else {
-                blob = (Blob) DocumentModelUtils.getPropertyValue(doc, propertyName);
-            }
-        }
-        return blob;
-    }
-
-    public static Blob getBlobViaBlobHolder(DocumentModel doc, String bhPath) {
-
-        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-        if (bh == null) {
-            return null;
-        }
-        bhPath = bhPath.replace("blobholder:", "");
-        try {
-            if ("".equals(bhPath) || "0".equals(bhPath)) {
-                return bh.getBlob();
-            } else {
-                int idx = Integer.parseInt(bhPath);
-                return bh.getBlobs().get(idx);
-            }
-        } catch (ClientException | NumberFormatException e) {
-            log.error("Error whild using BlobHolder to retrieve Blob", e);
-        }
-        return null;
-    }
-
-    public static String getFilenamePropertyName(DocumentView docView) {
-        String propertyPath = docView.getParameter(FILENAME_PROPERTY_PATH_KEY);
-        return DocumentModelUtils.decodePropertyName(propertyPath);
-    }
-
     public static String getFilename(DocumentModel doc, DocumentView docView) {
         String filename = docView.getParameter(FILENAME_KEY);
         if (filename == null) {
             // try to get it from document
-            String propertyName = getFilenamePropertyName(docView);
+            String propertyPath = docView.getParameter(FILENAME_PROPERTY_PATH_KEY);
+            String propertyName = DocumentModelUtils.decodePropertyName(propertyPath);
             if (propertyName != null) {
                 filename = (String) DocumentModelUtils.getPropertyValue(doc, propertyName);
             }

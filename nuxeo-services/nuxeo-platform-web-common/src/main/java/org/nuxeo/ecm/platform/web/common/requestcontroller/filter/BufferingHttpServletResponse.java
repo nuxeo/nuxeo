@@ -22,6 +22,8 @@ import java.io.PrintWriter;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
+
 /**
  * Buffers the response until {@link #stopBuffering()} is called.
  * <p>

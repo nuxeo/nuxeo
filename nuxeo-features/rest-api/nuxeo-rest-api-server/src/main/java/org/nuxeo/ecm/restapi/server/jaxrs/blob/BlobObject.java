@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.blob;
 
+import static org.nuxeo.ecm.core.io.download.DownloadService.BLOBHOLDER_PREFIX;
+
 import java.io.Serializable;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,8 +49,6 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 @WebObject(type = "blob")
 public class BlobObject extends DefaultObject {
 
-    public static final String BLOB_HOLDER_PREFIX = "blobholder:";
-
     private String fieldPath;
 
     private DocumentModel doc;
@@ -69,10 +69,10 @@ public class BlobObject extends DefaultObject {
                     throw new IllegalArgumentException("No xpath specified and document does not have 'file' schema");
                 }
             } else {
-                if (fieldPath.startsWith(BLOB_HOLDER_PREFIX)) {
+                if (fieldPath.startsWith(BLOBHOLDER_PREFIX)) {
                     bh = doc.getAdapter(BlobHolder.class);
                     if (bh != null) {
-                        fieldPath = fieldPath.replace(BLOB_HOLDER_PREFIX, "");
+                        fieldPath = fieldPath.replace(BLOBHOLDER_PREFIX, "");
                     } else {
                         throw new WebResourceNotFoundException("No BlobHolder found");
                     }
@@ -85,7 +85,7 @@ public class BlobObject extends DefaultObject {
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter.isAssignableFrom(Blob.class)) {
             try {
-                return adapter.cast(blob(fieldPath));
+                return adapter.cast(getBlob());
             } catch (ClientException e) {
                 throw WebException.wrap("Could not find any blob: " + fieldPath, e);
             }
@@ -93,7 +93,7 @@ public class BlobObject extends DefaultObject {
         return super.getAdapter(adapter);
     }
 
-    protected Blob blob(String xpath) throws ClientException {
+    protected Blob getBlob() throws ClientException {
         if (bh != null) {
             if (StringUtils.isBlank(fieldPath) || fieldPath.equals("0")) {
                 return bh.getBlob();
@@ -102,13 +102,13 @@ public class BlobObject extends DefaultObject {
                 return bh.getBlobs().get(index);
             }
         }
-        return (Blob) doc.getPropertyValue(xpath);
+        return (Blob) doc.getPropertyValue(fieldPath);
     }
 
     @GET
     public Object doGet(@Context Request request) throws ClientException {
         try {
-            Blob blob = blob(fieldPath);
+            Blob blob = getBlob();
             if (blob == null) {
                 throw new WebResourceNotFoundException("No attached file at " + fieldPath);
             }

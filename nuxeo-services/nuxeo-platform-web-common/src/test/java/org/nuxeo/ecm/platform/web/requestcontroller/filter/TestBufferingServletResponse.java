@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.web.requestcontroller.filter;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,14 +29,12 @@ import java.lang.reflect.Proxy;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
+import org.junit.Before;
+import org.junit.Test;
+import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingHttpServletResponse;
 
 public class TestBufferingServletResponse {

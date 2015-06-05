@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.ui.web.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +45,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.component.list.UIEditableList;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
@@ -172,59 +175,79 @@ public final class ComponentUtils {
         return value;
     }
 
-    public static String download(FacesContext faces, Blob blob, String filename) {
-        if (!faces.getResponseComplete()) {
-            // do not perform download in an ajax request
-            boolean ajaxRequest = faces.getPartialViewContext().isAjaxRequest();
-            if (ajaxRequest) {
-                return null;
-            }
-            if (blob == null) {
-                log.error("No bytes available for the file: " + filename);
-            } else {
-                ExternalContext econtext = faces.getExternalContext();
-                HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
-                if (filename == null || filename.length() == 0) {
-                    filename = "file";
-                }
-                HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
-                String digest = blob.getDigest();
-                try {
-                    String previousToken = request.getHeader("If-None-Match");
-                    if (previousToken != null && previousToken.equals(digest)) {
-                        response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-                    } else {
-                        response.setHeader("ETag", digest);
-                        response.setHeader("Content-Disposition",
-                                ServletHelper.getRFC2231ContentDisposition(request, filename));
+    /**
+     * Downloads a blob and sends it to the requesting user, in the JSF current context.
+     *
+     * @param doc the document, if available
+     * @param xpath the blob's xpath or blobholder index, if available
+     * @param blob the blob, if already fetched
+     * @param filename the filename to use
+     * @param reason the download reason
+     *
+     * @since 7.3
+     */
+   public static void download(DocumentModel doc, String xpath, Blob blob, String filename, String reason) {
+       download(doc, xpath, blob, filename, reason, null);
+   }
 
-                        addCacheControlHeaders(request, response);
-
-                        log.debug("Downloading with mime/type : " + blob.getMimeType());
-                        response.setContentType(blob.getMimeType());
-                        long fileSize = blob.getLength();
-                        if (fileSize > 0) {
-                            response.setContentLength((int) fileSize);
-                        }
-                        blob.transferTo(response.getOutputStream());
-                        response.flushBuffer();
-                    }
-                } catch (IOException e) {
-                    if (ExceptionHelper.isClientAbortError(e)) {
-                        ExceptionHelper.logClientAbort(e);
-                    } else {
-                        log.error("Error while downloading the file: " + filename, e);
-                    }
-                }
-                faces.responseComplete();
-            }
+    /**
+     * Downloads a blob and sends it to the requesting user, in the JSF current context.
+     *
+     * @param doc the document, if available
+     * @param xpath the blob's xpath or blobholder index, if available
+     * @param blob the blob, if already fetched
+     * @param filename the filename to use
+     * @param reason the download reason
+     * @param extendedInfos an optional map of extended informations to log
+     *
+     * @since 7.3
+     */
+    public static void download(DocumentModel doc, String xpath, Blob blob, String filename, String reason,
+            Map<String, Serializable> extendedInfos) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext.getResponseComplete()) {
+            // nothing can be written, an error was probably already sent. don't bother
+            log.debug("Cannot send " + filename + ", response already complete");
+            return;
         }
+        if (facesContext.getPartialViewContext().isAjaxRequest()) {
+            // do not perform download in an ajax request
+            return;
+        }
+        ExternalContext externalContext = facesContext.getExternalContext();
+        HttpServletRequest request = (HttpServletRequest) externalContext.getRequest();
+        HttpServletResponse response = (HttpServletResponse) externalContext.getResponse();
+        try {
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            downloadService.downloadBlob(request, response, doc, xpath, blob, filename, reason);
+        } catch (IOException e) {
+            log.error("Error while downloading the file: " + filename, e);
+        } finally {
+            facesContext.responseComplete();
+        }
+    }
+
+    public static String downloadFile(File file, String filename, String reason) throws IOException {
+        Blob blob = Blobs.createBlob(file);
+        download(null, null, blob, filename, reason);
         return null;
     }
 
+    /**
+     * @deprecated since 7.3, use {@link #downloadFile(Blob, String)} instead
+     */
+    @Deprecated
+    public static String download(FacesContext faces, Blob blob, String filename) {
+        download(null, null, blob, filename, "download");
+        return null;
+    }
+
+    /**
+     * @deprecated since 7.3, use {@link #downloadFile(File, String)} instead
+     */
+    @Deprecated
     public static String downloadFile(FacesContext faces, String filename, File file) throws IOException {
-        Blob blob = Blobs.createBlob(file);
-        return download(faces, blob, filename);
+        return downloadFile(file, filename, null);
     }
 
     protected static boolean forceNoCacheOnMSIE() {

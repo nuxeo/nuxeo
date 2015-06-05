@@ -33,9 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -119,16 +119,16 @@ public class FancyURLFilter implements Filter {
 
         } catch (IOException e) {
             String url = httpRequest.getRequestURL().toString();
-            if (ExceptionHelper.isClientAbortError(e)) {
-                ExceptionHelper.logClientAbort(e);
+            if (DownloadHelper.isClientAbortError(e)) {
+                DownloadHelper.logClientAbort(e);
                 log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
             } else {
                 throw new IOException("On requestURL: " + url, e);
             }
         } catch (ServletException e) {
             String url = httpRequest.getRequestURL().toString();
-            if (ExceptionHelper.isClientAbortError(e)) {
-                ExceptionHelper.logClientAbort(e);
+            if (DownloadHelper.isClientAbortError(e)) {
+                DownloadHelper.logClientAbort(e);
                 log.debug(String.format("Client disconnected from URL %s : %s", url, e.getMessage()));
             } else {
                 throw new ServletException("On requestURL: " + url, e);

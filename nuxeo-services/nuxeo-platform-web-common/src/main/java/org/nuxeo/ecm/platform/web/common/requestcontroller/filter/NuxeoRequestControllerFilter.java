@@ -42,8 +42,8 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestControllerManager;
 import org.nuxeo.ecm.platform.web.common.requestcontroller.service.RequestFilterConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -139,8 +139,8 @@ public class NuxeoRequestControllerFilter implements Filter {
             try {
                 chain.doFilter(request, response);
             } catch (ServletException e) {
-                if (ExceptionHelper.isClientAbortError(e)) {
-                    ExceptionHelper.logClientAbort(e);
+                if (DownloadHelper.isClientAbortError(e)) {
+                    DownloadHelper.logClientAbort(e);
                 } else {
                     throw e;
                 }
@@ -174,8 +174,8 @@ public class NuxeoRequestControllerFilter implements Filter {
                 }
                 TransactionHelper.setTransactionRollbackOnly();
             }
-            if (ExceptionHelper.isClientAbortError(e)) {
-                ExceptionHelper.logClientAbort(e);
+            if (DownloadHelper.isClientAbortError(e)) {
+                DownloadHelper.logClientAbort(e);
             } else {
                 log.error(doFormatLogMessage(httpRequest, "Unhandled error was caught by the Filter"), e);
                 throw new ServletException(e);

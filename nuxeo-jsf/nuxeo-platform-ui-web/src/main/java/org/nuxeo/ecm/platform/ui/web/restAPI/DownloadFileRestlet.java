@@ -37,9 +37,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
+import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.OutputRepresentation;
@@ -92,21 +94,26 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
 
             String blobPropertyName = getQueryParamValue(req, BLOB_PROPERTY_NAME, null);
             String filenamePropertyName = getQueryParamValue(req, FILENAME_PROPERTY_NAME, null);
+            String xpath;
             if (blobPropertyName != null && filenamePropertyName != null) {
                 filename = (String) dm.getPropertyValue(filenamePropertyName);
                 blob = (Blob) dm.getPropertyValue(blobPropertyName);
+                xpath = blobPropertyName;
             } else {
                 String schemaName = getQueryParamValue(req, SCHEMA, DEFAULT_SCHEMA);
                 String blobFieldName = getQueryParamValue(req, BLOB_FIELD, DEFAULT_BLOB_FIELD);
                 String filenameFieldName = getQueryParamValue(req, FILENAME_FIELD, DEFAULT_FILENAME_FIELD);
                 filename = (String) dm.getProperty(schemaName, filenameFieldName);
                 blob = (Blob) dm.getProperty(schemaName, blobFieldName);
+                xpath = schemaName + ':' + blobFieldName;
             }
 
             // blobs are always persistent, and temporary blobs are GCed only when not referenced anymore
             res.setEntity(new OutputRepresentation(null) {
                 @Override
                 public void write(OutputStream outputStream) throws IOException {
+                    DownloadService downloadService = Framework.getService(DownloadService.class);
+                    downloadService.logDownload(dm, xpath, filename, "restlet", null);
                     try (InputStream stream = blob.getStream()) {
                         IOUtils.copy(stream, outputStream);
                     }
