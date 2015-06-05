@@ -225,7 +225,6 @@
       <format-type>widget</format-type>
       <template>nxthemes/html/widgets/theme-view.xml</template>
       <resource>nxthemes.css</resource>
-      <resource>autosuggest.css</resource>
     </view>
 
     <view name="page frame" template-engine="html">

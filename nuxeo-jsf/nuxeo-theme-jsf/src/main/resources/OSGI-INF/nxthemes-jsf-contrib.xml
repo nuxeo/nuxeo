@@ -165,7 +165,6 @@
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/theme-view.xml</template>
       <resource>nxthemes.css</resource>
-      <resource>autosuggest.css</resource>
     </view>
 
     <view name="page frame" template-engine="jsf-facelets">
@@ -231,7 +230,6 @@
       <format-type>widget</format-type>
       <template>nxthemes/jsf/widgets/theme-view-no-cache.xml</template>
       <resource>nxthemes.css</resource>
-      <resource>autosuggest.css</resource>
     </view>
 
 
