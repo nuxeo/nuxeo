@@ -1,22 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+  xmlns:nxr="http://nuxeo.org/nxweb/resources">
 
-  <ui:define name="page title">
-    <h:outputText value="#{messages['label.layoutDemo.title']}" />
-  </ui:define>
+  <f:view contentType="text/html" />
+  <h:head id="pageHead">
+    <title>
+      <h:outputText value="#{messages['label.layoutDemo.title']}" />
+    </title>
 
-  <ui:define name="stylesheets">
+    <ui:decorate template="/incl/page_head.xhtml">
+      <ui:param name="name" value="layoutDemo/default" />
+    </ui:decorate>
+
     <link rel="stylesheet" type="text/css" href="${baseURL}layoutDemo/style/layoutDemo.css" />
     <link href="#{baseURL}layoutDemo/style/prettify.css" type="text/css" rel="stylesheet" />
-  </ui:define>
-
-  <ui:define name="header_scripts">
     <script type="text/javascript" src="#{baseURL}layoutDemo/scripts/layoutDemo.js"></script>
     <script type="text/javascript" src="#{baseURL}layoutDemo/scripts/prettify.js"></script>
+
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-81135-21']);
@@ -28,25 +31,44 @@
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 </script>
-  </ui:define>
 
-  <ui:define name="body">
+  </h:head>
 
-    <table class="layoutDemoPage">
-      <tbody>
-        <tr>
-          <ui:insert name="menu">
-            <td width="20%" valign="top">
-              <ui:include src="menu.xhtml" />
-            </td>
-          </ui:insert>
-          <td valign="top">
-            <ui:insert name="content" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <h:body>
 
-  </ui:define>
+    <ui:include src="/incl/includes.xhtml" />
 
-</nxthemes:composition>
+    <div>
+      <header class="nxHeader">
+        <div class="content">
+          <ui:include src="/layoutDemo/header.xhtml" />
+        </div>
+      </header>
+      <section class="nxMainContainer">
+        <div class="content">
+          <table class="layoutDemoPage">
+            <tbody>
+              <tr>
+                <ui:insert name="menu">
+                  <td width="20%" valign="top">
+                    <ui:include src="menu.xhtml" />
+                  </td>
+                </ui:insert>
+                <td valign="top">
+                  <ui:insert name="content" />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <footer class="nxFooter">
+        <div class="content">
+          <ui:include src="/layoutDemo/footer.xhtml" />
+        </div>
+      </footer>
+    </div>
+
+  </h:body>
+
+</html>
