@@ -33,6 +33,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
+
 /**
  * Test the {@link ESAuditChangeFinder}.
  *
@@ -56,7 +57,7 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
     }
 
     @Override
-    protected void cleanUpAuditLog() {
+    protected void cleanUpAuditLog() throws Exception {
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
         ((ESAuditBackend) auditService.getBackend()).deactivate();

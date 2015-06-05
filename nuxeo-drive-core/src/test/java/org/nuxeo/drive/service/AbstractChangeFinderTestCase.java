@@ -1076,7 +1076,7 @@ public abstract class AbstractChangeFinderTestCase {
         commitAndWaitForAsyncCompletion();
     }
 
-    protected abstract void cleanUpAuditLog();
+    protected abstract void cleanUpAuditLog() throws Exception;
 
     protected Set<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(List<FileSystemItemChange> changes) {
         Set<SimpleFileSystemItemChange> simpleChanges = new HashSet<SimpleFileSystemItemChange>();
