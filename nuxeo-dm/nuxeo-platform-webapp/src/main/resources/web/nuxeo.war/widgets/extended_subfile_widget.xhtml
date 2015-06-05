@@ -38,7 +38,7 @@
 
     <nxu:inputFile id="#{widget.id}_file" value="#{field_0}"
       filename="#{field_1}" required="#{widgetProperty_required}" editFilename="false" />
-    <h:message styleClass="errorMessage" for="#{widget.id}_file"
+    <h:message escape="false" styleClass="errorMessage" for="#{widget.id}_file"
       id="#{widget.id}_message" />
 
   </c:if>
