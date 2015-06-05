@@ -65,7 +65,7 @@ public class ResourceBundleRenderer extends ScriptStyleBaseRenderer {
             if (cssr != null && !cssr.isEmpty()) {
                 encodeEnd(context, component, ResourceType.css, ENDPOINT_PATH + name + ".css");
             }
-            List<Resource> jsr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.html.name());
+            List<Resource> jsr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.js.name());
             if (jsr != null && !jsr.isEmpty()) {
                 encodeEnd(context, component, ResourceType.js, ENDPOINT_PATH + name + ".js");
             }
