@@ -18,7 +18,6 @@ package org.nuxeo.ecm.liveconnect.dropbox;
 
 import com.dropbox.core.DbxEntry;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestUtil;
 import com.dropbox.core.json.JsonReadException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -90,5 +89,9 @@ public class MockDropboxBlobProvider extends DropboxBlobProvider {
             throw new UnsupportedOperationException(e);
         }
         return file;
+    }
+
+    protected DbxEntry.File getFileNoCache(String user, String filePath) throws DbxException, IOException {
+        return getFile(user, filePath);
     }
 }

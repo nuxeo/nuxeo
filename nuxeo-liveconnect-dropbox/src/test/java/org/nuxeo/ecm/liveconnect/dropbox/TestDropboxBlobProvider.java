@@ -18,16 +18,10 @@ package org.nuxeo.ecm.liveconnect.dropbox;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
-import org.nuxeo.ecm.core.blob.BlobManagerFeature;
 import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 import javax.inject.Inject;
@@ -38,22 +32,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.nuxeo.ecm.liveconnect.dropbox.DropboxBlobProvider.PREFIX;
 
-@RunWith(FeaturesRunner.class)
-@Features({BlobManagerFeature.class})
-@Deploy({ "org.nuxeo.ecm.core.cache", "org.nuxeo.ecm.core.mimetype" })
-@LocalDeploy({ "org.nuxeo.ecm.liveconnect.dropbox:OSGI-INF/cache-config.xml",
-        "org.nuxeo.ecm.liveconnect.dropbox:OSGI-INF/test-dropbox-config.xml" })
-public class TestDropboxBlobProvider {
-
-    private static final String USERID = "tester@example.com";
-
-    private static final String FILEID_JPEG = "12341234";
-
-    private static final String FILEID_DOC = "56785678";
-
-    private static final String FILENAME_PDF = "document.pdf";
-
-    private static final int SIZE = 36830;
+public class TestDropboxBlobProvider extends DropboxTestCase {
 
     @Inject
     protected RuntimeHarness harness;
