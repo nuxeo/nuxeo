@@ -17,8 +17,6 @@
  */
 package org.nuxeo.drive.elasticsearch;
 
-import javax.inject.Inject;
-
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -34,6 +32,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import com.google.inject.Inject;
 /**
  * Test the {@link ESAuditChangeFinder}.
  *
