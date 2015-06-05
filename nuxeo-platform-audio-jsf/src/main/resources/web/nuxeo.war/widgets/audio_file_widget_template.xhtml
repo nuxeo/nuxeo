@@ -27,7 +27,7 @@
     onclick="#{widgetProperty_onclick}" onchange="#{widgetProperty_onchange}">
     <nxu:validateFileMimetype extensions="#{acceptedExtensions}" hidden="true" />
   </nxu:inputFile>
-  <h:message styleClass="errorMessage" for="#{widget.id}"
+  <h:message escape="false" styleClass="errorMessage" for="#{widget.id}"
     id="#{widget.id}_message" />
 
 </c:if>
