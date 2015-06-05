@@ -33,7 +33,6 @@ import java.util.Map;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
-import javax.faces.application.FacesMessage;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
@@ -56,7 +55,6 @@ import org.nuxeo.ecm.platform.ui.web.model.impl.ProtectedEditableModelImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
 import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.faces.util.MessageFactory;
 
 /**
  * Editable table component.
@@ -955,66 +953,6 @@ public class UIEditableList extends UIInput implements NamingContainer,
         } else {
             // force reset
             resetCachedModel();
-        }
-    }
-
-    public void updateModel(FacesContext context) {
-
-        if (context == null) {
-            throw new NullPointerException();
-        }
-
-        if (!isValid() || !isLocalValueSet()) {
-            return;
-        }
-        ValueExpression ve = getValueExpression("value");
-        if (ve != null) {
-            try {
-                Boolean setDiff = getDiff();
-                if (setDiff) {
-                    // set list diff instead of the whole list
-                    ve.setValue(context.getELContext(),
-                            getEditableModel().getListDiff());
-                } else {
-                    ve.setValue(context.getELContext(), getLocalValue());
-                }
-                setValue(null);
-                setLocalValueSet(false);
-            } catch (ELException e) {
-                String messageStr = e.getMessage();
-                Throwable result = e.getCause();
-                while (null != result
-                        && result.getClass().isAssignableFrom(ELException.class)) {
-                    messageStr = result.getMessage();
-                    result = result.getCause();
-                }
-                FacesMessage message;
-                if (null == messageStr) {
-                    message = MessageFactory.getMessage(context,
-                            UPDATE_MESSAGE_ID,
-                            MessageFactory.getLabel(context, this));
-                } else {
-                    message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            messageStr, messageStr);
-                }
-                log.error(message.getSummary(), result);
-                context.addMessage(getClientId(context), message);
-                setValid(false);
-            } catch (IllegalArgumentException e) {
-                FacesMessage message = MessageFactory.getMessage(context,
-                        UPDATE_MESSAGE_ID,
-                        MessageFactory.getLabel(context, this));
-                log.error(message.getSummary(), e);
-                context.addMessage(getClientId(context), message);
-                setValid(false);
-            } catch (Exception e) {
-                FacesMessage message = MessageFactory.getMessage(context,
-                        UPDATE_MESSAGE_ID,
-                        MessageFactory.getLabel(context, this));
-                log.error(message.getSummary(), e);
-                context.addMessage(getClientId(context), message);
-                setValid(false);
-            }
         }
     }
 
