@@ -1109,7 +1109,9 @@ public class UIEditableList extends UIInput implements NamingContainer, Resettab
                 if (setDiff) {
                     // set list diff instead of the whole list
                     EditableModel model = getEditableModel();
-                    ve.setValue(context.getELContext(), model.getListDiff());
+                    // FIXME NXP-16515
+                    // ve.setValue(context.getELContext(), model.getListDiff());
+                    ve.setValue(context.getELContext(), getLocalValue());
                 } else {
                     ve.setValue(context.getELContext(), getLocalValue());
                 }
