@@ -36,7 +36,7 @@
       </properties>
     </action>
 
-    <action id="blobPreview" link="#{previewActions.getViewerURL(document, blobXPath)}" type="bare_link"
+    <action id="blobPreview" link="#{previewActions.getViewerURL(document, blobXPath, blob)}" type="bare_link"
             label="label.document.preview" icon="/icons/contextual_menu/preview.png" order="150">
       <category>BLOB_ACTIONS</category>
       <filter-id>hasPDFPreview</filter-id>

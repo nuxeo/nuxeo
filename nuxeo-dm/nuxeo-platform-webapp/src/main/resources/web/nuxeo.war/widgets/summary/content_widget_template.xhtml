@@ -43,7 +43,7 @@
               <h:outputText value="#{messages['label.summary.download.file']}" />
             </td>
             <td class="fieldColumn" docRef="#{currentDocument.id}">
-              <nxl:widgetType name="extendedFile" mode="view" value="#{currentDocument}" field="file:content"/>
+              <nxl:widgetType name="extendedFile" mode="view" value="#{currentDocument}" field="#{currentDocumentAsBlobHolder.xpath}"/>
             </td>
           </tr>
         </tbody>

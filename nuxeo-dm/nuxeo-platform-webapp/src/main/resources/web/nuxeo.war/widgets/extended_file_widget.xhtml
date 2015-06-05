@@ -11,14 +11,15 @@
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
     <nxu:set var="document" value="#{empty widgetProperty_document ? value : widgetProperty_document}">
     <nxu:set var="blobXPath"
-             value="#{empty widgetProperty_blobXPath ? widget.fieldDefinitions[0].fieldName : widgetProperty_blobXPath}">
-    <c:set var="blob" value="#{field_0}" />
+             value="#{empty widgetProperty_blobXPath ? widget.fieldDefinitions[0].propertyName : widgetProperty_blobXPath}">
+    <c:set var="isNote" value="#{blobXPath == 'note:note'}" />
+    <c:set var="blob" value="#{isNote ? currentDocumentAsBlobHolder.blob :  field_0}" />
     <c:set var="filename" value="#{empty field_1 ? blob.filename : field_1}" />
     <c:set var="blobLength" value="#{blob.length}" />
-    <c:set var="fileUrl" value="#{nxd:fileUrl('downloadFile', document, xpath, filename)}" />
+    <c:set var="fileUrl" value="#{nxd:fileUrl('downloadFile', document, isNote ? 'blobholder:0' : blobXPath, filename)}" />
 
     <nxu:set var="actions"
-             value="#{documentActions.getBlobActions(document, blobXPath)}"
+             value="#{documentActions.getBlobActions(document, blobXPath, blob)}"
              cache="true">
     <nxh:graphicImage value="#{nxd:fileIconPath(blob)}"
                       rendered="#{! empty nxd:fileIconPath(blob)}" />
@@ -30,11 +31,9 @@
     </c:if>
 
     <div class="actionsColumn">
-      <nxl:widgetType name="actions"
-                      mode="view"
-                      actions="#{actions}"
-                      actionsDisplay="icons"
-                      overallDisplay="horizontal_block" />
+      <nxl:widget name="blobActions"
+                  mode="view"
+                  actions="#{actions}" />
     </div>
     </nxu:set>
     </nxu:set>

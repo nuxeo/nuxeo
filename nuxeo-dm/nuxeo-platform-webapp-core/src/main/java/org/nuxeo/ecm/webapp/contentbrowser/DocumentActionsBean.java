@@ -467,13 +467,9 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     /**
      * @since 7.3
      */
-    public List<Action> getBlobActions(DocumentModel doc, String blobXPath) {
-        Serializable blob = doc.getPropertyValue(blobXPath);
-
-        if (blob == null || !(blob instanceof Blob)) {
-            return null;
-        }
+    public List<Action> getBlobActions(DocumentModel doc, String blobXPath, Blob blob) {
         ActionContext ctx = actionContextProvider.createActionContext();
+        ctx.putLocalVariable("document", doc);
         ctx.putLocalVariable("blob", blob);
         ctx.putLocalVariable("blobXPath", blobXPath);
         return webActions.getActionsList(BLOB_ACTIONS_CATEGORY, ctx, true);

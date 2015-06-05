@@ -32,6 +32,7 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -172,10 +173,10 @@ public class PreviewActionBean implements Serializable {
     /**
      * @since 7.3
      */
-    public String getViewerURL(DocumentModel doc, String field) {
+    public String getViewerURL(DocumentModel doc, String field, Blob blob) {
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
-        return PreviewHelper.getViewerURL(doc, protectField(field), baseURL);
+        return PreviewHelper.getViewerURL(doc, protectField(field), blob, baseURL);
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)

@@ -109,16 +109,20 @@ public class PreviewHelper {
     /**
      * @since 7.3
      */
-    public static String getViewerURL(DocumentModel doc, String xpath, String baseURL) {
-        Blob blob;
-        try {
-            Serializable value = doc.getPropertyValue(xpath);
-            if (value == null || !(value instanceof Blob)) {
+    public static String getViewerURL(DocumentModel doc, String xpath, Blob blob, String baseURL) {
+        if (blob == null) {
+            if (StringUtils.isEmpty(xpath)) {
                 return null;
             }
-            blob = (Blob) value;
-        } catch (PropertyNotFoundException e) {
-            return null;
+            try {
+                Serializable value = doc.getPropertyValue(xpath);
+                if (value == null || !(value instanceof Blob)) {
+                    return null;
+                }
+                blob = (Blob) value;
+            } catch (PropertyNotFoundException e) {
+               return null;
+            }
         }
 
         baseURL = baseURL.endsWith("/") ? baseURL.substring(0, baseURL.length() - 1) : baseURL;
