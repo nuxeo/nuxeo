@@ -27,7 +27,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -46,7 +45,6 @@ import org.nuxeo.ecm.restapi.server.jaxrs.resource.wro.ResourceBundleEndpoint.Re
  * @since 7.3
  */
 @Provider
-@Produces({ "text/plain" })
 public class ResourceBundleWriter implements MessageBodyWriter<ResourceBundleDispatcher> {
 
     private static final Log log = LogFactory.getLog(ResourceBundleEndpoint.class);
