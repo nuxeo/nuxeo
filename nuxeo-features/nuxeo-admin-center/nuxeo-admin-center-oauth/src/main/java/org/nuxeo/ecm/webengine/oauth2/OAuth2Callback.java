@@ -27,6 +27,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
+import com.google.api.client.auth.oauth2.Credential;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -45,6 +46,8 @@ public class OAuth2Callback extends ModuleRoot {
 
     @Context
     private HttpServletRequest request;
+
+    Credential credential;
 
     /**
      * @param serviceProviderName
@@ -65,10 +68,10 @@ public class OAuth2Callback extends ModuleRoot {
         new UnrestrictedSessionRunner(ctx.getCoreSession()) {
             @Override
             public void run() throws ClientException {
-                provider.handleAuthorizationCallback(request);
+                credential = provider.handleAuthorizationCallback(request);
             }
         }.runUnrestricted();
 
-        return getView("index");
+        return getView("index").arg("token", credential.getAccessToken());
     }
 }
