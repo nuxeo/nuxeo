@@ -51,4 +51,22 @@
     </component>
   </tag>
 
+  <tag>
+    <tag-name>meta</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.web.resources.jsf.component.UIMeta
+      </component-type>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>favicon</tag-name>
+    <component>
+      <component-type>
+        org.nuxeo.ecm.web.resources.jsf.component.UIFavicon
+      </component-type>
+    </component>
+  </tag>
+
 </facelet-taglib>

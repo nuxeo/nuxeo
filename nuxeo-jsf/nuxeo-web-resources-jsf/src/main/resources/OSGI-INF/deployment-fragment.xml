@@ -2,6 +2,28 @@
 
 <fragment version="1">
 
+  <extension target="faces-config#COMPONENT">
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.web.resources.jsf.component.UIMeta
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.web.resources.jsf.component.UIMeta
+      </component-class>
+    </component>
+
+    <component>
+      <component-type>
+        org.nuxeo.ecm.web.resources.jsf.component.UIFavicon
+      </component-type>
+      <component-class>
+        org.nuxeo.ecm.web.resources.jsf.component.UIFavicon
+      </component-class>
+    </component>
+
+  </extension>
+
   <extension target="faces-config#RENDERER">
 
     <renderer>
