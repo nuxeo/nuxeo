@@ -21,7 +21,6 @@ import static java.lang.Boolean.TRUE;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -35,11 +34,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
@@ -50,17 +46,12 @@ import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.CredentialFactory;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.OAuth2CredentialFactory;
 import org.nuxeo.ecm.liveconnect.google.drive.credential.ServiceAccountCredentialFactory;
 import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
-import org.nuxeo.ecm.liveconnect.update.worker.BlobProviderDocumentsUpdateWork;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
-import org.nuxeo.ecm.platform.query.api.PageProvider;
-import org.nuxeo.ecm.platform.query.api.PageProviderService;
-import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -85,6 +76,8 @@ import com.google.api.services.drive.model.RevisionList;
  * @since 7.3
  */
 public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider, LinkedAppsProvider {
+
+    private static final String GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP = "googledrive_document_to_be_updated";
 
     private static final Log log = LogFactory.getLog(GoogleDriveBlobProvider.class);
 
@@ -622,7 +615,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         for (DocumentModel doc : docs) {
             final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
             FileInfo fileInfo = getFileInfo(blob);
-            if (fileInfo.revisionId != null) {
+            if (isVersion(blob)) {
                 // assume that revisions never change
                 continue;
             }
@@ -643,48 +636,19 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     }
 
     @Override
-    public void processDocumentsUpdate() {
-        final RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
-        final WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        for (String repositoryName : repositoryManager.getRepositoryNames()) {
-            CoreSession session = null;
-            try {
-                session = CoreInstance.openCoreSessionSystem(repositoryName);
+    public String getPageProviderNameForUpdate() {
+        return GOOGLEDRIVE_DOCUMENT_TO_BE_UPDATED_PP;
+    }
 
-                long offset = 0;
-                List<DocumentModel> nextDocumentsToBeUpdated;
-                PageProviderService ppService = Framework.getService(PageProviderService.class);
-                Map<String, Serializable> props = new HashMap<String, Serializable>();
-                props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-                @SuppressWarnings("unchecked")
-                PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                        "googledrive_document_to_be_updated", null, null, null, props);
-                final long maxResult = pp.getPageSize();
-                do {
-                    pp.setCurrentPageOffset(offset);
-                    pp.refresh();
-                    nextDocumentsToBeUpdated = pp.getCurrentPage();
+    @Override
+    public String getBlobPrefix() {
+        return PREFIX;
+    }
 
-                    if (nextDocumentsToBeUpdated.isEmpty()) {
-                        break;
-                    }
-                    List<String> docIds = new ArrayList<>();
-                    for (DocumentModel doc : nextDocumentsToBeUpdated) {
-                        docIds.add(doc.getId());
-                    }
-                    BlobProviderDocumentsUpdateWork work = new BlobProviderDocumentsUpdateWork(
-                            "googledrive:" + repositoryName + ":" + offset, "googledrive");
-                    work.setDocuments(repositoryName, docIds);
-                    workManager.schedule(work, WorkManager.Scheduling.IF_NOT_SCHEDULED, true);
-                    offset += maxResult;
-                } while (nextDocumentsToBeUpdated.size() == maxResult);
-
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
-            }
-        }
+    @Override
+    public boolean isVersion(ManagedBlob blob) {
+        FileInfo fileInfo = getFileInfo(blob);
+        return fileInfo.revisionId != null;
     }
 
 }

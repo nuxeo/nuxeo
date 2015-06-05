@@ -26,9 +26,12 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
@@ -37,6 +40,7 @@ import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
 import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.liveconnect.update.BatchUpdateBlobProvider;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.ecm.platform.mimetype.service.MimetypeRegistryService;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -47,7 +51,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -56,7 +62,7 @@ import java.util.Map;
  *
  * @since 7.3
  */
-public class DropboxBlobProvider implements ExtendedBlobProvider {
+public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlobProvider {
 
     private static final Log log = LogFactory.getLog(DropboxBlobProvider.class);
 
@@ -65,6 +71,8 @@ public class DropboxBlobProvider implements ExtendedBlobProvider {
     private static final String APPLICATION_NAME = "Nuxeo/0";
 
     private static final String FILE_CACHE_NAME = "dropbox";
+
+    private static final String DROPBOX_DOCUMENT_TO_BE_UPDATED_PP = "dropbox_document_to_be_updated";
 
     /**
      * {@link DbxEntry.File} resource cache
@@ -180,7 +188,7 @@ public class DropboxBlobProvider implements ExtendedBlobProvider {
         blobInfo.length = file.numBytes;
         blobInfo.mimeType = getMimetypeFromFilename(file.name);
         blobInfo.encoding = null;
-        blobInfo.digest = null;
+        blobInfo.digest = file.rev;
         return new SimpleManagedBlob(blobInfo);
     }
 
@@ -296,4 +304,59 @@ public class DropboxBlobProvider implements ExtendedBlobProvider {
             MimetypeRegistry.class);
         return mimetypeRegistryService.getMimetypeFromFilename(filename);
     }
+
+    @Override
+    public List<DocumentModel> checkChangesAndUpdateBlob(List<DocumentModel> docs) {
+        List<DocumentModel> changedDocuments = new ArrayList<>();
+        for (DocumentModel doc : docs) {
+            final SimpleManagedBlob blob = (SimpleManagedBlob) doc.getProperty("content").getValue();
+            if (blob == null) {
+                continue;
+            }
+            if (isVersion(blob)) {
+                continue;
+            }
+            String fileInfo = getFileInfo(blob.key);
+            String user = getUser(fileInfo);
+            String filePath = getFilePath(fileInfo);
+            try {
+                DbxEntry.File file = getFileNoCache(user, filePath);
+                if (StringUtils.isBlank(blob.getDigest()) || !blob.getDigest().equals(file.rev)) {
+                    log.trace("Updating " + blob.key);
+                    getFileCache().invalidate(filePath);
+                    doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(fileInfo));
+                    changedDocuments.add(doc);
+                }
+
+            } catch (DbxException | IOException e) {
+                log.error("Could not update dropbox document " + filePath, e);
+            }
+        }
+        return changedDocuments;
+    }
+
+    protected DbxEntry.File getFileNoCache(String user, String filePath) throws DbxException, IOException {
+        DbxEntry fileMetadata = getDropboxClient(getCredential(user)).getMetadata(filePath);
+        if (fileMetadata == null) {
+            return null;
+        }
+        DbxEntry.File file = fileMetadata.asFile();
+        return file;
+    }
+
+    @Override
+    public String getPageProviderNameForUpdate() {
+        return DROPBOX_DOCUMENT_TO_BE_UPDATED_PP;
+    }
+
+    @Override
+    public String getBlobPrefix() {
+        return PREFIX;
+    }
+
+    @Override
+    public boolean isVersion(ManagedBlob blob) {
+      return false;
+    }
+
 }
