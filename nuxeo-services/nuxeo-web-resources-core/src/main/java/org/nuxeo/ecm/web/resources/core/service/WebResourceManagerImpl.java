@@ -191,7 +191,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
         for (String rn : rb.getResources()) {
             Resource r = getResource(rn);
             if (r == null) {
-                log.error(String.format("Could not resolve resource '%s' on bundle '%s'", r, bundleName));
+                log.error(String.format("Could not resolve resource '%s' on bundle '%s'", rn, bundleName));
                 continue;
             }
             if (!ResourceType.matches(type, r)) {
