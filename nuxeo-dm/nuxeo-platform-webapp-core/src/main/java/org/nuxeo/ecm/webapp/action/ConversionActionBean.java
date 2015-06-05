@@ -212,7 +212,7 @@ public class ConversionActionBean implements ConversionAction {
         }
     }
 
-    public String generatePdfFileFromBlobHolder(BlobHolder bh) {
+    public String generatePdfFileFromBlobHolder(DocumentModel doc, BlobHolder bh) {
         try {
 
             // redirect to the conversion URL when available
@@ -251,7 +251,8 @@ public class ConversionActionBean implements ConversionAction {
             }
             filename += ".pdf";
 
-            return ComponentUtils.download(FacesContext.getCurrentInstance(), result.getBlob(), filename);
+            ComponentUtils.download(doc, null, result.getBlob(), filename, "pdfConversion");
+            return null;
         } catch (ClientException e) {
             log.error("PDF generation error for file " + filename, e);
         }
@@ -263,8 +264,9 @@ public class ConversionActionBean implements ConversionAction {
     @WebRemote
     public String generatePdfFile() {
         try {
-            BlobHolder bh = new DocumentBlobHolder(getDocument(), fileFieldFullName);
-            return generatePdfFileFromBlobHolder(bh);
+            DocumentModel doc = getDocument();
+            BlobHolder bh = new DocumentBlobHolder(doc, fileFieldFullName);
+            return generatePdfFileFromBlobHolder(doc, bh);
         } catch (ClientException e) {
             log.error("PDF generation error for file " + filename, e);
         }

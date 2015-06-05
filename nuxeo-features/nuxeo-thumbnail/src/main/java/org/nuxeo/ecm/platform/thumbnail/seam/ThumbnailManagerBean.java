@@ -21,8 +21,6 @@ package org.nuxeo.ecm.platform.thumbnail.seam;
 
 import java.io.Serializable;
 
-import javax.faces.context.FacesContext;
-
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -73,9 +71,7 @@ public class ThumbnailManagerBean implements Serializable {
                 if (thumbnail == null) {
                     return;
                 }
-                String filename = (String) thumbnail.getFilename();
-                FacesContext context = FacesContext.getCurrentInstance();
-                ComponentUtils.download(context, thumbnail, filename);
+                ComponentUtils.download(doc, null, thumbnail, thumbnail.getFilename(), "thumbnail");
             }
         }
     }

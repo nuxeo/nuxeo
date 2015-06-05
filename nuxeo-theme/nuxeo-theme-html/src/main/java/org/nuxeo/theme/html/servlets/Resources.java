@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
+import org.nuxeo.ecm.core.io.download.BufferingServletOutputStream;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.ApplicationType;
 import org.nuxeo.theme.Manager;

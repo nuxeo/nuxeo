@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.RFC2231;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -62,16 +62,7 @@ public class ServletHelper {
      * @since 5.7.2
      */
     public static String getRFC2231ContentDisposition(HttpServletRequest request, String filename) {
-
-        String inline = request.getParameter("inline");
-        if (inline == null) {
-            inline = (String) request.getAttribute("inline");
-        }
-        boolean inlineFlag = (inline == null || "false".equals(inline)) ? false : true;
-
-        String userAgent = request.getHeader("User-Agent");
-        return RFC2231.encodeContentDisposition(filename, inlineFlag, userAgent);
-
+        return DownloadHelper.getRFC2231ContentDisposition(request, filename);
     }
 
 }

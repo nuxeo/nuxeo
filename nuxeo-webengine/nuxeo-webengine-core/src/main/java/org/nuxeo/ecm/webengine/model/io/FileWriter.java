@@ -35,7 +35,7 @@ import javax.ws.rs.ext.Provider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -58,8 +58,8 @@ public class FileWriter implements MessageBodyWriter<File> {
             FileUtils.copy(in, entityStream);
             entityStream.flush();
         } catch (RuntimeException | IOException e) {
-            if (ExceptionHelper.isClientAbortError(e)) {
-                ExceptionHelper.logClientAbort(e);
+            if (DownloadHelper.isClientAbortError(e)) {
+                DownloadHelper.logClientAbort(e);
             } else {
                 throw WebException.wrap("Failed to render resource", e);
             }

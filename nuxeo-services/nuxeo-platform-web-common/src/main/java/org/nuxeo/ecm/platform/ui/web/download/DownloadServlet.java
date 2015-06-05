@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,27 +12,25 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Thierry Delprat
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.ui.web.download;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.util.Arrays;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -41,14 +39,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
-import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
-import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.platform.web.common.ServletHelper;
-import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
+import org.nuxeo.ecm.core.io.download.DownloadHelper;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -56,136 +50,114 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 /**
  * Simple download servlet used for big files that can not be downloaded from within the JSF context (because of
  * buffered ResponseWrapper).
- *
- * @author tiry
  */
 public class DownloadServlet extends HttpServlet {
 
-    public static final String NXDOWNLOADINFO_PREFIX = "nxdownloadinfo";
-
-    public static final String NXBIGFILE_PREFIX = "nxbigfile";
-
-    public static final String NXBIGBLOB_PREFIX = "nxbigblob";
-
-    protected static final int BUFFER_SIZE = 1024 * 512;
-
-    protected static final int MIN_BUFFER_SIZE = 1024 * 64;
-
-    protected static final Blob BLOB_NOT_FOUND = Blobs.createBlob("404");
-
-    private static final long serialVersionUID = 986876871L;
+    private static final long serialVersionUID = 1L;
 
     private static final Log log = LogFactory.getLog(DownloadServlet.class);
 
+    public static final String NXBIGFILE_PREFIX = DownloadService.NXBIGFILE;
+
+    public static final String NXDOWNLOADINFO_PREFIX = DownloadService.NXDOWNLOADINFO;
+
+    public static final String NXBIGBLOB_PREFIX = DownloadService.NXBIGBLOB;
+
+    public static final String NXBIGZIPFILE_PREFIX = DownloadService.NXBIGZIPFILE;
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        handleDownload(req, resp);
+    public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        try {
+            handleDownload(req, resp);
+        } catch (IOException ioe) {
+            DownloadHelper.handleClientDisconnect(ioe);
+        }
     }
 
-    protected void handleDownload(HttpServletRequest req, HttpServletResponse resp) throws ServletException,
-            IOException {
+    protected void handleDownload(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String requestURI;
         try {
             requestURI = new URI(req.getRequestURI()).getPath();
-        } catch (URISyntaxException e1) {
+        } catch (URISyntaxException e) {
             requestURI = req.getRequestURI();
         }
-
         if (requestURI.contains("/" + NXBIGFILE_PREFIX + "/")) {
-            handleDownloadSingleDocument(req, resp, requestURI);
+            handleDownloadBlob(req, resp, requestURI);
         } else if (requestURI.contains("/" + NXDOWNLOADINFO_PREFIX + "/")) {
             handleGetDownloadInfo(req, resp, requestURI);
-        } else if (requestURI.contains("/nxbigzipfile/")) {
+        } else if (requestURI.contains("/" + NXBIGZIPFILE_PREFIX + "/")) {
             // handle the download for a big zip created in the tmp directory;
             // the name of this zip is sent in the request
             handleDownloadTemporaryZip(req, resp, requestURI);
         } else if (requestURI.contains("/" + NXBIGBLOB_PREFIX + "/")) {
-            // handle the download of a Blob referenced in Http request or Session
-            handleDownloadSingleBlob(req, resp, requestURI);
+            // handle the download of a Blob referenced in HTTP Request or Session
+            handleDownloadSessionBlob(req, resp, requestURI);
         }
     }
 
-    protected Blob resolveBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
-            throws ServletException {
+    // used by nxdropout.js
+    protected void handleGetDownloadInfo(HttpServletRequest req, HttpServletResponse resp, String requestURI)
+            throws IOException {
+        String downloadUrl = requestURI.replace(NXDOWNLOADINFO_PREFIX, NXBIGFILE_PREFIX);
+        downloadBlob(req, resp, downloadUrl, true);
+    }
 
-        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGFILE_PREFIX + "/", "");
-        String[] pathParts = filePath.split("/");
+    // regular download from xpath or blobholder
+    protected void handleDownloadBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
+            throws IOException {
+        downloadBlob(req, resp, requestURI, false);
+    }
 
-        String repoName = pathParts[0];
-        String docId = pathParts[1];
-
-        String fieldPath = "blobholder:0";
-        if (pathParts.length > 2) {
-            fieldPath = pathParts[2];
+    protected void downloadBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI, boolean info)
+            throws IOException {
+        String urlPath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGFILE_PREFIX + "/", "");
+        String[] parts = urlPath.split("/");
+        if (parts.length < 2) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
+            return;
         }
-
-        String fileName = null;
-        if (pathParts.length > 3) {
-            fileName = pathParts[3];
-        }
-
-        // alternate decoding
-        String[] alternatePath = filePath.split(docId);
-        if (alternatePath.length > 1) {
-            String completePath = alternatePath[1];
-            int idx = completePath.lastIndexOf('/');
-            if (idx > 0) {
-                fieldPath = completePath.substring(1, idx);
-                fileName = completePath.substring(idx + 1);
-            }
-        }
-
+        String repositoryName = parts[0];
+        String docId = parts[1];
         boolean tx = false;
         try {
             if (!TransactionHelper.isTransactionActive()) {
-                // manually start and stop a transaction around repository
-                // access to be able to release transactional resources without
-                // waiting for the download that can take a long time (longer
-                // than the transaction timeout) especially if the client or the
-                // connection is slow.
+                // Manually start and stop a transaction around repository access to be able to release transactional
+                // resources without waiting for the download that can take a long time (longer than the transaction
+                // timeout) especially if the client or the connection is slow.
                 tx = TransactionHelper.startTransaction();
             }
-            try (CoreSession session = CoreInstance.openCoreSession(repoName)) {
-                DocumentModel doc = session.getDocument(new IdRef(docId));
-                Blob blob = null;
-                if (fieldPath != null) {
-                    // Hack for Flash Url wich doesn't support ':' char
-                    fieldPath = fieldPath.replace(';', ':');
-                    // BlobHolder urls
-                    if (fieldPath.startsWith("blobholder")) {
-                        BlobHolder bh = doc.getAdapter(BlobHolder.class);
-                        if (bh == null) {
-                            return null;
-                        }
-                        String bhPath = fieldPath.replace("blobholder:", "");
-                        if ("".equals(bhPath) || "0".equals(bhPath)) {
-                            blob = bh.getBlob();
-                        } else {
-                            int idxbh = Integer.parseInt(bhPath);
-                            blob = bh.getBlobs().get(idxbh);
-                        }
-                    } else {
-                        try {
-                            blob = (Blob) doc.getPropertyValue(fieldPath);
-                        } catch (PropertyNotFoundException e) {
-                            log.debug(e.getMessage());
-                            return BLOB_NOT_FOUND;
-                        } catch (ClientException e) {
-                            log.debug(e.getMessage());
-                            return null;
-                        }
+            try (CoreSession session = CoreInstance.openCoreSession(repositoryName)) {
+                DocumentRef docRef = new IdRef(docId);
+                if (!session.exists(docRef)) {
+                    resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No Blob found");
+                    return;
+                }
+                DocumentModel doc = session.getDocument(docRef);
+                Pair<String, String> pair = parsePath(urlPath);
+                String xpath = pair.getLeft();
+                String filename = pair.getRight();
+                DownloadService downloadService = Framework.getService(DownloadService.class);
+                if (info) {
+                    Blob blob = downloadService.resolveBlob(doc, xpath);
+                    if (blob == null) {
+                        resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No blob found");
+                        return;
                     }
+                    String result = blob.getMimeType() + ':' + URLEncoder.encode(blob.getFilename(), "UTF-8") + ':'
+                            + VirtualHostHelper.getServerURL(req) + requestURI.substring(1);
+                    resp.setContentType("text/plain");
+                    resp.getWriter().write(result);
+                    resp.getWriter().flush();
+
+                } else {
+                    downloadService.downloadBlob(req, resp, doc, xpath, null, filename, "download");
                 }
-                if (fileName != null && !fileName.isEmpty()) {
-                    blob.setFilename(fileName);
-                }
-                return blob;
             }
-        } catch (ClientException | NumberFormatException e) {
+        } catch (ClientException e) {
             if (tx) {
                 TransactionHelper.setTransactionRollbackOnly();
             }
-            throw new ServletException(e);
+            throw new IOException(e);
         } finally {
             if (tx) {
                 TransactionHelper.commitOrRollbackTransaction();
@@ -193,66 +165,28 @@ public class DownloadServlet extends HttpServlet {
         }
     }
 
-    protected void handleGetDownloadInfo(HttpServletRequest req, HttpServletResponse resp, String requestURI)
-            throws ServletException {
-
-        String downloadUrl = requestURI.replace(NXDOWNLOADINFO_PREFIX, NXBIGFILE_PREFIX);
-        Blob blob = resolveBlob(req, resp, downloadUrl);
-        if (!isBlobFound(blob, resp)) {
-            return;
+    // first two parts are repository name and doc id, already parsed
+    protected static Pair<String, String> parsePath(String urlPath) {
+        String[] parts = urlPath.split("/");
+        int length = parts.length;
+        String xpath;
+        String filename;
+        if (length == 2) {
+            xpath = DownloadService.BLOBHOLDER_0;
+            filename = null;
+        } else if (length == 3) {
+            xpath = parts[2];
+            filename = null;
+        } else {
+            xpath = StringUtils.join(Arrays.asList(parts).subList(2, length - 1), "/");
+            filename = parts[length - 1];
         }
-
-        StringBuffer sb = new StringBuffer();
-
-        resp.setContentType("text/plain");
-        try {
-            sb.append(blob.getMimeType());
-            sb.append(":");
-            sb.append(URLEncoder.encode(blob.getFilename(), "UTF-8"));
-            sb.append(":");
-            sb.append(VirtualHostHelper.getServerURL(req));
-            sb.append(downloadUrl.substring(1));
-            resp.getWriter().write(sb.toString());
-        } catch (IOException e) {
-            throw new ServletException(e);
-        }
+        return Pair.of(xpath, filename);
     }
 
-    private boolean isBlobFound(Blob blob, HttpServletResponse resp) throws ServletException {
-        if (blob == null) {
-            try {
-                resp.sendError(HttpServletResponse.SC_NO_CONTENT, "No Blob found");
-                return false;
-            } catch (IOException e) {
-                throw new ServletException(e);
-            }
-        } else if (BLOB_NOT_FOUND.equals(blob)) {
-            try {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "No Blob found");
-                return false;
-            } catch (IOException e) {
-                throw new ServletException(e);
-            }
-        }
-        return true;
-    }
-
-    protected void handleDownloadSingleDocument(HttpServletRequest req, HttpServletResponse resp, String requestURI)
-            throws ServletException {
-        Blob blob = resolveBlob(req, resp, requestURI);
-        if (!isBlobFound(blob, resp)) {
-            return;
-        }
-
-        try {
-            downloadBlob(req, resp, blob, null);
-        } catch (IOException e) {
-            throw new ServletException(e);
-        }
-    }
-
-    protected void handleDownloadSingleBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
-            throws ServletException {
+    // used by DownloadFile operation
+    protected void handleDownloadSessionBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
+            throws IOException {
         String blobId = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGBLOB_PREFIX + "/", "");
         Blob blob = (Blob) req.getAttribute(blobId);
         if (blob != null) {
@@ -260,194 +194,33 @@ public class DownloadServlet extends HttpServlet {
         } else {
             HttpSession session = req.getSession(false);
             if (session == null) {
-                log.error("Unable to download blob since the holding http session does not exist");
+                log.error("Unable to download blob " + blobId + " since the holding http session does not exist");
                 return;
             }
             blob = (Blob) session.getAttribute(blobId);
-            if (blob != null) {
-                session.removeAttribute(blobId);
+            if (blob == null) {
+                return;
             }
+            session.removeAttribute(blobId);
         }
-
-        if (blob != null) {
-            try {
-                downloadBlob(req, resp, blob, null);
-            } catch (IOException e) {
-                throw new ServletException(e);
-            }
-        }
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        downloadService.downloadBlob(req, resp, null, null, blob, null, "DownloadFile");
     }
 
-    public static void downloadBlob(HttpServletRequest req, HttpServletResponse resp, Blob blob, String fileName)
-            throws IOException, ServletException {
-
-        BlobManager blobManager = Framework.getService(BlobManager.class);
-        URI uri = blobManager == null ? null : blobManager.getURI(blob, UsageHint.DOWNLOAD);
-        if (uri != null) {
-            resp.sendRedirect(uri.toString());
-            return;
-        }
-
-        InputStream in = blob.getStream();
-        OutputStream out = resp.getOutputStream();
-        try {
-            String digest = blob.getDigest();
-            String previousToken = req.getHeader("If-None-Match");
-            if (previousToken != null && previousToken.equals(digest)) {
-                resp.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-            } else {
-                resp.setHeader("ETag", digest);
-                if (fileName == null || fileName.length() == 0) {
-                    if (blob.getFilename() != null && blob.getFilename().length() > 0) {
-                        fileName = blob.getFilename();
-                    } else {
-                        fileName = "file";
-                    }
-                }
-
-                resp.setHeader("Content-Disposition", ServletHelper.getRFC2231ContentDisposition(req, fileName));
-                resp.setContentType(blob.getMimeType());
-
-                long fileSize = blob.getLength();
-                if (fileSize > 0) {
-                    resp.setHeader("Accept-Ranges", "bytes");
-                    String range = req.getHeader("Range");
-                    ByteRange byteRange = null;
-                    if (range != null) {
-                        try {
-                            byteRange = parseRange(range, fileSize);
-                        } catch (ClientException e) {
-                            log.error(e.getMessage(), e);
-                        }
-                    }
-                    if (byteRange != null) {
-                        resp.setHeader("Content-Range", "bytes " + byteRange.getStart() + "-" + byteRange.getEnd()
-                                + "/" + fileSize);
-                        long length = byteRange.getLength();
-                        if (length < Integer.MAX_VALUE) {
-                            resp.setContentLength((int) length);
-                        }
-                        resp.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
-                        writeStream(in, out, byteRange);
-                    } else {
-                        if (fileSize < Integer.MAX_VALUE) {
-                            resp.setContentLength((int) fileSize);
-                        }
-                        writeStream(in, out, new ByteRange(0, fileSize - 1));
-                    }
-                }
-            }
-
-        } catch (IOException ioe) {
-            handleClientDisconnect(ioe);
-        } finally {
-            if (resp != null) {
-                try {
-                    resp.flushBuffer();
-                } catch (IOException ioe) {
-                    handleClientDisconnect(ioe);
-                }
-            }
-            if (in != null) {
-                in.close();
-            }
-        }
-    }
-
-    public static void handleClientDisconnect(IOException ioe) throws IOException {
-        if (ExceptionHelper.isClientAbortError(ioe)) {
-            ExceptionHelper.logClientAbort(ioe);
-        } else {
-            // this is a real unexpected problem, let the traditional error
-            // management handle this case
-            throw ioe;
-        }
-    }
-
+    // used by ClipboardActionsBean
     protected void handleDownloadTemporaryZip(HttpServletRequest req, HttpServletResponse resp, String requestURI)
-            throws IOException, ServletException {
-        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/nxbigzipfile/", "");
+            throws IOException {
+        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGZIPFILE_PREFIX + "/",
+                "");
         String[] pathParts = filePath.split("/");
         String tmpFileName = pathParts[0];
         File tmpZip = new File(System.getProperty("java.io.tmpdir") + "/" + tmpFileName);
         try {
             Blob zipBlob = Blobs.createBlob(tmpZip);
-            downloadBlob(req, resp, zipBlob, "clipboard.zip");
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            downloadService.downloadBlob(req, resp, null, null, zipBlob, "clipboard.zip", "ZipExport");
         } finally {
             tmpZip.delete();
-        }
-    }
-
-    public static void writeStream(InputStream in, OutputStream out, ByteRange range) throws IOException {
-        BufferingServletOutputStream.stopBuffering(out);
-        byte[] buffer = new byte[BUFFER_SIZE];
-        long read;
-        long offset = range.getStart();
-        in.skip(offset);
-        while (offset <= range.getEnd() && (read = in.read(buffer)) != -1) {
-            read = Math.min(read, range.getEnd() - offset + 1);
-            out.write(buffer, 0, (int) read);
-            out.flush();
-            offset += read;
-        }
-
-    }
-
-    public static ByteRange parseRange(String range, long fileSize) throws ClientException {
-        // Do no support multiple ranges
-        if (!range.startsWith("bytes=") || range.indexOf(',') >= 0) {
-            throw new ClientException("Cannot parse range : " + range);
-        }
-        int sepIndex = range.indexOf('-', 6);
-        if (sepIndex < 0) {
-            throw new ClientException("Cannot parse range : " + range);
-        }
-        String start = range.substring(6, sepIndex).trim();
-        String end = range.substring(sepIndex + 1).trim();
-        long rangeStart = 0;
-        long rangeEnd = fileSize - 1;
-        if (start.isEmpty()) {
-            if (end.isEmpty()) {
-                throw new ClientException("Cannot parse range : " + range);
-            }
-            rangeStart = fileSize - Integer.parseInt(end);
-            if (rangeStart < 0) {
-                rangeStart = 0;
-            }
-        } else {
-            rangeStart = Integer.parseInt(start);
-            if (!end.isEmpty()) {
-                rangeEnd = Integer.parseInt(end);
-            }
-        }
-        if (rangeStart > rangeEnd) {
-            throw new ClientException("Cannot parse range : " + range);
-        }
-
-        return new ByteRange(rangeStart, rangeEnd);
-    }
-
-    public static class ByteRange {
-
-        private long start;
-
-        private long end;
-
-        public ByteRange(long rangeStart, long rangeEnd) {
-            start = rangeStart;
-            end = rangeEnd;
-        }
-
-        public long getStart() {
-            return start;
-        }
-
-        public long getEnd() {
-            return end;
-        }
-
-        public long getLength() {
-            return end - start + 1;
         }
     }
 

@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.el.ELException;
@@ -167,6 +168,18 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                 continue;
             }
             extendedInfos.put(descriptor.getKey(), newExtendedInfo(value));
+        }
+        if (eventContext != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Serializable> map = (Map<String, Serializable>) eventContext.getProperty("extendedInfos");
+            if (map != null) {
+                for (Entry<String, Serializable> en : map.entrySet()) {
+                    Serializable value = en.getValue();
+                    if (value != null) {
+                        extendedInfos.put(en.getKey(), newExtendedInfo(value));
+                    }
+                }
+            }
         }
     }
 

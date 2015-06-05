@@ -1,197 +1,42 @@
+/*
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Florent Guillaume
+ */
 package org.nuxeo.ecm.platform.ui.web.download;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet.ByteRange;
-import org.nuxeo.ecm.platform.web.common.requestcontroller.filter.BufferingServletOutputStream;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-public class TestDownloadServlet extends NXRuntimeTestCase {
+public class TestDownloadServlet {
 
     @Test
-    public void testParseByteRange() throws Exception {
-        ByteRange byteRange = DownloadServlet.parseRange("bytes=42-169", 12345);
-        assertEquals(42, byteRange.getStart());
-        assertEquals(169, byteRange.getEnd());
-        assertEquals(128, byteRange.getLength());
+    public void testParse() {
+        assertParsed("blobholder:0", null, "");
+        assertParsed("blobholder:0", null, "/");
+        assertParsed("foo", null, "/foo");
+        assertParsed("foo", null, "/foo/");
+        assertParsed("foo", "bar", "/foo/bar");
+        assertParsed("foo/bar", "baz", "/foo/bar/baz");
+        assertParsed("foo/bar/baz", "moo", "/foo/bar/baz/moo");
     }
 
-    @Test
-    public void testParseByteRangeWithoutEnd() throws Exception {
-        ByteRange byteRange = DownloadServlet.parseRange("bytes=0-", 12345);
-        assertEquals(0, byteRange.getStart());
-        assertEquals(12344, byteRange.getEnd());
-        assertEquals(12345, byteRange.getLength());
+    protected static void assertParsed(String path, String filename, String string) {
+        Pair<String, String> pair = DownloadServlet.parsePath("somerepo/someid" + string);
+        assertEquals(path + " " + filename, pair.getLeft() + " " + pair.getRight());
     }
 
-    @Test
-    public void testParseByteRangeWithoutStart() throws Exception {
-        ByteRange byteRange = DownloadServlet.parseRange("bytes=-128", 12345);
-        assertEquals(12217, byteRange.getStart());
-        assertEquals(12344, byteRange.getEnd());
-        assertEquals(128, byteRange.getLength());
-    }
-
-    @Test(expected = ClientException.class)
-    public void testParseUnsupportedByteRange() throws Exception {
-        DownloadServlet.parseRange("blablabla", 12345);
-    }
-
-    @Test(expected = ClientException.class)
-    public void testParseUnsupportedByteRange2() throws Exception {
-        DownloadServlet.parseRange("bytes=", 12345);
-    }
-
-    @Test(expected = ClientException.class)
-    public void testParseUnsupportedByteRange3() throws Exception {
-        DownloadServlet.parseRange("bytes=-", 12345);
-    }
-
-    @Test(expected = ClientException.class)
-    public void testParseUnsupportedByteRange4() throws Exception {
-        DownloadServlet.parseRange("bytes=123-45", 12345); // Start > end
-    }
-
-    @Test(expected = ClientException.class)
-    public void testParseUnsupportedByteRange5() throws Exception {
-        DownloadServlet.parseRange("bytes=0-123,-45", 12345); // Do no support
-                                                              // multiple ranges
-    }
-
-    @Test
-    public void testWriteStream() throws Exception {
-        InputStream in = new ByteArrayInputStream("Hello, world!".getBytes());
-        OutputStream out = new ByteArrayOutputStream();
-        ByteRange range = new ByteRange(7, 11);
-        DownloadServlet.writeStream(in, out, range);
-        assertEquals("world", out.toString());
-    }
-
-    @Test
-    public void testETagHeaderNone() throws Exception {
-        doTestETagHeader(null);
-    }
-
-    @Test
-    public void testETagHeaderNotMatched() throws Exception {
-        doTestETagHeader(Boolean.FALSE);
-    }
-
-    @Test
-    public void testETagHeaderMatched() throws Exception {
-        doTestETagHeader(Boolean.TRUE);
-    }
-
-    private void doTestETagHeader(Boolean match) throws Exception {
-        // Given a blob
-        String blobValue = "Hello World";
-        Blob blob = getBlobWithFakeDigest(blobValue, "12345");
-
-        // When i send a request a given digest
-        String digestToTest = getDigestToTest(match, blob);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        HttpServletResponse resp = getResponseForETag(digestToTest, blob, out);
-
-        // Then the response differs if the digest match
-        if (Boolean.TRUE.equals(match)) {
-            assertEquals(0, out.toByteArray().length);
-            verify(resp).sendError(HttpServletResponse.SC_NOT_MODIFIED);
-        } else {
-            assertEquals(blobValue, out.toString());
-            verify(resp).setHeader("ETag", blob.getDigest());
-        }
-
-    }
-
-    /**
-     * Returns a digest wether we want to match the blob's digest
-     *
-     * @param match may be null
-     * @param blob
-     * @return
-     * @since 5.8
-     */
-    private String getDigestToTest(Boolean match, Blob blob) {
-        if (match == null) {
-            return null;
-        } else if (match == true) {
-            return blob.getDigest();
-        }
-        return blob.getDigest() + "salt";
-    }
-
-    /**
-     * Mocks the request to the download servlet with a given ETag
-     *
-     * @param etag
-     * @param blob
-     * @param out
-     * @return
-     * @throws ServletException
-     * @throws IOException
-     * @since 5.8
-     */
-    private HttpServletResponse getResponseForETag(String etag, Blob blob, OutputStream out) throws IOException,
-            ServletException {
-
-        HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getHeader("If-None-Match")).thenReturn(etag);
-        HttpServletResponse resp = getMockResponse(out);
-
-        DownloadServlet servlet = new DownloadServlet();
-        servlet.downloadBlob(req, resp, blob, (String) null);
-        verify(req, atLeast(1)).getHeader("If-None-Match");
-        return resp;
-    }
-
-    /**
-     * Forges a mock response base on an outpuStream.
-     *
-     * @return
-     * @throws IOException
-     * @since 5.8
-     */
-    private HttpServletResponse getMockResponse(OutputStream out) throws IOException {
-        HttpServletResponse resp = mock(HttpServletResponse.class);
-        BufferingServletOutputStream sos = new BufferingServletOutputStream(out);
-        PrintWriter printWriter = new PrintWriter(sos);
-        when(resp.getOutputStream()).thenReturn(sos);
-        when(resp.getWriter()).thenReturn(printWriter);
-        return resp;
-    }
-
-    /**
-     * Forges a Blob with a string value and an expected digest.
-     *
-     * @param stringValue
-     * @param digest
-     * @return
-     * @throws IOException
-     * @since 5.8
-     */
-    private Blob getBlobWithFakeDigest(String stringValue, String digest) throws IOException {
-        Blob blob = Blobs.createBlob(stringValue);
-        blob.setFilename("myFile.txt");
-        blob.setDigest(digest);
-        return blob;
-    }
 }

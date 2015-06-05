@@ -105,6 +105,7 @@ public class FileService extends DefaultAdapter {
                 }
             }
 
+            // TODO probably not needed as DownloadService already does it
             String contentDisposition = ServletHelper.getRFC2231ContentDisposition(ctx.getRequest(), fileName);
 
             // cached resource did change or no ETag -> serve updated content

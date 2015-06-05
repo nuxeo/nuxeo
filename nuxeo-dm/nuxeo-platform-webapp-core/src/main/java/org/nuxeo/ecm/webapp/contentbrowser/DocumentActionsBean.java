@@ -43,7 +43,6 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -61,6 +60,7 @@ import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
 import org.nuxeo.ecm.core.blob.apps.AppLink;
 import org.nuxeo.ecm.core.blob.apps.LinkedAppsProvider;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.types.Type;
@@ -210,74 +210,58 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         return name;
     }
 
-    @Deprecated
-    @Override
-    public String download() throws ClientException {
-        if (fileFieldFullName == null) {
-            return null;
-        }
-
-        String[] s = fileFieldFullName.split(":");
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        Blob blob = (Blob) currentDocument.getProperty(s[0], s[1]);
-        String filename = getFileName(currentDocument);
-        FacesContext context = FacesContext.getCurrentInstance();
-        return ComponentUtils.download(context, blob, filename);
-    }
-
     @Override
     public void download(DocumentView docView) throws ClientException {
-        if (docView != null) {
-            DocumentLocation docLoc = docView.getDocumentLocation();
-            // fix for NXP-1799
-            if (documentManager == null) {
-                RepositoryLocation loc = new RepositoryLocation(docLoc.getServerName());
-                navigationContext.setCurrentServerLocation(loc);
-                documentManager = navigationContext.getOrCreateDocumentManager();
+        if (docView == null) {
+            return;
+        }
+        DocumentLocation docLoc = docView.getDocumentLocation();
+        // fix for NXP-1799
+        if (documentManager == null) {
+            RepositoryLocation loc = new RepositoryLocation(docLoc.getServerName());
+            navigationContext.setCurrentServerLocation(loc);
+            documentManager = navigationContext.getOrCreateDocumentManager();
+        }
+        DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
+        if (doc == null) {
+            return;
+        }
+        String xpath = docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY);
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        Blob blob = downloadService.resolveBlob(doc, xpath);
+        if (blob == null) {
+            log.warn("No blob for docView: " + docView);
+            return;
+        }
+        // get properties from document view
+        String filename = DocumentFileCodec.getFilename(doc, docView);
+        // download
+        FacesContext context = FacesContext.getCurrentInstance();
+        HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
+        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
+
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        try {
+            URI uri = blobManager.getURI(blob, UsageHint.DOWNLOAD);
+            if (uri != null) {
+                response.sendRedirect(uri.toString());
+                return;
             }
-            DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
-            if (doc != null) {
-                // get properties from document view
-                Blob blob = DocumentFileCodec.getBlob(doc, docView);
-                if (blob == null) {
-                    log.warn("No blob for docView: " + docView);
-                    return;
-                }
-                String filename = DocumentFileCodec.getFilename(doc, docView);
-                // download
-                FacesContext context = FacesContext.getCurrentInstance();
+        } catch (IOException e) {
+            log.error("Error while redirecting to blob provider's uri", e);
+        }
 
-                BlobManager blobManager = Framework.getService(BlobManager.class);
-                try {
-                    URI uri = blobManager.getURI(blob, UsageHint.DOWNLOAD);
-                    if (uri != null) {
-                        HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-                        response.sendRedirect(uri.toString());
-                        return;
-                    }
-                } catch (IOException e) {
-                    log.error("Error while redirecting to blob provider's uri", e);
-                }
-
-                if (blob.getLength() > Functions.getBigFileSizeLimit()) {
-                    HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
-                    HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
-
-                    String bigDownloadURL = BaseURL.getBaseURL(request);
-                    bigDownloadURL += "nxbigfile" + "/";
-                    bigDownloadURL += doc.getRepositoryName() + "/";
-                    bigDownloadURL += doc.getRef().toString() + "/";
-                    bigDownloadURL += docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY) + "/";
-                    bigDownloadURL += URIUtils.quoteURIPathComponent(filename, true);
-                    try {
-                        response.sendRedirect(bigDownloadURL);
-                    } catch (IOException e) {
-                        log.error("Error while redirecting for big file downloader", e);
-                    }
-                } else {
-                    ComponentUtils.download(context, blob, filename);
-                }
+        if (blob.getLength() > Functions.getBigFileSizeLimit()) {
+            String bigDownloadURL = BaseURL.getBaseURL(request)
+                    + downloadService.getDownloadUrl(doc.getRepositoryName(), doc.getId(),
+                            docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY), filename);
+            try {
+                response.sendRedirect(bigDownloadURL);
+            } catch (IOException e) {
+                log.error("Error while redirecting for big file downloader", e);
             }
+        } else {
+            ComponentUtils.download(doc, xpath, blob, filename, "download");
         }
     }
 

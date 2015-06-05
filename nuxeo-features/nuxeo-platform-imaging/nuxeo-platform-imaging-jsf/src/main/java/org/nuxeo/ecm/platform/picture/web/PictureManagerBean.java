@@ -282,45 +282,45 @@ public class PictureManagerBean implements PictureManager, Serializable {
                 documentManager = navigationContext.getOrCreateDocumentManager();
             }
             DocumentModel doc = documentManager.getDocument(docLoc.getDocRef());
-            if (doc != null) {
-                String[] propertyPath = docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY).split(":");
-                String title = null;
-                String field = null;
-                Property datamodel = null;
-                if (propertyPath.length == 2) {
-                    title = propertyPath[0];
-                    field = propertyPath[1];
-                    datamodel = doc.getProperty("picture:views");
-                } else if (propertyPath.length == 3) {
-                    String schema = propertyPath[0];
-                    title = propertyPath[1];
-                    field = propertyPath[2];
-                    datamodel = doc.getProperty(schema + ":" + "views");
+            if (doc == null) {
+                return;
+            }
+            String path = docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY);
+            String[] propertyPath = path.split(":");
+            String title = null;
+            String field = null;
+            Property datamodel = null;
+            if (propertyPath.length == 2) {
+                title = propertyPath[0];
+                field = propertyPath[1];
+                datamodel = doc.getProperty("picture:views");
+            } else if (propertyPath.length == 3) {
+                String schema = propertyPath[0];
+                title = propertyPath[1];
+                field = propertyPath[2];
+                datamodel = doc.getProperty(schema + ":" + "views");
+            }
+            Property view = null;
+            for (Property property : datamodel) {
+                if (property.get("title").getValue().equals(title)) {
+                    view = property;
                 }
-                Property view = null;
+            }
+
+            if (view == null) {
                 for (Property property : datamodel) {
-                    if (property.get("title").getValue().equals(title)) {
+                    if (property.get("title").getValue().equals("Thumbnail")) {
                         view = property;
                     }
                 }
-
-                if (view == null) {
-                    for (Property property : datamodel) {
-                        if (property.get("title").getValue().equals("Thumbnail")) {
-                            view = property;
-                        }
-                    }
-                }
-                if (view == null) {
-                    return;
-                }
-                Blob blob = (Blob) view.getValue(field);
-                String filename = (String) view.getValue("filename");
-                // download
-                FacesContext context = FacesContext.getCurrentInstance();
-
-                ComponentUtils.download(context, blob, filename);
             }
+            if (view == null) {
+                return;
+            }
+            Blob blob = (Blob) view.getValue(field);
+            String filename = (String) view.getValue("filename");
+            // download
+            ComponentUtils.download(doc, path, blob, filename, "picture");
         }
     }
 

@@ -97,9 +97,6 @@ public interface DocumentActions extends Serializable {
      */
     String saveDocument(DocumentModel newDocument) throws ClientException;
 
-    @Deprecated
-    String download() throws ClientException;
-
     /**
      * Downloads file as described by given document view.
      * <p>
