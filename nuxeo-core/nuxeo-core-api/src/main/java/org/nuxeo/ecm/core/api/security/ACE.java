@@ -13,6 +13,8 @@
 package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Access control entry, assigning a permission to a user.
@@ -36,6 +38,12 @@ public final class ACE implements Serializable, Cloneable {
 
     private final boolean isGranted;
 
+    private Calendar begin;
+
+    private Calendar end;
+
+    private String creator;
+
     /**
      * Constructs an ACE for a given username and permission.
      * <p>
@@ -45,6 +53,41 @@ public final class ACE implements Serializable, Cloneable {
      */
     public ACE(String username, String permission) {
         this(username, permission, true);
+    }
+
+    /**
+     * Constructs an ACE for a given username, permission and creator user.
+     *
+     * @since 7.3
+     */
+    public ACE(String username, String permission, String creator) {
+        this(username, permission, true);
+        this.creator = creator;
+    }
+
+    /**
+     * Constructs an ACE for a given username, permission, creator user, begin and end date.
+     *
+     * @since 7.3
+     */
+    public ACE(String username, String permission, String creator, Calendar begin, Calendar end) {
+        this(username, permission, true);
+        this.creator = creator;
+        this.begin = begin;
+        this.end = end;
+    }
+
+    /**
+     * Constructs an ACE for a given username, permission, specifying wether to grand or deny it, creator user, begin
+     * and end date.
+     *
+     * @since 7.3
+     */
+    public ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end) {
+        this(username, permission, isGranted);
+        this.creator = creator;
+        this.begin = begin;
+        this.end = end;
     }
 
     /**
@@ -86,6 +129,30 @@ public final class ACE implements Serializable, Cloneable {
         return !isGranted;
     }
 
+    public Calendar getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Calendar begin) {
+        this.begin = begin;
+    }
+
+    public Calendar getEnd() {
+        return end;
+    }
+
+    public void setEnd(Calendar end) {
+        this.end = end;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -93,7 +160,20 @@ public final class ACE implements Serializable, Cloneable {
         }
         if (obj instanceof ACE) {
             ACE ace = (ACE) obj;
-            return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission);
+            boolean beginEqual;
+            boolean endEqual;
+            if (ace.begin != null) {
+                beginEqual = ace.begin.equals(begin);
+            } else {
+                beginEqual = begin == null;
+            }
+            if (ace.end != null) {
+                endEqual = ace.end.equals(end);
+            } else {
+                endEqual = end == null;
+            }
+            return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission)
+                    && ace.creator == creator && beginEqual && endEqual;
         }
         return super.equals(obj);
     }
@@ -103,6 +183,9 @@ public final class ACE implements Serializable, Cloneable {
         int hash = 17;
         hash = hash * 37 + (isGranted ? 1 : 0);
         hash = hash * 37 + username.hashCode();
+        hash = creator != null ? hash * 37 + creator.hashCode() : hash;
+        hash = begin != null ? hash * 37 + begin.hashCode() : hash;
+        hash = end != null ? hash * 37 + end.hashCode() : hash;
         return hash * 37 + permission.hashCode();
     }
 

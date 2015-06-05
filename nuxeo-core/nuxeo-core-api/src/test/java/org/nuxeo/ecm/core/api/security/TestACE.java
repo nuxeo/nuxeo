@@ -17,14 +17,21 @@ package org.nuxeo.ecm.core.api.security;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import static org.junit.Assert.*;
 
 public class TestACE {
     private ACE ace;
+    private ACE acebis;
 
     @Before
     public void setUp() {
         ace = new ACE("bogdan", "write", false);
+        acebis = new ACE("vlad", "write", "pas", new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56),
+                new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56));
     }
 
     @After
@@ -72,4 +79,11 @@ public class TestACE {
         assertEquals("bogdan:write:false", ace.toString());
     }
 
+    @Test
+    public void testNewConstructors(){
+        Calendar cal1 = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+        Calendar cal2 = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
+        ACE ace1 = new ACE("vlad", "write", "pas", cal1, cal2);
+        assertEquals(acebis,ace1);
+    }
 }

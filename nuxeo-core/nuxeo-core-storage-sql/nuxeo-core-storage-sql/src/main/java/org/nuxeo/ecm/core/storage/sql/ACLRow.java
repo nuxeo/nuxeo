@@ -13,6 +13,7 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Comparator;
 
 /**
@@ -36,6 +37,20 @@ public class ACLRow implements Serializable {
 
     public final String group;
 
+    public Calendar begin;
+
+    public Calendar end;
+
+    public String creator;
+
+    public ACLRow(int pos, String name, boolean grant, String permission, String user, String group, String creator, Calendar begin,
+            Calendar end) {
+        this(pos, name, grant, permission, user, group);
+        this.creator = creator;
+        this.begin = begin;
+        this.end = end;
+    }
+
     public ACLRow(int pos, String name, boolean grant, String permission, String user, String group) {
         this.pos = pos;
         this.name = name;
@@ -48,7 +63,7 @@ public class ACLRow implements Serializable {
     @Override
     public String toString() {
         return getClass().getSimpleName() + '(' + pos + ',' + name + ',' + (grant ? "GRANT" : "DENY") + ','
-                + permission + ',' + user + ',' + group + ')';
+                + permission + ',' + user + ',' + group + ',' + begin + ',' + end + ')';
     }
 
     /**

@@ -1281,9 +1281,12 @@ public class DBSSession implements Session {
             ACE[] aces = acl.getACEs();
             List<Serializable> aceList = new ArrayList<Serializable>(aces.length);
             for (ACE ace : aces) {
-                State aceMap = new State(3);
+                State aceMap = new State(6);
                 aceMap.put(KEY_ACE_USER, ace.getUsername());
                 aceMap.put(KEY_ACE_PERMISSION, ace.getPermission());
+                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
+                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
+                aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
                 aceMap.put(KEY_ACE_GRANT, Boolean.valueOf(ace.isGranted()));
                 aceList.add(aceMap);
             }
