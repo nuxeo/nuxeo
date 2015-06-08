@@ -48,7 +48,7 @@
           </p>
         </description>
         <categories>
-          <category>document</category>
+          <category>configuration_not_ready</category>
         </categories>
         <supportedModes>
           <mode>edit</mode>
@@ -60,9 +60,6 @@
           <supportedTypes>
             <type>blob</type>
           </supportedTypes>
-          <defaultTypes>
-            <type>blob</type>
-          </defaultTypes>
         </fields>
         <properties>
           <layouts mode="view">
