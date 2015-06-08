@@ -1,0 +1,25 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxr="http://nuxeo.org/nxweb/resources"
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
+
+  <nxu:set var="page" value="#{themeStylingService.getPage(name)}">
+    <c:if test="#{page != null}">
+      <nxr:meta charset="#{page.charset}" />
+      <c:forEach var="fav" items="#{page.favicons.entrySet()}">
+        <nxr:favicon name="#{fav.key}" src="#{fav.value}" />
+      </c:forEach>
+      <ui:remove>
+        Include JSF resources coming from ui-web here as first dependencies
+      </ui:remove>
+      <ui:include src="/incl/jsf_resources.xhtml" />
+      <c:forEach var="bundle" items="#{page.resourceBundles}">
+        <nxr:resourceBundle name="#{bundle}" target="head" />
+      </c:forEach>
+    </c:if>
+  </nxu:set>
+
+</ui:composition>
