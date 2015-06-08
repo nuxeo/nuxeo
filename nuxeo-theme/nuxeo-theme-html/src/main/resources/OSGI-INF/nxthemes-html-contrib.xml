@@ -16,6 +16,30 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="prototype.js">
+      <path>nxthemes/html/scripts/prototype.js</path>
+    </resource>
+
+    <resource name="effects.js">
+      <path>nxthemes/html/scripts/scriptaculous/effects.js</path>
+      <require>prototype.js</require>
+    </resource>
+
+    <resource name="dragdrop.js">
+      <path>nxthemes/html/scripts/scriptaculous/dragdrop.js</path>
+      <require>effects.js</require>
+      <require>prototype.js</require>
+    </resource>
+
+    <!-- Seam 1.0.1.GA -->
+    <resource name="seam-remote.js">
+      <path>nxthemes/html/scripts/seam-remote.js</path>
+    </resource>
+
+  </extension>
+
   <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
 
     <!-- Prototype 1.6.1 -->
