@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.liveconnect.google.drive;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.liveconnect.google.drive.GoogleDriveBlobProvider.PREFIX;
@@ -63,6 +64,7 @@ public class TestGoogleDriveDocumentUpdate extends GoogleDriveTestCase {
             BlobInfo blobInfo = new BlobInfo();
             blobInfo.key = PREFIX + ":" + USERID + ":" + JPEG_FILEID;
             blobInfo.digest = "pouet";
+            blobInfo.filename = "oldfilename";
             SimpleManagedBlob blob = new SimpleManagedBlob(blobInfo);
             testFile.setPropertyValue("content", blob);
             testFile = session.createDocument(testFile);
@@ -83,6 +85,8 @@ public class TestGoogleDriveDocumentUpdate extends GoogleDriveTestCase {
 
             assertTrue(StringUtils.isNotBlank(blob.getDigest()));
             assertNotEquals("pouet", blob.getDigest());
+
+            assertEquals("testimage.jpg", blob.getFilename());
         }
 
     }

@@ -424,10 +424,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     protected ManagedBlob getBlob(FileInfo fileInfo) throws IOException {
         String key = getKey(fileInfo);
         File file = getFile(fileInfo);
-        String filename = file.getOriginalFilename();
-        if (filename == null) {
-            filename = file.getTitle().replace("/", "-");
-        }
+        String filename = file.getTitle().replace("/", "-");
         BlobInfo blobInfo = new BlobInfo();
         blobInfo.key = key;
         blobInfo.mimeType = file.getMimeType();
