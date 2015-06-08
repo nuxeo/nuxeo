@@ -4,7 +4,7 @@
   <artifactId>nuxeo-target-platforms-parent</artifactId>
   <name>Nuxeo Target Platforms - Parent Pom</name>
   <packaging>pom</packaging>
-  <version>1.0.6012</version>
+  <version>1.0.1.6012-SNAPSHOT</version>
   <properties>
     <nuxeo.targetplatforms.version>${project.version}</nuxeo.targetplatforms.version>
     <nuxeo.distribution.version>6.0-HF12</nuxeo.distribution.version>
