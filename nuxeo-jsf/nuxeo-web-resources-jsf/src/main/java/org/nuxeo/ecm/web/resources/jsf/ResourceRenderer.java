@@ -19,24 +19,34 @@ package org.nuxeo.ecm.web.resources.jsf;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.faces.application.FacesMessage;
-import javax.faces.application.ProjectStage;
-import javax.faces.application.Resource;
+import javax.faces.application.ResourceDependencies;
+import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.web.resources.api.Resource;
+import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-
-import com.sun.faces.config.WebConfiguration;
-import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
+import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Renderer for JavaScript and CSS resources declared on the {@link WebResourceManager} extension point.
  *
  * @since 7.3
  */
-public class ResourceRenderer extends ScriptStyleBaseRenderer {
+@ResourceDependencies({ @ResourceDependency(library = "javax.faces", name = "jsf.js"),
+        @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
+        @ResourceDependency(library = "org.richfaces", name = "richfaces.js"),
+        @ResourceDependency(library = "org.richfaces", name = "richfaces-queue.js"),
+        @ResourceDependency(library = "org.nuxeo", name = "widget-utils.js"),
+        @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js") })
+public class ResourceRenderer extends AbstractResourceRenderer {
+
+    private static final Log log = LogFactory.getLog(ResourceRenderer.class);
 
     @Override
     protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
@@ -49,77 +59,44 @@ public class ResourceRenderer extends ScriptStyleBaseRenderer {
     }
 
     @Override
+    protected void encodeEnd(FacesContext context, UIComponent component, String src) throws IOException {
+        // NOOP
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
-
         Map<String, Object> attributes = component.getAttributes();
-        Map<Object, Object> contextMap = context.getAttributes();
-
+        WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         String name = (String) attributes.get("name");
-        String library = (String) attributes.get("library");
-
-        String key = name + library;
-
-        if (null == name) {
-            return;
+        Resource r = wrm.getResource(name);
+        if (r != null) {
+            encodeEnd(context, component, r);
         }
-
-        // Ensure this import is not rendered more than once per request
-        if (contextMap.containsKey(key)) {
-            return;
-        }
-        contextMap.put(key, Boolean.TRUE);
-
-        // Special case of scripts that have query strings
-        // These scripts actually use their query strings internally, not externally
-        // so we don't need the resource to know about them
-        int queryPos = name.indexOf("?");
-        String query = null;
-        if (queryPos > -1 && name.length() > queryPos) {
-            query = name.substring(queryPos + 1);
-            name = name.substring(0, queryPos);
-        }
-
-        Resource resource = context.getApplication().getResourceHandler().createResource(name, library);
-
-        ResponseWriter writer = context.getResponseWriter();
-        this.startElement(writer, component);
-
-        String resourceSrc = "RES_NOT_FOUND";
-
-        WebConfiguration webConfig = WebConfiguration.getInstance();
-
-        if (library == null
-                && name != null
-                && name.startsWith(webConfig.getOptionValue(WebConfiguration.WebContextInitParameter.WebAppContractsDirectory))) {
-
-            if (context.isProjectStage(ProjectStage.Development)) {
-
-                String msg = "Illegal path, direct contract references are not allowed: " + name;
-                context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, msg,
-                        msg));
-            }
-            resource = null;
-        }
-
-        if (resource == null) {
-
-            if (context.isProjectStage(ProjectStage.Development)) {
-                String msg = "Unable to find resource " + (library == null ? "" : library + ", ") + name;
-                context.addMessage(component.getClientId(context), new FacesMessage(FacesMessage.SEVERITY_ERROR, msg,
-                        msg));
-            }
-
-        } else {
-            resourceSrc = resource.getRequestPath();
-            if (query != null) {
-                resourceSrc = resourceSrc + ((resourceSrc.indexOf("?") > -1) ? "&amp;" : "?") + query;
-            }
-            resourceSrc = context.getExternalContext().encodeResourceURL(resourceSrc);
-        }
-
-        writer.writeURIAttribute("src", resourceSrc, "src");
-        this.endElement(writer);
         super.encodeEnd(context, component);
     }
 
+    protected void encodeEnd(FacesContext context, UIComponent component, Resource resource) throws IOException {
+        String url = resolveResource(context, component, null, NuxeoUriLocator.PREFIX + resource.getName());
+        ResponseWriter writer = context.getResponseWriter();
+        if (ResourceType.css.matches(resource)) {
+            writer.startElement("link", component);
+            writer.writeAttribute("type", "text/css", "type");
+            writer.writeAttribute("rel", "stylesheet", "rel");
+            writer.writeURIAttribute("href", url, "href");
+            writer.endElement("link");
+        } else if (ResourceType.js.matches(resource)) {
+            writer.startElement("script", component);
+            writer.writeAttribute("type", "text/javascript", "type");
+            writer.writeURIAttribute("src", url, "src");
+            writer.endElement("script");
+        } else if (ResourceType.html.matches(resource)) {
+            writer.startElement("link", component);
+            writer.writeAttribute("rel", "import", "rel");
+            writer.writeURIAttribute("href", url, "href");
+            writer.endElement("link");
+        } else {
+            log.error("Unhandled type for resource " + resource);
+        }
+    }
 }
