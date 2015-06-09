@@ -78,7 +78,7 @@ public class TestACE {
 
         assertEquals(ace.hashCode(), ace2.hashCode());
     }
-    
+
     @Test
     public void testNewConstructors() {
         Calendar cal1 = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
