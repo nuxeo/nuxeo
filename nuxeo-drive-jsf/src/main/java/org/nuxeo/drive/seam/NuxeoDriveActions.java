@@ -17,8 +17,6 @@
  */
 package org.nuxeo.drive.seam;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -59,7 +57,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
-import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.user.center.UserCenterViewManager;
@@ -367,11 +364,6 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append(platformVersion);
         sb.append("/");
         return sb.toString();
-    }
-
-    public String downloadClientPackage(String name, File file) throws IOException {
-        FacesContext facesCtx = FacesContext.getCurrentInstance();
-        return ComponentUtils.downloadFile(facesCtx, name, file);
     }
 
     protected boolean isSyncRootCandidate(DocumentModel doc) throws ClientException {
