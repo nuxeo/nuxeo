@@ -43,7 +43,7 @@ public class NuxeoResourceHandler extends ResourceHandlerWrapper {
     public ViewResource createViewResource(FacesContext facesContext, String resourceName) {
         if (resourceName.startsWith(NuxeoUnknownResource.MARKER)) {
             return new NuxeoUnknownResource(resourceName.substring(NuxeoUnknownResource.MARKER.length()));
-        } else if (resourceName.startsWith(NuxeoUriLocator.PREFIX)) {
+        } else if (resourceName.startsWith(Resource.PREFIX)) {
             Resource resource = NuxeoUriLocator.getResource(resourceName);
             if (resource == null) {
                 return new NuxeoUnknownResource(resourceName);

@@ -16,10 +16,6 @@
  */
 package org.nuxeo.theme.styling.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -45,7 +41,6 @@ import org.mockito.MockitoAnnotations;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroModelFactory;
-import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -60,6 +55,11 @@ import ro.isdc.wro.model.resource.Resource;
 import ro.isdc.wro.model.resource.ResourceType;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
 import ro.isdc.wro.util.WroTestUtils;
+
+import static org.junit.Assert.assertEquals;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @since 7.3
@@ -129,7 +129,7 @@ public class TestFlavorResourceProcessor {
         when(mockRequest.getQueryString()).thenReturn("uri?flavor=" + flavor);
         final Reader reader = new InputStreamReader(getTestFile("themes/css/nuxeo_dm_default.css"));
         final StringWriter writer = new StringWriter();
-        victim.process(Resource.create(NuxeoUriLocator.PREFIX + "nuxeo_dm_default.css", ResourceType.CSS), reader,
+        victim.process(Resource.create(org.nuxeo.ecm.web.resources.api.Resource.PREFIX + "nuxeo_dm_default.css", ResourceType.CSS), reader,
                 writer);
         WroTestUtils.compare(getTestFile(filePath), new ByteArrayInputStream(writer.toString().getBytes()));
     }

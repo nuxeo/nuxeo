@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroCacheKeyFactory;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroManagerFactory;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroModelFactory;
@@ -114,11 +116,11 @@ public class TestNuxeoWroManagerFactory {
 
         // ensure Nuxeo resources are detected
         UriLocatorFactory locator = victim.getUriLocatorFactory();
-        String existing = NuxeoUriLocator.PREFIX + "foldable-box.css";
+        String existing = Resource.PREFIX + "foldable-box.css";
         assertTrue(locator.getInstance(existing) instanceof NuxeoUriLocator);
         InputStream in = locator.locate(existing);
         assertNotNull(in);
-        String unknown = NuxeoUriLocator.PREFIX + "foo";
+        String unknown = Resource.PREFIX + "foo";
         assertTrue(locator.getInstance(unknown) instanceof NuxeoUriLocator);
         assertNull(locator.locate(unknown));
 
@@ -144,7 +146,7 @@ public class TestNuxeoWroManagerFactory {
     @Test
     public void testNuxeoUriWildCardlocator() throws Exception {
         UriLocatorFactory locator = victim.getUriLocatorFactory();
-        String existing = NuxeoUriLocator.PREFIX + "all.css";
+        String existing = Resource.PREFIX + "all.css";
         assertTrue(locator.getInstance(existing) instanceof NuxeoUriLocator);
         InputStream in = locator.locate(existing);
         assertNotNull(in);

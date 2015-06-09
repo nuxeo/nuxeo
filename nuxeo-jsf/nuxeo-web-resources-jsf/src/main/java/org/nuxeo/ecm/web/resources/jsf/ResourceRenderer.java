@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -77,7 +76,7 @@ public class ResourceRenderer extends AbstractResourceRenderer {
     }
 
     protected void encodeEnd(FacesContext context, UIComponent component, Resource resource) throws IOException {
-        String url = resolveResource(context, component, null, NuxeoUriLocator.PREFIX + resource.getName());
+        String url = resolveResource(context, component, null, Resource.PREFIX + resource.getName());
         ResponseWriter writer = context.getResponseWriter();
         if (ResourceType.css.matches(resource)) {
             writer.startElement("link", component);

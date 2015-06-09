@@ -34,8 +34,6 @@ import ro.isdc.wro.model.resource.locator.factory.UriLocatorFactory;
  */
 public class NuxeoUriLocator implements UriLocator {
 
-    public static final String PREFIX = "nuxeo:";
-
     public static final String ALIAS = "nuxeoUri";
 
     @Inject
@@ -43,7 +41,7 @@ public class NuxeoUriLocator implements UriLocator {
 
     @Override
     public boolean accept(String uri) {
-        return uri != null && uri.startsWith(PREFIX);
+        return uri != null && uri.startsWith(Resource.PREFIX);
     }
 
     @Override
@@ -61,13 +59,13 @@ public class NuxeoUriLocator implements UriLocator {
 
     public static Resource getResource(String uri) {
         // resolve resource from Nuxeo service
-        String name = uri.substring(PREFIX.length());
+        String name = uri.substring(Resource.PREFIX.length());
         WebResourceManager service = Framework.getService(WebResourceManager.class);
         return service.getResource(name);
     }
 
     public static String getUri(Resource resource) {
-        return String.format("%s%s", PREFIX, resource.getName());
+        return String.format("%s%s", Resource.PREFIX, resource.getName());
     }
 
     public static boolean isProcessorEnabled(String alias, String uri) {
