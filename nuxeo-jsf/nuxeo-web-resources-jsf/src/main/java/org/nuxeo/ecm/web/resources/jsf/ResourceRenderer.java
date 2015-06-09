@@ -19,8 +19,6 @@ package org.nuxeo.ecm.web.resources.jsf;
 import java.io.IOException;
 import java.util.Map;
 
-import javax.faces.application.ResourceDependencies;
-import javax.faces.application.ResourceDependency;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -37,12 +35,6 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.3
  */
-@ResourceDependencies({ @ResourceDependency(library = "javax.faces", name = "jsf.js"),
-        @ResourceDependency(library = "org.richfaces", name = "jquery.js"),
-        @ResourceDependency(library = "org.richfaces", name = "richfaces.js"),
-        @ResourceDependency(library = "org.richfaces", name = "richfaces-queue.js"),
-        @ResourceDependency(library = "org.nuxeo", name = "widget-utils.js"),
-        @ResourceDependency(library = "org.nuxeo.select2", name = "select2.js") })
 public class ResourceRenderer extends AbstractResourceRenderer {
 
     private static final Log log = LogFactory.getLog(ResourceRenderer.class);
