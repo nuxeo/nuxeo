@@ -195,6 +195,7 @@ public class DialectOracle extends Dialect {
         rs.next();
         String user = rs.getString(1);
         log.trace("SQL:   -> " + user);
+        rs.close();
         st.close();
         return user;
     }
@@ -308,11 +309,15 @@ public class DialectOracle extends Dialect {
         }
         String sql = String.format("SELECT %s.NEXTVAL FROM DUAL", idSequenceName);
         Statement s = connection.createStatement();
+        ResultSet rs = null;
         try {
-            ResultSet rs = s.executeQuery(sql);
+            rs = s.executeQuery(sql);
             rs.next();
             return Long.valueOf(rs.getLong(1));
         } finally {
+            if (rs != null) {
+                rs.close();
+            }
             s.close();
         }
     }

@@ -267,12 +267,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 logger.logSQL(sql, ids);
             }
             PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = null;
             try {
                 int i = 1;
                 for (Serializable id : ids) {
                     dialect.setId(ps, i++, id);
                 }
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
                 countExecute();
 
                 // get all values from result set, separate by ids
@@ -320,7 +321,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 return res;
             } finally {
-                closeStatement(ps);
+                closeStatement(ps, rs);
             }
         } catch (Exception e) {
             checkConnectionReset(e);
@@ -356,6 +357,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             joinMap = Collections.emptyMap();
         }
         PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             ps = connection.prepareStatement(select.sql);
 
@@ -402,7 +404,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             /*
              * Execute query.
              */
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             countExecute();
 
             /*
@@ -436,12 +438,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             checkConcurrentUpdate(e);
             throw new StorageException("Could not select: " + select.sql, e);
         } finally {
-            if (ps != null) {
-                try {
-                    closeStatement(ps);
-                } catch (SQLException e) {
-                    logger.error(e.getMessage(), e);
-                }
+            try {
+                closeStatement(ps, rs);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -771,7 +771,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             countExecute();
             return;
         } finally {
-            closeStatement(ps);
+            try {
+                closeStatement(ps);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -911,12 +915,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         if (logger.isLogEnabled()) {
             logger.logSQL(sql, Collections.singletonList(id));
         }
-        PreparedStatement ps;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             ps = connection.prepareStatement(sql);
             try {
                 dialect.setId(ps, 1, id);
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
                 while (rs.next()) {
                     for (int i = 1; i <= columns.size(); i++) {
                         ret.put(columns.get(i - 1), rs.getString(i));
@@ -926,7 +931,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     logger.log("  -> " + ret);
                 }
             } finally {
-                closeStatement(ps);
+                closeStatement(ps, rs);
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
@@ -946,10 +951,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 logger.logSQL(sql, Collections.singletonList(id));
             }
             PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = null;
             try {
                 List<Column> columns = sqlInfo.selectFragmentById.get(tableName).whatColumns;
                 dialect.setId(ps, 1, id); // assumes only one primary column
-                ResultSet rs = ps.executeQuery();
+                rs = ps.executeQuery();
                 countExecute();
 
                 // construct the resulting collection using each row
@@ -968,7 +974,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
                 return array;
             } finally {
-                closeStatement(ps);
+                closeStatement(ps, rs);
             }
         } catch (Exception e) {
             checkConnectionReset(e);
@@ -1195,7 +1201,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             idMap.put(id, newId);
             return newId;
         } finally {
-            closeStatement(ps);
+            try {
+                closeStatement(ps);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -1210,13 +1220,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
         List<Column> columns = sqlInfo.getSelectChildrenIdsAndTypesWhatColumns();
         PreparedStatement ps = connection.prepareStatement(sql);
+        ResultSet rs = null;
         try {
             List<String> debugValues = null;
             if (logger.isLogEnabled()) {
                 debugValues = new LinkedList<String>();
             }
             dialect.setId(ps, 1, id); // parent id
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             countExecute();
             while (rs.next()) {
                 Serializable childId = null;
@@ -1244,7 +1255,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return children;
         } finally {
-            closeStatement(ps);
+            try {
+                closeStatement(ps);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -1298,8 +1313,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             // 0 , 0 -> null
             return after ? Boolean.TRUE : (before ? Boolean.FALSE : null);
         } finally {
-            closeStatement(copyPs);
-            closeStatement(deletePs);
+            try {
+                closeStatement(copyPs);
+                closeStatement(deletePs);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -1378,12 +1397,10 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             checkConnectionReset(e);
             throw new StorageException("Failed to get descendants", e);
         } finally {
-            if (ps != null) {
-                try {
-                    closeStatement(ps);
-                } catch (SQLException e) {
-                    logger.error(e.getMessage(), e);
-                }
+            try {
+                closeStatement(ps);
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
             }
         }
     }

@@ -238,12 +238,12 @@ public class SQLHelper {
                 columnNames.add(rs.getString("COLUMN_NAME"));
             }
         } finally {
-            try {
-                if (rs != null) {
+            if (rs != null) {
+                try {
                     rs.close();
+                } catch (SQLException e) {
+                    log.warn("Error while trying to close result set", e);
                 }
-            } catch (Exception e) {
-                log.warn("Error while trying to close result set", e);
             }
         }
         return columnNames;
@@ -264,11 +264,13 @@ public class SQLHelper {
                 schemaName = rs.getString(1);
                 log.trace("checking existing tables for oracle database, schema: "
                         + schemaName);
+                rs.close();
                 st.close();
             }
             ResultSet rs = metaData.getTables(null, schemaName,
                     table.getPhysicalName(), new String[] { "TABLE" });
             boolean exists = rs.next();
+            rs.close();
             log.debug(String.format("checking if table %s exists: %s",
                     table.getPhysicalName(), Boolean.valueOf(exists)));
             return exists;
