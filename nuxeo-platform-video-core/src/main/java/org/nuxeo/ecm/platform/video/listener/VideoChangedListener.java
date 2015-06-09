@@ -60,7 +60,7 @@ public class VideoChangedListener implements EventListener {
         }
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
         DocumentModel doc = docCtx.getSourceDocument();
-        if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET)) {
+        if (doc.hasFacet(HAS_VIDEO_PREVIEW_FACET) && !doc.isProxy()) {
             Property origVideoProperty = doc.getProperty("file:content");
             if (DOCUMENT_CREATED.equals(event.getName()) || origVideoProperty.isDirty()) {
 
