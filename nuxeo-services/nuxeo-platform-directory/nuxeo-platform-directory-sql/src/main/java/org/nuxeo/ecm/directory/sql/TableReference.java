@@ -153,17 +153,21 @@ public class TableReference extends AbstractReference {
         }
 
         PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             ps = session.sqlConnection.prepareStatement(selectSql);
             ps.setString(1, sourceId);
             ps.setString(2, targetId);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             rs.next();
             return rs.getInt(1) > 0;
         } catch (SQLException e) {
             throw new DirectoryException(String.format("error reading link from %s to %s", sourceId, targetId), e);
         } finally {
             try {
+                if (rs != null) {
+                    rs.close();
+                }
                 if (ps != null) {
                     ps.close();
                 }
@@ -241,11 +245,12 @@ public class TableReference extends AbstractReference {
 
         List<String> ids = new LinkedList<String>();
         PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             ps = session.sqlConnection.prepareStatement(sql);
             ps.setString(1, filterValue);
 
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 ids.add(rs.getString(valueColumn));
             }
@@ -254,6 +259,9 @@ public class TableReference extends AbstractReference {
             throw new DirectoryException("error fetching reference values: ", e);
         } finally {
             try {
+                if (rs != null) {
+                    rs.close();
+                }
                 if (ps != null) {
                     ps.close();
                 }
@@ -356,6 +364,7 @@ public class TableReference extends AbstractReference {
                     idsToDelete.add(existingId);
                 }
             }
+            rs.close();
         } catch (SQLException e) {
             throw new DirectoryException("failed to fetch existing links for " + filterValue, e);
         } finally {

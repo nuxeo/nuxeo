@@ -254,10 +254,12 @@ public class SQLHelper {
                 rs.next();
                 schemaName = rs.getString(1);
                 log.trace("checking existing tables for oracle database, schema: " + schemaName);
+                rs.close();
                 st.close();
             }
             ResultSet rs = metaData.getTables(null, schemaName, table.getPhysicalName(), new String[] { "TABLE" });
             boolean exists = rs.next();
+            rs.close();
             log.debug(String.format("checking if table %s exists: %s", table.getPhysicalName(), Boolean.valueOf(exists)));
             return exists;
         } catch (SQLException e) {

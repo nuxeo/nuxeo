@@ -390,6 +390,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
+                rs.close();
                 return null;
             }
 
@@ -399,6 +400,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 Object value = getFieldValue(rs, fieldName);
                 fieldMap.put(fieldName, value);
             }
+            rs.close();
 
             if (isMultiTenant()) {
                 // check that the entry is from the current tenant, or no tenant
@@ -838,6 +840,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     ResultSet rs = ps.executeQuery();
                     rs.next();
                     int count = rs.getInt(1);
+                    rs.close();
                     if (count > queryLimitSize) {
                         throw new SizeLimitExceededException("too many rows in result: " + count);
                     }
@@ -925,6 +928,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     }
                     list.add(docModel);
                 }
+                rs.close();
                 return list;
             } finally {
                 if (ps != null) {
@@ -1117,15 +1121,19 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
 
         PreparedStatement ps = null;
+        ResultSet rs = null;
         try {
             ps = sqlConnection.prepareStatement(sql);
             setFieldValue(ps, 1, table.getPrimaryColumn(), id);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
             throw new DirectoryException("hasEntry failed", e);
         } finally {
             try {
+                if (rs != null) {
+                    rs.close();
+                }
                 if (ps != null) {
                     ps.close();
                 }

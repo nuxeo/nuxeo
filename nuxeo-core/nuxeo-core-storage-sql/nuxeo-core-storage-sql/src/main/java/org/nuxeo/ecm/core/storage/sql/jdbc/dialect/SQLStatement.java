@@ -265,6 +265,7 @@ public class SQLStatement {
                         Boolean emptyResult = Boolean.valueOf(!rs.next());
                         properties.put(Tag.VAR_EMPTY_RESULT, emptyResult);
                         jdbc.logger.log("  -> emptyResult = " + emptyResult);
+                        rs.close();
                     } else {
                         st.execute(sql);
                     }
