@@ -92,7 +92,7 @@
 
       <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-      <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" data="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
+      <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
       <div>
         <h2>Access rights defined explicitely on this folder</h2>
@@ -165,7 +165,7 @@
             // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
             var item = e.model.dataHost.dataHost.item;
             self.$.rmPermission.params = {
-              user: item.username
+              id: item.id
             };
             self.$.rmPermission.execute();
           });
