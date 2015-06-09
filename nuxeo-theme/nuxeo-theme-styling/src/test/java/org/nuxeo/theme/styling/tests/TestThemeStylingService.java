@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -37,11 +35,17 @@ import org.nuxeo.theme.resources.ResourceManager;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.Page;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.themes.ThemeManager;
 import org.nuxeo.theme.types.Type;
 import org.nuxeo.theme.types.TypeFamily;
 import org.nuxeo.theme.types.TypeRegistry;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @since 5.5
@@ -428,4 +432,23 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertNull(service.getLogo("subDark"));
     }
 
+    @Test
+    public void testPageRegistration() throws Exception {
+        Page page = service.getPage("testStyling/default");
+        assertNotNull(page);
+        assertEquals("testStyling/default", page.getName());
+        assertEquals("default", page.getDefaultFlavor());
+        assertEquals(3, page.getFlavors().size());
+        assertEquals("default", page.getFlavors().get(0));
+        assertEquals("dark", page.getFlavors().get(1));
+        assertEquals("subDark", page.getFlavors().get(2));
+        assertEquals(0, page.getResourceBundles().size());
+        assertEquals(1, page.getResources().size());
+        assertEquals("jquery.fancybox.js", page.getResources().get(0));
+        assertEquals(2, page.getFavicons().size());
+        assertEquals("icon", page.getFavicons().get(0).getName());
+        assertEquals("/nuxeo/icons/favicon.png", page.getFavicons().get(0).getValue());
+        assertEquals("shortcut icon", page.getFavicons().get(1).getName());
+        assertEquals("/nuxeo/icons/favicon.ico", page.getFavicons().get(1).getValue());
+    }
 }

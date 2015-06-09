@@ -17,13 +17,10 @@
 package org.nuxeo.theme.styling.service.descriptors;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.theme.services.ThemeService;
 
@@ -47,8 +44,8 @@ public class Page {
     /**
      * @since 7.3
      */
-    @XNodeMap(value = "links/icon", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> favicons = new HashMap<String, String>();
+    @XNodeList(value = "links/icon", type = ArrayList.class, componentType = IconDescriptor.class)
+    List<IconDescriptor> favicons;
 
     @XNode("defaultFlavor")
     String defaultFlavor;
@@ -199,14 +196,14 @@ public class Page {
     /**
      * @since 7.3
      */
-    public Map<String, String> getFavicons() {
+    public List<IconDescriptor> getFavicons() {
         return favicons;
     }
 
     /**
      * @since 7.3
      */
-    public void setFavicons(Map<String, String> favicons) {
+    public void setFavicons(List<IconDescriptor> favicons) {
         this.favicons = favicons;
     }
 
@@ -221,7 +218,7 @@ public class Page {
             setCharset(newCharset);
         }
 
-        Map<String, String> newFavicons = src.getFavicons();
+        List<IconDescriptor> newFavicons = src.getFavicons();
         if (newFavicons != null && !newFavicons.isEmpty()) {
             setFavicons(newFavicons);
         }
@@ -292,9 +289,13 @@ public class Page {
         Page clone = new Page();
         clone.setName(getName());
         clone.setCharset(getCharset());
-        Map<String, String> favicons = new HashMap<String, String>();
+        List<IconDescriptor> favicons = getFavicons();
         if (favicons != null) {
-            clone.setFavicons(new HashMap<>(favicons));
+            List<IconDescriptor> icons = new ArrayList<IconDescriptor>();
+            for (IconDescriptor icon : favicons) {
+                icons.add(icon.clone());
+            }
+            clone.setFavicons(icons);
         }
         clone.setDefaultFlavor(getDefaultFlavor());
         clone.setAppendStyles(getAppendStyles());
