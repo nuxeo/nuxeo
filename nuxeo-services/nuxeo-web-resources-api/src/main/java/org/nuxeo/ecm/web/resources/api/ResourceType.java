@@ -25,6 +25,10 @@ public enum ResourceType {
 
     any, unknown, css, js, bundle, html;
 
+    public String getSuffix() {
+        return "." + name();
+    }
+
     public static final ResourceType parse(String type) {
         for (ResourceType item : values()) {
             if (item.name().equals(type)) {
@@ -38,7 +42,7 @@ public enum ResourceType {
         if (ResourceType.any == this) {
             return true;
         }
-        if (r.getType() == null) {
+        if (r == null || r.getType() == null) {
             return true;
         }
         if (this.name().toLowerCase().equals(r.getType().toLowerCase())) {

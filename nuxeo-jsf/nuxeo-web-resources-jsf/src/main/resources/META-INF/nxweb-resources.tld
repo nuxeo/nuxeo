@@ -34,11 +34,8 @@
     <description>
       <![CDATA[
       <p>
-        Tag handler managing import of JavaScript resources declared on the
+        Tag handler managing import of JavaScript/CSS/HTML resources declared on the
         WebResourceManager service.
-      </p>
-      <p>
-       TODO: check behavior, and if useful.
       </p>
       ]]>
     </description>
@@ -49,15 +46,6 @@
       <description>
         Name of the resource as registered on the service, can also
         be the name of the JSF resource as an alternative.
-      </description>
-    </attribute>
-    <attribute>
-      <name>library</name>
-      <required>false</required>
-      <type>java.lang.String</type>
-      <description>
-        The library name for this resource, if registered as a JSF
-        resource.
       </description>
     </attribute>
     <attribute>
@@ -147,8 +135,7 @@
       <type>java.lang.String</type>
       <description>
         Path to the resource to import, will lookup a local resource
-        if it does
-        not start with a slash
+        if it does not start with a slash.
       </description>
     </attribute>
     <attribute>

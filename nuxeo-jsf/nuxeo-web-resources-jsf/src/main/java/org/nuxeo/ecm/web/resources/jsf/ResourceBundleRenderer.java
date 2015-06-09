@@ -31,30 +31,14 @@ import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
-
 /**
  * Renderer for resource bundles, handling several types of resources (css, js, html for now).
  *
  * @since 7.3
  */
-public class ResourceBundleRenderer extends ScriptStyleBaseRenderer {
+public class ResourceBundleRenderer extends AbstractResourceRenderer {
 
     public static final String RENDERER_TYPE = "org.nuxeo.ecm.web.resources.jsf.ResourceBundle";
-
-    public static final String ENDPOINT_PATH = "/site/api/v1/resource/bundle/";
-
-    public static final String COMPONENTS_PATH = "/components/";
-
-    @Override
-    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
-        // NOOP
-    }
-
-    @Override
-    protected void endElement(ResponseWriter writer) throws IOException {
-        // NOOP
-    }
 
     @Override
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
@@ -74,7 +58,6 @@ public class ResourceBundleRenderer extends ScriptStyleBaseRenderer {
             List<Resource> htmlr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.html.name());
             if (htmlr != null && !htmlr.isEmpty()) {
                 for (Resource rhtml : htmlr) {
-                    // assume html resources are copied to the war "components" subdirectory for now
                     encodeEnd(context, component, ResourceType.html, COMPONENTS_PATH + rhtml.getPath());
                 }
             }
@@ -84,8 +67,7 @@ public class ResourceBundleRenderer extends ScriptStyleBaseRenderer {
 
     protected void encodeEnd(FacesContext context, UIComponent component, ResourceType type, String base)
             throws IOException {
-        String value = context.getApplication().getViewHandler().getResourceURL(context, base);
-        String url = context.getExternalContext().encodeResourceURL(value);
+        String url = resolveNuxeoResourceUrl(context, component, base);
         ResponseWriter writer = context.getResponseWriter();
         if (ResourceType.css.equals(type)) {
             writer.startElement("link", component);
@@ -104,6 +86,16 @@ public class ResourceBundleRenderer extends ScriptStyleBaseRenderer {
             writer.writeURIAttribute("href", url, "href");
             writer.endElement("link");
         }
+    }
+
+    @Override
+    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
+        // NOOP
+    }
+
+    @Override
+    protected void endElement(ResponseWriter writer) throws IOException {
+        // NOOP
     }
 
 }

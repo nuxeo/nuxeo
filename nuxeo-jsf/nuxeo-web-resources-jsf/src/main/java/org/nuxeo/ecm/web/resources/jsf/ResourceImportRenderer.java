@@ -17,11 +17,12 @@
 package org.nuxeo.ecm.web.resources.jsf;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
+import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 
 /**
@@ -29,25 +30,19 @@ import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
  *
  * @since 7.3
  */
-public class ResourceImportRenderer extends AbstractResourceRenderer {
+public class ResourceImportRenderer extends HTMLImportRenderer {
 
     @Override
-    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
-        // NOOP
-    }
-
-    @Override
-    protected void endElement(ResponseWriter writer) throws IOException {
-        // NOOP
-    }
-
-    @Override
-    protected void encodeEnd(FacesContext context, UIComponent component, String src) throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        writer.startElement("link", component);
-        writer.writeAttribute("rel", "import", "rel");
-        writer.writeURIAttribute("href", src, "href");
-        writer.endElement("link");
+    protected String resolveUrl(FacesContext context, UIComponent component) throws IOException {
+        Map<String, Object> attributes = component.getAttributes();
+        String name = (String) attributes.get("name");
+        if (name != null) {
+            Resource r = resolveNuxeoResource(context, component, name);
+            if (r != null) {
+                return getUrlWithParams(context, component, r.getURI());
+            }
+        }
+        return null;
     }
 
 }

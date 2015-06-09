@@ -16,50 +16,83 @@
  */
 package org.nuxeo.ecm.web.resources.jsf;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.application.ProjectStage;
 import javax.faces.application.Resource;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIParameter;
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
+
+import org.nuxeo.ecm.web.resources.api.ResourceType;
+import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
+import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.config.WebConfiguration;
+import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
 import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
 
 /**
- * Base class for web resources resolution.
+ * Base class for web resources resolution, factoring out helper methods for resources retrieval.
  *
  * @since 7.3
  */
 public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
 
-    protected abstract void startElement(ResponseWriter writer, UIComponent component) throws IOException;
+    public static final String ENDPOINT_PATH = "/site/api/v1/resource/bundle/";
 
-    protected abstract void endElement(ResponseWriter writer) throws IOException;
+    public static final String COMPONENTS_PATH = "/bower_components/";
 
-    protected abstract void encodeEnd(FacesContext context, UIComponent component, String src) throws IOException;
+    protected static final Param[] EMPTY_PARAMS = new Param[0];
 
-    @Override
-    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
-        Map<String, Object> attributes = component.getAttributes();
-        String src = (String) attributes.get("src");
-        String url;
-        if (src != null) {
-            String value = context.getApplication().getViewHandler().getResourceURL(context, src);
-            url = context.getExternalContext().encodeResourceURL(value);
-        } else {
-            String name = (String) attributes.get("name");
-            String library = (String) attributes.get("library");
-            url = resolveResource(context, component, library, name);
-        }
-        encodeEnd(context, component, url);
-        super.encodeEnd(context, component);
+    protected String resolveResourceFromSource(FacesContext context, UIComponent component, String src)
+            throws UnsupportedEncodingException {
+        String value = context.getApplication().getViewHandler().getResourceURL(context, src);
+        return getUrlWithParams(context, component, value);
     }
 
-    protected String resolveResource(FacesContext context, UIComponent component, String library, String name) {
+    protected org.nuxeo.ecm.web.resources.api.Resource resolveNuxeoResource(FacesContext context,
+            UIComponent component, String resource) throws UnsupportedEncodingException {
+        WebResourceManager wrm = Framework.getService(WebResourceManager.class);
+        return wrm.getResource(resource);
+    }
+
+    protected String resolveNuxeoResourcePath(org.nuxeo.ecm.web.resources.api.Resource resource) {
+        if (resource == null) {
+            return null;
+        }
+        String name = resource.getName();
+        if (ResourceType.css.matches(resource)) {
+            String suffixed = name;
+            if (!suffixed.endsWith(ResourceType.css.getSuffix())) {
+                suffixed += ResourceType.css.getSuffix();
+            }
+            return ENDPOINT_PATH + suffixed;
+        } else if (ResourceType.js.matches(resource)) {
+            String suffixed = name;
+            if (!suffixed.endsWith(ResourceType.js.getSuffix())) {
+                suffixed += ResourceType.js.getSuffix();
+            }
+            return ENDPOINT_PATH + suffixed;
+        } else if (ResourceType.html.matches(resource)) {
+            // assume html resources are copied to the war "components" sub-directory for now
+            return COMPONENTS_PATH + resource.getPath();
+        }
+        // fallback on URI
+        return resource.getURI();
+    }
+
+    protected String resolveNuxeoResourceUrl(FacesContext context, UIComponent component, String uri)
+            throws UnsupportedEncodingException {
+        String value = context.getApplication().getViewHandler().getResourceURL(context, uri);
+        return getUrlWithParams(context, component, value);
+    }
+
+    protected String resolveResourceUrl(FacesContext context, UIComponent component, String library, String name) {
         Map<Object, Object> contextMap = context.getAttributes();
 
         String key = name + library;
@@ -120,6 +153,51 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
         }
 
         return resourceSrc;
+    }
+
+    protected String getUrlWithParams(FacesContext context, UIComponent component, String src)
+            throws UnsupportedEncodingException {
+        // Write Anchor attributes
+
+        Param paramList[] = getParamList(component);
+        StringBuffer sb = new StringBuffer();
+        sb.append(src);
+        boolean paramWritten = false;
+        for (int i = 0, len = paramList.length; i < len; i++) {
+            String pn = paramList[i].name;
+            if (pn != null && pn.length() != 0) {
+                String pv = paramList[i].value;
+                sb.append((paramWritten) ? '&' : '?');
+                sb.append(URLEncoder.encode(pn, "UTF-8"));
+                sb.append('=');
+                if (pv != null && pv.length() != 0) {
+                    sb.append(URLEncoder.encode(pv, "UTF-8"));
+                }
+                paramWritten = true;
+            }
+        }
+
+        return context.getExternalContext().encodeResourceURL(sb.toString());
+    }
+
+    protected Param[] getParamList(UIComponent command) {
+        if (command.getChildCount() > 0) {
+            ArrayList<Param> parameterList = new ArrayList<Param>();
+
+            for (UIComponent kid : command.getChildren()) {
+                if (kid instanceof UIParameter) {
+                    UIParameter uiParam = (UIParameter) kid;
+                    if (!uiParam.isDisable()) {
+                        Object value = uiParam.getValue();
+                        Param param = new Param(uiParam.getName(), (value == null ? null : value.toString()));
+                        parameterList.add(param);
+                    }
+                }
+            }
+            return parameterList.toArray(new Param[parameterList.size()]);
+        } else {
+            return EMPTY_PARAMS;
+        }
     }
 
 }

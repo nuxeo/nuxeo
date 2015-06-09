@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.web.resources.jsf;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -29,22 +30,43 @@ import javax.faces.context.ResponseWriter;
  */
 public class HTMLImportRenderer extends AbstractResourceRenderer {
 
+    /**
+     * Resolve url either from src, looking up resource in the war, either from JSF resources, given a name (and
+     * optional library).
+     */
+    protected String resolveUrl(FacesContext context, UIComponent component) throws IOException {
+        Map<String, Object> attributes = component.getAttributes();
+        String src = (String) attributes.get("src");
+        String url;
+        if (src != null) {
+            url = resolveResourceFromSource(context, component, src);
+        } else {
+            String name = (String) attributes.get("name");
+            String library = (String) attributes.get("library");
+            url = resolveResourceUrl(context, component, library, name);
+        }
+        return url;
+    }
+
+    @Override
+    public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
+        String url = resolveUrl(context, component);
+        if (url != null) {
+            ResponseWriter writer = context.getResponseWriter();
+            startElement(writer, component);
+            writer.writeURIAttribute("href", url, "href");
+            endElement(writer);
+        }
+    }
+
     @Override
     protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
-        // NOOP
+        writer.startElement("link", component);
+        writer.writeAttribute("rel", "import", "rel");
     }
 
     @Override
     protected void endElement(ResponseWriter writer) throws IOException {
-        // NOOP
-    }
-
-    @Override
-    protected void encodeEnd(FacesContext context, UIComponent component, String url) throws IOException {
-        ResponseWriter writer = context.getResponseWriter();
-        writer.startElement("link", component);
-        writer.writeAttribute("rel", "import", "rel");
-        writer.writeURIAttribute("href", url, "href");
         writer.endElement("link");
     }
 
