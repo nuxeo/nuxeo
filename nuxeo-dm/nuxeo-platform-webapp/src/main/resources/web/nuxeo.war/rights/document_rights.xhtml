@@ -1,28 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:f="http://java.sun.com/jsf/core"
+<ui:composition
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets">
-<f:view contentType="text/html" />
-<h:head id="polymerHead">
-  <title>
-    <ui:insert name="page title">Page title</ui:insert>
-  </title>
 
-  <ui:insert name="imports"></ui:insert>
-
-  <meta name="viewport"
-    content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes"></meta>
   <script type="text/javascript"
     src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
   <link rel="import" href="#{baseURL}bower_components/paper-styles/paper-styles.html"></link>
   <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
-
-  <script>
-    HTMLImports.whenImportsReady = HTMLImports.whenReady;
-  </script>
 
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-resource.html"></link>
@@ -33,160 +17,103 @@
   <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
   <link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html"></link>
 
-  <style>
+  <template id="document-rights" is="dom-bind">
 
-    body {
-      margin: 0;
-      height: 100%;
-      font-family: 'RobotoDraft', sans-serif;
-    }
+    <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-    core-toolbar {
-      background: #03a9f4;
-      color: white;
-    }
+    <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
-    table {
-      width: 100%;
-    }
-    table th {
-      text-transform: uppercase;
-      font-size: 14px;
-      text-align: left;
-      padding-right: 40px;
-      border-bottom: 1px solid #eee;
-      font-weight: 500;
-      line-height: 48px;
-    }
-    table td {
-      padding: 0;
-      margin: 0;
-      vertical-align: top;
-      padding: 12px 12px 12px 0;
-    }
-
-    div {
-      padding: 0;
-      margin: 0;
-      vertical-align: top;
-      padding: 12px 12px 12px 0;
-    }
-
-    tr.tmp-tab {
-      border: 1px solid #00adff;
-    }
-
-    th.tmp-tab {
-      background-color: #00adff;
-      color: white;
-    }
-
-  </style>
-
-</h:head>
-<h:body unresolved="true">
-
-  <div fullbleed="fullbleed" vertical="vertical" layout="layout">
-
-    <template id="document-rights" is="dom-bind">
-
-      <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
-
-      <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
-
-      <div>
-        <h2>Access rights defined explicitely on this folder</h2>
-        <template is="dom-if" if="{{hasEverythingRight}}">
-          <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
-        </template>
-      </div>
-      <template is="dom-if" if="{{hasLocalRights}}">
-        <div>
-          <table class="tmp-tab">
-            <tr class="tmp-tab">
-              <th class="tmp-tab">Username</th>
-              <th class="tmp-tab">Permission</th>
-              <th class="tmp-tab">Granted</th>
-              <th class="tmp-tab">Actions</th>
-            </tr>
-            <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
-              <tr>
-                <td><span>{{item.username}}</span></td>
-                <td><span>{{item.permission}}</span></td>
-                <td><span>{{item.granted}}</span></td>
-                <td>
-                  <template id="actions-tpl" is="dom-if" if="{{hasEverythingRight}}">
-                    <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
-                  </template>
-                </td>
-              </tr>
-            </template>
-          </table>
-        </div>
+    <div>
+      <h2>Access rights defined explicitely on this folder</h2>
+      <template is="dom-if" if="{{hasEverythingRight}}">
+        <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
       </template>
-
+    </div>
+    <template is="dom-if" if="{{hasLocalRights}}">
       <div>
-        <h2>Access rights coming from upper folders in the hierarchy</h2>
-      </div>
-      <div>
-        <table>
+        <table class="tmp-tab">
           <tr class="tmp-tab">
             <th class="tmp-tab">Username</th>
             <th class="tmp-tab">Permission</th>
             <th class="tmp-tab">Granted</th>
+            <th class="tmp-tab">Actions</th>
           </tr>
-          <template is="dom-repeat" items="{{inheritedRights}}">
+          <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
             <tr>
               <td><span>{{item.username}}</span></td>
               <td><span>{{item.permission}}</span></td>
               <td><span>{{item.granted}}</span></td>
+              <td>
+                <template id="actions-tpl" is="dom-if" if="{{hasEverythingRight}}">
+                  <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
+                </template>
+              </td>
             </tr>
           </template>
         </table>
       </div>
-
-      <template is="dom-if" if="{{!hasLocalRights}}">
-        <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
-      </template>
-
-      <popup-confirm id="confirmation">
-        <h2>Confirm ACE deletion ?</h2>
-      </popup-confirm>
-
-      <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
     </template>
 
-    <script>
-      (function() {
-        var t = document.querySelector('#document-rights');
-        t.localRightsDel = function(e, i) {
-          var self = this;
-          this.$.confirmation.toggle(function() {
-            // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
-            var item = e.model.dataHost.dataHost.item;
-            self.$.rmPermission.params = {
-              id: item.id
-            };
-            self.$.rmPermission.execute();
-          });
-        };
+    <div>
+      <h2>Access rights coming from upper folders in the hierarchy</h2>
+    </div>
+    <div>
+      <table>
+        <tr class="tmp-tab">
+          <th class="tmp-tab">Username</th>
+          <th class="tmp-tab">Permission</th>
+          <th class="tmp-tab">Granted</th>
+        </tr>
+        <template is="dom-repeat" items="{{inheritedRights}}">
+          <tr>
+            <td><span>{{item.username}}</span></td>
+            <td><span>{{item.permission}}</span></td>
+            <td><span>{{item.granted}}</span></td>
+          </tr>
+        </template>
+      </table>
+    </div>
 
-        t.refresh = function() {
-          document.querySelector('#doc').get();
-        };
+    <template is="dom-if" if="{{!hasLocalRights}}">
+      <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
+    </template>
 
-        t.handleAclDeleted = function() {
-          this.refresh();
-        };
+    <popup-confirm id="confirmation">
+      <h2>Confirm ACE deletion ?</h2>
+    </popup-confirm>
 
-        t.handleAclCreated = function() {
-          this.refresh();
-        };
+    <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
+  </template>
 
-        t.currentDocumentPath = "/path" + currentDocumentPath;
-      })();
-    </script>
-  </div>
+  <script>
+    (function() {
+      var t = document.querySelector('#document-rights');
+      t.localRightsDel = function(e, i) {
+        var self = this;
+        this.$.confirmation.toggle(function() {
+          // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
+          var item = e.model.dataHost.dataHost.item;
+          self.$.rmPermission.params = {
+            id: item.id
+          };
+          self.$.rmPermission.execute();
+        });
+      };
 
-</h:body>
-</html>
+      t.refresh = function() {
+        document.querySelector('#doc').get();
+      };
+
+      t.handleAclDeleted = function() {
+        this.refresh();
+      };
+
+      t.handleAclCreated = function() {
+        this.refresh();
+      };
+
+      t.currentDocumentPath = "/path" + currentDocumentPath;
+    })();
+  </script>
+
+</ui:composition>
