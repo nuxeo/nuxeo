@@ -173,7 +173,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
                     provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
                     Arrays.asList(provider.getScopes()));
             } else {
-                log.warn("Provider " + provider.getName()
+                log.info("Provider " + provider.getName()
                     + " is already in the Database, XML contribution  won't overwrite it");
             }
         }
