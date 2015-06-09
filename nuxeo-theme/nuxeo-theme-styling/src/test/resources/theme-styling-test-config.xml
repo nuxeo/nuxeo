@@ -2,8 +2,12 @@
 <component name="org.nuxeo.theme.styling.tests.themeStylingContrib">
 
   <extension target="org.nuxeo.theme.styling.service" point="pages">
-    <themePage name="testStyling/default">
+    <page name="testStyling/default" charset="utf-8">
       <defaultFlavor>default</defaultFlavor>
+      <links>
+        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
+        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
+      </links>
       <flavors>
         <flavor>default</flavor>
         <flavor>dark</flavor>
@@ -15,7 +19,7 @@
       <resources>
         <resource>jquery.fancybox.js</resource>
       </resources>
-    </themePage>
+    </page>
 
     <themePage name="testStyling/print">
       <defaultFlavor>default</defaultFlavor>
