@@ -335,7 +335,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             App app = getApp(user, entry.getKey());
             AppLink appLink = new AppLink();
             appLink.setAppName(app.getName());
-            appLink.setLink(asURI(entry.getValue()));
+            appLink.setLink(entry.getValue());
 
             // pick an application icon
             for (com.google.api.services.drive.model.App.Icons icon : app.getIcons()) {
