@@ -691,4 +691,106 @@ public class TestNxqlConversion {
         Assert.assertEquals(expected[0], actual);
     }
 
+    @Test
+    public void testConvertHintGeo() throws Exception {
+        String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('40.73, -74.1', '40.01, -71.12')").toString();
+        String response = "{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"geo_bbox\" : {\n" + //
+                "        \"osm:location\" : {\n" + //
+                "          \"top_left\" : [ -74.1, 40.01 ],\n" + //
+                "          \"bottom_right\" : [ -71.12, 40.73 ]\n" + //
+                "        }\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}";
+        assertEqualsEvenUnderWindows(response, es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_bounding_box) */ osm:location IN ('dr5r9y', 'drj7tee')").toString();
+        // we can not do this because lat and lon are not rounded to match the input
+        //assertTruEqualsEvenUnderWindows(response, es);
+        Assert.assertTrue(es.contains("geo_bbox"));
+        Assert.assertTrue(es.contains("bottom_right"));
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance) */ " +
+                "osm:location IN ('40.73, -74.1', '20km')").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"geo_distance\" : {\n" + //
+                "        \"osm:location\" : [ -74.1, 40.73 ],\n" + //
+                "        \"distance\" : \"20km\"\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */" +
+                "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"geo_distance_range\" : {\n" + //
+                "        \"osm:location\" : [ -74.1, 40.73 ],\n" + //
+                "        \"from\" : \"500m\",\n" + //
+                "        \"to\" : \"20km\",\n" + //
+                "        \"include_lower\" : true,\n" + //
+                "        \"include_upper\" : true\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_distance_range) */" +
+                "osm:location IN ('40.73, -74.1', '500m', '20km')").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"geo_distance_range\" : {\n" + //
+                "        \"osm:location\" : [ -74.1, 40.73 ],\n" + //
+                "        \"from\" : \"500m\",\n" + //
+                "        \"to\" : \"20km\",\n" + //
+                "        \"include_lower\" : true,\n" + //
+                "        \"include_upper\" : true\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_hash_cell) */" +
+                "osm:location IN ('40.73, -74.1', '2')").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"geohash_cell\" : {\n" + //
+                "        \"precision\" : 10,\n" + //
+                "        \"osm:location\" : \"dr5r9ydj2y73\"\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where /*+ES: OPERATOR(geo_shape) */" +
+                "osm:location IN ('FRA', 'countries', 'shapes', 'location')").toString();
+        assertEqualsEvenUnderWindows("{\n" + //
+                "  \"constant_score\" : {\n" + //
+                "    \"filter\" : {\n" + //
+                "      \"geo_shape\" : {\n" + //
+                "        \"osm:location\" : {\n" + //
+                "          \"indexed_shape\" : {\n" + //
+                "            \"id\" : \"FRA\",\n" + //
+                "            \"type\" : \"countries\",\n" + //
+                "            \"index\" : \"shapes\",\n" + //
+                "            \"path\" : \"location\"\n" + //
+                "          },\n" + //
+                "          \"relation\" : \"within\"\n" + //
+                "        },\n" + //
+                "        \"_name\" : null\n" + //
+                "      }\n" + //
+                "    }\n" + //
+                "  }\n" + //
+                "}", es);
+
+    }
 }

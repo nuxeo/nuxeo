@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.query;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,6 +33,13 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hslf.model.ShapeTypes;
+import org.elasticsearch.common.geo.GeoPoint;
+import org.elasticsearch.common.geo.GeoUtils;
+import org.elasticsearch.common.geo.ShapeRelation;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentParser;
+import org.elasticsearch.common.xcontent.json.JsonXContent;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.CommonTermsQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
@@ -198,7 +206,11 @@ final public class NxqlQueryConverter {
         FilterBuilder filter = null;
         String name = getFieldName(nxqlName, hint);
         if (hint != null && hint.operator != null) {
-            query = makeHintQuery(name, value, hint);
+            if (hint.operator.startsWith("geo")) {
+                filter = makeHintFilter(name, values, hint);
+            } else {
+                query = makeHintQuery(name, value, hint);
+            }
         } else if (nxqlName.startsWith(NXQL.ECM_FULLTEXT)
                 && ("=".equals(op) || "!=".equals(op) || "<>".equals(op) || "LIKE".equals(op) || "NOT LIKE".equals(op))) {
             query = makeFulltextQuery(nxqlName, (String) value, hint);
@@ -264,6 +276,88 @@ final public class NxqlQueryConverter {
                 throw new UnsupportedOperationException("Operator: '" + op + "' is unknown");
             }
         return new QueryAndFilter(query, filter);
+    }
+
+    private static FilterBuilder makeHintFilter(String name, Object[] values, EsHint hint) {
+        FilterBuilder ret;
+        switch (hint.operator) {
+        case "geo_bounding_box":
+            if (values.length != 2) {
+                throw new IllegalArgumentException(String.format("Operator: %s requires 2 parameters: bottomLeft "
+                        + "and topRight point", hint.operator));
+            }
+            GeoPoint bottomLeft = parseGeoPointString((String) values[0]);
+            GeoPoint topRight = parseGeoPointString((String) values[1]);
+            ret = FilterBuilders.geoBoundingBoxFilter(name)
+                                .bottomLeft(bottomLeft)
+                                .topRight(topRight);
+            break;
+        case "geo_distance":
+            if (values.length != 2) {
+                throw new IllegalArgumentException(String.format("Operator: %s requires 2 parameters: point and "
+                        + "distance", hint.operator));
+            }
+            GeoPoint center = parseGeoPointString((String) values[0]);
+            String distance = (String) values[1];
+            ret = FilterBuilders.geoDistanceFilter(name)
+                                .point(center.lat(), center.lon())
+                                .distance(distance);
+            break;
+        case "geo_distance_range":
+            if (values.length != 3) {
+                throw new IllegalArgumentException(String.format("Operator: %s requires 3 parameters: point, "
+                        + "minimal and maximal distance", hint.operator));
+            }
+            center = parseGeoPointString((String) values[0]);
+            String from = (String) values[1];
+            String to = (String) values[2];
+            ret = FilterBuilders.geoDistanceRangeFilter(name)
+                                .point(center.lat(), center.lon())
+                                .from(from)
+                                .to(to);
+            break;
+        case "geo_hash_cell":
+            if (values.length != 2) {
+                throw new IllegalArgumentException(String.format("Operator: %s requires 2 parameters: point and "
+                        + "geohash precision", hint.operator));
+            }
+            center = parseGeoPointString((String) values[0]);
+            String precision = (String) values[1];
+            ret = FilterBuilders.geoHashCellFilter(name)
+                                .point(center)
+                                .precision(precision);
+            break;
+        case "geo_shape":
+            if (values.length != 4) {
+                throw new IllegalArgumentException(String.format("Operator: %s requires 4 parameters: shapeId, type, " +
+                        "index and path", hint
+                        .operator));
+            }
+            String shapeId = (String) values[0];
+            String shapeType = (String) values[1];
+            String shapeIndex = (String) values[2];
+            String shapePath = (String) values[3];
+            ret = FilterBuilders.geoShapeFilter(name, shapeId, shapeType, ShapeRelation.WITHIN).indexedShapeIndex
+                    (shapeIndex).indexedShapePath(shapePath);
+            break;
+        default:
+            throw new UnsupportedOperationException("Operator: '" + hint.operator + "' is unknown");
+        }
+        return ret;
+
+    }
+
+    private static GeoPoint parseGeoPointString(String value) {
+        XContentBuilder content = null;
+        try {
+            content = JsonXContent.contentBuilder();
+            content.value(value);
+            XContentParser parser = JsonXContent.jsonXContent.createParser(content.bytes());
+            parser.nextToken();
+            return GeoUtils.parseGeoPoint(parser);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Invalid value for geopoint: " + e.getMessage());
+        }
     }
 
     private static QueryBuilder makeHintQuery(String name, Object value, EsHint hint) {
