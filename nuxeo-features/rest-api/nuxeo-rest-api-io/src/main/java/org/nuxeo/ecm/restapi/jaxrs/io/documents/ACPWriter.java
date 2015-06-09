@@ -23,6 +23,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerator;
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -51,9 +53,13 @@ public class ACPWriter extends EntityWriter<ACP> {
 
             for (ACE ace : acl.getACEs()) {
                 jg.writeStartObject();
+                jg.writeStringField("id", ace.getId());
                 jg.writeStringField("username", ace.getUsername());
                 jg.writeStringField("permission", ace.getPermission());
                 jg.writeBooleanField("granted", ace.isGranted());
+                jg.writeStringField("creator", ace.getCreator());
+                jg.writeStringField("begin", ISODateTimeFormat.dateTime().print(new DateTime(ace.getBegin())));
+                jg.writeStringField("end", ISODateTimeFormat.dateTime().print(new DateTime(ace.getEnd())));
                 jg.writeEndObject();
             }
 

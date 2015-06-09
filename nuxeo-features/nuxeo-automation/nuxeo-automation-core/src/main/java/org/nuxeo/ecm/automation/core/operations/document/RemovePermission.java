@@ -79,7 +79,7 @@ public class RemovePermission {
             permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, user);
 
         } else if (id != null) {
-            permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, Integer.valueOf(id));
+            permissionChanged = DocumentPermissionHelper.removePermissionById(acp, aclName, id);
         }
 
         if (permissionChanged) {

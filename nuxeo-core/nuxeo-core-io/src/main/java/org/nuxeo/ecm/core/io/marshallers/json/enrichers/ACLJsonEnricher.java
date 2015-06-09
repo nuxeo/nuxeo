@@ -89,7 +89,7 @@ public class ACLJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
             jg.writeArrayFieldStart("ace");
             for (ACE ace : acl.getACEs()) {
                 jg.writeStartObject();
-                jg.writeStringField("id", String.valueOf(ace.hashCode()));
+                jg.writeStringField("id", ace.getId());
                 jg.writeStringField("username", ace.getUsername());
                 jg.writeStringField("permission", ace.getPermission());
                 jg.writeBooleanField("granted", ace.isGranted());

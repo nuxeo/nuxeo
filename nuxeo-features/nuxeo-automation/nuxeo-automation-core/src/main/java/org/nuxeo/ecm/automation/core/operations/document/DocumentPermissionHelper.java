@@ -97,13 +97,7 @@ public final class DocumentPermissionHelper {
     }
 
     private static boolean shouldAddACEToACL(List<ACE> aceList, ACE aceToAdd) {
-        boolean shouldAddPermission = true;
-        for (ACE ace : aceList) {
-            if (aceToAdd.equals(ace)) {
-                shouldAddPermission = false;
-            }
-        }
-        return shouldAddPermission;
+        return !aceList.contains(aceToAdd);
     }
 
     private static ACE getBlockInheritanceACE() {
@@ -173,16 +167,14 @@ public final class DocumentPermissionHelper {
      * @return true if something has changed on the document security
      * @since 7.3
      */
-    public static boolean removePermission(ACP acp, String aclName, int id) {
+    public static boolean removePermissionById(ACP acp, String aclName, String id) {
         ACL acl = acp.getACL(aclName);
 
         boolean securityHasChanged = false;
-        for (Iterator<ACE> it = acl.iterator(); it.hasNext();) {
-            ACE ace = it.next();
-            if (ace.hashCode() == id) {
-                it.remove();
-                securityHasChanged = true;
-            }
+        ACE ace = ACE.fromId(id);
+        if (acl.contains(ace)) {
+            acl.remove(ace);
+            securityHasChanged = true;
         }
 
         // in order to clear the cache

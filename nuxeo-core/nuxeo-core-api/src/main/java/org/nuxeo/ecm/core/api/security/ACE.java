@@ -14,7 +14,8 @@ package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Access control entry, assigning a permission to a user.
@@ -43,6 +44,45 @@ public final class ACE implements Serializable, Cloneable {
     private Calendar end;
 
     private String creator;
+
+    /**
+     * Create an ACE from an id.
+     *
+     * @since 7.4
+     */
+    public static ACE fromId(String aceId) {
+        if (aceId == null) {
+            return null;
+        }
+
+        String[] parts = aceId.split(":");
+        if (parts.length < 3) {
+            throw new IllegalArgumentException(String.format("Invalid ACE id: %s", aceId));
+        }
+
+        String username = parts[0];
+        String permission = parts[1];
+        boolean isGranted = Boolean.valueOf(parts[2]);
+
+        String creator = null;
+        if (parts.length >= 4 && StringUtils.isNotBlank(parts[3])) {
+            creator = parts[3];
+        }
+
+        Calendar begin = null;
+        if (parts.length >= 5 && StringUtils.isNotBlank(parts[4])) {
+            begin = Calendar.getInstance();
+            begin.setTimeInMillis(Long.valueOf(parts[4]));
+        }
+
+        Calendar end = null;
+        if (parts.length >= 6 && StringUtils.isNotBlank(parts[5])) {
+            end = Calendar.getInstance();
+            end.setTimeInMillis(Long.valueOf(parts[5]));
+        }
+
+        return new ACE(username, permission, isGranted, creator, begin, end);
+    }
 
     /**
      * Constructs an ACE for a given username and permission.
@@ -103,6 +143,39 @@ public final class ACE implements Serializable, Cloneable {
         this(null, null, false);
     }
 
+    /**
+     * Returns this ACE id.
+     * <p>
+     * This id is unique inside a given ACL.
+     *
+     * @since 7.4
+     */
+    public String getId() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(username);
+        sb.append(':');
+        sb.append(permission);
+        sb.append(':');
+        sb.append(isGranted);
+
+        if (creator != null) {
+            sb.append(':');
+            sb.append(creator);
+        }
+
+        if (begin != null) {
+            sb.append(':');
+            sb.append(begin.getTimeInMillis());
+        }
+
+        if (end != null) {
+            sb.append(':');
+            sb.append(end.getTimeInMillis());
+        }
+
+        return sb.toString();
+    }
+
     public String getUsername() {
         return username;
     }
@@ -160,20 +233,11 @@ public final class ACE implements Serializable, Cloneable {
         }
         if (obj instanceof ACE) {
             ACE ace = (ACE) obj;
-            boolean beginEqual;
-            boolean endEqual;
-            if (ace.begin != null) {
-                beginEqual = ace.begin.equals(begin);
-            } else {
-                beginEqual = begin == null;
-            }
-            if (ace.end != null) {
-                endEqual = ace.end.equals(end);
-            } else {
-                endEqual = end == null;
-            }
+            boolean beginEqual = ace.begin != null ? ace.begin.equals(begin) : begin == null;
+            boolean endEqual = ace.end != null ? ace.end.equals(end) : end == null;
+            boolean creatorEqual = ace.creator != null ? ace.creator.equals(creator) : creator == null;
             return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission)
-                    && ace.creator == creator && beginEqual && endEqual;
+                    && creatorEqual && beginEqual && endEqual;
         }
         return super.equals(obj);
     }
@@ -191,12 +255,27 @@ public final class ACE implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return username + ':' + permission + ':' + isGranted;
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append('(');
+        sb.append("username=" + username);
+        sb.append(", ");
+        sb.append("permission=" + permission);
+        sb.append(", ");
+        sb.append("isGranted=" + isGranted);
+        sb.append(", ");
+        sb.append("creator=" + creator);
+        sb.append(", ");
+        sb.append("begin=" + (begin != null ? begin.getTimeInMillis() : null));
+        sb.append(", ");
+        sb.append("end=" + (end != null ? end.getTimeInMillis() : null));
+        sb.append(')');
+        return sb.toString();
     }
 
     @Override
     public Object clone() {
-        return new ACE(username, permission, isGranted);
+        return new ACE(username, permission, isGranted, creator, begin, end);
     }
 
 }

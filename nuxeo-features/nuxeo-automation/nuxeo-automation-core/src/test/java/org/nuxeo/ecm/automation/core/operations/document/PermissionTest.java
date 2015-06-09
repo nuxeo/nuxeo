@@ -204,7 +204,7 @@ public class PermissionTest {
         assertEquals(4, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
 
         // When i call the removePermission operation
-        boolean hasChanged = DocumentPermissionHelper.removePermission(acp, ACL.LOCAL_ACL, ace.hashCode());
+        boolean hasChanged = DocumentPermissionHelper.removePermissionById(acp, ACL.LOCAL_ACL, ace.getId());
 
         // Then the user doesn't have any permission anymore
         assertTrue(hasChanged);
