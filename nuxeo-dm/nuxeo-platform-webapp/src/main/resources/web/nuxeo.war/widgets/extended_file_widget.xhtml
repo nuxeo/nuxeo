@@ -12,11 +12,12 @@
     <nxu:set var="document" value="#{empty widgetProperty_document ? value : widgetProperty_document}">
     <nxu:set var="blobXPath"
              value="#{empty widgetProperty_blobXPath ? widget.fieldDefinitions[0].propertyName : widgetProperty_blobXPath}">
-    <c:set var="isNote" value="#{blobXPath == 'note:note'}" />
-    <c:set var="blob" value="#{isNote ? currentDocumentAsBlobHolder.blob :  field_0}" />
+    <c:set var="blobHolder" value="#{blobHolderGenerator.getBlobHolder(document)}" />
+    <c:set var="isMainBlob" value="#{blobXPath == blobHolder.xpath}" />
+    <c:set var="blob" value="#{isMainBlob ? blobHolder.blob :  field_0}" />
     <c:set var="filename" value="#{empty field_1 ? blob.filename : field_1}" />
     <c:set var="blobLength" value="#{blob.length}" />
-    <c:set var="fileUrl" value="#{nxd:fileUrl('downloadFile', document, isNote ? 'blobholder:0' : blobXPath, filename)}" />
+    <c:set var="fileUrl" value="#{nxd:fileUrl('downloadFile', document, isMainBlob ? 'blobholder:0' : blobXPath, filename)}" />
 
     <nxu:set var="actions"
              value="#{documentActions.getBlobActions(document, blobXPath, blob)}"

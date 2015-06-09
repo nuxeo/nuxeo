@@ -20,11 +20,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
@@ -110,28 +113,15 @@ public class PreviewHelper {
      * @since 7.3
      */
     public static String getViewerURL(DocumentModel doc, String xpath, Blob blob, String baseURL) {
-        if (blob == null) {
-            if (StringUtils.isEmpty(xpath)) {
-                return null;
-            }
-            try {
-                Serializable value = doc.getPropertyValue(xpath);
-                if (value == null || !(value instanceof Blob)) {
-                    return null;
-                }
-                blob = (Blob) value;
-            } catch (PropertyNotFoundException e) {
-               return null;
-            }
-        }
-
         baseURL = baseURL.endsWith("/") ? baseURL.substring(0, baseURL.length() - 1) : baseURL;
-        String fileURL = String.format("%s/api/v1/id/%s/@blob/%s", baseURL, doc.getId(), xpath);
+        String fileURL = String.format("%s/api/v1/id/%s/@blob/%s", baseURL, doc.getId(),
+            isBlobHolder(doc, xpath) ? DownloadService.BLOBHOLDER_0 : xpath);
         StringBuilder sb = new StringBuilder();
         sb.append("viewer/web/viewer.html?file=");
         sb.append(fileURL);
         if (!isPDF(blob)) {
-            sb.append("/@convert?format=pdf");
+            sb.append("/@convert?");
+            sb.append(URIUtils.quoteURIPathToken("format=pdf"));
         }
 
         return sb.toString();
@@ -152,5 +142,10 @@ public class PreviewHelper {
             }
         }
         return false;
+    }
+
+    private static boolean isBlobHolder(DocumentModel doc, String xpath) {
+        DocumentBlobHolder bh = (DocumentBlobHolder) doc.getAdapter(BlobHolder.class);
+        return bh != null && bh.getXpath().equals(xpath);
     }
 }

@@ -45,6 +45,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -175,8 +176,8 @@ public class PreviewActionBean implements Serializable {
      */
     public String getViewerURL(DocumentModel doc, String field, Blob blob) {
         ServletRequest servletRequest = (ServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String baseURL = VirtualHostHelper.getBaseURL(servletRequest);
-        return PreviewHelper.getViewerURL(doc, protectField(field), blob, baseURL);
+        String baseURL = BaseURL.getBaseURL(servletRequest);
+        return PreviewHelper.getViewerURL(doc, field, blob, baseURL);
     }
 
     @Observer(value = { EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHANGED }, create = false)

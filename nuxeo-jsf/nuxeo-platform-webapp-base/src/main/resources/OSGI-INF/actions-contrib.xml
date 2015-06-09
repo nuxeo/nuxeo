@@ -132,7 +132,7 @@
       <filter-id>restoreVersionDisplay</filter-id>
     </action>
 
-    <action id="blobToPDF" link="#{conversionActions.generatePdfFileFromBlobHolder(document, blobHolderGenerator.getBlobHolder(document))}"
+    <action id="blobToPDF" link="#{conversionActions.generatePdfFileFromBlobHolder(currentDocument, currentDocumentAsBlobHolder)}"
             order="200" label="label.document.generatePdf" icon="/icons/pdf.png">
       <category>BLOB_ACTIONS</category>
       <filter-id>isMainBlob</filter-id>
