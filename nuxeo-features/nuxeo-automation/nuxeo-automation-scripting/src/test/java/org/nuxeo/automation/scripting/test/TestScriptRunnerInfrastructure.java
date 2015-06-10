@@ -307,7 +307,7 @@ public class TestScriptRunnerInfrastructure {
         InputStream stream = this.getClass().getResourceAsStream("/platformFunctions.js");
         assertNotNull(stream);
         scriptingService.run(stream, session);
-        assertEquals("Administrator@example.com" + System.lineSeparator(), outContent.toString());
+        assertEquals("devnull@nuxeo.com" + System.lineSeparator(), outContent.toString());
     }
 
     public String toString(Map<String, Object> creationProps) {
