@@ -98,7 +98,7 @@ public final class ACE implements Serializable, Cloneable {
     /**
      * Constructs an ACE for a given username, permission and creator user.
      *
-     * @since 7.3
+     * @since 7.4
      */
     public ACE(String username, String permission, String creator) {
         this(username, permission, true);
@@ -108,7 +108,7 @@ public final class ACE implements Serializable, Cloneable {
     /**
      * Constructs an ACE for a given username, permission, creator user, begin and end date.
      *
-     * @since 7.3
+     * @since 7.4
      */
     public ACE(String username, String permission, String creator, Calendar begin, Calendar end) {
         this(username, permission, true);
@@ -121,7 +121,7 @@ public final class ACE implements Serializable, Cloneable {
      * Constructs an ACE for a given username, permission, specifying wether to grand or deny it, creator user, begin
      * and end date.
      *
-     * @since 7.3
+     * @since 7.4
      */
     public ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end) {
         this(username, permission, isGranted);
