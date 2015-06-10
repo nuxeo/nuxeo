@@ -111,7 +111,7 @@ public class SessionImpl implements Session, XAResource {
     // public because used by unit tests
     public final PersistenceContext context;
 
-    private boolean live;
+    private volatile boolean live;
 
     private boolean inTransaction;
 
@@ -250,15 +250,15 @@ public class SessionImpl implements Session, XAResource {
     @Override
     public void close() throws ResourceException {
         try {
+            checkLive();
             closeSession();
-        } catch (StorageException e) {
-            throw new ResourceException(e);
+            repository.closeSession(this);
+        } catch (Exception cause) {
+            throw new ResourceException(cause);
         }
-        repository.closeSession(this);
     }
 
     protected void closeSession() throws StorageException {
-        checkLive();
         live = false;
         context.clearCaches();
         // close the mapper and therefore the connection
@@ -1305,8 +1305,9 @@ public class SessionImpl implements Session, XAResource {
     }
 
     private String countUpToAsString(long countUpTo) {
-        if (countUpTo > 0)
+        if (countUpTo > 0) {
             return String.format("count total results up to %d", countUpTo);
+        }
         return countUpTo == -1 ? "count total results UNLIMITED" : "";
     }
 
