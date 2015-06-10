@@ -11,7 +11,7 @@
     value="#{documentContentViewActions.getSelectionActionsContext(contentView, documentsListsManager.getWorkingList(contentView.selectionListName))}"
     cache="true">
   <nxu:set var="actions"
-    value="#{webActions.getActionsList(actionCategory, actionContext, false)}"
+    value="#{webActions.getActionsList(actionCategory, actionContext)}"
     cache="true">
   <nxu:set vars="#{actionContext.localVariables}">
     <c:if test="#{not status.first and not empty actions}">
