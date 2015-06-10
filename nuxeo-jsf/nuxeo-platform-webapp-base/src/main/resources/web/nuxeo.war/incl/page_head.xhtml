@@ -17,7 +17,9 @@
       </ui:remove>
       <ui:include src="/incl/jsf_resources.xhtml" />
       <c:forEach var="bundle" items="#{page.resourceBundles}">
-        <nxr:resourceBundle name="#{bundle}" target="head" />
+        <nxr:resourceBundle name="#{bundle}" target="head">
+          <f:param name="flavor" value="#{empty flavor? 'default': flavor}" />
+        </nxr:resourceBundle>
       </c:forEach>
     </c:if>
   </nxu:set>

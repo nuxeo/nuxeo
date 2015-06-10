@@ -60,11 +60,16 @@ public class ThemeActionsBean implements ThemeActions {
 
     @Override
     public Logo getLogo() {
+        String flavor = getCurrentFlavor();
+        return getLogo(flavor);
+    }
+
+    public String getCurrentFlavor() {
         FacesContext faces = FacesContext.getCurrentInstance();
         final ExternalContext ec = faces.getExternalContext();
         String flavor = (String) ec.getRequestMap().get(
                 Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.collection.name());
-        return getLogo(flavor);
+        return flavor;
     }
 
     @Override
