@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.audit.api.AuditAdmin;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -93,15 +94,27 @@ public class TestAuditWithElasticSearch {
         Assert.assertNotNull(trail);
         Assert.assertEquals(2, trail.size());
 
-        Long startId = trail.get(0).getId();
-        Assert.assertEquals("documentCreated", trail.get(0).getEventId());
-        Assert.assertEquals("eventDocumentCategory", trail.get(0).getCategory());
-        Assert.assertEquals("A File", trail.get(0).getExtendedInfos().get("title").getValue(String.class));
+        LogEntry entry = trail.get(0);
+        Long startId = entry.getId();
+        Assert.assertEquals("documentCreated", entry.getEventId());
+        Assert.assertEquals("eventDocumentCategory", entry.getCategory());
+        Assert.assertEquals("A File", entry.getExtendedInfos().get("title").getValue(String.class));
 
         Assert.assertEquals(startId + 1, trail.get(1).getId());
         Assert.assertEquals("documentModified", trail.get(1).getEventId());
         Assert.assertEquals("eventDocumentCategory", trail.get(1).getCategory());
         Assert.assertEquals("A modified File", trail.get(1).getExtendedInfos().get("title").getValue(String.class));
+
+        LogEntry entryById = reader.getLogEntryByID(entry.getId());
+        Assert.assertEquals(entry.getId(), entryById.getId());
+
+        entryById = reader.getLogEntryByID(123L);
+        Assert.assertNull(entryById);
+
+        NXAuditEventsService audit = (NXAuditEventsService) Framework.getRuntime().getComponent(
+                NXAuditEventsService.NAME);
+        AuditBackend backend = audit.getBackend();
+        Assert.assertEquals(1L, backend.getEventsCount(entry.getEventId()).longValue());
     }
 
     @Test

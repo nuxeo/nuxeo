@@ -205,7 +205,6 @@ public class TestESHistoryProvider {
         PageProviderDefinition ppdef = pps.getPageProviderDefinition("DOCUMENT_HISTORY_PROVIDER");
         assertNotNull(ppdef);
         long startIdx = 0;
-        long endIdx;
 
         List<SortInfo> si = Arrays.asList(new SortInfo("id", true));
 
@@ -286,7 +285,7 @@ public class TestESHistoryProvider {
         pp.setSearchDocumentModel(searchDoc);
 
         entries = (List<LogEntry>) pp.getCurrentPage();
-        if (true) {
+        if (verbose) {
             System.out.println("Proxy doc history");
             dump(entries);
         }

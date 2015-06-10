@@ -13,7 +13,7 @@
  *
  * Contributors:
  *     Tiry
- *
+ *     Benoit Delbosc
  */
 package org.nuxeo.elasticsearch.audit;
 
@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -36,19 +37,20 @@ import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.count.CountResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.TextTemplate;
@@ -77,7 +79,6 @@ import org.nuxeo.elasticsearch.seqgen.SequenceGenerator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-import com.sun.star.uno.RuntimeException;
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -116,24 +117,31 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public List<LogEntry> getLogEntriesFor(String uuid, Map<String, FilterMapEntry> filterMap, boolean doDefaultSort) {
-
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
-
-        if (filterMap == null || filterMap.size() == 0) {
-            builder.setQuery(QueryBuilders.matchQuery("docUUID", uuid));
+        SearchRequestBuilder builder = getSearchRequestBuilder();
+        TermFilterBuilder docFilter = FilterBuilders.termFilter("docUUID", uuid);
+        FilterBuilder filter;
+        if (MapUtils.isEmpty(filterMap)) {
+            filter = docFilter;
         } else {
-            BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
+            filter = FilterBuilders.boolFilter();
+            ((BoolFilterBuilder) filter).must(docFilter);
             for (String key : filterMap.keySet()) {
                 FilterMapEntry entry = filterMap.get(key);
-                filterBuilder.must(FilterBuilders.termFilter(entry.getColumnName(), entry.getObject()));
+                ((BoolFilterBuilder) filter).must(FilterBuilders.termFilter(entry.getColumnName(), entry.getObject()));
             }
-            builder.setQuery(QueryBuilders.filteredQuery(QueryBuilders.matchQuery("docUUID", uuid), filterBuilder));
         }
+        builder.setQuery(QueryBuilders.constantScoreQuery(filter)).setSize(Integer.MAX_VALUE);
+        if (doDefaultSort) {
+            builder.addSort("eventDate", SortOrder.DESC);
+        }
+        logSearchRequest(builder);
+        SearchResponse searchResponse = builder.get();
+        logSearchResponse(searchResponse);
+        return buildLogEntries(searchResponse);
+    }
 
-        SearchResponse searchResponse = builder.setFrom(0).setSize(60).execute().actionGet();
-
-        List<LogEntry> entries = new ArrayList<>();
+    protected List<LogEntry> buildLogEntries(SearchResponse searchResponse) {
+        List<LogEntry> entries = new ArrayList<>(searchResponse.getHits().getHits().length);
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
@@ -144,19 +152,19 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         return entries;
     }
 
+    protected SearchRequestBuilder getSearchRequestBuilder() {
+        return getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
+                SearchType.DFS_QUERY_THEN_FETCH);
+    }
+
     @Override
     public LogEntry getLogEntryByID(long id) {
-
-        SearchResponse searchResponse = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.idsQuery(String.valueOf(id))).setFrom(0).setSize(
-                10).execute().actionGet();
-
-        SearchHits hits = searchResponse.getHits();
-        if (hits.getTotalHits() > 1) {
-            throw new RuntimeException("Found several match for the same ID : there is something wrong");
+        GetResponse ret = getClient().prepareGet(IDX_NAME, IDX_TYPE, String.valueOf(id)).get();
+        if (! ret.isExists()) {
+            return null;
         }
         try {
-            return AuditEntryJSONReader.read(hits.getAt(0).getSourceAsString());
+            return AuditEntryJSONReader.read(ret.getSourceAsString());
         } catch (IOException e) {
             throw new RuntimeException("Unable to read Entry for id " + id, e);
         }
@@ -166,16 +174,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (params != null && params.size() > 0) {
             query = expandQueryVariables(query, params);
         }
-
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
+        SearchRequestBuilder builder = getSearchRequestBuilder();
         builder.setQuery(query);
-
         return builder;
     }
 
     public String expandQueryVariables(String query, Object[] params) {
-        Map<String, Object> qParams = new HashMap<String, Object>();
+        Map<String, Object> qParams = new HashMap<>();
         for (int i = 0; i < params.length; i++) {
             query = query.replaceFirst("\\?", "\\${param" + i + "}");
             qParams.put("param" + i, params[i]);
@@ -205,106 +210,60 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public List<?> nativeQuery(String query, Map<String, Object> params, int pageNb, int pageSize) {
-
         SearchRequestBuilder builder = buildQuery(query, params);
-
         if (pageNb > 0) {
             builder.setFrom(pageNb * pageSize);
         }
-
         if (pageSize > 0) {
             builder.setSize(pageSize);
         }
-
-        SearchResponse searchResponse = builder.execute().actionGet();
-        List<LogEntry> entries = new ArrayList<>();
-        for (SearchHit hit : searchResponse.getHits()) {
-            try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (IOException e) {
-                log.error("Error while reading Audit Entry from ES", e);
-            }
-        }
-        return entries;
+        logSearchRequest(builder);
+        SearchResponse searchResponse = builder.get();
+        logSearchResponse(searchResponse);
+        return buildLogEntries(searchResponse);
     }
 
     @Override
     public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String[] categories, String path, int pageNb,
             int pageSize) {
-
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
-
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        SearchRequestBuilder builder = getSearchRequestBuilder();
         BoolFilterBuilder filterBuilder = FilterBuilders.boolFilter();
-        int nbClauses = 0;
-        int nbFilters = 0;
-
         if (eventIds != null && eventIds.length > 0) {
             if (eventIds.length == 1) {
-                queryBuilder.must(QueryBuilders.matchQuery("eventId", eventIds[0]));
-                nbClauses++;
+                filterBuilder.must(FilterBuilders.termFilter("eventId", eventIds[0]));
             } else {
                 filterBuilder.must(FilterBuilders.termsFilter("eventId", eventIds));
-                nbFilters++;
             }
         }
-
         if (categories != null && categories.length > 0) {
             if (categories.length == 1) {
-                queryBuilder.must(QueryBuilders.matchQuery("category", categories[0]));
-                nbClauses++;
+                filterBuilder.must(FilterBuilders.termFilter("category", categories[0]));
             } else {
                 filterBuilder.must(FilterBuilders.termsFilter("category", categories));
-                nbFilters++;
             }
         }
-
         if (path != null) {
-            queryBuilder.must(QueryBuilders.matchQuery("docPath", path));
-            nbClauses++;
+            filterBuilder.must(FilterBuilders.termFilter("docPath", path));
         }
 
         if (limit != null) {
-            queryBuilder.must(QueryBuilders.rangeQuery("eventDate").lt(limit));
-            nbClauses++;
+            filterBuilder.must(FilterBuilders.rangeFilter("eventDate").lt(limit));
         }
 
-        QueryBuilder targetBuilder = null;
-        FilterBuilder targetFilter = null;
-
-        if (nbClauses > 0) {
-            targetBuilder = queryBuilder;
-        } else {
-            targetBuilder = QueryBuilders.matchAllQuery();
-        }
-
-        if (nbFilters > 0) {
-            targetFilter = filterBuilder;
-        } else {
-            targetFilter = FilterBuilders.matchAllFilter();
-        }
-
-        builder.setQuery(QueryBuilders.filteredQuery(targetBuilder, targetFilter));
+        builder.setQuery(QueryBuilders.constantScoreQuery(filterBuilder));
 
         if (pageNb > 0) {
             builder.setFrom(pageNb * pageSize);
         }
-
         if (pageSize > 0) {
             builder.setSize(pageSize);
+        } else {
+            builder.setSize(Integer.MAX_VALUE);
         }
-
-        SearchResponse searchResponse = builder.execute().actionGet();
-        List<LogEntry> entries = new ArrayList<>();
-        for (SearchHit hit : searchResponse.getHits()) {
-            try {
-                entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (IOException e) {
-                log.error("Error while reading Audit Entry from ES", e);
-            }
-        }
-        return entries;
+        logSearchRequest(builder);
+        SearchResponse searchResponse = builder.get();
+        logSearchResponse(searchResponse);
+        return buildLogEntries(searchResponse);
     }
 
     @Override
@@ -359,7 +318,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     @Override
     public Long getEventsCount(String eventId) {
         CountResponse res = getClient().prepareCount(IDX_NAME).setTypes(IDX_TYPE).setQuery(
-                QueryBuilders.matchQuery("eventId", eventId)).execute().actionGet();
+                QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("eventId", eventId))).get();
         return res.getCount();
     }
 
@@ -473,10 +432,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public SearchRequestBuilder buildSearchQuery(String fixedPart, PredicateDefinition[] predicates,
             DocumentModel searchDocumentModel) {
-
-        SearchRequestBuilder builder = getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
-
+        SearchRequestBuilder builder = getSearchRequestBuilder();
         QueryBuilder queryBuilder = QueryBuilders.wrapperQuery(fixedPart);
         FilterBuilder filterBuilder = buildFilter(predicates, searchDocumentModel);
         builder.setQuery(QueryBuilders.filteredQuery(queryBuilder, filterBuilder));
@@ -518,10 +474,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (migrationState != null) {
             return "Migration already scheduled : " + migrationState.toString();
         }
-
+        @SuppressWarnings("unchecked")
         List<Long> res = (List<Long>) sourceBackend.nativeQuery("select count(*) from LogEntry", 1, 20);
 
-        final long nbEntriesToMigrate = res.get(0).longValue();
+        final long nbEntriesToMigrate = res.get(0);
 
         Work migrationWork = new AbstractWork(MIGRATION_WORK_ID) {
 
@@ -540,6 +496,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                     int pageIdx = 0;
 
                     while (nbEntriesMigrated < nbEntriesToMigrate) {
+                        @SuppressWarnings("unchecked")
                         List<LogEntry> entries = (List<LogEntry>) sourceBackend.nativeQuery(
                                 "from LogEntry log order by log.id asc", pageIdx, batchSize);
 
@@ -564,8 +521,20 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         };
 
         wm.schedule(migrationWork);
-
         return "Migration work started : " + MIGRATION_WORK_ID;
-
     }
+
+    protected void logSearchResponse(SearchResponse response) {
+        if (log.isDebugEnabled()) {
+            log.debug("Response: " + response.toString());
+        }
+    }
+
+    protected void logSearchRequest(SearchRequestBuilder request) {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
+                    IDX_NAME, IDX_TYPE, request.toString()));
+        }
+    }
+
 }
