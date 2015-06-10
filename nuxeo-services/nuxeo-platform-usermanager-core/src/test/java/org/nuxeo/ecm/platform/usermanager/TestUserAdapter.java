@@ -80,7 +80,7 @@ public class TestUserAdapter extends NXRuntimeTestCase {
         groups.add("administrators");
 
         assertEquals("Administrator", userAdapter.getName());
-        assertEquals("Administrator@example.com", userAdapter.getEmail());
+        assertEquals("devnull@nuxeo.com", userAdapter.getEmail());
         assertEquals("user", userAdapter.getSchemaName());
         assertEquals(groups, userAdapter.getGroups());
         assertTrue(StringUtils.isEmpty(userAdapter.getFirstName()));

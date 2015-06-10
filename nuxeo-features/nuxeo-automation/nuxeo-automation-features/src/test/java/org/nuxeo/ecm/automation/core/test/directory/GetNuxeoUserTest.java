@@ -58,7 +58,7 @@ public class GetNuxeoUserTest {
         Assert.assertEquals("Jacky", doc.getPropertyValue("user:firstName"));
         Assert.assertEquals("Chan", doc.getPropertyValue("user:lastName"));
         Assert.assertEquals("Nuxeo", doc.getPropertyValue("user:company"));
-        Assert.assertEquals("Administrator@example.com",
+        Assert.assertEquals("devnull@nuxeo.com",
                 doc.getPropertyValue("user:email"));
 
     }
