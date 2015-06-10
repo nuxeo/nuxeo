@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.actions;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,11 +69,6 @@ public abstract class AbstractActionContext implements ActionContext {
     @Override
     public Object getLocalVariable(String key) {
         return localVariables.get(key);
-    }
-
-    @Override
-    public Map<String, Object> getLocalVariables() {
-        return Collections.unmodifiableMap(localVariables);
     }
 
     @Override

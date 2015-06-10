@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.webapp.contentbrowser;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfigurationConstants.CONTENT_VIEW_CONFIGURATION_CATEGORY;
+import static org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfigurationConstants.CONTENT_VIEW_CONFIGURATION_FACET;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,10 +51,6 @@ import org.nuxeo.ecm.webapp.action.ActionContextProvider;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfigurationConstants.CONTENT_VIEW_CONFIGURATION_CATEGORY;
-import static org.nuxeo.ecm.platform.types.localconfiguration.ContentViewConfigurationConstants.CONTENT_VIEW_CONFIGURATION_FACET;
-
 /**
  * Handles available content views defined on a document type per category, as well as helper methods to retrieve
  * selection actions for a given content view.
@@ -64,7 +64,6 @@ public class DocumentContentViewActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(DocumentContentViewActions.class);
 
     @In(create = true, required = false)
@@ -275,23 +274,15 @@ public class DocumentContentViewActions implements Serializable {
      * Helper to retrieve selection actions for a given content view, passing additional variables to the
      * {@link ActionContext} used for resolution.
      *
-     * @since 5.9.3
+     * @since 2.17
      * @param category
      * @param contentView
      * @param selectedEntries
      */
     public List<Action> getSelectionActions(String category, ContentView contentView, List<Object> selectedEntries) {
-        return webActions.getActionsList(category, getSelectionActionsContext(contentView, selectedEntries), false);
-    }
-
-    /**
-     * @since 7.3
-     */
-    public ActionContext getSelectionActionsContext(ContentView contentView, List<Object> selectedEntries) {
         ActionContext ctx = actionContextProvider.createActionContext();
         ctx.putLocalVariable("contentView", contentView);
         ctx.putLocalVariable("selectedDocuments", selectedEntries);
-        return ctx;
+        return webActions.getActionsList(category, ctx, false);
     }
-
 }
