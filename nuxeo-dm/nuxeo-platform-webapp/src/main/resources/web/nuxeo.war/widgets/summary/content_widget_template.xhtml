@@ -1,4 +1,4 @@
-<div class="content_block"
+<ui:fragment
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
@@ -11,6 +11,8 @@
   <c:set var="canHaveMainBlob" value="#{!empty currentDocumentAsBlobHolder}" />
   <c:set var="hasMainBlob" value="#{!empty currentDocumentAsBlobHolder.blob}" />
   <c:set var="hasOtherBlobs" value="#{currentDocument.hasSchema('files') and !empty currentDocument.files.files}" />
+
+<h:panelGroup styleClass="#{canHaveMainBlob || hasOtherBlobs ? 'content_block': ''}" layout="block">
 
   <c:if test="#{hasMainBlob || hasOtherBlobs || canHaveMainBlob}">
 
@@ -142,4 +144,6 @@
   </div>
   </c:if>
 
-</div>
+</h:panelGroup>
+
+</ui:fragment>
