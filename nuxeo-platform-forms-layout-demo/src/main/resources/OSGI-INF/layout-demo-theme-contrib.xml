@@ -33,6 +33,40 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="layoutDemo.css">
+      <uri>/layoutDemo/style/layoutDemo.css</uri>
+    </resource>
+    <resource name="layoutDemo.js">
+      <uri>/layoutDemo/scripts/layoutDemo.js</uri>
+    </resource>
+    <resource name="prettify.css">
+      <uri>/layoutDemo/style/prettify.css</uri>
+    </resource>
+    <resource name="prettify.js">
+      <uri>/layoutDemo/scripts/prettify.js</uri>
+    </resource>
+    <resource name="layoutDemo-ga.js">
+      <uri>/layoutDemo/scripts/ga.js</uri>
+    </resource>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+
+    <resourceBundle name="layoutDemo">
+      <resources>
+        <resource>layoutDemo.css</resource>
+        <resource>layoutDemo.js</resource>
+        <resource>prettify.css</resource>
+        <resource>prettify.js</resource>
+        <resource>layoutDemo-ga.js</resource>
+      </resources>
+    </resourceBundle>
+
+  </extension>
+
   <!-- Register mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
@@ -42,14 +76,11 @@
         <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
       </links>
       <defaultFlavor>default</defaultFlavor>
-      <flavors>
-        <flavor>default</flavor>
-        <flavor>rainbow</flavor>
-      </flavors>
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
         <bundle>nuxeo_header_footer</bundle>
+        <bundle>layoutDemo</bundle>
         <resource>screen.css</resource>
       </resources>
     </page>
@@ -60,10 +91,6 @@
         <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
       </favorites>
       <defaultFlavor>default</defaultFlavor>
-      <flavors>
-        <flavor>default</flavor>
-        <flavor>rainbow</flavor>
-      </flavors>
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
@@ -81,7 +108,8 @@
       <!-- local theme (specific to nuxeo5) -->
       <scheme>org.nuxeo.ecm.localconf.LocalTheme</scheme>
       <!-- popup theme (specific to layoutDemo) -->
-      <scheme>org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoTheme</scheme>
+      <scheme>org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoTheme
+      </scheme>
     </negotiation>
 
   </extension>
