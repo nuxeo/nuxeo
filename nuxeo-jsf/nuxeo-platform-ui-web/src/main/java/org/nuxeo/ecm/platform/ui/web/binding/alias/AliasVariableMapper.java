@@ -83,19 +83,8 @@ public class AliasVariableMapper extends VariableMapper {
         return vars.put(variable, expression);
     }
 
-    /**
-     * @since 7.3
-     */
-    public boolean hasVariable(String variable) {
-        return vars != null && vars.containsKey(variable);
-    }
-
-    /**
-     * @deprecated since 7.3, use {@link #hasVariable(String)} instead
-     */
-    @Deprecated
     public boolean hasVariables(String variable) {
-        return hasVariable(variable);
+        return vars != null && vars.containsKey(variable);
     }
 
     public VariableMapper getVariableMapperForBuild(VariableMapper orig) {
