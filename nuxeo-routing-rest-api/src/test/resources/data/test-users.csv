@@ -1,5 +1,5 @@
 username, password, firstName, lastName, company, email
-"Administrator","Administrator","","","blabla","Administrator@example.com"
+"Administrator","Administrator","","","blabla","devnull@nuxeo.com"
 "user","password","User","Lambda","mycomp","my@mail"
 "user1","password1","User1","Lambda","mycomp","my1@mail"
 "user2","password2","User2","Lambda","mycomp","my2@mail"
