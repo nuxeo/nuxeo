@@ -86,8 +86,8 @@ nuxeo.utils.GoogleDrivePicker.prototype = {
     showPicker : function(accessToken) {
         var view = new google.picker.DocsView();
         view.setIncludeFolders(true);
+        view.setOwnedByMe(true);
         new google.picker.PickerBuilder() //
-        // .enableFeature(google.picker.Feature.MINE_ONLY) //
         .setOAuthToken(accessToken) //
         .setAppId(this.clientId) //
         .addView(view) //
