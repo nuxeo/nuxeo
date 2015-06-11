@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,11 +13,13 @@
  *
  * Contributors:
  *     dmetzler
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -45,18 +47,38 @@ public final class DocumentPermissionHelper {
      * @param acp The ACP to modify
      * @param aclName the name of the ACL to target
      * @param userName the name of the principal (user or group)
-     * @param permissionName
+     * @param permission the permission of the ACE
      * @param blockInheritance Should we block inheritance
+     * @param currentPrincipalName the creator
      * @return true if something has changed on the document security
      */
     public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
             boolean blockInheritance, String currentPrincipalName) {
+        return addPermission(acp, aclName, userName, permission, blockInheritance, currentPrincipalName, null, null);
+    }
+
+    /**
+     *
+     * @param acp The ACP to modify
+     * @param aclName the name of the ACL to target
+     * @param userName the name of the principal (user or group)
+     * @param permission the permission of the ACE
+     * @param blockInheritance should we block inheritance
+     * @param currentPrincipalName the creator
+     * @param begin the begin date of the ACE
+     * @param end the end date of the ACE
+     * @return true if something has changed on the document security
+     *
+     * @since 7.4
+     */
+    public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
+            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end) {
         boolean securityHasChanged = false;
 
         ACL acl = acp.getOrCreateACL(aclName);
         List<ACE> aceList = getACEAsList(acl.getACEs());
 
-        ACE aceToAdd = new ACE(userName, permission, true);
+        ACE aceToAdd = new ACE(userName, permission, true, currentPrincipalName, begin, end);
 
         if (blockInheritance) {
             if (StringUtils.isEmpty(currentPrincipalName)) {
@@ -67,7 +89,7 @@ public final class DocumentPermissionHelper {
             aceList.add(aceToAdd);
 
             if (!userName.equals(currentPrincipalName)) {
-                aceList.add(new ACE(currentPrincipalName, SecurityConstants.EVERYTHING, true));
+                aceList.add(new ACE(currentPrincipalName, SecurityConstants.EVERYTHING, true, currentPrincipalName, begin, end));
             }
 
             aceList.addAll(getAdminEverythingACES());

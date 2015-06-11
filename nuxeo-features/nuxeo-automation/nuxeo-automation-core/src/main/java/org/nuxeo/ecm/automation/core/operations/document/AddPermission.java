@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     dmetzler
+ *     Vladimir Pasquier <vpasquier@nuxeo.com>
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
@@ -29,6 +30,8 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
+import java.util.Calendar;
+
 /**
  * Operation that adds a permission i given ACL for a given user.
  *
@@ -42,16 +45,22 @@ public class AddPermission {
     @Context
     protected CoreSession session;
 
-    @Param(name = "user")
+    @Param(name = "user", description = "ACE target user/group.")
     protected String user;
 
-    @Param(name = "permission")
+    @Param(name = "permission", description = "ACE permission.")
     String permission;
 
-    @Param(name = "acl", required = false, values = { ACL.LOCAL_ACL })
+    @Param(name = "acl", required = false, values = { ACL.LOCAL_ACL }, description = "ACL name.")
     String aclName = ACL.LOCAL_ACL;
 
-    @Param(name = "blockInheritance", required = false)
+    @Param(name = "begin", required = false, description = "ACE begin date.")
+    Calendar begin;
+
+    @Param(name = "end", required = false, description = "ACE end date.")
+    Calendar end;
+
+    @Param(name = "blockInheritance", required = false, description = "Block inheritance or not.")
     boolean blockInheritance = false;
 
     @OperationMethod(collector = DocumentModelCollector.class)
@@ -70,7 +79,7 @@ public class AddPermission {
     protected void addPermission(DocumentModel doc) {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
-                blockInheritance, session.getPrincipal().getName());
+                blockInheritance, session.getPrincipal().getName(), begin, end);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
