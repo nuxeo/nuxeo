@@ -5,7 +5,7 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <c:set var="mainBlob" value="#{blobHolderGenerator.getBlobHolder(fieldOrValue).blob}" />
-  <c:if test="#{!empty mainBlob}">
+  <c:if test="#{!empty mainBlob and mainBlob.length >= 0}">
     <h:outputText value="#{nxu:printFormatedFileSize(mainBlob.length, 'JEDEC', true)}"
       styleClass="fieldColumn" />
   </c:if>
