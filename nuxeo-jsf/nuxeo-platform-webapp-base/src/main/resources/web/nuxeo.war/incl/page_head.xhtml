@@ -12,10 +12,6 @@
       <c:forEach var="fav" items="#{page.favicons}">
         <nxr:favicon name="#{fav.name}" src="#{fav.value}" />
       </c:forEach>
-      <ui:remove>
-        Include JSF resources coming from ui-web here as first dependencies
-      </ui:remove>
-      <ui:include src="/incl/jsf_resources.xhtml" />
       <c:forEach var="bundle" items="#{page.resourceBundles}">
         <nxr:resourceBundle name="#{bundle}" target="head">
           <f:param name="flavor" value="#{empty flavor? 'default': flavor}" />

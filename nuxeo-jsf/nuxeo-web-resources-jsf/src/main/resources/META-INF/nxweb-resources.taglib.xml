@@ -24,7 +24,7 @@
       <component-type>javax.faces.Output</component-type>
       <renderer-type>org.nuxeo.ecm.web.resources.jsf.ResourceBundle</renderer-type>
       <handler-class>
-        com.sun.faces.facelets.tag.jsf.html.ScriptResourceHandler
+        org.nuxeo.ecm.web.resources.jsf.handler.ResourceBundleHandler
       </handler-class>
     </component>
   </tag>
