@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public enum ResourceType {
 
-    any, unknown, css, js, bundle, html;
+    any, unknown, css, js, bundle, html, jsfjs, jsfcss, xhtml;
 
     public String getSuffix() {
         return "." + name();

@@ -25,7 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 import org.nuxeo.ecm.web.resources.api.Resource;
-import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
@@ -45,21 +44,18 @@ public class ResourceBundleRenderer extends AbstractResourceRenderer {
         Map<String, Object> attributes = component.getAttributes();
         String name = (String) attributes.get("name");
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        ResourceBundle bundle = wrm.getResourceBundle(name);
-        if (bundle != null) {
-            List<Resource> cssr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.css.name());
-            if (cssr != null && !cssr.isEmpty()) {
-                encodeEnd(context, component, ResourceType.css, ENDPOINT_PATH + name + ".css");
-            }
-            List<Resource> jsr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.js.name());
-            if (jsr != null && !jsr.isEmpty()) {
-                encodeEnd(context, component, ResourceType.js, ENDPOINT_PATH + name + ".js");
-            }
-            List<Resource> htmlr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.html.name());
-            if (htmlr != null && !htmlr.isEmpty()) {
-                for (Resource rhtml : htmlr) {
-                    encodeEnd(context, component, ResourceType.html, COMPONENTS_PATH + rhtml.getPath());
-                }
+        List<Resource> cssr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.css.name());
+        if (cssr != null && !cssr.isEmpty()) {
+            encodeEnd(context, component, ResourceType.css, ENDPOINT_PATH + name + ".css");
+        }
+        List<Resource> jsr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.js.name());
+        if (jsr != null && !jsr.isEmpty()) {
+            encodeEnd(context, component, ResourceType.js, ENDPOINT_PATH + name + ".js");
+        }
+        List<Resource> htmlr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.html.name());
+        if (htmlr != null && !htmlr.isEmpty()) {
+            for (Resource rhtml : htmlr) {
+                encodeEnd(context, component, ResourceType.html, COMPONENTS_PATH + rhtml.getPath());
             }
         }
         super.encodeEnd(context, component);
