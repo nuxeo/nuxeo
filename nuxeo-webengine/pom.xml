@@ -39,6 +39,22 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <configuration>
+            <usedDependencies combine.children="append">
+              <artifact>org.nuxeo.build:nuxeo-apt-extensions</artifact>
+              <artifact>org.nuxeo.build:nuxeo-webengine-apt</artifact>
+            </usedDependencies>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <scm>
     <connection>scm:git:git://github.com/nuxeo/nuxeo-webengine.git</connection>

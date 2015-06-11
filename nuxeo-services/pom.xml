@@ -77,6 +77,25 @@
     </dependency>
   </dependencies>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <configuration>
+            <usedDependencies combine.children="append">
+              <artifact>org.nuxeo.common:nuxeo-common</artifact>
+              <artifact>org.nuxeo.runtime:nuxeo-runtime</artifact>
+              <artifact>org.nuxeo.runtime:nuxeo-runtime-test</artifact>
+              <artifact>org.nuxeo.ecm.core:nuxeo-core-test</artifact>
+            </usedDependencies>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <scm>
     <connection>scm:git:git://github.com/nuxeo/nuxeo-services.git</connection>
     <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-services.git</developerConnection>
