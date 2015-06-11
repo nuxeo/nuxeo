@@ -40,6 +40,9 @@
             label="label.document.preview" icon="/icons/contextual_menu/preview.png" order="150">
       <category>BLOB_ACTIONS</category>
       <filter-id>hasPDFPreview</filter-id>
+      <properties>
+        <property name="target">_blank</property>
+      </properties>
     </action>
 
   </extension>
