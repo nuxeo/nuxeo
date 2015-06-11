@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ftest.cap;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
@@ -23,9 +27,6 @@ import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Non regression tests related to personal workspace management.
@@ -36,6 +37,7 @@ public class ITPersonalWorkspaceTest extends AbstractTest {
 
     // first use case of NXP-9813
     @Test
+    @Ignore("see NXP-17259")
     public void testNavigationFromSelection() throws Exception {
         DocumentBasePage page = login();
         checkMainTabs();
