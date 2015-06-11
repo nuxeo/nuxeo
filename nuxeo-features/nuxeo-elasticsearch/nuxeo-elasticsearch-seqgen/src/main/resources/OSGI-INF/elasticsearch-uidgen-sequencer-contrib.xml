@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.uidgen.sequencer.contrib">
+
+  <extension target="org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService" point="sequencers">
+    <sequencer name="esSequencer" class="org.nuxeo.elasticsearch.seqgen.ESUIDSequencer"></sequencer>
+  </extension>
+
+</component>
