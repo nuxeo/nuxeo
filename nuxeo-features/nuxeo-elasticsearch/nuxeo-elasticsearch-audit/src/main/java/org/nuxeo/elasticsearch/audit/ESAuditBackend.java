@@ -198,9 +198,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 if (val == null) {
                     continue;
                 } else if (val instanceof Calendar) {
-                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime((Calendar) val)));
+                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime(val)));
                 } else if (val instanceof Date) {
-                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime((Date) val)));
+                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime(val)));
                 } else {
                     tmpl.setVariable(key, val.toString());
                 }
@@ -483,6 +483,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         final long nbEntriesToMigrate = res.get(0);
 
         Work migrationWork = new AbstractWork(MIGRATION_WORK_ID) {
+
+            private static final long serialVersionUID = 1L;
 
             @Override
             public String getTitle() {
