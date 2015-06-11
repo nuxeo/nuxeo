@@ -94,6 +94,8 @@ public class PictureViewsGenerationWork extends AbstractWork {
         if (workingDocument.isVersion()) {
             workingDocument.putContextData(ALLOW_VERSION_WRITE, Boolean.TRUE);
         }
+        workingDocument.putContextData("disableNotificationService", Boolean.TRUE);
+        workingDocument.putContextData("disableAuditLogger", Boolean.TRUE);
         session.saveDocument(workingDocument);
 
         firePictureViewsGenerationDoneEvent(workingDocument);
