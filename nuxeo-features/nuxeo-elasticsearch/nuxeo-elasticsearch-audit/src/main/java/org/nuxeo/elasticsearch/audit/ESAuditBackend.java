@@ -72,10 +72,12 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
+import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
-import org.nuxeo.elasticsearch.seqgen.SequenceGenerator;
+import org.nuxeo.elasticsearch.seqgen.ESUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -287,12 +289,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();
         JsonFactory factory = new JsonFactory();
 
-        SequenceGenerator sg = Framework.getService(SequenceGenerator.class);
+        UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
+        UIDSequencer seq = uidGeneratorService.getSequencer(ESUIDSequencer.SEQUENCER_CONTRIB);
 
         try {
 
             for (LogEntry entry : entries) {
-                entry.setId(sg.getNextId(SEQ_NAME));
+                entry.setId(seq.getNext(SEQ_NAME));
                 XContentBuilder builder = jsonBuilder();
                 JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);
