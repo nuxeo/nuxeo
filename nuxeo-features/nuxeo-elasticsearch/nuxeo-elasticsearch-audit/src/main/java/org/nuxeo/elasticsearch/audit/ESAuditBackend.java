@@ -81,7 +81,6 @@ import org.nuxeo.elasticsearch.seqgen.ESUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
  *
@@ -155,14 +154,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected SearchRequestBuilder getSearchRequestBuilder() {
-        return getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
+        return getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
     public LogEntry getLogEntryByID(long id) {
         GetResponse ret = getClient().prepareGet(IDX_NAME, IDX_TYPE, String.valueOf(id)).get();
-        if (! ret.isExists()) {
+        if (!ret.isExists()) {
             return null;
         }
         try {
