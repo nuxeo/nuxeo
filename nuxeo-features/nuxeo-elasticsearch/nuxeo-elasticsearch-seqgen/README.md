@@ -7,15 +7,16 @@ This project provides a sequence number generator based on Elasticsearch by cont
 
 ## Why this module?
 
-The Elasticsearch backend for the Nuxeo Audit service needs to generate sequence ids.
+The Elasticsearch backend for the Nuxeo Audit service `ESAuditBackend` needs to generate sequence ids.
 
-It seems bad to use a SQL Database just for handling these sequences : that's why this ES based implementation does exist.
+It seems bad to use a SQL database just for handling these sequences: that's why this ES based implementation does exist.
 
 ## How it works
 
-The implementation is based on the Blog post "[ElasticSearch::Sequence - a blazing fast ticket server](http://blogs.perl.org/users/clinton_gormley/2011/10/elasticsearchsequence--a-blazing-fast-ticket-server.html)".
+The implementation is based on the Blog post "[ElasticSearch::Sequence - a blazing fast ticket server](http://blogs.perl.org/users/clinton_gormley/2011/10/elasticsearchsequence---a-blazing-fast-ticket-server.html)".
 
-Basically, it uses an index with a single entry where the revisionn number is used has current value of the sequence.
+Basically, it uses an index with a single entry where the revision number is used as current value of the sequence.
+
 ## Using it
 
     UIDGeneratorService service = Framework.getService(UIDGeneratorService.class);
@@ -24,6 +25,6 @@ Basically, it uses an index with a single entry where the revisionn number is us
 
 ## Building
 
-To build and run the tests, simply start the Maven build:
+To build and run the tests, simply run the Maven build:
 
     mvn clean install
