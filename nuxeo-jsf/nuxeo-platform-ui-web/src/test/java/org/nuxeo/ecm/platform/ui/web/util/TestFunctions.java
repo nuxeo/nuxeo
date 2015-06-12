@@ -23,15 +23,34 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 /**
  * @author arussel
  */
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
 public class TestFunctions {
 
     @Test
     public void testPrintFileSize() {
+        String bytePrefixFormat = Functions.getDefaultBytePrefix().name();
+        assertEquals(Functions.DEFAULT_BYTE_PREFIX_FORMAT, bytePrefixFormat);
+        assertEquals("123 kB", Functions.printFileSize("123456"));
+        Framework.getProperties().setProperty(Functions.BYTE_PREFIX_FORMAT_PROPERTY, "JEDEC");
+        assertEquals("120 KB", Functions.printFileSize("123456"));
+        Framework.getProperties().setProperty(Functions.BYTE_PREFIX_FORMAT_PROPERTY, "IEC");
+        assertEquals("120 KiB", Functions.printFileSize("123456"));
+        Framework.getProperties().setProperty(Functions.BYTE_PREFIX_FORMAT_PROPERTY, bytePrefixFormat);
+    }
+
+    @Test
+    public void testPrintFormatedFileSize() {
         assertEquals("123 kB", Functions.printFormatedFileSize("123456", "SI", true));
         assertEquals("1 MB", Functions.printFormatedFileSize("1000000", "SI", true));
         assertEquals("1 megaB", Functions.printFormatedFileSize("1000000", "SI", false));
