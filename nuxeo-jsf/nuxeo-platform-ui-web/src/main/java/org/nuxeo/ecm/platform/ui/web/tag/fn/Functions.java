@@ -69,6 +69,10 @@ public final class Functions {
 
     public static final long DEFAULT_BIG_FILE_SIZE_LIMIT = 5 * 1024 * 1024;
 
+    public static final String BYTE_PREFIX_FORMAT_PROPERTY = "org.nuxeo.defaultBytePrefixFormat";
+
+    public static final String DEFAULT_BYTE_PREFIX_FORMAT = "SI";
+
     public static final Pattern YEAR_PATTERN = Pattern.compile("y+");
 
     public enum BytePrefix {
@@ -128,6 +132,15 @@ public final class Functions {
 
     // Utility class.
     private Functions() {
+    }
+
+    /**
+     * Returns the default byte prefix configured for the system
+     *
+     * @since 7.3
+     */
+    public static BytePrefix getDefaultBytePrefix() {
+        return BytePrefix.valueOf(Framework.getProperty(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
     }
 
     public static Object test(Boolean test, Object onSuccess, Object onFailure) {
@@ -429,7 +442,7 @@ public final class Functions {
     }
 
     public static String printFileSize(String size) {
-        return printFormatedFileSize(size, "SI", true);
+        return printFormatedFileSize(size, getDefaultBytePrefix().name(), true);
     }
 
     public static String printFormatedFileSize(String sizeS, String format, Boolean isShort) {
