@@ -5880,7 +5880,6 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>properties-maven-plugin</artifactId>
-            <inherited>false</inherited>
             <executions>
               <execution>
                 <phase>initialize</phase>
