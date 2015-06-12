@@ -1287,6 +1287,12 @@
             <property name="sortPropertyName">dc:title</property>
             <property name="label">label.selection.column.title_link</property>
           </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
           <widget>listing_title_link</widget>
         </column>
         <column name="lock">
@@ -1308,6 +1314,12 @@
             <property name="sortPropertyName">dc:modified</property>
             <property name="label">label.dublincore.modificationDate</property>
           </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
           <widget>listing_modification_date</widget>
         </column>
         <column name="lastContributor">
@@ -1315,6 +1327,12 @@
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
             <property name="sortPropertyName">dc:lastContributor</property>
             <property name="label">label.dublincore.lastContributor</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
+          </properties>
+          <properties mode="edit_sort_infos_map">
+            <property name="showInSortInfoSelection">true</property>
           </properties>
           <widget>listing_last_contributor</widget>
         </column>
@@ -1334,6 +1352,9 @@
               ecm:currentLifeCycleState
             </property>
             <property name="label">label.lifecycle</property>
+          </properties>
+          <properties mode="edit_sort_infos">
+            <property name="showInSortInfoSelection">true</property>
           </properties>
           <widget>listing_lifecycle</widget>
         </column>

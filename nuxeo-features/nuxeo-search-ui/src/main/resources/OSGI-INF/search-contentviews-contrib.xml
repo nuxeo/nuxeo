@@ -763,10 +763,65 @@
       </fields>
     </widget>
 
+    <widget name="content_view_selected_columns" type="layout">
+      <labels>
+        <label mode="any">label.search.results</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>cvd:selectedLayoutColumns</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="name">search_listing_ajax</property>
+        <property name="mode">edit_columns</property>
+        <property name="selectAllByDefault">true</property>
+        <property name="required">true</property>
+      </properties>
+      <widgetModes>
+        <mode value="view">hidden</mode>
+      </widgetModes>
+    </widget>
+
+    <widget name="content_view_sort_infos" type="layout">
+      <labels>
+        <label mode="any">label.search.orderBy</label>
+      </labels>
+      <fields>
+        <field>cvd:sortInfos</field>
+      </fields>
+      <translated>true</translated>
+      <properties widgetMode="edit">
+        <property name="name">search_listing_ajax</property>
+        <property name="mode">edit_sort_infos_map</property>
+        <property name="selectAllByDefault">true</property>
+        <property name="required">false</property>
+        <property name="newSortInfoTemplate">#{documentSearchActions.newSortInfoMap}</property>
+      </properties>
+      <widgetModes>
+        <mode value="view">hidden</mode>
+      </widgetModes>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
+
+    <layout name="content_view_display">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>content_view_selected_columns</widget>
+        </row>
+        <row>
+          <widget>content_view_sort_infos</widget>
+        </row>
+      </rows>
+    </layout>
 
     <layout name="default_search_layout">
       <templates>
