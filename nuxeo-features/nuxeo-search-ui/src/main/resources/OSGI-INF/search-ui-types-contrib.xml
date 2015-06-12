@@ -12,6 +12,7 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>default_search_layout</layout>
+        <layout>content_view_display</layout>
       </layouts>
     </type>
 
