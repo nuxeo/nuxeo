@@ -144,6 +144,8 @@
       accept="java.lang.String" produce="java.net.URL" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToDate"
       accept="java.lang.String" produce="java.util.Date" />
+    <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToCalendar"
+      accept="java.lang.String" produce="java.util.Calendar" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.CalendarToDate"
       accept="java.util.Calendar" produce="java.util.Date" />
     <adapter class="org.nuxeo.ecm.automation.core.impl.adapters.StringToList"
