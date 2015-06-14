@@ -20,7 +20,6 @@ package org.nuxeo.ecm.automation.core.operations.document;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -193,6 +192,41 @@ public final class DocumentPermissionHelper {
         ACL acl = acp.getACL(aclName);
 
         boolean securityHasChanged = false;
+        ACE ace = ACE.fromId(id);
+        if (acl.contains(ace)) {
+            acl.remove(ace);
+            securityHasChanged = true;
+        }
+
+        // in order to clear the cache
+        if (securityHasChanged) {
+            acp.addACL(acl);
+        }
+        return securityHasChanged;
+    }
+
+    /**
+     *
+     * @param acp The ACP to modify
+     * @param aclName the name of the ACL to target
+     * @param id the ACE id
+     * @param userName the name of the principal (user or group)
+     * @param permission the permission of the ACE
+     * @param blockInheritance should we block inheritance
+     * @param currentPrincipalName the creator
+     * @param begin the begin date of the ACE
+     * @param end the end date of the ACE
+     * @return true if something has changed on the document security
+     *
+     * @since 7.4
+     */
+    public static boolean updatePermission(ACP acp, String aclName, String id, String userName, String permission,
+            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end) {
+        // Add the new ACE.
+        boolean securityHasChanged = addPermission(acp, aclName, userName, permission, blockInheritance, currentPrincipalName, begin, end);
+
+        // Remove the target ACE.
+        ACL acl = acp.getACL(aclName);
         ACE ace = ACE.fromId(id);
         if (acl.contains(ace)) {
             acl.remove(ace);

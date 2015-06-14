@@ -31,6 +31,8 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.AddPermission;
+import org.nuxeo.ecm.automation.core.operations.document.DocumentPermissionHelper;
+import org.nuxeo.ecm.automation.core.operations.document.UpdatePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -72,7 +74,7 @@ public class PermissionAutomationTest {
     public void canAddPermission() throws OperationException {
         OperationContext ctx = new OperationContext(session);
         ctx.setInput(src);
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("user", "members");
         params.put("permission", "Write");
         GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
@@ -85,6 +87,33 @@ public class PermissionAutomationTest {
         automationService.run(ctx, AddPermission.ID, params);
         assertNotNull(src.getACP().getACL(ACL.LOCAL_ACL));
         assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
+
+        // Tear down
+        DocumentPermissionHelper.removePermission(src.getACP(), ACL.LOCAL_ACL, "members");
     }
 
+    @Test
+    public void canUpdatePermission() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+
+        // Add permission
+        Map<String, Object> params = new HashMap<>();
+        params.put("user", "members");
+        params.put("permission", "Write");
+        automationService.run(ctx, AddPermission.ID, params);
+        ctx.setInput(src);
+
+        // Update permission
+        params.put("user", "members");
+        params.put("permission", "Everything");
+        params.put("id", "members:Write:true:Administrator::");
+
+        assertEquals("Write", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
+        automationService.run(ctx, UpdatePermission.ID, params);
+        assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
+
+        // Tear down
+        DocumentPermissionHelper.removePermission(src.getACP(), ACL.LOCAL_ACL, "members");
+    }
 }

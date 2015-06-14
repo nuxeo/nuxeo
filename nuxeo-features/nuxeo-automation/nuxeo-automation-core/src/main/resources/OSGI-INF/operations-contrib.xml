@@ -90,6 +90,7 @@
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.SetDocumentACE" />
     <operation class="org.nuxeo.ecm.automation.core.operations.document.AddPermission" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.UpdatePermission" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.RemovePermission" />
     <operation
