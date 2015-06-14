@@ -12,7 +12,9 @@
 package org.nuxeo.ecm.automation.client.jaxrs.spi;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,7 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation;
 import org.nuxeo.ecm.automation.client.model.OperationDocumentation.Param;
 import org.nuxeo.ecm.automation.client.model.OperationInput;
+import sun.util.calendar.CalendarUtils;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -130,6 +133,8 @@ public class DefaultOperationRequest implements OperationRequest {
         // }
         if (value.getClass() == Date.class) {
             params.put(key, DateUtils.formatDate((Date) value));
+        } else if (value instanceof Calendar){
+            params.put(key, DateUtils.formatDate(((Calendar) value).getTime()));
         } else if ("properties".equals(key) && value instanceof Document) {
             // Handle document parameter in case of properties - and bind it to
             // properties
