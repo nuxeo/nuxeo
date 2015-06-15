@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://nuxeo.org/schemas/aceinfo">
+
+  <xs:element name="id" type="xs:string" />
+  <xs:element name="repositoryName" type="xs:string" />
+  <xs:element name="docId" type="xs:string" />
+  <xs:element name="aclName" type="xs:string" />
+  <xs:element name="aceId" type="xs:string" />
+  <xs:element name="notify" type="xs:boolean" />
+  <xs:element name="comment" type="xs:string" />
+
+</xs:schema>

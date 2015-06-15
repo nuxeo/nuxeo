@@ -14,6 +14,8 @@ package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -44,6 +46,8 @@ public final class ACE implements Serializable, Cloneable {
     private Calendar end;
 
     private String creator;
+
+    private Map<String, Serializable> contextData = new HashMap<>();
 
     /**
      * Create an ACE from an id.
@@ -118,16 +122,30 @@ public final class ACE implements Serializable, Cloneable {
     }
 
     /**
-     * Constructs an ACE for a given username, permission, specifying wether to grand or deny it, creator user, begin
+     * Constructs an ACE for a given username, permission, specifying whether to grant or deny it, creator user, begin
      * and end date.
      *
      * @since 7.4
      */
     public ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end) {
+        this(username, permission, isGranted, creator, begin, end, null);
+    }
+
+    /**
+     * Constructs an ACE for a given username, permission, specifying whether to grant or deny it, creator user, begin
+     * and end date.
+     *
+     * @since 7.3
+     */
+    public ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end,
+            Map<String, Serializable> contextData) {
         this(username, permission, isGranted);
         this.creator = creator;
         this.begin = begin;
         this.end = end;
+        if (contextData != null) {
+            this.contextData = new HashMap<>(contextData);
+        }
     }
 
     /**
@@ -226,6 +244,14 @@ public final class ACE implements Serializable, Cloneable {
         this.creator = creator;
     }
 
+    public Serializable getContextData(String key) {
+        return contextData.get(key);
+    }
+
+    public void putContextData(String key, Serializable value) {
+        contextData.put(key, value);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -275,7 +301,7 @@ public final class ACE implements Serializable, Cloneable {
 
     @Override
     public Object clone() {
-        return new ACE(username, permission, isGranted, creator, begin, end);
+        return new ACE(username, permission, isGranted, creator, begin, end, contextData);
     }
 
 }
