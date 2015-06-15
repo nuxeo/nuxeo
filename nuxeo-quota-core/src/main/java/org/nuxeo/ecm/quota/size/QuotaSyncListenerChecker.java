@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
@@ -269,6 +270,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     protected void processDocumentMoved(CoreSession session, DocumentModel targetDoc, DocumentModel sourceParent,
             DocumentEventContext docCtx) throws ClientException {
 
+        if (docCtx.getProperties().get(CoreEventConstants.DESTINATION_REF)
+                .equals(sourceParent.getRef())) {
+            log.debug(targetDoc.getPathAsString() + "(" + targetDoc.getId() + ") - document is just being renamed, skipping");
+            return;
+        }
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
         long total = 0;
         if (quotaDoc != null) {
