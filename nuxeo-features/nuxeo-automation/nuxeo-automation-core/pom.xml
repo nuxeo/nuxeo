@@ -61,6 +61,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-forms-layout-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-permissions</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

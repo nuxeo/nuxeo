@@ -5,12 +5,14 @@
     "nuxeo": "~0.4.2",
     "polymer": "Polymer/polymer#^1.0.0",
     "nuxeo-elements": "nuxeo/nuxeo-elements#master",
+    "iron-autogrow-textarea": "PolymerElements/iron-autogrow-textarea#^1.0.0",
     "paper-button": "PolymerElements/paper-button#^1.0.0",
     "paper-input": "PolymerElements/paper-input#^1.0.0",
     "paper-menu": "PolymerElements/paper-menu#^1.0.0",
     "paper-checkbox": "PolymerElements/paper-checkbox#^1.0.0",
     "paper-dialog": "PolymerElements/paper-dialog#^1.0.0",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^1.0.0",
-    "paper-item": "PolymerElements/paper-item#^1.0.0"
+    "paper-item": "PolymerElements/paper-item#^1.0.0",
+    "paper-styles": "PolymerElements/paper-styles#^1.0.0"
   }
 }

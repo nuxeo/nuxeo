@@ -17,6 +17,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -29,8 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-
-import java.util.Calendar;
 
 /**
  * Operation that adds a permission i given ACL for a given user.
@@ -63,6 +66,12 @@ public class AddPermission {
     @Param(name = "blockInheritance", required = false, description = "Block inheritance or not.")
     boolean blockInheritance = false;
 
+    @Param(name = "notify", required = false, description = "Notify the user or not")
+    boolean notify = false;
+
+    @Param(name = "comment", required = false, description = "Comment")
+    String comment;
+
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) {
         addPermission(doc);
@@ -78,8 +87,11 @@ public class AddPermission {
 
     protected void addPermission(DocumentModel doc) {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
+        Map<String, Serializable> contextData = new HashMap<>();
+
         boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
-                blockInheritance, session.getPrincipal().getName(), begin, end);
+                blockInheritance, session.getPrincipal()
+                                         .getName(), begin, end, contextData);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }

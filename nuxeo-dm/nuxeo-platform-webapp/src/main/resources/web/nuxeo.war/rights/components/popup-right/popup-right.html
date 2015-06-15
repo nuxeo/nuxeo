@@ -37,10 +37,16 @@
           <option value="EVERYTHING">Everything</option>
         </select>
       </div>
+      <div layout horizontal>
+        <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify</paper-checkbox>
+      </div>
+      <div layout horizontal>
+        <iron-autogrow-textarea id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+      </div>
 
       <div class="buttons">
-        <paper-button dialog-dismissive raised="true">Cancel</paper-button>
-        <paper-button dialog-affirmative raised="true" on-tap="doSend">Confirm</paper-button>
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm on-tap="doSend">Confirm</paper-button>
       </div>
     </paper-dialog>
   </template>
@@ -60,8 +66,10 @@
         value: function() {
           return {
             user: '',
-            permission: 'READ'
-          }
+            permission: 'READ',
+            notify: true,
+            comment: ''
+          };
         }
       }
     },
@@ -80,9 +88,12 @@
     },
 
     handleResponse: function() {
-      // close the popup
-      this.$.popupRight.toggle();
       this.fire('aclcreated');
+    },
+
+    toggleCommentText: function(event) {
+      var checked = event.element().checked;
+      this.$.commentText.readonly = !checked;
     }
   });
 </script>

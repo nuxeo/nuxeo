@@ -16,7 +16,13 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static org.nuxeo.ecm.permissions.PermissionListener.COMMENT_KEY;
+import static org.nuxeo.ecm.permissions.PermissionListener.NOTIFY_KEY;
+
+import java.io.Serializable;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -66,6 +72,12 @@ public class UpdatePermission {
     @Param(name = "blockInheritance", required = false, description = "Block inheritance or not.")
     boolean blockInheritance = false;
 
+    @Param(name = "notify", required = false, description = "Notify the user or not")
+    boolean notify = false;
+
+    @Param(name = "comment", required = false, description = "Comment")
+    String comment;
+
     @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel doc) throws ClientException {
         updatePermission(doc);
@@ -80,9 +92,13 @@ public class UpdatePermission {
     }
 
     protected void updatePermission(DocumentModel doc) throws ClientException {
+        Map<String, Serializable> contextData = new HashMap<>();
+        contextData.put(NOTIFY_KEY, notify);
+        contextData.put(COMMENT_KEY, comment);
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         boolean permissionChanged = DocumentPermissionHelper.updatePermission(acp, aclName, id, user, permission,
-                blockInheritance, session.getPrincipal().getName(), begin, end);
+                blockInheritance, session.getPrincipal()
+                                         .getName(), begin, end, contextData);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }

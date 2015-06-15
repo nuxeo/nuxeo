@@ -17,10 +17,12 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -53,11 +55,11 @@ public final class DocumentPermissionHelper {
      */
     public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
             boolean blockInheritance, String currentPrincipalName) {
-        return addPermission(acp, aclName, userName, permission, blockInheritance, currentPrincipalName, null, null);
+        return addPermission(acp, aclName, userName, permission, blockInheritance, currentPrincipalName, null, null,
+                null);
     }
 
     /**
-     *
      * @param acp The ACP to modify
      * @param aclName the name of the ACL to target
      * @param userName the name of the principal (user or group)
@@ -67,17 +69,22 @@ public final class DocumentPermissionHelper {
      * @param begin the begin date of the ACE
      * @param end the end date of the ACE
      * @return true if something has changed on the document security
-     *
      * @since 7.4
      */
     public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
-            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end) {
+            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end,
+            Map<String, Serializable> contextData) {
         boolean securityHasChanged = false;
 
         ACL acl = acp.getOrCreateACL(aclName);
         List<ACE> aceList = getACEAsList(acl.getACEs());
 
         ACE aceToAdd = new ACE(userName, permission, true, currentPrincipalName, begin, end);
+        if (contextData != null) {
+            for (Map.Entry<String, Serializable> entry : contextData.entrySet()) {
+                aceToAdd.putContextData(entry.getKey(), entry.getValue());
+            }
+        }
 
         if (blockInheritance) {
             if (StringUtils.isEmpty(currentPrincipalName)) {
@@ -88,7 +95,8 @@ public final class DocumentPermissionHelper {
             aceList.add(aceToAdd);
 
             if (!userName.equals(currentPrincipalName)) {
-                aceList.add(new ACE(currentPrincipalName, SecurityConstants.EVERYTHING, true, currentPrincipalName, begin, end));
+                aceList.add(new ACE(currentPrincipalName, SecurityConstants.EVERYTHING, true, currentPrincipalName,
+                        begin, end));
             }
 
             aceList.addAll(getAdminEverythingACES());
@@ -163,7 +171,8 @@ public final class DocumentPermissionHelper {
         if (acl != null) {
             ACE[] acEs = acl.getACEs();
             for (ACE ace : acEs) {
-                if (ace.getUsername().equals(principalName)) {
+                if (ace.getUsername()
+                       .equals(principalName)) {
                     acEs = (ACE[]) ArrayUtils.removeElement(acEs, ace);
                     securityHasChanged = true;
                 }
@@ -206,7 +215,6 @@ public final class DocumentPermissionHelper {
     }
 
     /**
-     *
      * @param acp The ACP to modify
      * @param aclName the name of the ACL to target
      * @param id the ACE id
@@ -217,13 +225,14 @@ public final class DocumentPermissionHelper {
      * @param begin the begin date of the ACE
      * @param end the end date of the ACE
      * @return true if something has changed on the document security
-     *
      * @since 7.4
      */
     public static boolean updatePermission(ACP acp, String aclName, String id, String userName, String permission,
-            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end) {
+            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end,
+            Map<String, Serializable> contextData) {
         // Add the new ACE.
-        boolean securityHasChanged = addPermission(acp, aclName, userName, permission, blockInheritance, currentPrincipalName, begin, end);
+        boolean securityHasChanged = addPermission(acp, aclName, userName, permission, blockInheritance,
+                currentPrincipalName, begin, end, contextData);
 
         // Remove the target ACE.
         ACL acl = acp.getACL(aclName);
