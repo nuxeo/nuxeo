@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.CoreService;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -49,7 +50,16 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
                 CoreSession session = ctx.getCoreSession();
                 Object[] args = ctx.getArguments();
                 if (args.length == 2) {
-                    ShallowDocumentModel deletedLiveDoc = (ShallowDocumentModel) args[0];
+
+                    DocumentModel doc = (ShallowDocumentModel) args[0];
+                    ShallowDocumentModel deletedLiveDoc= null;
+                    if (doc instanceof ShallowDocumentModel) {
+                        deletedLiveDoc = (ShallowDocumentModel) doc;
+                    } else {
+                        // cluster node has still no fetched invalidation
+                        // so ShallowDocumentModel has been reconnected via the cache !
+                        deletedLiveDoc = new ShallowDocumentModel(doc);
+                    }
                     List<String> versionUUIDs = (List<String>) args[1];
                     removeIfPossible(session, deletedLiveDoc, versionUUIDs);
                 }
