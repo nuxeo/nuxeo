@@ -263,8 +263,8 @@ public class SearchUIActions implements Serializable {
         if (contentViewState != null) {
             ContentView contentView = contentViewActions.restoreContentView(contentViewState);
             currentContentViewName = contentView.getName();
-            currentSelectedSavedSearchId = searchDocument.getId();
         }
+        currentSelectedSavedSearchId = searchDocument.getId();
     }
 
     public List<ContentViewHeader> getContentViewHeaders() throws ClientException {
