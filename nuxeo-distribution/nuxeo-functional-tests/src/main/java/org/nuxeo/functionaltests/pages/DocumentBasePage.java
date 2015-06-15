@@ -182,6 +182,13 @@ public class DocumentBasePage extends AbstractPage {
         return asPage(ContextualActions.class);
     }
 
+    /**
+     * @since 7.3
+     */
+    public List<WebElement> getBlobActions(int index) {
+        return findElementsWithTimeout(By.xpath("(//div[@class='actionsColumn'])[" + (index + 1) + "]//a"));
+    }
+
     public String getCurrentContributors() {
         return currentDocumentContributor.getText();
     }
