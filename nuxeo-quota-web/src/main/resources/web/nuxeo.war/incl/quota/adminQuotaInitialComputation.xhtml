@@ -42,12 +42,11 @@
               </td>
               <td>
                 <nxu:set var="status" value="#{quotaStatsActions.getStatus(updater.name)}">
-                  <c:if test="#{not empty status}">
-                    <input class="button" type="button" disabled="disabled"
-                      value="#{messages[status]}"></input>
+                  <c:if test="#{!(empty status or status == 'status.quota.initialComputationCompleted')}">
+                    <span class="label label-info" >#{messages[status]}</span>
                   </c:if>
 
-                  <c:if test="#{empty status}">
+                  <c:if test="#{empty status or status == 'status.quota.initialComputationCompleted'}">
                     <a4j:commandButton value="#{messages['action.quota.launch.computation']}"
                       action="#{quotaStatsActions.launchInitialComputation(updater.name)}"
                       styleClass="button"
