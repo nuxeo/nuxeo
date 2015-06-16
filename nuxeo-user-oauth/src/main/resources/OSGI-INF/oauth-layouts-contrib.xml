@@ -84,12 +84,6 @@
           <widget>serviceLogin</widget>
         </row>
         <row>
-          <widget>accessToken</widget>
-        </row>
-        <row>
-          <widget>refreshToken</widget>
-        </row>
-        <row>
           <widget>creationDate</widget>
         </row>
         <row>
@@ -128,24 +122,6 @@
         <translated>true</translated>
         <fields>
           <field>oauth2Token.serviceLogin</field>
-        </fields>
-      </widget>
-      <widget name="accessToken" type="text">
-        <labels>
-          <label mode="any">Access Token </label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauth2Token.accessToken</field>
-        </fields>
-      </widget>
-      <widget name="refreshToken" type="text">
-        <labels>
-          <label mode="any">Refresh Token</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>oauth2Token.refreshToken</field>
         </fields>
       </widget>
       <widget name="creationDate" type="datetime">
