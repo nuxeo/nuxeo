@@ -32,7 +32,7 @@ public interface DocumentRef extends Serializable {
     // the document is specified by its UUID
     int ID = 1;
 
-    // the documenmt is specified by its path
+    // the document is specified by its path
     int PATH = 2;
 
     /**
@@ -47,7 +47,7 @@ public interface DocumentRef extends Serializable {
      * <p>
      * For an ID reference, this is the document UUID.
      * <p>
-     * For an ID reference, this is the document path.
+     * For a PATH reference, this is the document path.
      * <p>
      * For an INSTANCE reference this is the document itself.
      *
