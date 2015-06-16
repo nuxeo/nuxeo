@@ -296,16 +296,25 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
     }
 
     @Override
+    public void optimizeIndex(String indexName) {
+        log.warn("Optimizing index: " + indexName);
+        for (ElasticSearchIndexConfig conf : indexConfig.values()) {
+            if (conf.getName().equals(indexName)) {
+                getClient().admin().indices().prepareOptimize(indexName).get();
+            }
+        }
+        log.info("Optimize done");
+    }
+
+    @Override
     public void optimizeRepositoryIndex(String repositoryName) {
-        log.warn("Optimize index associated with repo: " + repositoryName);
-        getClient().admin().indices().prepareOptimize(getIndexNameForRepository(repositoryName)).get();
-        log.info("Optimize index done");
+        optimizeIndex(getIndexNameForRepository(repositoryName));
     }
 
     @Override
     public void optimize() {
-        for (String repositoryName : indexNames.keySet()) {
-            optimizeRepositoryIndex(repositoryName);
+        for (ElasticSearchIndexConfig conf : indexConfig.values()) {
+            optimizeIndex(conf.getName());
         }
     }
 
@@ -321,6 +330,18 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             initIndex(conf, dropIfExists);
         }
         log.info("ES Service ready");
+        indexInitDone = true;
+    }
+
+    @Override
+    public void dropAndInitIndex(String indexName) {
+        log.info("Drop and init index: " + indexName);
+        indexInitDone = false;
+        for (ElasticSearchIndexConfig conf : indexConfig.values()) {
+            if (conf.getName().equals(indexName)) {
+                initIndex(conf, true);
+            }
+        }
         indexInitDone = true;
     }
 

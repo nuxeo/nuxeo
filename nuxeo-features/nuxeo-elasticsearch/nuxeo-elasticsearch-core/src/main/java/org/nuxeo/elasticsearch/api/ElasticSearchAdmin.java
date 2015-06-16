@@ -47,6 +47,14 @@ public interface ElasticSearchAdmin {
     void initIndexes(boolean dropIfExists);
 
     /**
+     * Reinitialize an index. This will drop the existing index, recreate it with its settings and
+     * mapping, the index will be empty.
+     *
+     * @since 7.3
+     */
+    void dropAndInitIndex(String indexName);
+
+    /**
      * Reinitialize the index of a repository. This will drop the existing index, recreate it with its settings and
      * mapping, the index will be empty.
      *
@@ -130,6 +138,14 @@ public interface ElasticSearchAdmin {
      * @since 7.2
      */
     void optimizeRepositoryIndex(String repositoryName);
+
+    /**
+     * Elasticsearch optimize operation allows to reduce the number of segments to one, Note that this can potentially
+     * be a very heavy operation.
+     *
+     * @since 7.3
+     */
+    void optimizeIndex(String indexName);
 
     /**
      * Returns the number of command scheduled for indexing.
