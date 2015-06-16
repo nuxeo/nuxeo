@@ -526,12 +526,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                         addLogEntries(entries);
                         pageIdx++;
                         nbEntriesMigrated += entries.size();
-                        log.info("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
+                        log.info("Migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
                         double dt = (System.currentTimeMillis() - t0) / 1000.0;
                         if (dt != 0) {
-                            log.info("migration speed " + (nbEntriesMigrated / dt) + " entries/s");
+                            log.info("Migration speed: " + (nbEntriesMigrated / dt) + " entries/s");
                         }
                     }
+                    log.info("Audit migration from SQL to Elasticsearch done: " + nbEntriesMigrated
+                            + " entries migrated");
 
                     // Log technical event in audit as a flag to know if the migration has been processed at application
                     // startup
