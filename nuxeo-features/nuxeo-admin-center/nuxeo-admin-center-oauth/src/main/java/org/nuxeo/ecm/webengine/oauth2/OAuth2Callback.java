@@ -17,6 +17,8 @@
 package org.nuxeo.ecm.webengine.oauth2;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +30,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import com.google.api.client.auth.oauth2.Credential;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -49,6 +53,8 @@ public class OAuth2Callback extends ModuleRoot {
 
     Credential credential;
 
+    private static final Log log = LogFactory.getLog(OAuth2Callback.class);
+
     /**
      * @param serviceProviderName
      * @return the rendered page.
@@ -65,13 +71,22 @@ public class OAuth2Callback extends ModuleRoot {
                     "No service provider called: \"" + serviceProviderName + "\".").build();
         }
 
+        Map<String, Object> args = new HashMap<>();
+
         new UnrestrictedSessionRunner(ctx.getCoreSession()) {
             @Override
             public void run() throws ClientException {
-                credential = provider.handleAuthorizationCallback(request);
+                try {
+                    credential = provider.handleAuthorizationCallback(request);
+                } catch (ClientException e) {
+                    log.error("Authorization request failed", e);
+                    args.put("error", "Authorization request failed");
+                }
             }
         }.runUnrestricted();
 
-        return getView("index").arg("token", credential.getAccessToken());
+        String token = (credential == null) ? "" : credential.getAccessToken();
+        args.put("token", token);
+        return getView("index").args(args);
     }
 }
