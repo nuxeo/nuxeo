@@ -53,6 +53,7 @@ import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3EncryptionClient;
+import com.amazonaws.services.s3.internal.ServiceUtils;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.CryptoConfiguration;
 import com.amazonaws.services.s3.model.EncryptedPutObjectRequest;
@@ -421,7 +422,7 @@ public class S3BinaryManager extends CachingBinaryManager {
                 }
             }
             // check transfer went ok
-            if (!isEncrypted && !etag.equals(digest)) {
+            if (!isEncrypted && !etag.equals(digest) && !ServiceUtils.isMultipartUploadETag(etag)) {
                 // When the blob is not encrypted by S3, the MD5 remotely
                 // computed by S3 and passed as a Etag should match the locally
                 // computed MD5 digest.
