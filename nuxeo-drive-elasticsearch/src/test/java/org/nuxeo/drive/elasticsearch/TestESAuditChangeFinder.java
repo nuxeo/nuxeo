@@ -41,8 +41,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, PlatformFeature.class, RepositoryElasticSearchFeature.class })
-@Deploy({ "org.nuxeo.ecm.platform.audit", "org.nuxeo.elasticsearch.seqgen", "org.nuxeo.elasticsearch.audit",
-        "org.nuxeo.drive.elasticsearch" })
+@Deploy({ "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
+        "org.nuxeo.elasticsearch.audit", "org.nuxeo.drive.elasticsearch" })
 @LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
 public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
 
