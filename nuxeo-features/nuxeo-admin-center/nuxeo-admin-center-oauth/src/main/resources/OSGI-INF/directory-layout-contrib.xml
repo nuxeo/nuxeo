@@ -508,7 +508,10 @@
         <properties mode="edit">
            <property name="size">40</property>
         </properties>
-
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="userAuthorizationURL" type="text">
         <labels>
@@ -547,6 +550,10 @@
         <fields>
           <field>oauth2ServiceProvider.scopes</field>
         </fields>
+        <widgetModes>
+          <mode value="view_list">hidden</mode>
+          <mode value="view_list_and_header">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="enabled" type="checkbox">
         <labels>
