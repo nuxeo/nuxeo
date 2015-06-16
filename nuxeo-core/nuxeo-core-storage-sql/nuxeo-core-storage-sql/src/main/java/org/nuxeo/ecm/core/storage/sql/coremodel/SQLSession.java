@@ -1130,8 +1130,12 @@ public class SQLSession implements Session {
         String mimeType = node.getSimpleProperty(BLOB_MIME_TYPE).getString();
         String encoding = node.getSimpleProperty(BLOB_ENCODING).getString();
         String digest = node.getSimpleProperty(BLOB_DIGEST).getString();
-        Long length = node.getSimpleProperty(BLOB_LENGTH).getLong();
-        return new StorageBlob(binary, name, mimeType, encoding, digest, length.longValue());
+        Long lengthProp = node.getSimpleProperty(BLOB_LENGTH).getLong();
+        long length = -1;
+        if (lengthProp != null) {
+            length = lengthProp.longValue();
+        }
+        return new StorageBlob(binary, name, mimeType, encoding, digest, length);
     }
 
     protected void writeBlobProperty(BlobProperty blobProperty, Node node, SQLDocument doc) throws StorageException,
