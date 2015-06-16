@@ -101,6 +101,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public static final String MIGRATION_FLAG_PROP = "audit.elasticsearch.migration";
 
+    public static final String MIGRATION_BATCH_SIZE_PROP = "audit.elasticsearch.migration.batchSize";
+
     public static final String MIGRATION_DONE_EVENT = "sqlToElasticsearchMigrationDone";
 
     public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
@@ -581,7 +583,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
                 esa.dropAndInitIndex(IDX_NAME);
                 int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
-                String batchSizeProp = Framework.getProperty("audit.elasticsearch.migration.batchSize");
+                String batchSizeProp = Framework.getProperty(MIGRATION_BATCH_SIZE_PROP);
                 if (batchSizeProp != null) {
                     batchSize = Integer.parseInt(batchSizeProp);
                 }

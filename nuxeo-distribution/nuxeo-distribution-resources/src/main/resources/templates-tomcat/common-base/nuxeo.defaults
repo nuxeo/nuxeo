@@ -89,3 +89,5 @@ elastcisearch.reindex.onStartup=false
 audit.elasticsearch.enabled=false
 # Migrate audit logs from SQL storage to Elasticsearch indexing, requires audit.elasticsearch.enabled=true
 audit.elasticsearch.migration=false
+# Batch size for audit logs migration, only useful with audit.elasticsearch.migration=true
+audit.elasticsearch.migration.batchSize=1000
