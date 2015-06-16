@@ -545,8 +545,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                     entry.setEventDate(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
                     addLogEntries(Collections.singletonList(entry));
                 } finally {
-                    sourceBackend.deactivate();
                     TransactionHelper.startTransaction();
+                    sourceBackend.deactivate();
                 }
             }
         };
