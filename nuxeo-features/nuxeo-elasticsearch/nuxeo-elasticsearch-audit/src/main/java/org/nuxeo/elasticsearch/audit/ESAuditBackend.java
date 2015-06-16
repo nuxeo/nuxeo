@@ -573,7 +573,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (Boolean.parseBoolean(Framework.getProperty("audit.elasticsearch.migration"))) {
             if (!isMigrationDone()) {
                 log.info("Property audit.elasticsearch.migration is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index");
-                // TODO: drop index first
+                // Drop audit index first in case of a previous bad migration
+                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+                esa.dropAndInitIndex(IDX_NAME);
                 int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
                 String batchSizeProp = Framework.getProperty("audit.elasticsearch.migration.batchSize");
                 if (batchSizeProp != null) {
