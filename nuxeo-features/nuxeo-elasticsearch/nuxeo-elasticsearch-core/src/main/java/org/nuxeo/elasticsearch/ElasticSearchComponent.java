@@ -263,6 +263,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
+    public void dropAndInitIndex(String indexName) {
+        esa.dropAndInitIndex(indexName);
+    }
+
+    @Override
     public void dropAndInitRepositoryIndex(String repositoryName) {
         esa.dropAndInitRepositoryIndex(repositoryName);
     }
@@ -363,6 +368,11 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public void optimizeRepositoryIndex(String repositoryName) {
         esa.optimizeRepositoryIndex(repositoryName);
+    }
+
+    @Override
+    public void optimizeIndex(String indexName) {
+        esa.optimizeIndex(indexName);
     }
 
     // ES Indexing =============================================================
