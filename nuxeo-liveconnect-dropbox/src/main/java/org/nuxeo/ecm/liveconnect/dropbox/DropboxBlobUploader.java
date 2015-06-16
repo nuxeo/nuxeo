@@ -58,8 +58,6 @@ public class DropboxBlobUploader implements JSFBlobUploader {
 
     public static final String UPLOAD_DROPBOX_FACET_NAME = "uploadDropbox";
 
-    public static final String DROPBOX_API_CLIENT_JS_URL = "https://www.dropbox.com/static/api/2/dropins.js";
-
     public DropboxBlobUploader() {
     }
 
@@ -100,8 +98,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
 
         String onButtonClick = onClick
             + ";"
-            + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s')",
-            inputId, infoId, authorizationUrl);
+            + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s', '%s')",
+            inputId, infoId, authorizationUrl, getClientId());
         writer.writeAttribute("onclick", onButtonClick, null);
 
         writer.startElement("span", parent);
@@ -116,12 +114,6 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         writer.writeAttribute("id", infoId, null);
         writer.write("no file selected"); // TODO i18n
         writer.endElement("span");
-
-        writer.startElement("script", parent);
-        writer.writeAttribute("src", DROPBOX_API_CLIENT_JS_URL, null);
-        writer.writeAttribute("id", "dropboxjs", null);
-        writer.writeAttribute("data-app-key", getClientId(), null);
-        writer.endElement("script");
 
         inputText.setLocalValueSet(false);
         inputText.setStyle("display: none");

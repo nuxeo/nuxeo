@@ -6,22 +6,36 @@ nuxeo.utils = nuxeo.utils || {};
 // inputId: element id of input fields to save the doc path
 // infoId: element id of span to fill with doc info
 // authorizationUrl: OAuth flow url
-nuxeo.utils.DropboxPicker = function(inputId, infoId, url) {
+nuxeo.utils.DropboxPicker = function(inputId, infoId, url, clientId) {
   this.inputId = inputId;
   this.infoId = infoId;
   this.url = url;
 
-  if (this.url == "" || nuxeo.utils.DropboxPicker.ignoreOAuthPopup == true) {
-    this.showPicker.call(this);
+  if (window.Dropbox) {
+    this.init();
   } else {
-    openPopup(this.url, {
-      onMessageReceive: this.parseMessage.bind(this),
-      onClose: this.onOAuthPopupClose.bind(this)
-    });
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.id = "dropboxjs";
+    script.setAttribute("data-app-key", clientId);
+    script.src = "https://www.dropbox.com/static/api/2/dropins.js";
+    script.onload = this.init.bind(this);
+    document.head.appendChild(script);
   }
 };
 
 nuxeo.utils.DropboxPicker.prototype = {
+
+  init: function() {
+    if (this.url == "" || nuxeo.utils.DropboxPicker.ignoreOAuthPopup == true) {
+      this.showPicker.call(this);
+    } else {
+      openPopup(this.url, {
+        onMessageReceive: this.parseMessage.bind(this),
+        onClose: this.onOAuthPopupClose.bind(this)
+      });
+    }
+  },
 
   onOAuthPopupClose : function() {
     if (this.token) {
