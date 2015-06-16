@@ -87,3 +87,5 @@ elasticsearch.adminCenter.displayClusterInfo=false
 elastcisearch.reindex.onStartup=false
 # Use Elasticsearch as a backend for audit logs
 audit.elasticsearch.enabled=false
+# Migrate audit logs from SQL storage to Elasticsearch indexing, requires audit.elasticsearch.enabled=true
+audit.elasticsearch.migration=false

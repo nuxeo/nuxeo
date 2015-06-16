@@ -22,11 +22,13 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
@@ -57,10 +59,13 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -94,6 +99,10 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public static final String SEQ_NAME = "audit";
 
+    public static final String MIGRATION_DONE_EVENT = "sqlToElasticsearchMigrationDone";
+
+    public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
+
     protected Client esClient = null;
 
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
@@ -107,6 +116,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             esClient = esa.getClient();
         }
         return esClient;
+    }
+
+    protected boolean isMigrationDone() {
+        AuditReader reader = Framework.getService(AuditReader.class);
+        List<LogEntry> entries = reader.queryLogs(new String[] { MIGRATION_DONE_EVENT }, null);
+        return !entries.isEmpty();
     }
 
     @Override
@@ -517,7 +532,18 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                             log.info("migration speed " + (nbEntriesMigrated / dt) + " entries/s");
                         }
                     }
+
+                    // Log technical event in audit as a flag to know if the migration has been processed at application
+                    // startup
+                    AuditLogger logger = Framework.getService(AuditLogger.class);
+                    LogEntry entry = logger.newLogEntry();
+                    entry.setCategory("NuxeoTechnicalEvent");
+                    entry.setEventId(MIGRATION_DONE_EVENT);
+                    entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
+                    entry.setEventDate(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
+                    addLogEntries(Collections.singletonList(entry));
                 } finally {
+                    sourceBackend.deactivate();
                     TransactionHelper.startTransaction();
                 }
             }
@@ -537,6 +563,26 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (log.isDebugEnabled()) {
             log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
                     IDX_NAME, IDX_TYPE, request.toString()));
+        }
+    }
+
+    @Override
+    public void onApplicationStarted() {
+        if (Boolean.parseBoolean(Framework.getProperty("audit.elasticsearch.migration"))) {
+            if (!isMigrationDone()) {
+                log.info("Property audit.elasticsearch.migration is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index");
+                // TODO: drop index first
+                int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
+                String batchSizeProp = Framework.getProperty("audit.elasticsearch.migration.batchSize");
+                if (batchSizeProp != null) {
+                    batchSize = Integer.parseInt(batchSizeProp);
+                }
+                migrate(batchSize);
+            } else {
+                log.warn("Property audit.elasticsearch.migration is true but migration is already done, please set this property to false");
+            }
+        } else {
+            log.debug("Property audit.elasticsearch.migration is false, not processing any migration");
         }
     }
 

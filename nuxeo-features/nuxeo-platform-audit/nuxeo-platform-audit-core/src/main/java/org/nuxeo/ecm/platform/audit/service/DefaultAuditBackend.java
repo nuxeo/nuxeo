@@ -390,4 +390,9 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         return queryLogsByPage(em, eventIds, limit, categories, path, pageNb, pageSize);
     }
 
+    @Override
+    public void onApplicationStarted() {
+        // Nothing to do
+    }
+
 }

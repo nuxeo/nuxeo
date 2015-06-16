@@ -29,4 +29,6 @@ public interface AuditBackend extends Logs {
 
     void deactivate();
 
+    void onApplicationStarted();
+
 }
