@@ -50,9 +50,8 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
                 CoreSession session = ctx.getCoreSession();
                 Object[] args = ctx.getArguments();
                 if (args.length == 2) {
-
-                    DocumentModel doc = (ShallowDocumentModel) args[0];
-                    ShallowDocumentModel deletedLiveDoc= null;
+                    DocumentModel doc = (DocumentModel) args[0];
+                    ShallowDocumentModel deletedLiveDoc = null;
                     if (doc instanceof ShallowDocumentModel) {
                         deletedLiveDoc = (ShallowDocumentModel) doc;
                     } else {
