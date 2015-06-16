@@ -99,6 +99,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public static final String SEQ_NAME = "audit";
 
+    public static final String MIGRATION_FLAG_PROP = "audit.elasticsearch.migration";
+
     public static final String MIGRATION_DONE_EVENT = "sqlToElasticsearchMigrationDone";
 
     public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
@@ -570,9 +572,11 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public void onApplicationStarted() {
-        if (Boolean.parseBoolean(Framework.getProperty("audit.elasticsearch.migration"))) {
+        if (Boolean.parseBoolean(Framework.getProperty(MIGRATION_FLAG_PROP))) {
             if (!isMigrationDone()) {
-                log.info("Property audit.elasticsearch.migration is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index");
+                log.info(String.format(
+                        "Property %s is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index",
+                        MIGRATION_FLAG_PROP));
                 // Drop audit index first in case of a previous bad migration
                 ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
                 esa.dropAndInitIndex(IDX_NAME);
@@ -583,10 +587,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 }
                 migrate(batchSize);
             } else {
-                log.warn("Property audit.elasticsearch.migration is true but migration is already done, please set this property to false");
+                log.warn(String.format(
+                        "Property %s is true but migration is already done, please set this property to false",
+                        MIGRATION_FLAG_PROP));
             }
         } else {
-            log.debug("Property audit.elasticsearch.migration is false, not processing any migration");
+            log.debug(String.format("Property %s is false, not processing any migration", MIGRATION_FLAG_PROP));
         }
     }
 
