@@ -20,6 +20,7 @@ import com.dropbox.core.DbxException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -45,6 +46,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -91,6 +93,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         String pickId = prefix + "DropboxPickMsg";
         String infoId = prefix + "DropboxInfo";
         String authorizationUrl = tokens.isEmpty() ? getOAuthAuthorizationUrl() : "";
+        Locale locale = context.getViewRoot().getLocale();
+        String message;
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
@@ -104,7 +108,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
 
         writer.startElement("span", parent);
         writer.writeAttribute("id", pickId, null);
-        writer.write("Dropbox"); // TODO i18n
+        message = I18NUtils.getMessageString("messages", "label.inputFile.dropboxUploadPicker", null, locale);
+        writer.write(message);
         writer.endElement("span");
 
         writer.endElement("button");
@@ -112,7 +117,8 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
         writer.startElement("span", parent);
         writer.writeAttribute("id", infoId, null);
-        writer.write("no file selected"); // TODO i18n
+        message = I18NUtils.getMessageString("messages", "error.inputFile.noFileSelected", null, locale);
+        writer.write(message);
         writer.endElement("span");
 
         inputText.setLocalValueSet(false);

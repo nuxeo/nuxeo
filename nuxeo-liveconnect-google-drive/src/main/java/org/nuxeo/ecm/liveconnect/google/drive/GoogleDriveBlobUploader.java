@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.liveconnect.google.drive;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import javax.faces.application.Application;
 import javax.faces.component.NamingContainer;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -103,6 +105,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         String authId = prefix + "GoogleDriveAuthMsg";
         String infoId = prefix + "GoogleDriveInfo";
         String authorizationUrl = tokens.isEmpty() ? getOAuthAuthorizationUrl() : "";
+        Locale locale = context.getViewRoot().getLocale();
+        String message;
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
@@ -117,13 +121,15 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
         writer.startElement("span", parent);
         writer.writeAttribute("id", pickId, null);
-        writer.write("Google Drive"); // TODO i18n
+        message = I18NUtils.getMessageString("messages", "label.inputFile.googleDriveUploadPicker", null, locale);
+        writer.write(message);
         writer.endElement("span");
 
         writer.startElement("span", parent);
         writer.writeAttribute("id", authId, null);
         writer.writeAttribute("style", "display:none", null); // hidden
-        writer.write("Click to Authenticate"); // TODO i18n
+        message = I18NUtils.getMessageString("messages", "label.inputFile.authenticate", null, locale);
+        writer.write(message);
         writer.endElement("span");
 
         writer.endElement("button");
@@ -131,7 +137,8 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
         writer.startElement("span", parent);
         writer.writeAttribute("id", infoId, null);
-        writer.write("no file selected"); // TODO i18n
+        message = I18NUtils.getMessageString("messages", "error.inputFile.noFileSelected", null, locale);
+        writer.write(message);
         writer.endElement("span");
 
         inputText.setLocalValueSet(false);
