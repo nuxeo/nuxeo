@@ -113,9 +113,9 @@ public class OpenIDConnectProviderRegistryImpl extends DefaultComponent implemen
             OAuth2ServiceProvider oauth2Provider = oauth2ProviderRegistry.getProvider(provider.getName());
 
             if (oauth2Provider == null) {
-                oauth2Provider = oauth2ProviderRegistry.addProvider(provider.getName(), provider.getTokenServerURL(),
-                        provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
-                        Arrays.asList(provider.getScopes()));
+                oauth2Provider = oauth2ProviderRegistry.addProvider(provider.getName(), provider.getDescription(),
+                        provider.getTokenServerURL(), provider.getAuthorizationServerURL(), provider.getClientId(),
+                        provider.getClientSecret(), Arrays.asList(provider.getScopes()));
             } else {
                 log.warn("Provider " + provider.getName()
                         + " is already in the Database, XML contribution  won't overwrite it");
