@@ -475,7 +475,7 @@
                   <field>subTab</field>
                 </fields>
               </widget>
-              <widget name="Tabs" type="text">
+              <widget name="tabs" type="text">
                 <labels>
                   <label mode="any">Tabs</label>
                 </labels>
