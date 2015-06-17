@@ -95,21 +95,24 @@ public interface AuditReader {
             int pageSize);
 
     /**
-     * Returns a batched list of log entries. WhereClause is a native where clause for the backend: here EJBQL 3.0 can
-     * be used.
+     * Returns a batched list of log entries. WhereClause is a native where clause for the backend: here EJBQL 3.0 must
+     * be used if implementation of audit backend is JPA (< 7.3 or audit.elasticsearch.enabled=false) and JSON if
+     * implementation is Elasticsearch.
      */
     List<LogEntry> nativeQueryLogs(String whereClause, int pageNb, int pageSize);
 
     /**
-     * Returns a batched list of entries. query string is a native query clause for the backend : here EJBQL 3.0 can be
-     * used
+     * Returns a batched list of entries. query string is a native query clause for the backend : here EJBQL 3.0 must be
+     * used if implementation of audit backend is JPA (< 7.3 or audit.elasticsearch.enabled=false) and JSON if
+     * implementation is Elasticsearch.
      */
     List<?> nativeQuery(String query, int pageNb, int pageSize);
 
     /**
      * Returns a batched list of entries.
      *
-     * @param query a JPA query language query
+     * @param query a JPA query language query if implementation of audit backend is JPA (< 7.3 or
+     *            audit.elasticsearch.enabled=false) and JSON if implementation is Elasticsearch
      * @param params parameters for the query
      * @param pageNb the page number (starts at 1)
      * @param pageSize the number of results per page
