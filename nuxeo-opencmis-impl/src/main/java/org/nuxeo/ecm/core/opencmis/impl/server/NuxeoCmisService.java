@@ -1483,14 +1483,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 // throw new CmisRuntimeException("Cannot find audit service");
             }
             // TODO XXX repositoryId as well
-            Map<String, Object> params = new HashMap<String, Object>();
-            String query = "FROM LogEntry log" //
-                    + " WHERE log.eventId IN (:evCreated, :evModified, :evRemoved)" //
-                    + " ORDER BY log.eventDate DESC";
-            params.put("evCreated", DOCUMENT_CREATED);
-            params.put("evModified", DOCUMENT_UPDATED);
-            params.put("evRemoved", DOCUMENT_REMOVED);
-            List<?> entries = reader.nativeQuery(query, params, 1, 1);
+            String[] events = new String[] {DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED};
+            String[] category = null;
+            List<?> entries = reader.queryLogsByPage(events, new Date(0), category, null, 1, 1);
             if (entries.size() == 0) {
                 return "0";
             }
