@@ -516,9 +516,12 @@ public class TestSQLDirectory extends SQLDirectoryTestCase {
             set.add("username");
             DocumentModelList list = session.query(filter, set);
             assertEquals(2, list.size());
-            DocumentModel docModel = list.get(0);
-            assertNotNull(docModel);
-            assertEquals("user_1", docModel.getProperty(SCHEMA, "username"));
+            Set<String> usernames = new HashSet<>();
+            for (DocumentModel docModel : list) {
+                usernames.add((String) docModel.getProperty(SCHEMA, "username"));
+            }
+            Set<String> expectedUsernames = new HashSet<>(Arrays.asList("user_1", "user_3"));
+            assertEquals(expectedUsernames, usernames);
         } finally {
             session.close();
         }
