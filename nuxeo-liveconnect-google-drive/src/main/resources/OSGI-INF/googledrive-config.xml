@@ -15,7 +15,7 @@
       <class>org.nuxeo.ecm.liveconnect.google.drive.GoogleOAuth2ServiceProvider</class>
       <tokenServerURL>https://accounts.google.com/o/oauth2/token</tokenServerURL>
       <authorizationServerURL>https://accounts.google.com/o/oauth2/auth?access_type=offline&amp;approval_prompt=force</authorizationServerURL>
-      <scope>https://www.googleapis.com/auth/drive.readonly</scope>
+      <scope>https://www.googleapis.com/auth/drive</scope>
       <scope>https://www.googleapis.com/auth/drive.apps.readonly</scope>
       <scope>email</scope>
       <clientId>${nuxeo.google.clientId:=}</clientId>
