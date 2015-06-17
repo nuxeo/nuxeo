@@ -194,7 +194,6 @@
             <property name="extendedBoundsMin">now-1m</property>
             <property name="extendedBoundsMax">now</property>
             <property name="timeZone">-02:00</property>
-            <property name="postZone">-02:30</property>
             <property name="preZone">-00:42</property>
             <!-- property name="order">count desc</property-->
           </properties>
