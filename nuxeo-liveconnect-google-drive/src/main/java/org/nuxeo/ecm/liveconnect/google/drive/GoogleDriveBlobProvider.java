@@ -112,6 +112,8 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     // ClientId for the file picker auth
     public static final String CLIENT_ID_PROP = "clientId";
 
+    public static final String DEFAULT_EXPORT_MIMETYPE = "application/pdf";
+
     protected static final ObjectParser JSON_PARSER = new JsonObjectParser(JacksonFactory.getDefaultInstance());
 
     private String serviceAccountId;
@@ -236,6 +238,9 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         } else {
             Revision revision = getRevision(fileInfo);
             String url = revision.getDownloadUrl();
+            if (StringUtils.isBlank(url)) {
+                url = revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE);
+            }
             // hack, without this we get a 401 on the returned URL...
             if (url.endsWith("&gd=true")) {
                 url = url.substring(0, url.length() - "&gd=true".length());
