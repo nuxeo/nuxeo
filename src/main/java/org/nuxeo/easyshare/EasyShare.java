@@ -151,7 +151,8 @@ public class EasyShare extends ModuleRoot {
     } else if (SHARE_DOC_TYPE.equals(documentModel.getType())) {
       return "SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND " +
           "ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' " +
-          "AND collectionMember:collectionIds/* = '" + documentModel.getId() + "'";
+          "AND collectionMember:collectionIds/* = '" + documentModel.getId() + "'" +
+          "OR ecm:parentId = '" + documentModel.getId() + "'";
     }
 
     return null;
