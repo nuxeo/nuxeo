@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.seqgen.test.contrib">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchLocal">
+    <elasticSearchLocal clusterName="nuxeoTestClusterLocal" nodeName="nuxeoTestNode" indexStoreType="memory"
+      httpEnabled="true" />
+  </extension>
+
+</component>

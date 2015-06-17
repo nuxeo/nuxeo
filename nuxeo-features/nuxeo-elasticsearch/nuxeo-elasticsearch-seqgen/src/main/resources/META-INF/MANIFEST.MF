@@ -4,5 +4,4 @@ Bundle-Name: ElasticSearch Sequence Generator
 Bundle-SymbolicName: org.nuxeo.elasticsearch.seqgen;singleton:=true
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/elasticsearch-sequence-index-contrib.xml,
- OSGI-INF/sequencegenerator-service.xml
-
+ OSGI-INF/elasticsearch-uidgen-sequencer-contrib.xml

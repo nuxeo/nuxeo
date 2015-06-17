@@ -22,11 +22,13 @@ import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
@@ -57,10 +59,13 @@ import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.audit.api.AuditLogger;
+import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -72,13 +77,14 @@ import org.nuxeo.ecm.platform.audit.service.BaseLogEntryProvider;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
 import org.nuxeo.ecm.platform.query.api.PredicateDefinition;
 import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
+import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
-import org.nuxeo.elasticsearch.seqgen.SequenceGenerator;
+import org.nuxeo.elasticsearch.seqgen.ESUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
-
 
 /**
  * Implementation of the {@link AuditBackend} interface using Elasticsearch persistence
@@ -93,6 +99,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     public static final String SEQ_NAME = "audit";
 
+    public static final String MIGRATION_FLAG_PROP = "audit.elasticsearch.migration";
+
+    public static final String MIGRATION_BATCH_SIZE_PROP = "audit.elasticsearch.migration.batchSize";
+
+    public static final String MIGRATION_DONE_EVENT = "sqlToElasticsearchMigrationDone";
+
+    public static final int MIGRATION_DEFAULT_BACTH_SIZE = 1000;
+
     protected Client esClient = null;
 
     protected static final Log log = LogFactory.getLog(ESAuditBackend.class);
@@ -106,6 +120,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             esClient = esa.getClient();
         }
         return esClient;
+    }
+
+    protected boolean isMigrationDone() {
+        AuditReader reader = Framework.getService(AuditReader.class);
+        List<LogEntry> entries = reader.queryLogs(new String[] { MIGRATION_DONE_EVENT }, null);
+        return !entries.isEmpty();
     }
 
     @Override
@@ -153,14 +173,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     }
 
     protected SearchRequestBuilder getSearchRequestBuilder() {
-        return getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH);
+        return getClient().prepareSearch(IDX_NAME).setTypes(IDX_TYPE).setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
     }
 
     @Override
     public LogEntry getLogEntryByID(long id) {
         GetResponse ret = getClient().prepareGet(IDX_NAME, IDX_TYPE, String.valueOf(id)).get();
-        if (! ret.isExists()) {
+        if (!ret.isExists()) {
             return null;
         }
         try {
@@ -196,9 +215,9 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 if (val == null) {
                     continue;
                 } else if (val instanceof Calendar) {
-                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime((Calendar) val)));
+                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime(val)));
                 } else if (val instanceof Date) {
-                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime((Date) val)));
+                    tmpl.setVariable(key, ISODateTimeFormat.dateTime().print(new DateTime(val)));
                 } else {
                     tmpl.setVariable(key, val.toString());
                 }
@@ -287,12 +306,13 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         BulkRequestBuilder bulkRequest = getClient().prepareBulk();
         JsonFactory factory = new JsonFactory();
 
-        SequenceGenerator sg = Framework.getService(SequenceGenerator.class);
+        UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
+        UIDSequencer seq = uidGeneratorService.getSequencer(ESUIDSequencer.SEQUENCER_CONTRIB);
 
         try {
 
             for (LogEntry entry : entries) {
-                entry.setId(sg.getNextId(SEQ_NAME));
+                entry.setId(seq.getNext(SEQ_NAME));
                 XContentBuilder builder = jsonBuilder();
                 JsonGenerator jsonGen = factory.createJsonGenerator(builder.stream());
                 AuditEntryJSONWriter.asJSON(jsonGen, entry);
@@ -481,6 +501,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
         Work migrationWork = new AbstractWork(MIGRATION_WORK_ID) {
 
+            private static final long serialVersionUID = 1L;
+
             @Override
             public String getTitle() {
                 return "Audit migration worker";
@@ -508,14 +530,27 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                         addLogEntries(entries);
                         pageIdx++;
                         nbEntriesMigrated += entries.size();
-                        log.info("migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
+                        log.info("Migrated " + nbEntriesMigrated + " log entries on " + nbEntriesToMigrate);
                         double dt = (System.currentTimeMillis() - t0) / 1000.0;
                         if (dt != 0) {
-                            log.info("migration speed " + (nbEntriesMigrated / dt) + " entries/s");
+                            log.info("Migration speed: " + (nbEntriesMigrated / dt) + " entries/s");
                         }
                     }
+                    log.info("Audit migration from SQL to Elasticsearch done: " + nbEntriesMigrated
+                            + " entries migrated");
+
+                    // Log technical event in audit as a flag to know if the migration has been processed at application
+                    // startup
+                    AuditLogger logger = Framework.getService(AuditLogger.class);
+                    LogEntry entry = logger.newLogEntry();
+                    entry.setCategory("NuxeoTechnicalEvent");
+                    entry.setEventId(MIGRATION_DONE_EVENT);
+                    entry.setPrincipalName(SecurityConstants.SYSTEM_USERNAME);
+                    entry.setEventDate(Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTime());
+                    addLogEntries(Collections.singletonList(entry));
                 } finally {
                     TransactionHelper.startTransaction();
+                    sourceBackend.deactivate();
                 }
             }
         };
@@ -534,6 +569,32 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         if (log.isDebugEnabled()) {
             log.debug(String.format("Search query: curl -XGET 'http://localhost:9200/%s/%s/_search?pretty' -d '%s'",
                     IDX_NAME, IDX_TYPE, request.toString()));
+        }
+    }
+
+    @Override
+    public void onApplicationStarted() {
+        if (Boolean.parseBoolean(Framework.getProperty(MIGRATION_FLAG_PROP))) {
+            if (!isMigrationDone()) {
+                log.info(String.format(
+                        "Property %s is true and migration is not done yet, processing audit migration from SQL to Elasticsearch index",
+                        MIGRATION_FLAG_PROP));
+                // Drop audit index first in case of a previous bad migration
+                ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
+                esa.dropAndInitIndex(IDX_NAME);
+                int batchSize = MIGRATION_DEFAULT_BACTH_SIZE;
+                String batchSizeProp = Framework.getProperty(MIGRATION_BATCH_SIZE_PROP);
+                if (batchSizeProp != null) {
+                    batchSize = Integer.parseInt(batchSizeProp);
+                }
+                migrate(batchSize);
+            } else {
+                log.warn(String.format(
+                        "Property %s is true but migration is already done, please set this property to false",
+                        MIGRATION_FLAG_PROP));
+            }
+        } else {
+            log.debug(String.format("Property %s is false, not processing any migration", MIGRATION_FLAG_PROP));
         }
     }
 

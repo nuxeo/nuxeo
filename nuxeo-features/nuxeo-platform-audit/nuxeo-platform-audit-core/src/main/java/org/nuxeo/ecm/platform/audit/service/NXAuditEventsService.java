@@ -190,4 +190,11 @@ public class NXAuditEventsService extends DefaultComponent {
         return backend;
     }
 
+    @Override
+    public void applicationStarted(ComponentContext context) {
+        if (backend != null) {
+            backend.onApplicationStarted();
+        }
+    }
+
 }

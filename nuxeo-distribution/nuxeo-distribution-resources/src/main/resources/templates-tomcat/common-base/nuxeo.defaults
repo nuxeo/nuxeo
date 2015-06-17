@@ -85,3 +85,9 @@ elasticsearch.indexing.clearCompletedAfterSeconds=90
 elasticsearch.adminCenter.displayClusterInfo=false
 # Reindex the repository content on startup if the index is empty
 elastcisearch.reindex.onStartup=false
+# Use Elasticsearch as a backend for audit logs
+audit.elasticsearch.enabled=false
+# Migrate audit logs from SQL storage to Elasticsearch indexing, requires audit.elasticsearch.enabled=true
+audit.elasticsearch.migration=false
+# Batch size for audit logs migration, only useful with audit.elasticsearch.migration=true
+audit.elasticsearch.migration.batchSize=1000

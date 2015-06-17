@@ -80,6 +80,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public void addLogEntries(final List<LogEntry> entries) {
         try {
             getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                @Override
                 public void runWith(EntityManager em) {
                     addLogEntries(em, entries);
                 }
@@ -97,6 +98,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public List<LogEntry> getLogEntriesFor(final String uuid) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                @Override
                 public List<LogEntry> runWith(EntityManager em) {
                     return getLogEntriesFor(em, uuid);
                 }
@@ -115,6 +117,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
             final boolean doDefaultSort) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                @Override
                 public List<LogEntry> runWith(EntityManager em) {
                     return getLogEntriesFor(em, uuid, filterMap, doDefaultSort);
                 }
@@ -133,6 +136,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public LogEntry getLogEntryByID(final long id) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<LogEntry>() {
+                @Override
                 public LogEntry runWith(EntityManager em) {
                     return getLogEntryByID(em, id);
                 }
@@ -150,6 +154,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                @Override
                 public List<LogEntry> runWith(EntityManager em) {
                     return nativeQueryLogs(em, whereClause, pageNb, pageSize);
                 }
@@ -167,6 +172,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public List<?> nativeQuery(final String query, final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
+                @Override
                 public List<?> runWith(EntityManager em) {
                     return nativeQuery(em, query, pageNb, pageSize);
                 }
@@ -185,6 +191,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
             final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<?>>() {
+                @Override
                 public List<?> runWith(EntityManager em) {
                     return nativeQuery(em, query, params, pageNb, pageSize);
                 }
@@ -202,6 +209,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                @Override
                 public List<LogEntry> runWith(EntityManager em) {
                     return queryLogs(em, eventIds, dateRange);
                 }
@@ -220,6 +228,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
             final String path, final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                @Override
                 public List<LogEntry> runWith(EntityManager em) {
                     return queryLogsByPage(em, eventIds, dateRange, category, path, pageNb, pageSize);
                 }
@@ -244,6 +253,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
             final String path, final int pageNb, final int pageSize) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<LogEntry>>() {
+                @Override
                 public List<LogEntry> runWith(EntityManager em) {
                     return queryLogsByPage(em, eventIds, limit, category, path, pageNb, pageSize);
                 }
@@ -262,6 +272,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public long syncLogCreationEntries(final String repoId, final String path, final Boolean recurs) {
         try {
             return getOrCreatePersistenceProvider().run(true, new RunCallback<Long>() {
+                @Override
                 public Long runWith(EntityManager em) {
                     return syncLogCreationEntries(em, repoId, path, recurs);
                 }
@@ -279,6 +290,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public void addLogEntry(final LogEntry entry) {
         try {
             getOrCreatePersistenceProvider().run(true, new RunCallback<Integer>() {
+                @Override
                 public Integer runWith(EntityManager em) {
                     addLogEntry(em, entry);
                     return 0;
@@ -297,6 +309,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public Long getEventsCount(final String eventId) {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<Long>() {
+                @Override
                 public Long runWith(EntityManager em) {
                     return getEventsCount(em, eventId);
                 }
@@ -314,6 +327,7 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     public List<String> getLoggedEventIds() {
         try {
             return getOrCreatePersistenceProvider().run(false, new RunCallback<List<String>>() {
+                @Override
                 public List<String> runWith(EntityManager em) {
                     return getLoggedEventIds(em);
                 }
@@ -328,9 +342,11 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         return LogEntryProvider.createProvider(em).findEventIds();
     }
 
+    @Override
     public void logEvent(final Event event) {
         try {
             getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                @Override
                 public void runWith(EntityManager em) {
                     logEvent(em, event);
                 }
@@ -340,9 +356,11 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
         }
     }
 
+    @Override
     public void logEvents(final EventBundle eventBundle) {
         try {
             getOrCreatePersistenceProvider().run(true, new RunVoid() {
+                @Override
                 public void runWith(EntityManager em) {
                     logEvents(em, eventBundle);
                 }
@@ -388,6 +406,11 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
             String path, int pageNb, int pageSize) {
         String[] categories = { category };
         return queryLogsByPage(em, eventIds, limit, categories, path, pageNb, pageSize);
+    }
+
+    @Override
+    public void onApplicationStarted() {
+        // Nothing to do
     }
 
 }
