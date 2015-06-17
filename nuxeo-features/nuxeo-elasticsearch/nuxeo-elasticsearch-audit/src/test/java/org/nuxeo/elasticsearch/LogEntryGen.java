@@ -23,7 +23,7 @@ public class LogEntryGen {
 
     protected static Map<String, ExtendedInfo> createExtendedInfos() {
         Map<String, ExtendedInfo> infos = new HashMap<String, ExtendedInfo>();
-        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo(new Long(1));
+        ExtendedInfo info = ExtendedInfoImpl.createExtendedInfo((long) 1);
         infos.put("id", info);
         return infos;
     }

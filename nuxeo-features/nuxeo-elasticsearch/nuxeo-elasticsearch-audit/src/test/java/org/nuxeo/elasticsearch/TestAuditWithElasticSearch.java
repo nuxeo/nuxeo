@@ -117,7 +117,6 @@ public class TestAuditWithElasticSearch {
     public void shouldSupportMultiCriteriaQueries() throws Exception {
 
         LogEntryGen.generate("mydoc", "evt", "cat", 9);
-        ;
 
         AuditReader reader = Framework.getLocalService(AuditReader.class);
 

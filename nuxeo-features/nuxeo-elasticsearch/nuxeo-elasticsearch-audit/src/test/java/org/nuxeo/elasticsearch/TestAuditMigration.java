@@ -52,6 +52,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:nxaudit-ds.xml", "org.nuxeo.elasticsearch.audit:nxuidsequencer-ds.xml",
         "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
+@SuppressWarnings("unchecked")
 public class TestAuditMigration {
 
     protected @Inject CoreSession session;

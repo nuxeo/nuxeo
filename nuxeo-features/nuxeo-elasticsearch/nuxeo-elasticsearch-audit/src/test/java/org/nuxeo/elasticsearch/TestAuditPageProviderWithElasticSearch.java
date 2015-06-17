@@ -55,6 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:es-audit-pageprovider-test-contrib.xml" })
+@SuppressWarnings("unchecked")
 public class TestAuditPageProviderWithElasticSearch {
 
     protected @Inject CoreSession session;

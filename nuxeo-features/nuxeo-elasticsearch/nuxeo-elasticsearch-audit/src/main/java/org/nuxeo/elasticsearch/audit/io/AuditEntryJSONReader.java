@@ -64,7 +64,6 @@ public class AuditEntryJSONReader {
                 } else if ("extended".equals(key)) {
                     entry.setExtendedInfos(readExtendedInfo(entry, jp));
                 }
-                ;
             }
             tok = jp.nextToken();
         }

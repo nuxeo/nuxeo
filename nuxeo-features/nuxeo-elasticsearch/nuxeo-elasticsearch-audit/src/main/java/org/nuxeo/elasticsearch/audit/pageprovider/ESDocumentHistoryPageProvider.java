@@ -67,8 +67,8 @@ public class ESDocumentHistoryPageProvider extends ESAuditPageProvider {
                 log.error(this.getClass().getSimpleName()
                         + " Expect only one parameter the document uuid, unexpected behavior may occur");
             }
-            CoreSession session = null;
-            String uuid = null;
+            CoreSession session;
+            String uuid;
             if (params[0] instanceof DocumentModel) {
                 DocumentModel doc = (DocumentModel) params[0];
                 uuid = doc.getId();

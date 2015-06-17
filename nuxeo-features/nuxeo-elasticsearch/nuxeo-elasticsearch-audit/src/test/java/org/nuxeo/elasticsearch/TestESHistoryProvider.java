@@ -41,6 +41,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features({ RepositoryElasticSearchFeature.class })
 @LocalDeploy({ "org.nuxeo.elasticsearch.audit:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.audit:audit-test-contrib.xml" })
+@SuppressWarnings("unchecked")
 public class TestESHistoryProvider {
 
     protected static final Calendar testDate = Calendar.getInstance();
