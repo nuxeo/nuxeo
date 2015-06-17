@@ -116,7 +116,7 @@ public class EasyShare extends ModuleRoot {
             getAutomationService().run(ctx, "Audit.Log", params);
 
             return getView("folderList")
-                .arg("isFolder", document.isFolder())
+                .arg("isFolder", document.isFolder() && !SHARE_DOC_TYPE.equals(document.getType()))  //Backward compatibility to non-collection
                 .arg("currentPageIndex", paginable.getCurrentPageIndex())
                 .arg("numberOfPages", paginable.getNumberOfPages())
                 .arg("docShare", docShare)
@@ -140,7 +140,8 @@ public class EasyShare extends ModuleRoot {
 
   protected static String buildQuery(DocumentModel documentModel) {
 
-    if (documentModel.isFolder()) {
+	  //Backward compatibility to non-collection
+    if (documentModel.isFolder() && !SHARE_DOC_TYPE.equals(documentModel.getType())) {
       return " SELECT * FROM Document WHERE ecm:parentId = '" + documentModel.getId() + "' AND " +
           "ecm:mixinType != 'HiddenInNavigation' AND " +
           "ecm:mixinType != 'NotCollectionMember' AND " +
