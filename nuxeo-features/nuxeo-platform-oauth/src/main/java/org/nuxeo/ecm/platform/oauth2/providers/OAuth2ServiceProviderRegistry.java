@@ -25,6 +25,6 @@ public interface OAuth2ServiceProviderRegistry {
 
     OAuth2ServiceProvider getProvider(String serviceName);
 
-    OAuth2ServiceProvider addProvider(String serviceName, String tokenServerURL, String authorizationServerURL,
+    OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL, String authorizationServerURL,
             String clientId, String clientSecret, List<String> scopes);
 }

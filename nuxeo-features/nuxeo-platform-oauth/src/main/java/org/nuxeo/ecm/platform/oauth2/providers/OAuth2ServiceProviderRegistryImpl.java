@@ -76,7 +76,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     }
 
     @Override
-    public OAuth2ServiceProvider addProvider(String serviceName, String tokenServerURL,
+    public OAuth2ServiceProvider addProvider(String serviceName, String description, String tokenServerURL,
             String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
@@ -87,6 +87,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
             DocumentModel entry = session.createEntry(creationEntry);
             entry.setProperty(SCHEMA, "serviceName", serviceName);
+            entry.setProperty(SCHEMA, "description", description);
             entry.setProperty(SCHEMA, "authorizationServerURL", authorizationServerURL);
             entry.setProperty(SCHEMA, "tokenServerURL", tokenServerURL);
             entry.setProperty(SCHEMA, "clientId", clientId);
@@ -169,7 +170,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     protected void registerCustomProviders() {
         for (OAuth2ServiceProviderDescriptor provider : registry.getContribs()) {
             if (getProvider(provider.getName()) == null) {
-                addProvider(provider.getName(), provider.getTokenServerURL(),
+                addProvider(provider.getName(), provider.getDescription(), provider.getTokenServerURL(),
                     provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
                     Arrays.asList(provider.getScopes()));
             } else {
