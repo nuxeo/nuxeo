@@ -445,7 +445,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         return digest;
     }
 
-    protected boolean isDigestChanged(SimpleManagedBlob blob, File file) {
+    protected boolean isDigestChanged(Blob blob, File file) {
         final String digest = blob.getDigest();
         String md5CheckSum = file.getMd5Checksum();
         String eTag = file.getEtag();
@@ -454,6 +454,14 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         } else {
             return eTag != null && !eTag.equals(digest);
         }
+    }
+
+    protected boolean isFilenameChanged(Blob blob, File file) {
+        return !file.getTitle().replace("/", "-").equals(blob.getFilename());
+    }
+
+    protected boolean isChanged(Blob blob, File file) {
+        return isFilenameChanged(blob, file) || isDigestChanged(blob, file);
     }
 
     /** Adds the prefix to the key. */
@@ -617,8 +625,8 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
                 continue;
             }
             try {
-                File remote = getPartialFile(fileInfo.user, fileInfo.fileId, "id", "etag", "md5Checksum");
-                if (isDigestChanged(blob, remote)) {
+                File remote = getPartialFile(fileInfo.user, fileInfo.fileId, "id", "title", "etag", "md5Checksum");
+                if (isChanged(blob, remote)) {
                     doc.setPropertyValue("content", (SimpleManagedBlob) getBlob(getFileInfo(blob)));
                     String cacheKey = "file_" + fileInfo.fileId;
                     getCache().invalidate(cacheKey);
