@@ -18,7 +18,7 @@
           <h:commandLink action="#{serverActions.selectRepository(core.name)}">
             <h:graphicImage value="/img/core_servers.png" alt="server" />
             <br/>
-            <h:outputText value="#{core.label} (#{core.name})" />
+            <h:outputText value="#{messages[core.label]} (#{core.name})" />
           </h:commandLink>
         </div>
       </nxu:dataList>
