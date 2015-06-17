@@ -64,7 +64,7 @@ import org.nuxeo.runtime.api.Framework;
  * Imports models and samples from resources or filesystem via CoreIO.
  * <p>
  * The association between template and document is translated during the IO import (because UUIDs change).
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class ModelImporter {
@@ -72,6 +72,8 @@ public class ModelImporter {
     protected final static Log log = LogFactory.getLog(ModelImporter.class);
 
     private static final String TEMPLATE_SAMPLE_INIT_EVENT = "TemplateSampleInit";
+
+    private static final String[] IMPORT_ALREADY_DONE_EVENTS = { TEMPLATE_SAMPLE_INIT_EVENT };
 
     public static final String EXAMPLES_ROOT = "examples";
 
@@ -150,17 +152,9 @@ public class ModelImporter {
             return false;
         }
 
-        AuditReader reader = Framework.getLocalService(AuditReader.class);
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("eventId", TEMPLATE_SAMPLE_INIT_EVENT);
-        @SuppressWarnings("unchecked")
-        List<Long> res = (List<Long>) reader.nativeQuery(
-                "select count(log.id) from LogEntry log where log.eventId=:eventId", params, 1, 20);
-        long resultsCount = res.get(0).longValue();
-        if (resultsCount == 0) {
-            return false;
-        }
-        return true;
+        AuditReader reader = Framework.getService(AuditReader.class);
+        List<LogEntry> entries = reader.queryLogs(IMPORT_ALREADY_DONE_EVENTS, null);
+        return !entries.isEmpty();
     }
 
     protected void markImportDone() {
