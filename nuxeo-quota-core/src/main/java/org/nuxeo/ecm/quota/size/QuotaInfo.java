@@ -70,4 +70,24 @@ public class QuotaInfo {
     public QuotaDisplayValue getLiveSize() {
         return liveSize;
     }
+
+    /**
+     * Returns the string representation of this quota informations.
+     * to = total size in bytes
+     * i  = inner size in bytes
+     * v  = versions' size in bytes
+     * l  = live size in bytes
+     * tr = trash size in bytes
+     * m  = maximum quota in bytes
+     */
+    @Override
+    public String toString() {
+         return getClass().getSimpleName() + String.format("(to:%d i:%d v:%d l:%d tr:%d m:%d)", 
+                 totalSize.getValue(), 
+                 innerSize.getValue(), 
+                 sizeVersions.getValue(), 
+                 liveSize.getValue(), 
+                 sizeTrash.getValue(), 
+                 maxQuota.getValue());
+    }
 }
