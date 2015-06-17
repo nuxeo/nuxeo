@@ -33,7 +33,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.poi.hslf.model.ShapeTypes;
 import org.elasticsearch.common.geo.GeoPoint;
 import org.elasticsearch.common.geo.GeoUtils;
 import org.elasticsearch.common.geo.ShapeRelation;
@@ -348,9 +347,8 @@ final public class NxqlQueryConverter {
     }
 
     private static GeoPoint parseGeoPointString(String value) {
-        XContentBuilder content = null;
         try {
-            content = JsonXContent.contentBuilder();
+            XContentBuilder content = JsonXContent.contentBuilder();
             content.value(value);
             XContentParser parser = JsonXContent.jsonXContent.createParser(content.bytes());
             parser.nextToken();
@@ -402,14 +400,14 @@ final public class NxqlQueryConverter {
             ret = QueryBuilders.wildcardQuery(name, (String) value);
             break;
         case "common":
-            CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTerms(name, value);
+            CommonTermsQueryBuilder commonQuery = QueryBuilders.commonTermsQuery(name, value);
             if (hint.analyzer != null) {
                 commonQuery.analyzer(hint.analyzer);
             }
             ret = commonQuery;
             break;
         case "query_string":
-            QueryStringQueryBuilder queryString = QueryBuilders.queryString((String) value);
+            QueryStringQueryBuilder queryString = QueryBuilders.queryStringQuery((String) value);
             if (hint.index != null) {
                 for (String index : hint.getIndex()) {
                     queryString.field(index);
@@ -423,7 +421,7 @@ final public class NxqlQueryConverter {
             ret = queryString;
             break;
         case "simple_query_string":
-            SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryString((String) value);
+            SimpleQueryStringBuilder querySimpleString = QueryBuilders.simpleQueryStringQuery((String) value);
             if (hint.index != null) {
                 for (String index : hint.getIndex()) {
                     querySimpleString.field(index);
@@ -496,7 +494,8 @@ final public class NxqlQueryConverter {
             defaultOperator = SimpleQueryStringBuilder.Operator.AND;
         }
         String analyzer = (hint != null && hint.analyzer != null) ? hint.analyzer : "fulltext";
-        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryString(queryString).defaultOperator(defaultOperator).analyzer(
+        SimpleQueryStringBuilder query = QueryBuilders.simpleQueryStringQuery(queryString).defaultOperator
+                (defaultOperator).analyzer(
                 analyzer);
         if (hint != null && hint.index != null) {
             for (String index : hint.getIndex()) {

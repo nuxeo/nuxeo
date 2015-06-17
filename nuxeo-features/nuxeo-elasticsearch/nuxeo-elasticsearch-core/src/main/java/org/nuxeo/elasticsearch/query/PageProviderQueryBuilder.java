@@ -53,7 +53,7 @@ public class PageProviderQueryBuilder {
             }
         }
         if (useNativeQuery) {
-            return QueryBuilders.queryString(query);
+            return QueryBuilders.queryStringQuery(query);
         } else {
 
             return NxqlQueryConverter.toESQueryBuilder(query);
@@ -75,7 +75,7 @@ public class PageProviderQueryBuilder {
             }
             if (useNativeQuery) {
                 // Fixed part handled as query_string
-                eb.add(QueryBuilders.queryString(fixedPart));
+                eb.add(QueryBuilders.queryStringQuery(fixedPart));
             } else {
                 eb.add(NxqlQueryConverter.toESQueryBuilder(fixedPart));
             }

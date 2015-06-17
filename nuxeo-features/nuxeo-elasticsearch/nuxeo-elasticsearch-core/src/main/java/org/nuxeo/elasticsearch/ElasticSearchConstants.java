@@ -43,8 +43,6 @@ final public class ElasticSearchConstants {
 
     public static final String AGG_PRE_ZONE_PROP = "preZone";
 
-    public static final String AGG_POST_ZONE_PROP = "postZone";
-
     public static final String AGG_ORDER_COUNT_DESC = "count desc";
 
     public static final String AGG_ORDER_COUNT_ASC = "count asc";

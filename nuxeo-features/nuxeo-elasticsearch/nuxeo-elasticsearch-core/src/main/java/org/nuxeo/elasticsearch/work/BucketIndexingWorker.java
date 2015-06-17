@@ -60,8 +60,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     @Override
     public String getTitle() {
-        String title = " ElasticSearch bucket indexer size " + documentCount;
-        return title;
+        return " ElasticSearch bucket indexer size " + documentCount;
     }
 
     @Override

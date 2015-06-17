@@ -26,7 +26,6 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_COUNT_DES
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_ASC;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_KEY_DESC;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_ORDER_PROP;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_POST_ZONE_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_PRE_ZONE_PROP;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.AGG_TIME_ZONE_PROP;
 
@@ -97,13 +96,10 @@ public class DateHistogramAggregate extends AggregateEsBase<BucketRangeDate> {
             ret.extendedBounds(props.get(AGG_EXTENDED_BOUND_MIN_PROP), props.get(AGG_EXTENDED_BOUND_MAX_PROP));
         }
         if (props.containsKey(AGG_TIME_ZONE_PROP)) {
-            ret.preZone(props.get(AGG_TIME_ZONE_PROP));
+            ret.timeZone(props.get(AGG_TIME_ZONE_PROP));
         }
         if (props.containsKey(AGG_PRE_ZONE_PROP)) {
-            ret.preZone(props.get(AGG_PRE_ZONE_PROP));
-        }
-        if (props.containsKey(AGG_POST_ZONE_PROP)) {
-            ret.postZone(props.get(AGG_POST_ZONE_PROP));
+            ret.timeZone(props.get(AGG_PRE_ZONE_PROP));
         }
         if (props.containsKey(AGG_FORMAT_PROP)) {
             ret.format(props.get(AGG_FORMAT_PROP));

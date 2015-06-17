@@ -17,8 +17,6 @@
 
 package org.nuxeo.elasticsearch.test;
 
-import static org.junit.Assume.assumeTrue;
-
 import javax.inject.Inject;
 
 import org.junit.Assert;

@@ -99,16 +99,19 @@ public class TestNxqlConversion {
 
         SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.queryString(" dc\\:nature:\"Nature1\" AND dc\\:title:\"File1\"")).setFrom(0).setSize(60).execute().actionGet();
+                QueryBuilders.queryStringQuery(" dc\\:nature:\"Nature1\" AND dc\\:title:\"File1\"")).setFrom(0).setSize
+                (60).execute().actionGet();
         Assert.assertEquals(1, searchResponse.getHits().getTotalHits());
 
         searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
                 SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.queryString(" dc\\:nature:\"Nature2\" AND dc\\:title:\"File1\"")).setFrom(0).setSize(60).execute().actionGet();
+                QueryBuilders.queryStringQuery(" dc\\:nature:\"Nature2\" AND dc\\:title:\"File1\"")).setFrom(0).setSize
+                (60).execute().actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
         searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.queryString(" NOT dc\\:nature:\"Nature2\"")).setFrom(
+                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.queryStringQuery(" NOT " +
+                "dc\\:nature:\"Nature2\"")).setFrom(
                 0).setSize(60).execute().actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
