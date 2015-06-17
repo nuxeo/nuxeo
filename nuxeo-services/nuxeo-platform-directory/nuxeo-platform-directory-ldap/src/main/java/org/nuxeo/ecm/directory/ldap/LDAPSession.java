@@ -941,6 +941,8 @@ public class LDAPSession extends BaseSession implements EntrySource {
                             throw new DirectoryException(e);
                         }
                     }
+                    referencedIds = new ArrayList<>(referencedIds);
+                    Collections.sort(referencedIds);
                     fieldMap.put(fieldName, referencedIds);
                 }
             } else {
