@@ -156,10 +156,12 @@ public class NuxeoRequestControllerFilter implements Filter {
         if (useSync) {
             sessionSynched = simpleSyncOnSession(httpRequest);
         }
-        boolean txStarted = false;
+        boolean txStarted = TransactionHelper.isTransactionActive();
         try {
             if (useTx) {
-                txStarted = ServletHelper.startTransaction(httpRequest);
+                if (!txStarted) {
+                    txStarted = ServletHelper.startTransaction(httpRequest);
+                }
                 if (txStarted) {
                     if (config.needTransactionBuffered()) {
                         response = new BufferingHttpServletResponse(httpResponse);
