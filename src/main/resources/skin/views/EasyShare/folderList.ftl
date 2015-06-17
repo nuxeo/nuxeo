@@ -1,36 +1,52 @@
 <@extends src="base.ftl">
 
-<@block name="content">
+  <@block name="content">
 
-<div>
-  <header>
-  <!--
-    <button><i class="icon-download"></i>Download</button>
-  -->
-    <h2>${docFolder.title}</h2>
-    <detail>Shared by <a title="email address" href="mailto:${docFolder.easysharefolder.contactEmail}">
-    ${docFolder.easysharefolder.contactEmail}</a></detail>
-  </header>
-  <content>
-    <div class="comment">
-      <i class="icon-user"></i>
-      <blockquote>${docFolder.easysharefolder.shareComment}</blockquote>
-    </div>
-    <div class="shared-items">
-    <#list docList as doc>
-    
-      <a class="item" title="document name" href="${docFolder.id}/${doc.id}/${This.getFileName(doc)}">
-        <span class="document">
-          <i class="icon-file"></i>${doc.title} - ${This.getFileName(doc)}
-        </span>
-        <i class="icon-download"></i>
-      </a>
-    </#list>
-    <#if !docList>
-      <div class="empty"><i class="icon-unhappy"></i>There is no files in this folder.</div>
-    </#if>
-  </content>
-</div>
+  <div>
 
-</@block>
+    <#include "includes/header.ftl">
+
+    <content>
+
+      <#if docShare.dublincore.description?length &gt; 0 >
+        <div class="comment">
+          <i class="icon-user"></i>
+          <blockquote>${docShare.dublincore.description}</blockquote>
+        </div>
+      </#if>
+
+      <#if isFolder>
+          <a class="action_bar" title="${docShare.title}" href="${basePath}/easyshare/${docShare.id}"> ${Context.getMessage("easyshare.label.backToTheRoot")}</a>
+      </#if>
+
+      <div class="shared-items">
+        <#list docList as doc>
+          <#assign filename=This.getFileName(doc)>
+
+          <#if doc.isFolder>
+          <a class="item" title="${filename}" href="${basePath}/easyshare/${docShare.id}/${doc.id}">
+            <span class="document">
+            <i class="icon-folder"></i>${doc.title}
+            </span>
+          <#else>
+          <a class="item" title="${filename}" target="_blank" href="${basePath}/easyshare/${docShare.id}/${doc.id}/${filename}">
+            <span class="document">
+            <i class="icon-file"></i>${doc.title}<#if filename != doc.title> - ${filename}</#if>
+          </span>
+            <i class="icon-download"></i>
+          </#if>
+        </a>
+        </#list>
+
+        <#if !docList>
+          <div class="empty"><i class="icon-unhappy"></i>${Context.getMessage("easyshare.label.nofiles")}</div>
+        </#if>
+
+    </content>
+
+    <#include "includes/pagination.ftl">
+
+  </div>
+
+  </@block>
 </@extends>

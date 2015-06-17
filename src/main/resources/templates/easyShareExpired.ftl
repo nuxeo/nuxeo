@@ -1,0 +1,1 @@
+${ip} attempts to access EasyShare folder ${docShare.name}
