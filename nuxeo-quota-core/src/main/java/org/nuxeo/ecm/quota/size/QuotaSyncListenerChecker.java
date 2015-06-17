@@ -101,6 +101,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             } finally {
                 res.close();
             }
+            removeFacet(unrestrictedSession, unrestrictedSession.getRootDocument().getId());
+            unrestrictedSession.save();
             try {
                 long idx = 0;
                 res = unrestrictedSession.queryAndFetch(query, "NXQL");
@@ -130,6 +132,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " already up to date");
             }
+            QuotaAware quotaDoc = target.getAdapter(QuotaAware.class);
+            quotaDoc.resetInfos(true);
+            if (log.isDebugEnabled()) {
+                log.debug(target.getPathAsString() + " reset to " + quotaDoc.getQuotaInfo());
+            }
             target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             target.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
             target.putContextData(DublinCoreListener.DISABLE_DUBLINCORE_LISTENER, true);
@@ -143,8 +150,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     protected void computeSizeOnDocument(CoreSession unrestrictedSession, String uuid, QuotaComputerProcessor processor)
             throws ClientException {
-        DocumentModel target = unrestrictedSession.getDocument(new IdRef(uuid));
         IdRef ref = new IdRef(uuid);
+        DocumentModel target = unrestrictedSession.getDocument(ref);
         if (log.isTraceEnabled()) {
             log.trace("process Quota initial computation on uuid " + uuid);
         }
@@ -153,6 +160,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 log.trace("doc with uuid " + uuid + " started update");
             }
             SizeUpdateEventContext quotaCtx = updateEventToProcessNewDocument(unrestrictedSession, target);
+            quotaCtx.setProperty(SizeUpdateEventContext.SOURCE_EVENT_PROPERTY_KEY, DOCUMENT_UPDATE_INITIAL_STATISTICS);
             quotaCtx.getProperties().put(SizeUpdateEventContext._UPDATE_TRASH_SIZE,
                     DELETED_STATE.equals(target.getCurrentLifeCycleState()));
             processor.processQuotaComputation(quotaCtx);

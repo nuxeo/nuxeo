@@ -92,7 +92,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             public void run() throws ClientException {
                 List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
                 for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
-                    log.debug("Calling updateStatistics on " + updater.getName());
+                    log.debug("Calling updateStatistics of " + updater.getName() + " FOR " + event.getName() + " ON " + docCtx.getSourceDocument().getPathAsString());
                     updater.updateStatistics(session, docCtx, event);
                 }
             }

@@ -111,7 +111,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
 
-        log.debug("compute Quota on " + sourceDocument.getPathAsString() + " and parents");
+        log.debug(sourceEvent + "/ compute Quota on " + sourceDocument.getPathAsString() + " and parents");
 
         if (ABOUT_TO_REMOVE.equals(sourceEvent) || ABOUT_TO_REMOVE_VERSION.equals(sourceEvent)) {
             // use the store list of parentIds
@@ -226,11 +226,16 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 // are also moved
                 processOnParents(parents, quotaCtx.getBlobDelta(), 0L, quotaCtx.getVersionsSize(), true, false, true);
             } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(), quotaCtx.getTrashSize(),
-                        quotaCtx.getVersionsSize(), true,
-                        quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
-                                && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
-                        true);
+                QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
+                if (quotaDoc.getInnerSize() > 0) {
+                    processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(), quotaCtx.getTrashSize(),
+                            quotaCtx.getVersionsSize(), true,
+                            quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
+                            && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
+                            true);
+                } else {
+                    log.debug("No inner size, parents not updated");
+                }
             } else if (DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobSize(), 0, true, false);
             } else {
@@ -257,20 +262,33 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         for (DocumentModel parent : parents) {
             // process Quota on target Document
             QuotaAware quotaDoc = parent.getAdapter(QuotaAware.class);
+            boolean toSave = false;
             if (quotaDoc == null) {
                 log.debug("   add Quota Facet on parent " + parent.getPathAsString());
                 quotaDoc = QuotaAwareDocumentFactory.make(parent, false);
+                toSave = true;
             } else {
-                log.debug("   update Quota Facet on parent " + parent.getPathAsString());
+                if (log.isDebugEnabled()) {
+                    log.debug("   update Quota Facet on parent " + parent.getPathAsString() + " (" + quotaDoc.getQuotaInfo() + ")");
+                }
             }
             if (total) {
-                quotaDoc.addTotalSize(deltaTotal, true);
+                quotaDoc.addTotalSize(deltaTotal, false);
+                toSave = true;
             }
             if (trashOp) {
-                quotaDoc.addTrashSize(deltaTotal, true);
+                quotaDoc.addTrashSize(deltaTotal, false);
+                toSave = true;
             }
             if (versionsOp) {
-                quotaDoc.addVersionsSize(deltaVersions, true);
+                quotaDoc.addVersionsSize(deltaVersions, false);
+                toSave = true;
+            }
+            if (toSave) {
+                quotaDoc.save(true);
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("   ==> " + parent.getPathAsString() + " (" + quotaDoc.getQuotaInfo() + ")");
             }
         }
     }
