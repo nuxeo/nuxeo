@@ -7,6 +7,7 @@
     <package id="nuxeo-spreadsheet" label="Spreadsheet (GRID)" color="#ff736e" textcolor="#FFF" shortlabel="GRID" desc="Spreadsheet"/>
     <package id="nuxeo-web-mobile" label="Mobile (MOB)" color="#faac05" textcolor="#FFF" shortlabel="MOB" desc="Mobile"/>
     <package id="nuxeo-template-rendering" label="Template Rendering (TMPL)" color="#c3c7c9" textcolor="#FFF" shortlabel="TMPL" desc="Template Rendering"/>
+    <package id="nuxeo-liveconnect" label="LiveConnect (LIVE)" color="#ff452a" textcolor="#FFF" shortlabel="LIVE" desc="Live Connect for Cloud Services"/>
   </packageDefinitions>
   <install>
     <packageOptions>
@@ -17,10 +18,11 @@
         <package ref="nuxeo-spreadsheet" exclusive="false" />
         <package ref="nuxeo-web-mobile" exclusive="false" />
         <package ref="nuxeo-template-rendering" exclusive="false" />
+        <package ref="nuxeo-liveconnect" exclusive="false" />
       </package>
     </packageOptions>
   </install>
   <presets>
-    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile</preset>
+    <preset id="nuxeo-cap-preset" label="Nuxeo CAP Preset">nuxeo-cap,nuxeo-dam,nuxeo-drive,nuxeo-web-mobile,nuxeo-liveconnect</preset>
   </presets>
 </packages>
