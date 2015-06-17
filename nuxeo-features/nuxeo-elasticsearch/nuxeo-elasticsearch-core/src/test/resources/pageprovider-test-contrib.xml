@@ -272,6 +272,16 @@
       <sort ascending="true" column="dc:title"/>
       <pageSize>50</pageSize>
     </coreQueryPageProvider>
+
+    <genericPageProvider name="INVALID_PP"
+                         class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+      <pattern>
+        SELECT * FROM Document WHERE
+      </pattern>
+      <sort ascending="true" column="dc:title"/>
+      <pageSize>50</pageSize>
+    </genericPageProvider>
+
   </extension>
 
 

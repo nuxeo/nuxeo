@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.Aggregate;
 import org.nuxeo.ecm.platform.query.api.AggregateDefinition;
@@ -71,10 +72,13 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         if (currentPageDocuments != null) {
             return currentPageDocuments;
         }
+        error = null;
+        errorMessage = null;
         if (log.isDebugEnabled()) {
             log.debug(String.format("Perform query for provider '%s': with pageSize=%d, offset=%d", getName(),
                     getMinMaxPageSize(), getCurrentPageOffset()));
         }
+        currentPageDocuments = new ArrayList<DocumentModel>();
         // Build the ES query
         QueryBuilder query = makeQueryBuilder();
         SortInfo[] sortArray = null;
@@ -98,8 +102,10 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             }
             setResultsCount(dmList.totalSize());
             currentPageDocuments = dmList;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        } catch (ClientException | QueryParseException e) {
+            error = e;
+            errorMessage = e.getMessage();
+            log.warn(e.getMessage(), e);
         }
         return currentPageDocuments;
     }

@@ -51,6 +51,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 @SuppressWarnings("unchecked")
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -275,6 +278,25 @@ public class TestPageProvider {
         Assert.assertEquals(pageSize, p.size());
         Assert.assertEquals(2, pp.getNumberOfPages());
         DocumentModel doc = p.get(0);
+    }
+
+    @Test
+    public void ICanUseInvalidPageProvider() throws Exception {
+        PageProviderService pps = Framework.getService(PageProviderService.class);
+        Assert.assertNotNull(pps);
+
+        PageProviderDefinition ppdef = pps.getPageProviderDefinition("INVALID_PP");
+        Assert.assertNotNull(ppdef);
+        HashMap<String, Serializable> props = new HashMap<>();
+        props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+        PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, (long) 0, (long) 0, props);
+        assertNotNull(pp);
+        List<?> p = pp.getCurrentPage();
+        assertNotNull(p);
+        assertEquals(0, p.size());
+        assertEquals(
+                "Syntax error: Invalid token <ORDER BY> at offset 29",
+                pp.getErrorMessage());
     }
 
     @Test
