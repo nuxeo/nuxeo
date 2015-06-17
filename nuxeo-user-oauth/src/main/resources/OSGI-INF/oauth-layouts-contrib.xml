@@ -96,7 +96,7 @@
 
       <widget name="id" type="text">
         <labels>
-          <label mode="any">Id</label>
+          <label mode="any">label.oauth.token.id</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -108,7 +108,7 @@
       </widget>
       <widget name="serviceName" type="text">
         <labels>
-          <label mode="any">Service Name</label>
+          <label mode="any">label.oauth.token.serviceName</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -117,7 +117,7 @@
       </widget>
       <widget name="serviceLogin" type="text">
         <labels>
-          <label mode="any">Service Login</label>
+          <label mode="any">label.oauth.token.serviceLogin</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -126,7 +126,7 @@
       </widget>
       <widget name="creationDate" type="datetime">
         <labels>
-          <label mode="any">Creation Date</label>
+          <label mode="any">label.oauth.token.creationDate</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -135,7 +135,7 @@
       </widget>
       <widget name="isShared" type="checkbox">
         <labels>
-          <label mode="any">Shared Token</label>
+          <label mode="any">label.oauth.token.isShared</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -144,7 +144,7 @@
       </widget>
       <widget name="sharedWith" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">User/Groups allowed</label>
+          <label mode="any">label.oauth.token.sharedWith</label>
         </labels>
         <fields>
           <field>#{oauthUserTokens.sharedWith}</field>

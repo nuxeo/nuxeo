@@ -17,11 +17,13 @@
   <c:if test="#{oauthUserTokens.editableEntry == null}">
     <div style="margin-top: 10px">
       <nxu:repeat var="entry" value="#{oauth2ServiceProvidersActions.getEnabledProviders()}">
+        <c:set var="providerName"
+               value="#{nxu:test(not empty entry.oauth2ServiceProvider.description, entry.oauth2ServiceProvider.description, entry.oauth2ServiceProvider.serviceName)}" />
         <h:outputLink value="#"
                       styleClass="button smallButton"
                       onclick="openOAuthAuthorizationPopup('#{oauth2ServiceProvidersActions.getAuthorizationURL(entry.oauth2ServiceProvider.serviceName)}');
                                    return false;">
-          Add a new #{entry.oauth2ServiceProvider.serviceName} token
+          #{nxu:translate('user.center.oauthtokens.add', providerName)}
         </h:outputLink>
       </nxu:repeat>
     </div>
