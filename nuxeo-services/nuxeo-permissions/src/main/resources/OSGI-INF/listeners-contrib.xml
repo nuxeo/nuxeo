@@ -9,6 +9,11 @@
       <event>documentSecurityUpdated</event>
     </listener>
 
+    <listener name="permissionNotificationListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.permissions.PermissionNotificationListener" >
+      <event>permissionNotification</event>
+    </listener>
+
   </extension>
 
 </component>

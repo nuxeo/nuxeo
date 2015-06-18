@@ -17,6 +17,9 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
+import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -36,7 +39,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
 /**
- * Operation that adds a permission i given ACL for a given user.
+ * Operation that adds a permission to a given ACL for a given user.
  *
  * @since 5.7.3
  */
@@ -88,6 +91,10 @@ public class AddPermission {
     protected void addPermission(DocumentModel doc) {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         Map<String, Serializable> contextData = new HashMap<>();
+        if (notify) {
+            contextData.put(NOTIFY_KEY, notify);
+            contextData.put(COMMENT_KEY, comment);
+        }
 
         boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
                 blockInheritance, session.getPrincipal()

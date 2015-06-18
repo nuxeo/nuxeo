@@ -32,9 +32,9 @@
       <div layout horizontal>
         <div>Allowed rights</div>
         <select flex two id="allowedRights">
-          <option value="READ">Read</option>
-          <option value="WRITE">Write</option>
-          <option value="EVERYTHING">Everything</option>
+          <option value="Read">Read</option>
+          <option value="Write">Write</option>
+          <option value="Everything">Everything</option>
         </select>
       </div>
       <div layout horizontal>
@@ -94,6 +94,9 @@
     toggleCommentText: function(event) {
       var checked = event.element().checked;
       this.$.commentText.readonly = !checked;
+      if (!checked) {
+        params.comment = '';
+      }
     }
   });
 </script>
