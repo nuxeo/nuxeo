@@ -109,6 +109,7 @@ public class DirectoryCache {
                     dm = source.getEntryFromSource(entryId, fetchReferences);
                     if (dm != null) {
                         getEntryCache().put(entryId, dm);
+                        sizeCounter.inc();
                     }
                 } else {
                     hitsCounter.inc();
