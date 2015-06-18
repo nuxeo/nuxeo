@@ -295,7 +295,7 @@ public class TestPageProvider {
         assertNotNull(p);
         assertEquals(0, p.size());
         assertEquals(
-                "Syntax error: Invalid token <ORDER BY> at offset 29",
+                "org.nuxeo.ecm.core.query.QueryParseException: Syntax error: Invalid token <ORDER BY> at offset 29",
                 pp.getErrorMessage());
     }
 
