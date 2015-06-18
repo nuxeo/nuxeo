@@ -97,14 +97,13 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         // not ours to close
         @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
-        DocumentModelList tokens = ((GoogleOAuth2ServiceProvider) getGoogleDriveBlobProvider().getOAuth2Provider()).getCredentialDataStore().query();
 
         String inputId = facet.getClientId(context);
         String prefix = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR;
         String pickId = prefix + "GoogleDrivePickMsg";
         String authId = prefix + "GoogleDriveAuthMsg";
         String infoId = prefix + "GoogleDriveInfo";
-        String authorizationUrl = tokens.isEmpty() ? getOAuthAuthorizationUrl() : "";
+        String authorizationUrl = hasServiceAccount() ? "" : getOAuthAuthorizationUrl();
         Locale locale = context.getViewRoot().getLocale();
         String message;
 
@@ -230,6 +229,13 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
             log.error("Failed to get access token for " + user, e);
         }
         return null;
+    }
+
+    private boolean hasServiceAccount() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String username = request.getUserPrincipal().getName();
+        GoogleOAuth2ServiceProvider provider = (GoogleOAuth2ServiceProvider) getGoogleDriveBlobProvider().getOAuth2Provider();
+        return provider != null && provider.getServiceUser(username) != null;
     }
 
     private String getOAuthAuthorizationUrl() {

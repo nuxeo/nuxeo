@@ -86,13 +86,12 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         // not ours to close
         @SuppressWarnings("resource")
         ResponseWriter writer = context.getResponseWriter();
-        DocumentModelList tokens = getDropboxBlobProvider().getOAuth2Provider().getCredentialDataStore().query();
 
         String inputId = facet.getClientId(context);
         String prefix = parent.getClientId(context) + NamingContainer.SEPARATOR_CHAR;
         String pickId = prefix + "DropboxPickMsg";
         String infoId = prefix + "DropboxInfo";
-        String authorizationUrl = tokens.isEmpty() ? getOAuthAuthorizationUrl() : "";
+        String authorizationUrl = hasServiceAccount() ? "" : getOAuthAuthorizationUrl();
         Locale locale = context.getViewRoot().getLocale();
         String message;
 
@@ -252,6 +251,13 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         } catch (DbxException | IOException e) {
             throw new RuntimeException(e); // TODO better feedback
         }
+    }
+
+    private boolean hasServiceAccount() {
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String username = request.getUserPrincipal().getName();
+        DropboxOAuth2ServiceProvider provider = getDropboxBlobProvider().getOAuth2Provider();
+        return provider != null && provider.getServiceUser(username) != null;
     }
 
     private String getOAuthAuthorizationUrl() {
