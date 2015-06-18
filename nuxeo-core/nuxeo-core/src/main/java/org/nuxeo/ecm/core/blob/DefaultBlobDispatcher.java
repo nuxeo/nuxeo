@@ -276,7 +276,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         if (useRepositoryName) {
             return repositoryName;
         }
-        throw new NuxeoException("All blob keys should be prefixed in repository: " + repositoryName);
+        // useful for legacy blobs created without prefix before dispatch was configured
+        return defaultProviderId;
     }
 
     @Override
