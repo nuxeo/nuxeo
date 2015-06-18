@@ -2220,9 +2220,9 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it = session.queryAndFetch(nxql, "NXQL", QueryFilter.EMPTY);
         Map<Serializable, String> expected = new HashMap<Serializable, String>();
         if (shadow) {
-            expected.put(doc.getId(), "docinfo");
+            expected.put(String.valueOf(doc.getId()), "docinfo");
         }
-        expected.put(proxy.getId(), "proxyinfo");
+        expected.put(String.valueOf(proxy.getId()), "proxyinfo");
         Map<Serializable, String> actual = new HashMap<Serializable, String>();
         for (Map<String, Serializable> map : it) {
             Serializable uuid = map.get("ecm:uuid");
