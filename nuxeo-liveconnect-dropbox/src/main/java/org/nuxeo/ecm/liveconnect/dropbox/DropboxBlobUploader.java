@@ -150,6 +150,12 @@ public class DropboxBlobUploader implements JSFBlobUploader {
             return;
         }
 
+        if (getDropboxBlobProvider().getOAuth2Provider() == null) {
+            ComponentUtils.addErrorMessage(context, parent, "error.inputFile.dropboxInvalidConfiguration");
+            parent.setValid(false);
+            return;
+        }
+
         String filePath = getPathFromUrl(string);
         if (StringUtils.isBlank(filePath)) {
             ComponentUtils.addErrorMessage(context, parent, "error.inputFile.invalidFilePath");

@@ -284,7 +284,7 @@ public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlo
 
     protected String getClientId() {
         OAuth2ServiceProvider provider = getOAuth2Provider();
-        return provider.getClientId();
+        return provider != null ? provider.getClientId() : null;
     }
 
     private Cache getFileCache() {
