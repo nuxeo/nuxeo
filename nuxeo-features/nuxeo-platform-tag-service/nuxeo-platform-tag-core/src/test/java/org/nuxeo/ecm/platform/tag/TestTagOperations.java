@@ -32,9 +32,12 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -89,8 +92,12 @@ public class TestTagOperations {
         params.put("tags", inputTags);
         automationService.run(ctx, TagDocument.ID, params);
         List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
-        assertEquals(TAG_1, tags.get(0).getLabel());
         assertEquals(3, tags.size());
+        Set<String> actual = new HashSet<>();
+        for (Tag tag : tags) {
+            actual.add(tag.getLabel());
+        }
+        assertEquals(new HashSet<>(Arrays.asList(TAG_1, TAG_2, TAG_3)), actual);
     }
 
     public void testUntagDocument() throws Exception {
@@ -100,8 +107,12 @@ public class TestTagOperations {
         params.put("tags", TAG_1);
         automationService.run(ctx, UntagDocument.ID, params);
         List<Tag> tags = tagService.getDocumentTags(session, docId, "Administrator");
-        assertEquals(TAG_2, tags.get(0).getLabel());
         assertEquals(2, tags.size());
+        Set<String> actual = new HashSet<>();
+        for (Tag tag : tags) {
+            actual.add(tag.getLabel());
+        }
+        assertEquals(new HashSet<>(Arrays.asList(TAG_2, TAG_3)), actual);
     }
 
     public void testRemoveTags() throws Exception {
