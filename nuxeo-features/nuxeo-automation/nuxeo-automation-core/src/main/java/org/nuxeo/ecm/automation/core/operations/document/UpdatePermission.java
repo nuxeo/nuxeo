@@ -16,14 +16,6 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
-import static org.nuxeo.ecm.permissions.PermissionListener.COMMENT_KEY;
-import static org.nuxeo.ecm.permissions.PermissionListener.NOTIFY_KEY;
-
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -37,6 +29,14 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
+import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
 
 /**
  * Updates a ACE permission given ACL for a given user/group.
@@ -57,7 +57,7 @@ public class UpdatePermission {
     @Param(name = "permission", description = "ACE permission.")
     String permission;
 
-    @Param(name = "acl", required = false, values = { ACL.LOCAL_ACL }, description = "ACL name.")
+    @Param(name = "acl", required = false, values = {ACL.LOCAL_ACL}, description = "ACL name.")
     String aclName = ACL.LOCAL_ACL;
 
     @Param(name = "begin", required = false, description = "ACE begin date.")
@@ -93,12 +93,14 @@ public class UpdatePermission {
 
     protected void updatePermission(DocumentModel doc) throws ClientException {
         Map<String, Serializable> contextData = new HashMap<>();
-        contextData.put(NOTIFY_KEY, notify);
-        contextData.put(COMMENT_KEY, comment);
+        if (notify) {
+            contextData.put(NOTIFY_KEY, notify);
+            contextData.put(COMMENT_KEY, comment);
+        }
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         boolean permissionChanged = DocumentPermissionHelper.updatePermission(acp, aclName, id, user, permission,
                 blockInheritance, session.getPrincipal()
-                                         .getName(), begin, end, contextData);
+                        .getName(), begin, end, contextData);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
