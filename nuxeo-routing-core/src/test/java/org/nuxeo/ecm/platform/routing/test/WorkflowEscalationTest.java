@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEscalationService;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.EscalationRule;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
+import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.test.runner.Features;
@@ -94,6 +95,54 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         doc.setPropertyValue("dc:title", "file");
         doc = session.createDocument(doc);
         routeDoc = createRoute("myroute", session);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testEscalationDeleteTask() throws Exception {
+        routeDoc = session.saveDocument(routeDoc);
+        DocumentModel node1 = createNode(routeDoc, "node1", session);
+        node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
+        setTransitions(node1,
+                transition("trans1", "node2", "true", "testchain_title1"));
+        node1.setPropertyValue(GraphNode.PROP_HAS_TASK, Boolean.TRUE);
+        node1.setPropertyValue(GraphNode.PROP_TASK_DUE_DATE_EXPR, "CurrentDate.days(-1)");
+        setEscalationRules(node1,
+                escalationRule("rule1", "WorkflowFn.timeSinceDueDateIsOver() >=3600000", "test_resumeWf", false));
+        node1 = session.saveDocument(node1);
+
+        DocumentModel node2 = createNode(routeDoc, "node2", session);
+        node2.setPropertyValue(GraphNode.PROP_MERGE, "all");
+
+        node2.setPropertyValue(GraphNode.PROP_STOP, Boolean.TRUE);
+        node2 = session.saveDocument(node2);
+        DocumentRoute routeInstance = instantiateAndRun(session);
+        String routeInstanceId = routeInstance.getDocument().getId();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+        Task taskToBeRemoved = routing.getTasks(doc, null, routeInstanceId, null, session).get(0);
+        session.removeDocument(taskToBeRemoved.getDocument().getRef());
+        session.save();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
+
+        List<String> nodes = escalationService.queryForSuspendedNodesWithEscalation(session);
+        assertEquals(1, nodes.size());
+        DocumentModel nodeDoc = session.getDocument(new IdRef(nodes.get(0)));
+        GraphNode node = nodeDoc.getAdapter(GraphNode.class);
+        assertEquals("node1", node.getId());
+        List<GraphNode.EscalationRule> rules = escalationService.computeEscalationRulesToExecute(node);
+        assertEquals(1, rules.size());
+        escalationService.scheduleExecution(rules.get(0), session);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        workManager.awaitCompletion("escalation", 3, TimeUnit.SECONDS);
+        assertEquals(0, workManager.getQueueSize("escalation", null));
+        TransactionHelper.startTransaction();
+
     }
 
     @Test

@@ -891,11 +891,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }.runUnrestricted();
     }
 
+    /**
+     * @since 7.3
+     */
     @Override
-    public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, Task task)
+    public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, String taskId)
             throws ClientException {
-        final String aclRoutingName = getRoutingACLName(task);
-        final String aclDelegationName = getDelegationACLName(task);
+        final String aclRoutingName = getRoutingACLName(taskId);
+        final String aclDelegationName = getDelegationACLName(taskId);
         new UnrestrictedSessionRunner(session) {
             @Override
             public void run() throws ClientException {
@@ -910,15 +913,34 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }.runUnrestricted();
     }
 
+    @Override
+    public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, Task task) {
+        removePermissionsForTaskActors(session, docs, task.getId());
+    }
+
     /**
      * Finds an ACL name specific to the task (there may be several tasks applying permissions to the same document).
      */
     protected static String getRoutingACLName(Task task) {
-        return DocumentRoutingConstants.DOCUMENT_ROUTING_ACL + '/' + task.getId();
+        return  getRoutingACLName(task.getId());
+    }
+
+    /**
+     * @since 7.3
+     */
+    protected static String getRoutingACLName(String taskId) {
+        return DocumentRoutingConstants.DOCUMENT_ROUTING_ACL + '/' + taskId;
     }
 
     protected static String getDelegationACLName(Task task) {
-        return DocumentRoutingConstants.DOCUMENT_ROUTING_DELEGATION_ACL + '/' + task.getId();
+        return getDelegationACLName(task.getId());
+    }
+
+    /**
+     * @since 7.3
+     */
+    protected static String getDelegationACLName(String taskId) {
+        return DocumentRoutingConstants.DOCUMENT_ROUTING_DELEGATION_ACL + '/' + taskId;
     }
 
     /**

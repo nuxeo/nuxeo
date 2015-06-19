@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -1077,6 +1078,16 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     protected void cancelTask(CoreSession session, final String taskId) throws DocumentRouteException {
         try {
+            DocumentRef taskRef = new IdRef(taskId);
+            if (!session.exists(taskRef)) {
+                log.info(String.format("Task with id %s does not exist anymore", taskId));
+                DocumentModelList docs = graph.getAttachedDocumentModels();
+                Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, taskId);
+                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                String actor = principal.getActingUser();
+                updateTaskInfo(taskId, true, null, actor, null);
+                return;
+            }
             DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
             Task task = taskDoc.getAdapter(Task.class);
             if (task == null) {
