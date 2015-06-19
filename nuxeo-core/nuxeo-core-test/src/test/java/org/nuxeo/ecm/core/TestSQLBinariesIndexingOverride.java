@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import java.util.Map;
 
@@ -68,17 +69,27 @@ public class TestSQLBinariesIndexingOverride {
     @Inject
     protected ReloadService reloadService;
 
+    protected boolean deployed;
+
     @Before
     public void setUp() throws Exception {
+        // SQL Server fulltext indexes can't easily be updated by Nuxeo
+        assumeTrue(!coreFeature.getStorageConfiguration().isVCSSQLServer());
+
         // cannot be done through @LocalDeploy, because the framework variables
         // about repository configuration aren't ready yet
         runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
+        deployed = true;
         newRepository(); // fully reread repo and its indexing config
     }
 
     @After
     public void tearDown() throws Exception {
-        runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-override-indexing-contrib.xml");
+        if (deployed) {
+            runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests",
+                    "OSGI-INF/test-override-indexing-contrib.xml");
+            deployed = false;
+        }
     }
 
     protected void newRepository() {
