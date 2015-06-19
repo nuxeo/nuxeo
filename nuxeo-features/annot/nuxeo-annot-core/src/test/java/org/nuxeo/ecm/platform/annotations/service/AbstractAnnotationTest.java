@@ -19,13 +19,12 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 
 import org.junit.Before;
-import static org.junit.Assert.*;
-
-import org.hsqldb.jdbc.jdbcDataSource;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
@@ -33,7 +32,6 @@ import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.jtajca.NuxeoContainer;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
@@ -59,12 +57,9 @@ public abstract class AbstractAnnotationTest extends SQLRepositoryTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
-        jdbcDataSource ds = new jdbcDataSource();
-        ds.setDatabase("jdbc:hsqldb:mem:jena");
-        ds.setUser("sa");
-        ds.setPassword("");
-        NuxeoContainer.addDeepBinding("java:comp/env/jdbc/nxrelations-default-jena", ds);
+        deployBundle("org.nuxeo.runtime.datasource");
+        deployTestContrib("org.nuxeo.runtime.datasource", "datasource-config.xml");
+        fireFrameworkStarted(); // to bind datasource
         Framework.getProperties().setProperty("org.nuxeo.ecm.sql.jena.databaseType", "HSQL");
         Framework.getProperties().setProperty("org.nuxeo.ecm.sql.jena.databaseTransactionEnabled", "false");
         deployBundle("org.nuxeo.ecm.relations");
