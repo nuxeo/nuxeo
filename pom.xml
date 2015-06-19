@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>6.0</version>
+    <version>7.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.datadog</groupId>
@@ -29,12 +29,6 @@
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.assertj</groupId>
-      <artifactId>assertj-core</artifactId>
-      <scope>test</scope>
-      <version>1.6.1</version>
     </dependency>
 
   </dependencies>
