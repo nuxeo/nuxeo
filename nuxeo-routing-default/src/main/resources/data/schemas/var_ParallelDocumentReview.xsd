@@ -35,7 +35,13 @@
   <xs:element name="end_date" type="xs:date"/>
   <xs:element name="initiatorComment" type="xs:string"/>
   <xs:element name="participants" type="nxs:stringList"/>
-  <xs:element name="review_result" type="xs:string"/>
+
+  <xs:simpleType name="bigString">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="10000"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="review_result" type="nxs:bigString"/>
   <xs:element name="review_result_file" type="nxs:content"/>
   <xs:element name="validationOrReview" type="xs:string"/>
 </xs:schema>

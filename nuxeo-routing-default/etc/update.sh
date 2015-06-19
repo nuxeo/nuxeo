@@ -51,6 +51,16 @@ sed -e '/<extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager
 sed -e 's/<property name=\"width\">300<\/property>/<property name=\"width\">70%<\/property>/g' \
     -i '~' $RES/OSGI-INF/extensions.xml
 
+#temporary fix for MySQL column length, see NXP-17334
+sed -e 's|  <xs:element name="review_result" type="xs:string"/>|\
+  <xs:simpleType name="bigString">\
+    <xs:restriction base="xs:string">\
+      <xs:maxLength value="10000"/>\
+    </xs:restriction>\
+  </xs:simpleType>\
+  <xs:element name="review_result" type="nxs:bigString"/>|' \
+    -i '~' $RES/data/schemas/var_ParallelDocumentReview.xsd
+
 # in zip, replace studio name in schema namespaces, as well as workflow filter id
 # also keep them unzipped to track changes in git diffs easily
 for wf in SerialDocumentReview ParallelDocumentReview; do
