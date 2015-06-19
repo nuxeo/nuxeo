@@ -27,6 +27,7 @@ import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
 import org.nuxeo.ecm.platform.scanimporter.service.ImporterConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @LocalDeploy({ "org.nuxeo.ecm.platform.scanimporter.test:needed-contribution-for-factory-deployment.xml",
         "org.nuxeo.ecm.platform.scanimporter.test:OSGI-INF/core-type-test-contrib.xml" })
@@ -53,7 +54,9 @@ public class TestImport extends ImportTestCase {
 
         importer.doImport(new File(testPath), config);
 
-        session.save();
+        // MySQL needs to commit the transaction to see the updated state
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
 
         DocumentModelList alldocs = session.query("select * from File order by ecm:path");
 
@@ -94,13 +97,21 @@ public class TestImport extends ImportTestCase {
 
         // Import once
         importer.doImport(new File(testPath), config);
-        session.save();
+
+        // MySQL needs to commit the transaction to see the updated state
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         DocumentModelList alldocs = session.query("select * from Folder");
         assertEquals(1, alldocs.size());
 
         // Import twice
         importer.doImport(new File(testPath), config);
-        session.save();
+
+        // MySQL needs to commit the transaction to see the updated state
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         alldocs = session.query("select * from Folder");
         assertEquals(2, alldocs.size());
     }
