@@ -97,10 +97,6 @@ public class TestServiceWithCore extends PublisherTestCase {
             Populate.self.doc2Publish.setProperty("file", "content", blob);
 
             Populate.self.doc2Publish = session.createDocument(Populate.self.doc2Publish);
-
-            TransactionHelper.commitOrRollbackTransaction();
-            TransactionHelper.startTransaction();
-
         }
 
     }
