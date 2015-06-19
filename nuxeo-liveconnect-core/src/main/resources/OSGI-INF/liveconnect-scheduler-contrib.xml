@@ -8,7 +8,7 @@
       <!-- cleanup every 30 sec  -->
       <!-- cronExpression>0/30 * * * * ?</cronExpression-->
       <!-- every day at 11.59 PM -->
-      <cronExpression>0 59 23 * * ?</cronExpression>
+      <cronExpression>0 0/5 * * * ?</cronExpression>
     </schedule>
   </extension>
 
