@@ -96,12 +96,7 @@
                   </script>
                   <div style="display:none;">
                     <div id="#{action.id}_fancybox_box">
-                      <h:form id="#{fancyboxFormId}"
-                        ajaxSubmit="true"
-                        render="#{elementsToReRender}"
-                        ignoreDupResponses="true"
-                        requestDelay="100"
-                        oncomplete="jQuery.fancybox.close();">
+                      <h:form id="#{fancyboxFormId}">
                         <c:if test="#{not empty action.properties.layout}">
                           <h3>Process</h3>
                           <div class="content">
@@ -111,19 +106,23 @@
                           </div>
                         </c:if>
                         <p class="buttonsGadget">
+                          <h:commandButton
+                            value="#{messages['command.close']}"
+                            immediate="true" onclick="jQuery.fancybox.close()"
+                            styleClass="button"/>
                           <c:forEach var="task_action" items="#{actions}">
                             <c:if test="#{task_action.type == 'fancybox'}">
                               <h:commandButton
-                                id="submitAction_#{task_action.id}"
-                                action="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}"
+                                id="#{task_action.id}"
+                                actionListener="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}"
                                 value="#{messages[task_action.label]}"
-                                styleClass="button" onclick="jQuery.fancybox.close()"/>
+                                styleClass="button">
+                                <nxu:actionListenerMethod
+                                  value="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}" />
+                                <f:ajax execute="@form" onevent="jQuery.fancybox.close" render="@all"/>
+                              </h:commandButton>
                             </c:if>
                           </c:forEach>
-                          <h:commandButton
-                            value="#{messages['command.cancel']}"
-                            immediate="true" onclick="jQuery.fancybox.close()"
-                            styleClass="button"/>
                         </p>
                       </h:form>
                     </div>
