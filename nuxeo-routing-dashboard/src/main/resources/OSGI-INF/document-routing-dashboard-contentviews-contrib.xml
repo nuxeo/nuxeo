@@ -14,6 +14,8 @@
           AND ecm:isCheckedInVersion = 0 AND
           ecm:currentLifeCycleState !=
           'deleted' AND
+          ecm:currentLifeCycleState !=
+          'cancelled' AND
           ecm:currentLifeCycleState != 'ended' AND ecm:isProxy = 0
         </pattern>
         <pageSize>20</pageSize>
