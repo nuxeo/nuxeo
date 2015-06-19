@@ -227,6 +227,21 @@ public class JsonAssert {
     }
 
     /**
+     * Checks that the current element is the empty string or null.
+     * <p>
+     * Useful for Oracle which confuses the two notions.
+     *
+     * @return The current json assertion for chaining.
+     * @since 7.3
+     */
+    public JsonAssert isEmptyStringOrNull() {
+        if (!jsonNode.isNull()) {
+            isEquals("");
+        }
+        return this;
+    }
+
+    /**
      * Checks the current is not null.
      *
      * @return The current json assertion for chaining.

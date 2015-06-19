@@ -18,11 +18,13 @@ package org.nuxeo.ecm.restapi.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter.ENTITY_TYPE;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.FETCH_PROPERTIES;
 import static org.nuxeo.ecm.core.io.registry.MarshallingConstants.HEADER_PREFIX;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -219,7 +221,11 @@ public class DocumentBrowsingTest extends BaseTest {
         // Then the document is updated
         fetchInvalidations();
         note = RestServerInit.getNote(0, session);
-        assertEquals("", note.getPropertyValue("dc:format"));
+        Serializable value = note.getPropertyValue("dc:format");
+        if (!"".equals(value)) {
+            // will be NULL for Oracle, where empty string and NULL are the same thing
+            assertNull(value);
+        }
     }
 
     @Test
