@@ -1638,6 +1638,11 @@ public class TestSQLRepositoryQuery {
         // 3 folders, 1 note, 3 files, 1 proxy, 1 version
         assertEquals(9, dml.size());
 
+        // to observe locks, which have been set from another transaction
+        // we may need to actually commit and re-open a transaction (MySQL)
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+
         /*
          * ecm:lock (deprecated, uses ecm:lockOwner actually)
          */
