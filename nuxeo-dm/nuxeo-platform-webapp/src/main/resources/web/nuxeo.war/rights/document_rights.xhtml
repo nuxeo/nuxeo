@@ -34,15 +34,21 @@
         <table class="tmp-tab">
           <tr class="tmp-tab">
             <th class="tmp-tab">Username</th>
+            <th class="tmp-tab">Creator</th>
             <th class="tmp-tab">Permission</th>
             <th class="tmp-tab">Granted</th>
+            <th class="tmp-tab">Begin</th>
+            <th class="tmp-tab">End</th>
             <th class="tmp-tab">Actions</th>
           </tr>
           <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
             <tr>
               <td><span>{{item.username}}</span></td>
+              <td><span>{{item.creator}}</span></td>
               <td><span>{{item.permission}}</span></td>
               <td><span>{{item.granted}}</span></td>
+              <td><span>{{format(item.begin)}}</span></td>
+              <td><span>{{format(item.end)}}</span></td>
               <td>
                 <template id="actions-tpl" is="dom-if" if="{{hasEverythingRight}}">
                   <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
@@ -61,14 +67,20 @@
       <table>
         <tr class="tmp-tab">
           <th class="tmp-tab">Username</th>
+          <th class="tmp-tab">Creator</th>
           <th class="tmp-tab">Permission</th>
           <th class="tmp-tab">Granted</th>
+          <th class="tmp-tab">Begin</th>
+          <th class="tmp-tab">End</th>
         </tr>
         <template is="dom-repeat" items="{{inheritedRights}}">
           <tr>
             <td><span>{{item.username}}</span></td>
+            <td><span>{{item.creator}}</span></td>
             <td><span>{{item.permission}}</span></td>
             <td><span>{{item.granted}}</span></td>
+            <td><span>{{format(item.begin)}}</span></td>
+            <td><span>{{format(item.end)}}</span></td>
           </tr>
         </template>
       </table>
@@ -85,8 +97,19 @@
     <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
   </template>
 
-  <script>
+  <script>//<![CDATA[
     (function() {
+      function leadingZero(str) {
+        if(parseInt(str) < 10) {
+          return "0" + str;
+        }
+
+        return str;
+      };
+
+      // Cache timezone offset
+      var timezoneOffset = new Date().getTimezoneOffset() * 60000;
+
       var t = document.querySelector('#document-rights');
       t.localRightsDel = function(e, i) {
         var self = this;
@@ -104,6 +127,12 @@
         document.querySelector('#doc').get();
       };
 
+      t.format = function(date) {
+        // TimeZone aware local date
+        var tzDate = new Date(Date.parse(date) + timezoneOffset);
+        return leadingZero(tzDate.getDate()) + '/' + leadingZero(tzDate.getMonth() + 1) + '/' + tzDate.getFullYear();
+      };
+
       t.handleAclDeleted = function() {
         this.refresh();
       };
@@ -114,6 +143,6 @@
 
       t.currentDocumentPath = "/path" + currentDocumentPath;
     })();
-  </script>
+  //]]></script>
 
 </ui:composition>
