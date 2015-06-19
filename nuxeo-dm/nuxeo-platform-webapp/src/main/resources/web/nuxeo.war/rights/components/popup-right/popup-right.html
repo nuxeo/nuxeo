@@ -28,10 +28,22 @@
           </paper-input>
         </div>
       </div>
+       <div>
+        <div>Start</div>
+        <div>
+          <paper-input id="begin" type="date" value="{{params.begin}}" />
+        </div>
+      </div>
+      <div>
+        <div>End</div>
+        <div>
+          <paper-input id="end" type="date" value="{{params.end}}" />
+        </div>
+      </div>
       <!-- Allowed rights row -->
       <div layout horizontal>
         <div>Allowed rights</div>
-        <select flex two id="allowedRights">
+        <select flex two value="{{params.permission::change}}">
           <option value="Read">Read</option>
           <option value="Write">Write</option>
           <option value="Everything">Everything</option>
@@ -45,7 +57,7 @@
       </div>
 
       <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-dismiss on-tap="togglePopup">Cancel</paper-button>
         <paper-button dialog-confirm on-tap="doSend">Confirm</paper-button>
       </div>
     </paper-dialog>
@@ -83,7 +95,14 @@
     },
 
     doSend: function() {
-      this.params.permission = this.$.allowedRights.value;
+      if(this.params.begin) {
+        this.params.begin = new Date(Date.parse(this.params.begin)).toISOString();
+      }
+
+      if(this.params.end) {
+        this.params.end = new Date(Date.parse(this.params.end)).toISOString();
+      }
+
       this.$.op.execute();
     },
 
