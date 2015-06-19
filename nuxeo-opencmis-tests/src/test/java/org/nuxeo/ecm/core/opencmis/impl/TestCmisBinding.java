@@ -666,12 +666,12 @@ public class TestCmisBinding extends TestCmisBindingBase {
         assertEquals(BigDecimal.valueOf(123.456), getValue(data, "my:double"));
         GregorianCalendar date = (GregorianCalendar) getValue(data, "my:date");
         GregorianCalendar expectedDate = Helper.getCalendar(2010, 9, 30, 16, 4, 55);
-        if (!CalendarHelper.toString(expectedDate).equals(CalendarHelper.toString(date))) {
+        if (expectedDate.getTimeInMillis() != date.getTimeInMillis()) {
             // there may be a timezone difference if the database
             // doesn't store timezones -> try with local timezone
             TimeZone tz = TimeZone.getDefault();
             GregorianCalendar localDate = Helper.getCalendar(2010, 9, 30, 16, 4, 55, tz);
-            assertEquals(CalendarHelper.toString(localDate), CalendarHelper.toString(date));
+            assertEquals(localDate.getTimeInMillis(), date.getTimeInMillis());
         }
         // check path segment created from name/title
         List<ObjectParentData> parents = navService.getObjectParents(repositoryId, id, null, null, null, null,
