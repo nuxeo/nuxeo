@@ -35,9 +35,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
-import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
-
 /**
  * Updates a ACE permission given ACL for a given user/group.
  *
@@ -47,6 +44,10 @@ import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
 public class UpdatePermission {
 
     public static final String ID = "Document.UpdatePermission";
+
+    public static final String NOTIFY_KEY = "notify";
+
+    public static final String COMMENT_KEY = "comment";
 
     @Context
     protected CoreSession session;
