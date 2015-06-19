@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -29,11 +34,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Updates a ACE permission given ACL for a given user/group.
@@ -52,7 +52,7 @@ public class UpdatePermission {
     @Context
     protected CoreSession session;
 
-    @Param(name = "user", description = "ACE target user/group.")
+    @Param(name = "username", alias = "user", description = "ACE target user/group.")
     protected String user;
 
     @Param(name = "permission", description = "ACE permission.")

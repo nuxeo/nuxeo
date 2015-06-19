@@ -5,8 +5,7 @@
     <schema name="aceinfo" src="schemas/aceinfo.xsd" prefix="aceinfo" />
   </extension>
 
-  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
-    point="directories">
+  <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
 
     <directory name="aceinfo">
       <schema>aceinfo</schema>

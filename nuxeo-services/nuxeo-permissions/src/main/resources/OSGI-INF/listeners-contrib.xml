@@ -1,16 +1,15 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.permissions.listeners">
 
-  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
-    point="listener">
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
     <listener name="permissionListener" async="false" postCommit="false"
-      class="org.nuxeo.ecm.permissions.PermissionListener" >
+      class="org.nuxeo.ecm.permissions.PermissionListener">
       <event>documentSecurityUpdated</event>
     </listener>
 
     <listener name="permissionNotificationListener" async="true" postCommit="true"
-      class="org.nuxeo.ecm.permissions.PermissionNotificationListener" >
+      class="org.nuxeo.ecm.permissions.PermissionNotificationListener">
       <event>permissionNotification</event>
     </listener>
 

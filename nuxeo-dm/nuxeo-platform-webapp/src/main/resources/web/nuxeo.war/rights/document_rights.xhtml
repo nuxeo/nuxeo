@@ -21,12 +21,12 @@
 
     <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-    <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="acls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
+    <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="extendedAcls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
     <div>
       <h2>Access rights defined explicitely on this folder</h2>
       <template is="dom-if" if="{{hasEverythingRight}}">
-        <popup-right doc-id="#{currentDocument.id}" on-aclcreated="handleAclCreated"></popup-right>
+        <popup-right doc-id="#{currentDocument.id}" on-acecreated="refresh"></popup-right>
       </template>
     </div>
     <template is="dom-if" if="{{hasLocalRights}}">
@@ -50,7 +50,8 @@
               <td><span>{{format(item.begin)}}</span></td>
               <td><span>{{format(item.end)}}</span></td>
               <td>
-                <template id="actions-tpl" is="dom-if" if="{{hasEverythingRight}}">
+                <template is="dom-if" if="{{hasEverythingRight}}">
+                  <popup-right doc-id="#{currentDocument.id}" ace="{{item}}" on-aceupdated="refresh"></popup-right>
                   <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
                 </template>
               </td>
@@ -91,58 +92,53 @@
     </template>
 
     <popup-confirm id="confirmation">
-      <h2>Confirm ACE deletion ?</h2>
+      <h2>Confirm ACE deletion?</h2>
     </popup-confirm>
 
-    <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="handleAclDeleted"></nx-operation>
+    <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="refresh"></nx-operation>
   </template>
 
   <script>//<![CDATA[
-    (function() {
-      function leadingZero(str) {
-        if(parseInt(str) < 10) {
-          return "0" + str;
-        }
+  (function() {
+    function leadingZero(str) {
+      if(parseInt(str) < 10) {
+        return "0" + str;
+      }
 
-        return str;
-      };
+      return str;
+    }
 
-      // Cache timezone offset
-      var timezoneOffset = new Date().getTimezoneOffset() * 60000;
+    // Cache timezone offset
+    var timezoneOffset = new Date().getTimezoneOffset() * 60000;
 
-      var t = document.querySelector('#document-rights');
-      t.localRightsDel = function(e, i) {
-        var self = this;
-        this.$.confirmation.toggle(function() {
-          // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
-          var item = e.model.dataHost.dataHost.item;
-          self.$.rmPermission.params = {
-            id: item.id
-          };
-          self.$.rmPermission.execute();
-        });
-      };
+    var t = document.querySelector('#document-rights');
+    t.localRightsDel = function(e, i) {
+      var self = this;
+      this.$.confirmation.toggle(function() {
+        // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
+        var item = e.model.dataHost.dataHost.item;
+        self.$.rmPermission.params = {
+          id: item.id
+        };
+        self.$.rmPermission.execute();
+      });
+    };
 
-      t.refresh = function() {
-        document.querySelector('#doc').get();
-      };
+    t.refresh = function() {
+      document.querySelector('#doc').get();
+    };
 
-      t.format = function(date) {
-        // TimeZone aware local date
-        var tzDate = new Date(Date.parse(date) + timezoneOffset);
-        return leadingZero(tzDate.getDate()) + '/' + leadingZero(tzDate.getMonth() + 1) + '/' + tzDate.getFullYear();
-      };
+    t.format = function(date) {
+      if (date === null) {
+        return '';
+      }
+      // TimeZone aware local date
+      var tzDate = new Date(Date.parse(date) + timezoneOffset);
+      return leadingZero(tzDate.getDate()) + '/' + leadingZero(tzDate.getMonth() + 1) + '/' + tzDate.getFullYear();
+    };
 
-      t.handleAclDeleted = function() {
-        this.refresh();
-      };
-
-      t.handleAclCreated = function() {
-        this.refresh();
-      };
-
-      t.currentDocumentPath = "/path" + currentDocumentPath;
-    })();
+    t.currentDocumentPath = "/path" + currentDocumentPath;
+  })();
   //]]></script>
 
 </ui:composition>

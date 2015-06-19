@@ -17,6 +17,11 @@
  */
 package org.nuxeo.ecm.automation.core.operations.document;
 
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -30,17 +35,12 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Operation that adds a permission to a given ACL for a given user.
  *
  * @since 5.7.3
  */
-@Operation(id = AddPermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Add Permission on the input document(s). Returns the document(s).", aliases = {"Document.AddACL"})
+@Operation(id = AddPermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Add Permission on the input document(s). Returns the document(s).", aliases = { "Document.AddACL" })
 public class AddPermission {
 
     public static final String ID = "Document.AddPermission";
@@ -52,13 +52,13 @@ public class AddPermission {
     @Context
     protected CoreSession session;
 
-    @Param(name = "user", description = "ACE target user/group.")
+    @Param(name = "username", alias = "user", description = "ACE target user/group.")
     protected String user;
 
     @Param(name = "permission", description = "ACE permission.")
     String permission;
 
-    @Param(name = "acl", required = false, values = {ACL.LOCAL_ACL}, description = "ACL name.")
+    @Param(name = "acl", required = false, values = { ACL.LOCAL_ACL }, description = "ACL name.")
     String aclName = ACL.LOCAL_ACL;
 
     @Param(name = "begin", required = false, description = "ACE begin date.")
@@ -99,7 +99,7 @@ public class AddPermission {
 
         boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
                 blockInheritance, session.getPrincipal()
-                        .getName(), begin, end, contextData);
+                                         .getName(), begin, end, contextData);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }

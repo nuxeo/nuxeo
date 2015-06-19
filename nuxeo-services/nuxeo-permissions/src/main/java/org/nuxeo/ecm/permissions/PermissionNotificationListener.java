@@ -17,6 +17,14 @@
 
 package org.nuxeo.ecm.permissions;
 
+import static org.apache.commons.logging.LogFactory.getLog;
+import static org.nuxeo.ecm.permissions.Constants.ACE_GRANTED_TEMPLATE;
+import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
+import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
+import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
+
+import java.util.Collections;
+
 import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
@@ -40,14 +48,6 @@ import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.Collections;
-
-import static org.apache.commons.logging.LogFactory.getLog;
-import static org.nuxeo.ecm.permissions.Constants.ACE_GRANTED_TEMPLATE;
-import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
-import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
-import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 
 /**
  * Listener sending an email notification for a given ACE.
@@ -106,18 +106,18 @@ public class PermissionNotificationListener implements PostCommitFilteringEventL
         StringList to = new StringList(Collections.singletonList(principal.getEmail()));
         Expression from = Scripting.newExpression("Env[\"mail.from\"]");
         NotificationService notificationService = NotificationServiceHelper.getNotificationService();
-        String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(), "New permission on",
-                doc.getTitle());
+        String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(),
+                "New permission on", doc.getTitle());
         try {
             OperationChain chain = new OperationChain("SendMail");
             chain.add(SendMail.ID)
-                    .set("from", from)
-                    .set("to", to)
-                    .set("HTML", true)
-                    .set("subject", subject)
-                    .set("message", ACE_GRANTED_TEMPLATE);
+                 .set("from", from)
+                 .set("to", to)
+                 .set("HTML", true)
+                 .set("subject", subject)
+                 .set("message", ACE_GRANTED_TEMPLATE);
             Framework.getService(AutomationService.class)
-                    .run(ctx, chain);
+                     .run(ctx, chain);
         } catch (OperationException e) {
             log.warn("Unable to notify user", e);
             log.debug(e, e);

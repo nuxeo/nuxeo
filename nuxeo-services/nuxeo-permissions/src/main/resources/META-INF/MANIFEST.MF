@@ -6,4 +6,5 @@ Bundle-Vendor: Nuxeo
 Bundle-Version: 1.0.0
 Nuxeo-Component: OSGI-INF/directories-contrib.xml,
  OSGI-INF/listeners-contrib.xml,
- OSGI-INF/notifications-contrib.xml
+ OSGI-INF/notifications-contrib.xml,
+ OSGI-INF/marshallers-contrib.xml

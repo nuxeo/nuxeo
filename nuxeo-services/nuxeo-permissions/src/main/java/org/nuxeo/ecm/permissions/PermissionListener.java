@@ -17,6 +17,21 @@
 
 package org.nuxeo.ecm.permissions;
 
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACP;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACP;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
+import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
+import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
+import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -30,21 +45,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACP;
-import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACP;
-import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
-import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
-import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
-import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
-import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 
 /**
  * Listener filling the 'aceinfo' directory when an ACP is updated.
@@ -78,12 +78,12 @@ public class PermissionListener implements EventListener {
             try {
                 session = directoryService.open(ACE_INFO_DIRECTORY);
                 for (ACE ace : diff.removedACEs) {
-                    String id = computeDirectoryId(doc.getId(), diff.aclName, ace.getId());
+                    String id = computeDirectoryId(doc, diff.aclName, ace.getId());
                     session.deleteEntry(id);
                 }
 
                 for (ACE ace : diff.addedACEs) {
-                    String id = computeDirectoryId(doc.getId(), diff.aclName, ace.getId());
+                    String id = computeDirectoryId(doc, diff.aclName, ace.getId());
                     Map<String, Object> m = new HashMap<>();
                     m.put("aceinfo:id", id);
                     m.put("aceinfo:repositoryName", doc.getRepositoryName());
@@ -105,8 +105,8 @@ public class PermissionListener implements EventListener {
         }
     }
 
-    protected String computeDirectoryId(String docId, String aclName, String aceId) {
-        return String.format("%s:%s:%s", docId, aclName, aceId);
+    protected String computeDirectoryId(DocumentModel doc, String aclName, String aceId) {
+        return String.format("%s:%s:%s:%s", doc.getId(), doc.getRepositoryName(), aclName, aceId);
     }
 
     protected List<ACLDiff> extractACLDiffs(ACP oldACP, ACP newACP) {
@@ -154,7 +154,8 @@ public class PermissionListener implements EventListener {
         Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
         if (notify != null && notify && ace.isGranted()) {
             Date now = new Date();
-            Date beginDate = ace.getBegin() == null ? null : ace.getBegin().getTime();
+            Date beginDate = ace.getBegin() == null ? null : ace.getBegin()
+                                                                .getTime();
             if (beginDate == null || now.after(beginDate) || now.equals(beginDate)) {
                 docCtx.setProperty(ACE_KEY, ace);
                 Event event = docCtx.newEvent(PERMISSION_NOTIFICATION_EVENT);

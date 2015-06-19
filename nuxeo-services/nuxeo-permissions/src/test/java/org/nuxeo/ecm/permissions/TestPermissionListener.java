@@ -22,8 +22,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
-import static org.nuxeo.ecm.permissions.PermissionListener.COMMENT_KEY;
-import static org.nuxeo.ecm.permissions.PermissionListener.NOTIFY_KEY;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
+import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
+import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -79,7 +80,7 @@ public class TestPermissionListener {
 
         Session session = null;
         try {
-            session = directoryService.open(PermissionListener.ACE_INFO_DIRECTORY);
+            session = directoryService.open(ACE_INFO_DIRECTORY);
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = session.query(filter);
@@ -127,7 +128,7 @@ public class TestPermissionListener {
         doc.setACP(acp, true);
         Session session = null;
         try {
-            session = directoryService.open(PermissionListener.ACE_INFO_DIRECTORY);
+            session = directoryService.open(ACE_INFO_DIRECTORY);
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = session.query(filter);
@@ -169,7 +170,7 @@ public class TestPermissionListener {
 
         Session session = null;
         try {
-            session = directoryService.open(PermissionListener.ACE_INFO_DIRECTORY);
+            session = directoryService.open(ACE_INFO_DIRECTORY);
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = session.query(filter);

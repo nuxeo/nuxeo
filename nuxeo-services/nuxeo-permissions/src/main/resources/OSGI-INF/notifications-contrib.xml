@@ -1,9 +1,7 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.permissions.notifications">
 
-  <extension
-    target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService"
-    point="templates">
+  <extension target="org.nuxeo.ecm.platform.ec.notification.service.NotificationService" point="templates">
 
     <template name="aceGranted" src="templates/aceGranted.ftl" />
 

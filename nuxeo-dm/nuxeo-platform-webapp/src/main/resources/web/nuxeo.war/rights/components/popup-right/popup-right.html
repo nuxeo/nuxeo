@@ -12,9 +12,16 @@
 
 <dom-module id="popup-right">
   <template>
-    <nx-operation id="op" op="Document.AddACL" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+    <nx-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+    <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
 
-    <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
+    <template is="dom-if" if="{{!updatingACE}}">
+      <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
+    </template>
+    <template is="dom-if" if="{{updatingACE}}">
+      <paper-button raised="true" on-click="togglePopup">Update</paper-button>
+    </template>
+
     <paper-dialog id="popupRight">
       <h2>Add new acl right</h2>
 
@@ -24,41 +31,54 @@
         <div>
           <paper-input
             id="user"
-            value="{{params.user}}">
+            value="{{params.username}}">
           </paper-input>
         </div>
       </div>
-       <div>
+      <div>
         <div>Start</div>
         <div>
-          <paper-input id="begin" type="date" value="{{params.begin}}" />
+          <paper-input id="begin" type="datetime-local" value="{{params.begin}}" />
         </div>
       </div>
       <div>
         <div>End</div>
         <div>
-          <paper-input id="end" type="date" value="{{params.end}}" />
+          <paper-input id="end" type="datetime-local" value="{{params.end}}" />
         </div>
       </div>
       <!-- Allowed rights row -->
       <div layout horizontal>
         <div>Allowed rights</div>
-        <select flex two value="{{params.permission::change}}">
+        <select id="allowedRights" flex two value="{{params.permission::change}}">
           <option value="Read">Read</option>
           <option value="Write">Write</option>
           <option value="Everything">Everything</option>
         </select>
       </div>
-      <div layout horizontal>
-        <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify</paper-checkbox>
-      </div>
-      <div layout horizontal>
-        <iron-autogrow-textarea id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+
+      <div id="notification">
+        <template is="dom-if" if="{{showNotificationFields}}">
+          <div layout horizontal>
+            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify</paper-checkbox>
+          </div>
+          <div layout horizontal>
+            <iron-autogrow-textarea id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+          </div>
+        </template>
       </div>
 
       <div class="buttons">
-        <paper-button dialog-dismiss on-tap="togglePopup">Cancel</paper-button>
-        <paper-button dialog-confirm on-tap="doSend">Confirm</paper-button>
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm on-tap="doSend">
+          <template is="dom-if" if="{{!updatingACE}}">
+            Create
+          </template>
+          <template is="dom-if" if="{{updatingACE}}">
+            Update
+          </template>
+        </paper-button>
+
       </div>
     </paper-dialog>
   </template>
@@ -73,21 +93,26 @@
         type: String,
         value: ''
       },
+      ace: {
+        type: Object,
+        value: null
+      },
       params: {
         type: Object,
-        value: function() {
-          return {
-            user: '',
-            permission: 'READ',
-            notify: true,
-            comment: ''
-          };
-        }
+        computed: 'computeParams(ace)'
+      },
+      updatingACE: {
+        type: Boolean,
+        computed: 'isUpdatingACE(ace)'
+      },
+      showNotificationFields: {
+        type: Boolean,
+        value: true,
+        computed: 'shouldShowNotification(ace)'
       }
     },
 
     ready: function() {
-      console.log(this.docId);
     },
 
     togglePopup: function() {
@@ -96,25 +121,73 @@
 
     doSend: function() {
       if(this.params.begin) {
-        this.params.begin = new Date(Date.parse(this.params.begin)).toISOString();
+        this.params.begin = new Date(this.params.begin).toISOString();
       }
 
       if(this.params.end) {
-        this.params.end = new Date(Date.parse(this.params.end)).toISOString();
+        this.params.end = new Date(this.params.end).toISOString();
+      }
+      this.params.permission = this.$.allowedRights.value;
+      if (this.updatingACE) {
+        this.$.updateOp.execute();
+      } else {
+        this.$.createOp.execute();
       }
 
-      this.$.op.execute();
     },
 
     handleResponse: function() {
-      this.fire('aclcreated');
+      if (this.updatingACE) {
+        this.fire('aceupdated');
+      } else {
+        this.fire('acecreated');
+      }
+
+      this.set('params.username', '');
+      this.set('params.permission', 'Read');
+      this.set('params.begin', null);
+      this.set('params.end', null);
+      this.set('params.notify', true);
+      this.set('params.comment', '');
     },
 
     toggleCommentText: function(event) {
       var checked = event.element().checked;
-      this.$.commentText.readonly = !checked;
+      this.$.notification.querySelector('#commentText').readonly = !checked;
       if (!checked) {
-        params.comment = '';
+        this.set('params.comment', '');
+      }
+    },
+
+    computeParams: function(ace) {
+      if (ace !== null) {
+        this.$.allowedRights.value = ace.permission;
+        if (ace.begin !== null) {
+          ace.begin = ace.begin.substring(0, ace.begin.length - 5);
+        }
+        if (ace.end !== null) {
+          ace.end = ace.end.substring(0, ace.end.length - 5);
+        }
+        return ace;
+      } else {
+        return {
+          username: '',
+          permission: 'Read',
+          begin: null,
+          end: null,
+          notify: true,
+          comment: ''
+        };
+      }
+    },
+
+    isUpdatingACE: function(ace) {
+      return ace !== null;
+    },
+
+    shouldShowNotification: function(ace) {
+      if (ace !== null) {
+        return ace.begin !== null;
       }
     }
   });
