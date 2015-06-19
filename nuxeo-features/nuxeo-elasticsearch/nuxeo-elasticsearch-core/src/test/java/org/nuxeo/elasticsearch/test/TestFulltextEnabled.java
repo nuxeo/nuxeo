@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchService;
@@ -71,6 +72,8 @@ public class TestFulltextEnabled {
     @Inject
     protected RuntimeHarness harness;
 
+    @Inject
+    protected CoreFeature coreFeature;
 
     private int commandProcessed;
 
@@ -89,6 +92,10 @@ public class TestFulltextEnabled {
         workManager.awaitCompletion(20, TimeUnit.SECONDS);
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
+    }
+
+    public void sleepForFulltext() {
+        coreFeature.getStorageConfiguration().sleepForFulltext();
     }
 
     protected void startTransaction() {
@@ -115,6 +122,7 @@ public class TestFulltextEnabled {
         Assert.assertEquals(1, esRet.totalSize());
 
         // binary fulltext is also searcheable with VCS
+        sleepForFulltext();
         DocumentModelList coreRet = session.query(nxql);
         Assert.assertEquals(1, coreRet.totalSize());
     }
