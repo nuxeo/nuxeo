@@ -101,6 +101,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 res.close();
             }
             removeFacet(unrestrictedSession, unrestrictedSession.getRootDocument().getId());
+            unrestrictedSession.save();
             try {
                 long idx = 0;
                 res = unrestrictedSession.queryAndFetch(query, "NXQL");
@@ -129,6 +130,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
             if (log.isTraceEnabled()) {
                 log.trace("doc with uuid " + uuid + " already up to date");
+            }
+            QuotaAware quotaDoc = target.getAdapter(QuotaAware.class);
+            quotaDoc.resetInfos(true);
+            if (log.isDebugEnabled()) {
+                log.debug(target.getPathAsString() + " reset to " + quotaDoc.getQuotaInfo());
             }
             target.removeFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             target.putContextData(NXAuditEventsService.DISABLE_AUDIT_LOGGER, true);
@@ -539,10 +545,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
         QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
-            long absSize = quotaDoc.getTotalSize();
-            if (quotaDoc.getDoc().isFolder()) {
-                absSize = quotaDoc.getInnerSize();
-                log.debug(quotaDoc.getDoc().getPathAsString() + " is a folder, just inner size (" + absSize + ") taken into account for trash size");
+            long absSize = quotaDoc.getInnerSize();
+            if (log.isDebugEnabled()) {
+                if (quotaDoc.getDoc().isFolder()) {
+                    log.debug(quotaDoc.getDoc().getPathAsString() + " is a folder, just inner size (" + absSize + ") taken into account for trash size");
+                }
             }
             long total = (DELETE_TRANSITION.equals(transition) == true ? absSize : -absSize);
             BlobSizeInfo bsi = new BlobSizeInfo();
