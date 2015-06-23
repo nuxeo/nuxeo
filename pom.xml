@@ -223,6 +223,11 @@
         <artifactId>nuxeo-platform-login-kerberos</artifactId>
         <version>${nuxeo.login.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-login-saml2</artifactId>
+        <version>${nuxeo.login.version}</version>
+      </dependency>
 
       <!-- Nuxeo Shell -->
       <dependency>
