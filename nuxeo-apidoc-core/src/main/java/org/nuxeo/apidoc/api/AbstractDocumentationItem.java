@@ -50,21 +50,14 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
         if (Framework.isTestModeSet()) {
             return type;
         }
-        Session session = null;
-        try {
-            DirectoryService dm = Framework.getService(DirectoryService.class);
-            session = dm.open(DocumentationComponent.DIRECTORY_NAME);
-            DocumentModel entry = session.getEntry(type);
-            return (String) entry.getProperty("vocabulary", "label");
-        } catch (ClientException e) {
-            log.error("Error while resolving typeLabel", e);
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                    log.warn("Error while close directory session", e);
-                }
+
+        DirectoryService dm = Framework.getService(DirectoryService.class);
+        try (Session session = dm.open(DocumentationComponent.DIRECTORY_NAME)) {
+            try {
+                DocumentModel entry = session.getEntry(type);
+                return (String) entry.getProperty("vocabulary", "label");
+            } catch (ClientException e) {
+                log.error("Error while resolving typeLabel", e);
             }
         }
         return "";

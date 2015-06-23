@@ -395,12 +395,9 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     protected List<DocumentModel> listCategories() {
         DirectoryService dm = Framework.getService(DirectoryService.class);
-        Session session = dm.open(DIRECTORY_NAME);
-        try {
+        try (Session session = dm.open(DIRECTORY_NAME)) {
             return session.query(Collections.<String, Serializable> emptyMap(), null,
                     Collections.singletonMap("ordering", "ASC"));
-        } finally {
-            session.close();
         }
     }
 
