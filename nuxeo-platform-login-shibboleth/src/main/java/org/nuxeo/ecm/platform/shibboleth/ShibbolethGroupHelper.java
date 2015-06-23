@@ -80,10 +80,7 @@ public class ShibbolethGroupHelper {
     }
 
     public static DocumentModel createGroup(DocumentModel group) throws ClientException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY);
-
+        try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             if (session.hasEntry(group.getPropertyValue(
                     ShibbolethConstants.SHIBBOLETH_SCHEMA + ":" + ShibbolethConstants.GROUP_ID_PROPERTY).toString())) {
                 throw new GroupAlreadyExistsException();
@@ -93,49 +90,26 @@ public class ShibbolethGroupHelper {
 
             group = session.createEntry(group);
             return group;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     public static DocumentModel getGroup(String groupName) throws DirectoryException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY);
+        try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             return session.getEntry(groupName);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     public static void updateGroup(DocumentModel group) throws ClientException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY);
-
+        try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             checkExpressionLanguageValidity(group);
 
             session.updateEntry(group);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     public static void deleteGroup(DocumentModel group) throws ClientException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY);
+        try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             session.deleteEntry(group);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -154,23 +128,13 @@ public class ShibbolethGroupHelper {
     }
 
     public static DocumentModelList getGroups() throws ClientException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY);
-
+        try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             return session.getEntries();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     public static DocumentModelList searchGroup(String fullText) throws ClientException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY);
-
+        try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             Map<String, Serializable> filters = new HashMap<String, Serializable>();
             if (fullText != null && !"".equals(fullText)) {
                 filters.put(ShibbolethConstants.GROUP_ID_PROPERTY, fullText);
@@ -179,10 +143,6 @@ public class ShibbolethGroupHelper {
             Map<String, String> orderBy = new HashMap<String, String>();
             orderBy.put(ShibbolethConstants.GROUP_ID_PROPERTY, DocumentModelComparator.ORDER_ASC);
             return session.query(filters, new HashSet<String>(filters.keySet()), orderBy);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 

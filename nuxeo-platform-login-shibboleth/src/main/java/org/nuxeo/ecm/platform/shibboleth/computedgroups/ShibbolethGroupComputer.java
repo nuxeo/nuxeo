@@ -90,14 +90,8 @@ public class ShibbolethGroupComputer extends AbstractGroupComputer {
      * @return
      */
     private DocumentModelList getAllGroups() {
-        Session shibGroupDirectory = null;
-        try {
-            shibGroupDirectory = getDS().open(getDirectoryName());
+        try (Session shibGroupDirectory = getDS().open(getDirectoryName())) {
             return shibGroupDirectory.getEntries();
-        } finally {
-            if (shibGroupDirectory != null) {
-                shibGroupDirectory.close();
-            }
         }
     }
 }

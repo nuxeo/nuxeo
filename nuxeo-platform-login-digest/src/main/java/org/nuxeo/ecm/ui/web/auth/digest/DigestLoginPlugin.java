@@ -119,15 +119,12 @@ public class DigestLoginPlugin extends BaseLoginModule {
         if (directory == null) {
             throw new IllegalArgumentException("Digest Auth directory not found: " + dirName);
         }
-        Session dir = directoryService.open(dirName);
-        try {
+        try (Session dir = directoryService.open(dirName)) {
             String schema = directoryService.getDirectorySchema(dirName);
             DocumentModel entry = dir.getEntry(username, true);
             String passwordField = (parameters.containsKey(PASSWORD_FIELD)) ? parameters.get(PASSWORD_FIELD)
                     : dir.getPasswordField();
             return entry == null ? null : (String) entry.getProperty(schema, passwordField);
-        } finally {
-            dir.close();
         }
     }
 

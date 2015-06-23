@@ -108,10 +108,8 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         if (userId == null || "".equals(userId)) {
             return null;
         }
-        Session userDir = null;
-        try {
-            UserManager userManager = Framework.getService(UserManager.class);
-            userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName());
+        UserManager userManager = Framework.getService(UserManager.class);
+        try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())){
             Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
             DocumentModel entry = userDir.getEntry(userId);
             if (entry == null) {
@@ -122,14 +120,6 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
             }
         } catch (Exception e) {
             log.error("Failed to get or create user entry", e);
-        } finally {
-            if (userDir != null) {
-                try {
-                    userDir.close();
-                } catch (DirectoryException e) {
-                    log.error("Error while closing directory session", e);
-                }
-            }
         }
 
         return new UserIdentificationInfo(userId, userId);

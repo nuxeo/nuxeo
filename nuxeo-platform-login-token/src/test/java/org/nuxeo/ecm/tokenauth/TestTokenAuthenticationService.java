@@ -66,14 +66,11 @@ public class TestTokenAuthenticationService {
 
     @After
     public void cleanDirectories() throws Exception {
-        Session tokenDirSession = directoryService.open("authTokens");
-        try {
+        try (Session tokenDirSession = directoryService.open("authTokens")) {
             DocumentModelList entries = tokenDirSession.getEntries();
             for (DocumentModel entry : entries) {
                 tokenDirSession.deleteEntry(entry);
             }
-        } finally {
-            tokenDirSession.close();
         }
     }
 
@@ -96,8 +93,7 @@ public class TestTokenAuthenticationService {
         assertNotNull(token);
 
         // Test token binding persistence
-        Session directorySession = directoryService.open("authTokens");
-        try {
+        try (Session directorySession = directoryService.open("authTokens")) {
             DocumentModel tokenModel = directorySession.getEntry(token);
             assertNotNull(tokenModel);
             assertEquals(token, tokenModel.getPropertyValue("authtoken:token"));
@@ -107,8 +103,6 @@ public class TestTokenAuthenticationService {
             assertEquals("This is my personal box", tokenModel.getPropertyValue("authtoken:deviceDescription"));
             assertEquals("rw", tokenModel.getPropertyValue("authtoken:permission"));
             assertNotNull(tokenModel.getPropertyValue("authtoken:creationDate"));
-        } finally {
-            directorySession.close();
         }
 
         // Test existing token acquisition

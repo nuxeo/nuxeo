@@ -53,10 +53,8 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
 
     @Override
     public void storeUserInfo(String userId, OpenIDUserInfo userInfo) {
-        Session session = null;
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            session = ds.open(DIRECTORY_NAME);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Object> data = new HashMap<String, Object>();
 
             // Generate an ID
@@ -97,24 +95,13 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
 
         } catch (DirectoryException e) {
             log.error("Error during token storage", e);
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                    log.debug(e);
-                }
-            }
         }
     }
 
     @Override
     public String getNuxeoLogin(OpenIDUserInfo userInfo) {
-
-        Session session = null;
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            session = ds.open(DIRECTORY_NAME);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.getEntry(getID(providerName, userInfo.getSubject()));
             if (entry == null) {
                 return null;
@@ -123,23 +110,13 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         } catch (Exception e) {
             log.error("Error retrieving OpenID user info", e);
             return null;
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                }
-            }
         }
     }
 
     @Override
     public OpenIDUserInfo getUserInfo(String nuxeoLogin) {
-
-        Session session = null;
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            session = ds.open(DIRECTORY_NAME);
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put(OPENID_PROVIDER_KEY, providerName);
             filter.put(NUXEO_LOGIN_KEY, nuxeoLogin);
@@ -154,13 +131,6 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
         } catch (Exception e) {
             log.error("Error retrieving OpenID user info", e);
             return null;
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                }
-            }
         }
     }
 

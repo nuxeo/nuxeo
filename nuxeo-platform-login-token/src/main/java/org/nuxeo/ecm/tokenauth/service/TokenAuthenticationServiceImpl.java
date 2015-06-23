@@ -100,8 +100,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         }
         try {
             // Open directory session
-            final Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME);
-            try {
+            try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 // Generate random token, store the binding and return the token
                 UUID uuid = UUID.randomUUID();
                 token = uuid.toString();
@@ -125,8 +124,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                         userName, applicationName, deviceId));
                 return token;
 
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -158,8 +155,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         }
         try {
             // Open directory session
-            final Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME);
-            try {
+            try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 // Look for a token bound to the (userName,
                 // applicationName, deviceId) triplet, if it exists return it,
                 // else return null
@@ -193,8 +189,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
             } catch (ClientException e) {
                 log.error(e);
                 throw e;
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -219,8 +213,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
             throw new ClientException("Cannot log in as system user", e);
         }
         try {
-            final Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME);
-            try {
+            try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 DocumentModel entry = session.getEntry(token);
                 if (entry == null) {
                     log.debug(String.format("Found no user name bound to the token: '%s', returning null.", token));
@@ -229,8 +222,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                 log.debug(String.format("Found a user name bound to the token: '%s', returning it.", token));
                 return (String) entry.getProperty(DIRECTORY_SCHEMA, USERNAME_FIELD);
 
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -255,12 +246,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
             throw new ClientException("Cannot log in as system user", e);
         }
         try {
-            final Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME);
-            try {
+            try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 session.deleteEntry(token);
                 log.info(String.format("Deleted token: '%s' from the back-end.", token));
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -285,15 +273,12 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
             throw new ClientException("Cannot log in as system user", e);
         }
         try {
-            final Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME);
-            try {
+            try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
                 final Map<String, Serializable> filter = new HashMap<String, Serializable>();
                 filter.put(USERNAME_FIELD, userName);
                 final Map<String, String> orderBy = new HashMap<String, String>();
                 orderBy.put(CREATION_DATE_FIELD, "desc");
                 return session.query(filter, Collections.<String> emptySet(), orderBy);
-            } finally {
-                session.close();
             }
         } finally {
             try {

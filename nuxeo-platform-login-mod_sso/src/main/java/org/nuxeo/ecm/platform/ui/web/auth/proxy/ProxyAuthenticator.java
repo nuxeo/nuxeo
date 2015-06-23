@@ -33,7 +33,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -89,10 +88,8 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
         if (credentialFieldName != null) {
             // use custom directory field to find the user with the ID given in
             // the HTTP header
-            Session userDir = null;
-            try {
-                String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
-                userDir = Framework.getService(DirectoryService.class).open(directoryName);
+            String directoryName = Framework.getService(UserManager.class).getUserDirectoryName();
+            try (Session userDir = Framework.getService(DirectoryService.class).open(directoryName)) {
                 Map<String, Serializable> queryFilters = new HashMap<String, Serializable>();
                 queryFilters.put(credentialFieldName, userName);
                 DocumentModelList result = userDir.query(queryFilters);
@@ -113,14 +110,6 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
                 log.error(String.format("could not retrieve user entry with %s='%s':  %s", credentialFieldName,
                         userName, e.getMessage()), e);
                 return null;
-            } finally {
-                if (userDir != null) {
-                    try {
-                        userDir.close();
-                    } catch (DirectoryException e) {
-                        log.error("error while closing directory session: " + e.getMessage(), e);
-                    }
-                }
             }
         }
 
