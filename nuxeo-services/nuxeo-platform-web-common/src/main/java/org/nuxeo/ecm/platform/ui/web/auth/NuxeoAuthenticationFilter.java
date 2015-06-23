@@ -27,6 +27,7 @@ import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORCE_ANONYMOUS
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.FORM_SUBMITTED_MARKER;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGINCONTEXT_KEY;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_ERROR;
+import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGIN_STATUS_CODE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.LOGOUT_PAGE;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.PAGE_AFTER_SWITCH;
 import static org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants.REQUESTED_URL;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.naming.NamingException;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -289,7 +291,12 @@ public class NuxeoAuthenticationFilter implements Filter {
         } catch (LoginException e) {
             log.info("Login failed for " + cachableUserIdent.getUserInfo().getUserName());
             logAuthenticationAttempt(cachableUserIdent.getUserInfo(), false);
-            if (e.getCause() instanceof DirectoryException) {
+            Throwable cause = e.getCause();
+            if (cause instanceof DirectoryException) {
+                if (cause.getCause() instanceof NamingException
+                        && cause.getMessage().contains("LDAP response read timed out")) {
+                    httpRequest.setAttribute(LOGIN_STATUS_CODE, HttpServletResponse.SC_REQUEST_TIMEOUT);
+                }
                 return DIRECTORY_ERROR_PRINCIPAL;
             }
             return null;
