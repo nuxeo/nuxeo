@@ -26,6 +26,7 @@ public final class NXAuthConstants {
     public static final String USERIDENT_KEY = "org.nuxeo.ecm.login.identity";
     public static final String LOGINCONTEXT_KEY = "org.nuxeo.ecm.login.context";
     public static final String LOGIN_ERROR = "org.nuxeo.ecm.login.error";
+    public static final String LOGIN_STATUS_CODE = "org.nuxeo.ecm.login.status.code";
     public static final String LOGOUT_PAGE = "logout";
     public static final String SWITCH_USER_PAGE = "swuser";
     public static final String PAGE_AFTER_SWITCH = "pageAfterSwitch";
