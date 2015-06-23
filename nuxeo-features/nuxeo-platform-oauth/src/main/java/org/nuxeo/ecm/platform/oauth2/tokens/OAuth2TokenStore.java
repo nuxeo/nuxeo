@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.api.client.auth.oauth2.StoredCredential;
-import com.google.api.client.util.store.DataStore;
-import com.google.api.client.util.store.DataStoreFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -38,6 +35,10 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+
+import com.google.api.client.auth.oauth2.StoredCredential;
+import com.google.api.client.util.store.DataStore;
+import com.google.api.client.util.store.DataStoreFactory;
 
 /**
  * {@link DataStore} backed by a Nuxeo Directory
@@ -75,9 +76,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     @Override
     public DataStore<StoredCredential> delete(String key) throws IOException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("serviceName", serviceName);
             filter.put(ENTRY_ID, key);
@@ -85,10 +84,6 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
             DocumentModelList entries = session.query(filter);
             for (DocumentModel entry : entries) {
                 session.deleteEntry(entry);
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
         return this;
@@ -187,27 +182,19 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     public NuxeoOAuth2Token refresh(DocumentModel entry, NuxeoOAuth2Token token) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             entry.setProperty("oauth2Token", "accessToken", token.getAccessToken());
             entry.setProperty("oauth2Token", "refreshToken", token.getRefreshToken());
             entry.setProperty("oauth2Token", "creationDate", token.getCreationDate());
             entry.setProperty("oauth2Token", "expirationTimeMilliseconds", token.getExpirationTimeMilliseconds());
             session.updateEntry(entry);
             return getTokenFromDirectoryEntry(entry);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     public void delete(String token, String clientId) throws ClientException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("serviceName", serviceName);
             filter.put("clientId", clientId);
@@ -216,10 +203,6 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
             DocumentModelList entries = session.query(filter);
             for (DocumentModel entry : entries) {
                 session.deleteEntry(entry);
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
     }
@@ -247,15 +230,9 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     public DocumentModelList query(Map<String, Serializable> filter) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             filter.put("serviceName", serviceName);
             return session.query(filter);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -265,16 +242,10 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
 
     protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(NuxeoOAuth2Token aToken) throws ClientException {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.createEntry(aToken.toMap());
             session.updateEntry(entry);
             return getTokenFromDirectoryEntry(entry);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 

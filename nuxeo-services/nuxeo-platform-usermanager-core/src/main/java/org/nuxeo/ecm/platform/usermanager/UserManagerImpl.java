@@ -371,17 +371,14 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             return expected.equals(password);
         }
 
-        Session userDir = null;
-        try {
-            String userDirName;
-            // BBB backward compat for userDirectory + userAuthentication
-            if ("userDirectory".equals(userDirectoryName) && dirService.getDirectory("userAuthentication") != null) {
-                userDirName = "userAuthentication";
-            } else {
-                userDirName = userDirectoryName;
-            }
-
-            userDir = dirService.open(userDirName);
+        String userDirName;
+        // BBB backward compat for userDirectory + userAuthentication
+        if ("userDirectory".equals(userDirectoryName) && dirService.getDirectory("userAuthentication") != null) {
+            userDirName = "userAuthentication";
+        } else {
+            userDirName = userDirectoryName;
+        }
+        try (Session userDir = dirService.open(userDirName)) {
             if (!userDir.isAuthenticating()) {
                 log.error("Trying to authenticate against a non authenticating " + "directory: " + userDirName);
                 return false;
@@ -392,10 +389,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 syncDigestAuthPassword(username, password);
             }
             return authenticated;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
     }
 
@@ -406,9 +399,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
 
         String ha1 = encodeDigestAuthPassword(username, digestAuthRealm, password);
-        Session dir = null;
-        try {
-            dir = dirService.open(digestAuthDirectory);
+        try (Session dir = dirService.open(digestAuthDirectory)) {
             String schema = dirService.getDirectorySchema(digestAuthDirectory);
             DocumentModel entry = dir.getEntry(username, true);
             if (entry == null) {
@@ -427,10 +418,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             }
         } catch (DirectoryException e) {
             log.warn("Digest auth password not synchronized, check your configuration", e);
-        } finally {
-            if (dir != null) {
-                dir.close();
-            }
         }
     }
 
@@ -773,41 +760,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public Boolean areGroupsReadOnly() throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
+        try (Session groupDir = dirService.open(groupDirectoryName)) {
             return groupDir.isReadOnly();
         } catch (DirectoryException e) {
             log.error(e);
             return false;
-        } finally {
-            try {
-                if (groupDir != null) {
-                    groupDir.close();
-                }
-            } catch (DirectoryException e) {
-                log.error(e, e);
-            }
         }
     }
 
     @Override
     public Boolean areUsersReadOnly() throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
+        try (Session userDir = dirService.open(userDirectoryName)) {
             return userDir.isReadOnly();
         } catch (DirectoryException e) {
             log.error(e);
             return false;
-        } finally {
-            try {
-                if (userDir != null) {
-                    userDir.close();
-                }
-            } catch (DirectoryException e) {
-                log.error(e, e);
-            }
         }
     }
 
@@ -875,17 +842,11 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public List<String> getGroupIds() throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName);
+        try (Session groupDir = dirService.open(groupDirectoryName)) {
             List<String> groupIds = groupDir.getProjection(Collections.<String, Serializable> emptyMap(),
                     groupDir.getIdField());
             Collections.sort(groupIds);
             return groupIds;
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 
@@ -991,9 +952,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     @Override
     public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern)
             throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName);
+        try (Session userDir = dirService.open(userDirectoryName)) {
             removeVirtualFilters(filter);
 
             DocumentModelList entries = userDir.query(filter, pattern);
@@ -1005,10 +964,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 principals.add(makeAnonymousPrincipal());
             }
             return principals;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
     }
 
@@ -1063,10 +1018,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext,
             Map<String, String> orderBy, DocumentModel context) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName, context);
-
+        try (Session userDir = dirService.open(userDirectoryName, context)) {
             removeVirtualFilters(filter);
 
             // XXX: do not fetch references, can be costly
@@ -1083,10 +1035,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             }
 
             return entries;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
     }
 
@@ -1145,16 +1093,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<String>();
         multiTenantManagement.queryTransformer(this, filter, fulltextClone, context);
 
-        Session groupDir = null;
-        try {
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             removeVirtualFilters(filter);
-            groupDir = dirService.open(groupDirectoryName, context);
-
             return groupDir.query(filter, fulltextClone, getGroupSortMap(), false);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 
@@ -1166,9 +1107,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         // be sure the name does not contains trailing spaces
         checkGrouId(groupModel);
 
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName, context);
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             String groupId = getGroupId(groupModel);
 
             // check the group does not exist
@@ -1180,27 +1119,18 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             notify(groupId, GROUPCREATED_EVENT_ID);
             return groupModel;
 
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 
     @Override
     public DocumentModel getGroupModel(String groupIdValue, DocumentModel context) throws ClientException {
         String groupName = multiTenantManagement.groupnameTranformer(this, groupIdValue, context);
-        Session groupDir = null;
         if (groupName != null) {
             groupName = groupName.trim();
         }
-        try {
-            groupDir = dirService.open(groupDirectoryName, context);
+
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             return groupDir.getEntry(groupName);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 
@@ -1216,14 +1146,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             return makeVirtualUserEntry(getAnonymousUserId(), anonymousUser);
         }
 
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName, context);
+        try (Session userDir = dirService.open(userDirectoryName, context)) {
             return userDir.getEntry(userName);
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
     }
 
@@ -1295,30 +1219,21 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public List<String> getUserIds(DocumentModel context) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName, context);
+        try (Session userDir = dirService.open(userDirectoryName, context)) {
             List<String> userIds = userDir.getProjection(Collections.<String, Serializable> emptyMap(),
                     userDir.getIdField());
             Collections.sort(userIds);
             return userIds;
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
     }
 
     @Override
     public DocumentModel createUser(DocumentModel userModel, DocumentModel context) throws ClientException,
             UserAlreadyExistsException {
-        Session userDir = null;
-
         // be sure UserId does not contains any trailing spaces
         checkUserId(userModel);
 
-        try {
-            userDir = dirService.open(userDirectoryName, context);
+        try (Session userDir = dirService.open(userDirectoryName, context)) {
             String userId = getUserId(userModel);
 
             // check the user does not exist
@@ -1338,18 +1253,12 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             notify(userId, USERCREATED_EVENT_ID);
             return userModel;
 
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
     }
 
     @Override
     public void updateUser(DocumentModel userModel, DocumentModel context) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName, context);
+        try (Session userDir = dirService.open(userDirectoryName, context)) {
             String userId = getUserId(userModel);
 
             if (!userDir.hasEntry(userId)) {
@@ -1366,12 +1275,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
             notifyUserChanged(userId);
             notify(userId, USERMODIFIED_EVENT_ID);
-        } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
         }
-
     }
 
     @Override
@@ -1382,9 +1286,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public void deleteUser(String userId, DocumentModel context) throws ClientException {
-        Session userDir = null;
-        try {
-            userDir = dirService.open(userDirectoryName, context);
+        try (Session userDir = dirService.open(userDirectoryName, context)) {
             if (!userDir.hasEntry(userId)) {
                 throw new DirectoryException("User does not exist: " + userId);
             }
@@ -1393,18 +1295,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             notify(userId, USERDELETED_EVENT_ID);
 
         } finally {
-            if (userDir != null) {
-                userDir.close();
-            }
             notifyUserChanged(userId);
         }
     }
 
     @Override
     public void updateGroup(DocumentModel groupModel, DocumentModel context) throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName, context);
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             String groupId = getGroupId(groupModel);
 
             if (!groupDir.hasEntry(groupId)) {
@@ -1413,10 +1310,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             groupDir.updateEntry(groupModel);
             notifyGroupChanged(groupId);
             notify(groupId, GROUPMODIFIED_EVENT_ID);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 
@@ -1428,19 +1321,13 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public void deleteGroup(String groupId, DocumentModel context) throws ClientException {
-        Session groupDir = null;
-        try {
-            groupDir = dirService.open(groupDirectoryName, context);
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             if (!groupDir.hasEntry(groupId)) {
                 throw new DirectoryException("Group does not exist: " + groupId);
             }
             groupDir.deleteEntry(groupId);
             notifyGroupChanged(groupId);
             notify(groupId, GROUPDELETED_EVENT_ID);
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 
@@ -1451,10 +1338,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     @Override
     public List<String> getTopLevelGroups(DocumentModel context) throws ClientException {
-        Session groupDir = null;
-        try {
+        try (Session groupDir = dirService.open(groupDirectoryName, context)) {
             List<String> topLevelGroups = new LinkedList<String>();
-            groupDir = dirService.open(groupDirectoryName, context);
             // XXX retrieve all entries with references, can be costly.
             DocumentModelList groups = groupDir.query(Collections.<String, Serializable> emptyMap(), null, null, true);
             for (DocumentModel group : groups) {
@@ -1466,10 +1351,6 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 }
             }
             return topLevelGroups;
-        } finally {
-            if (groupDir != null) {
-                groupDir.close();
-            }
         }
     }
 

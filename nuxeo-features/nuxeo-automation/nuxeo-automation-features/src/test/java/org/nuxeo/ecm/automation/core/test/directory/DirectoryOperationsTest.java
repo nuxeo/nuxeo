@@ -83,14 +83,8 @@ public class DirectoryOperationsTest {
         m.put("label", label);
         m.put("obsolete", obsolete);
 
-        Session directorySession = null;
-        try {
-            directorySession = directoryService.open("continent");
+        try (Session directorySession = directoryService.open("continent")) {
             directorySession.createEntry(m);
-        } finally {
-            if (directorySession != null) {
-                directorySession.close();
-            }
         }
     }
 
@@ -117,19 +111,13 @@ public class DirectoryOperationsTest {
         assertEquals("newContinent", createdIds.get(0));
         assertEquals("anotherContinent", createdIds.get(1));
 
-        Session directorySession = null;
-        try {
-            directorySession = directoryService.open("continent");
+        try (Session directorySession = directoryService.open("continent")) {
             DocumentModel entry = directorySession.getEntry("newContinent");
             assertNotNull(entry);
             assertEquals("newLabel", entry.getProperty("vocabulary", "label"));
             entry = directorySession.getEntry("anotherContinent");
             assertNotNull(entry);
             assertEquals("anotherLabel", entry.getProperty("vocabulary", "label"));
-        } finally {
-            if (directorySession != null) {
-                directorySession.close();
-            }
         }
     }
 
@@ -178,14 +166,8 @@ public class DirectoryOperationsTest {
         assertEquals(1, deleteIds.size());
         assertEquals("entryToDelete", deleteIds.get(0));
 
-        Session directorySession = null;
-        try {
-            directorySession = directoryService.open("continent");
+        try (Session directorySession = directoryService.open("continent")) {
             assertNull(directorySession.getEntry("entryToDelete"));
-        } finally {
-            if (directorySession != null) {
-                directorySession.close();
-            }
         }
     }
 
@@ -211,16 +193,10 @@ public class DirectoryOperationsTest {
         assertEquals(1, deleteIds.size());
         assertEquals("entryToMarkAsObsolete", deleteIds.get(0));
 
-        Session directorySession = null;
-        try {
-            directorySession = directoryService.open("continent");
+        try (Session directorySession = directoryService.open("continent")) {
             DocumentModel entry = directorySession.getEntry("entryToMarkAsObsolete");
             assertNotNull(entry);
             assertEquals(1L, entry.getProperty("vocabulary", "obsolete"));
-        } finally {
-            if (directorySession != null) {
-                directorySession.close();
-            }
         }
     }
 
@@ -248,16 +224,10 @@ public class DirectoryOperationsTest {
         assertEquals(1, updatedIds.size());
         assertEquals("entryToUpdate", updatedIds.get(0));
 
-        Session directorySession = null;
-        try {
-            directorySession = directoryService.open("continent");
+        try (Session directorySession = directoryService.open("continent")) {
             DocumentModel entry = directorySession.getEntry("entryToUpdate");
             assertNotNull(entry);
             assertEquals("newEntryToUpdateLabel", entry.getProperty("vocabulary", "label"));
-        } finally {
-            if (directorySession != null) {
-                directorySession.close();
-            }
         }
     }
 

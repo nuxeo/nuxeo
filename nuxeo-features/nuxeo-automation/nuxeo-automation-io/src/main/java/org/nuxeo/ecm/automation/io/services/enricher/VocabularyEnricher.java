@@ -122,9 +122,7 @@ public class VocabularyEnricher extends AbstractContentEnricher {
      */
     private void writeLabels(JsonGenerator jg, String directoryName, String[] entriesIds, List<String> labelFields)
             throws IOException {
-        Session session = null;
-        try {
-            session = getDirectoryService().open(directoryName);
+        try (Session session = getDirectoryService().open(directoryName)) {
             for (String entryId : entriesIds) {
                 Map<String, String> labels = getAbsoluteLabels(entryId, session, labelFields);
                 // Write absolute labels (<parent label> / <child label>)
@@ -135,12 +133,7 @@ public class VocabularyEnricher extends AbstractContentEnricher {
                 }
                 jg.writeEndObject();
             }
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
-
     }
 
     /**

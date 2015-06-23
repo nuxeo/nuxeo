@@ -73,10 +73,7 @@ public class DirectoryProjection {
 
     @OperationMethod
     public void run() {
-        Directory directory = directoryService.getDirectory(directoryName);
-        Session session = null;
-        try {
-            session = directory.getSession();
+        try (Session session = directoryService.open(directoryName)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             Set<String> fulltext = new HashSet<String>();
             if (filterProperties != null) {
@@ -87,14 +84,6 @@ public class DirectoryProjection {
             }
             List<String> uids = session.getProjection(filter, fulltext, columnName);
             ctx.put(variableName, uids);
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
     }
 

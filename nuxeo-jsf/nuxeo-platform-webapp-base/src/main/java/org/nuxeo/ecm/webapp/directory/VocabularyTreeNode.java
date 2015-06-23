@@ -215,8 +215,7 @@ public class VocabularyTreeNode {
             // XXX: use the cache manager instead of field caching strategy
             return childrenEntries;
         }
-        Session session = getDirectorySession();
-        try {
+        try (Session session = getDirectorySession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
             String directorySchema = getDirectorySchema();
@@ -243,8 +242,6 @@ public class VocabularyTreeNode {
                 childrenEntries = session.query(filter);
             }
             return childrenEntries;
-        } finally {
-            session.close();
         }
     }
 

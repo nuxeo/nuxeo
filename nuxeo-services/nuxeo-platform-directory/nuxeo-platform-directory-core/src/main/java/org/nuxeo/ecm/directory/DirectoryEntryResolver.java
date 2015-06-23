@@ -182,15 +182,12 @@ public class DirectoryEntryResolver implements ObjectResolver {
                     return null;
                 }
             }
-            Session session = directory.getSession();
-            try {
+            try (Session session = directory.getSession()) {
                 DocumentModel doc = session.getEntry(id);
                 if (doc != null) {
                     return new DirectoryEntry(directory.getName(), doc);
                 }
                 return null;
-            } finally {
-                session.close();
             }
         }
         return null;
@@ -229,22 +226,14 @@ public class DirectoryEntryResolver implements ObjectResolver {
                 if (hierarchical) {
                     String parent = (String) entry.getProperty(schema, parentField);
                     DocumentModel parentModel;
-                    Session session = null;
-                    try {
+                    try (Session session = directory.getSession()) {
                         while (parent != null) {
-                            if (session == null) {
-                                session = directory.getSession();
-                            }
                             parentModel = session.getEntry(parent);
                             if (parentModel != null) {
                                 parent = (String) entry.getProperty(schema, idField);
                                 result = parent + separator + result;
                                 parent = (String) entry.getProperty(schema, parentField);
                             }
-                        }
-                    } finally {
-                        if (session != null) {
-                            session.close();
                         }
                     }
                 }

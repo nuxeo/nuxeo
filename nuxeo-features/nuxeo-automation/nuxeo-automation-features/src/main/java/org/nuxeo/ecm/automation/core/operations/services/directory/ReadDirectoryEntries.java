@@ -89,12 +89,11 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
         List<String> ids = mapper.readValue(jsonEntries, new TypeReference<List<String>>() {
         });
         List<Map<String, Object>> entries = new ArrayList<Map<String, Object>>();
-        Session session = null;
-        try {
-            Directory directory = directoryService.getDirectory(directoryName);
-            String schemaName = directory.getSchema();
-            Schema schema = schemaManager.getSchema(schemaName);
-            session = directoryService.open(directoryName);
+
+        Directory directory = directoryService.getDirectory(directoryName);
+        String schemaName = directory.getSchema();
+        Schema schema = schemaManager.getSchema(schemaName);
+        try (Session session = directoryService.open(directoryName)) {
             for (String id : ids) {
                 DocumentModel entry = session.getEntry(id);
                 if (entry != null) {
@@ -110,10 +109,6 @@ public class ReadDirectoryEntries extends AbstractDirectoryOperation {
                     }
                     entries.add(m);
                 }
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
 

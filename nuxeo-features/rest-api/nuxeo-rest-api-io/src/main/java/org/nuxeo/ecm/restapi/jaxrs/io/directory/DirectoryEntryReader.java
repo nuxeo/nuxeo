@@ -155,13 +155,11 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
         String schema = directory.getSchema();
         String id = propertiesNode.get(directory.getIdField()).getTextValue();
 
-        Session session = null;
-        try {
-            session = directory.getSession();
+        try (Session session = directory.getSession()) {
             DocumentModel entry = session.getEntry(id);
 
             if (entry == null) {
-                entry = BaseSession.createEntryModel(null, schema, id, new HashMap<String, Object>());
+                entry = BaseSession.createEntryModel(null, schema, id, new HashMap<>());
             }
 
             Properties props = new Properties();
@@ -175,10 +173,6 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
 
             return new DirectoryEntry(directory.getName(), entry);
 
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 

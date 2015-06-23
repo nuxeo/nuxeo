@@ -84,9 +84,7 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
         List<String> entries = mapper.readValue(jsonEntries, new TypeReference<List<String>>() {
         });
         List<String> ids = new ArrayList<String>();
-        Session session = null;
-        try {
-            session = directoryService.open(directoryName);
+        try (Session session = directoryService.open(directoryName)) {
             for (String entryId : entries) {
                 if (markObsolete) {
                     markObsoleteOrDelete(session, entryId);
@@ -94,10 +92,6 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
                     session.deleteEntry(entryId);
                 }
                 ids.add(entryId);
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
 

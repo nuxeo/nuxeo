@@ -53,8 +53,7 @@ public class TestSQLDirectoryAutoIncrementId {
 
     @Test
     public void testAutoIncrementId() throws Exception {
-        Session session = directoryService.open("testAutoIncrement");
-        try {
+        try (Session session = directoryService.open("testAutoIncrement")) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("id", Long.valueOf(42)); // will be ignored
             map.put("label", "foo");
@@ -69,8 +68,6 @@ public class TestSQLDirectoryAutoIncrementId {
             assertNotNull(entry2);
             assertEquals(Long.valueOf(2), entry2.getProperty(SCHEMA, "id"));
             assertEquals("bar", entry2.getProperty(SCHEMA, "label"));
-        } finally {
-            session.close();
         }
     }
 

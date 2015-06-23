@@ -240,9 +240,8 @@ public class LDAPReference extends AbstractReference {
             }
             return;
         }
-        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
-        LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
-        try {
+        try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
+                LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
             // fetch the entry to be able to run the security policy
             // implemented in an entry adaptor
             DocumentModel sourceEntry = sourceSession.getEntry(sourceId, false);
@@ -321,9 +320,6 @@ public class LDAPReference extends AbstractReference {
             }
         } catch (NamingException e) {
             throw new DirectoryException("addLinks failed: " + e.getMessage(), e);
-        } finally {
-            sourceSession.close();
-            targetSession.close();
         }
     }
 
@@ -340,12 +336,11 @@ public class LDAPReference extends AbstractReference {
             return;
         }
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
-        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();
-        LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
 
         String emptyRefMarker = sourceDirectory.getConfig().getEmptyRefMarker();
-        try {
+        try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
+                LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
             if (!sourceSession.isReadOnly()) {
                 // compute the target dn to add to all the matching source
                 // entries
@@ -424,9 +419,6 @@ public class LDAPReference extends AbstractReference {
             }
         } catch (NamingException e) {
             throw new DirectoryException("addLinks failed: " + e.getMessage(), e);
-        } finally {
-            sourceSession.close();
-            targetSession.close();
         }
     }
 
@@ -449,10 +441,9 @@ public class LDAPReference extends AbstractReference {
             // step #1.1: fetch the dn of the targetId entry in the target
             // directory by the static dn valued strategy
             LDAPDirectory targetDir = getTargetLDAPDirectory();
-            LDAPSession targetSession = (LDAPSession) targetDir.getSession();
 
             if (staticAttributeIdIsDn) {
-                try {
+                try (LDAPSession targetSession = (LDAPSession) targetDir.getSession()) {
                     targetLdapEntry = targetSession.getLdapEntry(targetId, true);
                     if (targetLdapEntry == null) {
                         String msg = String.format("Failed to perform inverse lookup on LDAPReference"
@@ -467,8 +458,6 @@ public class LDAPReference extends AbstractReference {
                 } catch (NamingException e) {
                     throw new DirectoryException("error fetching " + targetId + " from " + targetDirectoryName + ": "
                             + e.getMessage(), e);
-                } finally {
-                    targetSession.close();
                 }
             }
 
@@ -486,9 +475,8 @@ public class LDAPReference extends AbstractReference {
             }
 
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
-            LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
             SearchControls sctls = sourceDirectory.getSearchControls();
-            try {
+            try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
                             + " filter='%s' args='%s' scope='%s' [%s]", targetId, searchBaseDn, filterExpr,
@@ -514,8 +502,6 @@ public class LDAPReference extends AbstractReference {
                 }
             } catch (NamingException e) {
                 throw new DirectoryException("error during reference search for " + filterArgs[0], e);
-            } finally {
-                sourceSession.close();
             }
         }
         // step #2: resolve dynamic references
@@ -525,10 +511,9 @@ public class LDAPReference extends AbstractReference {
             LDAPDirectory sourceDirectory = getSourceLDAPDirectory();
             LDAPDirectory targetDirectory = getTargetLDAPDirectory();
             String searchBaseDn = sourceDirectory.getConfig().getSearchBaseDn();
-            LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
-            LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
 
-            try {
+            try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
+                    LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
                 // step #2.1: fetch the target entry to apply the ldap url
                 // filters of the candidate sources on it
                 if (targetLdapEntry == null) {
@@ -608,9 +593,6 @@ public class LDAPReference extends AbstractReference {
                 }
             } catch (NamingException e) {
                 throw new DirectoryException("error during reference search for " + targetId, e);
-            } finally {
-                sourceSession.close();
-                targetSession.close();
             }
         }
 
@@ -634,16 +616,13 @@ public class LDAPReference extends AbstractReference {
     // XXX: broken, use getLdapTargetIds for a proper implementation
     @SuppressWarnings("unchecked")
     public List<String> getTargetIdsForSource(String sourceId) throws DirectoryException {
-        Session session = getSourceDirectory().getSession();
         String schemaName = getSourceDirectory().getSchema();
-        try {
+        try (Session session = getSourceDirectory().getSession()) {
             try {
                 return (List<String>) session.getEntry(sourceId).getProperty(schemaName, fieldName);
             } catch (ClientException e) {
                 throw new DirectoryException(e);
             }
-        } finally {
-            session.close();
         }
     }
 
@@ -682,9 +661,8 @@ public class LDAPReference extends AbstractReference {
 
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectoryDescriptor targetDirconfig = getTargetDirectoryDescriptor();
-        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         String emptyRefMarker = targetDirectory.getConfig().getEmptyRefMarker();
-        try {
+        try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
             String baseDn = pseudoNormalizeDn(targetDirconfig.getSearchBaseDn());
 
             // step #1: fetch ids referenced by static attributes
@@ -869,8 +847,6 @@ public class LDAPReference extends AbstractReference {
             return new ArrayList<String>(targetIds);
         } catch (NamingException e) {
             throw new DirectoryException("error computing LDAP references", e);
-        } finally {
-            targetSession.close();
         }
     }
 
@@ -983,10 +959,9 @@ public class LDAPReference extends AbstractReference {
     public void removeLinksForSource(String sourceId) throws DirectoryException {
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();
-        LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
-        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         String attributeId = getStaticAttributeId();
-        try {
+        try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
+                LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
             if (sourceSession.isReadOnly() || attributeId == null) {
                 // do not try to do anything on a read only server or to a
                 // purely dynamic reference
@@ -1073,9 +1048,6 @@ public class LDAPReference extends AbstractReference {
             }
         } catch (NamingException e) {
             throw new DirectoryException("removeLinksForSource failed: " + e.getMessage(), e);
-        } finally {
-            sourceSession.close();
-            targetSession.close();
         }
     }
 
@@ -1091,11 +1063,10 @@ public class LDAPReference extends AbstractReference {
             return;
         }
         LDAPDirectory targetDirectory = (LDAPDirectory) getTargetDirectory();
-        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         LDAPDirectory sourceDirectory = (LDAPDirectory) getSourceDirectory();
-        LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
         String attributeId = getStaticAttributeId();
-        try {
+        try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
+                LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
             if (!sourceSession.isReadOnly()) {
                 // get the dn of the target that matches targetId
                 String targetAttributeValue;
@@ -1202,9 +1173,6 @@ public class LDAPReference extends AbstractReference {
             }
         } catch (NamingException e) {
             throw new DirectoryException("removeLinksForTarget failed: " + e.getMessage(), e);
-        } finally {
-            sourceSession.close();
-            targetSession.close();
         }
     }
 

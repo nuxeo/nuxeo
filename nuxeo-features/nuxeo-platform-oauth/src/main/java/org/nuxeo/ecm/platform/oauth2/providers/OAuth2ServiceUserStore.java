@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.oauth2.providers;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -25,13 +29,9 @@ import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Directory backed storage for mapping between users and services
- * The current implementation reuses the existing token directory as storage.
+ * Directory backed storage for mapping between users and services The current implementation reuses the existing token
+ * directory as storage.
  *
  * @since 7.3
  */
@@ -55,18 +55,12 @@ public class OAuth2ServiceUserStore {
 
     public String store(String nuxeoLogin, Map<String, Object> fields) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             fields.put("nuxeoLogin", nuxeoLogin);
             fields.put("serviceName", serviceName);
             DocumentModel entry = session.createEntry(fields);
             Long id = (Long) entry.getProperty(NuxeoOAuth2Token.SCHEMA, ENTRY_ID);
             return id.toString();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -85,14 +79,8 @@ public class OAuth2ServiceUserStore {
 
     protected DocumentModelList query(Map<String, Serializable> filter) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             return session.query(filter);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 }

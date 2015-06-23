@@ -79,10 +79,7 @@ public class UpdateDirectoryEntries extends AbstractDirectoryOperation {
         Directory directory = directoryService.getDirectory(directoryName);
         String idField = directory.getIdField();
 
-        Session session = null;
-        try {
-
-            session = directoryService.open(directoryName);
+        try (Session session = directoryService.open(directoryName)) {
             for (Map<String, Object> entry : entries) {
                 if (entry.containsKey(idField)) {
                     DocumentModel doc = session.getEntry((String) entry.get(idField));
@@ -92,10 +89,6 @@ public class UpdateDirectoryEntries extends AbstractDirectoryOperation {
                         ids.add(doc.getId());
                     }
                 }
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
 

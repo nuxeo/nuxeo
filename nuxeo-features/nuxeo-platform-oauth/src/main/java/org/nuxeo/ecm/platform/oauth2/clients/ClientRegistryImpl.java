@@ -42,9 +42,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     @Override
     public boolean hasClient(String clientId) throws ClientException {
         DirectoryService service = getService();
-        Session session = null;
-        try {
-            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
+        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("clientId", clientId);
             DocumentModelList docs = session.query(filter);
@@ -54,10 +52,6 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
 
             DocumentModel entry = docs.get(0);
             return OAuth2Client.fromDocumentModel(entry).isEnabled();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -80,19 +74,12 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
         }
 
         DirectoryService service = getService();
-        Session session = null;
-        try {
-            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
+        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             if (session.hasEntry(client.getId())) {
                 log.debug(String.format("ClientId is already registered: %s", client.getId()));
                 return false;
             }
-
             session.createEntry(client.toMap());
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
         return true;
     }
@@ -100,31 +87,19 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     @Override
     public boolean deleteClient(String clientId) throws ClientException {
         DirectoryService service = getService();
-        Session session = null;
-        try {
-            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
+        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             session.deleteEntry(clientId);
             return true;
         } catch (DirectoryException e) {
             return false;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     @Override
     public List<DocumentModel> listClients() throws ClientException {
         DirectoryService service = getService();
-        Session session = null;
-        try {
-            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
+        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             return session.getEntries();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -135,18 +110,12 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
 
     protected DocumentModel getClientModel(String clientId) throws ClientException {
         DirectoryService service = getService();
-        Session session = null;
-        try {
-            session = service.open(OAUTH2CLIENT_DIRECTORY_NAME);
+        try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("clientId", clientId);
             DocumentModelList docs = session.query(filter);
             if (docs.size() > 0) {
                 return docs.get(0);
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
         return null;

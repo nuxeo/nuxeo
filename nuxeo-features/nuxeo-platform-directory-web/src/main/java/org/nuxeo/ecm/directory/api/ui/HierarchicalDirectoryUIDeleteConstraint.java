@@ -65,9 +65,7 @@ public class HierarchicalDirectoryUIDeleteConstraint extends AbstractDirectoryUI
     }
 
     public boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException, ClientException {
-        Session dirSession = null;
-        try {
-            dirSession = dirService.open(targetDirectory);
+        try (Session dirSession = dirService.open(targetDirectory)) {
             // search for given entry id usage in this directory
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put(targetDirectoryField, entryId);
@@ -80,10 +78,6 @@ public class HierarchicalDirectoryUIDeleteConstraint extends AbstractDirectoryUI
                         + targetDirectoryField + ":" + res.get(0).getId());
             }
             return false;
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
         }
     }
 

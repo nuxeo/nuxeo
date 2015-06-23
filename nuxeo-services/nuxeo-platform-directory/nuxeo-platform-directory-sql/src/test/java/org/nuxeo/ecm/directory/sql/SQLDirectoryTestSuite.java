@@ -107,83 +107,75 @@ public class SQLDirectoryTestSuite {
 
     @Test
     public void testTableReference() throws Exception {
-        Session groupSession = directoryService.open(GROUP_DIR);
-        try {
-            Reference membersRef = directoryService.getDirectory(GROUP_DIR).getReference("members");
+        Reference membersRef = directoryService.getDirectory(GROUP_DIR).getReference("members");
 
-            // test initial configuration
-            List<String> administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(1, administrators.size());
-            assertTrue(administrators.contains("Administrator"));
+        // test initial configuration
+        List<String> administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(1, administrators.size());
+        assertTrue(administrators.contains("Administrator"));
 
-            // add user_1 to the administrators group
-            membersRef.addLinks("administrators", Arrays.asList("user_1"));
+        // add user_1 to the administrators group
+        membersRef.addLinks("administrators", Arrays.asList("user_1"));
 
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(2, administrators.size());
-            assertTrue(administrators.contains("Administrator"));
-            assertTrue(administrators.contains("user_1"));
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(2, administrators.size());
+        assertTrue(administrators.contains("Administrator"));
+        assertTrue(administrators.contains("user_1"));
 
-            // readding the same link should not duplicate it
-            membersRef.addLinks("administrators", Arrays.asList("user_1", "user_2"));
+        // readding the same link should not duplicate it
+        membersRef.addLinks("administrators", Arrays.asList("user_1", "user_2"));
 
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(3, administrators.size());
-            assertTrue(administrators.contains("Administrator"));
-            assertTrue(administrators.contains("user_1"));
-            assertTrue(administrators.contains("user_2"));
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(3, administrators.size());
+        assertTrue(administrators.contains("Administrator"));
+        assertTrue(administrators.contains("user_1"));
+        assertTrue(administrators.contains("user_2"));
 
-            // remove the reference to Administrator
-            membersRef.removeLinksForTarget("Administrator");
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(2, administrators.size());
-            assertTrue(administrators.contains("user_1"));
-            assertTrue(administrators.contains("user_2"));
+        // remove the reference to Administrator
+        membersRef.removeLinksForTarget("Administrator");
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(2, administrators.size());
+        assertTrue(administrators.contains("user_1"));
+        assertTrue(administrators.contains("user_2"));
 
-            // remove the references from administrators
-            membersRef.removeLinksForSource("administrators");
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(0, administrators.size());
+        // remove the references from administrators
+        membersRef.removeLinksForSource("administrators");
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(0, administrators.size());
 
-            // readd references with the set* methods
+        // readd references with the set* methods
 
-            membersRef.setTargetIdsForSource("administrators", Arrays.asList("user_1", "user_2"));
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(2, administrators.size());
-            assertTrue(administrators.contains("user_1"));
-            assertTrue(administrators.contains("user_2"));
+        membersRef.setTargetIdsForSource("administrators", Arrays.asList("user_1", "user_2"));
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(2, administrators.size());
+        assertTrue(administrators.contains("user_1"));
+        assertTrue(administrators.contains("user_2"));
 
-            membersRef.setTargetIdsForSource("administrators", Arrays.asList("user_1", "Administrator"));
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(2, administrators.size());
-            assertTrue(administrators.contains("user_1"));
-            assertTrue(administrators.contains("Administrator"));
+        membersRef.setTargetIdsForSource("administrators", Arrays.asList("user_1", "Administrator"));
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(2, administrators.size());
+        assertTrue(administrators.contains("user_1"));
+        assertTrue(administrators.contains("Administrator"));
 
-            membersRef.setSourceIdsForTarget("Administrator", Arrays.asList("members"));
-            administrators = membersRef.getTargetIdsForSource("administrators");
-            assertEquals(1, administrators.size());
-            assertTrue(administrators.contains("user_1"));
+        membersRef.setSourceIdsForTarget("Administrator", Arrays.asList("members"));
+        administrators = membersRef.getTargetIdsForSource("administrators");
+        assertEquals(1, administrators.size());
+        assertTrue(administrators.contains("user_1"));
 
-            administrators = membersRef.getSourceIdsForTarget("Administrator");
-            assertEquals(1, administrators.size());
-            assertTrue(administrators.contains("members"));
+        administrators = membersRef.getSourceIdsForTarget("Administrator");
+        assertEquals(1, administrators.size());
+        assertTrue(administrators.contains("members"));
 
-            // cleanup for other tests
-            // (because the feature doesn't clean up everything)
-            membersRef.setTargetIdsForSource("administrators", Arrays.asList("Administrator"));
-            membersRef.setTargetIdsForSource("members", Arrays.asList("user_1"));
-
-        } finally {
-            groupSession.close();
-        }
+        // cleanup for other tests
+        // (because the feature doesn't clean up everything)
+        membersRef.setTargetIdsForSource("administrators", Arrays.asList("Administrator"));
+        membersRef.setTargetIdsForSource("members", Arrays.asList("user_1"));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateEntry() throws Exception {
-        Session session = getSession();
-        assertNotNull(session);
-        try {
+        try (Session session = getSession()) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("username", "user_0");
             map.put("password", "pass_0");
@@ -211,15 +203,12 @@ public class SQLDirectoryTestSuite {
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
 
-        } finally {
-            session.close();
         }
 
         // recheck the created entries has really been created from a second
         // session
-        session = getSession();
-        assertNotNull(session);
-        try {
+
+        try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_0");
             assertNotNull(dm);
 
@@ -243,16 +232,13 @@ public class SQLDirectoryTestSuite {
             assertTrue(groups.contains("administrators"));
             assertTrue(groups.contains("members"));
 
-        } finally {
-            session.close();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             // password restored through SQLDirectoryFeature is now encrypted
@@ -277,15 +263,12 @@ public class SQLDirectoryTestSuite {
             assertTrue(groups.contains("administrators"));
             // assertTrue(groups.contains("members"));
 
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testGetEntries() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             DocumentModelList entries = session.getEntries();
 
             assertEquals(3, entries.size());
@@ -315,12 +298,9 @@ public class SQLDirectoryTestSuite {
 
             dm = entryMap.get("user_3");
             assertFalse((Boolean) dm.getProperty(SCHEMA, "booleanField"));
-        } finally {
-            session.close();
         }
 
-        session = directoryService.open(GROUP_DIR);
-        try {
+        try (Session session = directoryService.open(GROUP_DIR)){
             DocumentModel doc = session.getEntry("administrators");
             assertEquals("administrators", doc.getPropertyValue("group:groupname"));
             assertEquals("Administrators group", doc.getPropertyValue("group:grouplabel"));
@@ -332,16 +312,13 @@ public class SQLDirectoryTestSuite {
                 // NULL for Oracle
                 assertEquals("", label);
             }
-        } finally {
-            session.close();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testUpdateEntry() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
 
             // update entry
@@ -351,14 +328,13 @@ public class SQLDirectoryTestSuite {
             dm.setProperty(SCHEMA, "dateField", getCalendar(2001, 2, 3, 4, 5, 6, 7));
             dm.setProperty(SCHEMA, "groups", Arrays.asList("administrators", "members"));
             session.updateEntry(dm);
-            session.close();
+        }
 
             // retrieve entry again
             // even if we tried to change the user id (username), it should
             // not be changed
-
-            session = getSession();
-            dm = session.getEntry("user_1");
+        try (Session session = getSession()) {
+            DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
             String password = (String) dm.getProperty(SCHEMA, "password");
             assertFalse("pass_2".equals(password));
@@ -376,38 +352,33 @@ public class SQLDirectoryTestSuite {
             // change other field, check password still ok
             dm.setProperty(SCHEMA, "company", "foo");
             session.updateEntry(dm);
-            session.close();
-            session = getSession();
-            dm = session.getEntry("user_1");
-            password = (String) dm.getProperty(SCHEMA, "password");
+        }
+        try (Session session = getSession()) {
+            DocumentModel dm = session.getEntry("user_1");
+            String password = (String) dm.getProperty(SCHEMA, "password");
             assertFalse("pass_2".equals(password));
             assertTrue(PasswordHelper.verifyPassword("pass_2", password));
-        } finally {
-            session.close();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testDeleteEntry() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             session.deleteEntry(dm);
-            session.close();
+        }
 
-            session = getSession();
-            dm = session.getEntry("user_1");
+        try (Session session = getSession()) {
+            DocumentModel dm = session.getEntry("user_1");
             assertNull(dm);
-            session.close();
+        }
 
-            session = directoryService.open(GROUP_DIR);
+        try (Session session = directoryService.open(GROUP_DIR)) {
             DocumentModel group1 = session.getEntry("group_1");
             List<String> members = (List<String>) group1.getProperty("group", "members");
             assertTrue(members.isEmpty());
             // assertFalse(members.contains("group_1"));
-        } finally {
-            session.close();
         }
     }
 
@@ -419,8 +390,7 @@ public class SQLDirectoryTestSuite {
     @Test
     @Ignore
     public void testDeleteEntryExtended() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             // create a second entry with user_1 as key but with
             // a different email (would be "parent" in a hierarchical
             // vocabulary)
@@ -455,16 +425,13 @@ public class SQLDirectoryTestSuite {
             // entry is gone, only Administrator left
             assertEquals(1, session.getEntries().size());
 
-        } finally {
-            session.close();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testQuery1() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
             filter.put("firstName", "f");
@@ -493,15 +460,12 @@ public class SQLDirectoryTestSuite {
             assertTrue(groups.contains("members"));
             assertTrue(groups.contains("group_1"));
 
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testQuerySubAny() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "er_");
             Set<String> set = new HashSet<String>();
@@ -514,29 +478,23 @@ public class SQLDirectoryTestSuite {
             }
             Set<String> expectedUsernames = new HashSet<>(Arrays.asList("user_1", "user_3"));
             assertEquals(expectedUsernames, usernames);
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testQuery2() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
             filter.put("password", "pass_x"); // no such password
             DocumentModelList list = session.query(filter);
             assertEquals(0, list.size());
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testQueryCaseInsensitive() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             // case insensitive substring search
             filter.put("username", "admini");
@@ -544,29 +502,23 @@ public class SQLDirectoryTestSuite {
             assertEquals(1, list.size());
             DocumentModel dm = list.get(0);
             assertEquals("Administrator", dm.getProperty(SCHEMA, "username"));
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testGetProjection() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user_1");
             List<String> list = session.getProjection(filter, "firstName");
             assertEquals(1, list.size());
             assertTrue(list.contains("f"));
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testSearch() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
             // exact match
@@ -595,15 +547,12 @@ public class SQLDirectoryTestSuite {
             assertTrue(users.contains("user_1"));
             assertTrue(users.contains("Administrator"));
 
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testIsAuthenticating() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             // by default the user directory is authenticating
             assertTrue(session.isAuthenticating());
 
@@ -617,15 +566,12 @@ public class SQLDirectoryTestSuite {
                 config.setPasswordField("password");
             }
 
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testAuthenticate() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             // successful authentication
             assertTrue(session.authenticate("Administrator", "Administrator"));
             assertTrue(session.authenticate("user_1", "pass_1"));
@@ -639,16 +585,12 @@ public class SQLDirectoryTestSuite {
 
             // failed authentication: not existing user
             assertFalse(session.authenticate("NonExistingUser", "whatever"));
-
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testCreateFromModel() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             String schema = "user";
             DocumentModel entry = BaseSession.createEntryModel(null, schema, null, null);
             entry.setProperty("user", "username", "yo");
@@ -666,19 +608,14 @@ public class SQLDirectoryTestSuite {
                 fail("Should raise an error, entry already exists");
             } catch (DirectoryException e) {
             }
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testHasEntry() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             assertTrue(session.hasEntry("Administrator"));
             assertFalse(session.hasEntry("foo"));
-        } finally {
-            session.close();
         }
     }
 

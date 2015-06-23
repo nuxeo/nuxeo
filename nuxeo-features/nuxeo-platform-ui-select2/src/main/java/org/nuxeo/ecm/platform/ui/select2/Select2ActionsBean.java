@@ -304,41 +304,33 @@ public class Select2ActionsBean implements Serializable {
         }
 
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = null;
-        Session session = null;
         try {
-            directory = directoryService.getDirectory(directoryName);
+            Directory directory = directoryService.getDirectory(directoryName);
             if (directory == null) {
                 log.error("Could not find directory with name " + directoryName);
+                return null;
+            }
+
+            try (Session session = directory.getSession()) {
+                String schemaName = directory.getSchema();
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                Schema schema = schemaManager.getSchema(schemaName);
+                final Locale locale = org.jboss.seam.core.Locale.instance();
+                final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName,
+                        locale.getLanguage());
+
+                for (String ref : storedRefs) {
+                    JSONObject obj = resolveDirectoryEntry(ref, keySeparator, session, schema, label, localize, dbl10n);
+                    if (obj != null) {
+                        result.add(obj);
+                    }
+                }
                 return result;
             }
-            session = directory.getSession();
-            String schemaName = directory.getSchema();
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-            Schema schema = schemaManager.getSchema(schemaName);
-            final Locale locale = org.jboss.seam.core.Locale.instance();
-            final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, locale.getLanguage());
-
-            for (String ref : storedRefs) {
-                JSONObject obj = resolveDirectoryEntry(ref, keySeparator, session, schema, label, localize, dbl10n);
-                if (obj != null) {
-                    result.add(obj);
-                }
-            }
-            return result;
         } catch (DirectoryException de) {
             log.error("An error occured while obtaining directory " + directoryName, de);
             return result;
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
-
     }
 
     @SuppressWarnings("rawtypes")
@@ -395,39 +387,30 @@ public class Select2ActionsBean implements Serializable {
         }
 
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Directory directory = null;
-        Session session = null;
         try {
-            directory = directoryService.getDirectory(directoryName);
+            Directory directory = directoryService.getDirectory(directoryName);
             if (directory == null) {
                 log.error("Could not find directory with name " + directoryName);
                 return null;
             }
-            session = directory.getSession();
-            String schemaName = directory.getSchema();
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-            Schema schema = schemaManager.getSchema(schemaName);
 
-            final Locale locale = org.jboss.seam.core.Locale.instance();
-            final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, locale.getLanguage());
+            try (Session session = directory.getSession()) {
+                String schemaName = directory.getSchema();
+                SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+                Schema schema = schemaManager.getSchema(schemaName);
 
-            JSONObject obj = resolveDirectoryEntry(storedReference, keySeparator, session, schema, label, localize,
-                    dbl10n);
+                final Locale locale = org.jboss.seam.core.Locale.instance();
+                final String label = Select2Common.getLabelFieldName(schema, dbl10n, labelFieldName, locale.getLanguage());
 
-            return obj;
+                JSONObject obj = resolveDirectoryEntry(storedReference, keySeparator, session, schema, label, localize,
+                        dbl10n);
+
+                return obj;
+            }
         } catch (DirectoryException de) {
             log.error("An error occured while obtaining directory " + directoryName, de);
             return null;
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
-
     }
 
     protected JSONObject getSingleUserReference(final String storedReference, final boolean prefixed,
@@ -952,8 +935,13 @@ public class Select2ActionsBean implements Serializable {
     protected DocumentModelJsonWriter getDocumentModelWriter(final String schemaNames) {
         MarshallerRegistry registry = Framework.getService(MarshallerRegistry.class);
         String[] schemas = Select2Common.getSchemas(schemaNames);
-        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        RenderingContext ctx = RenderingContextWebUtils.getBuilder(request).properties(schemas).enrichDoc("documentURL").get();
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance()
+                .getExternalContext()
+                .getRequest();
+        RenderingContext ctx = RenderingContextWebUtils.getBuilder(request)
+                .properties(schemas)
+                .enrichDoc("documentURL")
+                .get();
         return registry.getInstance(ctx, DocumentModelJsonWriter.class);
     }
 

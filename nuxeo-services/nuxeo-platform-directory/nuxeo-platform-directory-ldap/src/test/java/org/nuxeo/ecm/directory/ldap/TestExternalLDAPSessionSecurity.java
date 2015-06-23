@@ -83,14 +83,11 @@ public class TestExternalLDAPSessionSecurity {
 
     @Before
     public void setUp() {
-        LDAPSession session = (LDAPSession) ((LDAPDirectory) userDir).getSession();
-        try {
+        try (LDAPSession session = (LDAPSession) ((LDAPDirectory) userDir).getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : ldapFeature.getLdifFiles()) {
                 ldapFeature.loadDataFromLdif(ldifFile, ctx);
             }
-        } finally {
-            session.close();
         }
 
         userDirSession = userDir.getSession();

@@ -51,69 +51,69 @@ public class DirectoryEntryJsonWriterTest extends
     public void test() throws Exception {
         String directoryName = "referencedDirectory1";
         Directory directory = directoryService.getDirectory(directoryName);
-        Session session = directory.getSession();
-        DocumentModel entryModel = session.getEntry("123");
-        session.close();
-        DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
-        JsonAssert json = jsonAssert(entry);
-        json.isObject();
-        json.properties(3);
-        json.has("entity-type").isEquals("directoryEntry");
-        json.has("directoryName").isEquals(directoryName);
-        json = json.has("properties").isObject();
-        json.properties(2);
-        json.has("id").isEquals("123");
-        json.has("label").isEquals("Label123");
+        try (Session session = directory.getSession()) {
+            DocumentModel entryModel = session.getEntry("123");
+            DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
+            JsonAssert json = jsonAssert(entry);
+            json.isObject();
+            json.properties(3);
+            json.has("entity-type").isEquals("directoryEntry");
+            json.has("directoryName").isEquals(directoryName);
+            json = json.has("properties").isObject();
+            json.properties(2);
+            json.has("id").isEquals("123");
+            json.has("label").isEquals("Label123");
+        }
     }
 
     @Test
     public void testTranslated() throws Exception {
         String directoryName = "referencedDirectory1";
         Directory directory = directoryService.getDirectory(directoryName);
-        Session session = directory.getSession();
-        DocumentModel entryModel = session.getEntry("678");
-        session.close();
-        DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
-        JsonAssert json = jsonAssert(entry, CtxBuilder.locale(Locale.FRENCH).translate(ENTITY_TYPE, "label").get());
-        json.isObject();
-        json = json.has("properties").isObject();
-        json.has("label").isEquals("hi, it works");
-        // without translation
-        json = jsonAssert(entry);
-        json.isObject();
-        json = json.has("properties").isObject();
-        json.has("label").isEquals("label.test.translated.entry");
-        // falback to english if no locale
-        json = jsonAssert(entry, CtxBuilder.translate(ENTITY_TYPE, "label").get());
-        json.isObject();
-        json = json.has("properties").isObject();
-        json.has("label").isEquals("in english please");
+        try (Session session = directory.getSession()) {
+            DocumentModel entryModel = session.getEntry("678");
+            DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
+            JsonAssert json = jsonAssert(entry, CtxBuilder.locale(Locale.FRENCH).translate(ENTITY_TYPE, "label").get());
+            json.isObject();
+            json = json.has("properties").isObject();
+            json.has("label").isEquals("hi, it works");
+            // without translation
+            json = jsonAssert(entry);
+            json.isObject();
+            json = json.has("properties").isObject();
+            json.has("label").isEquals("label.test.translated.entry");
+            // falback to english if no locale
+            json = jsonAssert(entry, CtxBuilder.translate(ENTITY_TYPE, "label").get());
+            json.isObject();
+            json = json.has("properties").isObject();
+            json.has("label").isEquals("in english please");
+        }
     }
 
     @Test
     public void testFetched() throws Exception {
         String directoryName = "referencedDirectory1";
         Directory directory = directoryService.getDirectory(directoryName);
-        Session session = directory.getSession();
-        DocumentModel entryModel = session.getEntry("789");
-        session.close();
-        DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
-        JsonAssert json = jsonAssert(entry, CtxBuilder.fetch(ENTITY_TYPE, "label").get());
-        json.isObject();
-        json = json.has("properties").isObject();
-        json = json.has("label").isObject();
-        json.properties(3);
-        json.has("entity-type").isEquals("directoryEntry");
-        json.has("directoryName").isEquals(directoryName);
-        json = json.has("properties").isObject();
-        json.properties(2);
-        json.has("id").isEquals("123");
-        json.has("label").isEquals("Label123");
-        // test without fetching
-        json = jsonAssert(entry, CtxBuilder.get());
-        json.isObject();
-        json = json.has("properties").isObject();
-        json = json.has("label").isEquals("123");
+        try (Session session = directory.getSession()) {
+            DocumentModel entryModel = session.getEntry("789");
+            DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
+            JsonAssert json = jsonAssert(entry, CtxBuilder.fetch(ENTITY_TYPE, "label").get());
+            json.isObject();
+            json = json.has("properties").isObject();
+            json = json.has("label").isObject();
+            json.properties(3);
+            json.has("entity-type").isEquals("directoryEntry");
+            json.has("directoryName").isEquals(directoryName);
+            json = json.has("properties").isObject();
+            json.properties(2);
+            json.has("id").isEquals("123");
+            json.has("label").isEquals("Label123");
+            // test without fetching
+            json = jsonAssert(entry, CtxBuilder.get());
+            json.isObject();
+            json = json.has("properties").isObject();
+            json = json.has("label").isEquals("123");
+        }
     }
 
 }

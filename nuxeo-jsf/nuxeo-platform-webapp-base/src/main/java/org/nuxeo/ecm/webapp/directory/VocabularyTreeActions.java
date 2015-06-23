@@ -108,12 +108,10 @@ public class VocabularyTreeActions implements Serializable {
     public String getLabelFor(String vocabularyName, String path, char keySeparator) {
         Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
         String schemaName = null;
-        Session session = null;
         List<String> labels = new ArrayList<String>();
-        try {
-            DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        try (Session session = directoryService.open(vocabularyName)) {
             schemaName = directoryService.getDirectorySchema(vocabularyName);
-            session = directoryService.open(vocabularyName);
             for (String id : StringUtils.split(path, keySeparator)) {
                 DocumentModel entry = session.getEntry(id);
                 if (entry != null) {
@@ -129,15 +127,8 @@ public class VocabularyTreeActions implements Serializable {
             }
         } catch (DirectoryException e) {
             log.error("Error while accessing directory " + vocabularyName, e);
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (DirectoryException e) {
-                log.error("Error while closing directory " + vocabularyName, e);
-            }
         }
+
         if (labels.isEmpty()) {
             return null;
         } else {

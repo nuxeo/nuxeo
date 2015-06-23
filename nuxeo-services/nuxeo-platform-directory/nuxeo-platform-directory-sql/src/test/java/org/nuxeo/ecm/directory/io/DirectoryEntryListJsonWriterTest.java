@@ -53,23 +53,23 @@ public class DirectoryEntryListJsonWriterTest extends
     public void test() throws Exception {
         String dirName = "referencedDirectory1";
         Directory directory = directoryService.getDirectory(dirName);
-        Session session = directory.getSession();
-        DocumentModelList entryModels = session.query(new HashMap<String, Serializable>());
-        session.close();
-        List<DirectoryEntry> entries = new ArrayList<DirectoryEntry>();
-        for (DocumentModel entryModel : entryModels) {
-            entries.add(new DirectoryEntry(dirName, entryModel));
+        try (Session session = directory.getSession()) {
+            DocumentModelList entryModels = session.query(new HashMap<String, Serializable>());
+            List<DirectoryEntry> entries = new ArrayList<DirectoryEntry>();
+            for (DocumentModel entryModel : entryModels) {
+                entries.add(new DirectoryEntry(dirName, entryModel));
+            }
+            JsonAssert json = jsonAssert(entries);
+            json.isObject();
+            json.properties(2);
+            json.has("entity-type").isEquals("directoryEntries");
+            json = json.has("entries").length(entries.size());
+            String entryType = "directoryEntry";
+            json.childrenContains("entity-type", entryType, entryType, entryType, entryType, entryType, entryType,
+                    entryType);
+            json.childrenContains("directoryName", dirName, dirName, dirName, dirName, dirName, dirName, dirName);
+            json.childrenContains("properties.id", "123", "234", "345", "456", "567", "678", "789");
         }
-        JsonAssert json = jsonAssert(entries);
-        json.isObject();
-        json.properties(2);
-        json.has("entity-type").isEquals("directoryEntries");
-        json = json.has("entries").length(entries.size());
-        String entryType = "directoryEntry";
-        json.childrenContains("entity-type", entryType, entryType, entryType, entryType, entryType, entryType,
-                entryType);
-        json.childrenContains("directoryName", dirName, dirName, dirName, dirName, dirName, dirName, dirName);
-        json.childrenContains("properties.id", "123", "234", "345", "456", "567", "678", "789");
     }
 
 }

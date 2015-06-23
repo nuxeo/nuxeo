@@ -82,15 +82,9 @@ public final class DirectoryFunctions {
         if (entryId == null) {
             return null;
         }
-        Session session = null;
-        try {
-            DirectoryService dirService = Framework.getService(DirectoryService.class);
-            session = dirService.open(directoryName);
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
+        try (Session session = dirService.open(directoryName)) {
             return session.getEntry(entryId);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -99,10 +93,8 @@ public final class DirectoryFunctions {
         if (entryIds == null) {
             return null;
         }
-        Session session = null;
-        try {
-            DirectoryService dirService = Framework.getService(DirectoryService.class);
-            session = dirService.open(directoryName);
+        DirectoryService dirService = Framework.getService(DirectoryService.class);
+        try (Session session = dirService.open(directoryName)) {
             DocumentModelList result = new DocumentModelListImpl();
             for (String entryId : entryIds) {
                 DocumentModel entry = session.getEntry(entryId);
@@ -111,10 +103,6 @@ public final class DirectoryFunctions {
                 }
             }
             return result;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 

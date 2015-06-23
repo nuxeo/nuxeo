@@ -453,9 +453,7 @@ public class SuggestDirectoryEntries {
             log.error("Could not find directory with name " + directoryName);
             return null;
         }
-        Session session = null;
-        try {
-            session = directory.getSession();
+        try (Session session = directory.getSession()) {
             String schemaName = directory.getSchema();
             Schema schema = schemaManager.getSchema(schemaName);
 
@@ -536,14 +534,6 @@ public class SuggestDirectoryEntries {
 
             }
             return Blobs.createBlob(jsonAdapter.getChildrenJSONArray().toString(), "application/json");
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
     }
 

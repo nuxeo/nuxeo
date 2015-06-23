@@ -54,8 +54,7 @@ public class TestPagingComplexFilterDirectory {
 
     @Test
     public void testPaging() throws ClientException {
-        Session session = directoryService.open(DIR);
-        try {
+        try (Session session = directoryService.open(DIR)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("label", "Label");
 
@@ -79,15 +78,12 @@ public class TestPagingComplexFilterDirectory {
             assertEquals("12", entries.get(0).getId());
         } catch (UnsupportedOperationException e) {
             // paging not supported by dialect (NXP-10647)
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testComplexFilter() throws ClientException {
-        Session session = directoryService.open(DIR);
-        try {
+        try (Session session = directoryService.open(DIR)) {
             Calendar d121110 = new DateTime(2012, 11, 10, 0, 0, 0, 0).toGregorianCalendar();
             Calendar d121211 = new DateTime(2012, 12, 11, 0, 0, 0, 0).toGregorianCalendar();
             Calendar d121224 = new DateTime(2012, 12, 24, 0, 0, 0, 0).toGregorianCalendar();
@@ -106,8 +102,6 @@ public class TestPagingComplexFilterDirectory {
             filter.put("type", "something");
             entries = session.query(filter);
             assertEquals(1, entries.size());
-        } finally {
-            session.close();
         }
     }
 }

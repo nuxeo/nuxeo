@@ -248,8 +248,7 @@ public class DirectoryTreeNode {
             // XXX: use the cache manager instead of field caching strategy
             return childrenEntries;
         }
-        Session session = getDirectorySession();
-        try {
+        try (Session session = getDirectorySession()) {
             if (level == 0) {
                 String schemaName = getDirectorySchema();
                 SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -269,8 +268,6 @@ public class DirectoryTreeNode {
                 childrenEntries = session.query(filter);
             }
             return childrenEntries;
-        } finally {
-            session.close();
         }
     }
 
@@ -387,21 +384,19 @@ public class DirectoryTreeNode {
                 if (dirName == null) {
                     throw new DirectoryException("Could not find directory name for key=" + b);
                 }
-                Session session = getDirectoryService().open(dirName);
-                DocumentModel docMod = session.getEntry(bitsOfPath[b]);
-                try {
-                    // take first schema: directory entries only have one
-                    final String schemaName = docMod.getSchemas()[0];
-                    property = (String) docMod.getProperty(schemaName, LABEL_FIELD_ID);
-                } catch (ClientException e) {
-                    throw new DirectoryException(e);
+                try (Session session = getDirectoryService().open(dirName)) {
+                    DocumentModel docMod = session.getEntry(bitsOfPath[b]);
+                    try {
+                        // take first schema: directory entries only have one
+                        final String schemaName = docMod.getSchemas()[0];
+                        property = (String) docMod.getProperty(schemaName, LABEL_FIELD_ID);
+                    } catch (ClientException e) {
+                        throw new DirectoryException(e);
+                    }
+                    myPath = myPath + property + '/';
                 }
-                myPath = myPath + property + '/';
-
-                session.close();
             }
             Events.instance().raiseEvent("PATH_PROCESSED", myPath);
-
         } else {
             Events.instance().raiseEvent("PATH_PROCESSED", "");
         }

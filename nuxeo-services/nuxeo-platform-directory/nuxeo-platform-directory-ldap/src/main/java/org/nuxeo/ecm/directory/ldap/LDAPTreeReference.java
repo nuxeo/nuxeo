@@ -165,8 +165,7 @@ public class LDAPTreeReference extends AbstractReference {
         // step #1: fetch the dn of the targetId entry in the target
         // directory by the static dn valued strategy
         LDAPDirectory targetDir = getTargetLDAPDirectory();
-        LDAPSession targetSession = (LDAPSession) targetDir.getSession();
-        try {
+        try (LDAPSession targetSession = (LDAPSession) targetDir.getSession()) {
             SearchResult targetLdapEntry = targetSession.getLdapEntry(targetId, true);
             if (targetLdapEntry == null) {
                 // no parent accessible => return empty list
@@ -175,8 +174,6 @@ public class LDAPTreeReference extends AbstractReference {
             targetDn = pseudoNormalizeDn(targetLdapEntry.getNameInNamespace());
         } catch (NamingException e) {
             throw new DirectoryException("error fetching " + targetId, e);
-        } finally {
-            targetSession.close();
         }
 
         // step #2: search for entries that reference parent dn in the
@@ -186,11 +183,10 @@ public class LDAPTreeReference extends AbstractReference {
         String filterExpr = String.format("(&%s)", sourceDirectory.getBaseFilter());
         String[] filterArgs = {};
 
-        LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession();
         // get a copy of original search controls
         SearchControls sctls = sourceDirectory.getSearchControls(true);
         sctls.setSearchScope(SearchControls.OBJECT_SCOPE);
-        try {
+        try (LDAPSession sourceSession = (LDAPSession) sourceDirectory.getSession()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("LDAPReference.getSourceIdsForTarget(%s): LDAP search search base='%s'"
                         + " filter='%s' args='%s' scope='%s' [%s]", targetId, parentDn, filterExpr,
@@ -218,8 +214,6 @@ public class LDAPTreeReference extends AbstractReference {
             }
         } catch (NamingException e) {
             throw new DirectoryException("error during reference search for " + targetDn, e);
-        } finally {
-            sourceSession.close();
         }
 
         return new ArrayList<String>(sourceIds);
@@ -242,8 +236,7 @@ public class LDAPTreeReference extends AbstractReference {
         // step #1: fetch the dn of the sourceId entry in the source
         // directory by the static dn valued strategy
         LDAPDirectory sourceDir = getSourceLDAPDirectory();
-        LDAPSession sourceSession = (LDAPSession) sourceDir.getSession();
-        try {
+        try (LDAPSession sourceSession = (LDAPSession) sourceDir.getSession()) {
             SearchResult sourceLdapEntry = sourceSession.getLdapEntry(sourceId, true);
             if (sourceLdapEntry == null) {
                 throw new DirectoryException(sourceId + " does not exist in " + sourceDirectoryName);
@@ -251,8 +244,6 @@ public class LDAPTreeReference extends AbstractReference {
             sourceDn = pseudoNormalizeDn(sourceLdapEntry.getNameInNamespace());
         } catch (NamingException e) {
             throw new DirectoryException("error fetching " + sourceId, e);
-        } finally {
-            sourceSession.close();
         }
 
         // step #2: search for entries with sourceDn as base dn and collect
@@ -262,11 +253,10 @@ public class LDAPTreeReference extends AbstractReference {
         String filterExpr = String.format("(&%s)", targetDirectory.getBaseFilter());
         String[] filterArgs = {};
 
-        LDAPSession targetSession = (LDAPSession) targetDirectory.getSession();
         // get a copy of original search controls
         SearchControls sctls = targetDirectory.getSearchControls(true);
         sctls.setSearchScope(getScope());
-        try {
+        try (LDAPSession targetSession = (LDAPSession) targetDirectory.getSession()) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("LDAPReference.getTargetIdsForSource(%s): LDAP search search base='%s'"
                         + " filter='%s' args='%s' scope='%s' [%s]", sourceId, sourceDn, filterExpr,
@@ -296,8 +286,6 @@ public class LDAPTreeReference extends AbstractReference {
             }
         } catch (NamingException e) {
             throw new DirectoryException("error during reference search for " + sourceDn, e);
-        } finally {
-            targetSession.close();
         }
 
         return new ArrayList<String>(targetIds);

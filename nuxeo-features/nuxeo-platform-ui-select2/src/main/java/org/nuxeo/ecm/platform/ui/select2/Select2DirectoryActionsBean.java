@@ -29,7 +29,6 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
@@ -88,15 +87,13 @@ public class Select2DirectoryActionsBean implements Serializable {
     }
 
     public void createDirectoryEntry() throws ClientException {
-        Session dirSession = null;
-        try {
+        DirectoryService dirService = DirectoryHelper.getDirectoryService();
+        String dirName = getDirectoryName();
+        try (Session dirSession = dirService.open(dirName)) {
             // check if entry already exists
-            DirectoryService dirService = DirectoryHelper.getDirectoryService();
-            String dirName = getDirectoryName();
             String schema = dirService.getDirectorySchema(dirName);
             String idField = dirService.getDirectoryIdField(dirName);
             Object id = newDirectoryEntry.getProperty(schema, idField);
-            dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
                 facesMessages.addToControl("suggestAddNewDirectoryEntry", StatusMessage.Severity.ERROR,
                         messages.get("vocabulary.entry.identifier.already.exists"));
@@ -108,12 +105,6 @@ public class Select2DirectoryActionsBean implements Serializable {
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.added"));
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
         }
     }
 

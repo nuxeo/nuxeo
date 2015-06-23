@@ -150,16 +150,13 @@ public class DirectoryEntryJsonWriter extends ExtensibleEntityJsonWriter<Directo
 
     protected boolean writeFetchedValue(JsonGenerator jg, String directoryName, String fieldName, String value)
             throws IOException {
-        Session session = directoryService.open(directoryName);
-        try {
+        try (Session session = directoryService.open(directoryName)) {
             DocumentModel entryModel = session.getEntry(value);
             if (entryModel != null) {
                 DirectoryEntry entry = new DirectoryEntry(directoryName, entryModel);
                 writeEntity(entry, jg);
                 return true;
             }
-        } finally {
-            session.close();
         }
         return false;
     }

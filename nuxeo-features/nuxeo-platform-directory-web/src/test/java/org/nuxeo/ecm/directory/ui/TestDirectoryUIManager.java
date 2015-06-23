@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.api.ui.DirectoryUI;
@@ -98,17 +97,10 @@ public class TestDirectoryUIManager {
 
     @Test
     public void testDirectoryUIDeleteConstraint() throws Exception {
-        Session continentSession = null;
-        Session countrySession = null;
-        try {
-            Directory continentDir = dirService.getDirectory("continent");
-            assertNotNull(continentDir);
-            continentSession = dirService.open("continent");
+        try (Session continentSession = dirService.open("continent");
+                Session countrySession = dirService.open("country")) {
             assertTrue(continentSession.hasEntry("asia"));
 
-            Directory country = dirService.getDirectory("country");
-            assertNotNull(country);
-            countrySession = dirService.open("country");
             assertTrue(countrySession.hasEntry("Afghanistan"));
             DocumentModel afgha = countrySession.getEntry("Afghanistan");
             assertEquals("asia", afgha.getProperty("xvocabulary", "parent"));
@@ -125,15 +117,7 @@ public class TestDirectoryUIManager {
             assertFalse(constraint.canDelete(dirService, "asia"));
             assertTrue(constraint.canDelete(dirService, "antartica"));
 
-        } finally {
-            if (continentSession != null) {
-                continentSession.close();
-            }
-            if (countrySession != null) {
-                countrySession.close();
-            }
         }
-
     }
 
 }

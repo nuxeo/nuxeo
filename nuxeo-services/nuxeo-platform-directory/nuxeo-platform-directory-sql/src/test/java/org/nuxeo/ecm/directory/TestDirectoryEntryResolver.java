@@ -85,9 +85,9 @@ public class TestDirectoryEntryResolver {
 
     @Before
     public void setup() throws Exception {
-        Session session1 = directoryService.open(REFERENCED_DIRECTORY1);
-        entry1 = session1.getEntry(ENTRY_ID);
-        session1.close();
+        try (Session session1 = directoryService.open(REFERENCED_DIRECTORY1)) {
+            entry1 = session1.getEntry(ENTRY_ID);
+        }
         doc = coreSession.createDocumentModel("/", "doc1", "DirectoryReferencer");
     }
 
@@ -254,10 +254,12 @@ public class TestDirectoryEntryResolver {
 
     @Test
     public void testConfigurationIsLoaded() {
-        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH).getType()).getObjectResolver();
+        DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH)
+                                                                                      .getType()).getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY1, idResolver.getParameters().get(PARAM_DIRECTORY));
-        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF2_XPATH).getType()).getObjectResolver();
+        DirectoryEntryResolver pathResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF2_XPATH)
+                                                                                        .getType()).getObjectResolver();
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getDirectory().getName());
         assertEquals(REFERENCED_DIRECTORY2, pathResolver.getParameters().get(PARAM_DIRECTORY));
     }

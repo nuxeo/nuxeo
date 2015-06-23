@@ -129,27 +129,23 @@ public abstract class LDAPDirectoryTestCase {
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
         }
-        LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
-        try {
+        ;
+        try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : getLdifFiles()) {
                 loadDataFromLdif(ldifFile, ctx);
             }
-        } finally {
-            session.close();
         }
     }
 
     @After
     public void tearDown() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
-            try {
+
+            try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
                 DirContext ctx = session.getContext();
                 destroyRecursively("ou=people,dc=example,dc=com", ctx, -1);
                 destroyRecursively("ou=groups,dc=example,dc=com", ctx, -1);
-            } finally {
-                session.close();
             }
             runtimeHarness.undeployContrib("org.nuxeo.ecm.directory.ldap.tests", EXTERNAL_SERVER_SETUP);
         } else {
@@ -166,8 +162,8 @@ public abstract class LDAPDirectoryTestCase {
 
     protected static void loadDataFromLdif(String ldif, DirContext ctx) {
         List<LdifLoadFilter> filters = new ArrayList<LdifLoadFilter>();
-        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters,
-                Thread.currentThread().getContextClassLoader());
+        LdifFileLoader loader = new LdifFileLoader(ctx, new File(ldif), filters, Thread.currentThread()
+                                                                                       .getContextClassLoader());
         loader.execute();
     }
 

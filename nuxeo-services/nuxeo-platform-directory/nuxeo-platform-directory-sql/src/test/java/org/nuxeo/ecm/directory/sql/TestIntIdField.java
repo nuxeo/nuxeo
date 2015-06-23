@@ -29,10 +29,8 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.directory.DirectoryServiceImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -49,8 +47,7 @@ public class TestIntIdField {
     @SuppressWarnings("boxing")
     @Test
     public void testIntIdDirectory() throws Exception {
-        Session session = directoryService.open("testIdDirectory");
-        try {
+        try (Session session = directoryService.open("testIdDirectory")) {
             Map<String, Object> map = new HashMap<String, Object>();
             map.put("id", 1);
             map.put("label", "toto");
@@ -65,8 +62,6 @@ public class TestIntIdField {
             assertNotNull(session.getEntry("1"));
             assertNotNull(session.getEntry("2"));
             assertNull(session.getEntry("3"));
-        } finally {
-            session.close();
         }
     }
 

@@ -72,9 +72,7 @@ public class GetDirectoryEntries {
     @OperationMethod
     public Blob run(DocumentModel doc) {
         Directory directory = directoryService.getDirectory(directoryName, doc);
-        Session session = null;
-        try {
-            session = directory.getSession();
+        try (Session session = directory.getSession()) {
             DocumentModelList entries = session.getEntries();
             String schemaName = directory.getSchema();
             Schema schema = schemaManager.getSchema(schemaName);
@@ -93,14 +91,6 @@ public class GetDirectoryEntries {
                 rows.add(obj);
             }
             return Blobs.createBlob(rows.toString(), "application/json");
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
     }
 

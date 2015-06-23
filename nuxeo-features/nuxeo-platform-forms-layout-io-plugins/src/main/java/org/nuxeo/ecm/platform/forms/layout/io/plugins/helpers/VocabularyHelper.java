@@ -38,36 +38,22 @@ public class VocabularyHelper {
 
     public static List<WidgetSelectOption> getVocabularySelectOptions(String dirName, String lang) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(dirName);
+        try (Session session = ds.open(dirName)) {
             String schema = ds.getDirectory(dirName).getSchema();
             DocumentModelList entries = session.getEntries();
             return convertToSelectOptions(entries, schema, dirName, lang);
         } catch (DirectoryException e) {
             log.error("Error while getting content of directory " + dirName, e);
             return Collections.emptyList();
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                    log.error("Error while closing directory", e);
-                }
-            }
         }
     }
 
     public static List<WidgetSelectOption> getChainSelectVocabularySelectOptions(String parentDirName,
             String childDirName, String lang) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        Session subSession = null;
         List<WidgetSelectOption> result = new ArrayList<WidgetSelectOption>();
-        try {
-            session = ds.open(parentDirName);
+        try (Session session = ds.open(parentDirName); Session subSession = ds.open(childDirName)) {
             String schema = ds.getDirectory(parentDirName).getSchema();
-            subSession = ds.open(childDirName);
             String subSchema = ds.getDirectory(childDirName).getSchema();
 
             DocumentModelList entries = session.getEntries();
@@ -98,21 +84,6 @@ public class VocabularyHelper {
         } catch (ClientException e) {
             log.error("Error while getting content of directories " + parentDirName + "/" + childDirName, e);
             return result;
-        } finally {
-            if (session != null) {
-                try {
-                    session.close();
-                } catch (DirectoryException e) {
-                    log.error("Error while closing directory", e);
-                }
-            }
-            if (subSession != null) {
-                try {
-                    subSession.close();
-                } catch (DirectoryException e) {
-                    log.error("Error while closing directory", e);
-                }
-            }
         }
     }
 

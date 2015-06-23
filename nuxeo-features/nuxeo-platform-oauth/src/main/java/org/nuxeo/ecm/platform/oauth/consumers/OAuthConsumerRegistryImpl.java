@@ -64,28 +64,19 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
 
     protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.getEntry(consumerKey);
             if (entry == null) {
                 return null;
             }
-            NuxeoOAuthConsumer consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, keyType);
-            return consumer;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+            return NuxeoOAuthConsumer.createFromDirectoryEntry(entry, keyType);
         }
     }
 
     @Override
     public NuxeoOAuthConsumer storeConsumer(NuxeoOAuthConsumer consumer) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Object> init = new HashMap<String, Object>();
             init.put("consumerKey", consumer.consumerKey);
             DocumentModel entry = session.createEntry(init);
@@ -96,10 +87,6 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
             }
             consumer = NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null);
             return consumer;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -107,14 +94,8 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
     public void deleteConsumer(String consumerKey) {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
+            try (Session session = ds.open(DIRECTORY_NAME)) {
                 session.deleteEntry(consumerKey);
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
             }
         } catch (ClientException e) {
             log.error("Unable to delete consumer " + consumerKey, e);
@@ -127,16 +108,10 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
         List<NuxeoOAuthConsumer> result = new ArrayList<NuxeoOAuthConsumer>();
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
+            try (Session session = ds.open(DIRECTORY_NAME)) {
                 DocumentModelList entries = session.getEntries();
                 for (DocumentModel entry : entries) {
                     result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
                 }
             }
         } catch (ClientException e) {

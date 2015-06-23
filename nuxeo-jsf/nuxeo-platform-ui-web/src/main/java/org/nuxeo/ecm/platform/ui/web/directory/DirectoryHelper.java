@@ -108,10 +108,8 @@ public final class DirectoryHelper {
         FacesContext context = FacesContext.getCurrentInstance();
 
         // an extended schema also has parent field
-        Session session = null;
-        try {
+        try (Session session = getService().open(directoryName)) {
             String schema = getService().getDirectorySchema(directoryName);
-            session = getService().open(directoryName);
             if (session == null) {
                 throw new ClientException("could not open session on directory: " + directoryName);
             }
@@ -138,16 +136,6 @@ public final class DirectoryHelper {
                 list.add(item);
             }
 
-        } catch (ClientException e) {
-            throw new RuntimeException("failed to build option list for directory " + directoryName, e);
-        } finally {
-            try {
-                if (session != null) {
-                    session.close();
-                }
-            } catch (ClientException ce) {
-                log.error("Could not close directory session", ce);
-            }
         }
 
         return list;
@@ -226,18 +214,9 @@ public final class DirectoryHelper {
         if (dirService == null) {
             throw new ClientException("Could not lookup DirectoryService");
         }
-        Session session = dirService.open(directoryName);
-        DocumentModel entry;
-        try {
-            entry = session.getEntry(entryId);
-        } finally {
-            try {
-                session.close();
-            } catch (ClientException e) {
-                log.warn("Could not close a session on directory " + directoryName, e);
-            }
+        try (Session session = dirService.open(directoryName)) {
+            return session.getEntry(entryId);
         }
-        return entry;
     }
 
     /**

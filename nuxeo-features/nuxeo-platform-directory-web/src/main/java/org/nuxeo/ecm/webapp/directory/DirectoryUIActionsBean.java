@@ -157,10 +157,8 @@ public class DirectoryUIActionsBean implements Serializable {
     public DocumentModelList getCurrentDirectoryEntries() throws ClientException {
         if (currentDirectoryEntries == null) {
             currentDirectoryEntries = new DocumentModelListImpl();
-            Session dirSession = null;
-            try {
-                String dirName = currentDirectoryInfo.getName();
-                dirSession = dirService.open(dirName);
+            String dirName = currentDirectoryInfo.getName();
+            try (Session dirSession = dirService.open(dirName)) {
                 Map<String, Serializable> emptyMap = Collections.emptyMap();
                 Set<String> emptySet = Collections.emptySet();
                 DocumentModelList entries = dirSession.query(emptyMap, emptySet, null, true);
@@ -179,10 +177,6 @@ public class DirectoryUIActionsBean implements Serializable {
                         new DocumentModelComparator(dirService.getDirectorySchema(dirName), orderBy));
             } catch (DirectoryException e) {
                 throw new ClientException(e);
-            } finally {
-                if (dirSession != null) {
-                    dirSession.close();
-                }
             }
         }
         return currentDirectoryEntries;
@@ -218,14 +212,12 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     public void createDirectoryEntry() throws ClientException {
-        Session dirSession = null;
-        try {
-            String dirName = currentDirectoryInfo.getName();
+        String dirName = currentDirectoryInfo.getName();
+        try (Session dirSession = dirService.open(dirName)) {
             // check if entry already exists
             String schema = dirService.getDirectorySchema(dirName);
             String idField = dirService.getDirectoryIdField(dirName);
             Object id = creationDirectoryEntry.getProperty(schema, idField);
-            dirSession = dirService.open(dirName);
             if (id instanceof String && dirSession.hasEntry((String) id)) {
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         messages.get("vocabulary.entry.identifier.already.exists"));
@@ -241,10 +233,6 @@ public class DirectoryUIActionsBean implements Serializable {
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.added"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
         }
     }
 
@@ -254,17 +242,11 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     public void selectDirectoryEntry(String entryId) throws ClientException {
-        Session dirSession = null;
-        try {
-            String dirName = currentDirectoryInfo.getName();
-            dirSession = dirService.open(dirName);
+        String dirName = currentDirectoryInfo.getName();
+        try (Session dirSession = dirService.open(dirName)) {
             selectedDirectoryEntry = dirSession.getEntry(entryId);
         } catch (DirectoryException e) {
             throw new ClientException(e);
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
         }
     }
 
@@ -277,10 +259,8 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     public void editSelectedDirectoryEntry() throws ClientException {
-        Session dirSession = null;
-        try {
-            String dirName = currentDirectoryInfo.getName();
-            dirSession = dirService.open(dirName);
+        String dirName = currentDirectoryInfo.getName();
+        try (Session dirSession = dirService.open(dirName)) {
             dirSession.updateEntry(selectedDirectoryEntry);
             selectedDirectoryEntry = null;
             // invalidate directory entries list
@@ -290,10 +270,6 @@ public class DirectoryUIActionsBean implements Serializable {
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.edited"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
         }
     }
 
@@ -309,9 +285,7 @@ public class DirectoryUIActionsBean implements Serializable {
                 }
             }
         }
-        Session dirSession = null;
-        try {
-            dirSession = dirService.open(dirName);
+        try (Session dirSession = dirService.open(dirName)) {
             dirSession.deleteEntry(entryId);
             // invalidate directory entries list
             currentDirectoryEntries = null;
@@ -319,21 +293,13 @@ public class DirectoryUIActionsBean implements Serializable {
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.deleted"));
         } catch (DirectoryException e) {
             throw new ClientException(e);
-        } finally {
-            if (dirSession != null) {
-                dirSession.close();
-            }
         }
     }
 
     public boolean isReadOnly(String directoryName) throws ClientException {
+        boolean isReadOnly;
 
-        Session dirSession = null;
-        boolean isReadOnly = false;
-
-        try {
-            dirSession = dirService.open(directoryName);
-
+        try (Session dirSession = dirService.open(directoryName)) {
             // Check Directory ReadOnly Status
             boolean dirReadOnly = dirSession.isReadOnly();
 
@@ -350,12 +316,6 @@ public class DirectoryUIActionsBean implements Serializable {
             isReadOnly = dirReadOnly || dirUIReadOnly;
         } catch (DirectoryException e) {
             throw new ClientException(e);
-        } finally {
-
-            if (dirSession != null) {
-                dirSession.close();
-            }
-
         }
         return isReadOnly;
     }

@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jboss.seam.annotations.In;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -62,14 +61,11 @@ public abstract class DirectoryBasedEditor implements Serializable {
 
     public void createEntry() throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
-        try {
+        try (Session session = ds.open(getDirectoryName())) {
             session.createEntry(creationEntry);
             creationEntry = null;
             showAddForm = false;
             entries = null;
-        } finally {
-            session.close();
         }
     }
 
@@ -98,14 +94,11 @@ public abstract class DirectoryBasedEditor implements Serializable {
     public DocumentModelList getEntries() throws DirectoryException {
         if (entries == null) {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = ds.open(getDirectoryName());
-            try {
+            try (Session session = ds.open(getDirectoryName())) {
                 Map<String, Serializable> emptyMap = getQueryFilter();
                 Set<String> emptySet = getOrderSet();
 
                 entries = session.query(emptyMap, emptySet, null, true);
-            } finally {
-                session.close();
             }
         }
         return entries;
@@ -113,18 +106,14 @@ public abstract class DirectoryBasedEditor implements Serializable {
 
     public void editEntry(String entryId) throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(getDirectoryName());
-        try {
+        try (Session session = ds.open(getDirectoryName())) {
             editableEntry = session.getEntry(entryId);
-        } finally {
-            session.close();
         }
     }
 
     public void saveEntry() throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session directorySession = ds.open(getDirectoryName());
-        try {
+        try (Session directorySession = ds.open(getDirectoryName())) {
             UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
                 @Override
                 public void run() throws ClientException {
@@ -134,15 +123,12 @@ public abstract class DirectoryBasedEditor implements Serializable {
             sessionRunner.runUnrestricted();
             editableEntry = null;
             entries = null;
-        } finally {
-            directorySession.close();
         }
     }
 
     public void deleteEntry(String entryId) throws DirectoryException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session directorySession = ds.open(getDirectoryName());
-        try {
+        try (Session directorySession = ds.open(getDirectoryName())) {
             UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
                 @Override
                 public void run() throws ClientException {
@@ -154,9 +140,6 @@ public abstract class DirectoryBasedEditor implements Serializable {
                 editableEntry = null;
             }
             entries = null;
-        } finally {
-            directorySession.close();
         }
     }
-
 }

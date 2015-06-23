@@ -74,16 +74,10 @@ public class CreateDirectoryEntries extends AbstractDirectoryOperation {
                 new TypeReference<List<Map<String, Object>>>() {
                 });
         List<String> ids = new ArrayList<String>();
-        Session session = null;
-        try {
-            session = directoryService.open(directoryName);
+        try (Session session = directoryService.open(directoryName)) {
             for (Map<String, Object> entry : entries) {
                 DocumentModel doc = session.createEntry(entry);
                 ids.add(doc.getId());
-            }
-        } finally {
-            if (session != null) {
-                session.close();
             }
         }
 

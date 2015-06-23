@@ -83,9 +83,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
     @Override
     public NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("appId", appId);
             filter.put("clientId", owner);
@@ -98,19 +96,13 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
                 log.error("Found several tokens");
             }
             return getTokenFromDirectoryEntry(entries.get(0));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     @Override
     public void removeClientAccessToken(String appId, String owner) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("appId", appId);
             filter.put("clientId", owner);
@@ -123,12 +115,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
                 log.error("Found several tokens");
             }
             session.deleteEntry(entries.get(0));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
-
     }
 
     @Override
@@ -152,18 +139,12 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     protected NuxeoOAuthToken getTokenFromDirectory(String token) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.getEntry(token);
             if (entry == null) {
                 return null;
             }
             return getTokenFromDirectoryEntry(entry);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -173,9 +154,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     protected NuxeoOAuthToken storeAccessTokenAsDirectoryEntry(NuxeoOAuthToken aToken) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.getEntry(aToken.getToken());
             if (entry == null) {
                 Map<String, Object> init = new HashMap<String, Object>();
@@ -187,10 +166,6 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
             session.updateEntry(entry);
 
             return getTokenFromDirectoryEntry(session.getEntry(aToken.getToken()));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -227,22 +202,14 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
     public List<OAuthToken> listAccessTokenForConsumer(String consumerKey) {
         List<OAuthToken> result = new ArrayList<OAuthToken>();
 
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                filter.put("consumerKey", consumerKey);
-                filter.put("clientToken", 0);
-                DocumentModelList entries = session.query(filter);
-                for (DocumentModel entry : entries) {
-                    result.add(new NuxeoOAuthToken(entry));
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put("consumerKey", consumerKey);
+            filter.put("clientToken", 0);
+            DocumentModelList entries = session.query(filter);
+            for (DocumentModel entry : entries) {
+                result.add(new NuxeoOAuthToken(entry));
             }
         } catch (ClientException e) {
             log.error("Error during token listing", e);
@@ -252,44 +219,27 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
     @Override
     public List<OAuthToken> listAccessTokenForUser(String login) {
-
         List<OAuthToken> result = new ArrayList<OAuthToken>();
-
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                filter.put("nuxeoLogin", login);
-                filter.put("clientToken", 0);
-                DocumentModelList entries = session.query(filter);
-                for (DocumentModel entry : entries) {
-                    result.add(new NuxeoOAuthToken(entry));
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("nuxeoLogin", login);
+            filter.put("clientToken", 0);
+            DocumentModelList entries = session.query(filter);
+            for (DocumentModel entry : entries) {
+                result.add(new NuxeoOAuthToken(entry));
             }
         } catch (ClientException e) {
             log.error("Error during token listing", e);
         }
         return result;
-
     }
 
     @Override
     public void removeAccessToken(String token) throws ClientException {
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             session.deleteEntry(token);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 

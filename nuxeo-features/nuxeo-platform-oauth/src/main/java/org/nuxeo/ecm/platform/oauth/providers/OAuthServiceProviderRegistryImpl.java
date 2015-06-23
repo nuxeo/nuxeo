@@ -121,10 +121,8 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         }
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
         NuxeoOAuthServiceProvider provider = null;
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             if (gadgetUri != null) {
                 filter.put("gadgetUrl", gadgetUri);
@@ -159,10 +157,6 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
             }
             provider = NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry);
             return provider;
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -195,14 +189,8 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     public void deleteProvider(String providerId) {
         try {
             DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
+            try (Session session = ds.open(DIRECTORY_NAME)) {
                 session.deleteEntry(providerId);
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
             }
         } catch (ClientException e) {
             log.error("Unable to delete provider " + providerId, e);
@@ -216,19 +204,11 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         for (NuxeoOAuthServiceProvider provider : inMemoryProviders.values()) {
             result.add(provider);
         }
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
-                DocumentModelList entries = session.getEntries();
-                for (DocumentModel entry : entries) {
-                    result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
+            DocumentModelList entries = session.getEntries();
+            for (DocumentModel entry : entries) {
+                result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
             }
         } catch (ClientException e) {
             log.error("Error while fetching provider directory", e);

@@ -85,8 +85,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
         allDirectoryData.clear();
         for (Directory dir : directoryService.getDirectories()) {
             Map<String, Map<String, Object>> data = new HashMap<>();
-            Session session = dir.getSession();
-            try {
+            try (Session session = dir.getSession()) {
                 List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
                         Collections.emptyMap(), true); // fetch references
                 for (DocumentModel entry : entries) {
@@ -94,8 +93,6 @@ public class SQLDirectoryFeature extends SimpleFeature {
                     data.put(entry.getId(), dm.getMap());
                 }
                 allDirectoryData.put(dir.getName(), data);
-            } finally {
-                session.close();
             }
         }
     }
@@ -105,14 +102,11 @@ public class SQLDirectoryFeature extends SimpleFeature {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         // clear all directories
         for (Directory dir : directoryService.getDirectories()) {
-            Session session = dir.getSession();
-            try {
+            try (Session session = dir.getSession()) {
                 List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
                 for (String id : ids) {
                     session.deleteEntry(id);
                 }
-            } finally {
-                session.close();
             }
         }
         // re-create all directory entries
@@ -120,8 +114,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
             String directoryName = each.getKey();
             Directory directory = directoryService.getDirectory(directoryName);
             Collection<Map<String, Object>> data = each.getValue().values();
-            Session session = directory.getSession();
-            try {
+            try (Session session = directory.getSession()) {
                 for (Map<String, Object> map : data) {
                     try {
                         session.createEntry(map);
@@ -133,8 +126,6 @@ public class SQLDirectoryFeature extends SimpleFeature {
                         }
                     }
                 }
-            } finally {
-                session.close();
             }
         }
     }

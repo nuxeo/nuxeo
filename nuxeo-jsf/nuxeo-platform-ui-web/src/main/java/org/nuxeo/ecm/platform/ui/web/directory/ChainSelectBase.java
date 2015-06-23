@@ -43,10 +43,8 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -255,10 +253,8 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
         String directoryName = getDirectory(level);
 
         DirectoryService service = DirectoryHelper.getDirectoryService();
-        Session session = null;
-        try {
+        try (Session session = service.open(directoryName)) {
             String schema = service.getDirectorySchema(directoryName);
-            session = service.open(directoryName);
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
 
             if (level == 0) {
@@ -293,11 +289,6 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
                 DirectoryEntry newNode = new DirectoryEntry(schema, entry);
                 result.add(newNode);
             }
-
-        } catch (ClientException e) {
-            throw new RuntimeException("failed to query  directory: " + directoryName, e);
-        } finally {
-            closeSession(session);
         }
 
         return result;
@@ -314,13 +305,11 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
         List<DirectoryEntry> result = new ArrayList<DirectoryEntry>();
 
         DirectoryService service = DirectoryHelper.getDirectoryService();
-        Session session = null;
         for (int level = 0; level < keys.length; level++) {
-            try {
-                String directoryName = getDirectory(level);
+            String directoryName = getDirectory(level);
+            try (Session session = service.open(directoryName)) {
                 String schema = service.getDirectorySchema(directoryName);
-                session = service.open(directoryName);
-                Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                Map<String, Serializable> filter = new HashMap<>();
 
                 if (level == 0) {
                     if (schema.equals(XVOCABULARY_SCHEMA)) {
@@ -345,20 +334,9 @@ public abstract class ChainSelectBase extends UIInput implements NamingContainer
                 DirectoryEntry node = new DirectoryEntry(schema, entries.get(0));
                 result.add(node);
 
-            } catch (ClientException e) {
-                throw new RuntimeException("failed to lookup keys: ", e);
-            } finally {
-                closeSession(session);
             }
         }
         return result;
-    }
-
-    private static void closeSession(Session session) {
-        try {
-            session.close();
-        } catch (DirectoryException e) {
-        }
     }
 
     public String getComponentId(int level) {

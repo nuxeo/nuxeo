@@ -914,19 +914,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (id == null) {
             return "";
         }
-        Session directory = null;
-        try {
-            directory = getDirectoryService().open(directoryName);
+        try (Session directory = getDirectoryService().open(directoryName)) {
             // XXX hack, directory entries have only one datamodel
             DocumentModel documentModel = directory.getEntry(id);
             String schemaName = documentModel.getSchemas()[0];
             return (String) documentModel.getProperty(schemaName, "label");
         } catch (ClientException e) {
             return "";
-        } finally {
-            if (directory != null) {
-                directory.close();
-            }
         }
     }
 

@@ -24,6 +24,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -53,8 +54,7 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     public String getVocabularyLabel(String voc, String key) {
-        org.nuxeo.ecm.directory.Session session = getDirService().open(voc);
-        try {
+        try (Session session = getDirService().open(voc)) {
             DocumentModel doc = session.getEntry(key);
             // TODO: which is the best method to get "label" property when not
             // knowing vocabulary schema?
@@ -62,8 +62,6 @@ public class PlatformFunctions extends CoreFunctions {
             // fallback on "label" when not given
             DataModel dm = doc.getDataModels().values().iterator().next();
             return (String) dm.getData("label");
-        } finally {
-            session.close();
         }
     }
 

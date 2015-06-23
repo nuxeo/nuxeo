@@ -19,6 +19,12 @@
 
 package org.nuxeo.ecm.directory.ldap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,9 +34,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -70,13 +73,13 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
         }
         super.tearDown();
     }
+
     // override tests to get specific use cases
 
     @SuppressWarnings("rawtypes")
     @Test
     public void testGetEntry() throws Exception {
-        Session session = getLDAPDirectory("userDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
             assertEquals("ADMINISTRATOR", entry.getId());
@@ -108,15 +111,12 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
             DocumentModel entry3 = session.getEntry("UnexistingEntry");
             assertNull(entry3);
 
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testQuery1() throws ClientException {
-        Session session = getLDAPDirectory("userDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             DocumentModelList entries;
 
@@ -135,8 +135,6 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
             filter.put("firstName", "User");
             entries = session.query(filter);
             assertEquals(0, entries.size());
-        } finally {
-            session.close();
         }
     }
 

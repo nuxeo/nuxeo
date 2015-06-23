@@ -16,6 +16,11 @@
  */
 package org.nuxeo.ecm.directory.ldap;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,8 +30,6 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
@@ -61,8 +64,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry2() throws ClientException {
-        Session session = getLDAPDirectory("groupDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
@@ -98,8 +100,6 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 // LDAP references do not work with the internal test server
                 assertEquals(Arrays.asList("user2"), entry.getProperty(GROUP_SCHEMANAME, "members"));
             }
-        } finally {
-            session.close();
         }
     }
 
@@ -107,8 +107,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Test
     public void testCreateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            Session session = getLDAPDirectory("groupDirectory").getSession();
-            try {
+            try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
                 assertNotNull(session);
                 Map<String, Object> map = new HashMap<String, Object>();
                 map.put("groupname", "group2");
@@ -142,8 +141,6 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 assertEquals("emptygroup", dm.getProperty(GROUP_SCHEMANAME, "groupname"));
 
                 assertEquals(Arrays.asList(), dm.getProperty(GROUP_SCHEMANAME, "members"));
-            } finally {
-                session.close();
             }
         }
     }
@@ -152,9 +149,8 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Test
     public void testUpdateEntry() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            Session session = getLDAPDirectory("userDirectory").getSession();
-            Session groupSession = getLDAPDirectory("groupDirectory").getSession();
-            try {
+            try (Session session = getLDAPDirectory("userDirectory").getSession();
+                    Session groupSession = getLDAPDirectory("groupDirectory").getSession()) {
                 DocumentModel entry = session.getEntry("user1");
                 assertNotNull(entry);
 
@@ -198,17 +194,12 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 assertEquals(Arrays.asList("Administrator", "user1", "user2"),
                         entry.getProperty(GROUP_SCHEMANAME, "members"));
 
-            } finally {
-                session.close();
-                groupSession.close();
             }
-            session = getLDAPDirectory("groupDirectory").getSession();
-            try {
+
+            try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
                 DocumentModel entry = session.getEntry("administrators");
                 assertNotNull(entry);
                 assertEquals(Arrays.asList("Administrator", "user1"), entry.getProperty(GROUP_SCHEMANAME, "members"));
-            } finally {
-                session.close();
             }
         }
     }
@@ -217,8 +208,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Test
     public void testUpdateEntry2() throws Exception {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            Session session = getLDAPDirectory("groupDirectory").getSession();
-            try {
+            try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
                 DocumentModel entry = session.getEntry("members");
                 assertNotNull(entry);
 
@@ -245,8 +235,6 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
                 assertNotNull(entry);
                 assertEquals("blablabla", entry.getProperty(GROUP_SCHEMANAME, "description"));
                 assertEquals(Arrays.asList("user1", "user3"), entry.getProperty(GROUP_SCHEMANAME, "members"));
-            } finally {
-                session.close();
             }
         }
     }
@@ -258,8 +246,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
         if (!HAS_DYNGROUP_SCHEMA) {
             return;
         }
-        Session session = getLDAPDirectory("groupDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("dyngroup1");
             assertNotNull(entry);
             assertEquals("dyngroup1", entry.getId());
@@ -308,8 +295,6 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 
             parentGroups = (List<String>) entry.getProperty(GROUP_SCHEMANAME, "parentGroups");
             assertEquals(Arrays.asList("dyngroup1"), parentGroups);
-        } finally {
-            session.close();
         }
     }
 
@@ -317,21 +302,16 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Test
     public void testGetMandatoryAttributes() throws ClientException {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
-            LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession();
-            try {
+            try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
                 assertEquals(Arrays.asList("sn", "cn"), mandatoryAttributes);
-            } finally {
-                session.close();
             }
-            session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession();
-            try {
+
+            try (LDAPSession session = (LDAPSession) getLDAPDirectory("groupDirectory").getSession()) {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
                 List<String> expectedAttributes = Arrays.asList("cn", "gidNumber");
                 Collections.sort(mandatoryAttributes);
                 assertEquals(expectedAttributes, mandatoryAttributes);
-            } finally {
-                session.close();
             }
         }
     }

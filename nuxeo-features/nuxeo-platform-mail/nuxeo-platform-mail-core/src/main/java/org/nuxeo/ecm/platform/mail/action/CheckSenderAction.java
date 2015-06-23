@@ -66,11 +66,10 @@ public class CheckSenderAction implements MessageAction {
     }
 
     private static String getPrincipal(String address) {
-        Session session = null;
-        String principal = null;
-        try {
-            DirectoryService directoryService = Framework.getService(DirectoryService.class);
-            session = directoryService.open("userDirectory");
+        String principal;
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        try (Session session = directoryService.open("userDirectory")) {
+
             Map<String, Serializable> map = new HashMap<String, Serializable>();
             map.put("email", address);
             DocumentModelList list = session.query(map);
@@ -80,8 +79,6 @@ public class CheckSenderAction implements MessageAction {
             }
             DocumentModel dm = list.get(0);
             principal = dm.getId();
-        } finally {
-            session.close();
         }
         return principal;
     }

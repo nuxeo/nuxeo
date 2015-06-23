@@ -18,6 +18,7 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.io.Closeable;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
  * @author glefter@nuxeo.com
  */
 
-public interface Session {
+public interface Session extends AutoCloseable {
 
     /**
      * Retrieves a directory entry using its id.
@@ -221,6 +222,7 @@ public interface Session {
      *
      * @throws DirectoryException if a communication error occurs
      */
+    @Override
     void close() throws DirectoryException;
 
     /**

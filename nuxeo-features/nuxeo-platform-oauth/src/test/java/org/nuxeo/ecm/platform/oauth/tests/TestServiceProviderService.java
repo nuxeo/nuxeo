@@ -66,42 +66,41 @@ public class TestServiceProviderService {
         assertEquals(p.getId(), p2.getId());
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = ds.open(OAuthServiceProviderRegistryImpl.DIRECTORY_NAME);
-        Map<String, Object> init = new HashMap<String, Object>();
+        try (Session session = ds.open(OAuthServiceProviderRegistryImpl.DIRECTORY_NAME)) {
+            Map<String, Object> init = new HashMap<String, Object>();
 
-        init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget1");
-        init.put("serviceName", "");
-        init.put("consumerKey", "key1");
-        init.put("consumerSecret", "secret");
-        init.put("publicKey", "pk");
-        DocumentModel entry = session.createEntry(init);
-        session.updateEntry(entry);
+            init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget1");
+            init.put("serviceName", "");
+            init.put("consumerKey", "key1");
+            init.put("consumerSecret", "secret");
+            init.put("publicKey", "pk");
+            DocumentModel entry = session.createEntry(init);
+            session.updateEntry(entry);
 
-        init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget2");
-        init.put("serviceName", "");
-        init.put("consumerKey", "key2");
-        init.put("consumerSecret", "secret");
-        init.put("publicKey", "pk");
-        entry = session.createEntry(init);
-        session.updateEntry(entry);
+            init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget2");
+            init.put("serviceName", "");
+            init.put("consumerKey", "key2");
+            init.put("consumerSecret", "secret");
+            init.put("publicKey", "pk");
+            entry = session.createEntry(init);
+            session.updateEntry(entry);
 
-        init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget3");
-        init.put("serviceName", "sn1");
-        init.put("consumerKey", "key3");
-        init.put("consumerSecret", "secret");
-        init.put("publicKey", "pk");
-        entry = session.createEntry(init);
-        session.updateEntry(entry);
+            init.put("gadgetUrl", "http://127.0.0.1:8080/nuxeo/gadget3");
+            init.put("serviceName", "sn1");
+            init.put("consumerKey", "key3");
+            init.put("consumerSecret", "secret");
+            init.put("publicKey", "pk");
+            entry = session.createEntry(init);
+            session.updateEntry(entry);
 
-        init.put("gadgetUrl", "");
-        init.put("serviceName", "sn2");
-        init.put("consumerKey", "key4");
-        init.put("consumerSecret", "secret");
-        init.put("publicKey", "pk");
-        entry = session.createEntry(init);
-        session.updateEntry(entry);
-
-        session.close();
+            init.put("gadgetUrl", "");
+            init.put("serviceName", "sn2");
+            init.put("consumerKey", "key4");
+            init.put("consumerSecret", "secret");
+            init.put("publicKey", "pk");
+            entry = session.createEntry(init);
+            session.updateEntry(entry);
+        }
 
         assertEquals(5, providerRegistry.listProviders().size());
 

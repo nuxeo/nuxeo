@@ -53,6 +53,10 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
         return directorySession;
     }
 
+    /**
+     * @deprecated since 7.4. Directory sessions are now AutoCloseable.
+     */
+    @Deprecated
     protected static void closeDirectorySession(Session directorySession) {
         if (directorySession != null) {
             try {
@@ -76,9 +80,8 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
             }
         } else if (value instanceof String) {
             Object varValue = saveRequestMapVarValue();
-            try {
+            try (Session directorySession = getDirectorySession()) {
                 String entryId = (String) value;
-                Session directorySession = getDirectorySession();
                 if (directorySession != null) {
                     try {
                         DocumentModel entry = directorySession.getEntry(entryId);
@@ -92,7 +95,6 @@ public abstract class DirectorySelectItemFactory extends SelectItemFactory {
                 } else {
                     log.error("No session provided for directory, returning empty selection");
                 }
-                closeDirectorySession(directorySession);
             } finally {
                 restoreRequestMapVarValue(varValue);
             }

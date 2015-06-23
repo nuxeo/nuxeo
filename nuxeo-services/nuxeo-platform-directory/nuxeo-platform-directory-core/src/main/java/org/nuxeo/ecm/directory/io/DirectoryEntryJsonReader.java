@@ -78,12 +78,11 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
         String directoryName = getStringField(jn, "directoryName");
         Directory directory = directoryService.getDirectory(directoryName);
         String schema = directory.getSchema();
-        Session session = null;
+
         JsonNode propsNode = jn.get("properties");
         if (propsNode != null && !propsNode.isNull() && propsNode.isObject()) {
             String id = getStringField(propsNode, directory.getIdField());
-            try {
-                session = directory.getSession();
+            try (Session session = directory.getSession()) {
                 DocumentModel entry = session.getEntry(id);
                 if (entry == null) {
                     entry = BaseSession.createEntryModel(null, schema, id, new HashMap<String, Object>());
@@ -96,10 +95,6 @@ public class DirectoryEntryJsonReader extends EntityJsonReader<DirectoryEntry> {
                     }
                 }
                 return new DirectoryEntry(directory.getName(), entry);
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
             }
         }
         return null;

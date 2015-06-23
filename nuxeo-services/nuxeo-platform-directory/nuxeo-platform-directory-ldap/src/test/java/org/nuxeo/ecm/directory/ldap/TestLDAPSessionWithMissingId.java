@@ -84,8 +84,7 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry() throws Exception {
-        Session session = getLDAPDirectory("userDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNull(entry);
 
@@ -156,16 +155,13 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
                 assertNull(entry6);
             }
 
-        } finally {
-            session.close();
         }
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void testGetEntry2() throws ClientException {
-        Session session = getLDAPDirectory("groupDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
             assertEquals("administrators", entry.getId());
@@ -225,15 +221,12 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
                 }
             }
 
-        } finally {
-            session.close();
         }
     }
 
     @Test
     public void testQuery1() throws ClientException {
-        Session session = getLDAPDirectory("userDirectory").getSession();
-        try {
+        try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("username", "user");
             Set<String> fulltext = new HashSet<String>();
@@ -250,8 +243,6 @@ public class TestLDAPSessionWithMissingId extends LDAPDirectoryTestCase {
             assertEquals("ogrisel+user1@nuxeo.com", entryIds.get(0));
             assertEquals("ogrisel+user3@nuxeo.com", entryIds.get(1));
 
-        } finally {
-            session.close();
         }
     }
 

@@ -74,8 +74,9 @@ public class TestSessionsAreClosedAutomatically {
         boolean started = TransactionHelper.startTransaction();
 
         try {
-            Session session = userDirectory.getSession();
-            session.close();
+            try (Session session = userDirectory.getSession()) {
+                // do nothing
+            }
         } finally {
             if (started) {
                 TransactionHelper.commitOrRollbackTransaction();

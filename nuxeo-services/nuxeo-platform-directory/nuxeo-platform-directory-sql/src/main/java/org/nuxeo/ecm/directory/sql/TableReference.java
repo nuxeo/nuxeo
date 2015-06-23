@@ -94,11 +94,8 @@ public class TableReference extends AbstractReference {
         if (targetIds == null) {
             return;
         }
-        SQLSession session = getSQLSession();
-        try {
+        try (SQLSession session = getSQLSession()) {
             addLinks(sourceId, targetIds, session);
-        } finally {
-            session.close();
         }
     }
 
@@ -107,11 +104,8 @@ public class TableReference extends AbstractReference {
         if (sourceIds == null) {
             return;
         }
-        SQLSession session = getSQLSession();
-        try {
+        try (SQLSession session = getSQLSession()) {
             addLinks(sourceIds, targetId, session);
-        } finally {
-            session.close();
         }
     }
 
@@ -228,47 +222,31 @@ public class TableReference extends AbstractReference {
 
     protected List<String> getIdsFor(String valueColumn, String filterColumn, String filterValue)
             throws DirectoryException {
-        SQLSession session = getSQLSession();
+        try (SQLSession session = getSQLSession()) {
+            // String sql = String.format("SELECT %s FROM %s WHERE %s = ?",
+            // table.getColumn(valueColumn), tableName, filterColumn);
+            Table table = getTable();
+            Select select = new Select(table);
+            select.setWhat(table.getColumn(valueColumn).getQuotedName());
+            select.setFrom(table.getQuotedName());
+            select.setWhere(table.getColumn(filterColumn).getQuotedName() + " = ?");
 
-        // String sql = String.format("SELECT %s FROM %s WHERE %s = ?",
-        // table.getColumn(valueColumn), tableName, filterColumn);
-        Table table = getTable();
-        Select select = new Select(table);
-        select.setWhat(table.getColumn(valueColumn).getQuotedName());
-        select.setFrom(table.getQuotedName());
-        select.setWhere(table.getColumn(filterColumn).getQuotedName() + " = ?");
-
-        String sql = select.getStatement();
-        if (session.logger.isLogEnabled()) {
-            session.logger.logSQL(sql, Collections.<Serializable> singleton(filterValue));
-        }
-
-        List<String> ids = new LinkedList<String>();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = session.sqlConnection.prepareStatement(sql);
-            ps.setString(1, filterValue);
-
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                ids.add(rs.getString(valueColumn));
+            String sql = select.getStatement();
+            if (session.logger.isLogEnabled()) {
+                session.logger.logSQL(sql, Collections.<Serializable> singleton(filterValue));
             }
-            return ids;
-        } catch (SQLException e) {
-            throw new DirectoryException("error fetching reference values: ", e);
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
+
+            List<String> ids = new LinkedList<String>();
+            try (PreparedStatement ps = session.sqlConnection.prepareStatement(sql)) {
+                ps.setString(1, filterValue);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        ids.add(rs.getString(valueColumn));
+                    }
+                    return ids;
                 }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch (SQLException sqle) {
-                throw new DirectoryException(sqle);
-            } finally {
-                session.close();
+            } catch (SQLException e) {
+                throw new DirectoryException("error fetching reference values: ", e);
             }
         }
     }
@@ -285,8 +263,8 @@ public class TableReference extends AbstractReference {
 
     public void removeLinksFor(String column, String entryId, SQLSession session) throws DirectoryException {
         Table table = getTable();
-        String sql = String.format("DELETE FROM %s WHERE %s = ?", table.getQuotedName(),
-                table.getColumn(column).getQuotedName());
+        String sql = String.format("DELETE FROM %s WHERE %s = ?", table.getQuotedName(), table.getColumn(column)
+                                                                                              .getQuotedName());
         if (session.logger.isLogEnabled()) {
             session.logger.logSQL(sql, Collections.<Serializable> singleton(entryId));
         }
@@ -318,21 +296,15 @@ public class TableReference extends AbstractReference {
 
     @Override
     public void removeLinksForSource(String sourceId) throws DirectoryException {
-        SQLSession session = getSQLSession();
-        try {
+        try (SQLSession session = getSQLSession()) {
             removeLinksForSource(sourceId, session);
-        } finally {
-            session.close();
         }
     }
 
     @Override
     public void removeLinksForTarget(String targetId) throws DirectoryException {
-        SQLSession session = getSQLSession();
-        try {
+        try (SQLSession session = getSQLSession()) {
             removeLinksForTarget(targetId, session);
-        } finally {
-            session.close();
         }
     }
 
@@ -438,21 +410,15 @@ public class TableReference extends AbstractReference {
 
     @Override
     public void setSourceIdsForTarget(String targetId, List<String> sourceIds) throws DirectoryException {
-        SQLSession session = getSQLSession();
-        try {
+        try (SQLSession session = getSQLSession()) {
             setSourceIdsForTarget(targetId, sourceIds, session);
-        } finally {
-            session.close();
         }
     }
 
     @Override
     public void setTargetIdsForSource(String sourceId, List<String> targetIds) throws DirectoryException {
-        SQLSession session = getSQLSession();
-        try {
+        try (SQLSession session = getSQLSession()) {
             setTargetIdsForSource(sourceId, targetIds, session);
-        } finally {
-            session.close();
         }
     }
 
@@ -460,12 +426,9 @@ public class TableReference extends AbstractReference {
 
     protected SQLSession getSQLSession() throws DirectoryException {
         if (!initialized) {
-            SQLSession sqlSession = (SQLSession) getSourceDirectory().getSession();
-            try {
+            try (SQLSession sqlSession = (SQLSession) getSourceDirectory().getSession()) {
                 initialize(sqlSession);
                 initialized = true;
-            } finally {
-                sqlSession.close();
             }
         }
         return (SQLSession) getSourceDirectory().getSession();

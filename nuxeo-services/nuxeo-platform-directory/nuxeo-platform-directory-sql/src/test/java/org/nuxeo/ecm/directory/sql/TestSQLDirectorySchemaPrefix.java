@@ -56,12 +56,9 @@ public class TestSQLDirectorySchemaPrefix {
 
     @Test
     public void testSchemaWithPrefix() throws Exception {
-        Session session = getSession();
-        try {
+        try (Session session = getSession()) {
             DocumentModel dm = session.getEntry("user_1");
             assertEquals("user_1", dm.getProperty(SCHEMA, "username"));
-        } finally {
-            session.close();
         }
     }
 

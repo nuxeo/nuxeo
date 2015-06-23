@@ -51,8 +51,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     public static final String SCHEMA = "oauth2ServiceProvider";
 
     /**
-     * Registry of contributed providers.
-     * These providers can extend and/or override the default provider class.
+     * Registry of contributed providers. These providers can extend and/or override the default provider class.
      */
     protected OAuth2ServiceProviderContributionRegistry registry = new OAuth2ServiceProviderContributionRegistry();
 
@@ -80,10 +79,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             String authorizationServerURL, String clientId, String clientSecret, List<String> scopes) {
 
         DirectoryService ds = Framework.getService(DirectoryService.class);
-        Session session = null;
-
-        try {
-            session = ds.open(DIRECTORY_NAME);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel creationEntry = BaseSession.createEntryModel(null, SCHEMA, null, null);
             DocumentModel entry = session.createEntry(creationEntry);
             entry.setProperty(SCHEMA, "serviceName", serviceName);
@@ -97,31 +93,19 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             entry.setProperty(SCHEMA, "enabled", enabled);
             if (!enabled) {
                 log.info("OAuth2 provider for " + serviceName
-                    + " is disabled because clientId and/or clientSecret are empty");
+                        + " is disabled because clientId and/or clientSecret are empty");
             }
             session.updateEntry(entry);
             return getProvider(serviceName);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
     protected List<DocumentModel> queryProviders(Map<String, Serializable> filter, int limit) {
-        try {
-            DirectoryService ds = Framework.getService(DirectoryService.class);
-            Session session = null;
-            try {
-                session = ds.open(DIRECTORY_NAME);
-                Set<String> fulltext = Collections.emptySet();
-                Map<String, String> orderBy = Collections.emptyMap();
-                return session.query(filter, fulltext, orderBy, true, limit, 0);
-            } finally {
-                if (session != null) {
-                    session.close();
-                }
-            }
+        DirectoryService ds = Framework.getService(DirectoryService.class);
+        try (Session session = ds.open(DIRECTORY_NAME)) {
+            Set<String> fulltext = Collections.emptySet();
+            Map<String, String> orderBy = Collections.emptyMap();
+            return session.query(filter, fulltext, orderBy, true, limit, 0);
         } catch (ClientException e) {
             log.error("Error while fetching provider directory", e);
         }
@@ -150,8 +134,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     }
 
     @Override
-    public void registerContribution(Object contribution,
-        String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (PROVIDER_EP.equals(extensionPoint)) {
             OAuth2ServiceProviderDescriptor provider = (OAuth2ServiceProviderDescriptor) contribution;
             log.info("OAuth2 provider for " + provider.getName() + " will be registered at application startup");
@@ -171,11 +154,11 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
         for (OAuth2ServiceProviderDescriptor provider : registry.getContribs()) {
             if (getProvider(provider.getName()) == null) {
                 addProvider(provider.getName(), provider.getDescription(), provider.getTokenServerURL(),
-                    provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
-                    Arrays.asList(provider.getScopes()));
+                        provider.getAuthorizationServerURL(), provider.getClientId(), provider.getClientSecret(),
+                        Arrays.asList(provider.getScopes()));
             } else {
                 log.info("Provider " + provider.getName()
-                    + " is already in the Database, XML contribution  won't overwrite it");
+                        + " is already in the Database, XML contribution  won't overwrite it");
             }
         }
     }
