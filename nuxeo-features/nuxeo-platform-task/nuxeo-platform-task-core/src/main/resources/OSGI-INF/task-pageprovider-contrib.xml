@@ -9,7 +9,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND nt:actors IN ?
+        0 AND nt:actors/* IN ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -31,7 +31,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND nt:targetDocumentId = ? AND nt:actors IN ?
+        0 AND nt:targetDocumentId = ? AND nt:actors/* IN ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -42,7 +42,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds IN (?))
+        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds/* IN (?))
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -53,8 +53,8 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds IN (?)) AND
-        nt:actors IN ?
+        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds/* IN (?)) AND
+        nt:actors/* IN ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -76,7 +76,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND nt:processId = ? AND nt:actors IN ?
+        0 AND nt:processId = ? AND nt:actors/* IN ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -100,8 +100,8 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds IN (?)) AND
-        (nt:actors IN ? OR nt:delegatedActors IN ?)";
+        0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds/* IN (?)) AND
+        (nt:actors/* IN ? OR nt:delegatedActors/* IN ?)";
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>

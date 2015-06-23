@@ -36,7 +36,7 @@ public class TaskQueryConstant {
      * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
-    public static final String TASK_ACTORS_WHERE_CLAUSE = " nt:actors IN (%s) ";
+    public static final String TASK_ACTORS_WHERE_CLAUSE = " nt:actors/* IN (%s) ";
 
     /**
      * @since 6.0
@@ -55,7 +55,7 @@ public class TaskQueryConstant {
      * @deprecated since 6.0: use page providers instead.
      */
     @Deprecated
-    public static final String GET_TASKS_FOR_ACTORS_QUERY = GET_TASKS_QUERY + " AND nt:actors IN (%s) ";
+    public static final String GET_TASKS_FOR_ACTORS_QUERY = GET_TASKS_QUERY + " AND nt:actors/* IN (%s) ";
 
     /**
      * @since 6.0
@@ -80,7 +80,7 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_QUERY = GET_TASKS_QUERY
-            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') )";
+            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds/* IN ('%s') )";
 
     /**
      * @since 6.0
@@ -92,7 +92,7 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY = GET_TASKS_QUERY
-            + " AND nt:targetDocumentId = '%s' AND nt:actors IN (%s) ";
+            + " AND nt:targetDocumentId = '%s' AND nt:actors/* IN (%s) ";
 
     /**
      * @since 6.0
@@ -105,7 +105,7 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_QUERY = GET_TASKS_QUERY
-            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') ) AND nt:actors IN (%s) ";
+            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds/* IN ('%s') ) AND nt:actors/* IN (%s) ";
 
     /**
      * @since 6.0
@@ -130,7 +130,7 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static final String GET_TASKS_FOR_PROCESS_ID_AND_ACTORS_QUERY = GET_TASKS_QUERY
-            + " AND nt:processId = '%s' AND nt:actors IN (%s) ";
+            + " AND nt:processId = '%s' AND nt:actors/* IN (%s) ";
 
     /**
      * @since 6.0
@@ -156,7 +156,7 @@ public class TaskQueryConstant {
      */
     @Deprecated
     public static final String GET_TASKS_FOR_TARGET_DOCUMENT_AND_ACTORS_QUERY_OR_DELEGATED_ACTORS_QUERY = GET_TASKS_QUERY
-            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds IN ('%s') ) AND ( nt:actors IN (%s) OR nt:delegatedActors IN (%s) ) ";
+            + " AND ( nt:targetDocumentId = '%s' OR nt:targetDocumentsIds/* IN ('%s') ) AND ( nt:actors/* IN (%s) OR nt:delegatedActors/* IN (%s) ) ";
 
     /**
      * @deprecated since 6.0: page providers implement this logic instead.

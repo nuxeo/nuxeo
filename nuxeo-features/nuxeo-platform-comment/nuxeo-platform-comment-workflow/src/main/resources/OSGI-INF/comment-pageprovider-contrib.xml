@@ -9,7 +9,7 @@
         SELECT * FROM Document WHERE ecm:mixinType = 'Task' AND
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
-        0 AND nt:targetDocumentId = ? AND nt:actors IN (?) AND
+        0 AND nt:targetDocumentId = ? AND nt:actors/* IN (?) AND
         nt:task_variables/*/key = 'commentId' AND nt:task_variables/*/value = ?
       </pattern>
       <pageSize>0</pageSize>
