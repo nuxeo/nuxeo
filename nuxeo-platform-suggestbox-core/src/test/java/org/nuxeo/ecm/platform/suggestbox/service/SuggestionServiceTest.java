@@ -105,8 +105,7 @@ public class SuggestionServiceTest {
     }
 
     protected void makeSomeUsersAndGroups() throws ClientException {
-        Session userSession = userdir.getSession();
-        try {
+        try (Session userSession = userdir.getSession()) {
             Map<String, Object> john = new HashMap<String, Object>();
             john.put("username", "john");
             john.put("firstName", "John");
@@ -122,19 +121,14 @@ public class SuggestionServiceTest {
             Map<String, Object> noname = new HashMap<String, Object>();
             noname.put("username", "noname");
             userSession.createEntry(noname);
-        } finally {
-            userSession.close();
         }
 
-        Session groupSession = groupDir.getSession();
-        try {
+        try (Session groupSession = groupDir.getSession()) {
             Map<String, Object> musicians = new HashMap<String, Object>();
             musicians.put("groupname", "musicians");
             musicians.put("grouplabel", "Musicians");
             musicians.put("members", Arrays.asList("john", "bob"));
             groupSession.createEntry(musicians);
-        } finally {
-            groupSession.close();
         }
     }
 
@@ -241,8 +235,7 @@ public class SuggestionServiceTest {
         assumeTrue("No multiple fulltext indexes",
                 coreFeature.getStorageConfiguration().supportsMultipleFulltextIndexes());
 
-        Session userSession = userdir.getSession();
-        try {
+        try (Session userSession = userdir.getSession()) {
             for (int i = 0; i < 10; i++) {
                 Map<String, Object> user = new HashMap<String, Object>();
                 user.put("username", String.format("user%d", i));
@@ -250,8 +243,6 @@ public class SuggestionServiceTest {
                 user.put("lastName", "Homonym");
                 userSession.createEntry(user);
             }
-        } finally {
-            userSession.close();
         }
 
         // build a suggestion context
