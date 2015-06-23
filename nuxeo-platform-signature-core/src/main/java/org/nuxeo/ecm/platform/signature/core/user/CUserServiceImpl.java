@@ -113,8 +113,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-            try {
+            try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 KeyStore keystore = null;
                 DocumentModel entry = session.getEntry(userID);
                 if (entry != null) {
@@ -126,8 +125,6 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     throw new CertException("No directory entry for " + userID);
                 }
                 return keystore;
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -152,8 +149,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
             throw new ClientException("Cannot log in as system user", e);
         }
         try {
-            Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-            try {
+            try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 String userKeystorePassword = userKeyPassword;
                 DocumentModel certificate = null;
 
@@ -184,8 +180,6 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
             } catch (DirectoryException e) {
                 LOG.error(e);
                 throw new CertException(e);
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -239,12 +233,9 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-            try {
+            try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 DocumentModel certificate = session.getEntry(userID);
                 return certificate;
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -275,11 +266,8 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-            try {
+            try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 return session.getEntry(userID) != null;
-            } finally {
-                session.close();
             }
         } finally {
             try {
@@ -304,15 +292,12 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
         try {
             // Open directory session
-            final Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME);
-            try {
+            try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
                 DocumentModel certEntry = session.getEntry(userID);
                 session.deleteEntry(certEntry);
                 assert (null == session.getEntry(userID));
             } catch (ClientException e) {
                 throw new CertException(e);
-            } finally {
-                session.close();
             }
         } finally {
             try {

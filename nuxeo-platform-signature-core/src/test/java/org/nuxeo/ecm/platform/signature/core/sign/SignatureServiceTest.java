@@ -155,10 +155,10 @@ public class SignatureServiceTest {
     public void tearDown() throws Exception {
 
         // delete certificates associated with user ids
-        Session sqlSession = directoryService.open(CERTIFICATE_DIRECTORY_NAME);
-        sqlSession.deleteEntry(DEFAULT_USER_ID);
-        sqlSession.deleteEntry(SECOND_USER_ID);
-        sqlSession.close();
+        try (Session sqlSession = directoryService.open(CERTIFICATE_DIRECTORY_NAME)) {
+            sqlSession.deleteEntry(DEFAULT_USER_ID);
+            sqlSession.deleteEntry(SECOND_USER_ID);
+        }
 
         // delete users
         userManager.deleteUser(DEFAULT_USER_ID);

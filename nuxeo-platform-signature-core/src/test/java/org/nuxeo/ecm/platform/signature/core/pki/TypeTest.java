@@ -100,33 +100,33 @@ public class TypeTest {
     public void savePropertiesToDirectory() throws Exception {
         // create an entry in the directory
         String userID = "testUserID2";
-        Session sqlSession = directoryService.open("certificate");
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("userid", userID);
+        try (Session sqlSession = directoryService.open("certificate")) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("userid", userID);
 
-        // add a keystore to the entry
-        KeyStore keystore = certService.initializeUser(getUserInfo(userID), USER_KEY_PASSWORD);
-        ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
-        keystore.store(byteOS, USER_KEYSTORE_PASSWORD.toCharArray());
-        String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
-        map.put("keystore", keystore64Encoded);
+            // add a keystore to the entry
+            KeyStore keystore = certService.initializeUser(getUserInfo(userID), USER_KEY_PASSWORD);
+            ByteArrayOutputStream byteOS = new ByteArrayOutputStream();
+            keystore.store(byteOS, USER_KEYSTORE_PASSWORD.toCharArray());
+            String keystore64Encoded = Base64.encodeBytes(byteOS.toByteArray());
+            map.put("keystore", keystore64Encoded);
 
-        DocumentModel entry = sqlSession.createEntry(map);
-        assertNotNull(entry);
+            DocumentModel entry = sqlSession.createEntry(map);
+            assertNotNull(entry);
 
-        // retrieve a persisted entry from the directory
-        DocumentModel entryFromSession = sqlSession.getEntry(userID);
-        String keystore64EncodedFromSession = (String) entryFromSession.getPropertyValue("cert:keystore");
-        byte[] keystoreBytes = Base64.decode(keystore64EncodedFromSession);
-        ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(keystoreBytes);
-        keystore.load(keystoreByteIS, USER_KEYSTORE_PASSWORD.toCharArray());
-        AliasWrapper userAlias = new AliasWrapper(userID);
+            // retrieve a persisted entry from the directory
+            DocumentModel entryFromSession = sqlSession.getEntry(userID);
+            String keystore64EncodedFromSession = (String) entryFromSession.getPropertyValue("cert:keystore");
+            byte[] keystoreBytes = Base64.decode(keystore64EncodedFromSession);
+            ByteArrayInputStream keystoreByteIS = new ByteArrayInputStream(keystoreBytes);
+            keystore.load(keystoreByteIS, USER_KEYSTORE_PASSWORD.toCharArray());
+            AliasWrapper userAlias = new AliasWrapper(userID);
 
-        // check if you can read an existing alias from the persisted keystore
-        assertTrue(keystore.containsAlias(userAlias.getId(AliasType.KEY)));
+            // check if you can read an existing alias from the persisted keystore
+            assertTrue(keystore.containsAlias(userAlias.getId(AliasType.KEY)));
 
-        sqlSession.deleteEntry(userID);
-        sqlSession.close();
+            sqlSession.deleteEntry(userID);
+        }
     }
 
     public UserInfo getUserInfo(String userID) throws Exception {
