@@ -78,18 +78,12 @@ public class TestTenantIsolationByDefault {
         ACL acl = acp.getOrCreateACL();
         assertNotNull(acl);
 
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = session.getEntries();
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
             assertEquals(domain.getTitle(), doc.getPropertyValue("tenant:label"));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 

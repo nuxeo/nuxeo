@@ -114,14 +114,11 @@ public class TestMultiTenantService {
         if (userManager.getPrincipal("leela") != null) {
             userManager.deleteUser("leela");
         }
-        Session dir = directoryService.open(TENANTS_DIRECTORY);
-        try {
+        try (Session dir = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = dir.getEntries();
             for (DocumentModel doc : docs) {
                 dir.deleteEntry(doc.getId());
             }
-        } finally {
-            dir.close();
         }
         multiTenantService.disableTenantIsolation(session);
         List<DocumentModel> groups = userManager.searchGroups(null);
@@ -157,15 +154,9 @@ public class TestMultiTenantService {
         assertNotNull(domain);
         assertFalse(domain.hasFacet(TENANT_CONFIG_FACET));
 
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = session.getEntries();
             assertEquals(0, docs.size());
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -179,9 +170,7 @@ public class TestMultiTenantService {
         assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
         assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
 
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = session.getEntries();
             assertEquals(2, docs.size());
             // order from directory is not fixed
@@ -192,10 +181,6 @@ public class TestMultiTenantService {
             DocumentModel doc = docs.get(1);
             assertEquals(newDomain.getName(), doc.getPropertyValue("tenant:id"));
             assertEquals(newDomain.getTitle(), doc.getPropertyValue("tenant:label"));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -213,18 +198,12 @@ public class TestMultiTenantService {
         ACL acl = acp.getOrCreateACL();
         assertNotNull(acl);
 
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = session.getEntries();
             assertEquals(1, docs.size());
             DocumentModel doc = docs.get(0);
             assertEquals(domain.getName(), doc.getPropertyValue("tenant:id"));
             assertEquals(domain.getTitle(), doc.getPropertyValue("tenant:label"));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -245,12 +224,9 @@ public class TestMultiTenantService {
         newDomain = session.getDocument(newDomain.getRef());
         assertFalse(newDomain.hasFacet(TENANT_CONFIG_FACET));
 
-        Session dirSession = directoryService.open(TENANTS_DIRECTORY);
-        try {
+        try (Session dirSession = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = dirSession.getEntries();
             assertEquals(1, docs.size());
-        } finally {
-            dirSession.close();
         }
     }
 
@@ -264,12 +240,9 @@ public class TestMultiTenantService {
         assertTrue(newDomain.hasFacet(TENANT_CONFIG_FACET));
         assertEquals(newDomain.getName(), newDomain.getPropertyValue(TENANT_ID_PROPERTY));
 
-        Session dirSession = directoryService.open(TENANTS_DIRECTORY);
-        try {
+        try (Session dirSession = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = dirSession.getEntries();
             assertEquals(2, docs.size());
-        } finally {
-            dirSession.close();
         }
 
         // trash the domain, which incidentally changes its name
@@ -279,12 +252,9 @@ public class TestMultiTenantService {
         newDomain = session.getDocument(newDomain.getRef());
         assertFalse(newDomain.hasFacet(TENANT_CONFIG_FACET));
 
-        dirSession = directoryService.open(TENANTS_DIRECTORY);
-        try {
+        try (Session dirSession = directoryService.open(TENANTS_DIRECTORY)) {
             DocumentModelList docs = dirSession.getEntries();
             assertEquals(1, docs.size());
-        } finally {
-            dirSession.close();
         }
     }
 

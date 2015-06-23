@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -146,18 +145,12 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
 
     private DocumentModel registerTenant(DocumentModel doc) throws ClientException {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             Map<String, Object> m = new HashMap<String, Object>();
             m.put("id", getTenantIdForTenant(doc));
             m.put("label", doc.getTitle());
             m.put("docId", doc.getId());
             return session.createEntry(m);
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -207,14 +200,8 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
 
     private void unregisterTenant(DocumentModel doc) throws ClientException {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             session.deleteEntry(getTenantIdForTenant(doc));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -238,14 +225,8 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     @Override
     public List<DocumentModel> getTenants() throws ClientException {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-        Session session = null;
-        try {
-            session = directoryService.open(TENANTS_DIRECTORY);
+        try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             return session.getEntries();
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
