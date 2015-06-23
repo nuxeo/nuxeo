@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
+import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 
 public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
@@ -66,7 +67,14 @@ public class BasicAuthenticator implements NuxeoAuthenticationPlugin {
                 String baHeader = "Basic realm=\"" + realName + '\"';
                 httpResponse.addHeader(BA_HEADER_NAME, baHeader);
             }
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            int statusCode;
+            Integer requestStatusCode = (Integer) httpRequest.getAttribute(NXAuthConstants.LOGIN_STATUS_CODE);
+            if (requestStatusCode != null) {
+                statusCode = requestStatusCode;
+            } else {
+                statusCode = HttpServletResponse.SC_UNAUTHORIZED;
+            }
+            httpResponse.sendError(statusCode);
             return true;
         } catch (IOException e) {
             return false;
