@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.platform.shibboleth;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -161,9 +162,11 @@ public class ShibbolethGroupHelper {
         Directory dir = getDirectoryService().getDirectory(
                 getUserManager().getGroupDirectoryName());
 
-        Reference subGroups = dir.getReference(
-                getUserManager().getGroupSubGroupsField());
-        List<String> ret = subGroups.getSourceIdsForTarget(shibbGroupName);
+        List<Reference> subGroups = dir.getReferences(getUserManager().getGroupSubGroupsField());
+        List<String> ret = new ArrayList<>();
+        for (Reference subGroup : subGroups) {
+            ret.addAll(subGroup.getSourceIdsForTarget(shibbGroupName));
+        }
         return ret;
     }
 
