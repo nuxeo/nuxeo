@@ -295,6 +295,12 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sourceId = entry.getId();
         for (Reference reference : getDirectory().getReferences()) {
             String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
+            if (getDirectory().getReferences(referenceFieldName).size() > 1) {
+                log.warn("Directory " + getDirectory().getName() + " cannot create field " + referenceFieldName
+                        + " for entry " + fieldMap.get(idFieldName)
+                        + ": this field is associated with more than one reference");
+                continue;
+            }
             @SuppressWarnings("unchecked")
             List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
             if (reference instanceof TableReference) {
@@ -420,12 +426,23 @@ public class SQLSession extends BaseSession implements EntrySource {
 
             // fetch the reference fields
             if (fetchReferences) {
+                Map<String, List<String>> targetIdsMap = new HashMap<String, List<String>>();
                 for (Reference reference : directory.getReferences()) {
                     List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
                     targetIds = new ArrayList<>(targetIds);
                     Collections.sort(targetIds);
+                    String fieldName = reference.getFieldName();
+                    if (targetIdsMap.containsKey(fieldName)) {
+                        targetIdsMap.get(fieldName).addAll(targetIds);
+                    } else {
+                        targetIdsMap.put(fieldName, targetIds);
+                    }
+                }
+                for (Entry<String, List<String>> en : targetIdsMap.entrySet()) {
+                    String fieldName = en.getKey();
+                    List<String> targetIds = en.getValue();
                     try {
-                        entry.setProperty(schemaName, reference.getFieldName(), targetIds);
+                        entry.setProperty(schemaName, fieldName, targetIds);
                     } catch (ClientException e) {
                         throw new DirectoryException(e);
                     }
@@ -551,15 +568,22 @@ public class SQLSession extends BaseSession implements EntrySource {
 
         // update reference fields
         for (String referenceFieldName : referenceFieldList) {
-            Reference reference = directory.getReference(referenceFieldName);
-            @SuppressWarnings("unchecked")
-            List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
-            if (reference instanceof TableReference) {
-                // optim: reuse current session
-                TableReference tableReference = (TableReference) reference;
-                tableReference.setTargetIdsForSource(docModel.getId(), targetIds, this);
+            List<Reference> references = directory.getReferences(referenceFieldName);
+            if (references.size() > 1) {
+                // not supported
+                log.warn("Directory " + getDirectory().getName() + " cannot update field " + referenceFieldName
+                        + " for entry " + docModel.getId() + ": this field is associated with more than one reference");
             } else {
-                reference.setTargetIdsForSource(docModel.getId(), targetIds);
+                Reference reference = references.get(0);
+                @SuppressWarnings("unchecked")
+                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
+                if (reference instanceof TableReference) {
+                    // optim: reuse current session
+                    TableReference tableReference = (TableReference) reference;
+                    tableReference.setTargetIdsForSource(docModel.getId(), targetIds, this);
+                } else {
+                    reference.setTargetIdsForSource(docModel.getId(), targetIds);
+                }
             }
         }
         directory.invalidateCaches();
@@ -819,6 +843,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
 
             int queryLimitSize = directory.getConfig().getQuerySizeLimit();
+            boolean trucatedResults = false;
             if (queryLimitSize != 0 && (limit <= 0 || limit > queryLimitSize)) {
                 PreparedStatement ps = null;
                 try {
@@ -844,7 +869,10 @@ public class SQLSession extends BaseSession implements EntrySource {
                     int count = rs.getInt(1);
                     rs.close();
                     if (count > queryLimitSize) {
-                        throw new SizeLimitExceededException("too many rows in result: " + count);
+                        trucatedResults = true;
+                        limit = queryLimitSize;
+                        log.error("Displayed results will be truncated because too many rows in result: " + count);
+                        // throw new SizeLimitExceededException("too many rows in result: " + count);
                     }
                 } finally {
                     if (ps != null) {
@@ -923,14 +951,28 @@ public class SQLSession extends BaseSession implements EntrySource {
 
                     // fetch the reference fields
                     if (fetchReferences) {
+                        Map<String, List<String>> targetIdsMap = new HashMap<String, List<String>>();
                         for (Reference reference : directory.getReferences()) {
                             List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
-                            docModel.setProperty(schemaName, reference.getFieldName(), targetIds);
+                            String fieldName = reference.getFieldName();
+                            if (targetIdsMap.containsKey(fieldName)) {
+                                targetIdsMap.get(fieldName).addAll(targetIds);
+                            } else {
+                                targetIdsMap.put(fieldName, targetIds);
+                            }
+                        }
+                        for (Entry<String, List<String>> en : targetIdsMap.entrySet()) {
+                            String fieldName = en.getKey();
+                            List<String> targetIds = en.getValue();
+                            docModel.setProperty(schemaName, fieldName, targetIds);
                         }
                     }
                     list.add(docModel);
                 }
                 rs.close();
+                if (trucatedResults) {
+                    ((DocumentModelListImpl) list).setTotalSize(-2);
+                }
                 return list;
             } finally {
                 if (ps != null) {

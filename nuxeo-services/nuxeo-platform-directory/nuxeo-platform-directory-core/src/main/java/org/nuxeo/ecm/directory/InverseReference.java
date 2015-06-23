@@ -66,7 +66,26 @@ public class InverseReference extends AbstractReference {
 
     protected void checkDualReference() throws DirectoryException {
         if (dualReference == null) {
-            dualReference = getTargetDirectory().getReference(dualReferenceName);
+            List<Reference> references = getTargetDirectory().getReferences(dualReferenceName);
+            if (references.size() == 0) {
+                dualReference = null;
+            } else if (references.size() == 1) {
+                dualReference = references.get(0);
+            } else {
+                for (Reference ref : references) {
+                    if (ref instanceof InverseReference) {
+                        continue;
+                    } else if (sourceDirectoryName.equals(ref.getTargetDirectory().getName())
+                            && targetDirectoryName.equals(ref.getSourceDirectory().getName())) {
+                        if (dualReference == null) {
+                            dualReference = ref;
+                        } else {
+                            throw new DirectoryException(
+                                    "More than one reference: could not find reference " + dualReferenceName);
+                        }
+                    }
+                }
+            }
         }
         if (dualReference == null) {
             throw new DirectoryException("could not find reference " + dualReferenceName);

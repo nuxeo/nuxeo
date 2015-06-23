@@ -19,6 +19,8 @@
 
 package org.nuxeo.ecm.directory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,7 +46,7 @@ public abstract class AbstractDirectory implements Directory {
 
     protected DirectoryFieldMapper fieldMapper;
 
-    protected final Map<String, Reference> references = new HashMap<String, Reference>();
+    protected final Map<String, List<Reference>> references = new HashMap<>();
 
     // simple cache system for entry lookups, disabled by default
     protected final DirectoryCache cache;
@@ -69,7 +71,7 @@ public abstract class AbstractDirectory implements Directory {
      */
     public void invalidateCaches() throws DirectoryException {
         cache.invalidateAll();
-        for (Reference ref : references.values()) {
+        for (Reference ref : getReferences()) {
             Directory targetDir = ref.getTargetDirectory();
             if (targetDir != null) {
                 targetDir.invalidateDirectoryCache();
@@ -86,6 +88,19 @@ public abstract class AbstractDirectory implements Directory {
 
     @Override
     public Reference getReference(String referenceFieldName) {
+        List<Reference> refs = getReferences(referenceFieldName);
+        if (refs == null || refs.isEmpty()) {
+            return null;
+        } else if (refs.size() == 1) {
+            return refs.get(0);
+        } else {
+            throw new DirectoryException(
+                    "Unexpected multiple references for " + referenceFieldName + " in directory " + getName());
+        }
+    }
+
+    @Override
+    public List<Reference> getReferences(String referenceFieldName) {
         return references.get(referenceFieldName);
     }
 
@@ -95,7 +110,14 @@ public abstract class AbstractDirectory implements Directory {
 
     public void addReference(Reference reference) throws ClientException {
         reference.setSourceDirectoryName(getName());
-        references.put(reference.getFieldName(), reference);
+        String fieldName = reference.getFieldName();
+        List<Reference> fieldRefs;
+        if (references.containsKey(fieldName)) {
+            fieldRefs = references.get(fieldName);
+        } else {
+            references.put(fieldName, fieldRefs = new ArrayList<>(1));
+        }
+        fieldRefs.add(reference);
     }
 
     public void addReferences(Reference[] references) throws ClientException {
@@ -106,7 +128,11 @@ public abstract class AbstractDirectory implements Directory {
 
     @Override
     public Collection<Reference> getReferences() {
-        return references.values();
+        List<Reference> allRefs = new ArrayList<>(2);
+        for (List<Reference> refs : references.values()) {
+            allRefs.addAll(refs);
+        }
+        return allRefs;
     }
 
     /**

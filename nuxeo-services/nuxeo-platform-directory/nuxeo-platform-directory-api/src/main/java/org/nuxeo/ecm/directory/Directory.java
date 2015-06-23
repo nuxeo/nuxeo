@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.directory;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The directory interface.
@@ -90,8 +91,18 @@ public interface Directory {
      *
      * @return the matching reference implementation or null
      * @throws DirectoryException
+     * @deprecated since 7.4, kept for compatibility with old code, use {@link #getReferences(String)} instead
      */
+    @Deprecated
     Reference getReference(String referenceFieldName) throws DirectoryException;
+
+    /**
+     * Lookup the References by field name.
+     *
+     * @return the matching references implementation or null
+     * @throws DirectoryException
+     */
+    List<Reference> getReferences(String referenceFieldName) throws DirectoryException;
 
     /**
      * Lookup all References defined on the directory.

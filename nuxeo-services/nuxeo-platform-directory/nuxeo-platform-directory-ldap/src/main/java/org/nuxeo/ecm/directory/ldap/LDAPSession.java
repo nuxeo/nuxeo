@@ -185,11 +185,16 @@ public class LDAPSession extends BaseSession implements EntrySource {
                     attr.add(password);
                     attrs.put(attr);
                 } else if (directory.isReference(fieldId)) {
-                    Reference reference = directory.getReference(fieldId);
-                    if (reference instanceof LDAPReference) {
-                        attr = new BasicAttribute(((LDAPReference) reference).getStaticAttributeId());
-                        attr.add(directory.getConfig().getEmptyRefMarker());
-                        attrs.put(attr);
+                    List<Reference> references = directory.getReferences(fieldId);
+                    if (references.size() > 1) {
+                        // not supported
+                    } else {
+                        Reference reference = references.get(0);
+                        if (reference instanceof LDAPReference) {
+                            attr = new BasicAttribute(((LDAPReference) reference).getStaticAttributeId());
+                            attr.add(directory.getConfig().getEmptyRefMarker());
+                            attrs.put(attr);
+                        }
                     }
                     referenceFieldList.add(fieldId);
                 } else if (LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY.equals(backendFieldId)) {
@@ -211,9 +216,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
             dirContext.bind(dn, null, attrs);
 
             for (String referenceFieldName : referenceFieldList) {
-                Reference reference = directory.getReference(referenceFieldName);
-                List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
-                reference.addLinks((String) fieldMap.get(getIdField()), targetIds);
+                List<Reference> references = directory.getReferences(referenceFieldName);
+                if (references.size() > 1) {
+                    // not supported
+                } else {
+                    Reference reference = references.get(0);
+                    List<String> targetIds = (List<String>) fieldMap.get(referenceFieldName);
+                    reference.addLinks((String) fieldMap.get(getIdField()), targetIds);
+                }
             }
             String dnFieldName = directory.getFieldMapper().getDirectoryField(LDAPDirectory.DN_SPECIAL_ATTRIBUTE_KEY);
             if (directory.getSchemaFieldMap().containsKey(dnFieldName)) {
@@ -431,9 +441,14 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
             // update reference fields
             for (String referenceFieldName : referenceFieldList) {
-                Reference reference = directory.getReference(referenceFieldName);
-                List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
-                reference.setTargetIdsForSource(docModel.getId(), targetIds);
+                List<Reference> references = directory.getReferences(referenceFieldName);
+                if (references.size() > 1) {
+                    // not supported
+                } else {
+                    Reference reference = references.get(0);
+                    List<String> targetIds = (List<String>) docModel.getProperty(schemaName, referenceFieldName);
+                    reference.setTargetIdsForSource(docModel.getId(), targetIds);
+                }
             }
         } catch (NamingException e) {
             handleException(e, "updateEntry failed:");
@@ -468,8 +483,13 @@ public class LDAPSession extends BaseSession implements EntrySource {
         try {
             for (String fieldName : schemaFieldMap.keySet()) {
                 if (directory.isReference(fieldName)) {
-                    Reference reference = directory.getReference(fieldName);
-                    reference.removeLinksForSource(id);
+                    List<Reference> references = directory.getReferences(fieldName);
+                    if (references.size() > 1) {
+                        // not supported
+                    } else {
+                        Reference reference = references.get(0);
+                        reference.removeLinksForSource(id);
+                    }
                 }
             }
             SearchResult result = getLdapEntry(id);
@@ -853,34 +873,40 @@ public class LDAPSession extends BaseSession implements EntrySource {
             return null;
         }
         for (String fieldName : schemaFieldMap.keySet()) {
-            Reference reference = directory.getReference(fieldName);
-            if (reference != null) {
+            List<Reference> references = directory.getReferences(fieldName);
+            if (references != null && references.size() > 0) {
                 if (fetchReferences) {
-                    // reference resolution
-                    List<String> referencedIds;
-                    if (reference instanceof LDAPReference) {
-                        // optim: use the current LDAPSession directly to
-                        // provide the LDAP reference with the needed backend
-                        // entries
-                        LDAPReference ldapReference = (LDAPReference) reference;
-                        referencedIds = ldapReference.getLdapTargetIds(attributes);
-                    } else if (reference instanceof LDAPTreeReference) {
-                        // TODO: optimize using the current LDAPSession
-                        // directly to provide the LDAP reference with the
-                        // needed backend entries (needs to implement
-                        // getLdapTargetIds)
-                        LDAPTreeReference ldapReference = (LDAPTreeReference) reference;
-                        referencedIds = ldapReference.getTargetIdsForSource(entryId);
-                    } else {
-                        try {
-                            referencedIds = reference.getTargetIdsForSource(entryId);
-                        } catch (ClientException e) {
-                            throw new DirectoryException(e);
+                    Map<String, List<String>> referencedIdsMap = new HashMap<>();
+                    for (Reference reference : references) {
+                        // reference resolution
+                        List<String> referencedIds;
+                        if (reference instanceof LDAPReference) {
+                            // optim: use the current LDAPSession directly to
+                            // provide the LDAP reference with the needed backend entries
+                            LDAPReference ldapReference = (LDAPReference) reference;
+                            referencedIds = ldapReference.getLdapTargetIds(attributes);
+                        } else if (reference instanceof LDAPTreeReference) {
+                            // TODO: optimize using the current LDAPSession
+                            // directly to provide the LDAP reference with the
+                            // needed backend entries (needs to implement getLdapTargetIds)
+                            LDAPTreeReference ldapReference = (LDAPTreeReference) reference;
+                            referencedIds = ldapReference.getTargetIdsForSource(entryId);
+                        } else {
+                            try {
+                                referencedIds = reference.getTargetIdsForSource(entryId);
+                            } catch (ClientException e) {
+                                throw new DirectoryException(e);
+                            }
+                        }
+                        referencedIds = new ArrayList<>(referencedIds);
+                        Collections.sort(referencedIds);
+                        if (referencedIdsMap.containsKey(fieldName)) {
+                            referencedIdsMap.get(fieldName).addAll(referencedIds);
+                        } else {
+                            referencedIdsMap.put(fieldName, referencedIds);
                         }
                     }
-                    referencedIds = new ArrayList<>(referencedIds);
-                    Collections.sort(referencedIds);
-                    fieldMap.put(fieldName, referencedIds);
+                    fieldMap.put(fieldName, referencedIdsMap.get(fieldName));
                 }
             } else {
                 // manage directly stored fields

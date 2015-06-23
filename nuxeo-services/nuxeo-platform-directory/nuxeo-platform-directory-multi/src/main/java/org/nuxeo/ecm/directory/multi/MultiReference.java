@@ -56,7 +56,7 @@ public class MultiReference extends AbstractReference {
     }
 
     protected interface Collector {
-        List<String> collect(Reference dir) throws DirectoryException;
+        List<String> collect(List<Reference> dir) throws DirectoryException;
     }
 
     protected List<String> doCollect(Collector extractor) throws DirectoryException {
@@ -68,7 +68,7 @@ public class MultiReference extends AbstractReference {
                 if (dir == null) {
                     continue;
                 }
-                Reference ref = dir.getReference(fieldName);
+                List<Reference> ref = dir.getReferences(fieldName);
                 if (ref == null) {
                     continue;
                 }
@@ -86,16 +86,24 @@ public class MultiReference extends AbstractReference {
 
     public List<String> getSourceIdsForTarget(final String targetId) throws DirectoryException {
         return doCollect(new Collector() {
-            public List<String> collect(Reference ref) throws DirectoryException {
-                return ref.getSourceIdsForTarget(targetId);
+            public List<String> collect(List<Reference> refs) throws DirectoryException {
+                List<String> sourceIds = new ArrayList<>(1);
+                for (Reference ref : refs) {
+                    sourceIds.addAll(ref.getSourceIdsForTarget(targetId));
+                }
+                return sourceIds;
             }
         });
     }
 
     public List<String> getTargetIdsForSource(final String sourceId) throws DirectoryException {
         return doCollect(new Collector() {
-            public List<String> collect(Reference ref) throws DirectoryException {
-                return ref.getSourceIdsForTarget(sourceId);
+            public List<String> collect(List<Reference> refs) throws DirectoryException {
+                List<String> targetIds = new ArrayList<>(1);
+                for (Reference ref : refs) {
+                    targetIds.addAll(ref.getSourceIdsForTarget(sourceId));
+                }
+                return targetIds;
             }
         });
     }

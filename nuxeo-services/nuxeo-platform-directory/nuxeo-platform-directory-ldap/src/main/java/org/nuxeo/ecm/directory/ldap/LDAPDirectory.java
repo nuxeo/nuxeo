@@ -30,6 +30,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -106,8 +107,9 @@ public class LDAPDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Reference getReference(String referenceFieldName) {
-        if (schemaFieldMap == null) {
+    public List<Reference> getReferences(String referenceFieldName) {
+        if(schemaFieldMap == null)
+        {
             initLDAPConfig();
         }
         return references.get(referenceFieldName);
@@ -246,7 +248,7 @@ public class LDAPDirectory extends AbstractDirectory {
         }
         attrs.add("objectClass");
 
-        for (Reference reference : references.values()) {
+        for (Reference reference : getReferences()) {
             if (reference instanceof LDAPReference) {
                 LDAPReference ldapReference = (LDAPReference) reference;
                 attrs.add(ldapReference.getStaticAttributeId(fieldMapper));

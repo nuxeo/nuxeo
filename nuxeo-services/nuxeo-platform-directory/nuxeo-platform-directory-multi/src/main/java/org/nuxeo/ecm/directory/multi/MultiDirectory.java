@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.directory.multi;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.nuxeo.ecm.directory.AbstractDirectory;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -76,8 +79,9 @@ public class MultiDirectory extends AbstractDirectory {
     }
 
     @Override
-    public Reference getReference(String referenceFieldName) {
-        return new MultiReference(this, referenceFieldName);
+    public List<Reference> getReferences(String referenceFieldName) {
+        Reference reference = new MultiReference(this, referenceFieldName);
+        return Collections.singletonList(reference);
     }
 
     @Override
