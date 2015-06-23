@@ -151,14 +151,11 @@ public abstract class AbstractChangeFinderTestCase {
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "10");
 
         // Create test users
-        Session userDir = directoryService.getDirectory("userDirectory").getSession();
-        try {
+        try (Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user1 = new HashMap<String, Object>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user1);
-        } finally {
-            userDir.close();
         }
         user1Session = repository.openSessionAs("user1");
 
@@ -179,13 +176,10 @@ public abstract class AbstractChangeFinderTestCase {
         if (user1Session != null) {
             user1Session.close();
         }
-        Session usersDir = directoryService.getDirectory("userDirectory").getSession();
-        try {
+        try (Session usersDir = directoryService.open("userDirectory")) {
             if (usersDir.getEntry("user1") != null) {
                 usersDir.deleteEntry("user1");
             }
-        } finally {
-            usersDir.close();
         }
 
         // Disable deletion listener for the repository cleanup phase done in

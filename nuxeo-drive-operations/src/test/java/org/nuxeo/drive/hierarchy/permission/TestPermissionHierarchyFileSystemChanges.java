@@ -413,23 +413,17 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected void createUser(String userName, String password) throws ClientException {
-        Session userDir = directoryService.getDirectory("userDirectory").getSession();
-        try {
+        try (Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", userName);
             user.put("password", password);
             userDir.createEntry(user);
-        } finally {
-            userDir.close();
         }
     }
 
     protected void deleteUser(String userName) throws ClientException {
-        org.nuxeo.ecm.directory.Session userDir = directoryService.getDirectory("userDirectory").getSession();
-        try {
+        try (Session userDir = directoryService.open("userDirectory")) {
             userDir.deleteEntry(userName);
-        } finally {
-            userDir.close();
         }
     }
 

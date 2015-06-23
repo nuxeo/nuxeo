@@ -128,8 +128,7 @@ public class TestNuxeoDriveManager {
 
     @Before
     public void createUserSessionsAndFolders() throws Exception {
-        Session userDir = directoryService.getDirectory("userDirectory").getSession();
-        try {
+        try (Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user1 = new HashMap<String, Object>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
@@ -138,8 +137,6 @@ public class TestNuxeoDriveManager {
             user2.put("username", "user2");
             user2.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user2);
-        } finally {
-            userDir.close();
         }
         workspace_1 = session.createDocument(session.createDocumentModel("/default-domain/workspaces", "workspace-1",
                 "Workspace"));
@@ -176,12 +173,9 @@ public class TestNuxeoDriveManager {
         if (user2Session != null) {
             user2Session.close();
         }
-        Session usersDir = directoryService.getDirectory("userDirectory").getSession();
-        try {
+        try (Session usersDir = directoryService.open("userDirectory")) {
             usersDir.deleteEntry("user1");
             usersDir.deleteEntry("user2");
-        } finally {
-            usersDir.close();
         }
         // Simulate root deletion to cleanup the cache between the tests
         nuxeoDriveManager.handleFolderDeletion((IdRef) doc("/").getRef());
