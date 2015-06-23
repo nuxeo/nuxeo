@@ -58,6 +58,7 @@
         </description>
         <properties>
           <defaultValues mode="any">
+            <property name="display">block</property>
             <property name="thumbnailHeaderLayout">listing_thumbnail_header</property>
           </defaultValues>
         </properties>
