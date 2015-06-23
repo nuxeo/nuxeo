@@ -21,33 +21,8 @@
  */
 package org.nuxeo.ecm.core.opencmis.bindings;
 
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_CONFLICT;
-import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static javax.servlet.http.HttpServletResponse.SC_METHOD_NOT_ALLOWED;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
-
-import java.io.IOException;
-
-import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisConstraintException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisContentAlreadyExistsException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisFilterNotValidException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNameConstraintViolationException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisStorageException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisStreamNotSupportedException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisUpdateConflictException;
-import org.apache.chemistry.opencmis.commons.exceptions.CmisVersioningException;
-import org.apache.commons.lang.math.NumberUtils;
-import org.nuxeo.ecm.core.api.RecoverableClientException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.StringUtils;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Helper to deal with HTTP errors.
@@ -56,7 +31,25 @@ import org.slf4j.LoggerFactory;
  */
 public class NuxeoCmisErrorHelper {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NuxeoCmisErrorHelper.class);
+    public static final String EXTRACTOR_CLASS_PROP = "org.nuxeo.cmis.errorextractor";
+
+    public static ErrorExtractor errorExtractor;
+
+    /**
+     * Interface for a helper able to extract the error from an exception.
+     *
+     * @since 7.4
+     */
+    public interface ErrorExtractor {
+
+        /**
+         * Extracts the error from the exception.
+         *
+         * @param ex the exception
+         * @return the error info
+         */
+        ErrorInfo extractError(Exception ex);
+    }
 
     /**
      * Info about an error to return to client code.
@@ -77,95 +70,19 @@ public class NuxeoCmisErrorHelper {
         }
     }
 
-    /**
-     * Extracts the error from the exception.
-     *
-     * @param ex the exception
-     * @return the error info
-     * @since 7.1
-     */
-    // see CmisAtomPubServlet.printError
-    // see CmisBrowserBindingServlet.ErrorServiceCall.printError
     public static ErrorInfo extractError(Exception ex) {
-        int statusCode = SC_INTERNAL_SERVER_ERROR;
-        String exceptionName = "runtime";
-
-        if (ex instanceof CmisRuntimeException) {
-            Throwable cause = ex.getCause();
-            if (cause instanceof RecoverableClientException) {
-                // don't log something harsh in that case
-                statusCode = getHttpStatus((RecoverableClientException) cause);
-            } else {
-                LOG.error(ex.getMessage(), ex);
+        if (errorExtractor == null) {
+            String className = Framework.getProperty(EXTRACTOR_CLASS_PROP);
+            if (StringUtils.isBlank(className)) {
+                className = DefaultErrorExtractor.class.getName();
             }
-        } else if (ex instanceof CmisStorageException) {
-            LOG.error(ex.getMessage(), ex);
-            statusCode = getErrorCode((CmisStorageException) ex);
-            exceptionName = ((CmisStorageException) ex).getExceptionName();
-        } else if (ex instanceof CmisBaseException) {
-            statusCode = getErrorCode((CmisBaseException) ex);
-            exceptionName = ((CmisBaseException) ex).getExceptionName();
-        } else if (ex instanceof IOException) {
-            LOG.warn(ex.getMessage(), ex);
-        } else {
-            LOG.error(ex.getMessage(), ex);
-        }
-
-        String message = ex.getMessage();
-        if (!(ex instanceof CmisBaseException)) {
-            message = "An error occurred!";
-        }
-
-        return new ErrorInfo(statusCode, exceptionName, message);
-    }
-
-    /*
-     * A bit of a hack, we need a way to find the HTTP status from the exception. We use the last parameter of the
-     * localized message for that.
-     */
-    public static int getHttpStatus(RecoverableClientException ex) {
-        String[] params = ex.geLocalizedMessageParams(); // urgh, typo
-        int len = params == null ? 0 : params.length;
-        String lastParam;
-        if (len > 0 && NumberUtils.isDigits(lastParam = params[len - 1])) {
             try {
-                return Integer.parseInt(lastParam);
-            } catch (NumberFormatException e) {
-                // fall through
+                errorExtractor = (ErrorExtractor) Class.forName(className).newInstance();
+            } catch (ReflectiveOperationException | ClassCastException e) {
+                throw new RuntimeException("Cannot instantiate " + className, e);
             }
         }
-        return SC_INTERNAL_SERVER_ERROR;
-    }
-
-    // see CmisAtomPubServlet.getErrorCode
-    // see CmisBrowserBindingServlet.ErrorServiceCall.getErrorCode
-    public static int getErrorCode(CmisBaseException ex) {
-        if (ex instanceof CmisConstraintException) {
-            return SC_CONFLICT; // 409
-        } else if (ex instanceof CmisContentAlreadyExistsException) {
-            return SC_CONFLICT; // 409
-        } else if (ex instanceof CmisFilterNotValidException) {
-            return SC_BAD_REQUEST; // 400
-        } else if (ex instanceof CmisInvalidArgumentException) {
-            return SC_BAD_REQUEST; // 400
-        } else if (ex instanceof CmisNameConstraintViolationException) {
-            return SC_CONFLICT; // 409
-        } else if (ex instanceof CmisNotSupportedException) {
-            return SC_METHOD_NOT_ALLOWED; // 405
-        } else if (ex instanceof CmisObjectNotFoundException) {
-            return SC_NOT_FOUND; // 404
-        } else if (ex instanceof CmisPermissionDeniedException) {
-            return SC_FORBIDDEN; // 403
-        } else if (ex instanceof CmisStorageException) {
-            return SC_INTERNAL_SERVER_ERROR; // 500
-        } else if (ex instanceof CmisStreamNotSupportedException) {
-            return SC_FORBIDDEN; // 403
-        } else if (ex instanceof CmisUpdateConflictException) {
-            return SC_CONFLICT; // 409
-        } else if (ex instanceof CmisVersioningException) {
-            return SC_CONFLICT; // 409
-        }
-        return SC_INTERNAL_SERVER_ERROR; // 500
+        return errorExtractor.extractError(ex);
     }
 
 }
