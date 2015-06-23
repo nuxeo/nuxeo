@@ -87,9 +87,7 @@ public class DCVocabulariesJsonEnricher extends AbstractJsonEnricher<DocumentMod
      */
     private void writeLabels(JsonGenerator jg, String directoryName, String[] entriesIds, List<String> labelFields)
             throws IOException {
-        Session session = null;
-        try {
-            session = directoryService.open(directoryName);
+        try (Session session = directoryService.open(directoryName)) {
             for (String entryId : entriesIds) {
                 Map<String, String> labels = getAbsoluteLabels(entryId, session, labelFields);
                 // Write absolute labels (<parent label> / <child label>)
@@ -100,12 +98,7 @@ public class DCVocabulariesJsonEnricher extends AbstractJsonEnricher<DocumentMod
                 }
                 jg.writeEndObject();
             }
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
-
     }
 
     /**
