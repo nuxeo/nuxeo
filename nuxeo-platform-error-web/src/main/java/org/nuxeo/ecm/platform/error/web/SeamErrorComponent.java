@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
 import org.nuxeo.ecm.directory.DirectoryException;
+import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -172,28 +173,20 @@ public class SeamErrorComponent implements Serializable {
 
     protected DocumentModel createDummyUser() throws ClientException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
-        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory("userDirectory").getSession();
-        try {
-            Map<String, Object> user = new HashMap<String, Object>();
+        try (Session userDir = directories.getDirectory("userDirectory").getSession()) {
+            Map<String, Object> user = new HashMap<>();
             user.put("username", "dummy");
             user.put("password", "dummy");
             user.put("firstName", "dummy");
             user.put("lastName", "dummy");
             return userDir.createEntry(user);
-        } finally {
-            userDir.close();
         }
     }
 
     protected void clearDummyUser() throws DirectoryException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
-        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory("userDirectory").getSession();
-        try {
+        try (Session userDir = directories.open("userDirectory")) {
             userDir.deleteEntry("dummy");
-        } catch (Exception e) {
-            ;
-        } finally {
-            userDir.close();
         }
     }
 
@@ -203,14 +196,11 @@ public class SeamErrorComponent implements Serializable {
     @Factory(scope = ScopeType.EVENT)
     public boolean isDummyUserExists() throws DirectoryException {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
-        org.nuxeo.ecm.directory.Session userDir = directories.getDirectory("userDirectory").getSession();
-        try {
+        try (Session userDir = directories.getDirectory("userDirectory").getSession()) {
             DocumentModel user = userDir.getEntry("dummy");
             return user != null;
         } catch (DirectoryException cause) {
             return false;
-        } finally {
-            userDir.close();
         }
     }
 
