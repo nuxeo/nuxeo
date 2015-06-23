@@ -50,13 +50,10 @@ public class AuthorizedApplicationsActions implements Serializable {
 
     public List<DocumentModel> getAuthorizedApplications() throws ClientException {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME);
-        try {
+        try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
             Map<String, Serializable> queryFilter = getQueryFilter();
             Set<String> emptySet = Collections.emptySet();
             return session.query(queryFilter, emptySet, null, true);
-        } finally {
-            session.close();
         }
     }
 
@@ -69,11 +66,8 @@ public class AuthorizedApplicationsActions implements Serializable {
 
     public void revokeAccess(String id) throws ClientException {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME);
-        try {
+        try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
             session.deleteEntry(id);
-        } finally {
-            session.close();
         }
     }
 

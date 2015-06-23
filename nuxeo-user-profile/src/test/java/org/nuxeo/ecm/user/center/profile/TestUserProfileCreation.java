@@ -45,15 +45,12 @@ public class TestUserProfileCreation {
     @Test
     public void testAdminCreate() throws Exception {
 
-        Session userDir = directoryService.getDirectory("userDirectory").getSession();
         DocumentModel user;
-        try {
+        try (Session userDir = directoryService.getDirectory("userDirectory").getSession()) {
             Map<String, Object> user1 = new HashMap<String, Object>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             user = userDir.createEntry(user1);
-        } finally {
-            userDir.close();
         }
 
         try (CoreSession session = repositorySettings.openSessionAs(user.getId())) {
