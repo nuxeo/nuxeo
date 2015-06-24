@@ -70,6 +70,11 @@
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
+        <template is="dom-if" if="{{!updatingACE}}">
+          <paper-button on-tap="doSend">
+            Create and add a new one
+          </paper-button>
+        </template>
         <paper-button dialog-confirm on-tap="doSend">
           <template is="dom-if" if="{{!updatingACE}}">
             Create
