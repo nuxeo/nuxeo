@@ -1220,7 +1220,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 "SELECT * FROM Document WHERE ecm:mixinType = '%s' AND ecm:currentLifeCycleState = '%s'",
                 TaskConstants.TASK_FACET_NAME, TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE));
         if (StringUtils.isNotBlank(actorId)) {
-            query.append(String.format(" AND nt:actors = '%s'", actorId));
+            query.append(String.format(" AND nt:actors/* = '%s'", actorId));
         }
         if (StringUtils.isNotBlank(workflowInstanceId)) {
             query.append(String.format(" AND nt:processId = '%s'", workflowInstanceId));
