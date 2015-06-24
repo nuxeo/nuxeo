@@ -470,8 +470,9 @@ IS
 BEGIN
   EXECUTE IMMEDIATE 'TRUNCATE TABLE ancestors';
   INSERT INTO ancestors (hierarchy_id, ancestor)
-  SELECT h.id AS hierarchy_id, t.COLUMN_VALUE AS ancestor FROM hierarchy h, TABLE(nx_get_ancestors(h.id)) t
-    WHERE isproperty = 0;
+  SELECT CONNECT_BY_ROOT id AS hierarchy_id, parentid AS ancestor
+    FROM hierarchy WHERE parentid IS NOT NULL AND isproperty = 0
+    CONNECT BY PRIOR parentid = id AND PRIOR isproperty = 0;
 END;
 
 

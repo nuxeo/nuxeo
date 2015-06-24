@@ -191,8 +191,12 @@ RETURNS void
 BEGIN
   TRUNCATE TABLE ancestors;
   INSERT INTO ancestors
-    SELECT id, nx_get_ancestors(id)
-    FROM (SELECT id FROM hierarchy WHERE NOT isproperty) AS uids;
+    WITH RECURSIVE rec(id, ancestor) AS (
+      SELECT id, parentid ancestor FROM hierarchy WHERE parentid IS NOT NULL AND not isproperty
+      UNION ALL
+      SELECT rec.id, h.parentid FROM rec JOIN hierarchy h ON rec.ancestor = h.id WHERE h.parentid IS NOT NULL
+    )
+    SELECT id, array_agg(ancestor) FROM rec GROUP BY id;
   PERFORM nx_ancestors_create_triggers();
   RETURN;
 END $$
