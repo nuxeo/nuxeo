@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -38,8 +37,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.Sorter;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionFinder;
 import org.nuxeo.ecm.platform.publisher.helper.RootSectionsManager;
@@ -53,8 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Name("adminPublishActions")
 @Scope(ScopeType.CONVERSATION)
-public class AdministrationPublishActions extends AbstractPublishActions
-        implements Serializable {
+public class AdministrationPublishActions extends AbstractPublishActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -105,8 +101,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
         }
 
         if (currentSectionRootId != null) {
-            sectionsRoot = documentManager.getDocument(new IdRef(
-                    currentSectionRootId));
+            sectionsRoot = documentManager.getDocument(new IdRef(currentSectionRootId));
         }
 
         sectionsTree = getDocumentTreeNode(sectionsRoot);
@@ -118,8 +113,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
         this.currentSectionRootId = currentSectionRootId;
     }
 
-    public String getDomainNameFor(final DocumentModel sectionRoot)
-            throws ClientException {
+    public String getDomainNameFor(final DocumentModel sectionRoot) throws ClientException {
         final List<String> domainName = new ArrayList<>();
         new UnrestrictedSessionRunner(documentManager) {
             @Override
@@ -143,18 +137,13 @@ public class AdministrationPublishActions extends AbstractPublishActions
             Filter filter = null;
             Sorter sorter = null;
             try {
-                filter = getTreeManager().getFilter(
-                        PUBLICATION_TREE_PLUGIN_NAME);
-                sorter = getTreeManager().getSorter(
-                        PUBLICATION_TREE_PLUGIN_NAME);
+                filter = getTreeManager().getFilter(PUBLICATION_TREE_PLUGIN_NAME);
+                sorter = getTreeManager().getSorter(PUBLICATION_TREE_PLUGIN_NAME);
             } catch (Exception e) {
-                log.error(
-                        "Could not fetch filter, sorter or node type for tree ",
-                        e);
+                log.error("Could not fetch filter, sorter or node type for tree ", e);
             }
 
-            documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter,
-                    sorter);
+            documentTreeNode = new DocumentTreeNodeImpl(documentModel, filter, sorter);
         }
 
         return documentTreeNode;
@@ -186,8 +175,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
 
     public DocumentModelList getSelectedSections() throws ClientException {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
-        return getRootFinder().getSectionRootsForWorkspace(currentDocument,
-                true);
+        return getRootFinder().getSectionRootsForWorkspace(currentDocument, true);
     }
 
     public String removeSection(String sectionId) throws ClientException {
@@ -209,8 +197,7 @@ public class AdministrationPublishActions extends AbstractPublishActions
     }
 
     @Override
-    protected DocumentModel getParentDocument(DocumentModel documentModel)
-            throws ClientException {
+    protected DocumentModel getParentDocument(DocumentModel documentModel) throws ClientException {
         try {
             return documentManager.getDocument(documentModel.getParentRef());
         } catch (Exception e) {

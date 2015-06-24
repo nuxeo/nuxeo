@@ -44,8 +44,7 @@ public abstract class AbstractPublishActions {
     @In(create = true)
     protected Map<String, String> messages;
 
-    public String getFormattedPath(DocumentModel documentModel)
-            throws ClientException {
+    public String getFormattedPath(DocumentModel documentModel) throws ClientException {
         List<String> pathFragments = new ArrayList<>();
         getPathFragments(documentModel, pathFragments);
         return formatPathFragments(pathFragments);
@@ -62,14 +61,12 @@ public abstract class AbstractPublishActions {
         return fullPath;
     }
 
-    protected void getPathFragments(DocumentModel documentModel,
-            List<String> pathFragments) throws ClientException {
+    protected void getPathFragments(DocumentModel documentModel, List<String> pathFragments) throws ClientException {
         String pathElementName = documentModel.getTitle();
         String translatedPathElement = messages.get(pathElementName);
         pathFragments.add(translatedPathElement);
 
-        if (isDomain(documentModel)
-                || "/".equals(documentModel.getPathAsString())) {
+        if (isDomain(documentModel) || "/".equals(documentModel.getPathAsString())) {
             return;
         }
 
@@ -79,10 +76,8 @@ public abstract class AbstractPublishActions {
         }
     }
 
-    protected DocumentModel getParentDocument(DocumentModel documentModel)
-            throws ClientException {
-        if (documentManager.hasPermission(documentModel.getParentRef(),
-                SecurityConstants.READ)) {
+    protected DocumentModel getParentDocument(DocumentModel documentModel) throws ClientException {
+        if (documentManager.hasPermission(documentModel.getParentRef(), SecurityConstants.READ)) {
             return documentManager.getDocument(documentModel.getParentRef());
         }
         return null;
