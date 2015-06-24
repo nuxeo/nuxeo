@@ -23,7 +23,12 @@
     </template>
 
     <paper-dialog id="popupRight">
-      <h2>Add new acl right</h2>
+      <template is="dom-if" if="{{!updatingACE}}">
+        <h2>Add new permission</h2>
+      </template>
+      <template is="dom-if" if="{{updatingACE}}">
+        <h2>Update permission</h2>
+      </template>
 
       <!-- Give acces to row -->
       <div>
