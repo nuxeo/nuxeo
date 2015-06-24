@@ -206,7 +206,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             } else if (DOCUMENT_CHECKEDOUT.equals(sourceEvent)) {
                 // All quota computation are now handled on Checkin
             } else if (DELETE_TRANSITION.equals(sourceEvent) || UNDELETE_TRANSITION.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(), quotaCtx.getTrashSize(), false, true);
+                processOnParents(parents, 0, quotaCtx.getBlobSize(), false, true);
             } else if (ABOUT_TO_REMOVE_VERSION.equals(sourceEvent)) {
                 processOnParents(parents, quotaCtx.getBlobDelta(), 0L, quotaCtx.getBlobDelta(), true, false, true);
             } else if (ABOUT_TO_REMOVE.equals(sourceEvent)) {
@@ -216,7 +216,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 log.debug("Processing document about to be removed on parents. Total: " + quotaCtx.getBlobDelta()
                         + " , trash size: " + quotaCtx.getTrashSize() + " , versions size: "
                         + quotaCtx.getVersionsSize());
-                processOnParents(parents, quotaCtx.getBlobDelta(), quotaCtx.getTrashSize(), quotaCtx.getVersionsSize(),
+                processOnParents(parents, quotaCtx.getBlobDelta(), quotaCtx.getBlobDelta(), quotaCtx.getVersionsSize(),
                         true, quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
                                 && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
                         true);
@@ -228,7 +228,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
                 QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
                 if (quotaDoc.getInnerSize() > 0) {
-                    processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(), quotaCtx.getTrashSize(),
+                    processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(), 
+                            quotaCtx.getBlobSize(),
                             quotaCtx.getVersionsSize(), true,
                             quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
                             && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
@@ -237,9 +238,9 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                     log.debug("No inner size, parents not updated");
                 }
             } else if (DOCUMENT_CREATED_BY_COPY.equals(sourceEvent)) {
-                processOnParents(parents, quotaCtx.getBlobSize(), 0, true, false);
+                processOnParents(parents, quotaCtx.getBlobSize());
             } else {
-                processOnParents(parents, quotaCtx.getBlobDelta(), quotaCtx.getBlobDelta(), true, false);
+                processOnParents(parents, quotaCtx.getBlobDelta());
             }
         }
     }
@@ -250,6 +251,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
      */
     private long getVersionSizeFromCtx(SizeUpdateEventContext quotaCtx) {
         return quotaCtx.getBlobSize();
+    }
+
+    protected void processOnParents(List<DocumentModel> parents, long delta)
+            throws ClientException {
+        processOnParents(parents, delta, 0L, 0L, true, false, false);
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta, long trash, boolean total, boolean trashOp)
@@ -277,7 +283,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 toSave = true;
             }
             if (trashOp) {
-                quotaDoc.addTrashSize(deltaTotal, false);
+                quotaDoc.addTrashSize(trashSize, false);
                 toSave = true;
             }
             if (versionsOp) {
