@@ -2,22 +2,27 @@
 
 Nuxeo Live Connect connector for Dropbox.
 
-# Setting OAuth with Dropbox
+# Setting up OAuth with Dropbox
 
- 1. Go to https://www.dropbox.com/developers/apps
- 2. Click on 'App console'
- 3. Select 'Dropbox API app'
+## Step 1:  Preparing your application accounts on the Dropbox App console
+
+ 1. Go to https://www.dropbox.com/developers/apps.
+ 2. Click on 'App console'.
+ 3. Click on the button 'Create app'.
+ 4. Select 'Dropbox API app' and then:
     Select:
-    - Can your app be limited to its own folder? -> No My app needs access to files already on Dropbox.
-    - What type of files does your app need access to? -> All file types My app needs access to a user's full Dropbox.
-    - Fill the name with 'XXX'.
-    - Click 'Create app'
- 4. From the 'XXX' App settings tab, copy:
+    - 'Can your app be limited to its own folder?' -> No
+    - 'What type of files does your app need access to?' -> All file types
+    - Fill the name of your application.
+    - Click 'Create app'.
+ 5. From the Settings tab, copy:
     - App key
     - App secret
+ 6. In the 'OAuth 2' > Redirect URIs set the following URL, adapting the hostname and port to your case: http://localhost:8080/nuxeo/site/oauth2/dropbox/callback.
  
-    and go to the Admin Center/OAuth of your running nuxeo server to edit the 'dropbox' service provider.
+## Step 2: Configuring the Nuxeo Platform
+ 1. In the Nuxeo Platform go to the Admin Center > Cloud Services. 
+ 2. In the 'Service providers' tab, edit the 'dropbox' service provider.
     - Paste there your key and secret.
-    - Enable the provider
-
-Now go to the HOME tab and click OAuth Menu and click the 'Add a new dropbox token' button. 
+    - Make sure the 'Enabled' box is checked.
+ 3. Now go to the HOME tab and click 'Cloud Services' tab and click the 'Connect to Dropbox' button or just create a new Dropbox document.
