@@ -43,9 +43,12 @@
               <h:outputLabel for="csv_import_notifyUserByEmail"
                 value="#{messages['label.csv.import.notifyUserByEmail']}" />
             </c:if>
+            <a4j:poll interval="2000"
+              render="csv_import_panel"
+              enabled="#{importScheduled or importRunning}">
+              <a4j:attachQueue ignoreDupResponses="true" />
+            </a4j:poll>
             <c:if test="#{importScheduled}">
-              <a4j:poll interval="2000"
-                render="csv_import_panel" ignoreDupResponses="true" />
               <h4><h:outputText styleClass="processMessage scheduled" value="#{messages['label.csv.import.scheduled']}" /></h4>
               <h:outputFormat value="#{messages['label.csv.import.scheduled.status']}">
                 <f:param value="#{importStatus.positionInQueue}" />
@@ -53,8 +56,6 @@
               </h:outputFormat>
             </c:if>
             <c:if test="#{importRunning}">
-              <a4j:poll interval="2000"
-                render="csv_import_panel" ignoreDupResponses="true" />
               <h4>
                 <h:outputText styleClass="processMessage running" value="#{messages['label.csv.import.importing']} #{csvImportActions.importingCSVFilename}" />
               </h4>
@@ -85,7 +86,7 @@
           </a4j:outputPanel>
 
             <c:if test="#{importRunning or importComplete}">
-              <nxu:set var="importLogs" value="#{nxu:test(importRunning, csvImportActions.getLastLogs(500), csvImportActions.getSkippedAndErrorLogs())}">
+              <nxu:set var="importLogs" value="#{nxu:test(importRunning, csvImportActions.getLastLogs(50), csvImportActions.getSkippedAndErrorLogs())}">
               <c:if test="#{not empty importLogs}">
                 <h4><h:outputText value="#{messages['label.csv.import.complete.report']}" /></h4>
                 <div class="jsCsvImportResultDiv" style="height: 15em; overflow-y: auto;">
