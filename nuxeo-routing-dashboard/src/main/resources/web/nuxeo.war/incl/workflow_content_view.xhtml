@@ -80,6 +80,7 @@
               <nxu:set var="fancyboxFormId" value="#{action.id}_fancybox_form">
                 <c:if test="#{(clickedActionId == action.id and action.type == 'process_task') or nxu:hasMessages(fancyboxFormId)}">
                   <script>
+                  jQuery(document).ready(function() {
                     openFancyBox('##{action.id}_fancybox_box', {
                       'autoDimensions': true,
                       'autoScale': true,
@@ -93,6 +94,7 @@
                       'onClosed': closeFancybox
                     });
                     jQuery('form[id$=#{fancyboxFormId}]').focusFirst();
+                  });
                   </script>
                   <div style="display:none;">
                     <div id="#{action.id}_fancybox_box">
@@ -108,19 +110,27 @@
                         <p class="buttonsGadget">
                           <h:commandButton
                             value="#{messages['command.close']}"
-                            immediate="true" onclick="jQuery.fancybox.close()"
-                            styleClass="button"/>
+                            styleClass="button">
+                            <f:ajax execute="@this" onevent="jQuery.fancybox.close" render="#{elementsToReRender}" />
+                          </h:commandButton>
+                          <script>
+                           function setClickButton(buttonId) {
+                              jQuery("input[name='button']").attr('value', buttonId);
+                           }
+                          </script>
+                          <input type="hidden" name="button" value="" />
                           <c:forEach var="task_action" items="#{actions}">
                             <c:if test="#{task_action.type == 'fancybox'}">
-                              <h:commandButton
+                              <a4j:commandButton
                                 id="#{task_action.id}"
-                                actionListener="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}"
                                 value="#{messages[task_action.label]}"
-                                styleClass="button">
+                                onclick="setClickButton('#{task_action.properties.buttonId}');return true;"
+                                styleClass="button"
+                                oncomplete="jQuery.fancybox.close();"
+                                render="#{elementsToReRender}">
                                 <nxu:actionListenerMethod
                                   value="#{routingTaskActions.endTasks(contentView.selectionListName, task_action)}" />
-                                <f:ajax execute="@form" onevent="jQuery.fancybox.close" render="@all"/>
-                              </h:commandButton>
+                              </a4j:commandButton>
                             </c:if>
                           </c:forEach>
                         </p>
