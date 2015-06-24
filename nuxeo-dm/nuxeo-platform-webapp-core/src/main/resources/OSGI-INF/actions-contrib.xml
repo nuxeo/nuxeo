@@ -114,8 +114,7 @@
     </action>
 
     <action id="TAB_RIGHTS_WEB_COMPONENT" link="/rights/document_rights.xhtml"
-      order="50" label="action.view.rights.management" icon="/icons/file.gif"
-      enabled="false">
+      order="50" label="action.view.rights.management" icon="/icons/file.gif">
       <category>VIEW_ACTION_LIST</category>
       <properties>
         <property name="ajaxSupport">true</property>
