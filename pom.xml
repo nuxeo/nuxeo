@@ -126,6 +126,7 @@
     <module>nuxeo-binary-metadata</module>
     <module>nuxeo-segment.io-connector</module>
     <module>nuxeo-liveconnect</module>
+    <module>nuxeo-media-publishing</module>
   </modules>
 
   <dependencyManagement>
@@ -1002,6 +1003,13 @@
       <dependency>
         <groupId>org.nuxeo.ecm.liveconnect</groupId>
         <artifactId>nuxeo-liveconnect-core</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+
+      <!-- Media Publishing -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.media.publishing</groupId>
+        <artifactId>nuxeo-media-publishing-core</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
