@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
@@ -83,6 +84,8 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     private String HOST;
 
+    private WeakHashMap<String, String> credentials = new WeakHashMap<>();
+
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         HttpSession session = httpRequest.getSession(false);
@@ -125,6 +128,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         if (session.getAttribute(ONE_FACTOR_CHECK) == null || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
             userIdent = super.handleRetrieveIdentity(httpRequest, httpResponse);
             if (userIdent != null) {
+                credentials.put(userIdent.getUserName(), userIdent.getPassword());
                 try {
                     NuxeoPrincipal principal = validateUserIdentity();
                     if (principal != null) {
@@ -146,6 +150,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                 || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK)) {
             String sigResponse = httpRequest.getParameter(SIG_RESPONSE);
             String response = DuoWeb.verifyResponse(IKEY, SKEY, AKEY, sigResponse);
+            userIdent = new UserIdentificationInfo(response, credentials.get(response));
             session.setAttribute(TWO_FACTORS_CHECK, response != null ? Boolean.TRUE : Boolean.FALSE);
             if (response == null) {
                 return null;
