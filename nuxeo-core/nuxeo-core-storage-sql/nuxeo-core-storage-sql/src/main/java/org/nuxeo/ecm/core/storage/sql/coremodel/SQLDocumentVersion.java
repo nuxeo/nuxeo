@@ -46,6 +46,9 @@ public class SQLDocumentVersion extends SQLDocumentLive {
             throws DocumentException {
         super(node, type, session, readonly);
         Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
+        if (versionSeriesId == null) {
+            throw new NoSuchDocumentException("Version was removed: " + node.getId());
+        }
         versionableNode = session.getNodeById(versionSeriesId);
     }
 
