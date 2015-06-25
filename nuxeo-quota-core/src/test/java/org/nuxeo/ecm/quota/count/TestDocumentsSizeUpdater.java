@@ -906,6 +906,71 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
+    public void testQuotaOnDeleteVersion() throws Exception {
+        addContent();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                assertQuota(getFirstFile(), 100, 100, 0, 0);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
+                assertQuota(getFirstFolder(), 0, 300, 0, 0);
+                assertQuota(getWorkspace(), 0, 300, 0, 0);
+
+            }
+        });
+        // update and create a version
+        doUpdateAndVersionContent();
+        // ws + 50, file + 280 + version
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+
+                dump();
+
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 760, 0, 380);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
+            }
+        });
+        doDeleteFileContent(firstFileRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 380, 760, 380, 380);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 380, 380);
+                assertQuota(getFirstFolder(), 0, 960, 380, 380);
+                assertQuota(getWorkspace(), 50, 1010, 380, 380);
+            }
+        });
+        // TODO
+        doRemoveContent();
+        eventService.waitForAsyncCompletion();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertFalse(session.exists(firstFileRef));
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 200, 0, 0);
+                assertQuota(getFirstFolder(), 0, 200, 0, 0);
+                assertQuota(getWorkspace(), 50, 250, 0, 0);
+            }
+        });
+    }
+
+    @Test
     public void testQuotaOnMoveContentWithVersions() throws Exception {
 
         addContent();
