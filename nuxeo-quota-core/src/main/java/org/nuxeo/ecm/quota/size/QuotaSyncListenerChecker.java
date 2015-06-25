@@ -551,10 +551,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
         QuotaAware quotaDoc = doc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
-            long absSize = quotaDoc.getTotalSize();
-            if (quotaDoc.getDoc().isFolder()) {
-                absSize = quotaDoc.getInnerSize();
-                log.debug(quotaDoc.getDoc().getPathAsString() + " is a folder, just inner size (" + absSize + ") taken into account for trash size");
+            long absSize = quotaDoc.getInnerSize();
+            if (log.isDebugEnabled()) {
+                if (quotaDoc.getDoc().isFolder()) {
+                    log.debug(quotaDoc.getDoc().getPathAsString() + " is a folder, just inner size (" + absSize + ") taken into account for trash size");
+                }
             }
             long total = (DELETE_TRANSITION.equals(transition) == true ? absSize : -absSize);
             BlobSizeInfo bsi = new BlobSizeInfo();

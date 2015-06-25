@@ -807,6 +807,52 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
+    public void testComputeInitialStatisticsAfterFileMovedToTrash() throws Exception {
+
+        EventServiceAdmin eventAdmin = Framework.getLocalService(EventServiceAdmin.class);
+        eventAdmin.setListenerEnabledFlag("quotaStatsListener", true);
+
+        addContent(true);
+        doDeleteFileContent(firstFileRef);
+
+        isr.run(new RunnableWithException() {
+
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 100L, 200L, 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
+                assertQuota(getFirstSubFolder(), 0L, 400L, 100L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L, 100L, 100L);
+                assertQuota(getWorkspace(), 0L, 400L, 100L, 100L);
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                String updaterName = "documentsSizeUpdater";
+                quotaStatsService.launchInitialStatisticsComputation(updaterName, session.getRepositoryName());
+                WorkManager workManager = Framework.getLocalService(WorkManager.class);
+                String queueId = workManager.getCategoryQueueId(QuotaStatsInitialWork.CATEGORY_QUOTA_INITIAL);
+
+                workManager.awaitCompletion(queueId, 10, TimeUnit.SECONDS);
+
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 100L, 200L, 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L, 0L, 0L);
+                assertQuota(getFirstSubFolder(), 0L, 400L, 100L, 100L);
+                assertQuota(getFirstFolder(), 0L, 400L, 100L, 100L);
+                assertQuota(getWorkspace(), 0L, 400L, 100L, 100L);
+            }
+        });
+    }
+
+    @Test
     public void testQuotaOnDeleteContent() throws Exception {
         addContent();
         doDeleteFileContent();
@@ -1226,20 +1272,17 @@ public class TestDocumentsSizeUpdater {
 
                 DocumentModel firstFolder = session.createDocumentModel(ws.getPathAsString(), "folder1", "Folder");
                 firstFolder = session.createDocument(firstFolder);
-                firstFolder = session.saveDocument(firstFolder);
                 firstFolderRef = firstFolder.getRef();
 
                 DocumentModel firstSubFolder = session.createDocumentModel(firstFolder.getPathAsString(), "subfolder1",
                         "Folder");
                 firstSubFolder = session.createDocument(firstSubFolder);
-                firstSubFolder = session.saveDocument(firstSubFolder);
 
                 firstSubFolderRef = firstSubFolder.getRef();
 
                 DocumentModel firstFile = session.createDocumentModel(firstSubFolder.getPathAsString(), "file1", "File");
                 firstFile.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
                 firstFile = session.createDocument(firstFile);
-                firstFile = session.saveDocument(firstFile);
                 if (checkInFirstFile) {
                     firstFile.checkIn(VersioningOption.MINOR, null);
                 }
@@ -1251,18 +1294,15 @@ public class TestDocumentsSizeUpdater {
                 secondFile.setPropertyValue("file:content", (Serializable) getFakeBlob(200));
 
                 secondFile = session.createDocument(secondFile);
-                secondFile = session.saveDocument(secondFile);
                 secondFileRef = secondFile.getRef();
 
                 DocumentModel secondSubFolder = session.createDocumentModel(firstFolder.getPathAsString(),
                         "subfolder2", "Folder");
                 secondSubFolder = session.createDocument(secondSubFolder);
-                secondSubFolder = session.saveDocument(secondSubFolder);
                 secondSubFolderRef = secondSubFolder.getRef();
 
                 DocumentModel secondFolder = session.createDocumentModel(ws.getPathAsString(), "folder2", "Folder");
                 secondFolder = session.createDocument(secondFolder);
-                secondFolder = session.saveDocument(secondFolder);
                 secondFolderRef = secondFolder.getRef();
             }
         });
@@ -1506,8 +1546,7 @@ public class TestDocumentsSizeUpdater {
 
             if (doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET)) {
                 QuotaAware qa = doc.getAdapter(QuotaAware.class);
-                System.out.println(" [ quota : " + qa.getTotalSize() + "(" + qa.getInnerSize() + ") / "
-                        + qa.getMaxQuota() + "]");
+                System.out.println( " " + qa.getQuotaInfo());
                 // System.out.println(" with Quota facet");
             } else {
                 System.out.println(" no Quota facet !!!");
@@ -1520,24 +1559,25 @@ public class TestDocumentsSizeUpdater {
         assertTrue(doc.hasFacet(DOCUMENTS_SIZE_STATISTICS_FACET));
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize,
-                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize());
+        assertEquals("inner:", innerSize, qa.getInnerSize());
+        assertEquals("total:", totalSize, qa.getTotalSize());
     }
 
     protected void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize + " trash:" + trashSize, "inner:" + qa.getInnerSize()
-                + " total:" + qa.getTotalSize() + " trash:" + qa.getTrashSize());
+        assertEquals("inner:", innerSize, qa.getInnerSize());
+        assertEquals("total:", totalSize, qa.getTotalSize());
+        assertEquals("trash:", trashSize, qa.getTrashSize());
     }
 
     protected void assertQuota(DocumentModel doc, long innerSize, long totalSize, long trashSize, long versionsSize) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         assertNotNull(qa);
-        assertEquals("inner:" + innerSize + " total:" + totalSize + " trash:" + trashSize + " versions: "
-                + versionsSize,
-                "inner:" + qa.getInnerSize() + " total:" + qa.getTotalSize() + " trash:" + qa.getTrashSize()
-                        + " versions: " + qa.getVersionsSize());
+        assertEquals("inner:", innerSize, qa.getInnerSize());
+        assertEquals("total:", totalSize, qa.getTotalSize());
+        assertEquals("trash:", trashSize, qa.getTrashSize());
+        assertEquals("versions: ", versionsSize, qa.getVersionsSize());
     }
 
     /**
