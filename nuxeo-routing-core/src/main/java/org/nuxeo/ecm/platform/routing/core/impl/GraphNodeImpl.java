@@ -1015,6 +1015,23 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     @Override
+    public void removeTaskInfo(String taskId) throws ClientException {
+        ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
+        Property propertytoBeRemoved = null;
+        for (Property p : props) {
+            if (taskId.equals(p.get(PROP_TASK_INFO_TASK_DOC_ID).getValue())) {
+                propertytoBeRemoved = p;
+                break;
+            }
+        }
+        if (propertytoBeRemoved != null) {
+            props.remove(propertytoBeRemoved);
+            saveDocument();
+            tasksInfo = null;
+        }
+    }
+
+    @Override
     public void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
             throws ClientException {
         boolean updated = false;
