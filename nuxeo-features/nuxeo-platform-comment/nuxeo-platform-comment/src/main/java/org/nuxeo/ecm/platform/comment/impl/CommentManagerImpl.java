@@ -453,15 +453,9 @@ public class CommentManagerImpl implements CommentManager {
     public DocumentModel createComment(DocumentModel docModel,
             DocumentModel parent, DocumentModel child) throws ClientException {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
-            String author = updateAuthor(docModel, child);
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
             DocumentModel newComment = internalCreateComment(session,
                     parentDocModel, child, null);
-
-            UserManager userManager = Framework.getLocalService(UserManager.class);
-            NuxeoPrincipal principal = userManager.getPrincipal(author);
-            notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, parent,
-                    newComment, principal);
 
             session.save();
             return newComment;
