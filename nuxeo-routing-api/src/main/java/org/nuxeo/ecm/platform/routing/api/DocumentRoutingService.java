@@ -567,7 +567,7 @@ public interface DocumentRoutingService {
      * @param session the session
      * @param docs the documents
      * @param taskId the taskId
-     * @since 7.3
+     * @since 7.4
      */
     void removePermissionsForTaskActors(CoreSession session, List<DocumentModel> docs, String taskId)
             throws ClientException;

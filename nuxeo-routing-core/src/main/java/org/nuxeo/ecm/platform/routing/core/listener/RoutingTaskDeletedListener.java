@@ -32,6 +32,9 @@ import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphRoute;
 import org.nuxeo.ecm.platform.task.Task;
 
+/**
+ * @since 7.4
+ */
 public class RoutingTaskDeletedListener implements EventListener {
 
     @Override

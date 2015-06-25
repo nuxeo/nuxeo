@@ -892,7 +892,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     @Override
     public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, String taskId)
@@ -926,7 +926,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     protected static String getRoutingACLName(String taskId) {
         return DocumentRoutingConstants.DOCUMENT_ROUTING_ACL + '/' + taskId;
@@ -937,7 +937,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     protected static String getDelegationACLName(String taskId) {
         return DocumentRoutingConstants.DOCUMENT_ROUTING_DELEGATION_ACL + '/' + taskId;

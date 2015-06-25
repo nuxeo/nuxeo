@@ -97,6 +97,9 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
         routeDoc = createRoute("myroute", session);
     }
 
+    /**
+     * @since 7.4
+     */
     @SuppressWarnings("unchecked")
     @Test
     public void testEscalationDeleteTask() throws Exception {
