@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -1069,8 +1070,25 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     }
 
     @Override
-    public void updateTaskInfo(String taskId, boolean ended, String status,
-            String actor, String comment) throws ClientException {
+    public void removeTaskInfo(String taskId) throws ClientException {
+        ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
+        Property propertytoBeRemoved = null;
+        for (Property p : props) {
+            if (taskId.equals(p.get(PROP_TASK_INFO_TASK_DOC_ID).getValue())) {
+                propertytoBeRemoved = p;
+                break;
+            }
+        }
+        if (propertytoBeRemoved != null) {
+            props.remove(propertytoBeRemoved);
+            saveDocument();
+            tasksInfo = null;
+        }
+    }
+
+    @Override
+    public void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
+            throws ClientException {
         boolean updated = false;
         List<TaskInfo> tasksInfo = getTasksInfo();
         for (TaskInfo taskInfo : tasksInfo) {
@@ -1133,6 +1151,16 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements
     protected void cancelTask(CoreSession session, final String taskId)
             throws DocumentRouteException {
         try {
+            DocumentRef taskRef = new IdRef(taskId);
+            if (!session.exists(taskRef)) {
+                log.info(String.format("Task with id %s does not exist anymore", taskId));
+                DocumentModelList docs = graph.getAttachedDocumentModels();
+                Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, taskId);
+                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+                String actor = principal.getActingUser();
+                updateTaskInfo(taskId, true, null, actor, null);
+                return;
+            }
             DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
             Task task = taskDoc.getAdapter(Task.class);
             if (task == null) {

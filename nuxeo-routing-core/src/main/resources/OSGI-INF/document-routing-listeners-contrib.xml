@@ -43,6 +43,11 @@
       <event>afterRouteFinish</event>
     </listener>
     
+    <listener name="deleteRoutingTaskListener" async="true"
+      class="org.nuxeo.ecm.platform.routing.core.listener.RoutingTaskDeletedListener">
+      <event>aboutToRemove</event>
+    </listener>
+
   </extension>
 
 </component>

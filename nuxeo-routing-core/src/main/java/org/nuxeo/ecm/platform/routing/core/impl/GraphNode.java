@@ -946,4 +946,9 @@ public interface GraphNode {
      * @since 5.9.3, 5.8.0-HF11
      */
     void setJSONVariables(Map<String, String> map);
+
+    /**
+     * @since 7.4
+     */
+    void removeTaskInfo(String taskId) throws ClientException;
 }

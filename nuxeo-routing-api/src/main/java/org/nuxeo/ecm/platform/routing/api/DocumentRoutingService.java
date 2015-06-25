@@ -621,10 +621,21 @@ public interface DocumentRoutingService {
             List<DocumentModel> docs, Task task) throws ClientException;
 
     /**
-     * Query for the routes 'done' or 'canceled' and delete them. The max no of
-     * the routes that will be deleted is specified by the 'limit' parameter.
-     * When the limit is '0' all the completed routes are deleted. The routes to
-     * be deleted are ordered ascending by their creation date.
+     * Removes on these documents the specified assignees permissions for the task actors and also tasks delegated
+     * actors if this task was delegated
+     *
+     * @param session the session
+     * @param docs the documents
+     * @param taskId the taskId
+     * @since 7.4
+     */
+    void removePermissionsForTaskActors(CoreSession session, List<DocumentModel> docs, String taskId)
+            throws ClientException;
+
+    /**
+     * Query for the routes 'done' or 'canceled' and delete them. The max no of the routes that will be deleted is
+     * specified by the 'limit' parameter. When the limit is '0' all the completed routes are deleted. The routes to be
+     * deleted are ordered ascending by their creation date.
      *
      * @throws ClientException
      *
