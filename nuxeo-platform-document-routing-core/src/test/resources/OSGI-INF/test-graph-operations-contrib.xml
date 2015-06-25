@@ -72,6 +72,10 @@
         <param type="object" name="value">expr:workflowInitiator</param>
       </operation>
     </chain>
+    <chain id="test_resumeWf">
+      <operation id="Context.FetchDocument"/>
+      <operation id="Workflow.ResumeNodeOperation"/>
+    </chain>
 
   </extension>
 </component>
