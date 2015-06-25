@@ -225,7 +225,9 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 log.debug("Processing document about to be removed on parents. Total: " + quotaCtx.getBlobDelta()
                         + " , trash size: " + quotaCtx.getTrashSize() + " , versions size: "
                         + quotaCtx.getVersionsSize());
-                processOnParents(parents, quotaCtx.getBlobDelta(), quotaCtx.getBlobDelta(), quotaCtx.getVersionsSize(),
+                processOnParents(parents, quotaCtx.getBlobDelta(), 
+                        quotaCtx.getBlobDelta()-quotaCtx.getVersionsSize(), 
+                        quotaCtx.getVersionsSize(),
                         true, quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
                                 && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
                         true);
