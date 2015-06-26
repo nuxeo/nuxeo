@@ -170,10 +170,20 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
 
     @Test
     public void testBlobCheckInNative() throws Exception {
-        testBlobCheckIn(GOOGLEDOC_FILEID, GOOGLEDOC_REVID);
+        DocumentModel version = testBlobCheckIn(GOOGLEDOC_FILEID, GOOGLEDOC_REVID);
+        assertTrue(version.hasFacet(GoogleDriveBlobProvider.BLOB_CONVERSIONS_FACET));
+
+        Blob blob = (Blob) version.getPropertyValue("file:content");
+
+        // native files do not support downloading revision conversions
+        assertTrue(blobManager.getAvailableConversions(blob, BlobManager.UsageHint.STREAM).isEmpty());
+
+        // still we can get our stored conversion
+        assertNotNull(blobManager.getConvertedStream(blob, GoogleDriveBlobProvider.DEFAULT_EXPORT_MIMETYPE, version));
+
     }
 
-    protected void testBlobCheckIn(String fileId, String revisionId) {
+    protected DocumentModel testBlobCheckIn(String fileId, String revisionId) {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         BlobInfo blobInfo = newBlobInfo();
         blobInfo.key = PREFIX + ":" + USERID + ":" + fileId;
@@ -191,6 +201,8 @@ public class TestGoogleDriveBlobProvider extends GoogleDriveTestCase {
         ManagedBlob mvb = (ManagedBlob) verBlob;
         assertEquals(PREFIX, mvb.getProviderId());
         assertEquals(PREFIX + ":" + USERID + ":" + fileId + ":" + revisionId, mvb.getKey());
+
+        return version;
     }
 
 }

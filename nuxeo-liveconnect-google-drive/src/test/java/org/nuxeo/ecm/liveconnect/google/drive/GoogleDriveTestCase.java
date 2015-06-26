@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 })
 @LocalDeploy({ "org.nuxeo.ecm.platform.query.api:OSGI-INF/pageprovider-framework.xml",
         "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/cache-config.xml",
+        "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/core-types-contrib.xml",
         "org.nuxeo.ecm.liveconnect:OSGI-INF/liveconnect-workmanager-contrib.xml",
         "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/test-googledrive-config.xml",
         "org.nuxeo.ecm.liveconnect.google.drive:OSGI-INF/googledrive-pageprovider-contrib.xml" })

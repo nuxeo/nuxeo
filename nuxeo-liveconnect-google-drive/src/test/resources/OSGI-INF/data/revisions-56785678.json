@@ -213,7 +213,7 @@
     "application/rtf": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=rtf",
     "text/html": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=html",
     "text/plain": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=txt",
-    "application/pdf": "https://docs.google.com/feeds/download/documents/export/Export?id=56785678&revision=4551&exportFormat=pdf"
+    "application/pdf": "http://example.com/download/56785678-v4551.pdf"
    },
    "lastModifyingUserName": "Tester Tester",
    "lastModifyingUser": {

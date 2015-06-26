@@ -30,12 +30,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.api.client.http.HttpResponseException;
+import com.google.api.client.http.HttpStatusCodes;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
 import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
@@ -69,6 +73,7 @@ import com.google.api.services.drive.model.App;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.Revision;
 import com.google.api.services.drive.model.RevisionList;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Provider for blobs getting information from Google Drive.
@@ -113,6 +118,15 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     public static final String CLIENT_ID_PROP = "clientId";
 
     public static final String DEFAULT_EXPORT_MIMETYPE = "application/pdf";
+
+    // Blob conversion constants
+    protected static final String BLOB_CONVERSIONS_FACET = "BlobConversions";
+
+    protected static final String BLOB_CONVERSIONS_PROPERTY = "blobconversions:conversions";
+
+    protected static final String BLOB_CONVERSION_KEY = "key";
+
+    protected static final String BLOB_CONVERSION_BLOB = "blob";
 
     protected static final ObjectParser JSON_PARSER = new JsonObjectParser(JacksonFactory.getDefaultInstance());
 
@@ -218,7 +232,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             return file.getDownloadUrl();
         } else {
             Revision revision = getRevision(fileInfo);
-            return revision.getDownloadUrl();
+            return revision != null ? revision.getDownloadUrl() : null;
         }
     }
 
@@ -227,26 +241,28 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
      */
     protected String getDownloadUrl(ManagedBlob blob) throws IOException {
         FileInfo fileInfo = getFileInfo(blob);
+        String url = null;
         if (fileInfo.revisionId == null) {
             File file = getFile(fileInfo);
-            String url = file.getWebContentLink();
+            url = file.getWebContentLink();
             if (url == null) {
                 // native Google document
                 url = file.getAlternateLink();
             }
-            return url;
         } else {
             Revision revision = getRevision(fileInfo);
-            String url = revision.getDownloadUrl();
-            if (StringUtils.isBlank(url)) {
-                url = revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE);
+            if (revision != null) {
+                url = revision.getDownloadUrl();
+                if (StringUtils.isBlank(url)) {
+                    url = revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE);
+                }
+                // hack, without this we get a 401 on the returned URL...
+                if (url.endsWith("&gd=true")) {
+                    url = url.substring(0, url.length() - "&gd=true".length());
+                }
             }
-            // hack, without this we get a 401 on the returned URL...
-            if (url.endsWith("&gd=true")) {
-                url = url.substring(0, url.length() - "&gd=true".length());
-            }
-            return url;
         }
+        return url;
     }
 
     // TODO remove
@@ -293,7 +309,8 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             return file.getExportLinks();
         } else {
             Revision revision = getRevision(fileInfo);
-            return revision.getExportLinks();
+            return revision != null && TRUE.equals(revision.getPinned()) ?
+                revision.getExportLinks() : Collections.emptyMap();
         }
     }
 
@@ -304,7 +321,12 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     }
 
     @Override
-    public InputStream getConvertedStream(ManagedBlob blob, String mimeType) throws IOException {
+    public InputStream getConvertedStream(ManagedBlob blob, String mimeType, DocumentModel doc) throws IOException {
+        Blob conversion = retrieveBlobConversion(blob, mimeType, doc);
+        if (conversion != null) {
+            return conversion.getStream();
+        }
+
         Map<String, URI> conversions = getAvailableConversions(blob, UsageHint.STREAM);
         URI uri = conversions.get(mimeType);
         if (uri == null) {
@@ -323,6 +345,11 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         List<AppLink> appLinks = new ArrayList<>();
 
         FileInfo fileInfo = getFileInfo(blob);
+
+        // application links do not work with revisions
+        if (fileInfo.revisionId != null) {
+            return appLinks;
+        }
 
         // retrieve the service's user (email in this case) for this username
         String user = getServiceUser(username);
@@ -384,7 +411,7 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
     }
 
     @Override
-    public ManagedBlob freezeVersion(ManagedBlob blob) throws IOException {
+    public ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException {
         FileInfo fileInfo = getFileInfo(blob);
         if (fileInfo.revisionId != null) {
             // already frozen
@@ -412,12 +439,70 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
             if (list.isEmpty()) {
                 return null;
             }
-            Revision headRevision = list.get(list.size() - 1);
-            revisionId = headRevision.getId();
-            fileInfo = new FileInfo(user, fileId, revisionId);
-            // native Google document revision cannot be pinned
+            Revision revision = list.get(list.size() - 1);
+
+            // native Google document revision cannot be pinned so we store a conversion of the blob
+            URI uri = asURI(revision.getExportLinks().get(DEFAULT_EXPORT_MIMETYPE));
+
+            InputStream is = doGet(user, uri);
+            Blob conversion = Blobs.createBlob(is);
+            conversion.setFilename(blob.getFilename());
+            conversion.setMimeType(DEFAULT_EXPORT_MIMETYPE);
+
+            fileInfo = new FileInfo(user, fileId, revision.getId());
+
+            // store a conversion of this revision
+            storeBlobConversion(doc, getKey(fileInfo), conversion);
         }
         return getBlob(fileInfo);
+    }
+
+    /**
+     * Store a conversion of the given blob
+     */
+    @SuppressWarnings("unchecked")
+    protected void storeBlobConversion(Document doc, String blobKey, Blob blob) {
+        if (!doc.hasFacet(BLOB_CONVERSIONS_FACET)) {
+            doc.addFacet(BLOB_CONVERSIONS_FACET);
+        }
+
+        List<Map<String, Object>> conversions = (List<Map<String, Object>>) doc.getValue(BLOB_CONVERSIONS_PROPERTY);
+        Map<String, Object> conversion = new HashMap<>();
+        conversion.put(BLOB_CONVERSION_KEY, blobKey);
+        conversion.put(BLOB_CONVERSION_BLOB, blob);
+        conversions.add(conversion);
+        doc.setValue(BLOB_CONVERSIONS_PROPERTY, conversions);
+    }
+
+    /**
+     * Retrieve a stored conversion of the given blob
+     */
+    protected Blob retrieveBlobConversion(ManagedBlob blob, String mimeType, DocumentModel doc) {
+        if (doc == null || !doc.hasFacet(BLOB_CONVERSIONS_FACET)) {
+            return null;
+        }
+
+        boolean txWasActive = TransactionHelper.isTransactionActiveOrMarkedRollback();
+        try {
+            if (!txWasActive) {
+                TransactionHelper.startTransaction();
+            }
+            ListProperty conversions = (ListProperty) doc.getProperty(BLOB_CONVERSIONS_PROPERTY);
+            for (int i = 0; i < conversions.size(); i++) {
+                if (blob.getKey().equals(conversions.get(i).getValue(BLOB_CONVERSION_KEY))) {
+                    String conversionXPath = String.format("%s/%d/%s", BLOB_CONVERSIONS_PROPERTY, i, BLOB_CONVERSION_BLOB);
+                    Blob conversion = (Blob) doc.getPropertyValue(conversionXPath);
+                    if (conversion.getMimeType().equals(mimeType)) {
+                        return conversion;
+                    }
+                }
+            }
+        } finally {
+            if (!txWasActive) {
+                TransactionHelper.commitOrRollbackTransaction();
+            }
+        }
+        return null;
     }
 
     /**
@@ -548,7 +633,15 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
         String cacheKey = "rev_" + fileInfo.fileId + "_" + fileInfo.revisionId;
         DriveRequest<Revision> request = getService(fileInfo.user).revisions().get(fileInfo.fileId,
                 fileInfo.revisionId);
-        return executeAndCache(cacheKey, request, Revision.class);
+        try {
+            return executeAndCache(cacheKey, request, Revision.class);
+        } catch (HttpResponseException e) {
+            // return null if revision is not found
+            if (e.getStatusCode() == HttpStatusCodes.STATUS_CODE_NOT_FOUND) {
+                return null;
+            }
+            throw e;
+        }
     }
 
     /**

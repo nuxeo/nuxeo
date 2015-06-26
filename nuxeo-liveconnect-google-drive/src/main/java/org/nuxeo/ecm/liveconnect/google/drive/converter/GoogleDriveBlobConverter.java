@@ -23,7 +23,9 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -56,7 +58,11 @@ public class GoogleDriveBlobConverter implements Converter {
         }
 
         try {
-            dstBlob = convert(srcBlob);
+            DocumentModel doc = null;
+            if (blobHolder instanceof DocumentBlobHolder) {
+                doc = ((DocumentBlobHolder) blobHolder).getDocument();
+            }
+            dstBlob = convert(srcBlob, doc);
         } catch (IOException e) {
             throw new ConversionException("Unable to fetch conversion", e);
         }
@@ -68,9 +74,9 @@ public class GoogleDriveBlobConverter implements Converter {
         return new SimpleCachableBlobHolder(dstBlob);
     }
 
-    protected Blob convert(Blob blob) throws IOException {
+    protected Blob convert(Blob blob, DocumentModel doc) throws IOException {
         String mimetype = descriptor.getDestinationMimeType();
-        InputStream is = Framework.getService(BlobManager.class).getConvertedStream(blob, mimetype);
+        InputStream is = Framework.getService(BlobManager.class).getConvertedStream(blob, mimetype, doc);
         return is == null ? null : Blobs.createBlob(is, mimetype);
     }
 }

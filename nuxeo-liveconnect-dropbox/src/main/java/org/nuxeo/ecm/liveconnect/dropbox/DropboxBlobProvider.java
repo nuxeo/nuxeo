@@ -157,7 +157,7 @@ public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlo
     }
 
     @Override
-    public InputStream getConvertedStream(ManagedBlob blob, String mimeType) throws IOException {
+    public InputStream getConvertedStream(ManagedBlob blob, String mimeType, DocumentModel doc) throws IOException {
         Map<String, URI> conversions = getAvailableConversions(blob, UsageHint.STREAM);
         URI uri = conversions.get(mimeType);
         if (uri == null) {
@@ -167,7 +167,7 @@ public class DropboxBlobProvider implements ExtendedBlobProvider, BatchUpdateBlo
     }
 
     @Override
-    public ManagedBlob freezeVersion(ManagedBlob blob) throws IOException {
+    public ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException {
         return null;
     }
 
