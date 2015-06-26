@@ -647,10 +647,8 @@ public class SQLSession implements Session {
     protected Node getChildProperty(Node node, String name, String typeName) throws StorageException {
         Node childNode = session.getChildNode(node, name, true);
         if (childNode == null) {
-            // all complex property children have been already created by SessionImpl.addChildNode
-            // if it's missing here, it means that it was concurrently deleted and we're only now finding out
-            throw new ConcurrentUpdateStorageException(
-                    "Child " + name + " of " + node.getId() + " was concurrently deleted");
+            // create the needed complex property immediately
+            childNode = session.addChildNode(node, name, null, typeName, true);
         }
         return childNode;
     }
