@@ -45,6 +45,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -147,6 +148,8 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 if (idxRequest != null) {
                     bulkRequest.add(idxRequest);
                 }
+            } catch (ConcurrentUpdateException e) {
+                throw e; // bubble up, usually until AbstractWork catches it and maybe retries
             } catch (ClientException | IllegalArgumentException e) {
                 if (e.getCause() instanceof NoSuchDocumentException) {
                     log.info("Skip indexing command to bulk, doc does not exists anymore: " + cmd);

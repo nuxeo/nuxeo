@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -42,6 +43,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.BaseDocument;
+import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -181,6 +183,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     protected Node getChild(Node node, String name, Type type) throws PropertyException {
         try {
             return session.getChildProperty(node, name, type.getName());
+        } catch (ConcurrentUpdateStorageException e) {
+            throw new ConcurrentUpdateException(e);
         } catch (StorageException e) {
             throw new PropertyException(e.getMessage(), e);
         }

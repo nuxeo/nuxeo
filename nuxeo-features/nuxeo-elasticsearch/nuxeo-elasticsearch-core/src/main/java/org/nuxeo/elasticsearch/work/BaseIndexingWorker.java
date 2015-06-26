@@ -44,6 +44,14 @@ public abstract class BaseIndexingWorker extends AbstractWork {
     }
 
     @Override
+    public int getRetryCount() {
+        // even read-only threads may encounter concurrent update exceptions
+        // when trying to read a previously deleted complex property
+        // due to read committed semantics, cf NXP-17384
+        return 1;
+    }
+
+    @Override
     public void work() {
         getMonitor().incrementRunningWorker();
         try {
