@@ -45,7 +45,7 @@ public class GwtBundleActivator implements BundleActivator, FrameworkListener {
 
     public static final File GWT_ROOT = new File(Environment.getDefault().getWeb(), "root.war/gwt");
 
-    public static final boolean GWT_DEV_MODE = "true".equals(Framework.getProperty(GWT_DEV_MODE_PROP, "false"));
+    public static final boolean GWT_DEV_MODE = "true".equals(System.getProperty(GWT_DEV_MODE_PROP, "false"));
 
     protected BundleContext context;
 
