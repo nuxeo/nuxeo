@@ -977,6 +977,58 @@ public class TestDocumentsSizeUpdater {
         });
     }
 
+    /**
+     * NXP-17350
+     * @throws Exception
+     * @since TODO
+     */
+    @Test
+    public void testQuotaOnDeleteFolder() throws Exception {
+        addContent();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 100, 100, 0, 0);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
+                assertQuota(getFirstFolder(), 0, 300, 0, 0);
+                assertQuota(getWorkspace(), 0, 300, 0, 0);
+            }
+        });
+        // update and create a version
+        doUpdateAndVersionContent();
+        // ws + 50, file + 280 + version
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 760, 0, 380);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
+            }
+        });
+        doDeleteFileContent(firstSubFolderRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                // inner, total, trash, versions
+                assertQuota(getFirstFile(), 380, 760, 380, 380);
+                assertQuota(getSecondFile(), 200, 200, 200, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 580, 380);
+                assertQuota(getFirstFolder(), 0, 960, 580, 380);
+                assertQuota(getWorkspace(), 50, 1010, 580, 380);
+            }
+        });
+    }
+
     @Test
     public void testQuotaOnMoveContentWithVersions() throws Exception {
 
