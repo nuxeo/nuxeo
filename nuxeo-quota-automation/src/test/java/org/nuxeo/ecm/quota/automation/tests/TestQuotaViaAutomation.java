@@ -60,7 +60,7 @@ import com.google.inject.Inject;
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation", "org.nuxeo.ecm.automation.core" })
+@Deploy({ "org.nuxeo.ecm.quota.core", "org.nuxeo.ecm.quota.automation", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.cache" })
 public class TestQuotaViaAutomation {
 
     private Log log = LogFactory.getLog(TestQuotaViaAutomation.class);
