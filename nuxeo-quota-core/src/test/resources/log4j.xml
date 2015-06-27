@@ -21,6 +21,16 @@
     </layout>
   </appender>
 
+<!-- 
+  <category name="org.nuxeo.ecm.core.event.impl.EventServiceImpl">
+    <priority value="DEBUG" />
+  </category>
+
+  <category name="org.nuxeo.ecm.quota">
+    <priority value="DEBUG" />
+  </category>
+ -->
+
   <root>
     <priority value="WARN" />
     <appender-ref ref="CONSOLE" />

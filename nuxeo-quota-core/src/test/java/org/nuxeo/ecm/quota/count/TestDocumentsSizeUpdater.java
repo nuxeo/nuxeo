@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -62,6 +63,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
@@ -74,6 +76,7 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ QuotaFeature.class })
+@LocalDeploy("org.nuxeo.ecm.quota.core:cache-contrib.xml")
 @TransactionalConfig
 @Ignore("NXP-14442, NXP-14444")
 public class TestDocumentsSizeUpdater {
@@ -109,7 +112,7 @@ public class TestDocumentsSizeUpdater {
 
     private IsolatedSessionRunner isr;
 
-    protected static final boolean verboseMode = false;
+    protected static final boolean verboseMode = true;
 
     @Before
     public void cleanupSessionAssociationBeforeTest() throws Exception {
@@ -599,6 +602,7 @@ public class TestDocumentsSizeUpdater {
             public void run() throws Exception {
 
                 dump();
+                assertQuota(getFirstFile(), 100L, 100L);
 
                 // now add quota limit
                 QuotaAware qa = getWorkspace().getAdapter(QuotaAware.class);
@@ -640,6 +644,7 @@ public class TestDocumentsSizeUpdater {
 
             @Override
             public void run() throws Exception {
+                assertQuota(getFirstFile(), 100L, 100L);
 
                 // now remove the quota limit
                 QuotaAware qa = getWorkspace().getAdapter(QuotaAware.class);
@@ -677,6 +682,105 @@ public class TestDocumentsSizeUpdater {
             }
         });
 
+    }
+
+    @Test
+    public void testQuotaExceededMassCopy() throws Exception {
+        addContent();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 100L, 100L);
+                assertQuota(getSecondFile(), 200L, 200L);
+                assertQuota(getFirstSubFolder(), 0L, 300L);
+                assertQuota(getFirstFolder(), 0L, 300L);
+                assertQuota(getWorkspace(), 0L, 300L);
+
+            }
+        });
+        final String title = "MassCopyDoc";
+        final int nbrDocs = 20;
+        final int fileSize = 50;
+        final int firstSubFolderExistingFilesNbr = session.getChildren(firstSubFolderRef, "File").size();
+        assertEquals(2, firstSubFolderExistingFilesNbr);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                Blob blob = getFakeBlob(fileSize);
+                for (int i = 0; i < nbrDocs; i++) {
+                    DocumentModel doc = session.createDocumentModel("File");
+                    doc.setPropertyValue("file:content", (Serializable) blob);
+                    doc.setPropertyValue("dc:title", title);
+                    doc.setPathInfo(getSecondFolder().getPathAsString(), "myfile" + i);
+                    doc = session.createDocument(doc);
+                }
+                eventService.waitForAsyncCompletion();
+            }
+        });
+        final long maxSize = 455L;
+        QuotaAware qa = getFirstSubFolder().getAdapter(QuotaAware.class);
+        assertNotNull(qa);
+        final long firstSubFolderTotalSize = qa.getTotalSize();
+        final long expectedNbrDocsCopied = (maxSize-firstSubFolderTotalSize)/fileSize;
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                assertEquals(nbrDocs, session.getChildren(secondFolderRef, "File").size());
+                dump();
+                QuotaAware qa = getSecondFolder().getAdapter(QuotaAware.class);
+                assertEquals(nbrDocs*fileSize, qa.getTotalSize());
+                // now add quota limit
+                assertEquals(300L, firstSubFolderTotalSize);
+                assertEquals(-1L, qa.getMaxQuota());
+                // set the quota
+                qa = getFirstSubFolder().getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+                qa.setMaxQuota(maxSize, true);
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                QuotaAware qa = getFirstSubFolder().getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+                assertEquals(maxSize, qa.getMaxQuota());
+                DocumentModelList docsToCopy = session.query("SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID + " = '" + getSecondFolder().getId() + "' AND dc:title = '" + title + "'");
+                List<DocumentRef> refsToCopy = new ArrayList<DocumentRef>(docsToCopy.size());
+                for (DocumentModel doc : docsToCopy) {
+                    refsToCopy.add(doc.getRef());
+                }
+                try {
+                    session.move(refsToCopy, firstSubFolderRef);
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("!! raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
+                    }
+                    // Rollback all copy operations
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                eventService.waitForAsyncCompletion();
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                QuotaAware qa = getFirstSubFolder().getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+                assertTrue(qa.getTotalSize() < maxSize);
+//                assertEquals(firstSubFolderTotalSize+(expectedNbrDocsCopied*fileSize), qa.getTotalSize());
+                assertEquals(firstSubFolderTotalSize, qa.getTotalSize());
+                DocumentModel parent = session.getDocument(firstSubFolderRef);
+                System.out.println("parent: " + parent + " " + parent.getAdapter(QuotaAware.class).getQuotaInfo());
+                DocumentModelList children = session.getChildren(firstSubFolderRef, "File");
+                System.out.println("children:");
+                for (DocumentModel doc : children) {
+                    System.out.println(doc + " " + doc.getAdapter(QuotaAware.class).getQuotaInfo());
+                }
+//                assertEquals(firstSubFolderExistingFilesNbr + expectedNbrDocsCopied, children.size());
+                assertEquals(firstSubFolderExistingFilesNbr, children.size());
+            }
+        });
     }
 
     @Test
@@ -970,6 +1074,58 @@ public class TestDocumentsSizeUpdater {
                 assertQuota(getFirstSubFolder(), 0, 200, 0, 0);
                 assertQuota(getFirstFolder(), 0, 200, 0, 0);
                 assertQuota(getWorkspace(), 50, 250, 0, 0);
+            }
+        });
+    }
+
+    /**
+     * NXP-17350
+     * @throws Exception
+     * @since TODO
+     */
+    @Test
+    public void testQuotaOnDeleteFolder() throws Exception {
+        addContent();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 100, 100, 0, 0);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 300, 0, 0);
+                assertQuota(getFirstFolder(), 0, 300, 0, 0);
+                assertQuota(getWorkspace(), 0, 300, 0, 0);
+            }
+        });
+        // update and create a version
+        doUpdateAndVersionContent();
+        // ws + 50, file + 280 + version
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                DocumentModel firstFile = getFirstFile();
+                assertFalse(firstFile.isCheckedOut());
+                assertEquals("0.1", firstFile.getVersionLabel());
+
+                assertQuota(firstFile, 380, 760, 0, 380);
+                assertQuota(getSecondFile(), 200, 200, 0, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 0, 380);
+                assertQuota(getFirstFolder(), 0, 960, 0, 380);
+                assertQuota(getWorkspace(), 50, 1010, 0, 380);
+            }
+        });
+        doDeleteFileContent(firstSubFolderRef);
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                // inner, total, trash, versions
+                assertQuota(getFirstFile(), 380, 760, 380, 380);
+                assertQuota(getSecondFile(), 200, 200, 200, 0);
+                assertQuota(getFirstSubFolder(), 0, 960, 580, 380);
+                assertQuota(getFirstFolder(), 0, 960, 580, 380);
+                assertQuota(getWorkspace(), 50, 1010, 580, 380);
             }
         });
     }
