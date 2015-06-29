@@ -36,10 +36,10 @@ public class ContentDiffAdapterFactoryDescriptor implements Serializable {
     @XNode("@enabled")
     private boolean enabled = true;
 
-    @XNode("typeName")
+    @XNode("@typeName")
     private String typeName;
 
-    @XNode("class")
+    @XNode("@class")
     private Class<?> adapterClass;
 
     public Class<?> getAdapterClass() {
