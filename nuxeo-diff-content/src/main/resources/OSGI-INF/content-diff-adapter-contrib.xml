@@ -1,8 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.diff.content.adapter.contrib">
-  <extension
-    target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent"
-    point="adapterFactory">
+  <extension target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" point="adapterFactory">
 
     <documentation>
       Default builtin content diff adapters
@@ -10,9 +8,7 @@
 
   </extension>
 
-  <extension
-    target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent"
-    point="mimeTypeContentDiffer">
+  <extension target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" point="mimeTypeContentDiffer">
     <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
       <pattern>text/html</pattern>
     </contentDiffer>
