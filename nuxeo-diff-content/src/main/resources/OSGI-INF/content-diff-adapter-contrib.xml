@@ -22,5 +22,8 @@
     <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer">
       <pattern>text/xml</pattern>
     </contentDiffer>
+    <contentDiffer class="org.nuxeo.ecm.diff.content.adapter.ImageMagickContentDiffer">
+      <pattern>image/.*</pattern>
+    </contentDiffer>
   </extension>
 </component>

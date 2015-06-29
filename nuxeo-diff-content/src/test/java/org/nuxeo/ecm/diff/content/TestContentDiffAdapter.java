@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
@@ -156,24 +155,13 @@ public class TestContentDiffAdapter {
         ContentDiffAdapter contentDiffAdapter = leftDoc.getAdapter(ContentDiffAdapter.class);
         assertNotNull(contentDiffAdapter);
 
-        // Try to get content diff blobs using text conversion
-        try {
-            contentDiffAdapter.getFileContentDiffBlobs(rightDoc, ContentDiffConversionType.text, Locale.ENGLISH);
-            fail("No png2text converter is registered, call should have thrown a ConverterNotRegistered exception.");
-        } catch (ConverterNotRegistered cnr) {
-            assertEquals(
-                    "Converter for sourceMimeType = image/png, destinationMimeType = text/plain is not registered",
-                    cnr.getMessage());
-        }
+        // Get content diff blobs
+        List<Blob> contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, null, Locale.ENGLISH);
+        assertNotNull(contentDiffBlobs);
+        assertEquals(1, contentDiffBlobs.size());
 
-        // Try to get content diff blobs using html conversion
-        try {
-            contentDiffAdapter.getFileContentDiffBlobs(rightDoc, ContentDiffConversionType.html, Locale.ENGLISH);
-            fail("No png2html converter is registered, call should have thrown a ConverterNotRegistered exception.");
-        } catch (ConverterNotRegistered cnr) {
-            assertEquals("Converter for sourceMimeType = image/png, destinationMimeType = text/html is not registered",
-                    cnr.getMessage());
-        }
+        Blob contentDiffBlob = contentDiffBlobs.get(0);
+        assertNotNull(contentDiffBlob);
     }
 
     protected void checkContentDiff(String expectedBlobPath, Blob contentDiffBlob) {

@@ -123,7 +123,7 @@ public class TestDiffDisplayContribOverride {
         // Check diffDisplay contribs
         Map<String, List<String>> diffDisplays = diffDisplayService.getDiffDisplays();
         assertNotNull(diffDisplays);
-        assertEquals(4, diffDisplays.size());
+        assertEquals(5, diffDisplays.size());
         assertTrue(diffDisplays.containsKey("Folder"));
         assertTrue(diffDisplays.containsKey("File"));
         assertTrue(diffDisplays.containsKey("Note"));
@@ -177,7 +177,7 @@ public class TestDiffDisplayContribOverride {
         // Check diffBlock contribs
         Map<String, DiffBlockDefinition> contribs = diffDisplayService.getDiffBlockDefinitions();
         assertNotNull(contribs);
-        assertEquals(5, contribs.size());
+        assertEquals(6, contribs.size());
         assertTrue(contribs.containsKey("dublincore"));
         assertTrue(contribs.containsKey("files"));
         assertTrue(contribs.containsKey("note"));
