@@ -187,6 +187,15 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
+    protected Node getChildForWrite(Node node, String name, Type type) throws PropertyException {
+        try {
+            return session.getChildPropertyForWrite(node, name, type.getName());
+        } catch (StorageException e) {
+            throw new PropertyException(e.getMessage(), e);
+        }
+    }
+
+    @Override
     protected List<Node> getChildAsList(Node node, String name) throws PropertyException {
         try {
             return session.getComplexList(node, name);

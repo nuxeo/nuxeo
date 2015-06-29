@@ -645,7 +645,16 @@ public class SQLSession implements Session {
     }
 
     protected Node getChildProperty(Node node, String name, String typeName) throws StorageException {
-        Node childNode = session.getChildNode(node, name, true);
+        // all complex property children have already been created by SessionImpl.addChildNode or
+        // SessionImpl.addMixinType
+        // if one is missing here, it means that it was concurrently deleted and we're only now finding out
+        // or that a schema change was done and we now expect a new child
+        // return null in that case
+        return session.getChildNode(node, name, true);
+    }
+
+    protected Node getChildPropertyForWrite(Node node, String name, String typeName) throws StorageException {
+        Node childNode = getChildProperty(node, name, typeName);
         if (childNode == null) {
             // create the needed complex property immediately
             childNode = session.addChildNode(node, name, null, typeName, true);

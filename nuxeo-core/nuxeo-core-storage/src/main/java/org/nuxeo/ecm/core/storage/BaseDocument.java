@@ -145,9 +145,22 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
      * @param state the parent state
      * @param name the child name
      * @param type the child's type
-     * @return the child state, never {@code null}
+     * @return the child state, or {@code null} if it doesn't exist
      */
     protected abstract T getChild(T state, String name, Type type) throws PropertyException;
+
+    /**
+     * Gets a child state into which we will want to write data.
+     * <p>
+     * Creates it if needed.
+     *
+     * @param state the parent state
+     * @param name the child name
+     * @param type the child's type
+     * @return the child state, never {@code null}
+     * @since 7.4
+     */
+    protected abstract T getChildForWrite(T state, String name, Type type) throws PropertyException;
 
     /**
      * Gets a child state which is a list.
@@ -368,6 +381,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 } else if (type.isComplexType()) {
                     // complex property
                     state = getChild(state, name, type);
+                    if (state == null) {
+                        throw new PropertyNotFoundException(xpath, "Missing value at segment: " + segment);
+                    }
                     parentType = (ComplexType) type;
                 } else {
                     // list
@@ -395,6 +411,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         } else if (type.isComplexType()) {
             // complex property
             T childState = getChild(state, name, type);
+            if (childState == null) {
+                return null;
+            }
             return getValueComplex(childState, (ComplexType) type);
         } else {
             // array or list
@@ -495,8 +514,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 } else {
                     // not last segment
                     parentType = (ComplexType) field.getType();
-                    continue;
                 }
+                continue;
             }
 
             if (i == segments.length - 1) {
@@ -509,7 +528,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     throw new PropertyNotFoundException(xpath, "Segment must be last: " + segment);
                 } else if (type.isComplexType()) {
                     // complex property
-                    state = getChild(state, name, type);
+                    state = getChildForWrite(state, name, type);
                     parentType = (ComplexType) type;
                 } else {
                     // list
@@ -536,7 +555,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
             state.setSingle(name, value);
         } else if (type.isComplexType()) {
             // complex property
-            T childState = getChild(state, name, type);
+            T childState = getChildForWrite(state, name, type);
             setValueComplex(childState, field, value);
         } else {
             // array or list
@@ -773,7 +792,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 }
             } else if (type.isComplexType()) {
                 // complex property
-                T childState = getChild(state, name, type);
+                T childState = getChildForWrite(state, name, type);
                 writeComplexProperty(childState, (ComplexProperty) property, xp, writeContext);
             } else {
                 ListType listType = (ListType) type;
@@ -866,7 +885,9 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         } else if (type.isComplexType()) {
             // complex property
             T childState = getChild(state, name, type);
-            readPrefetch(childState, (ComplexType) type, xpathGeneric, xpath, prefixes, prefetch);
+            if (childState != null) {
+                readPrefetch(childState, (ComplexType) type, xpathGeneric, xpath, prefixes, prefetch);
+            }
         } else {
             // array or list
             ListType listType = (ListType) type;
@@ -973,9 +994,11 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 // complex property
                 String name = field.getName().getPrefixedName();
                 T childState = getChild(state, name, type);
-                path.addLast(name);
-                visitBlobsComplex(childState, (ComplexType) type);
-                path.removeLast();
+                if (childState != null) {
+                    path.addLast(name);
+                    visitBlobsComplex(childState, (ComplexType) type);
+                    path.removeLast();
+                }
             } else {
                 // array or list
                 Type fieldType = ((ListType) type).getFieldType();

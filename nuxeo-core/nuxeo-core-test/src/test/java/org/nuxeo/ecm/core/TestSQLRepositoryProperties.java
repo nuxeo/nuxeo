@@ -557,9 +557,19 @@ public class TestSQLRepositoryProperties {
             session = repositorySettings.createSession();
 
             doc = session.getDocument(new IdRef(doc.getId()));
+
             // this property did not exist on document creation, after updating the
             // doctype it should not fail
-            doc.getProperty("cmpf:attachedFile");
+            Property prop = doc.getProperty("cmpf:attachedFile");
+            Map<String, Object> expected = new HashMap<>();
+            expected.put("name", null);
+            expected.put("vignettes", Collections.emptyList());
+            assertEquals(expected, prop.getValue());
+
+            // check that we can write to it as well
+            prop.setValue(Collections.singletonMap("vignettes",
+                    Collections.singletonList(Collections.singletonMap("width", Long.valueOf(123)))));
+            doc = session.saveDocument(doc);
         } finally {
             runtimeHarness.undeployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-schema-update.xml");
         }

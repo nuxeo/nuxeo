@@ -370,7 +370,12 @@ public class DBSDocument extends BaseDocument<State> {
 
     @Override
     protected State getChild(State state, String name, Type type) {
-        State child = (State) state.get(name);
+        return (State) state.get(name);
+    }
+
+    @Override
+    protected State getChildForWrite(State state, String name, Type type) throws PropertyException {
+        State child = getChild(state, name, type);
         if (child == null) {
             state.put(name, child = new State());
         }
