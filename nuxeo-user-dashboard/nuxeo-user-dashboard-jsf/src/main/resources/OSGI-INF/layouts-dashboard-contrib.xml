@@ -143,6 +143,15 @@
       </properties>
     </widget>
 
+    <widget name="dashboard_user_shared_documents" type="contentViewWithForms">
+      <properties widgetMode="any">
+        <property name="contentViewName">user_shared_documents</property>
+        <property name="foldable">true</property>
+        <property name="hideEmpty">false</property>
+        <property name="useAjaxPagination">true</property>
+      </properties>
+    </widget>
+
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -158,6 +167,13 @@
       <category>DASHBOARD_LEFT</category>
       <properties>
         <property name="widgetName">dashboard_user_favorites</property>
+      </properties>
+    </action>
+
+    <action id="dashboard_user_shared_documents" type="widget" order="30">
+      <category>DASHBOARD_LEFT</category>
+      <properties>
+        <property name="widgetName">dashboard_user_shared_documents</property>
       </properties>
     </action>
 

@@ -228,6 +228,28 @@
       </resultLayouts>
     </contentView>
 
+    <contentView name="user_shared_documents">
+      <title>title.dashboard.userSharedDocuments</title>
+      <translateTitle>true</translateTitle>
+      <pageProvider name="user_shared_documents">
+        <property name="coreSession">#{documentManager}</property>
+        <parameter>#{jsfDashboardActions.currentUserPrincipalsToCheck}</parameter>
+      </pageProvider>
+      <showPageSizeSelector>false</showPageSizeSelector>
+      <showRefreshCommand>true</showRefreshCommand>
+      <useGlobalPageSize>false</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentChildrenChanged</event>
+      </refresh>
+      <cacheKey>only_one_cache</cacheKey>
+      <cacheSize>1</cacheSize>
+      <resultLayouts>
+        <layout name="dashboard_document_listing" showCSVExport="false"
+          showPDFExport="false" showSyndicationLinks="false" />
+      </resultLayouts>
+    </contentView>
+
   </extension>
 
 </component>

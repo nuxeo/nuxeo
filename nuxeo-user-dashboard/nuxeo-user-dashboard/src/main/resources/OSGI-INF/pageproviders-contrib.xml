@@ -108,6 +108,19 @@
       <pageSize>5</pageSize>
     </coreQueryPageProvider>
 
+    <coreQueryPageProvider name="user_shared_documents">
+      <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+      <pattern>
+        SELECT * FROM Document where ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState !=
+        'deleted' AND ecm:acl/*1/grant = 1 AND
+        ecm:acl/*1/permission IN ('Read', 'ReadWrite', 'ReadRemove', 'Everything') AND
+        ecm:acl/*1/principal IN ?
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>5</pageSize>
+    </coreQueryPageProvider>
+
   </extension>
 
 </component>
