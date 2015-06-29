@@ -182,9 +182,6 @@ public class FileBlob extends AbstractBlob implements Serializable {
         if (!isTemporary) {
             throw new IOException("Cannot move non-temporary file: " + file);
         }
-        if (dest.exists()) {
-            throw new IOException("Destination already exists: " + dest);
-        }
         Path path = file.toPath();
         Path destPath = dest.toPath();
         try {
