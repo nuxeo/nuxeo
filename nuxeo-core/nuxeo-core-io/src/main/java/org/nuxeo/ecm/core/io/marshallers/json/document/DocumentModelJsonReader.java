@@ -105,7 +105,12 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
             ParameterizedType genericType = TypeUtils.parameterize(List.class, Property.class);
             List<Property> properties = readEntity(List.class, genericType, propsNode);
             for (Property property : properties) {
-                simpleDoc.setPropertyValue(property.getName(), property.getValue());
+                String propertyName = property.getName();
+                // handle schema with no prefix
+                if (!propertyName.contains(":")) {
+                    propertyName = property.getField().getDeclaringType().getName() + ":" + propertyName;
+                }
+                simpleDoc.setPropertyValue(propertyName, property.getValue());
             }
         }
 
