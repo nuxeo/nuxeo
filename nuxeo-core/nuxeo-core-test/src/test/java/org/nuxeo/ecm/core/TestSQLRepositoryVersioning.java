@@ -320,6 +320,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         session.saveDocument(doc);
         session.save();
 
+        maybeSleepToNextSecond();
         DocumentRef v2Ref = session.checkIn(docRef, null, null);
         session.checkOut(docRef);
 
@@ -329,6 +330,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertEquals("second name", newDoc.getProperty("file", "filename"));
 
         waitForFulltextIndexing();
+        maybeSleepToNextSecond();
         DocumentModel restoredDoc = session.restoreToVersion(docRef, v1Ref);
 
         assertNotNull(restoredDoc);
@@ -336,6 +338,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         assertNull(restoredDoc.getProperty("file", "filename"));
 
         waitForFulltextIndexing();
+        maybeSleepToNextSecond();
         restoredDoc = session.restoreToVersion(docRef, v2Ref);
 
         assertNotNull(restoredDoc);
@@ -400,6 +403,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         childFile.setProperty("dc", "description", "desc 1");
         session.saveDocument(childFile);
         session.save();
+        maybeSleepToNextSecond();
         DocumentRef v2Ref = session.checkIn(childFile.getRef(), null, null);
 
         DocumentModel newDoc = session.getDocument(childFile.getRef());
@@ -409,6 +413,7 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
 
         // restore, no snapshot as already pristine
         waitForFulltextIndexing();
+        maybeSleepToNextSecond();
         DocumentModel restoredDoc = session.restoreToVersion(
                 childFile.getRef(), v1Ref);
 
@@ -897,9 +902,11 @@ public class TestSQLRepositoryVersioning extends SQLRepositoryTestCase {
         DocumentRef ci1 = session.checkIn(co, VersioningOption.MAJOR,
                 "first check-in");
         session.checkOut(co);
+        maybeSleepToNextSecond();
         DocumentRef ci2 = session.checkIn(co, VersioningOption.MAJOR,
                 "second check-in");
         waitForFulltextIndexing();
+        maybeSleepToNextSecond();
         session.restoreToVersion(co, ci1);
 
         // save document with auto-increment should produce version 3.0
