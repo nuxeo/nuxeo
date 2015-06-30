@@ -112,6 +112,11 @@ class Spreadsheet {
     this.query.namedParameters = p;
   }
 
+  set sortInfos(sortInfos) {
+    this.query.sortBy = sortInfos.map((s) => s.sortColumn);
+    this.query.sortOrder = sortInfos.map((s) => s.sortAscending ? 'asc' : 'desc');
+  }
+
   _fetch() {
     return this.query.run()
         .then((result) => {

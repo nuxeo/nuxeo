@@ -54,6 +54,14 @@ class Query extends Operation {
     this.params.pageSize = s;
   }
 
+  set sortBy(s) {
+    this.params.sortBy = s.join(',');
+  }
+
+  set sortOrder(s) {
+    this.params.sortOrder = s.join(',');
+  }
+
   run() {
     return this.execute();
   }
