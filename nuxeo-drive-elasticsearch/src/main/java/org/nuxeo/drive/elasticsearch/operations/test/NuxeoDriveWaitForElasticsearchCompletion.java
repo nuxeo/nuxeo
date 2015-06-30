@@ -16,6 +16,10 @@
  */
 package org.nuxeo.drive.elasticsearch.operations.test;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.nuxeo.drive.operations.test.NuxeoDriveIntegrationTestsHelper;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -35,11 +39,15 @@ public class NuxeoDriveWaitForElasticsearchCompletion {
     public static final String ID = "NuxeoDrive.WaitForElasticsearchCompletion";
 
     @OperationMethod
-    public void run() {
+    public void run() throws InterruptedException, ExecutionException, TimeoutException {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
-        esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
+        // Wait for indexing
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
+        // Explicit refresh
+        esa.refresh();
+        // Explicit refresh for the audit index until it is handled by esa.refresh
+        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).get();
     }
 
 }
