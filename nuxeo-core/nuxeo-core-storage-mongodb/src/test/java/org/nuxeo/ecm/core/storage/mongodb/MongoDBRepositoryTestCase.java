@@ -24,6 +24,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobManagerComponent;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.BlobProviderDescriptor;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -41,6 +46,8 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     protected String repositoryName = "test";
 
     protected MongoDBRepositoryDescriptor descriptor;
+
+    protected BlobProviderDescriptor blobProviderDescriptor;
 
     protected CoreSession session;
 
@@ -96,6 +103,11 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         descriptor.dbname = null; // default "nuxeo"
         MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
         repositoryService.addContribution(descriptor);
+        blobProviderDescriptor = new BlobProviderDescriptor();
+        blobProviderDescriptor.name = repositoryName;
+        blobProviderDescriptor.klass = DefaultBinaryManager.class;
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.registerBlobProvider(blobProviderDescriptor);
 
         clearMongoDb();
     }
@@ -118,6 +130,8 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         Framework.getService(RepositoryService.class).shutdown();
         MongoDBRepositoryService repositoryService = Framework.getLocalService(MongoDBRepositoryService.class);
         repositoryService.removeContribution(descriptor);
+        BlobManagerComponent blobManager = (BlobManagerComponent) Framework.getService(BlobManager.class);
+        blobManager.unregisterBlobProvider(blobProviderDescriptor);
     }
 
     protected void initCheckLeaks() {
