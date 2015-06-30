@@ -67,13 +67,17 @@ gulp.task('build', function() {
 
 gulp.task('browser-sync', function () {
   try {
+    // setup our local proxy
+    var proxyOptions = require('url').parse('http://localhost:8080/nuxeo');
+    proxyOptions.route = '/nuxeo';
     require('browser-sync')({
       server: {
-        baseDir: ['app']
+        baseDir: ['app'],
+        middleware: [require('proxy-middleware')(proxyOptions)]
       }
     });
   } catch (e) {
-   console.log('Failed to load browser-sync. Please run `npm install browser-sync`.');
+   console.log('Failed to load browser-sync and/or proxy-middleware. Please run `npm install browser-sync proxy-middleware`.');
    process.exit(-1);
   }
 });
