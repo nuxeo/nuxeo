@@ -17,6 +17,8 @@
  */
 package org.nuxeo.drive.elasticsearch;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
@@ -51,8 +53,12 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
     @Override
     protected void waitForAsyncCompletion() throws Exception {
         super.waitForAsyncCompletion();
-        esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
-        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
+        // Wait for indexing
+        esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
+        // Explicit refresh
+        esa.refresh();
+        // Explicit refresh for the audit index until it is handled by esa.refresh
+        esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).get();
     }
 
     @Override
