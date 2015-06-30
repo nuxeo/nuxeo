@@ -21,7 +21,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -52,8 +51,8 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
     protected ElasticSearchAdmin esa;
 
     @Override
-    protected void commitAndWaitForAsyncCompletion(CoreSession session) throws Exception {
-        super.commitAndWaitForAsyncCompletion(session);
+    protected void waitForAsyncCompletion() throws Exception {
+        super.waitForAsyncCompletion();
         esa.getClient().admin().indices().prepareFlush(ESAuditBackend.IDX_NAME).execute().actionGet();
         esa.getClient().admin().indices().prepareRefresh(ESAuditBackend.IDX_NAME).execute().actionGet();
     }

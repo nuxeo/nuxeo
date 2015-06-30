@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -55,14 +56,12 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.core.work.api.WorkQueueDescriptor;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -96,9 +95,6 @@ public abstract class AbstractChangeFinderTestCase {
 
     @Inject
     protected DirectoryService directoryService;
-
-    @Inject
-    protected EventService eventService;
 
     @Inject
     protected NuxeoDriveManager nuxeoDriveManager;
@@ -135,14 +131,7 @@ public abstract class AbstractChangeFinderTestCase {
                 eventServiceAdmin.setListenerEnabledFlag(postCommitListenerDescName, false);
             }
         }
-        // Disable work queues except for the audit one
-        List<String> workQueueIds = workManager.getWorkQueueIds();
-        for (String workQueueId : workQueueIds) {
-            if (!"audit".equals(workQueueId)) {
-                WorkQueueDescriptor desc = workManager.getWorkQueueDescriptor(workQueueId);
-                desc.queuing = Boolean.FALSE;
-            }
-        }
+
         // Enable deletion listener because the tear down disables it
         eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
@@ -418,7 +407,7 @@ public abstract class AbstractChangeFinderTestCase {
             nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder1, user1Session);
             nuxeoDriveManager.registerSynchronizationRoot(user1Session.getPrincipal(), folder2, user1Session);
         } finally {
-            commitAndWaitForAsyncCompletion(user1Session);
+            commitAndWaitForAsyncCompletion();
         }
 
         try {
@@ -1042,14 +1031,15 @@ public abstract class AbstractChangeFinderTestCase {
         return changeSummary;
     }
 
-    protected void commitAndWaitForAsyncCompletion(CoreSession session) throws Exception {
+    protected void commitAndWaitForAsyncCompletion() throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
+        waitForAsyncCompletion();
         TransactionHelper.startTransaction();
-        eventService.waitForAsyncCompletion();
+
     }
 
-    protected void commitAndWaitForAsyncCompletion() throws Exception {
-        commitAndWaitForAsyncCompletion(session);
+    protected void waitForAsyncCompletion() throws Exception {
+        workManager.awaitCompletion(20, TimeUnit.SECONDS);
     }
 
     protected void setPermissions(DocumentModel doc, ACE... aces) throws Exception {
