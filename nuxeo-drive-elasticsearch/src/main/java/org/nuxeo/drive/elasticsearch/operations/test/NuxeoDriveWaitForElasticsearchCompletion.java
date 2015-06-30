@@ -41,6 +41,7 @@ public class NuxeoDriveWaitForElasticsearchCompletion {
     @OperationMethod
     public void run() throws InterruptedException, ExecutionException, TimeoutException {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
+        NuxeoDriveIntegrationTestsHelper.waitForAsyncCompletion();
         ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
         // Wait for indexing
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
