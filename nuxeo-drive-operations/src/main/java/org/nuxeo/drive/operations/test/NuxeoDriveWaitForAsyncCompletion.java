@@ -19,8 +19,6 @@ package org.nuxeo.drive.operations.test;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Waits for asynchronous event listener completion.
@@ -33,9 +31,9 @@ public class NuxeoDriveWaitForAsyncCompletion {
     public static final String ID = "NuxeoDrive.WaitForAsyncCompletion";
 
     @OperationMethod
-    public void run() {
+    public void run() throws InterruptedException {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        NuxeoDriveIntegrationTestsHelper.waitForAsyncCompletion();
     }
 
 }
