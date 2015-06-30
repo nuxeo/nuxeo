@@ -47,6 +47,7 @@ class Spreadsheet {
 
     this.query = new Query(connection);
     this.query.enrichers = ['permissions', 'vocabularies'];
+    this.query.headers['fetch.document'] = 'versionLabel';
     this.query.pageProvider = pageProvider;
 
     new Layout(connection, layout).fetch().then((layout) => {
