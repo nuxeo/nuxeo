@@ -221,7 +221,7 @@ public class ElasticSearchIndexConfig {
     }
 
     public String getRepositoryName() {
-        if (type == DOC_TYPE && repositoryName == null) {
+        if (DOC_TYPE.equals(type) && repositoryName == null) {
             repositoryName = DEFAULT_REPOSITORY_NAME;
         }
         return repositoryName;
