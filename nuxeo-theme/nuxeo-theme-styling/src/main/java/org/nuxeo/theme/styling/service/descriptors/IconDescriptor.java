@@ -23,7 +23,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 /**
  * Descriptor for icon elements.
  *
- * @since 7.3
+ * @since 7.4
  */
 @XObject("icon")
 public class IconDescriptor {

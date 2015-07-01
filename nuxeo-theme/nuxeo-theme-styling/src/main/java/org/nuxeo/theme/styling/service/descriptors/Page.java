@@ -28,7 +28,7 @@ import org.nuxeo.theme.services.ThemeService;
 /**
  * Descriptor to associate resources and flavors to a page.
  *
- * @since 7.3
+ * @since 7.4
  */
 @XObject("page")
 public class Page {
@@ -37,13 +37,13 @@ public class Page {
     String name;
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     @XNode("@charset")
     String charset;
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     @XNodeList(value = "links/icon", type = ArrayList.class, componentType = IconDescriptor.class)
     List<IconDescriptor> favicons;
@@ -52,14 +52,14 @@ public class Page {
     String defaultFlavor;
 
     /**
-     * @deprecated since 7.3: use resources instead
+     * @deprecated since 7.4: use resources instead
      */
     @Deprecated
     @XNode("styles@append")
     boolean appendStyles;
 
     /**
-     * @deprecated since 7.3: use resources instead
+     * @deprecated since 7.4: use resources instead
      */
     @Deprecated
     @XNodeList(value = "styles/style", type = ArrayList.class, componentType = String.class)
@@ -78,7 +78,7 @@ public class Page {
     List<String> resources;
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     @XNodeList(value = "resources/bundle", type = ArrayList.class, componentType = String.class)
     List<String> bundles;
@@ -101,14 +101,14 @@ public class Page {
     }
 
     /**
-     * @deprecated since 7.3: use resources instead
+     * @deprecated since 7.4: use resources instead
      */
     public boolean getAppendStyles() {
         return appendStyles;
     }
 
     /**
-     * @deprecated since 7.3: use resources instead
+     * @deprecated since 7.4: use resources instead
      */
     public List<String> getStyles() {
         return styles;
@@ -165,14 +165,14 @@ public class Page {
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     public List<String> getResourceBundles() {
         return bundles;
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     public void setResourceBundles(List<String> bundles) {
         this.bundles = bundles;
@@ -199,28 +199,28 @@ public class Page {
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     public String getCharset() {
         return charset;
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     public void setCharset(String charset) {
         this.charset = charset;
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     public List<IconDescriptor> getFavicons() {
         return favicons;
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     public void setFavicons(List<IconDescriptor> favicons) {
         this.favicons = favicons;

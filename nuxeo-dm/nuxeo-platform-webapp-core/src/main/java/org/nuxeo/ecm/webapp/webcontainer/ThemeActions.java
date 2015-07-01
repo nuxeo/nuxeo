@@ -46,7 +46,7 @@ public interface ThemeActions extends Serializable {
     Flavor getFlavor(String flavorName);
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     String getCurrentFlavor();
 

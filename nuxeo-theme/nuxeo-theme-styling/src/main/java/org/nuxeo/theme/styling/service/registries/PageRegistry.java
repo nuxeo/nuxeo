@@ -67,7 +67,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     /**
-     * @deprecated since 7.3: use {@link #getPage(String)} instead.
+     * @deprecated since 7.4: use {@link #getPage(String)} instead.
      */
     @Deprecated
     public Page getThemePage(String id) {
@@ -85,7 +85,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     /**
-     * @deprecated since 7.3: use {@link #getPages()} instead.
+     * @deprecated since 7.4: use {@link #getPages()} instead.
      */
     @Deprecated
     public List<Page> getThemePages() {
@@ -97,7 +97,7 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     /**
-     * @deprecated since 7.3: use {@link #getConfigurationApplyingToAll()} instead.
+     * @deprecated since 7.4: use {@link #getConfigurationApplyingToAll()} instead.
      */
     public Page getConfigurationApplyingToAllThemes() {
         return getConfigurationApplyingToAll();

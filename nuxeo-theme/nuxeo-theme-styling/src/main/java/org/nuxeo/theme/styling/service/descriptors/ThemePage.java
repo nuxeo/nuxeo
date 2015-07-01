@@ -22,7 +22,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * Descriptor to associate resources to a theme page
  *
  * @since 5.5
- * @deprecated since 7.3, use {@link Page} instead.
+ * @deprecated since 7.4, use {@link Page} instead.
  */
 @XObject("themePage")
 public class ThemePage extends Page {

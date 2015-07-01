@@ -26,7 +26,7 @@ import javax.faces.context.ResponseWriter;
 /**
  * Component rendering a "meta" HTML tag.
  *
- * @since 7.3
+ * @since 7.4
  */
 public class UIMeta extends UIComponentBase {
 

@@ -93,7 +93,7 @@ public interface ThemeStylingService {
      * <p>
      * Resources and bundles declared for all pages will also be attached to returned page.
      *
-     * @since 7.3
+     * @since 7.4
      */
     Page getPage(String name);
 
