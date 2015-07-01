@@ -19,14 +19,6 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
-import java.io.IOException;
-
-import javax.el.ELException;
-import javax.faces.FacesException;
-import javax.faces.component.UIComponent;
-import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
-
 /**
  * Leaf Facelet Handler
  * <p>
@@ -35,14 +27,8 @@ import javax.faces.view.facelets.FaceletHandler;
  * Used when there is no next handler to apply, as next handler can never be null.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
+ * @deprecated since 7.4: use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} instead.
  */
-public class LeafFaceletHandler implements FaceletHandler {
+public class LeafFaceletHandler extends org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler {
 
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
-    }
-
-    @Override
-    public String toString() {
-        return "FaceletHandler Tail";
-    }
 }

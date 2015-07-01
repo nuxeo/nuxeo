@@ -23,9 +23,11 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIOutput;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 
+import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
@@ -58,12 +60,13 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         String bundleName = name.getValue(ctx);
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
+        LeafFaceletHandler leaf = new LeafFaceletHandler();
         // first include handlers that match JSF resources
         List<Resource> jsfjsr = wrm.getResources(new ResourceContextImpl(), bundleName, ResourceType.jsfjs.name());
         if (jsfjsr != null && !jsfjsr.isEmpty()) {
             String rendererType = "javax.faces.resource.Script";
             for (Resource resource : jsfjsr) {
-                ComponentConfig config = getJSFResourceComponentConfig(resource.getURI(), rendererType);
+                ComponentConfig config = getJSFResourceComponentConfig(resource.getURI(), rendererType, leaf);
                 new ScriptResourceHandler(config).apply(ctx, parent);
             }
         }
@@ -71,7 +74,7 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         if (jsfcssr != null && !jsfcssr.isEmpty()) {
             String rendererType = "javax.faces.resource.Stylesheet";
             for (Resource resource : jsfcssr) {
-                ComponentConfig config = getJSFResourceComponentConfig(resource.getURI(), rendererType);
+                ComponentConfig config = getJSFResourceComponentConfig(resource.getURI(), rendererType, leaf);
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
         }
@@ -82,7 +85,7 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
                 ComponentConfig tagConfig = getComponentConfig();
                 TagAttributeImpl srcAttr = getTagAttribute("src", resource.getURI());
                 TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { srcAttr });
-                TagConfig config = TagConfigFactory.createTagConfig(tagConfig, tagConfig.getTagId(), attributes, null);
+                TagConfig config = TagConfigFactory.createTagConfig(tagConfig, tagConfig.getTagId(), attributes, leaf);
                 new IncludeHandler(config).apply(ctx, parent);
             }
         }
@@ -90,7 +93,8 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         super.apply(ctx, parent);
     }
 
-    protected ComponentConfig getJSFResourceComponentConfig(String resourceName, String rendererType) {
+    protected ComponentConfig getJSFResourceComponentConfig(String resourceName, String rendererType,
+            FaceletHandler nextHandler) {
         ComponentConfig tagConfig = getComponentConfig();
         String componentType = UIOutput.COMPONENT_TYPE;
         TagAttributeImpl nameAttr = getTagAttribute("name", resourceName);
