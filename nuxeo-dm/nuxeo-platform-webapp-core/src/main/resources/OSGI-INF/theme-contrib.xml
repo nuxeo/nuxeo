@@ -295,6 +295,13 @@
     <resource name="default-contextmenu-actions.js" type="js">
       <uri>/scripts/default-contextmenu-actions.js</uri>
     </resource>
+    <resource name="tinymce.js" type="js">
+      <uri>/tinymce/tinymce.js</uri>
+    </resource>
+    <resource name="tinymce_init.js" type="js">
+      <uri>/tinymce/tinymce_init.js</uri>
+      <require>tinymce.js</require>
+    </resource>
     <!-- end of "static" resources declaration -->
 
     <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
@@ -467,6 +474,7 @@
         <resource>tableSelections.js</resource>
         <resource>customSeamRemotingWaiter.js</resource>
         <resource>default-contextmenu-actions.js</resource>
+        <resource>tinymce_init.js</resource>
       </resources>
     </resourceBundle>
 
