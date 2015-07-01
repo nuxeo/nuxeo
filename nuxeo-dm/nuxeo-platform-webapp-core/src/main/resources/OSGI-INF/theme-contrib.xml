@@ -277,6 +277,9 @@
     <resource name="nuxeo.js">
       <uri>/bower_components/nuxeo/lib/jquery/nuxeo.js</uri>
     </resource>
+    <resource name="confirm-alerts.xhtml" type="xhtml">
+      <uri>/incl/confirm-alerts.xhtml</uri>
+    </resource>
     <!-- end of "static" resources declaration -->
 
     <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
@@ -444,6 +447,7 @@
         <resource>jquery.nuxeo.cv-lightbox.js</resource>
         <resource>nuxeo-documents-import.js</resource>
         <resource>fixmultipartajax.js</resource>
+        <resource>confirm-alerts.xhtml</resource>
       </resources>
     </resourceBundle>
 
