@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -75,13 +76,13 @@ public final class ACE implements Serializable, Cloneable {
 
         Calendar begin = null;
         if (parts.length >= 5 && StringUtils.isNotBlank(parts[4])) {
-            begin = Calendar.getInstance();
+            begin = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             begin.setTimeInMillis(Long.valueOf(parts[4]));
         }
 
         Calendar end = null;
         if (parts.length >= 6 && StringUtils.isNotBlank(parts[5])) {
-            end = Calendar.getInstance();
+            end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             end.setTimeInMillis(Long.valueOf(parts[5]));
         }
 
@@ -176,18 +177,18 @@ public final class ACE implements Serializable, Cloneable {
         sb.append(':');
         sb.append(isGranted);
 
+        sb.append(':');
         if (creator != null) {
-            sb.append(':');
             sb.append(creator);
         }
 
+        sb.append(':');
         if (begin != null) {
-            sb.append(':');
             sb.append(begin.getTimeInMillis());
         }
 
+        sb.append(':');
         if (end != null) {
-            sb.append(':');
             sb.append(end.getTimeInMillis());
         }
 

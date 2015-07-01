@@ -230,22 +230,25 @@ public final class DocumentPermissionHelper {
     public static boolean updatePermission(ACP acp, String aclName, String id, String userName, String permission,
             boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end,
             Map<String, Serializable> contextData) {
-        // Add the new ACE.
+        // add the new ACE
         boolean securityHasChanged = addPermission(acp, aclName, userName, permission, blockInheritance,
                 currentPrincipalName, begin, end, contextData);
 
-        // Remove the target ACE.
-        ACL acl = acp.getACL(aclName);
-        ACE ace = ACE.fromId(id);
-        if (acl.contains(ace)) {
-            acl.remove(ace);
-            securityHasChanged = true;
+        if (securityHasChanged) {
+            // remove the old ACE
+            ACL acl = acp.getACL(aclName);
+            ACE ace = ACE.fromId(id);
+            if (acl.contains(ace)) {
+                acl.remove(ace);
+                securityHasChanged = true;
+            }
+
+            // in order to clear the cache
+            if (securityHasChanged) {
+                acp.addACL(acl);
+            }
         }
 
-        // in order to clear the cache
-        if (securityHasChanged) {
-            acp.addACL(acl);
-        }
         return securityHasChanged;
     }
 

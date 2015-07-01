@@ -77,6 +77,15 @@ public class TestACE {
         assertFalse(ace.equals(ace5));
 
         assertEquals(ace.hashCode(), ace2.hashCode());
+
+        Calendar begin = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+        Calendar end= new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
+        ACE ace6 = new ACE("leela", "read", false, null, begin, end);
+        ACE ace7 = new ACE("leela", "read", false, null, begin, end);
+        assertEquals(ace6, ace7);
+
+        ACE ace8 = ACE.fromId(ace7.getId());
+        assertEquals(ace6, ace8);
     }
 
     @Test
