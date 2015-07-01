@@ -43,13 +43,13 @@
       <div>
         <div>Start</div>
         <div>
-          <paper-input id="begin" type="datetime-local" value="{{params.begin}}" />
+          <paper-input id="begin" type="date" value="{{params.begin}}" />
         </div>
       </div>
       <div>
         <div>End</div>
         <div>
-          <paper-input id="end" type="datetime-local" value="{{params.end}}" />
+          <paper-input id="end" type="date" value="{{params.end}}" />
         </div>
       </div>
       <!-- Allowed rights row -->
@@ -173,10 +173,10 @@
       if (ace !== null) {
         this.$.allowedRights.value = ace.permission;
         if (ace.begin !== null) {
-          ace.begin = ace.begin.substring(0, ace.begin.length - 5);
+          ace.begin = ace.begin.substring(0, ace.begin.indexOf('T'));
         }
         if (ace.end !== null) {
-          ace.end = ace.end.substring(0, ace.end.length - 5);
+          ace.end = ace.end.substring(0, ace.end.indexOf('T'));
         }
         return ace;
       } else {
