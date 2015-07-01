@@ -19,6 +19,7 @@ package org.nuxeo.elasticsearch.config;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.BINARYTEXT_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -47,10 +48,12 @@ public class ElasticSearchIndexConfig {
     protected String name;
 
     @XNode("@repository")
-    protected String repositoryName = "default";
+    protected String repositoryName;
+
+    private static final String DEFAULT_REPOSITORY_NAME = "default";
 
     @XNode("@type")
-    protected String type = "doc";
+    protected String type = DOC_TYPE;
 
     @XNode("@create")
     protected boolean create = true;
@@ -218,6 +221,9 @@ public class ElasticSearchIndexConfig {
     }
 
     public String getRepositoryName() {
+        if (type == DOC_TYPE && repositoryName == null) {
+            repositoryName = DEFAULT_REPOSITORY_NAME;
+        }
         return repositoryName;
     }
 
@@ -230,16 +236,16 @@ public class ElasticSearchIndexConfig {
     }
 
     /**
-     * Replace mapping and settings if defined.
+     * Use {@code other} mapping and settings if not defined.
      */
     public void merge(final ElasticSearchIndexConfig other) {
         if (other == null) {
             return;
         }
-        if (other.mapping != null) {
+        if (mapping == null && other.mapping != null) {
             mapping = other.mapping;
         }
-        if (other.settings != null) {
+        if (settings == null && other.settings != null) {
             settings = other.settings;
         }
     }
