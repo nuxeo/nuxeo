@@ -22,6 +22,7 @@ import static org.nuxeo.elasticsearch.ElasticSearchConstants.FULLTEXT_FIELD;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -42,6 +43,8 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
+import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -66,6 +69,7 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.sql.jdbc.NXQLQueryMaker;
 import org.nuxeo.runtime.api.Framework;
 
+
 /**
  * Helper class that holds the conversion logic. Conversion is based on the existing NXQL Parser, we are just using a
  * visitor to build the ES request.
@@ -83,8 +87,15 @@ final public class NxqlQueryConverter {
     }
 
     public static QueryBuilder toESQueryBuilder(final String nxql) {
+        return toESQueryBuilder(nxql, null);
+    }
+
+    public static QueryBuilder toESQueryBuilder(final String nxql, final CoreSession session) {
         final LinkedList<ExpressionBuilder> builders = new LinkedList<>();
         SQLQuery nxqlQuery = getSqlQuery(nxql);
+        if (session != null) {
+            nxqlQuery = addSecurityPolicy(session, nxqlQuery);
+        }
         final ExpressionBuilder ret = new ExpressionBuilder(null);
         builders.add(ret);
         final ArrayList<String> fromList = new ArrayList<>();
@@ -182,6 +193,15 @@ final public class NxqlQueryConverter {
             throw e;
         }
         return nxqlQuery;
+    }
+
+    protected static SQLQuery addSecurityPolicy(CoreSession session,  SQLQuery query) {
+        Collection<SQLQuery.Transformer> transformers = NXCore.getSecurityService().getPoliciesQueryTransformers
+                (session.getRepositoryName());
+        for (SQLQuery.Transformer trans: transformers) {
+            query = trans.transform(session.getPrincipal(), query);
+        }
+        return query;
     }
 
     protected static String completeQueryWithSelect(String nxql) {
