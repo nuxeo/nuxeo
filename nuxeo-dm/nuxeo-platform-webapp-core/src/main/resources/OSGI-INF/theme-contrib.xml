@@ -280,6 +280,21 @@
     <resource name="confirm-alerts.xhtml" type="xhtml">
       <uri>/incl/confirm-alerts.xhtml</uri>
     </resource>
+    <resource name="confirm-alerts.xhtml" type="xhtml">
+      <uri>/incl/confirm-alerts.xhtml</uri>
+    </resource>
+    <resource name="DragAndDrop.js" type="js">
+      <uri>/scripts/DragAndDrop.js</uri>
+    </resource>
+    <resource name="tableSelections.js" type="js">
+      <uri>/scripts/tableSelections.js</uri>
+    </resource>
+    <resource name="customSeamRemotingWaiter.js" type="js">
+      <uri>/scripts/customSeamRemotingWaiter.js</uri>
+    </resource>
+    <resource name="default-contextmenu-actions.js" type="js">
+      <uri>/scripts/default-contextmenu-actions.js</uri>
+    </resource>
     <!-- end of "static" resources declaration -->
 
     <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
@@ -448,6 +463,10 @@
         <resource>nuxeo-documents-import.js</resource>
         <resource>fixmultipartajax.js</resource>
         <resource>confirm-alerts.xhtml</resource>
+        <resource>DragAndDrop.js</resource>
+        <resource>tableSelections.js</resource>
+        <resource>customSeamRemotingWaiter.js</resource>
+        <resource>default-contextmenu-actions.js</resource>
       </resources>
     </resourceBundle>
 
