@@ -74,7 +74,7 @@
       resolveTwice="true" cache="false">
     <nxu:set var="toggledLayoutNameFromW"
       value="#{widget.properties['toggledLayoutName']}"
-      resolveTwice="true" cache="true">
+      resolveTwice="true" cache="false">
     <nxu:set var="toggledLayoutName"
       value="#{nxu:test(empty toggledLayoutNameFromW, initialLayoutName, toggledLayoutNameFromW)}"
       cache="false">
