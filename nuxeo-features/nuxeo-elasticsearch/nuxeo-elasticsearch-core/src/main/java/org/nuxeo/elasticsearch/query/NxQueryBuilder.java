@@ -16,17 +16,6 @@
  */
 package org.nuxeo.elasticsearch.query;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
-
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.AndFilterBuilder;
@@ -53,6 +42,17 @@ import org.nuxeo.elasticsearch.fetcher.EsFetcher;
 import org.nuxeo.elasticsearch.fetcher.Fetcher;
 import org.nuxeo.elasticsearch.fetcher.VcsFetcher;
 import org.nuxeo.runtime.api.Framework;
+
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.UNSUPPORTED_ACL;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.ACL_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.FETCH_DOC_FROM_ES_PROPERTY;
 
 /**
  * Elasticsearch query buidler for the Nuxeo ES api.
@@ -85,7 +85,7 @@ public class NxQueryBuilder {
 
     private boolean searchOnAllRepo = false;
 
-    private String[] selectFields = { ElasticSearchConstants.ID_FIELD };
+    private String[] selectFields = {ElasticSearchConstants.ID_FIELD};
 
     private Map<String, Type> selectFieldsAndTypes;
 
@@ -223,7 +223,7 @@ public class NxQueryBuilder {
     public QueryBuilder makeQuery() {
         if (esQueryBuilder == null) {
             if (nxql != null) {
-                esQueryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql);
+                esQueryBuilder = NxqlQueryConverter.toESQueryBuilder(nxql, session);
                 // handle the built-in order by clause
                 if (nxql.toLowerCase().contains("order by")) {
                     List<SortInfo> builtInSortInfos = NxqlQueryConverter.getSortInfo(nxql);
@@ -352,6 +352,7 @@ public class NxQueryBuilder {
         return QueryBuilders.filteredQuery(query, aclFilter);
     }
 
+
     /**
      * Add a specific repository to search. Default search is done on the session repository only.
      *
@@ -379,7 +380,7 @@ public class NxQueryBuilder {
      */
     public List<String> getSearchRepositories() {
         if (searchOnAllRepo) {
-            return Collections.<String> emptyList();
+            return Collections.<String>emptyList();
         }
         return repositories;
     }

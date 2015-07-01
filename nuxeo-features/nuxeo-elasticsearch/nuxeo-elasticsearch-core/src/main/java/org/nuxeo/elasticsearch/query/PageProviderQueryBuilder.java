@@ -55,7 +55,6 @@ public class PageProviderQueryBuilder {
         if (useNativeQuery) {
             return QueryBuilders.queryStringQuery(query);
         } else {
-
             return NxqlQueryConverter.toESQueryBuilder(query);
         }
     }
