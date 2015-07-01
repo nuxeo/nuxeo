@@ -350,7 +350,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         log.info("Drop and init index of repository: " + repositoryName);
         indexInitDone = false;
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
-            if (conf.getRepositoryName().equals(repositoryName)) {
+            if (DOC_TYPE.equals(conf.getType()) && repositoryName.equals(conf.getRepositoryName())) {
                 initIndex(conf, true);
             }
         }
@@ -397,7 +397,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             }
             getClient().admin().indices().preparePutMapping(conf.getName()).setType(conf.getType()).setSource(
                     conf.getMapping()).execute().actionGet();
-            if (!dropIfExists) {
+            if (!dropIfExists && conf.getRepositoryName() != null) {
                 repositoryInitialized.add(conf.getRepositoryName());
             }
         }
