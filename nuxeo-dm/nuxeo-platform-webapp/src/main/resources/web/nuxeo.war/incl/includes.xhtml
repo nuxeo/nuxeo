@@ -19,12 +19,6 @@
   Seam.Remoting.resourcePath = '#{contextPath}/seam/resource/remoting';
 </h:outputScript>
 
-<!-- FIXME: tiny mce scripts inclusion is not ok when using theme resources -->
-<script type="text/javascript" src="tinymce/tinymce.js">
-</script>
-<script type="text/javascript" src="tinymce/tinymce_init.js">
-</script>
-
 <ui:include src="/incl/dnd/dnd-common.xhtml" />
 
 <c:if test="#{useHtml5DragAndDrop}">
