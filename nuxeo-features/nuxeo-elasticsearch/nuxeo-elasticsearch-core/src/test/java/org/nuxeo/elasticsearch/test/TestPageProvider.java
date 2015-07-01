@@ -27,6 +27,10 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import org.apache.commons.lang.SystemUtils;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.Assert;
 import org.junit.Test;
@@ -78,6 +82,7 @@ public class TestPageProvider {
     ElasticSearchService ess;
 
     private int commandProcessed;
+    private Priority consoleThresold;
 
     // Number of processed command since the startTransaction
     public void assertNumberOfCommandProcessed(int processed) throws Exception {
@@ -102,6 +107,22 @@ public class TestPageProvider {
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
+    protected void hideWarningFromConsoleLog() {
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleThresold = consoleAppender.getThreshold();
+        consoleAppender.setThreshold(Level.ERROR);
+    }
+
+    protected void restoreConsoleLog() {
+        if (consoleThresold == null) {
+            return;
+        }
+        Logger rootLogger = Logger.getRootLogger();
+        ConsoleAppender consoleAppender = (ConsoleAppender) rootLogger.getAppender("CONSOLE");
+        consoleAppender.setThreshold(consoleThresold);
+        consoleThresold = null;
+    }
     @Test
     public void ICanUseANativePageProvider() throws Exception {
         PageProviderService pps = Framework.getService(PageProviderService.class);
@@ -291,7 +312,9 @@ public class TestPageProvider {
         props.put(ElasticSearchNativePageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<?> pp = pps.getPageProvider("INVALID_PP", ppdef, null, null, (long) 0, (long) 0, props);
         assertNotNull(pp);
+        hideWarningFromConsoleLog();
         List<?> p = pp.getCurrentPage();
+        restoreConsoleLog();
         assertNotNull(p);
         assertEquals(0, p.size());
         assertEquals(
