@@ -138,6 +138,7 @@ public class Page {
         return appendResources;
     }
 
+    // FIXME: wro does not serve single resources -> need to use bundles instead
     public List<String> getResources() {
         List<String> res = new ArrayList<String>();
         // BBB
