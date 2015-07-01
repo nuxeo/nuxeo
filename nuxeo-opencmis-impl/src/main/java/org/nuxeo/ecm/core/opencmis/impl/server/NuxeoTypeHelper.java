@@ -244,6 +244,8 @@ public class NuxeoTypeHelper {
             Cardinality cardinality;
             Type fieldType = field.getType();
             String schemaName = schema.getName();
+            boolean queryable;
+            boolean orderable;
             if (fieldType.isComplexType()) {
                 if (isComplexPropertiesEnabled()) {
                     // content is specifically excluded from the properties
@@ -256,6 +258,8 @@ public class NuxeoTypeHelper {
                     // the NuxeoPropertyData class will marshal/unmarshal them as JSON.
                     cardinality = Cardinality.SINGLE;
                     propertyType = PropertyType.STRING;
+                    queryable = false;
+                    orderable = false;
                 } else {
                     log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + " in type: " + t.getId());
                     continue;
@@ -269,6 +273,8 @@ public class NuxeoTypeHelper {
                             // the NuxeoPropertyData class will marshal/unmarshal them as JSON.
                             cardinality = Cardinality.MULTI;
                             propertyType = PropertyType.STRING;
+                            queryable = false;
+                            orderable = false;
                         } else {
                             log.debug("Ignoring complex type: " + schemaName + '/' + field.getName() + "in type: "
                                     + t.getId());
@@ -278,16 +284,20 @@ public class NuxeoTypeHelper {
                         // array: use a collection table
                         cardinality = Cardinality.MULTI;
                         propertyType = getPropertType((SimpleType) listFieldType);
+                        queryable = false;
+                        orderable = false;
                     }
                 } else {
                     // primitive type
                     cardinality = Cardinality.SINGLE;
                     propertyType = getPropertType((SimpleType) fieldType);
+                    queryable = true;
+                    orderable = true;
                 }
             }
             String name = field.getName().getPrefixedName();
             PropertyDefinition<?> pd = newPropertyDefinition(name, name, propertyType, cardinality,
-                    Updatability.READWRITE, false, false, true, true);
+                    Updatability.READWRITE, false, false, queryable, orderable);
             if (t.getPropertyDefinitions().containsKey(pd.getId())) {
                 log.error("Type '" + t.getId() + "' has duplicate property '" + name + "' in schemas '"
                         + propertyToSchema.get(pd.getId()) + "' and '" + schemaName + "', ignoring the one in '"

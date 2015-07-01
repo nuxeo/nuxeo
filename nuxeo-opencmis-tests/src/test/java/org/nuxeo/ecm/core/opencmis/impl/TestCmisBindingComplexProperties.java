@@ -30,6 +30,7 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import org.apache.chemistry.opencmis.commons.data.ObjectData;
+import org.apache.chemistry.opencmis.commons.data.ObjectList;
 import org.apache.chemistry.opencmis.commons.data.Properties;
 import org.apache.chemistry.opencmis.commons.data.PropertyData;
 import org.apache.chemistry.opencmis.commons.data.PropertyString;
@@ -80,6 +81,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     @After
     public void tearDown() {
+        Framework.getProperties().remove(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES);
         tearDownBinding();
     }
 
@@ -128,6 +130,48 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void testQueryComplexListProperty() throws Exception {
+        // Enable complex properties
+        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
+
+        // Create a complex property to encode
+        List<Map<String, Object>> propList = createComplexPropertyList(3);
+
+        // Set the property value on a document
+        CoreSession session = coreSession;
+        DocumentModel doc = session.createDocumentModel("/", null, "ComplexFile");
+        doc.setPropertyValue("complexTest:listItem", (Serializable) propList);
+        doc = session.createDocument(doc);
+        session.save();
+        doc.refresh();
+        assertTrue(session.exists(new IdRef(doc.getId())));
+
+        // explicit select
+        String statement = "SELECT complexTest:listItem FROM ComplexFile";
+        ObjectList res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        PropertyData<String> data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:listItem");
+        assertNotNull(data);
+        // Verify the JSON produced is valid and matches the original objects
+        List<String> values = data.getValues();
+        for (int i = 0; i < values.size(); i++) {
+            String jsonStr = values.get(i);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode jsonNode = mapper.readTree(jsonStr);
+            Map<String, Object> propMap = (Map<String, Object>) propList.get(i);
+            assertComplexPropertyNodeEquals(propMap, jsonNode, DateTimeFormat.W3C);
+        }
+
+        // star select, doesn't return lists
+        statement = "SELECT * FROM ComplexFile";
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:listItem");
+        assertNull(data);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void testSetComplexListProperty() throws Exception {
         // Enable complex properties
         Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
@@ -157,7 +201,7 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         doc.refresh();
         List<Object> list = (List<Object>) doc.getPropertyValue("complexTest:listItem");
         assertEquals("Wrong number of elements in list", nodeList.size(), list.size());
-        for (int i = 1; i < list.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
             JsonNode orig = nodeList.get(i);
             Map<String, Object> obj = (Map<String, Object>) list.get(i);
             assertComplexPropertyNodeEquals(obj, orig, DateTimeFormat.TIME_IN_MILLIS);
@@ -196,6 +240,47 @@ public class TestCmisBindingComplexProperties extends TestCmisBindingBase {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(jsonStr);
         assertComplexPropertyNodeEquals(propMap, jsonNode, DateTimeFormat.W3C);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testQueryComplexProperty() throws Exception {
+        // Enable complex properties
+        Framework.getProperties().setProperty(NuxeoTypeHelper.ENABLE_COMPLEX_PROPERTIES, "true");
+
+        // Create a complex property to encode
+        List<Map<String, Object>> list = createComplexPropertyList(1);
+        Map<String, Object> propMap = list.get(0);
+
+        // Set the property value on a document
+        CoreSession session = coreSession;
+        DocumentModel doc = session.createDocumentModel("/", null, "ComplexFile");
+        doc.setPropertyValue("complexTest:complexItem", (Serializable) propMap);
+        Blob blob = Blobs.createBlob("Test content");
+        blob.setFilename("test.txt");
+        doc.setProperty("file", "content", blob);
+        doc = session.createDocument(doc);
+        session.save();
+        doc.refresh();
+        assertTrue(session.exists(new IdRef(doc.getId())));
+
+        // explicit select
+        String statement = "SELECT complexTest:complexItem FROM ComplexFile";
+        ObjectList res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        // Verify the JSON produced is valid and matches the original objects
+        PropertyData<String> data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:complexItem");
+        String jsonStr = data.getFirstValue();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonStr);
+        assertComplexPropertyNodeEquals(propMap, jsonNode, DateTimeFormat.W3C);
+
+        // star select, doesn't return strings from complex props
+        statement = "SELECT * FROM ComplexFile";
+        res = discService.query(repositoryId, statement, Boolean.TRUE, null, null, null, null, null, null);
+        assertEquals(1, res.getNumItems().intValue());
+        data = (PropertyData<String>) res.getObjects().get(0).getProperties().getProperties().get("complexTest:complexItem");
+        assertNull(data);
     }
 
     @SuppressWarnings("unchecked")

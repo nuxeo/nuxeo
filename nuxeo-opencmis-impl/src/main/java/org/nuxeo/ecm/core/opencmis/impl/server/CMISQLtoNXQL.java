@@ -356,7 +356,9 @@ public class CMISQLtoNXQL {
             String key = col.getPropertyQueryName();
             PropertyDefinition<?> pd = col.getPropertyDefinition();
             String nxqlCol = getColumn(col);
-            if (nxqlCol != null && pd.getCardinality() == Cardinality.SINGLE) {
+            String id = pd.getId();
+            if (nxqlCol != null && pd.getCardinality() == Cardinality.SINGLE && (Boolean.TRUE.equals(pd.isQueryable())
+                    || id.equals(PropertyIds.BASE_TYPE_ID) || id.equals(PropertyIds.OBJECT_TYPE_ID))) {
                 col.setInfo(nxqlCol);
                 realColumns.put(key, nxqlCol);
             } else {
