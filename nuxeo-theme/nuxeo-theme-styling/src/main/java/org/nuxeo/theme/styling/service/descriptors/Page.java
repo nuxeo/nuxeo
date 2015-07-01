@@ -22,6 +22,7 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.theme.services.ThemeService;
 
 /**
@@ -138,7 +139,24 @@ public class Page {
     }
 
     public List<String> getResources() {
-        return resources;
+        List<String> res = new ArrayList<String>();
+        // BBB
+        if (styles != null) {
+            for (String style : styles) {
+                if (style == null) {
+                    continue;
+                }
+                if (style.endsWith(ResourceType.css.name())) {
+                    res.add(style);
+                } else {
+                    res.add(style + "." + ResourceType.css.name());
+                }
+            }
+        }
+        if (resources != null) {
+            res.addAll(resources);
+        }
+        return res;
     }
 
     public void setResources(List<String> resources) {
