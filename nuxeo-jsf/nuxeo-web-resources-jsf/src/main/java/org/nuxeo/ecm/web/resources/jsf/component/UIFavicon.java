@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Component rendering a favicon link.
  *
- * @since 7.3
+ * @since 7.4
  */
 public class UIFavicon extends UIComponentBase {
 

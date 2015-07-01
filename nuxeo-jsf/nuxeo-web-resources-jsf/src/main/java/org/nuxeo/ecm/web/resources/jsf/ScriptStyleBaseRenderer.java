@@ -62,7 +62,7 @@ import com.sun.faces.util.FacesLogger;
 /**
  * Override of the default JSF class to override #encodeChildren
  *
- * @since 7.3
+ * @since 7.4
  */
 @ListenerFor(systemEventClass = PostAddToViewEvent.class)
 public abstract class ScriptStyleBaseRenderer extends Renderer implements ComponentSystemEventListener {
