@@ -493,7 +493,8 @@ public final class FaceletHandlerHelper {
     /**
      * Returns an html component handler for this configuration.
      * <p>
-     * Next handler cannot be null, use {@link LeafFaceletHandler} if no next handler is needed.
+     * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
+     * handler is needed.
      */
     public ComponentHandler getHtmlComponentHandler(String tagConfigId, TagAttributes attributes,
             FaceletHandler nextHandler, String componentType, String rendererType) {
@@ -514,7 +515,7 @@ public final class FaceletHandlerHelper {
      * Component handler that displays an error on interface
      */
     public ComponentHandler getErrorComponentHandler(String tagConfigId, String errorMessage) {
-        FaceletHandler leaf = new LeafFaceletHandler();
+        FaceletHandler leaf = new org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler();
         TagAttribute valueAttr = createAttribute("value", "<span style=\"color:red;font-weight:bold;\">ERROR: "
                 + errorMessage + "</span><br />");
         TagAttribute escapeAttr = createAttribute("escape", "false");
@@ -536,7 +537,8 @@ public final class FaceletHandlerHelper {
     /**
      * Returns a convert handler for this configuration.
      * <p>
-     * Next handler cannot be null, use {@link LeafFaceletHandler} if no next handler is needed.
+     * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
+     * handler is needed.
      */
     public ConverterHandler getConvertHandler(String tagConfigId, TagAttributes attributes, FaceletHandler nextHandler,
             String converterId) {
@@ -558,7 +560,8 @@ public final class FaceletHandlerHelper {
     /**
      * Returns a validate handler for this configuration.
      * <p>
-     * Next handler cannot be null, use {@link LeafFaceletHandler} if no next handler is needed.
+     * Next handler cannot be null, use {@link org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler} if no next
+     * handler is needed.
      */
     public ValidatorHandler getValidateHandler(String tagConfigId, TagAttributes attributes,
             FaceletHandler nextHandler, String validatorId) {
@@ -591,7 +594,7 @@ public final class FaceletHandlerHelper {
         TagAttribute styleAttr = createAttribute("styleClass", styleClass);
         TagAttributes attributes = getTagAttributes(forAttr, idAttr, styleAttr);
         ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, tagConfigId, attributes,
-                new LeafFaceletHandler(), HtmlMessage.COMPONENT_TYPE, null);
+                new org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler(), HtmlMessage.COMPONENT_TYPE, null);
         return new ComponentHandler(config);
     }
 

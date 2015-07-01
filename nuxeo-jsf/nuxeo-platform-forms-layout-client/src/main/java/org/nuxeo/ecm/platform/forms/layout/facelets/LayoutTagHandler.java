@@ -449,7 +449,7 @@ public class LayoutTagHandler extends TagHandler {
                 String.format("#{%s}", RenderVariables.layoutVariables.layout.name()));
         TagAttributes devWidgetAttributes = FaceletHandlerHelper.getTagAttributes(attr);
         TagConfig devWidgetConfig = TagConfigFactory.createTagConfig(config, layout.getTagConfigId(),
-                devWidgetAttributes, new LeafFaceletHandler());
+                devWidgetAttributes, new org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler());
         return new LayoutDevTagHandler(devWidgetConfig);
     }
 }
