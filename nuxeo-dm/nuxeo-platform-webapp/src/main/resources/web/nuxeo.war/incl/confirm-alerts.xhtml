@@ -1,8 +1,6 @@
-<ui:composition
+<h:outputScript target="head"
   xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
-
-<script type="text/javascript">
+  xmlns:h="http://java.sun.com/jsf/html">
   function confirmDeleteDocuments() {
     return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
   }
@@ -22,6 +20,4 @@
     var message = "#{messages['label.documents.confirmRemoveFiles']} '" + file + "'#{messages['label.documents.confirmRemoveFilesEnd']}";
     return confirm(message);
   }
-</script>
-
-</ui:composition>
+</h:outputScript>
