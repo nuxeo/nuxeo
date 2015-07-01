@@ -113,6 +113,13 @@
     <resource name="jsf.js" type="jsfjs">
       <uri>javax.faces/jsf.js</uri>
     </resource>
+    <resource name="fixjsfviewstate.js" type="jsfjs">
+      <uri>js/fixviewstate.js</uri>
+    </resource>
+    <resource name="fixmultipartajax.js">
+      <uri>/scripts/fixmultipartajax.js</uri>
+      <require>jsf.js</require>
+    </resource>
     <resource name="jquery.js" type="jsfjs">
       <uri>org.richfaces/jquery.js</uri>
     </resource>
@@ -262,9 +269,6 @@
     <resource name="nuxeo-documents-import.js">
       <uri>/scripts/nuxeo-documents-import.js</uri>
     </resource>
-    <resource name="fixmultipartajax.js">
-      <uri>/scripts/fixmultipartajax.js</uri>
-    </resource>
     <resource name="nuxeo.js">
       <uri>/bower_components/nuxeo/lib/jquery/nuxeo.js</uri>
     </resource>
@@ -398,6 +402,7 @@
     <resourceBundle name="nuxeo_includes">
       <resources>
         <resource>jsf.js</resource>
+        <resource>fixjsfviewstate.js</resource>
         <resource>jquery.js</resource>
         <resource>richfaces.js</resource>
         <resource>richfaces-queue.js</resource>
