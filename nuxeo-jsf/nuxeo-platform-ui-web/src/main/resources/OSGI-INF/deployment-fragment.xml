@@ -327,19 +327,6 @@
       <param-value>${nuxeo.jsf.maxRequestSize:=0}</param-value>
     </context-param>
 
-    <!-- use the JS Minimizer built into RichFaces -->
-    <!-- disabled, to migrate to JSF2 -->
-    <!--
-      <context-param>
-      <param-name>
-      org.nuxeo.ecm.platform.web.common.resources.JSMinimizer
-      </param-name>
-      <param-value>
-      org.nuxeo.ecm.platform.ui.web.richfaces.RichFacesJSMinimizer
-      </param-value>
-      </context-param>
-    -->
-
     <!-- use NEKO instead of default tidy parser, see NXP-11272 -->
     <context-param>
       <param-name>org.ajax4jsf.xmlparser.ORDER</param-name>
