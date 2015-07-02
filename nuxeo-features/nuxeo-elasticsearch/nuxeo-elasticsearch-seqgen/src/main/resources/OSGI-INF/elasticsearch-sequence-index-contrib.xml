@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
 
-    <elasticSearchIndex name="sequence" type="seqId">
+    <elasticSearchIndex name="uidgen" type="seqId">
 
       <settings>
         {
