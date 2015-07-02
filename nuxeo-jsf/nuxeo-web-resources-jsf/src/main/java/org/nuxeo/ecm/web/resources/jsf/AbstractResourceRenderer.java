@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.web.resources.jsf;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -34,7 +35,6 @@ import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.config.WebConfiguration;
 import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
-import com.sun.faces.renderkit.html_basic.ScriptStyleBaseRenderer;
 
 /**
  * Base class for web resources resolution, factoring out helper methods for resources retrieval.
@@ -48,6 +48,24 @@ public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
     public static final String COMPONENTS_PATH = "/bower_components/";
 
     protected static final Param[] EMPTY_PARAMS = new Param[0];
+
+    /**
+     * Resolve url either from src, looking up resource in the war, either from JSF resources, given a name (and
+     * optional library).
+     */
+    protected String resolveUrl(FacesContext context, UIComponent component) throws IOException {
+        Map<String, Object> attributes = component.getAttributes();
+        String src = (String) attributes.get("src");
+        String url;
+        if (src != null) {
+            url = resolveResourceFromSource(context, component, src);
+        } else {
+            String name = (String) attributes.get("name");
+            String library = (String) attributes.get("library");
+            url = resolveResourceUrl(context, component, library, name);
+        }
+        return url;
+    }
 
     protected String resolveResourceFromSource(FacesContext context, UIComponent component, String src)
             throws UnsupportedEncodingException {

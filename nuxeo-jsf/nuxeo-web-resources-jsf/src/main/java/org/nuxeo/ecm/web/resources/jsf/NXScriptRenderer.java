@@ -23,11 +23,22 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 /**
- * Renderer for HTML imports.
+ * Overrides JSF script renderer to allow specifying resources from the war using "src" attribute.
  *
- * @since 6.0
+ * @since 7.4
  */
-public class HTMLImportRenderer extends AbstractResourceRenderer {
+public class NXScriptRenderer extends AbstractResourceRenderer {
+
+    @Override
+    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
+        writer.startElement("script", component);
+        writer.writeAttribute("type", "text/javascript", "type");
+    }
+
+    @Override
+    protected void endElement(ResponseWriter writer) throws IOException {
+        writer.endElement("script");
+    }
 
     @Override
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
@@ -35,20 +46,15 @@ public class HTMLImportRenderer extends AbstractResourceRenderer {
         if (url != null) {
             ResponseWriter writer = context.getResponseWriter();
             startElement(writer, component);
-            writer.writeURIAttribute("href", url, "href");
+            writer.writeURIAttribute("src", url, "src");
             endElement(writer);
         }
+        super.encodeEnd(context, component);
     }
 
     @Override
-    protected void startElement(ResponseWriter writer, UIComponent component) throws IOException {
-        writer.startElement("link", component);
-        writer.writeAttribute("rel", "import", "rel");
-    }
-
-    @Override
-    protected void endElement(ResponseWriter writer) throws IOException {
-        writer.endElement("link");
+    public void encodeChildren(FacesContext context, UIComponent component) throws IOException {
+        encodeChildren(context, component, true);
     }
 
 }

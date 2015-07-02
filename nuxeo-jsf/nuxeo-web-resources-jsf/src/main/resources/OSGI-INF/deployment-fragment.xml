@@ -66,6 +66,28 @@
       </renderer-class>
     </renderer>
 
+    <!-- override default renderer -->
+    <renderer>
+      <component-family>javax.faces.Output</component-family>
+      <renderer-type>
+        javax.faces.resource.Script
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.web.resources.jsf.NXScriptRenderer
+      </renderer-class>
+    </renderer>
+
+    <!-- override default renderer -->
+    <renderer>
+      <component-family>javax.faces.Output</component-family>
+      <renderer-type>
+        javax.faces.resource.Stylesheet
+      </renderer-type>
+      <renderer-class>
+        org.nuxeo.ecm.web.resources.jsf.NXStylesheetRenderer
+      </renderer-class>
+    </renderer>
+
   </extension>
 
 </fragment>
