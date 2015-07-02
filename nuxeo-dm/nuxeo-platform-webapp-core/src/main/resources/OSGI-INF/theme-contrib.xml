@@ -316,6 +316,10 @@
       <uri>/widgets/dev/layout_dev_init.xhtml</uri>
       <require>jquery.js</require>
     </resource>
+    <resource name="seam_remoting.xhtml" type="xhtml">
+      <uri>/incl/seam_remoting.xhtml</uri>
+      <require>seam-remote.js</require>
+    </resource>
     <!-- end of "static" resources declaration -->
 
     <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
@@ -492,6 +496,7 @@
         <resource>konami.xhtml</resource>
         <resource>doubleClick_shield.xhtml</resource>
         <resource>layout_dev_init.xhtml</resource>
+        <resource>seam_remoting.xhtml</resource>
       </resources>
     </resourceBundle>
 
