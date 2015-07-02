@@ -111,32 +111,32 @@
 
     <!-- JSF resources -->
     <resource name="jsf.js" type="jsfjs">
-      <uri>javax.faces/jsf.js</uri>
+      <uri>javax.faces:jsf.js</uri>
     </resource>
     <resource name="fixjsfviewstate.js" type="jsfjs">
-      <uri>js/fixviewstate.js</uri>
+      <uri>js:fixviewstate.js</uri>
     </resource>
     <resource name="fixmultipartajax.js">
       <uri>/scripts/fixmultipartajax.js</uri>
       <require>jsf.js</require>
     </resource>
     <resource name="jquery.js" type="jsfjs">
-      <uri>org.richfaces/jquery.js</uri>
+      <uri>org.richfaces:jquery.js</uri>
     </resource>
     <resource name="richfaces.js" type="jsfjs">
-      <uri>org.richfaces/richfaces.js</uri>
+      <uri>org.richfaces:richfaces.js</uri>
       <require>jsf.js</require>
     </resource>
     <resource name="richfaces-queue.js" type="jsfjs">
-      <uri>org.richfaces/richfaces-queue.js</uri>
+      <uri>org.richfaces:richfaces-queue.js</uri>
       <require>richfaces.js</require>
     </resource>
     <resource name="widget-utils.js" type="jsfjs">
-      <uri>org.nuxeo/widget-utils.js</uri>
+      <uri>org.nuxeo:widget-utils.js</uri>
       <require>richfaces-queue.js</require>
     </resource>
     <resource name="select2.js" type="jsfjs">
-      <uri>org.nuxeo.select2/select2.js</uri>
+      <uri>org.nuxeo.select2:select2.js</uri>
       <require>widget-utils.js</require>
     </resource>
 

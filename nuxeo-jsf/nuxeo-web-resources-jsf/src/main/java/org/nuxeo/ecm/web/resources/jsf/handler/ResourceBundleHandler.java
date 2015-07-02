@@ -66,15 +66,15 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         if (jsfjsr != null && !jsfjsr.isEmpty()) {
             String rendererType = "javax.faces.resource.Script";
             for (Resource resource : jsfjsr) {
-                ComponentConfig config = getJSFResourceComponentConfig(resource.getURI(), rendererType, leaf);
+                ComponentConfig config = getJSFResourceComponentConfig(resource, rendererType, leaf);
                 new ScriptResourceHandler(config).apply(ctx, parent);
             }
         }
-        List<Resource> jsfcssr = wrm.getResources(new ResourceContextImpl(), bundleName, ResourceType.jsfjs.name());
+        List<Resource> jsfcssr = wrm.getResources(new ResourceContextImpl(), bundleName, ResourceType.jsfcss.name());
         if (jsfcssr != null && !jsfcssr.isEmpty()) {
             String rendererType = "javax.faces.resource.Stylesheet";
             for (Resource resource : jsfcssr) {
-                ComponentConfig config = getJSFResourceComponentConfig(resource.getURI(), rendererType, leaf);
+                ComponentConfig config = getJSFResourceComponentConfig(resource, rendererType, leaf);
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
         }
@@ -93,13 +93,25 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         }
     }
 
-    protected ComponentConfig getJSFResourceComponentConfig(String resourceName, String rendererType,
+    protected ComponentConfig getJSFResourceComponentConfig(Resource resource, String rendererType,
             FaceletHandler nextHandler) {
         ComponentConfig tagConfig = getComponentConfig();
         String componentType = UIOutput.COMPONENT_TYPE;
+        String uri = resource.getURI();
+        String resourceName;
+        String resourceLib;
+        int i = uri != null ? uri.indexOf(":") : -1;
+        if (i > 0) {
+            resourceLib = uri.substring(0, i);
+            resourceName = uri.substring(i + 1);
+        } else {
+            resourceLib = null;
+            resourceName = uri;
+        }
         TagAttributeImpl nameAttr = getTagAttribute("name", resourceName);
+        TagAttributeImpl libAttr = getTagAttribute("library", resourceLib);
         TagAttributeImpl targetAttr = getTagAttribute("target", "head");
-        TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { nameAttr, targetAttr });
+        TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { nameAttr, libAttr, targetAttr });
         ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, tagConfig.getTagId(), attributes,
                 nextHandler, componentType, rendererType);
         return config;
