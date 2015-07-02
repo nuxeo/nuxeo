@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 
 /**
@@ -30,7 +31,15 @@ import org.nuxeo.ecm.diff.content.ContentDiffException;
  * @since 5.6
  */
 public interface MimeTypeContentDiffer {
+	
+	public enum TYPE_OF_PARAMETERS {
+        BLOB, DOCUMENT, ANY
+    };
+
+    TYPE_OF_PARAMETERS getTypeOfParameters();
 
     List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException;
+    
+    List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale) throws ContentDiffException;
 
 }

@@ -24,46 +24,63 @@ import java.util.Locale;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 
 /**
- * Dummy content differ.
+ * ImageMagickContentDiffer
  * <p>
- * TODO Use ImageMagick to perform a real diff!
  *
  * @since 7.4
  */
 public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
 
-    protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
+	public MimeTypeContentDiffer.TYPE_OF_PARAMETERS getTypeOfParameters() {
+		return TYPE_OF_PARAMETERS.DOCUMENT;
+	}
 
-    @Override
-    public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
+	@Override
+	public List<Blob> getContentDiff(DocumentModel leftDoc,
+			DocumentModel rightDoc, String xpath, Locale locale)
+			throws ContentDiffException {
 
-        try {
-            List<Blob> blobResults = new ArrayList<Blob>();
-            StringWriter sw = new StringWriter();
+		try {
+			String leftDocId = leftDoc.getId();
+			String rightDocId = rightDoc.getId();
+			String url = VirtualHostHelper.getContextPathProperty();
 
-            sw.write("<html>");
-            sw.write("<body>");
-            sw.write("<div>Hello, this is a <b>killer feature</b>!</div>");
-            sw.write("</body>");
-            sw.write("</html>");
+			url += "/diffPictures?action=diff&leftDocId=" + leftDocId
+					+ "&rightDocId=" + rightDocId + "&xpath=" + xpath;
 
-            String stringBlob = sw.toString().replaceAll(NUXEO_DEFAULT_CONTEXT_PATH,
-                    VirtualHostHelper.getContextPathProperty());
-            Blob mainBlob = Blobs.createBlob(stringBlob);
-            sw.close();
+			List<Blob> blobResults = new ArrayList<Blob>();
+			StringWriter sw = new StringWriter();
 
-            mainBlob.setFilename("contentDiff.html");
-            mainBlob.setMimeType("text/html");
+			sw.write("<html>");
+			sw.write("<body>");
+			sw.write("<div><img src='" + url + "'></img></div>");
+			sw.write("</body>");
+			sw.write("</html>");
 
-            blobResults.add(mainBlob);
-            return blobResults;
+			String stringBlob = sw.toString();
+			Blob mainBlob = Blobs.createBlob(stringBlob);
+			sw.close();
 
-        } catch (Exception e) {
-            throw new ContentDiffException(e);
-        }
-    }
+			mainBlob.setFilename("contentDiff.html");
+			mainBlob.setMimeType("text/html");
+
+			blobResults.add(mainBlob);
+			return blobResults;
+		} catch (Exception e) {
+			throw new ContentDiffException(e);
+		}
+	}
+
+	@Override
+	public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
+			Locale locale) throws ContentDiffException {
+
+		throw new ContentDiffException(
+				"ImageMagickContentDiffer can handle only DocumentModel");
+	}
 }

@@ -58,6 +58,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
 
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
 
+    @Override
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
 
         try {

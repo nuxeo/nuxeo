@@ -145,10 +145,12 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         return blobResults;
     }
 
+    @Override
     public void cleanup() {
         // Nothing to do here
     }
 
+    @Override
     public boolean cachable() {
         return true;
     }
@@ -222,8 +224,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
      * @return the converted blob holder
      * @throws ConversionException if an error occurs while converting the blob holder
      */
-    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName)
-            throws ConversionException {
+    protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName) throws ConversionException {
 
         if (converterName == null) {
             log.debug(String.format("No converter parameter, using generic one: '%s'.", DEFAULT_CONVERTER_NAME));
@@ -246,8 +247,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         }
     }
 
-    protected void addSecondaryBlobs(List<Blob> blobResults, BlobHolder blobHolder, String mainBlobFilename)
-            {
+    protected void addSecondaryBlobs(List<Blob> blobResults, BlobHolder blobHolder, String mainBlobFilename) {
 
         for (Blob blob : blobHolder.getBlobs()) {
             String blobFilename = blob.getFilename();
