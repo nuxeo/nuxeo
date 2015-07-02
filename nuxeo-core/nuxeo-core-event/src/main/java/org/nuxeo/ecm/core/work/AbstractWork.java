@@ -283,11 +283,9 @@ public abstract class AbstractWork implements Work {
         }
         // all retries have been done, throw the exception
         if (suppressed != null) {
-            if (suppressed instanceof RuntimeException) {
-                throw (RuntimeException) suppressed;
-            } else {
-                throw new RuntimeException(suppressed);
-            }
+            String msg = "Work failed after " + retryCount + " " + (retryCount == 1 ? "retry" : "retries") + ", class="
+                    + getClass() + " id=" + getId() + " category=" + getCategory() + " title=" + getTitle();
+            throw new RuntimeException(msg, suppressed);
         }
     }
 
