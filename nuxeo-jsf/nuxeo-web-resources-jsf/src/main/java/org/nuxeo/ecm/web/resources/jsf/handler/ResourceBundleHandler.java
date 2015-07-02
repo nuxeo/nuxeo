@@ -51,14 +51,21 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
 
     protected final TagAttribute name;
 
+    protected final TagAttribute target;
+
     public ResourceBundleHandler(ComponentConfig config) {
         super(config);
         this.name = getRequiredAttribute("name");
+        this.target = getAttribute("target");
     }
 
     @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         String bundleName = name.getValue(ctx);
+        String targetValue = null;
+        if (target != null) {
+            targetValue = target.getValue(ctx);
+        }
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
         LeafFaceletHandler leaf = new LeafFaceletHandler();
         // first include handlers that match JSF resources
@@ -66,7 +73,7 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         if (jsfjsr != null && !jsfjsr.isEmpty()) {
             String rendererType = "javax.faces.resource.Script";
             for (Resource resource : jsfjsr) {
-                ComponentConfig config = getJSFResourceComponentConfig(resource, rendererType, leaf);
+                ComponentConfig config = getJSFResourceComponentConfig(resource, rendererType, targetValue, leaf);
                 new ScriptResourceHandler(config).apply(ctx, parent);
             }
         }
@@ -74,7 +81,7 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         if (jsfcssr != null && !jsfcssr.isEmpty()) {
             String rendererType = "javax.faces.resource.Stylesheet";
             for (Resource resource : jsfcssr) {
-                ComponentConfig config = getJSFResourceComponentConfig(resource, rendererType, leaf);
+                ComponentConfig config = getJSFResourceComponentConfig(resource, rendererType, targetValue, leaf);
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
         }
@@ -93,7 +100,7 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         }
     }
 
-    protected ComponentConfig getJSFResourceComponentConfig(Resource resource, String rendererType,
+    protected ComponentConfig getJSFResourceComponentConfig(Resource resource, String rendererType, String target,
             FaceletHandler nextHandler) {
         ComponentConfig tagConfig = getComponentConfig();
         String componentType = UIOutput.COMPONENT_TYPE;
@@ -110,7 +117,7 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
         }
         TagAttributeImpl nameAttr = getTagAttribute("name", resourceName);
         TagAttributeImpl libAttr = getTagAttribute("library", resourceLib);
-        TagAttributeImpl targetAttr = getTagAttribute("target", "head");
+        TagAttributeImpl targetAttr = getTagAttribute("target", target);
         TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { nameAttr, libAttr, targetAttr });
         ComponentConfig config = TagConfigFactory.createComponentConfig(tagConfig, tagConfig.getTagId(), attributes,
                 nextHandler, componentType, rendererType);
