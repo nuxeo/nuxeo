@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.utils.BlobsExtractor;
 
 /**
  * {@link BlobHolder} implementation based on a {@link DocumentModel} and a XPath.
- *
+ * 
  * @author tiry
  */
 public class DocumentBlobHolder extends AbstractBlobHolder {
@@ -93,14 +93,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
                 return h;
             }
         }
-        if (doc == null) {
-            throw new NullPointerException("null doc");
-        }
-        Calendar modificationDate = getModificationDate();
-        if (modificationDate == null) {
-            throw new NullPointerException("null modificationDate");
-        }
-        return doc.getId() + xPath + modificationDate.toString();
+        return doc.getId() + xPath + getModificationDate().toString();
     }
 
     @Override
