@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.utils.BlobsExtractor;
 
 /**
  * {@link BlobHolder} implementation based on a {@link DocumentModel} and a XPath.
- * 
+ *
  * @author tiry
  */
 public class DocumentBlobHolder extends AbstractBlobHolder {
