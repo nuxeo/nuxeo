@@ -3,30 +3,11 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
+<ui:remove>
+  Template keeping resources that should be included in the body of all pages.
+  Resources that can go to the page head are now pluggable using runtime extension points.
+</ui:remove>
 
-<script type="text/javascript"
-  src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}">
-</script>
-<h:outputScript>
-  var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
-  var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
-  var currentDocumentPath = '#{nxu:javaScriptEscape(currentDocument.pathAsString)}';
-  var currentDocumentId = '#{currentDocument.id}';
-  // set the conversation id before doing any call
-  Seam.Remoting.getContext().setConversationId(currentConversationId);
-  Seam.Remoting.contextPath = '#{contextPath}';
-  var nxContextPath = '#{contextPath}';
-  Seam.Remoting.resourcePath = '#{contextPath}/seam/resource/remoting';
-</h:outputScript>
-
-<ui:include src="/incl/dnd/dnd-common.xhtml" />
-
-<c:if test="#{useHtml5DragAndDrop}">
-  <ui:include src="/incl/dnd/dnd.xhtml" />
-</c:if>
-
-<c:if test="#{!useHtml5DragAndDrop}">
-  <ui:include src="/incl/dnd/legacyDnd.xhtml" />
-</c:if>
+  <ui:include src="/incl/dnd_init.xhtml" />
 
 </ui:fragment>

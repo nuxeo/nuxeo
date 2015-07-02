@@ -1,0 +1,22 @@
+<ui:fragment xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+<script type="text/javascript"
+  src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}">
+</script>
+<h:outputScript>
+  var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
+  var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
+  var currentDocumentPath = '#{nxu:javaScriptEscape(currentDocument.pathAsString)}';
+  var currentDocumentId = '#{currentDocument.id}';
+  // set the conversation id before doing any call
+  Seam.Remoting.getContext().setConversationId(currentConversationId);
+  Seam.Remoting.contextPath = '#{contextPath}';
+  var nxContextPath = '#{contextPath}';
+  Seam.Remoting.resourcePath = '#{contextPath}/seam/resource/remoting';
+</h:outputScript>
+
+</ui:fragment>
