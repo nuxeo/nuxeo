@@ -22,8 +22,8 @@
     <filter-mapping>
       <filter-name>WroContextFilter</filter-name>
       <url-pattern>/wapi/v1/resource/bundle/*</url-pattern>
-      <!-- disable REQUEST to keep URL internal -->
       <dispatcher>FORWARD</dispatcher>
+      <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
 
     <filter>
@@ -33,7 +33,7 @@
     <filter-mapping>
       <filter-name>WroFilter</filter-name>
       <url-pattern>/wapi/v1/resource/bundle/*</url-pattern>
-      <!-- disable REQUEST to keep URL internal -->
+      <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
 
