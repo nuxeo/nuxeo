@@ -96,7 +96,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
                 return h;
             }
         }
-        return doc.getId() + xPath + getModificationDate().toString();
+        return doc.getId() + xPath + String.valueOf(getModificationDate());
     }
 
     @Override
