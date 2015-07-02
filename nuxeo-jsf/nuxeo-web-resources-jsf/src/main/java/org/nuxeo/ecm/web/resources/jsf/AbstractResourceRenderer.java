@@ -43,7 +43,7 @@ import com.sun.faces.renderkit.html_basic.HtmlBasicRenderer.Param;
  */
 public abstract class AbstractResourceRenderer extends ScriptStyleBaseRenderer {
 
-    public static final String ENDPOINT_PATH = "/site/api/v1/resource/bundle/";
+    public static final String ENDPOINT_PATH = "/wapi/v1/resource/bundle/";
 
     public static final String COMPONENTS_PATH = "/bower_components/";
 
