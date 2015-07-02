@@ -304,6 +304,10 @@
       <require>tinymce.js</require>
       <require>jquery.js</require>
     </resource>
+    <resource name="tinymce.xhtml" type="xhtml">
+      <uri>/incl/tinymce.xhtml</uri>
+      <require>tinymce_init.js</require>
+    </resource>
     <resource name="konami.xhtml" type="xhtml">
       <uri>/incl/konami.xhtml</uri>
       <require>jquery.js</require>
@@ -492,7 +496,7 @@
         <resource>tableSelections.js</resource>
         <resource>customSeamRemotingWaiter.js</resource>
         <resource>default-contextmenu-actions.js</resource>
-        <resource>tinymce_init.js</resource>
+        <resource>tinymce.xhtml</resource>
         <resource>konami.xhtml</resource>
         <resource>doubleClick_shield.xhtml</resource>
         <resource>layout_dev_init.xhtml</resource>
