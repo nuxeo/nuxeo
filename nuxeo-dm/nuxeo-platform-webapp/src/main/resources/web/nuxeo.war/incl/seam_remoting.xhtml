@@ -1,13 +1,9 @@
 <ui:fragment xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:c="http://java.sun.com/jstl/core">
+  xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<script type="text/javascript"
-  src="#{baseURL}seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}">
-</script>
-<h:outputScript>
+<h:outputScript src="/seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}" target="head" />
+<h:outputScript target="head">
   var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
   var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
   var currentDocumentPath = '#{nxu:javaScriptEscape(currentDocument.pathAsString)}';
