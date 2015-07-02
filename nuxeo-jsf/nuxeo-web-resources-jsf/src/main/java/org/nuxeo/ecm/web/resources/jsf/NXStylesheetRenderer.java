@@ -24,7 +24,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 /**
- * Overrides JSF script renderer to allow specifying resources from the war using "src" attribute.
+ * Overrides JSF stylesheet renderer to allow specifying resources from the war using "src" attribute.
  *
  * @since 7.4
  */
