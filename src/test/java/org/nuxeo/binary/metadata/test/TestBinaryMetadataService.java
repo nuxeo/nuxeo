@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.binary.metadata.api.BinaryMetadataService;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -126,10 +127,11 @@ public class TestBinaryMetadataService {
         assertEquals("Adobe Photoshop CS4 Macintosh", blobProperties.get("EXIF:Software").toString());
 
         // Write a new content
-        assertTrue(binaryMetadataService.writeMetadata(psdBlobHolder.getBlob(), inputPSDMetadata, false));
+        Blob blob = binaryMetadataService.writeMetadata(psdBlobHolder.getBlob(), inputPSDMetadata, false);
+        assertNotNull(blob);
 
         // Check the content
-        blobProperties = binaryMetadataService.readMetadata(psdBlobHolder.getBlob(), PSDMetadata, false);
+        blobProperties = binaryMetadataService.readMetadata(blob, PSDMetadata, false);
         assertNotNull(blobProperties);
         assertEquals(2, blobProperties.size());
         assertEquals(200, blobProperties.get("EXIF:ImageHeight"));

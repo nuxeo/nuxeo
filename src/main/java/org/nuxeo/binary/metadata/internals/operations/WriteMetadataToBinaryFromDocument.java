@@ -28,8 +28,10 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 
 /**
  * @since 7.1
@@ -38,6 +40,9 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 public class WriteMetadataToBinaryFromDocument {
 
     public static final String ID = "Blob.SetMetadataFromDocument";
+
+    @Context
+    protected CoreSession session;
 
     @Context
     protected BinaryMetadataService binaryMetadataService;
@@ -54,24 +59,25 @@ public class WriteMetadataToBinaryFromDocument {
     @Param(name = "ignorePrefix", required = false, description = "Ignore metadata prefixes or not")
     boolean ignorePrefix = true;
 
+    @Param(name = "save", required = false, values = "true")
+    protected boolean save = true;
+
     @OperationMethod
-    public void run(DocumentModel doc) {
+    public DocumentModel run(DocumentModel doc) {
         Map<String, Object> metadataMap = new HashMap<>(metadata.size());
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             metadataMap.put(entry.getKey(), entry.getValue());
         }
-        Blob blob;
+        BlobHolder blobHolder;
         if (blobXPath != null) {
-            blob = doc.getProperty(blobXPath).getValue(Blob.class);
+            blobHolder = new DocumentBlobHolder(doc, blobXPath);
         } else {
-            BlobHolder blobHolder = doc.getAdapter(BlobHolder.class);
-            blob = blobHolder.getBlob();
+            blobHolder = doc.getAdapter(BlobHolder.class);
         }
-        if (blob != null) {
-            binaryMetadataService.writeMetadata(processor, blob, metadataMap, ignorePrefix);
-        } else {
+        Blob blob = blobHolder.getBlob();
+        if (blob == null) {
             String message;
-            if (blobXPath != null) {
+            if (blobXPath == null) {
                 message = "No blob attached for document '" + doc.getId() + "'. Please specify a blobXPath parameter.";
             } else {
                 message = "No blob attached for document '" + doc.getId() + "' and blob xpath '" + blobXPath
@@ -79,5 +85,12 @@ public class WriteMetadataToBinaryFromDocument {
             }
             throw new BinaryMetadataException(message);
         }
+        Blob newBlob = binaryMetadataService.writeMetadata(processor, blob, metadataMap, ignorePrefix);
+        blobHolder.setBlob(newBlob);
+        if (save) {
+            doc = session.saveDocument(doc);
+        }
+        return doc;
     }
+
 }

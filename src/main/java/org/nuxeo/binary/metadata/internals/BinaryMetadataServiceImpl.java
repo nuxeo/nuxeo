@@ -95,7 +95,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public boolean writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
+    public Blob writeMetadata(String processorName, Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(processorName);
             return processor.writeMetadata(blob, metadata, ignorePrefix);
@@ -105,7 +105,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public boolean writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
+    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix) {
         try {
             BinaryMetadataProcessor processor = getProcessor(BinaryMetadataConstants.EXIF_TOOL_CONTRIBUTION_ID);
             return processor.writeMetadata(blob, metadata, ignorePrefix);
@@ -115,7 +115,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public boolean writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc) {
+    public Blob writeMetadata(String processorName, Blob blob, String mappingDescriptorId, DocumentModel doc) {
         try {
             // Creating mapping properties Map.
             Map<String, Object> metadataMapping = new HashMap<>();
@@ -133,7 +133,7 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
     }
 
     @Override
-    public boolean writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc) {
+    public Blob writeMetadata(Blob blob, String mappingDescriptorId, DocumentModel doc) {
         try {
             // Creating mapping properties Map.
             Map<String, Object> metadataMapping = new HashMap<>();
@@ -233,7 +233,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 if (fileProp.isDirty()) {
                     if (isDirtyMapping) {
                         // if Blob dirty and document metadata dirty, write metadata from doc to Blob
-                        writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        Blob newBlob = writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        fileProp.setValue(newBlob);
                     } else {
                         // if Blob dirty and document metadata not dirty, write metadata from Blob to doc
                         writeMetadata(doc, docCtx.getCoreSession());
@@ -241,7 +242,8 @@ public class BinaryMetadataServiceImpl implements BinaryMetadataService {
                 } else {
                     if (isDirtyMapping) {
                         // if Blob not dirty and document metadata dirty, write metadata from doc to Blob
-                        writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        Blob newBlob = writeMetadata(fileProp.getValue(Blob.class), mappingDescriptor.getId(), doc);
+                        fileProp.setValue(newBlob);
                     }
                 }
             }

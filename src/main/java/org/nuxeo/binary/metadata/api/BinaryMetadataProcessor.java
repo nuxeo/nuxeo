@@ -34,9 +34,9 @@ public interface BinaryMetadataProcessor {
      * @param blob Blob to write.
      * @param metadata Metadata to inject.
      * @param ignorePrefix
-     * @return success or not.
+     * @return the updated blob, or {@code null} if there was an error (since 7.4)
      */
-    public boolean writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
+    public Blob writeMetadata(Blob blob, Map<String, Object> metadata, boolean ignorePrefix);
 
     /**
      * Read from a given blob given metadata map. Since 7.3 ignorePrefix is added.

@@ -42,6 +42,7 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -129,19 +130,20 @@ public class TestBinaryMetadataOperation {
         // Get PSD Document
         DocumentModel jpgFile = BinaryMetadataServerInit.getFile(4, session);
         BlobHolder jpgBlobHolder = jpgFile.getAdapter(BlobHolder.class);
+        Blob blob = jpgBlobHolder.getBlob();
 
         // Check the content
-        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob(), false);
+        Map<String, Object> blobProperties = binaryMetadataService.readMetadata(blob, false);
         assertNotNull(blobProperties);
         assertEquals("Google", blobProperties.get("EXIF:Make"));
         assertEquals("Nexus", blobProperties.get("EXIF:Model").toString());
 
-        operationContext.setInput(jpgBlobHolder.getBlob());
+        operationContext.setInput(blob);
         operationContext.setCoreSession(session);
-        automationService.run(operationContext, WriteMetadataToBinaryFromContext.ID, jpgParameters);
+        Blob newBlob = (Blob) automationService.run(operationContext, WriteMetadataToBinaryFromContext.ID, jpgParameters);
 
         // Check the content
-        blobProperties = binaryMetadataService.readMetadata(jpgBlobHolder.getBlob(), false);
+        blobProperties = binaryMetadataService.readMetadata(newBlob, false);
         assertNotNull(blobProperties);
         assertEquals("Nuxeo", blobProperties.get("EXIF:Make"));
         assertEquals("Platform", blobProperties.get("EXIF:Model").toString());

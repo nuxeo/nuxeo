@@ -31,9 +31,10 @@ import org.nuxeo.ecm.core.api.Blob;
 /**
  * @since 7.1
  */
-@Operation(id = WriteMetadataToBinaryFromContext.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Binary From"
-        + " Context", description = "Write Metadata To Binary From Context "
-        + "given a processor name (or the default Nuxeo one) and given metadata" + ".", since = "7.1", addToStudio = true, aliases = { "Binary.WriteMetadataFromContext" })
+@Operation(id = WriteMetadataToBinaryFromContext.ID, category = Constants.CAT_BLOB, label = "Write Metadata To Blob From"
+        + " Context", description = "Write Metadata To Blob From Context "
+                + "given a processor name (or the default Nuxeo one) and given metadata, and return the updated Blob"
+                + ".", since = "7.1", addToStudio = true, aliases = { "Binary.WriteMetadataFromContext" })
 public class WriteMetadataToBinaryFromContext {
 
     public static final String ID = "Blob.SetMetadataFromContext";
@@ -51,11 +52,11 @@ public class WriteMetadataToBinaryFromContext {
     protected Properties metadata;
 
     @OperationMethod
-    public void run(Blob blob) {
+    public Blob run(Blob blob) {
         Map<String, Object> metadataMap = new HashMap<>(metadata.size());
         for (Map.Entry<String, String> entry : metadata.entrySet()) {
             metadataMap.put(entry.getKey(), entry.getValue());
         }
-        binaryMetadataService.writeMetadata(processor, blob, metadataMap, ignorePrefix);
+        return binaryMetadataService.writeMetadata(processor, blob, metadataMap, ignorePrefix);
     }
 }
