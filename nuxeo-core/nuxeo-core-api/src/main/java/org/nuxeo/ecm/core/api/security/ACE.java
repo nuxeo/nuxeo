@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -76,13 +75,13 @@ public final class ACE implements Serializable, Cloneable {
 
         Calendar begin = null;
         if (parts.length >= 5 && StringUtils.isNotBlank(parts[4])) {
-            begin = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            begin = Calendar.getInstance(); // FIXME timezone?
             begin.setTimeInMillis(Long.valueOf(parts[4]));
         }
 
         Calendar end = null;
         if (parts.length >= 6 && StringUtils.isNotBlank(parts[5])) {
-            end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+            end = Calendar.getInstance(); // FIXME timezone?
             end.setTimeInMillis(Long.valueOf(parts[5]));
         }
 
@@ -260,8 +259,11 @@ public final class ACE implements Serializable, Cloneable {
         }
         if (obj instanceof ACE) {
             ACE ace = (ACE) obj;
-            boolean beginEqual = ace.begin != null ? ace.begin.equals(begin) : begin == null;
-            boolean endEqual = ace.end != null ? ace.end.equals(end) : end == null;
+            // check Calendars without handling timezone
+            boolean beginEqual = ace.begin == null && begin == null || !(ace.begin == null || begin == null)
+                    && ace.begin.getTimeInMillis() == begin.getTimeInMillis();
+            boolean endEqual = ace.end == null && end == null || !(ace.end == null || end == null)
+                    && ace.end.getTimeInMillis() == end.getTimeInMillis();
             boolean creatorEqual = ace.creator != null ? ace.creator.equals(creator) : creator == null;
             return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission)
                     && creatorEqual && beginEqual && endEqual;
