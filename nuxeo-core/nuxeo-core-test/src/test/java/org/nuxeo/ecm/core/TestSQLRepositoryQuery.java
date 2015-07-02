@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -1360,6 +1361,9 @@ public class TestSQLRepositoryQuery {
         acl.add(new ACE("Administrator", "Everything", true));
         acl.add(new ACE("bob", "Browse", true));
         acl.add(new ACE("steve", "Read", true));
+        Calendar begin = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+        Calendar end = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
+        acl.add(new ACE("leela", "Write", true, "Administrator", begin, end));
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
@@ -1393,6 +1397,21 @@ public class TestSQLRepositoryQuery {
         // a bob and a Read
         checkQueryACL(1, queryBase + "ecm:acl/*/principal = 'bob' AND ecm:acl/*/permission = 'Read'");
 
+        // creator is Administrator
+        checkQueryACL(1, queryBase + "ecm:acl/*/creator = 'Administrator'");
+
+        // document for leela with a begin date after 2007-01-01
+        checkQueryACL(
+                1,
+                queryBase
+                        + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end <= DATE '2020-01-01'");
+
+        // document for leela with an end date after 2020-01-01, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+
+        // document with valid begin date but not end date, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+
         // block
         checkQueryACL(1, queryBase
                 + "ecm:acl/*1/principal = 'Everyone' AND ecm:acl/*1/permission = 'Everything' AND ecm:acl/*1/grant = 0");
@@ -1420,6 +1439,9 @@ public class TestSQLRepositoryQuery {
         acl.add(new ACE("Administrator", "Everything", true));
         acl.add(new ACE("bob", "Browse", true));
         acl.add(new ACE("steve", "Read", true));
+        Calendar begin = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
+        Calendar end = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
+        acl.add(new ACE("leela", "Write", true, "Administrator", begin, end));
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
@@ -1441,19 +1463,27 @@ public class TestSQLRepositoryQuery {
 
         // read full ACL
         res = session.queryAndFetch(
-                "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/pos, ecm:acl/*1/principal, ecm:acl/*1/permission, ecm:acl/*1/grant FROM Document WHERE ecm:isProxy = 0 AND "
+                "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/pos, ecm:acl/*1/principal, ecm:acl/*1/permission, ecm:acl/*1/grant, "
+                        + "ecm:acl/*1/creator, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document WHERE ecm:isProxy = 0 AND "
                         + "ecm:acl/*/principal = 'bob'", "NXQL");
-        assertEquals(4, res.size());
+        assertEquals(5, res.size());
         set = new HashSet<>();
         for (Map<String, Serializable> map : res) {
-            set.add(map.get("ecm:acl/*1/name") + ":" + map.get("ecm:acl/*1/pos") + ":"
+            String ace = map.get("ecm:acl/*1/name") + ":" + map.get("ecm:acl/*1/pos") + ":"
                     + map.get("ecm:acl/*1/principal") + ":" + map.get("ecm:acl/*1/permission") + ":"
-                    + map.get("ecm:acl/*1/grant"));
+                    + map.get("ecm:acl/*1/grant") + ":" + map.get("ecm:acl/*1/creator");
+            Calendar cal = (Calendar) map.get("ecm:acl/*1/begin");
+            ace += ":" + (cal != null ? cal.getTimeInMillis() : null);
+            cal = (Calendar) map.get("ecm:acl/*1/end");
+            ace += ":" + (cal != null ? cal.getTimeInMillis() : null);
+            set.add(ace);
         }
         res.close();
         assertEquals(
-                new HashSet<>(Arrays.asList("local:0:Administrator:Everything:true", "local:1:bob:Browse:true",
-                        "local:2:steve:Read:true", "local:3:Everyone:Everything:false")), set);
+                new HashSet<>(Arrays.asList("local:0:Administrator:Everything:true:null:null:null",
+                        "local:1:bob:Browse:true:null:null:null", "local:2:steve:Read:true:null:null:null",
+                        "local:3:leela:Write:true:Administrator:1436870096000:1439548496000",
+                        "local:4:Everyone:Everything:false:null:null:null")), set);
     }
 
     @Test

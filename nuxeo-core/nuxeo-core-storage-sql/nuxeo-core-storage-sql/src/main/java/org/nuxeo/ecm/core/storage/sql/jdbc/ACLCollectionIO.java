@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
@@ -37,6 +38,9 @@ public class ACLCollectionIO implements CollectionIO {
         String name = null;
         boolean grant = false;
         String permission = null;
+        String creator = null;
+        Calendar begin = null;
+        Calendar end = null;
         String user = null;
         String group = null;
         int i = 0;
@@ -44,19 +48,25 @@ public class ACLCollectionIO implements CollectionIO {
             i++;
             String key = column.getKey();
             Serializable v = column.getFromResultSet(rs, i);
-            if (key.equals(model.MAIN_KEY)) {
+            if (key.equals(Model.MAIN_KEY)) {
                 id = v;
-            } else if (key.equals(model.ACL_NAME_KEY)) {
+            } else if (key.equals(Model.ACL_NAME_KEY)) {
                 name = (String) v;
-            } else if (key.equals(model.ACL_GRANT_KEY)) {
+            } else if (key.equals(Model.ACL_GRANT_KEY)) {
                 grant = v == null ? false : (Boolean) v;
-            } else if (key.equals(model.ACL_PERMISSION_KEY)) {
+            } else if (key.equals(Model.ACL_PERMISSION_KEY)) {
                 permission = (String) v;
-            } else if (key.equals(model.ACL_USER_KEY)) {
+            } else if (key.equals(Model.ACL_CREATOR_KEY)) {
+                creator = (String) v;
+            } else if (key.equals(Model.ACL_BEGIN_KEY)) {
+                begin = (Calendar) v;
+            } else if (key.equals(Model.ACL_END_KEY)) {
+                end = (Calendar) v;
+            } else if (key.equals(Model.ACL_USER_KEY)) {
                 user = (String) v;
-            } else if (key.equals(model.ACL_GROUP_KEY)) {
+            } else if (key.equals(Model.ACL_GROUP_KEY)) {
                 group = (String) v;
-            } else if (key.equals(model.ACL_POS_KEY)) {
+            } else if (key.equals(Model.ACL_POS_KEY)) {
                 // ignore, query already sorts by pos
             } else {
                 throw new RuntimeException(key);
@@ -66,7 +76,7 @@ public class ACLCollectionIO implements CollectionIO {
         returnId[0] = id;
         int pos = (id != null && !id.equals(prevId)) ? 0 : returnPos[0] + 1;
         returnPos[0] = pos;
-        return new ACLRow(pos, name, grant, permission, user, group);
+        return new ACLRow(pos, name, grant, permission, user, group, creator, begin, end);
     }
 
     @Override
@@ -96,6 +106,12 @@ public class ACLCollectionIO implements CollectionIO {
                         v = acl.grant;
                     } else if (key.equals(Model.ACL_PERMISSION_KEY)) {
                         v = acl.permission;
+                    } else if (key.equals(Model.ACL_CREATOR_KEY)) {
+                        v = acl.creator;
+                    } else if (key.equals(Model.ACL_BEGIN_KEY)) {
+                        v = acl.begin;
+                    } else if (key.equals(Model.ACL_END_KEY)) {
+                        v = acl.end;
                     } else if (key.equals(Model.ACL_USER_KEY)) {
                         v = acl.user;
                     } else if (key.equals(Model.ACL_GROUP_KEY)) {

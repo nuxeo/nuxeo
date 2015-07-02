@@ -139,6 +139,27 @@ public class NXQL {
     public static final String ECM_ACL_POS = "pos";
 
     /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /creator}
+     *
+     * @since 7.4
+     */
+    public static final String ECM_ACL_CREATOR = "creator";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /begin}
+     *
+     * @since 7.4
+     */
+    public static final String ECM_ACL_BEGIN = "begin";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /end}
+     *
+     * @since 7.4
+     */
+    public static final String ECM_ACL_END = "end";
+
+    /**
      * Escapes a string into a single-quoted string for NXQL.
      * <p>
      * Any single quote or backslash characters are escaped with a backslash.

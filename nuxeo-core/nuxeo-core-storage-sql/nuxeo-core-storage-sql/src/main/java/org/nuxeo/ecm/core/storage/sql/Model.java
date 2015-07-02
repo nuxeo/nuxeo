@@ -175,6 +175,12 @@ public class Model {
 
     public static final String ACL_PERMISSION_KEY = "permission";
 
+    public static final String ACL_CREATOR_KEY = "creator";
+
+    public static final String ACL_BEGIN_KEY = "begin";
+
+    public static final String ACL_END_KEY = "end";
+
     public static final String ACL_USER_KEY = "user";
 
     public static final String ACL_GROUP_KEY = "group";
@@ -1455,6 +1461,9 @@ public class Model {
         keysType.put(ACL_NAME_KEY, ColumnType.SYSNAME);
         keysType.put(ACL_GRANT_KEY, ColumnType.BOOLEAN);
         keysType.put(ACL_PERMISSION_KEY, ColumnType.SYSNAME);
+        keysType.put(ACL_CREATOR_KEY, ColumnType.SYSNAME);
+        keysType.put(ACL_BEGIN_KEY, ColumnType.TIMESTAMP);
+        keysType.put(ACL_END_KEY, ColumnType.TIMESTAMP);
         keysType.put(ACL_USER_KEY, ColumnType.SYSNAME);
         keysType.put(ACL_GROUP_KEY, ColumnType.SYSNAME);
         String fragmentName = ACL_TABLE_NAME;
@@ -1471,6 +1480,12 @@ public class Model {
         allPathPropertyInfos.put("ecm:acl.name/*", new ModelProperty(PropertyType.STRING, fragmentName, ACL_NAME_KEY,
                 true));
         allPathPropertyInfos.put("ecm:acl.pos/*", new ModelProperty(PropertyType.LONG, fragmentName, ACL_POS_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.creator/*", new ModelProperty(PropertyType.STRING, fragmentName,
+                ACL_CREATOR_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.begin/*", new ModelProperty(PropertyType.DATETIME, fragmentName,
+                ACL_BEGIN_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.end/*", new ModelProperty(PropertyType.DATETIME, fragmentName, ACL_END_KEY,
+                true));
     }
 
     /**

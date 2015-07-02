@@ -153,6 +153,21 @@ public class NXQLQueryMaker implements QueryMaker {
 
     public static final String ECM_SIMPLE_ACP_POS = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_POS;
 
+    /**
+     * @since 7.4
+     */
+    public static final String ECM_SIMPLE_ACP_CREATOR = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_CREATOR;
+
+    /**
+     * @since 7.4
+     */
+    public static final String ECM_SIMPLE_ACP_BEGIN = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_BEGIN;
+
+    /**
+     * @since 7.4
+     */
+    public static final String ECM_SIMPLE_ACP_END = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_END;
+
     public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
 
     protected static final String TABLE_HIER_ALIAS = "_H";
@@ -1296,7 +1311,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 String simple = simpleXPath(name);
                 if (simple.equals(ECM_SIMPLE_ACP_PRINCIPAL) || simple.equals(ECM_SIMPLE_ACP_PERMISSION)
                         || simple.equals(ECM_SIMPLE_ACP_GRANT) || simple.equals(ECM_SIMPLE_ACP_NAME)
-                        || simple.equals(ECM_SIMPLE_ACP_POS)) {
+                        || simple.equals(ECM_SIMPLE_ACP_POS) || simple.equals(ECM_SIMPLE_ACP_CREATOR)
+                        || simple.equals(ECM_SIMPLE_ACP_BEGIN) || simple.equals(ECM_SIMPLE_ACP_END)) {
                     // ok
                 } else {
                     throw new QueryParseException("Unknown field: " + name);
@@ -1850,8 +1866,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 tableName = table.getQuotedName();
             }
             buf.append(String.format("EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ", tableName,
-                    dataHierTable.getColumn(model.MAIN_KEY).getFullQuotedName(),
-                    table.getColumn(model.MAIN_KEY).getFullQuotedName()));
+                    dataHierTable.getColumn(model.MAIN_KEY).getFullQuotedName(), table.getColumn(model.MAIN_KEY)
+                                                                                      .getFullQuotedName()));
         }
 
         protected void generateExistsEnd(StringBuilder buf) {
