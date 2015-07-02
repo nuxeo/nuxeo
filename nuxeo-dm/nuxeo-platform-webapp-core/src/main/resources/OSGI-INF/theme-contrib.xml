@@ -244,6 +244,7 @@
     </resource>
     <resource name="jquery.tipsy.js">
       <uri>/scripts/jquery/jquery.tipsy.js</uri>
+      <require>tipsy.css</require>
     </resource>
     <resource name="tipsy.css">
       <uri>/css/tipsy.css</uri>
@@ -255,7 +256,6 @@
     <resource name="jquery.nuxeo.tipsy.init.js">
       <uri>/scripts/jquery.nuxeo.tipsy.init.js</uri>
       <require>jquery.nuxeo.tipsy.js</require>
-      <require>tipsy.css</require>
     </resource>
     <resource name="jquery.magnific-popup.js">
       <uri>/scripts/jquery/jquery.magnific-popup.js</uri>
