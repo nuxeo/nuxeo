@@ -78,6 +78,8 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
         }
+        // then let other resources (css, js, html) be processed by the component at render time
+        super.apply(ctx, parent);
         // then include xhtml templates
         List<Resource> xhtmlr = wrm.getResources(new ResourceContextImpl(), bundleName, ResourceType.xhtml.name());
         if (xhtmlr != null && !xhtmlr.isEmpty()) {
@@ -89,8 +91,6 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
                 new IncludeHandler(config).apply(ctx, parent);
             }
         }
-        // then let other resources (css, js, html) be processed by the component at render time
-        super.apply(ctx, parent);
     }
 
     protected ComponentConfig getJSFResourceComponentConfig(String resourceName, String rendererType,
