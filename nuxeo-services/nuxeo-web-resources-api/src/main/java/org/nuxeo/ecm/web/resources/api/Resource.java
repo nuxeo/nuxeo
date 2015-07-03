@@ -40,8 +40,6 @@ public interface Resource extends Serializable {
 
     String getURI();
 
-    void setURI(String uri);
-
     /**
      * Names of the resource dependencies.
      */
@@ -52,7 +50,11 @@ public interface Resource extends Serializable {
      */
     List<String> getProcessors();
 
-    // TODO: check if this is still useful
+    /**
+     * Returns true if resource can be minimized.
+     * <p>
+     * Returns true by default if not specified.
+     */
     boolean isShrinkable();
 
 }

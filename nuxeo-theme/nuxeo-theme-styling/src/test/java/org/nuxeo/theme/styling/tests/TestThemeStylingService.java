@@ -67,6 +67,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         super.setUp();
         deployBundle("org.nuxeo.theme.core");
         deployBundle("org.nuxeo.theme.fragments");
+        deployBundle("org.nuxeo.web.resources.core");
         deployBundle("org.nuxeo.theme.styling");
         deployContrib("org.nuxeo.theme.styling.tests", "theme-test-config.xml");
         deployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config.xml");

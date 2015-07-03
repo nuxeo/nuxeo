@@ -53,6 +53,27 @@ public class ResourceBundleDescriptor implements ResourceBundle {
         return append;
     }
 
+    /**
+     * @since 7.4
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setAppend(boolean append) {
+        this.append = append;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setResources(List<String> resources) {
+        this.resources = resources;
+    }
+
     public ResourceBundleDescriptor clone() {
         ResourceBundleDescriptor c = new ResourceBundleDescriptor();
         c.name = name;

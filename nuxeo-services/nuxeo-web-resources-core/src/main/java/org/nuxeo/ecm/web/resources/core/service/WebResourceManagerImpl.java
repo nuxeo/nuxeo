@@ -34,6 +34,7 @@ import org.nuxeo.ecm.web.resources.api.ResourceContext;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.ecm.web.resources.core.ProcessorDescriptor;
+import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -70,16 +71,12 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (RESOURCES_ENDPOINT.equals(extensionPoint)) {
-            Resource resource = (Resource) contribution;
-            log.info(String.format("Register resource '%s'", resource.getName()));
+            ResourceDescriptor resource = (ResourceDescriptor) contribution;
             computeResourceUri(resource, contributor);
-            resources.addContribution(resource);
-            log.info(String.format("Done registering resource '%s'", resource.getName()));
+            registerResource(resource);
         } else if (RESOURCE_BUNDLES_ENDPOINT.equals(extensionPoint)) {
             ResourceBundle bundle = (ResourceBundle) contribution;
-            log.info(String.format("Register resource bundle '%s'", bundle.getName()));
-            resourceBundles.addContribution(bundle);
-            log.info(String.format("Done registering resource bundle '%s'", bundle.getName()));
+            registerResourceBundle(bundle);
         } else if (PROCESSORS_ENDPOINT.equals(extensionPoint)) {
             ProcessorDescriptor p = (ProcessorDescriptor) contribution;
             log.info(String.format("Register processor '%s'", p.getName()));
@@ -95,14 +92,10 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (RESOURCES_ENDPOINT.equals(extensionPoint)) {
             Resource resource = (Resource) contribution;
-            log.info(String.format("Removing resource '%s'", resource.getName()));
-            resources.removeContribution(resource);
-            log.info(String.format("Done removing resource '%s'", resource.getName()));
+            unregisterResource(resource);
         } else if (RESOURCE_BUNDLES_ENDPOINT.equals(extensionPoint)) {
-            ResourceBundle resourceBundle = (ResourceBundle) contribution;
-            log.info(String.format("Removing resource bundle '%s'", resourceBundle.getName()));
-            resourceBundles.removeContribution(resourceBundle);
-            log.info(String.format("Done removing resource bundle '%s'", resourceBundle.getName()));
+            ResourceBundle bundle = (ResourceBundle) contribution;
+            unregisterResourceBundle(bundle);
         } else if (PROCESSORS_ENDPOINT.equals(extensionPoint)) {
             ProcessorDescriptor p = (ProcessorDescriptor) contribution;
             log.info(String.format("Removing processor '%s'", p.getName()));
@@ -117,7 +110,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
 
     // service API
 
-    protected void computeResourceUri(Resource resource, ComponentInstance contributor) {
+    protected void computeResourceUri(ResourceDescriptor resource, ComponentInstance contributor) {
         String uri = resource.getURI();
         if (uri == null) {
             // build it from local classpath
@@ -213,25 +206,56 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
 
     protected Map<String, Resource> getSubResources(DAG graph, Resource r, String type) {
         Map<String, Resource> res = new HashMap<String, Resource>();
-        for (String dn : r.getDependencies()) {
-            Resource d = getResource(dn);
-            if (d == null) {
-                log.error(String.format("Unknown resource dependency named '%s'", dn));
-                continue;
+        List<String> deps = r.getDependencies();
+        if (deps != null) {
+            for (String dn : deps) {
+                Resource d = getResource(dn);
+                if (d == null) {
+                    log.error(String.format("Unknown resource dependency named '%s'", dn));
+                    continue;
+                }
+                if (!ResourceType.matches(type, d)) {
+                    continue;
+                }
+                res.put(dn, d);
+                try {
+                    graph.addEdge(r.getName(), dn);
+                } catch (CycleDetectedException e) {
+                    log.error("Cycle detected in resource dependencies: ", e);
+                    break;
+                }
+                res.putAll(getSubResources(graph, d, type));
             }
-            if (!ResourceType.matches(type, d)) {
-                continue;
-            }
-            res.put(dn, d);
-            try {
-                graph.addEdge(r.getName(), dn);
-            } catch (CycleDetectedException e) {
-                log.error("Cycle detected in resource dependencies: ", e);
-                break;
-            }
-            res.putAll(getSubResources(graph, d, type));
         }
         return res;
+    }
+
+    @Override
+    public void registerResourceBundle(ResourceBundle bundle) {
+        log.info(String.format("Register resource bundle '%s'", bundle.getName()));
+        resourceBundles.addContribution(bundle);
+        log.info(String.format("Done registering resource bundle '%s'", bundle.getName()));
+    }
+
+    @Override
+    public void unregisterResourceBundle(ResourceBundle bundle) {
+        log.info(String.format("Removing resource bundle '%s'", bundle.getName()));
+        resourceBundles.removeContribution(bundle);
+        log.info(String.format("Done removing resource bundle '%s'", bundle.getName()));
+    }
+
+    @Override
+    public void registerResource(Resource resource) {
+        log.info(String.format("Register resource '%s'", resource.getName()));
+        resources.addContribution(resource);
+        log.info(String.format("Done registering resource '%s'", resource.getName()));
+    }
+
+    @Override
+    public void unregisterResource(Resource resource) {
+        log.info(String.format("Removing resource '%s'", resource.getName()));
+        resources.removeContribution(resource);
+        log.info(String.format("Done removing resource '%s'", resource.getName()));
     }
 
 }
