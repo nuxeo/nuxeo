@@ -62,17 +62,16 @@ import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.BlobManager.BlobInfo;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
-import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
@@ -908,7 +907,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         } catch (RuntimeException e) {
             Throwable[] suppressed = e.getSuppressed();
             assertNotNull(suppressed);
-            assertTrue(suppressed[0].toString(), suppressed[0] instanceof ConcurrentUpdateStorageException);
+            assertTrue(suppressed[0].toString(), suppressed[0] instanceof ConcurrentUpdateException);
         }
     }
 

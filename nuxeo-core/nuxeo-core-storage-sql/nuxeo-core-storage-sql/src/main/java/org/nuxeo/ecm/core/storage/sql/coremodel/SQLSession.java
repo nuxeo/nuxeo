@@ -35,7 +35,6 @@ import javax.resource.ResourceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,7 +62,6 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.security.SecurityException;
-import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.lock.LockException;
@@ -154,8 +152,6 @@ public class SQLSession implements Session {
     public void save() throws DocumentException {
         try {
             session.save();
-        } catch (ConcurrentUpdateStorageException e) {
-            throw new ConcurrentUpdateDocumentException(e);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }
@@ -756,8 +752,6 @@ public class SQLSession implements Session {
     protected void remove(Node node) throws DocumentException {
         try {
             session.removeNode(node);
-        } catch (ConcurrentUpdateStorageException e) {
-            throw new ConcurrentUpdateDocumentException(e);
         } catch (StorageException e) {
             throw new DocumentException(e);
         }

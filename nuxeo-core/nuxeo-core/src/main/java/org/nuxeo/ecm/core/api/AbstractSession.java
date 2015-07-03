@@ -1415,7 +1415,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             }
             removeNotifyOneDoc(doc);
 
-        } catch (ConcurrentUpdateDocumentException e) {
+        } catch (ConcurrentUpdateException e) {
             throw new ConcurrentUpdateException("Failed to remove document " + doc.getUUID(), e);
         } catch (DocumentException e) {
             throw new ClientException("Failed to remove document " + doc.getUUID(), e);
@@ -1507,8 +1507,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
             getSession().save();
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null, null, true, false);
-        } catch (ConcurrentUpdateDocumentException e) {
-            throw new ConcurrentUpdateException("Failed to save session: " + e, e);
+        } catch (ConcurrentUpdateException e) {
+            throw new ConcurrentUpdateException("Failed to save session", e);
         } catch (DocumentException e) {
             throw new ClientException("Failed to save session", e);
         }

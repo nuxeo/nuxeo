@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ConcurrentUpdateDocumentException;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
@@ -139,7 +139,7 @@ public class MemRepository extends DBSRepositoryBase {
         }
         State state = states.get(id);
         if (state == null) {
-            throw new ConcurrentUpdateDocumentException("Missing: " + id);
+            throw new ConcurrentUpdateException("Missing: " + id);
         }
         applyDiff(state, diff);
     }

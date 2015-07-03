@@ -22,9 +22,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.lock.LockException;
@@ -180,7 +180,7 @@ public class VCSLockManager extends AbstractLockManager {
             }
             try {
                 return setLockInternal(id, lock);
-            } catch (StorageException e) {
+            } catch (StorageException | ConcurrentUpdateException e) {
                 suppressed.add(e);
                 if (shouldRetry(e)) {
                     // cluster: two simultaneous inserts
@@ -214,8 +214,8 @@ public class VCSLockManager extends AbstractLockManager {
     /**
      * Does the exception mean that we should retry the transaction?
      */
-    protected boolean shouldRetry(StorageException e) {
-        if (e instanceof ConcurrentUpdateStorageException) {
+    protected boolean shouldRetry(Exception e) {
+        if (e instanceof ConcurrentUpdateException) {
             return true;
         }
         Throwable t = e.getCause();

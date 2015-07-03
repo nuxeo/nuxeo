@@ -39,6 +39,7 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -47,7 +48,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
@@ -1348,21 +1348,16 @@ public class SessionImpl implements Session, XAResource {
             if (flags != TMFAIL) {
                 try {
                     flush();
+                } catch (ConcurrentUpdateException e) {
+                    TransactionHelper.noteSuppressedException(e);
+                    log.debug("Exception during transaction commit", e);
+                    // set rollback only manually instead of throwing, this avoids
+                    // a spurious log in Geronimo TransactionImpl and has the same effect
+                    TransactionHelper.setTransactionRollbackOnly();
+                    return;
                 } catch (StorageException e) {
-                    String msg = "Exception during transaction commit";
-                    if (e instanceof ConcurrentUpdateStorageException) {
-                        TransactionHelper.noteSuppressedException(e);
-                        log.debug(msg, e);
-                        // set rollback only manually instead of throwing,
-                        // this avoids a spurious log in Geronimo
-                        // TransactionImpl
-                        // and has the same effect
-                        TransactionHelper.setTransactionRollbackOnly();
-                        return;
-                    } else {
-                        log.error(msg, e);
-                        throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
-                    }
+                    log.error("Exception during transaction commit", e);
+                    throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
             }
             failed = false;

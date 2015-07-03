@@ -24,7 +24,7 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 
 import org.nuxeo.common.utils.JDBCUtils;
-import org.nuxeo.ecm.core.storage.ConcurrentUpdateStorageException;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
@@ -293,9 +293,9 @@ public class JDBCConnection {
      * @param e the exception
      * @since 5.8
      */
-    protected void checkConcurrentUpdate(Throwable e) throws ConcurrentUpdateStorageException {
+    protected void checkConcurrentUpdate(Throwable e) throws ConcurrentUpdateException {
         if (dialect.isConcurrentUpdateException(e)) {
-            throw new ConcurrentUpdateStorageException(e);
+            throw new ConcurrentUpdateException(e);
         }
     }
 
