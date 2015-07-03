@@ -157,6 +157,13 @@ public class TestSQLRepositoryAPI {
         }
     }
 
+    /**
+     * Sleep 1s, useful for stupid databases (like MySQL) that don't have subsecond resolution in TIMESTAMP fields.
+     */
+    protected void maybeSleepToNextSecond() {
+        coreFeature.getStorageConfiguration().maybeSleepToNextSecond();
+    }
+
     @Test
     public void testBasics() throws Exception {
         DocumentModel root = session.getRootDocument();
@@ -3046,6 +3053,7 @@ public class TestSQLRepositoryAPI {
         folder = session.getDocument(folder.getRef());
 
         // publishDocument API
+        maybeSleepToNextSecond();
         proxy = session.publishDocument(doc, root);
         session.save(); // needed for publish-by-copy to work
         assertEquals(3, session.getChildrenRefs(root.getRef(), null).size());
