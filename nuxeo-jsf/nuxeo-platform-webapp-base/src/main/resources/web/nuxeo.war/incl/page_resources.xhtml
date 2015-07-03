@@ -1,0 +1,15 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxr="http://nuxeo.org/nxweb/resources">
+
+  <c:if test="#{page != null}">
+    <c:forEach var="bundle" items="#{page.resourceBundles}">
+      <nxr:resourceBundle name="#{bundle}" target="#{target}">
+        <f:param name="flavor" value="#{empty flavor? 'default': flavor}" />
+      </nxr:resourceBundle>
+    </c:forEach>
+  </c:if>
+
+</ui:composition>
