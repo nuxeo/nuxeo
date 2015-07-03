@@ -57,6 +57,8 @@ import javax.faces.event.ListenerFor;
 import javax.faces.event.PostAddToViewEvent;
 import javax.faces.render.Renderer;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.sun.faces.util.FacesLogger;
 
 /**
@@ -222,6 +224,9 @@ public abstract class ScriptStyleBaseRenderer extends Renderer implements Compon
      * Allow a subclass to control what's a valid value for "target".
      */
     protected String verifyTarget(String toVerify) {
+        if (StringUtils.isBlank(toVerify)) {
+            return null;
+        }
         return toVerify;
     }
 

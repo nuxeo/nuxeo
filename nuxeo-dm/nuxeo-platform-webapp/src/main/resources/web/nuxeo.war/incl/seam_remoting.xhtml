@@ -2,8 +2,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-<h:outputScript src="/seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}" target="head" />
-<h:outputScript target="head">
+<h:outputScript src="/seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}" />
+<h:outputScript>
   var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
   var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
   var currentDocumentPath = '#{nxu:javaScriptEscape(currentDocument.pathAsString)}';
