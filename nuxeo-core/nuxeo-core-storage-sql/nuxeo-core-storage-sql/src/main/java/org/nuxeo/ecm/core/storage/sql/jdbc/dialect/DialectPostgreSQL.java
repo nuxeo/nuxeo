@@ -40,17 +40,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -99,8 +99,7 @@ public class DialectPostgreSQL extends Dialect {
 
     protected String idSequenceName;
 
-    public DialectPostgreSQL(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+    public DialectPostgreSQL(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         fulltextAnalyzer = repositoryDescriptor == null ? null
                 : repositoryDescriptor.fulltextAnalyzer == null ? DEFAULT_FULLTEXT_ANALYZER
@@ -112,7 +111,7 @@ public class DialectPostgreSQL extends Dialect {
             major = metadata.getDatabaseMajorVersion();
             minor = metadata.getDatabaseMinorVersion();
         } catch (SQLException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
         supportsWith = major > 8 || (major == 8 && minor >= 4);
         if ((major == 9 && minor >= 1) || (major > 9)) {
@@ -137,12 +136,12 @@ public class DialectPostgreSQL extends Dialect {
                 idSequenceName = "hierarchy_seq";
             }
         } else {
-            throw new StorageException("Unknown id type: '" + idt + "'");
+            throw new NuxeoException("Unknown id type: '" + idt + "'");
         }
         try {
             compatibilityFulltextTable = getCompatibilityFulltextTable(metadata);
         } catch (SQLException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -485,7 +484,7 @@ public class DialectPostgreSQL extends Dialect {
             return FulltextQueryAnalyzer.translateFulltext(ft, "|", "&", "& !", "");
         }
         if (compatibilityFulltextTable) {
-            throw new QueryMakerException("Cannot use phrase search in fulltext compatibilty mode. "
+            throw new QueryParseException("Cannot use phrase search in fulltext compatibilty mode. "
                     + "Please upgrade the fulltext table: " + query);
         }
         /*
@@ -882,12 +881,12 @@ public class DialectPostgreSQL extends Dialect {
     }
 
     @Override
-    public ArraySubQuery getArraySubQuery(Column arrayColumn, String subQueryAlias) throws QueryMakerException {
+    public ArraySubQuery getArraySubQuery(Column arrayColumn, String subQueryAlias) {
         return new ArraySubQueryPostgreSQL(arrayColumn, subQueryAlias);
     }
 
     @Override
-    public String getArrayElementString(String arrayColumnName, int arrayElementIndex) throws QueryMakerException {
+    public String getArrayElementString(String arrayColumnName, int arrayElementIndex) {
         // PostgreSQL arrays index start at 1
         return arrayColumnName + "[" + (arrayElementIndex + 1) + "]";
     }

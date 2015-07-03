@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -143,7 +142,7 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Mapper getMapper() throws StorageException {
+    public Mapper getMapper() {
         return getSession().getMapper();
     }
 
@@ -160,178 +159,174 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public String getRepositoryName() throws StorageException {
+    public String getRepositoryName() {
         return getSession().getRepositoryName();
     }
 
     @Override
-    public Model getModel() throws StorageException {
+    public Model getModel() {
         return getSession().getModel();
     }
 
     @Override
-    public void save() throws StorageException {
+    public void save() {
         getSession().save();
     }
 
     @Override
-    public Node getRootNode() throws StorageException {
+    public Node getRootNode() {
         return getSession().getRootNode();
     }
 
     @Override
-    public Node getNodeById(Serializable id) throws StorageException {
+    public Node getNodeById(Serializable id) {
         return getSession().getNodeById(id);
     }
 
     @Override
-    public List<Node> getNodesByIds(List<Serializable> ids) throws StorageException {
+    public List<Node> getNodesByIds(List<Serializable> ids) {
         return getSession().getNodesByIds(ids);
     }
 
     @Override
-    public Node getNodeByPath(String path, Node node) throws StorageException {
+    public Node getNodeByPath(String path, Node node) {
         return getSession().getNodeByPath(path, node);
     }
 
     @Override
-    public boolean addMixinType(Node node, String mixin) throws StorageException {
+    public boolean addMixinType(Node node, String mixin) {
         return getSession().addMixinType(node, mixin);
     }
 
     @Override
-    public boolean removeMixinType(Node node, String mixin) throws StorageException {
+    public boolean removeMixinType(Node node, String mixin) {
         return getSession().removeMixinType(node, mixin);
     }
 
     @Override
-    public boolean hasChildNode(Node parent, String name, boolean complexProp) throws StorageException {
+    public boolean hasChildNode(Node parent, String name, boolean complexProp) {
         return getSession().hasChildNode(parent, name, complexProp);
     }
 
     @Override
-    public Node getChildNode(Node parent, String name, boolean complexProp) throws StorageException {
+    public Node getChildNode(Node parent, String name, boolean complexProp) {
         return getSession().getChildNode(parent, name, complexProp);
     }
 
     @Override
-    public boolean hasChildren(Node parent, boolean complexProp) throws StorageException {
+    public boolean hasChildren(Node parent, boolean complexProp) {
         return getSession().hasChildren(parent, complexProp);
     }
 
     @Override
-    public List<Node> getChildren(Node parent, String name, boolean complexProp) throws StorageException {
+    public List<Node> getChildren(Node parent, String name, boolean complexProp) {
         return getSession().getChildren(parent, name, complexProp);
     }
 
     @Override
-    public Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp)
-            throws StorageException {
+    public Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp) {
         return getSession().addChildNode(parent, name, pos, typeName, complexProp);
     }
 
     @Override
-    public Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName, boolean complexProp)
-            throws StorageException {
+    public Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName,
+            boolean complexProp) {
         return getSession().addChildNode(id, parent, name, pos, typeName, complexProp);
     }
 
     @Override
-    public void removeNode(Node node) throws StorageException {
+    public void removeNode(Node node) {
         getSession().removeNode(node);
     }
 
     @Override
-    public void removePropertyNode(Node node) throws StorageException {
+    public void removePropertyNode(Node node) {
         getSession().removePropertyNode(node);
     }
 
     @Override
-    public Node getParentNode(Node node) throws StorageException {
+    public Node getParentNode(Node node) {
         return getSession().getParentNode(node);
     }
 
     @Override
-    public String getPath(Node node) throws StorageException {
+    public String getPath(Node node) {
         return getSession().getPath(node);
     }
 
     @Override
-    public void orderBefore(Node node, Node src, Node dest) throws StorageException {
+    public void orderBefore(Node node, Node src, Node dest) {
         getSession().orderBefore(node, src, dest);
     }
 
     @Override
-    public Node move(Node source, Node parent, String name) throws StorageException {
+    public Node move(Node source, Node parent, String name) {
         return getSession().move(source, parent, name);
     }
 
     @Override
-    public Node copy(Node source, Node parent, String name) throws StorageException {
+    public Node copy(Node source, Node parent, String name) {
         return getSession().copy(source, parent, name);
     }
 
     @Override
-    public Node checkIn(Node node, String label, String checkinComment) throws StorageException {
+    public Node checkIn(Node node, String label, String checkinComment) {
         return getSession().checkIn(node, label, checkinComment);
     }
 
     @Override
-    public void checkOut(Node node) throws StorageException {
+    public void checkOut(Node node) {
         getSession().checkOut(node);
     }
 
     @Override
-    public void restore(Node node, Node version) throws StorageException {
+    public void restore(Node node, Node version) {
         getSession().restore(node, version);
     }
 
     @Override
-    public Node getVersionByLabel(Serializable versionSeriesId, String label) throws StorageException {
+    public Node getVersionByLabel(Serializable versionSeriesId, String label) {
         return getSession().getVersionByLabel(versionSeriesId, label);
     }
 
     @Override
-    public List<Node> getVersions(Serializable versionSeriesId) throws StorageException {
+    public List<Node> getVersions(Serializable versionSeriesId) {
         return getSession().getVersions(versionSeriesId);
     }
 
     @Override
-    public Node getLastVersion(Serializable versionSeriesId) throws StorageException {
+    public Node getLastVersion(Serializable versionSeriesId) {
         return getSession().getLastVersion(versionSeriesId);
     }
 
     @Override
-    public List<Node> getProxies(Node document, Node parent) throws StorageException {
+    public List<Node> getProxies(Node document, Node parent) {
         return getSession().getProxies(document, parent);
     }
 
     @Override
-    public void setProxyTarget(Node proxy, Serializable targetId) throws StorageException {
+    public void setProxyTarget(Node proxy, Serializable targetId) {
         getSession().setProxyTarget(proxy, targetId);
     }
 
     @Override
-    public Node addProxy(Serializable targetId, Serializable versionSeriesId, Node parent, String name, Long pos)
-            throws StorageException {
+    public Node addProxy(Serializable targetId, Serializable versionSeriesId, Node parent, String name, Long pos) {
         return getSession().addProxy(targetId, versionSeriesId, parent, name, pos);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal) {
         return getSession().query(query, queryFilter, countTotal);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         return getSession().query(query, queryType, queryFilter, countUpTo);
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-            throws StorageException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            Object... params) {
         IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, params);
         noteQueryResult(result);
         return result;
@@ -394,17 +389,17 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public void updateReadAcls() throws StorageException {
+    public void updateReadAcls() {
         getSession().updateReadAcls();
     }
 
     @Override
-    public void rebuildReadAcls() throws StorageException {
+    public void rebuildReadAcls() {
         getSession().rebuildReadAcls();
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(Serializable id) throws StorageException {
+    public Map<String, String> getBinaryFulltext(Serializable id) {
         return getSession().getBinaryFulltext(id);
     }
 

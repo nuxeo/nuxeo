@@ -27,9 +27,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -126,7 +126,7 @@ public class SQLInfo {
      * @param model the model
      * @param dialect the SQL dialect
      */
-    public SQLInfo(Model model, Dialect dialect) throws StorageException {
+    public SQLInfo(Model model, Dialect dialect) {
         this.model = model;
         this.dialect = dialect;
         RepositoryDescriptor repositoryDescriptor = model.getRepositoryDescriptor();
@@ -163,7 +163,7 @@ public class SQLInfo {
         try {
             initSQLStatements(JDBCMapper.testProps, repositoryDescriptor.sqlInitFiles);
         } catch (IOException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -551,12 +551,12 @@ public class SQLInfo {
     /**
      * Creates all the sql from the models.
      */
-    protected void initSQL() throws StorageException {
+    protected void initSQL() {
 
         // structural tables
         if (model.getRepositoryDescriptor().getClusteringEnabled()) {
             if (!dialect.isClusteringSupported()) {
-                throw new StorageException("Clustering not supported for " + dialect.getClass().getSimpleName());
+                throw new NuxeoException("Clustering not supported for " + dialect.getClass().getSimpleName());
             }
             initClusterSQL();
         }
@@ -604,7 +604,7 @@ public class SQLInfo {
             if (fulltextConfiguration.indexNames.size() > 1 && !dialect.supportsMultipleFulltextIndexes()) {
                 String msg = String.format("SQL database supports only one fulltext index, but %d are configured: %s",
                         fulltextConfiguration.indexNames.size(), fulltextConfiguration.indexNames);
-                throw new StorageException(msg);
+                throw new NuxeoException(msg);
             }
             for (String indexName : fulltextConfiguration.indexNames) {
                 String suffix = model.getFulltextIndexSuffix(indexName);

@@ -17,7 +17,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A rich value corresponding to one row or a collection of rows in a table.
@@ -196,25 +195,21 @@ public abstract class Fragment implements Serializable {
      * accessed again.
      *
      * @return the new state, {@link State#PRISTINE} or {@link State#ABSENT}
-     * @throws StorageException
      */
-    protected abstract State refetch() throws StorageException;
+    protected abstract State refetch();
 
     /**
      * Resets the data for a fragment that was invalidated by deletion.
      *
      * @return the new state, {@link State#PRISTINE} or {@link State#ABSENT}
-     * @throws StorageException
      */
-    protected abstract State refetchDeleted() throws StorageException;
+    protected abstract State refetchDeleted();
 
     /**
      * Checks that access to the fragment is possible. Called internally before a get, so that invalidated fragments can
      * be refetched.
-     *
-     * @throws StorageException
      */
-    protected void accessed() throws StorageException {
+    protected void accessed() {
         switch (state) {
         case DETACHED:
         case ABSENT:

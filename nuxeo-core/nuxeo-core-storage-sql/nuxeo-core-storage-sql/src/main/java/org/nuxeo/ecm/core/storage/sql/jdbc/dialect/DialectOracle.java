@@ -44,11 +44,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -125,7 +125,7 @@ public class DialectOracle extends Dialect {
 
     }
 
-    public DialectOracle(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public DialectOracle(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         fulltextParameters = repositoryDescriptor == null ? null : repositoryDescriptor.fulltextAnalyzer == null ? ""
                 : repositoryDescriptor.fulltextAnalyzer;
@@ -150,13 +150,13 @@ public class DialectOracle extends Dialect {
                 idSequenceName = "HIERARCHY_SEQ";
             }
         } else {
-            throw new StorageException("Unknown id type: '" + idt + "'");
+            throw new NuxeoException("Unknown id type: '" + idt + "'");
         }
         xaErrorLogger = newXAErrorLogger();
         initArrayReflection();
     }
 
-    protected XAErrorLogger newXAErrorLogger() throws StorageException {
+    protected XAErrorLogger newXAErrorLogger() {
         try {
             return new XAErrorLogger();
         } catch (ReflectiveOperationException e) {
@@ -166,7 +166,7 @@ public class DialectOracle extends Dialect {
     }
 
     // use reflection to avoid linking dependencies
-    private void initArrayReflection() throws StorageException {
+    private void initArrayReflection() {
         try {
             Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
             arrayDescriptorConstructor = arrayDescriptorClass.getConstructor(String.class, Connection.class);
@@ -177,7 +177,7 @@ public class DialectOracle extends Dialect {
             // query syntax unit test run without Oracle JDBC driver
             return;
         } catch (ReflectiveOperationException e) {
-            throw new StorageException(e.toString(), e);
+            throw new NuxeoException(e);
         }
     }
 

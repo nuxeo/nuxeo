@@ -14,9 +14,9 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 
@@ -39,12 +39,8 @@ public class SQLRepository implements Repository {
     private final String name;
 
     public SQLRepository(RepositoryDescriptor descriptor) {
-        try {
-            repository = new RepositoryImpl(descriptor);
-            name = descriptor.name;
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
+        repository = new RepositoryImpl(descriptor);
+        name = descriptor.name;
     }
 
     /*
@@ -61,18 +57,14 @@ public class SQLRepository implements Repository {
      */
     @Override
     public Session getSession(String sessionId) throws DocumentException {
-        try {
-            return new SQLSession(repository.getConnection(), this, sessionId);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
+        return new SQLSession(repository.getConnection(), this, sessionId);
     }
 
     @Override
     public void shutdown() {
         try {
             repository.close();
-        } catch (StorageException e) {
+        } catch (NuxeoException e) {
             log.error("Cannot close repository", e);
         }
     }

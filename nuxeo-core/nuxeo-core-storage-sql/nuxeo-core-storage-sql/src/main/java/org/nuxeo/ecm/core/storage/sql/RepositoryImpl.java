@@ -26,13 +26,13 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextParser;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
@@ -83,7 +83,7 @@ public class RepositoryImpl implements Repository {
      */
     public String repositoryId;
 
-    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
         cachePropagator = new InvalidationsPropagator("cache-" + this);
@@ -96,10 +96,10 @@ public class RepositoryImpl implements Repository {
         try {
             klass = Thread.currentThread().getContextClassLoader().loadClass(className);
         } catch (ClassNotFoundException e) {
-            throw new StorageException("Unknown fulltext parser class: " + className, e);
+            throw new NuxeoException("Unknown fulltext parser class: " + className, e);
         }
         if (!FulltextParser.class.isAssignableFrom(klass)) {
-            throw new StorageException("Invalid fulltext parser class: " + className);
+            throw new NuxeoException("Invalid fulltext parser class: " + className);
         }
         fulltextParserClass = (Class<? extends FulltextParser>) klass;
 
@@ -150,7 +150,7 @@ public class RepositoryImpl implements Repository {
         });
     }
 
-    protected RepositoryBackend createBackend() throws StorageException {
+    protected RepositoryBackend createBackend() {
         Class<? extends RepositoryBackend> backendClass = repositoryDescriptor.backendClass;
         if (backendClass == null) {
             backendClass = JDBCBackend.class;
@@ -159,14 +159,12 @@ public class RepositoryImpl implements Repository {
             RepositoryBackend backend = backendClass.newInstance();
             backend.initialize(this);
             return backend;
-        } catch (StorageException e) {
-            throw e;
         } catch (ReflectiveOperationException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
-    protected Mapper createCachingMapper(Model model, Mapper mapper) throws StorageException {
+    protected Mapper createCachingMapper(Model model, Mapper mapper) {
         try {
             Class<? extends CachingMapper> cachingMapperClass = getCachingMapperClass();
             if (cachingMapperClass == null) {
@@ -177,7 +175,7 @@ public class RepositoryImpl implements Repository {
                     repositoryDescriptor.cachingMapperProperties);
             return cachingMapper;
         } catch (ReflectiveOperationException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -222,10 +220,9 @@ public class RepositoryImpl implements Repository {
      *
      * @param connectionSpec the parameters to use to connect (unused)
      * @return the session
-     * @throws StorageException
      */
     @Override
-    public SessionImpl getConnection(ConnectionSpec connectionSpec) throws StorageException {
+    public SessionImpl getConnection(ConnectionSpec connectionSpec) {
         return getConnection();
     }
 
@@ -233,10 +230,9 @@ public class RepositoryImpl implements Repository {
      * Gets a new connection.
      *
      * @return the session
-     * @throws StorageException
      */
     @Override
-    public synchronized SessionImpl getConnection() throws StorageException {
+    public synchronized SessionImpl getConnection() {
         if (Framework.getRuntime().isShuttingDown()) {
             throw new IllegalStateException("Cannot open connection, runtime is shutting down");
         }
@@ -252,7 +248,7 @@ public class RepositoryImpl implements Repository {
         return session;
     }
 
-    protected void initRepository() throws StorageException {
+    protected void initRepository() {
         log.debug("Initializing");
         ModelSetup modelSetup = new ModelSetup();
         modelSetup.repositoryDescriptor = repositoryDescriptor;
@@ -277,7 +273,7 @@ public class RepositoryImpl implements Repository {
         }
     }
 
-    protected void initLockManager() throws StorageException {
+    protected void initLockManager() {
         String lockManagerName = getName(); // TODO configure in repo descriptor
         LockManagerService lockManagerService = Framework.getService(LockManagerService.class);
         lockManager = lockManagerService.getLockManager(lockManagerName);
@@ -289,7 +285,7 @@ public class RepositoryImpl implements Repository {
         log.info("Repository " + getName() + " using lock manager " + lockManager);
     }
 
-    protected SessionImpl newSession(Model model, Mapper mapper) throws StorageException {
+    protected SessionImpl newSession(Model model, Mapper mapper) {
         mapper = createCachingMapper(model, mapper);
         return new SessionImpl(this, model, mapper);
     }
@@ -303,7 +299,7 @@ public class RepositoryImpl implements Repository {
         }
 
         @Override
-        public Serializable getIdForPath(String path) throws StorageException {
+        public Serializable getIdForPath(String path) {
             Node node = session.getNodeByPath(path, null);
             return node == null ? null : node.getId();
         }
@@ -344,7 +340,7 @@ public class RepositoryImpl implements Repository {
      */
 
     @Override
-    public synchronized void close() throws StorageException {
+    public synchronized void close() {
         closeAllSessions();
         model = null;
         backend.shutdown();
@@ -354,7 +350,7 @@ public class RepositoryImpl implements Repository {
         registry.remove(MetricRegistry.name(SelectionContext.class, getName(), "cache-size"));
     }
 
-    protected synchronized void closeAllSessions() throws StorageException {
+    protected synchronized void closeAllSessions() {
         for (SessionImpl session : sessions) {
             if (!session.isLive()) {
                 continue;

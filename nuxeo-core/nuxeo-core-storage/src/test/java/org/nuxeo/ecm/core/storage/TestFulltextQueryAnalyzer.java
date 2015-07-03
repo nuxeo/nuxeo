@@ -16,8 +16,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
-import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQueryException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.Op;
 
 public class TestFulltextQueryAnalyzer {
@@ -26,7 +26,7 @@ public class TestFulltextQueryAnalyzer {
         try {
             FulltextQueryAnalyzer.analyzeFulltextQuery(query);
             fail("Query should fail: " + query);
-        } catch (FulltextQueryException e) {
+        } catch (QueryParseException e) {
             // ok
         }
     }

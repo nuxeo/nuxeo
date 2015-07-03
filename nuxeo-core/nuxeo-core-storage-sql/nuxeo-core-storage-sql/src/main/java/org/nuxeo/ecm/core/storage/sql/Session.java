@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * The session is the main high level access point to data from the underlying database.
@@ -36,7 +35,7 @@ public interface Session extends Connection {
      *
      * @return the mapper
      */
-    Mapper getMapper() throws StorageException;
+    Mapper getMapper();
 
     /**
      * Checks if the session is live (not closed).
@@ -55,49 +54,45 @@ public interface Session extends Connection {
      *
      * @return the repository name
      */
-    String getRepositoryName() throws StorageException;
+    String getRepositoryName();
 
     /**
      * Gets the {@link Model} associated to this session.
      *
      * @return the model
-     * @throws StorageException
      */
-    Model getModel() throws StorageException;
+    Model getModel();
 
     /**
      * Saves the modifications to persistent storage.
      * <p>
      * Modifications will be actually written only upon transaction commit.
      *
-     * @throws StorageException
      */
-    void save() throws StorageException;
+    void save();
 
     /**
      * Gets the root node of the repository.
      *
      * @return the root node
      */
-    Node getRootNode() throws StorageException;
+    Node getRootNode();
 
     /**
      * Gets a node given its id.
      *
      * @param id the id
      * @return the node, or {@code null} if not found
-     * @throws StorageException
      */
-    Node getNodeById(Serializable id) throws StorageException;
+    Node getNodeById(Serializable id);
 
     /**
      * Gets several nodes given their ids.
      *
      * @param ids the ids
      * @return the nodes, in the same order as the ids, with elements being {@code null} if not found
-     * @throws StorageException
      */
-    List<Node> getNodesByIds(List<Serializable> ids) throws StorageException;
+    List<Node> getNodesByIds(List<Serializable> ids);
 
     /**
      * Gets a node given its absolute path, or given an existing node and a relative path.
@@ -105,9 +100,8 @@ public interface Session extends Connection {
      * @param path the path
      * @param node the node (ignored for absolute paths)
      * @return the node, or {@code null} if not found
-     * @throws StorageException
      */
-    Node getNodeByPath(String path, Node node) throws StorageException;
+    Node getNodeByPath(String path, Node node);
 
     /**
      * Adds a mixin to a node.
@@ -119,7 +113,7 @@ public interface Session extends Connection {
      * @return {@code true} if the mixin was added, or {@code false} if it is already present
      * @since 5.8
      */
-    boolean addMixinType(Node node, String mixin) throws StorageException;
+    boolean addMixinType(Node node, String mixin);
 
     /**
      * Removes a mixin from a node.
@@ -132,7 +126,7 @@ public interface Session extends Connection {
      *         does not exist
      * @since 5.8
      */
-    boolean removeMixinType(Node node, String mixin) throws StorageException;
+    boolean removeMixinType(Node node, String mixin);
 
     /**
      * Interface for a class that knows how to resolve a node path into a node id.
@@ -144,7 +138,7 @@ public interface Session extends Connection {
          * @param path the node path
          * @return the node id, or {@code null}
          */
-        Serializable getIdForPath(String path) throws StorageException;
+        Serializable getIdForPath(String path);
     }
 
     /**
@@ -154,18 +148,16 @@ public interface Session extends Connection {
      *
      * @param node the node
      * @return the parent node, or {@code null} for the root's parent
-     * @throws StorageException
      */
-    Node getParentNode(Node node) throws StorageException;
+    Node getParentNode(Node node);
 
     /**
      * Gets the absolute path of a node.
      *
      * @param node the node
      * @return the path
-     * @throws StorageException
      */
-    String getPath(Node node) throws StorageException;
+    String getPath(Node node);
 
     /**
      * Checks if a child node with the given name exists.
@@ -177,9 +169,8 @@ public interface Session extends Connection {
      * @param name the child name
      * @param complexProp whether to check complex properties or regular children
      * @return {@code true} if a child node with that name exists
-     * @throws StorageException
      */
-    boolean hasChildNode(Node parent, String name, boolean complexProp) throws StorageException;
+    boolean hasChildNode(Node parent, String name, boolean complexProp);
 
     /**
      * Gets a child node given its parent and name.
@@ -188,9 +179,8 @@ public interface Session extends Connection {
      * @param name the child name
      * @param complexProp whether to check complex properties or regular children
      * @return the child node, or {@code null} is not found
-     * @throws StorageException
      */
-    Node getChildNode(Node parent, String name, boolean complexProp) throws StorageException;
+    Node getChildNode(Node parent, String name, boolean complexProp);
 
     /**
      * Checks it a node has children.
@@ -198,9 +188,8 @@ public interface Session extends Connection {
      * @param parent the parent node
      * @param complexProp whether to check complex properties or regular children
      * @return {@code true} if the parent has children
-     * @throws StorageException
      */
-    boolean hasChildren(Node parent, boolean complexProp) throws StorageException;
+    boolean hasChildren(Node parent, boolean complexProp);
 
     /**
      * Gets the children of a node.
@@ -209,9 +198,8 @@ public interface Session extends Connection {
      * @param name the children name to get (for lists of complex properties), or {@code null} for all
      * @param complexProp whether to check complex properties or regular children
      * @return the collection of children
-     * @throws StorageException
      */
-    List<Node> getChildren(Node parent, String name, boolean complexProp) throws StorageException;
+    List<Node> getChildren(Node parent, String name, boolean complexProp);
 
     /**
      * Creates a new child node.
@@ -222,9 +210,8 @@ public interface Session extends Connection {
      * @param typeName the child type
      * @param complexProp whether this is a complex property ({@code true}) or a regular child ({@code false})
      * @return the new node
-     * @throws StorageException
      */
-    Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp) throws StorageException;
+    Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp);
 
     /**
      * Creates a new child node with given id (used for import).
@@ -236,10 +223,8 @@ public interface Session extends Connection {
      * @param typeName the child type
      * @param complexProp whether this is a complex property ({@code true}) or a regular child ({@code false})
      * @return the new node
-     * @throws StorageException
      */
-    Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName, boolean complexProp)
-            throws StorageException;
+    Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName, boolean complexProp);
 
     /**
      * Creates a proxy for a version node.
@@ -250,10 +235,8 @@ public interface Session extends Connection {
      * @param name the proxy name
      * @param pos the proxy position
      * @return the new proxy node
-     * @throws StorageException
      */
-    Node addProxy(Serializable targetId, Serializable versionSeriesId, Node parent, String name, Long pos)
-            throws StorageException;
+    Node addProxy(Serializable targetId, Serializable versionSeriesId, Node parent, String name, Long pos);
 
     /**
      * Sets a proxies' target.
@@ -262,7 +245,7 @@ public interface Session extends Connection {
      * @param targetId the new target id
      * @since 5.5
      */
-    void setProxyTarget(Node proxy, Serializable targetId) throws StorageException;
+    void setProxyTarget(Node proxy, Serializable targetId);
 
     /**
      * Removes a node from the storage.
@@ -270,10 +253,9 @@ public interface Session extends Connection {
      * This is much more complex that removing a property node ( {@link #removePropertyNode}).
      *
      * @param node the node to remove
-     * @throws StorageException
      * @see {@link #removePropertyNode}
      */
-    void removeNode(Node node) throws StorageException;
+    void removeNode(Node node);
 
     /**
      * Removes a property node from the storage.
@@ -281,10 +263,9 @@ public interface Session extends Connection {
      * This is much less complex that removing a generic document node ( {@link #removeNode}).
      *
      * @param node the property node to remove
-     * @throws StorageException
      * @see {@link #removeNode}
      */
-    void removePropertyNode(Node node) throws StorageException;
+    void removePropertyNode(Node node);
 
     /**
      * Order the given source child node before the destination child node. The source node will be placed before the
@@ -294,9 +275,8 @@ public interface Session extends Connection {
      * @param parent the parent node
      * @param source the child node to move
      * @param dest the child node before which to place the source node, or {@code null} to move at the end
-     * @throws StorageException
      */
-    void orderBefore(Node parent, Node source, Node dest) throws StorageException;
+    void orderBefore(Node parent, Node source, Node dest);
 
     /**
      * Moves a node to a new location with a new name.
@@ -307,9 +287,8 @@ public interface Session extends Connection {
      * @param parent the new parent to which the node is moved
      * @param name the new node name
      * @return the moved node
-     * @throws StorageException
      */
-    Node move(Node source, Node parent, String name) throws StorageException;
+    Node move(Node source, Node parent, String name);
 
     /**
      * Copies a node to a new location with a new name.
@@ -320,9 +299,8 @@ public interface Session extends Connection {
      * @param parent the new parent to which the node is copied
      * @param name the new node name
      * @return the copied node
-     * @throws StorageException
      */
-    Node copy(Node source, Node parent, String name) throws StorageException;
+    Node copy(Node source, Node parent, String name);
 
     /**
      * Checks in a checked-out node: creates a new version with a copy of its information.
@@ -333,17 +311,15 @@ public interface Session extends Connection {
      * @param label the label for the version
      * @param checkinComment the description for the version
      * @return the created version
-     * @throws StorageException
      */
-    Node checkIn(Node node, String label, String checkinComment) throws StorageException;
+    Node checkIn(Node node, String label, String checkinComment);
 
     /**
      * Checks out a checked-in node.
      *
      * @param node the node to check out
-     * @throws StorageException
      */
-    void checkOut(Node node) throws StorageException;
+    void checkOut(Node node);
 
     /**
      * Restores a node to a given version.
@@ -352,9 +328,8 @@ public interface Session extends Connection {
      *
      * @param node the node to restore
      * @param version the version to restore from
-     * @throws StorageException
      */
-    void restore(Node node, Node version) throws StorageException;
+    void restore(Node node, Node version);
 
     /**
      * Gets a version given its version series id and label.
@@ -362,9 +337,8 @@ public interface Session extends Connection {
      * @param versionSeriesId the version series id
      * @param label the label
      * @return the version node, or {@code null} if not found
-     * @throws StorageException
      */
-    Node getVersionByLabel(Serializable versionSeriesId, String label) throws StorageException;
+    Node getVersionByLabel(Serializable versionSeriesId, String label);
 
     /**
      * Gets all the versions for a given version series id.
@@ -373,9 +347,8 @@ public interface Session extends Connection {
      *
      * @param versionSeriesId the version series id
      * @return the list of versions
-     * @throws StorageException
      */
-    List<Node> getVersions(Serializable versionSeriesId) throws StorageException;
+    List<Node> getVersions(Serializable versionSeriesId);
 
     /**
      * Gets the last version for a given version series id.
@@ -384,9 +357,8 @@ public interface Session extends Connection {
      *
      * @param versionSeriesId the version series id
      * @return the last version, or {@code null} if no versions exist
-     * @throws StorageException
      */
-    Node getLastVersion(Serializable versionSeriesId) throws StorageException;
+    Node getLastVersion(Serializable versionSeriesId);
 
     /**
      * Finds the proxies for a document. If the parent is not null, the search will be limited to its direct children.
@@ -400,9 +372,8 @@ public interface Session extends Connection {
      * @param document the document
      * @param parent the parent, or {@code null}
      * @return the list of proxies
-     * @throws StorageException
      */
-    List<Node> getProxies(Node document, Node parent) throws StorageException;
+    List<Node> getProxies(Node document, Node parent);
 
     /**
      * Makes a NXQL query to the database.
@@ -412,7 +383,7 @@ public interface Session extends Connection {
      * @param countTotal if {@code true}, also count the total size without offset/limit
      * @return the resulting list with total size included
      */
-    PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal) throws StorageException;
+    PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal);
 
     /**
      * Makes a query to the database.
@@ -427,8 +398,7 @@ public interface Session extends Connection {
      * @return the resulting list with total size included
      * @Since 5.6
      */
-    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws StorageException;
+    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
 
     /**
      * Makes a query to the database and returns an iterable (which must be closed when done).
@@ -438,10 +408,8 @@ public interface Session extends Connection {
      * @param queryFilter the query filter
      * @param params optional query-type-dependent parameters
      * @return an iterable, which <b>must</b> be closed when done
-     * @throws StorageException
      */
-    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-            throws StorageException;
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params);
 
     /**
      * Gets the lock state of a document.
@@ -492,23 +460,19 @@ public interface Session extends Connection {
 
     /**
      * Update only the read ACLs that have changed.
-     *
-     * @throws StorageException
      */
-    void updateReadAcls() throws StorageException;
+    void updateReadAcls();
 
     /**
      * Rebuild the read ACLs for the whole repository.
-     *
-     * @throws StorageException
      */
-    void rebuildReadAcls() throws StorageException;
+    void rebuildReadAcls();
 
     /**
      * Gets the fulltext extracted from the binary fields.
      *
      * @since 5.9.3
      */
-    Map<String, String> getBinaryFulltext(Serializable id) throws StorageException;
+    Map<String, String> getBinaryFulltext(Serializable id);
 
 }

@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
@@ -24,18 +23,18 @@ public interface RepositoryBackend {
     /**
      * Initializer.
      */
-    void initialize(RepositoryImpl repository) throws StorageException;
+    void initialize(RepositoryImpl repository);
 
     /**
      * Initializes the {@link ModelSetup}. Called once lazily at repository initialization.
      */
-    void initializeModelSetup(ModelSetup modelSetup) throws StorageException;
+    void initializeModelSetup(ModelSetup modelSetup);
 
     /**
      * Initializes what's needed after the {@link Model} has been created. Called once lazily at repository
      * initialization.
      */
-    void initializeModel(Model model) throws StorageException;
+    void initializeModel(Model model);
 
     /**
      * The kind of mapper to create through {@link #newMapper}.
@@ -51,11 +50,11 @@ public interface RepositoryBackend {
      * @param pathResolver the path resolver
      * @param kind the kind of mapper to create
      */
-    Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) throws StorageException;
+    Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind);
 
     /**
      * Shuts down the backend.
      */
-    void shutdown() throws StorageException;
+    void shutdown();
 
 }

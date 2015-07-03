@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
@@ -52,8 +51,7 @@ public class ClusterNodeHandler {
     /** Cluster node id. */
     private Serializable nodeId;
 
-    public ClusterNodeHandler(Mapper clusterNodeMapper, RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+    public ClusterNodeHandler(Mapper clusterNodeMapper, RepositoryDescriptor repositoryDescriptor) {
         this.clusterNodeMapper = clusterNodeMapper;
 
         String nodeIdString = repositoryDescriptor.getClusterNodeId();
@@ -81,18 +79,14 @@ public class ClusterNodeHandler {
         return (JDBCConnection) clusterNodeMapper;
     }
 
-    public void close() throws StorageException {
+    public void close() {
         synchronized (clusterNodeMapper) {
-            try {
-                clusterNodeMapper.removeClusterNode(nodeId);
-            } catch (StorageException e) {
-                log.error(e.getMessage(), e);
-            }
+            clusterNodeMapper.removeClusterNode(nodeId);
             clusterNodeMapper.close();
         }
     }
 
-    public void connectionWasReset() throws StorageException {
+    public void connectionWasReset() {
         synchronized (clusterNodeMapper) {
             // TODO needed?
             // all invalidations queued for us have been lost
@@ -130,7 +124,7 @@ public class ClusterNodeHandler {
     /**
      * Receives cluster invalidations from other cluster nodes.
      */
-    public Invalidations receiveClusterInvalidations() throws StorageException {
+    public Invalidations receiveClusterInvalidations() {
         synchronized (clusterNodeMapper) {
             long remaining = clusterNodeLastInvalidationTimeMillis + clusteringDelay - System.currentTimeMillis();
             if (remaining > 0) {
@@ -153,7 +147,7 @@ public class ClusterNodeHandler {
     /**
      * Sends cluster invalidations to other cluster nodes.
      */
-    public void sendClusterInvalidations(Invalidations invalidations) throws StorageException {
+    public void sendClusterInvalidations(Invalidations invalidations) {
         if (invalidations == null || invalidations.isEmpty()) {
             return;
         }

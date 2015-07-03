@@ -14,8 +14,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.storage.StorageException;
-
 /**
  * A {@link CollectionProperty} gives access to a collection value stored in an underlying {@link Fragment}.
  *
@@ -49,7 +47,7 @@ public class CollectionProperty extends BaseProperty {
 
     // ----- getters -----
 
-    public Serializable[] getValue() throws StorageException {
+    public Serializable[] getValue() {
         Serializable[] value = null;
         if (hasCollectionFragment()) {
             value = ((CollectionFragment) fragment).get();
@@ -62,7 +60,7 @@ public class CollectionProperty extends BaseProperty {
         return value;
     }
 
-    public String[] getStrings() throws StorageException {
+    public String[] getStrings() {
         switch (type) {
         case ARRAY_STRING:
             Serializable[] res = getValue();
@@ -78,7 +76,7 @@ public class CollectionProperty extends BaseProperty {
 
     // ----- setters -----
 
-    public void setValue(Object[] value) throws StorageException {
+    public void setValue(Object[] value) {
         checkWritable();
         try {
             if (hasCollectionFragment()) {

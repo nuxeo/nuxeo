@@ -23,8 +23,8 @@ import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
@@ -85,7 +85,7 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
      * @return the connection
      */
     @Override
-    public Session getConnection(ConnectionSpec connectionSpec) throws StorageException {
+    public Session getConnection(ConnectionSpec connectionSpec) {
         return getConnection();
     }
 
@@ -95,11 +95,9 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
      * @return the connection
      */
     @Override
-    public Session getConnection() throws StorageException {
+    public Session getConnection() {
         try {
             return (Session) connectionManager.allocateConnection(managedConnectionFactory, null);
-        } catch (StorageException e) {
-            throw e;
         } catch (ResourceException e) {
             String msg = e.getMessage();
             if (msg != null && msg.startsWith("No ManagedConnections available")) {
@@ -111,9 +109,9 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
                             + config.getBlockingTimeoutMillis() + ") or " + "nuxeo.vcs.max-pool-size (currently "
                             + config.getMaxPoolSize() + ")";
                 }
-                throw new StorageException(err, e);
+                throw new NuxeoException(err, e);
             }
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -147,7 +145,7 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
      */
 
     @Override
-    public void close() throws StorageException {
+    public void close() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
@@ -162,11 +160,7 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
 
     @Override
     public org.nuxeo.ecm.core.model.Session getSession(String sessionId) throws DocumentException {
-        try {
-            return new SQLSession(getConnection(), this, sessionId);
-        } catch (StorageException e) {
-            throw new DocumentException(e.getMessage(), e);
-        }
+        return new SQLSession(getConnection(), this, sessionId);
     }
 
     @Override
@@ -178,7 +172,7 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
         }
         try {
             managedConnectionFactory.shutdown();
-        } catch (StorageException e) {
+        } catch (NuxeoException e) {
             LogFactory.getLog(ConnectionFactoryImpl.class).warn("cannot shutdown connection factory  " + name);
         }
     }

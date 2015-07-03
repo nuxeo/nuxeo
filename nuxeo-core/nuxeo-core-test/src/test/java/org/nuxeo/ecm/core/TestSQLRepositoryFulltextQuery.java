@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -420,7 +421,7 @@ public class TestSQLRepositoryFulltextQuery {
             query = "SELECT ecm:fulltextScore FROM File";
             res = session.queryAndFetch(query, "NXQL");
             fail("query should fail");
-        } catch (ClientException e) {
+        } catch (QueryParseException e) {
             assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
         }
         // cannot order by score if there's no search

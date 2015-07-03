@@ -20,8 +20,8 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.storage.StateAccessor;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@code Node} implementation. The actual data is stored in contained objects that are {@link Fragment}s.
@@ -60,7 +60,7 @@ public class Node implements StateAccessor {
      * @param path the path, if known at construction time
      */
     @SuppressWarnings("unchecked")
-    protected Node(PersistenceContext context, FragmentGroup fragmentGroup, String path) throws StorageException {
+    protected Node(PersistenceContext context, FragmentGroup fragmentGroup, String path) {
         this.context = context;
         model = context.model;
         hierFragment = fragmentGroup.hier;
@@ -89,39 +89,19 @@ public class Node implements StateAccessor {
     }
 
     public String getName() {
-        try {
-            return getHierFragment().getString(model.HIER_CHILD_NAME_KEY);
-        } catch (StorageException e) {
-            // do not propagate this unlikely exception as a checked one
-            throw new RuntimeException(e);
-        }
+        return getHierFragment().getString(model.HIER_CHILD_NAME_KEY);
     }
 
     public Long getPos() {
-        try {
-            return (Long) getHierFragment().get(model.HIER_CHILD_POS_KEY);
-        } catch (StorageException e) {
-            // do not propagate this unlikely exception as a checked one
-            throw new RuntimeException(e);
-        }
+        return (Long) getHierFragment().get(model.HIER_CHILD_POS_KEY);
     }
 
     public String getPrimaryType() {
-        try {
-            return hierFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
-        } catch (StorageException e) {
-            // do not propagate this unlikely exception as a checked one
-            throw new RuntimeException(e);
-        }
+        return hierFragment.getString(model.MAIN_PRIMARY_TYPE_KEY);
     }
 
     public Serializable getParentId() {
-        try {
-            return getHierFragment().get(model.HIER_PARENT_KEY);
-        } catch (StorageException e) {
-            // do not propagate this unlikely exception as a checked one
-            throw new RuntimeException(e);
-        }
+        return getHierFragment().get(model.HIER_PARENT_KEY);
     }
 
     /**
@@ -145,11 +125,7 @@ public class Node implements StateAccessor {
     // cache the isVersion computation
     public boolean isVersion() {
         if (isVersion == null) {
-            try {
-                isVersion = (Boolean) getSimpleProperty(model.MAIN_IS_VERSION_PROP).getValue();
-            } catch (StorageException e) {
-                throw new RuntimeException(e);
-            }
+            isVersion = (Boolean) getSimpleProperty(model.MAIN_IS_VERSION_PROP).getValue();
             if (isVersion == null) {
                 isVersion = Boolean.FALSE;
             }
@@ -173,12 +149,8 @@ public class Node implements StateAccessor {
      * Never returns {@code null}.
      */
     public String[] getMixinTypes() {
-        try {
-            String[] value = (String[]) hierFragment.get(model.MAIN_MIXIN_TYPES_KEY);
-            return value == null ? NO_MIXINS : value.clone();
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
+        String[] value = (String[]) hierFragment.get(model.MAIN_MIXIN_TYPES_KEY);
+        return value == null ? NO_MIXINS : value.clone();
     }
 
     /**
@@ -221,14 +193,14 @@ public class Node implements StateAccessor {
      *
      * @param name the property name
      * @return the property
-     * @throws IllegalArgumentException if the name is invalid
+     * @throws PropertyNotFoundException if the name is invalid
      */
-    public SimpleProperty getSimpleProperty(String name) throws StorageException {
+    public SimpleProperty getSimpleProperty(String name) {
         SimpleProperty property = (SimpleProperty) propertyCache.get(name);
         if (property == null) {
             ModelProperty propertyInfo = getPropertyInfo(name);
             if (propertyInfo == null) {
-                throw new IllegalArgumentException("Unknown field: " + name);
+                throw new PropertyNotFoundException(name);
             }
             property = makeSimpleProperty(name, propertyInfo);
             propertyCache.put(name, property);
@@ -236,7 +208,7 @@ public class Node implements StateAccessor {
         return property;
     }
 
-    protected SimpleProperty makeSimpleProperty(String name, ModelProperty propertyInfo) throws StorageException {
+    protected SimpleProperty makeSimpleProperty(String name, ModelProperty propertyInfo) {
         String fragmentName = propertyInfo.fragmentName;
         Fragment fragment = fragments.get(fragmentName);
         if (fragment == null) {
@@ -254,14 +226,14 @@ public class Node implements StateAccessor {
      *
      * @param name the property name
      * @return the property
-     * @throws IllegalArgumentException if the name is invalid
+     * @throws PropertyNotFoundException if the name is invalid
      */
-    public CollectionProperty getCollectionProperty(String name) throws StorageException {
+    public CollectionProperty getCollectionProperty(String name) {
         CollectionProperty property = (CollectionProperty) propertyCache.get(name);
         if (property == null) {
             ModelProperty propertyInfo = getPropertyInfo(name);
             if (propertyInfo == null) {
-                throw new IllegalArgumentException("Unknown field: " + name);
+                throw new PropertyNotFoundException(name);
             }
             property = makeCollectionProperty(name, propertyInfo);
             propertyCache.put(name, property);
@@ -269,8 +241,7 @@ public class Node implements StateAccessor {
         return property;
     }
 
-    protected CollectionProperty makeCollectionProperty(String name, ModelProperty propertyInfo)
-            throws StorageException {
+    protected CollectionProperty makeCollectionProperty(String name, ModelProperty propertyInfo) {
         String fragmentName = propertyInfo.fragmentName;
         Fragment fragment = fragments.get(fragmentName);
         if (fragment == null) {
@@ -311,12 +282,12 @@ public class Node implements StateAccessor {
         return null;
     }
 
-    public void setSimpleProperty(String name, Object value) throws StorageException {
+    public void setSimpleProperty(String name, Object value) {
         SimpleProperty property = getSimpleProperty(name);
         property.setValue(value);
     }
 
-    public void setCollectionProperty(String name, Object[] value) throws StorageException {
+    public void setCollectionProperty(String name, Object[] value) {
         CollectionProperty property = getCollectionProperty(name);
         property.setValue(value);
     }
@@ -365,38 +336,22 @@ public class Node implements StateAccessor {
 
     @Override
     public Object getSingle(String name) throws PropertyException {
-        try {
-            return getSimpleProperty(name).getValue();
-        } catch (StorageException e) {
-            throw new PropertyException(name, e);
-        }
+        return getSimpleProperty(name).getValue();
     }
 
     @Override
     public Object[] getArray(String name) throws PropertyException {
-        try {
-            return getCollectionProperty(name).getValue();
-        } catch (StorageException e) {
-            throw new PropertyException(name, e);
-        }
+        return getCollectionProperty(name).getValue();
     }
 
     @Override
     public void setSingle(String name, Object value) throws PropertyException {
-        try {
-            getSimpleProperty(name).setValue(value);
-        } catch (StorageException e) {
-            throw new PropertyException(name, e);
-        }
+        getSimpleProperty(name).setValue(value);
     }
 
     @Override
     public void setArray(String name, Object[] value) throws PropertyException {
-        try {
-            getCollectionProperty(name).setValue(value);
-        } catch (StorageException e) {
-            throw new PropertyException(name, e);
-        }
+        getCollectionProperty(name).setValue(value);
     }
 
 }

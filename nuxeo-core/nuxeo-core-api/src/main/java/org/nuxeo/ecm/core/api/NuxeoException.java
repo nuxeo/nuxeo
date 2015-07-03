@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,12 +12,29 @@
  */
 package org.nuxeo.ecm.core.api;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * The most generic exception thrown by the Nuxeo Core.
+ * The most generic exception thrown by the Nuxeo.
+ * <p>
+ * It can be used to provide enriched information on the exception catch path, without re-wrapping:
+ *
+ * <pre>
+ * try {
+ *     doSomething(id);
+ * } catch (NuxeoException e) {
+ *     e.addInfo("Failed to do something with document id: " + id);
+ *     throw e;
+ * }
+ * </pre>
  */
 public class NuxeoException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
+
+    private LinkedList<String> infos;
 
     public NuxeoException() {
     }
@@ -32,6 +49,57 @@ public class NuxeoException extends RuntimeException {
 
     public NuxeoException(Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * Adds information to this exception, to be returned with the message.
+     *
+     * @param info the information
+     * @since 7.4
+     */
+    public void addInfo(String info) {
+        if (infos == null) {
+            infos = new LinkedList<>();
+        }
+        infos.addFirst(info);
+    }
+
+    /**
+     * Gets the information added to this exception.
+     * <p>
+     * The list is returned in the reverse order than that of the calls to {@link #addInfo}, i.e., the last added
+     * information is first in the list.
+     *
+     * @return the information list
+     * @since 7.4
+     */
+    public List<String> getInfos() {
+        return infos == null ? Collections.emptyList() : infos;
+    }
+
+    /**
+     * Gets the original message passed to the constructor, without additional information added.
+     *
+     * @since 7.4
+     */
+    public String getOriginalMessage() {
+        return super.getMessage();
+    }
+
+    @Override
+    public String getMessage() {
+        String message = getOriginalMessage();
+        if (infos == null) {
+            return message;
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (String info : infos) {
+                sb.append(info);
+                sb.append(", ");
+            }
+            sb.append(message);
+            return sb.toString();
+        }
     }
 
 }

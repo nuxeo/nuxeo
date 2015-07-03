@@ -32,8 +32,8 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.FacetNames;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.CopyResult;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
@@ -151,7 +151,7 @@ public class PersistenceContext {
     protected long bigSelWarnThreshold;
 
     @SuppressWarnings("unchecked")
-    public PersistenceContext(Model model, RowMapper mapper, SessionImpl session) throws StorageException {
+    public PersistenceContext(Model model, RowMapper mapper, SessionImpl session) {
         this.model = model;
         this.mapper = mapper;
         this.session = session;
@@ -231,7 +231,7 @@ public class PersistenceContext {
     /**
      * Generates a new id, or used a pre-generated one (import).
      */
-    protected Serializable generateNewId(Serializable id) throws StorageException {
+    protected Serializable generateNewId(Serializable id) {
         if (id == null) {
             id = mapper.generateNewId();
         }
@@ -250,7 +250,7 @@ public class PersistenceContext {
      * (it's important to call it later and not now because for delta values we need the delta during batch write, and
      * they are cleared by clearDirty).
      */
-    protected RowBatch getSaveBatch(List<Fragment> fragmentsToClearDirty) throws StorageException {
+    protected RowBatch getSaveBatch(List<Fragment> fragmentsToClearDirty) {
         RowBatch batch = new RowBatch();
 
         // created main rows are saved first in the batch (in their order of
@@ -327,11 +327,11 @@ public class PersistenceContext {
         return batch;
     }
 
-    private boolean complexProp(SimpleFragment fragment) throws StorageException {
+    private boolean complexProp(SimpleFragment fragment) {
         return complexProp((Boolean) fragment.get(Model.HIER_CHILD_ISPROPERTY_KEY));
     }
 
-    private boolean complexProp(Boolean isProperty) throws StorageException {
+    private boolean complexProp(Boolean isProperty) {
         return Boolean.TRUE.equals(isProperty);
     }
 
@@ -345,8 +345,7 @@ public class PersistenceContext {
      * @param dirtyStrings set of ids, updated by this method
      * @param dirtyBinaries set of ids, updated by this method
      */
-    protected void findDirtyDocuments(Set<Serializable> dirtyStrings, Set<Serializable> dirtyBinaries)
-            throws StorageException {
+    protected void findDirtyDocuments(Set<Serializable> dirtyStrings, Set<Serializable> dirtyBinaries) {
         // deleted documents, for which we don't need to reindex anything
         Set<Serializable> deleted = null;
         for (Fragment fragment : modified.values()) {
@@ -453,7 +452,7 @@ public class PersistenceContext {
      * <p>
      * Called post-transaction by session commit/rollback or transactionless save.
      */
-    public void sendInvalidationsToOthers() throws StorageException {
+    public void sendInvalidationsToOthers() {
         Invalidations invalidations = new Invalidations();
         for (SelectionContext sel : selections) {
             sel.gatherInvalidations(invalidations);
@@ -466,7 +465,7 @@ public class PersistenceContext {
      * <p>
      * Called pre-transaction by start or transactionless save;
      */
-    public void processReceivedInvalidations() throws StorageException {
+    public void processReceivedInvalidations() {
         Invalidations invals = mapper.receiveInvalidations();
         if (invals == null) {
             return;
@@ -475,7 +474,7 @@ public class PersistenceContext {
         processCacheInvalidations(invals);
     }
 
-    private void processCacheInvalidations(Invalidations invalidations) throws StorageException {
+    private void processCacheInvalidations(Invalidations invalidations) {
         if (invalidations == null) {
             return;
         }
@@ -559,7 +558,7 @@ public class PersistenceContext {
      * @param allowAbsent {@code true} to return an absent fragment as an object instead of {@code null}
      * @return the fragment, or {@code null} if none is found and {@value allowAbsent} was {@code false}
      */
-    protected Fragment get(RowId rowId, boolean allowAbsent) throws StorageException {
+    protected Fragment get(RowId rowId, boolean allowAbsent) {
         Fragment fragment = getIfPresent(rowId);
         if (fragment == null) {
             fragment = getFromMapper(rowId, allowAbsent, false);
@@ -575,7 +574,7 @@ public class PersistenceContext {
      * @param cacheOnly only check memory, not the database
      * @return the fragment, or when {@code allowAbsent} is {@code false}, a {@code null} if not found
      */
-    protected Fragment getFromMapper(RowId rowId, boolean allowAbsent, boolean cacheOnly) throws StorageException {
+    protected Fragment getFromMapper(RowId rowId, boolean allowAbsent, boolean cacheOnly) {
         List<Fragment> fragments = getFromMapper(Collections.singleton(rowId), allowAbsent, cacheOnly);
         return fragments.isEmpty() ? null : fragments.get(0);
     }
@@ -585,8 +584,7 @@ public class PersistenceContext {
      * <p>
      * Fragments not found are not returned if {@code allowAbsent} is {@code false}.
      */
-    protected List<Fragment> getFromMapper(Collection<RowId> rowIds, boolean allowAbsent, boolean cacheOnly)
-            throws StorageException {
+    protected List<Fragment> getFromMapper(Collection<RowId> rowIds, boolean allowAbsent, boolean cacheOnly) {
         List<Fragment> res = new ArrayList<Fragment>(rowIds.size());
 
         // find fragments we really want to fetch
@@ -627,7 +625,7 @@ public class PersistenceContext {
      * @param allowAbsent {@code true} to return an absent fragment as an object instead of skipping it
      * @return the fragments, in arbitrary order (no {@code null}s)
      */
-    public List<Fragment> getMulti(Collection<RowId> rowIds, boolean allowAbsent) throws StorageException {
+    public List<Fragment> getMulti(Collection<RowId> rowIds, boolean allowAbsent) {
         if (rowIds.isEmpty()) {
             return Collections.emptyList();
         }
@@ -672,8 +670,7 @@ public class PersistenceContext {
      * @param allowAbsent {@code true} to return an absent fragment as an object instead of {@code null}
      * @return the list of fragments
      */
-    protected List<Fragment> getFragmentsFromFetchedRows(List<? extends RowId> rowIds, boolean allowAbsent)
-            throws StorageException {
+    protected List<Fragment> getFragmentsFromFetchedRows(List<? extends RowId> rowIds, boolean allowAbsent) {
         List<Fragment> fragments = new ArrayList<Fragment>(rowIds.size());
         for (RowId rowId : rowIds) {
             Fragment fragment = getFragmentFromFetchedRow(rowId, allowAbsent);
@@ -698,7 +695,7 @@ public class PersistenceContext {
      * @param allowAbsent {@code true} to return an absent fragment as an object instead of {@code null}
      * @return the fragment, or {@code null} if it was deleted
      */
-    protected Fragment getFragmentFromFetchedRow(RowId rowId, boolean allowAbsent) throws StorageException {
+    protected Fragment getFragmentFromFetchedRow(RowId rowId, boolean allowAbsent) {
         if (rowId == null) {
             return null;
         }
@@ -748,7 +745,7 @@ public class PersistenceContext {
         }
     }
 
-    public SimpleFragment createHierarchyFragment(Row row) throws StorageException {
+    public SimpleFragment createHierarchyFragment(Row row) {
         SimpleFragment fragment = createSimpleFragment(row);
         SelectionContext hierSel = getHierSelectionContext(complexProp(fragment));
         hierSel.recordCreated(fragment);
@@ -760,7 +757,7 @@ public class PersistenceContext {
         return fragment;
     }
 
-    private SimpleFragment createVersionFragment(Row row) throws StorageException {
+    private SimpleFragment createVersionFragment(Row row) {
         SimpleFragment fragment = createSimpleFragment(row);
         seriesVersions.recordCreated(fragment);
         // no proxies for this new version
@@ -770,28 +767,28 @@ public class PersistenceContext {
         return fragment;
     }
 
-    public void createdProxyFragment(SimpleFragment fragment) throws StorageException {
+    public void createdProxyFragment(SimpleFragment fragment) {
         if (model.proxiesEnabled) {
             seriesProxies.recordCreated(fragment);
             targetProxies.recordCreated(fragment);
         }
     }
 
-    public void removedProxyTarget(SimpleFragment fragment) throws StorageException {
+    public void removedProxyTarget(SimpleFragment fragment) {
         if (model.proxiesEnabled) {
             targetProxies.recordRemoved(fragment);
         }
     }
 
-    public void addedProxyTarget(SimpleFragment fragment) throws StorageException {
+    public void addedProxyTarget(SimpleFragment fragment) {
         if (model.proxiesEnabled) {
             targetProxies.recordCreated(fragment);
         }
     }
 
-    private SimpleFragment createSimpleFragment(Row row) throws StorageException {
+    private SimpleFragment createSimpleFragment(Row row) {
         if (pristine.containsKey(row) || modified.containsKey(row)) {
-            throw new StorageException("Row already registered: " + row);
+            throw new NuxeoException("Row already registered: " + row);
         }
         return new SimpleFragment(row, State.CREATED, this);
     }
@@ -802,7 +799,7 @@ public class PersistenceContext {
      * There's less work to do than when we have to remove a generic document node (less selections, and we can assume
      * the depth is small so recurse).
      */
-    public void removePropertyNode(SimpleFragment hierFragment) throws StorageException {
+    public void removePropertyNode(SimpleFragment hierFragment) {
         // collect children
         Deque<SimpleFragment> todo = new LinkedList<SimpleFragment>();
         List<SimpleFragment> children = new LinkedList<SimpleFragment>();
@@ -826,7 +823,7 @@ public class PersistenceContext {
         }
     }
 
-    private void removeFragmentAndDependents(SimpleFragment hierFragment, boolean primary) throws StorageException {
+    private void removeFragmentAndDependents(SimpleFragment hierFragment, boolean primary) {
         Serializable id = hierFragment.getId();
         for (String fragmentName : model.getTypeFragments(new IdWithTypes(hierFragment))) {
             RowId rowId = new RowId(fragmentName, id);
@@ -843,7 +840,7 @@ public class PersistenceContext {
      * <p>
      * Assumes a full flush was done.
      */
-    public void removeNode(SimpleFragment hierFragment) throws StorageException {
+    public void removeNode(SimpleFragment hierFragment) {
         // remove the lock using the lock manager
         // TODO children locks?
         Serializable rootId = hierFragment.getId();
@@ -889,7 +886,7 @@ public class PersistenceContext {
     /**
      * Remove node from children/proxies selections.
      */
-    private void removeFromSelections(NodeInfo info) throws StorageException {
+    private void removeFromSelections(NodeInfo info) {
         Serializable id = info.id;
         if (Model.PROXY_TYPE.equals(info.primaryType)) {
             seriesProxies.recordRemoved(id, info.versionSeriesId);
@@ -928,7 +925,7 @@ public class PersistenceContext {
      * Deletes a fragment from the context. May generate a database DELETE if primary is {@code true}, otherwise
      * consider that database removal will be a cascade-induced consequence of another DELETE.
      */
-    public void removeFragment(Fragment fragment, boolean primary) throws StorageException {
+    public void removeFragment(Fragment fragment, boolean primary) {
         RowId rowId = fragment.row;
         switch (fragment.getState()) {
         case ABSENT:
@@ -959,7 +956,7 @@ public class PersistenceContext {
      *
      * @param rowId the row id
      */
-    private void removedFragment(RowId rowId) throws StorageException {
+    private void removedFragment(RowId rowId) {
         Fragment fragment = getIfPresent(rowId);
         if (fragment == null) {
             return;
@@ -988,7 +985,7 @@ public class PersistenceContext {
     /**
      * Recomputes isLatest / isLatestMajor on all versions.
      */
-    public void recomputeVersionSeries(Serializable versionSeriesId) throws StorageException {
+    public void recomputeVersionSeries(Serializable versionSeriesId) {
         List<SimpleFragment> versFrags = seriesVersions.getSelectionFragments(versionSeriesId, null);
         Collections.sort(versFrags, VER_CREATED_COMPARATOR);
         Collections.reverse(versFrags);
@@ -1013,20 +1010,20 @@ public class PersistenceContext {
     /**
      * Gets the version ids for a version series, ordered by creation time.
      */
-    public List<Serializable> getVersionIds(Serializable versionSeriesId) throws StorageException {
+    public List<Serializable> getVersionIds(Serializable versionSeriesId) {
         List<SimpleFragment> fragments = seriesVersions.getSelectionFragments(versionSeriesId, null);
         Collections.sort(fragments, VER_CREATED_COMPARATOR);
         return fragmentsIds(fragments);
     }
 
     // called only when proxies enabled
-    public List<Serializable> getSeriesProxyIds(Serializable versionSeriesId) throws StorageException {
+    public List<Serializable> getSeriesProxyIds(Serializable versionSeriesId) {
         List<SimpleFragment> fragments = seriesProxies.getSelectionFragments(versionSeriesId, null);
         return fragmentsIds(fragments);
     }
 
     // called only when proxies enabled
-    public List<Serializable> getTargetProxyIds(Serializable targetId) throws StorageException {
+    public List<Serializable> getTargetProxyIds(Serializable targetId) {
         List<SimpleFragment> fragments = targetProxies.getSelectionFragments(targetId, null);
         return fragmentsIds(fragments);
     }
@@ -1057,7 +1054,7 @@ public class PersistenceContext {
     /**
      * Gets the path by recursing up the hierarchy.
      */
-    public String getPath(SimpleFragment hierFragment) throws StorageException {
+    public String getPath(SimpleFragment hierFragment) {
         PathAndId pathAndId = getPathOrMissingParentId(hierFragment, true);
         return pathAndId.path;
     }
@@ -1072,7 +1069,7 @@ public class PersistenceContext {
      *
      * @param fetch {@code true} if we can use the database, {@code false} if only caches should be used
      */
-    public PathAndId getPathOrMissingParentId(SimpleFragment hierFragment, boolean fetch) throws StorageException {
+    public PathAndId getPathOrMissingParentId(SimpleFragment hierFragment, boolean fetch) {
         LinkedList<String> list = new LinkedList<String>();
         Serializable parentId = null;
         while (true) {
@@ -1123,7 +1120,7 @@ public class PersistenceContext {
      * @param id the id
      * @return the id of the containing document, or {@code null} if there is no parent or the parent has been deleted.
      */
-    public Serializable getContainingDocument(Serializable id) throws StorageException {
+    public Serializable getContainingDocument(Serializable id) {
         Serializable pid = id;
         while (true) {
             if (pid == null) {
@@ -1143,12 +1140,12 @@ public class PersistenceContext {
     }
 
     // also called by Selection
-    protected SimpleFragment getHier(Serializable id, boolean allowAbsent) throws StorageException {
+    protected SimpleFragment getHier(Serializable id, boolean allowAbsent) {
         RowId rowId = new RowId(Model.HIER_TABLE_NAME, id);
         return (SimpleFragment) get(rowId, allowAbsent);
     }
 
-    private boolean isOrderable(Serializable parentId, boolean complexProp) throws StorageException {
+    private boolean isOrderable(Serializable parentId, boolean complexProp) {
         if (complexProp) {
             return true;
         }
@@ -1159,7 +1156,7 @@ public class PersistenceContext {
 
     /** Recursively checks if any of a fragment's parents has been deleted. */
     // needed because we don't recursively clear caches when doing a delete
-    public boolean isDeleted(Serializable id) throws StorageException {
+    public boolean isDeleted(Serializable id) {
         while (id != null) {
             SimpleFragment fragment = getHier(id, false);
             State state;
@@ -1179,7 +1176,7 @@ public class PersistenceContext {
      * @param complexProp whether to deal with complex properties or regular children
      * @return the next pos, or {@code null} if not orderable
      */
-    public Long getNextPos(Serializable nodeId, boolean complexProp) throws StorageException {
+    public Long getNextPos(Serializable nodeId, boolean complexProp) {
         if (!isOrderable(nodeId, complexProp)) {
             return null;
         }
@@ -1200,7 +1197,7 @@ public class PersistenceContext {
      * @param sourceId the node id to move
      * @param destId the node id before which to place the source node, if {@code null} then move the source to the end
      */
-    public void orderBefore(Serializable parentId, Serializable sourceId, Serializable destId) throws StorageException {
+    public void orderBefore(Serializable parentId, Serializable sourceId, Serializable destId) {
         boolean complexProp = false;
         if (!isOrderable(parentId, complexProp)) {
             // TODO throw exception?
@@ -1249,16 +1246,14 @@ public class PersistenceContext {
         }
     }
 
-    public SimpleFragment getChildHierByName(Serializable parentId, String name, boolean complexProp)
-            throws StorageException {
+    public SimpleFragment getChildHierByName(Serializable parentId, String name, boolean complexProp) {
         return getHierSelectionContext(complexProp).getSelectionFragment(parentId, name);
     }
 
     /**
      * Gets hier fragments for children.
      */
-    public List<SimpleFragment> getChildren(Serializable parentId, String name, boolean complexProp)
-            throws StorageException {
+    public List<SimpleFragment> getChildren(Serializable parentId, String name, boolean complexProp) {
         List<SimpleFragment> fragments = getHierSelectionContext(complexProp).getSelectionFragments(parentId, name);
         if (isOrderable(parentId, complexProp)) {
             // sort children in order
@@ -1268,26 +1263,26 @@ public class PersistenceContext {
     }
 
     /** Checks that we don't move/copy under ourselves. */
-    protected void checkNotUnder(Serializable parentId, Serializable id, String op) throws StorageException {
+    protected void checkNotUnder(Serializable parentId, Serializable id, String op) {
         Serializable pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new StorageException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
+                throw new NuxeoException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
             }
             SimpleFragment p = getHier(pid, false);
             if (p == null) {
                 // cannot happen
-                throw new StorageException("No parent: " + pid);
+                throw new NuxeoException("No parent: " + pid);
             }
             pid = p.get(Model.HIER_PARENT_KEY);
         } while (pid != null);
     }
 
     /** Checks that a name is free. Cannot check concurrent sessions though. */
-    protected void checkFreeName(Serializable parentId, String name, boolean complexProp) throws StorageException {
+    protected void checkFreeName(Serializable parentId, String name, boolean complexProp) {
         Fragment fragment = getChildHierByName(parentId, name, complexProp);
         if (fragment != null) {
-            throw new StorageException("Destination name already exists: " + name);
+            throw new NuxeoException("Destination name already exists: " + name);
         }
     }
 
@@ -1297,9 +1292,8 @@ public class PersistenceContext {
      * @param source the source
      * @param parentId the destination parent id
      * @param name the new name
-     * @throws StorageException
      */
-    public void move(Node source, Serializable parentId, String name) throws StorageException {
+    public void move(Node source, Serializable parentId, String name) {
         // a save() has already been done by the caller when doing
         // an actual move (different parents)
         Serializable id = source.getId();
@@ -1336,7 +1330,7 @@ public class PersistenceContext {
      * @param name the new name
      * @return the id of the copy
      */
-    public Serializable copy(Node source, Serializable parentId, String name) throws StorageException {
+    public Serializable copy(Node source, Serializable parentId, String name) {
         Serializable id = source.getId();
         SimpleFragment hierFragment = source.getHierFragment();
         Serializable oldParentId = hierFragment.get(Model.HIER_PARENT_KEY);
@@ -1381,10 +1375,10 @@ public class PersistenceContext {
      * @param checkinComment the version description
      * @return the created version id
      */
-    public Serializable checkIn(Node node, String label, String checkinComment) throws StorageException {
+    public Serializable checkIn(Node node, String label, String checkinComment) {
         Boolean checkedIn = (Boolean) node.hierFragment.get(Model.MAIN_CHECKED_IN_KEY);
         if (Boolean.TRUE.equals(checkedIn)) {
-            throw new StorageException("Already checked in");
+            throw new NuxeoException("Already checked in");
         }
         if (label == null) {
             // use version major + minor as label
@@ -1396,7 +1390,7 @@ public class PersistenceContext {
                 } else {
                     label = major + "." + minor;
                 }
-            } catch (StorageException e) {
+            } catch (IllegalArgumentException e) {
                 log.error("Cannot get version", e);
                 label = "";
             }
@@ -1438,10 +1432,10 @@ public class PersistenceContext {
      *
      * @param node the node to check out
      */
-    public void checkOut(Node node) throws StorageException {
+    public void checkOut(Node node) {
         Boolean checkedIn = (Boolean) node.hierFragment.get(Model.MAIN_CHECKED_IN_KEY);
         if (!Boolean.TRUE.equals(checkedIn)) {
-            throw new StorageException("Already checked out");
+            throw new NuxeoException("Already checked out");
         }
         // update the node to reflect that it's checked out
         node.hierFragment.put(Model.MAIN_CHECKED_IN_KEY, Boolean.FALSE);
@@ -1455,7 +1449,7 @@ public class PersistenceContext {
      * @param node the node
      * @param version the version to restore on this node
      */
-    public void restoreVersion(Node node, Node version) throws StorageException {
+    public void restoreVersion(Node node, Node version) {
         Serializable versionableId = node.getId();
         Serializable versionId = version.getId();
 

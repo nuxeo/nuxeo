@@ -65,15 +65,17 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -122,7 +124,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             root.getSimpleProperty("tst:title");
             fail("Property should not exist");
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyNotFoundException e) {
             // ok
         }
         session.save();
@@ -745,7 +747,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             }
         }
 
-        protected void createDoc() throws StorageException {
+        protected void createDoc() {
             Node root = session.getRootNode();
             session.addChildNode(root, name, null, "TestDoc", false);
             session.save();
@@ -1553,16 +1555,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             session.move(foldera, nodea, "abc");
             fail();
-        } catch (StorageException e) {
-            // ok
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Cannot move a node under itself"));
         }
 
         // cannot move to name that already exists
         try {
             session.move(foldera, folderb, "node_b");
             fail();
-        } catch (StorageException e) {
-            // ok
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Destination name already exists"));
         }
 
         // do normal move
@@ -1754,16 +1758,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             session.copy(foldera, nodea, "abc");
             fail();
-        } catch (StorageException e) {
-            // ok
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Cannot copy a node under itself"));
         }
 
         // cannot copy to name that already exists
         try {
             session.copy(foldera, folderb, "node_b");
             fail();
-        } catch (StorageException e) {
-            // ok
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg, msg.contains("Destination name already exists"));
         }
 
         // do normal copy
@@ -2178,7 +2184,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             doc.setSimpleProperty("info:info", "docinfo");
             session.save();
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyNotFoundException e) {
             if (shadow) {
                 // base doc should have the property
                 throw e;
@@ -2587,7 +2593,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             session.query("SELECT * FROM TestDoc WHERE ecm:fulltext = 'world'", QueryFilter.EMPTY, false);
             fail("Expected fulltext to be disabled and throw an exception");
-        } catch (StorageException e) {
+        } catch (NuxeoException e) {
             if (!e.getMessage().contains("disabled")) {
                 fail("Expected fulltext to be disabled, got: " + e);
             }
@@ -2725,7 +2731,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             node.getSimpleProperty("age:age");
             fail();
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyNotFoundException e) {
             // ok
         }
 
@@ -2744,7 +2750,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             node.getSimpleProperty("age:age");
             fail();
-        } catch (IllegalArgumentException e) {
+        } catch (PropertyNotFoundException e) {
             // ok
         }
     }
@@ -3262,7 +3268,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @SuppressWarnings("boxing")
-    protected List<Serializable> makeComplexDoc(Session session) throws StorageException {
+    protected List<Serializable> makeComplexDoc(Session session) {
         Node root = session.getRootNode();
 
         Node doc = session.addChildNode(root, "doc", null, "TestDoc", false);
@@ -3692,7 +3698,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
             fail();
-        } catch (StorageException e) {
+        } catch (QueryParseException e) {
             String expected = "For SELECT * the ORDER BY columns cannot use wildcard indexes";
             assertEquals(expected, e.getMessage());
         }
@@ -3707,7 +3713,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             session.queryAndFetch("SELECT DISTINCT tst:title" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
             fail();
-        } catch (StorageException e) {
+        } catch (QueryParseException e) {
             String expected = "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: [tst:subjects/*1]";
             assertEquals(expected, e.getMessage());
         }
@@ -3833,15 +3839,15 @@ public class TestSQLBackend extends SQLBackendTestCase {
         try {
             session.queryAndFetch("SELECT tst:title FROM TestDoc WHERE COUNT(tst:title) = 1", "NXQL", QueryFilter.EMPTY);
             fail("Should fail");
-        } catch (StorageException e) {
-            String msg = e.getCause().getMessage();
+        } catch (QueryParseException e) {
+            String msg = e.getMessage();
             assertTrue(msg, msg.contains("Function not supported in WHERE clause"));
         }
         try {
             session.queryAndFetch("SELECT COUNT(*) FROM TestDoc", "NXQL", QueryFilter.EMPTY);
             fail("Should fail");
-        } catch (StorageException e) {
-            String msg = e.getCause().getMessage();
+        } catch (QueryParseException e) {
+            String msg = e.getMessage();
             assertTrue(msg, msg.contains("Syntax error"));
         }
     }
@@ -4089,7 +4095,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     }
 
-    protected static void checkOneDoc(Session session) throws StorageException {
+    protected static void checkOneDoc(Session session) {
         String query = "SELECT * FROM TestDoc WHERE ecm:isProxy = 0";
         QueryFilter qf = new QueryFilter(null, new String[] { "members", "bob" },
                 new String[] { "Read", "Everything" }, null, Collections.<SQLQuery.Transformer> emptyList(), 0, 0);

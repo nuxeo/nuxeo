@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
@@ -36,7 +35,7 @@ import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
  */
 public class DialectHSQLDB extends Dialect {
 
-    public DialectHSQLDB(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) throws StorageException {
+    public DialectHSQLDB(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
     }
 

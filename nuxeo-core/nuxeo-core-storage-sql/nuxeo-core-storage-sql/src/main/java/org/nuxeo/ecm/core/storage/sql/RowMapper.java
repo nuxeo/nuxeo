@@ -24,8 +24,6 @@ import java.util.Set;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.nuxeo.ecm.core.storage.StorageException;
-
 /**
  * A {@link RowMapper} maps {@link Row}s to and from the database.
  * <p>
@@ -40,7 +38,7 @@ public interface RowMapper {
      *
      * @return a new unique id
      */
-    Serializable generateNewId() throws StorageException;
+    Serializable generateNewId();
 
     /*
      * ----- Batch -----
@@ -56,9 +54,8 @@ public interface RowMapper {
      * @param cacheOnly if {@code true}, only hit memory
      * @return the collection of {@link Row}s (or {@link RowId}s if the row was absent from the database). Order is not
      *         the same as the input {@code rowIds}
-     * @throws StorageException
      */
-    List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) throws StorageException;
+    List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly);
 
     /**
      * A {@link Row} and a list of its keys that have to be updated.
@@ -146,9 +143,8 @@ public interface RowMapper {
      * Writes a set of rows. This includes creating, updating and deleting rows.
      *
      * @param batch the set of rows and the operations to do on them
-     * @throws StorageException
      */
-    void write(RowBatch batch) throws StorageException;
+    void write(RowBatch batch);
 
     /*
      * ----- Read -----
@@ -161,7 +157,7 @@ public interface RowMapper {
      * @param rowId the row id
      * @return the row, or {@code null}
      */
-    Row readSimpleRow(RowId rowId) throws StorageException;
+    Row readSimpleRow(RowId rowId);
 
     /**
      * Gets the fulltext extracted from the binary fields.
@@ -170,7 +166,7 @@ public interface RowMapper {
      * @param rowId the row id
      * @return the fulltext string representation or {@code null} if unsupported
      */
-    Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException;
+    Map<String, String> getBinaryFulltext(RowId rowId);
 
     /**
      * Gets an array for a {@link CollectionFragment} from the database, given its table name and id. If no rows are
@@ -179,7 +175,7 @@ public interface RowMapper {
      * @param rowId the row id
      * @return the array
      */
-    Serializable[] readCollectionRowArray(RowId rowId) throws StorageException;
+    Serializable[] readCollectionRowArray(RowId rowId);
 
     /**
      * Reads the rows corresponding to a selection.
@@ -193,7 +189,7 @@ public interface RowMapper {
      * @return the list of rows
      */
     List<Row> readSelectionRows(SelectionType selType, Serializable selId, Serializable filter, Serializable criterion,
-            boolean limitToOne) throws StorageException;
+            boolean limitToOne);
 
     /*
      * ----- Copy -----
@@ -223,7 +219,7 @@ public interface RowMapper {
             this.mixinTypes = node.getMixinTypes();
         }
 
-        public IdWithTypes(SimpleFragment hierFragment) throws StorageException {
+        public IdWithTypes(SimpleFragment hierFragment) {
             this.id = hierFragment.getId();
             this.primaryType = hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY);
             this.mixinTypes = (String[]) hierFragment.get(Model.MAIN_MIXIN_TYPES_KEY);
@@ -269,10 +265,8 @@ public interface RowMapper {
      * @param overwriteRow when not {@code null}, the copy is done onto this existing row, and the values are set in
      *            hierarchy
      * @return info about the copy
-     * @throws StorageException
      */
-    CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow)
-            throws StorageException;
+    CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow);
 
     /**
      * A document id, parent id and primary type, along with the version and proxy information (the potentially impacted
@@ -311,8 +305,7 @@ public interface RowMapper {
         /**
          * Creates node info for a node that may also be a proxy or a version.
          */
-        public NodeInfo(SimpleFragment hierFragment, SimpleFragment versionFragment, SimpleFragment proxyFragment)
-                throws StorageException {
+        public NodeInfo(SimpleFragment hierFragment, SimpleFragment versionFragment, SimpleFragment proxyFragment) {
             id = hierFragment.getId();
             parentId = hierFragment.get(Model.HIER_PARENT_KEY);
             primaryType = hierFragment.getString(Model.MAIN_PRIMARY_TYPE_KEY);
@@ -336,7 +329,7 @@ public interface RowMapper {
      * @param rootInfo info about the root to be deleted with its children (root id, and the rest is for invalidations)
      * @return info about the descendants removed (including the root)
      */
-    List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException;
+    List<NodeInfo> remove(NodeInfo rootInfo);
 
     /**
      * Processes and returns the invalidations queued for processing by the cache (if any).
@@ -345,7 +338,7 @@ public interface RowMapper {
      *
      * @return the invalidations, or {@code null}
      */
-    Invalidations receiveInvalidations() throws StorageException;
+    Invalidations receiveInvalidations();
 
     /**
      * Post-transaction invalidations notification.
@@ -354,7 +347,7 @@ public interface RowMapper {
      *
      * @param invalidations the known invalidations to send to others, or {@code null}
      */
-    void sendInvalidations(Invalidations invalidations) throws StorageException;
+    void sendInvalidations(Invalidations invalidations);
 
     /**
      * Clears the mapper's cache (if any)

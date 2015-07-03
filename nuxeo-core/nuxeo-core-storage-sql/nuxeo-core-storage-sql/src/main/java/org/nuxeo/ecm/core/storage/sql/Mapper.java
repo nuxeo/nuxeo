@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@link Mapper} maps {@link Row}s to and from the database.
@@ -59,26 +58,25 @@ public interface Mapper extends RowMapper, XAResource {
      * and from which repository instance.
      *
      * @return the repository and mapper identification
-     * @throws StorageException when initial connection failed (for a NetMapper)
      */
-    Identification getIdentification() throws StorageException;
+    Identification getIdentification();
 
     // used for reflection
     String GET_IDENTIFICATION = "getIdentification";
 
-    void close() throws StorageException;
+    void close();
 
     // used for reflection
     String CLOSE = "close";
 
     // TODO
-    int getTableSize(String tableName) throws StorageException;
+    int getTableSize(String tableName);
 
     /**
      * Creates the necessary structures in the database.
      */
     // TODO
-    void createDatabase() throws StorageException;
+    void createDatabase();
 
     /*
      * ========== Methods returning non-Rows ==========
@@ -94,7 +92,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param repositoryId the repository id
      * @return the root id, or null if not found
      */
-    Serializable getRootId(String repositoryId) throws StorageException;
+    Serializable getRootId(String repositoryId);
 
     /**
      * Records the newly generated root id for a given repository.
@@ -102,7 +100,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param repositoryId the repository id, usually 0
      * @param id the root id
      */
-    void setRootId(Serializable repositoryId, Serializable id) throws StorageException;
+    void setRootId(Serializable repositoryId, Serializable id);
 
     /*
      * ----- Query -----
@@ -117,8 +115,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param countTotal if {@code true}, count the total size without limit/offset
      * @return the list of matching document ids
      */
-    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, boolean countTotal)
-            throws StorageException;
+    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, boolean countTotal);
 
     /**
      * Makes a NXQL query to the database.
@@ -133,8 +130,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @return the list of matching document ids
      * @Since 5.6
      */
-    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws StorageException;
+    PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
 
     /**
      * Makes a query to the database and returns an iterable (which must be closed when done).
@@ -147,7 +143,7 @@ public interface Mapper extends RowMapper, XAResource {
      */
     // queryFilter used for principals and permissions
     IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-            throws StorageException;
+;
 
     /**
      * Gets the ids for all the ancestors of the given row ids.
@@ -155,15 +151,15 @@ public interface Mapper extends RowMapper, XAResource {
      * @param ids the ids
      * @return the set of ancestor ids
      */
-    Set<Serializable> getAncestorsIds(Collection<Serializable> ids) throws StorageException;
+    Set<Serializable> getAncestorsIds(Collection<Serializable> ids);
 
     /*
      * ----- ACLs -----
      */
 
-    void updateReadAcls() throws StorageException;
+    void updateReadAcls();
 
-    void rebuildReadAcls() throws StorageException;
+    void rebuildReadAcls();
 
     /*
      * ----- Clustering -----
@@ -174,22 +170,22 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * Informs the cluster that this node exists.
      */
-    void createClusterNode(Serializable nodeId) throws StorageException;
+    void createClusterNode(Serializable nodeId);
 
     /**
      * Removes this node from the cluster.
      */
-    void removeClusterNode(Serializable nodeId) throws StorageException;
+    void removeClusterNode(Serializable nodeId);
 
     /**
      * Inserts the invalidation rows for the other cluster nodes.
      */
-    void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) throws StorageException;
+    void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations);
 
     /**
      * Gets the invalidations from other cluster nodes.
      */
-    Invalidations getClusterInvalidations(Serializable nodeId) throws StorageException;
+    Invalidations getClusterInvalidations(Serializable nodeId);
 
     /*
      * ----- Locking -----
@@ -203,7 +199,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param id the document id
      * @return the existing lock, or {@code null} when there is no lock
      */
-    Lock getLock(Serializable id) throws StorageException;
+    Lock getLock(Serializable id);
 
     /**
      * Sets a lock on a document.
@@ -215,7 +211,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param lock the lock object to set
      * @return {@code null} if locking succeeded, or the existing lock if locking failed, or a
      */
-    Lock setLock(Serializable id, Lock lock) throws StorageException;
+    Lock setLock(Serializable id, Lock lock);
 
     /**
      * Removes a lock from a document.
@@ -232,14 +228,14 @@ public interface Mapper extends RowMapper, XAResource {
      * @param force {@code true} to just do the remove and not return the previous lock
      * @return the previous lock
      */
-    Lock removeLock(Serializable id, String owner, boolean force) throws StorageException;
+    Lock removeLock(Serializable id, String owner, boolean force);
 
     /**
      * Marks the binaries referenced by this mapper with the referenced binary garbage collector.
      *
      * @param gc the binary garbage collector
      */
-    void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException;
+    void markReferencedBinaries(BinaryGarbageCollector gc);
 
     /**
      * Cleans up (hard-delete) any rows that have been soft-deleted in the database.
@@ -248,7 +244,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @param beforeTime the maximum deletion time of the rows to delete
      * @return the number of rows deleted
      */
-    int cleanupDeletedRows(int max, Calendar beforeTime) throws StorageException;
+    int cleanupDeletedRows(int max, Calendar beforeTime);
 
     /**
      * @since 5.9.3
@@ -258,7 +254,7 @@ public interface Mapper extends RowMapper, XAResource {
     /**
      * @since 5.9.3
      */
-    void connect() throws StorageException;
+    void connect();
 
     /**
      * @since 5.9.3

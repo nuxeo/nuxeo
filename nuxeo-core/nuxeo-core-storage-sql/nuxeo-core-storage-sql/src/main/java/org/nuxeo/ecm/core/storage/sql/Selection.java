@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@link Selection} holds information about row ids corresponding to a fixed clause for a given table.
@@ -127,12 +126,7 @@ public class Selection {
     }
 
     protected Serializable fragmentValue(SimpleFragment fragment) {
-        try {
-            return fragment.get(filterKey);
-        } catch (StorageException e) {
-            log.error("Could not fetch value: " + fragment.getId());
-            return null;
-        }
+        return fragment.get(filterKey);
     }
 
     /**
@@ -258,7 +252,7 @@ public class Selection {
         return (SimpleFragment) context.getIfPresent(rowId);
     }
 
-    private SimpleFragment getFragment(Serializable id) throws StorageException {
+    private SimpleFragment getFragment(Serializable id) {
         RowId rowId = new RowId(tableName, id);
         return (SimpleFragment) context.get(rowId, false);
     }
@@ -276,13 +270,7 @@ public class Selection {
     public SimpleFragment getFragmentByValue(Serializable filter) {
         if (existing != null) {
             for (Serializable id : existing) {
-                SimpleFragment fragment;
-                try {
-                    fragment = getFragment(id);
-                } catch (StorageException e) {
-                    log.warn("Failed refetch for: " + id, e);
-                    continue;
-                }
+                SimpleFragment fragment = getFragment(id);
                 if (fragment == null) {
                     log.warn("Existing fragment missing: " + id);
                     continue;
@@ -333,13 +321,7 @@ public class Selection {
         List<SimpleFragment> filtered = new LinkedList<SimpleFragment>();
         if (existing != null) {
             for (Serializable id : existing) {
-                SimpleFragment fragment;
-                try {
-                    fragment = getFragment(id);
-                } catch (StorageException e) {
-                    log.warn("Failed refetch for: " + id, e);
-                    continue;
-                }
+                SimpleFragment fragment = getFragment(id);
                 if (fragment == null) {
                     log.warn("Existing fragment missing: " + id);
                     continue;

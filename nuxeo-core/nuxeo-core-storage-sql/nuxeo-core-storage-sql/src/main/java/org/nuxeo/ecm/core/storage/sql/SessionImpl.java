@@ -42,6 +42,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -52,7 +53,6 @@ import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork;
 import org.nuxeo.ecm.core.storage.FulltextUpdaterWork.IndexAndText;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.PersistenceContext.PathAndId;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.RowBatch;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLFulltextExtractorWork;
@@ -125,7 +125,7 @@ public class SessionImpl implements Session, XAResource {
 
     private static final long LOG_MIN_DURATION_NS = Long.parseLong(Framework.getProperty(LOG_MIN_DURATION_KEY, "-1")) * 1000000;
 
-    public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper) throws StorageException {
+    public SessionImpl(RepositoryImpl repository, Model model, Mapper mapper) {
         this.repository = repository;
         this.mapper = mapper;
         this.model = model;
@@ -136,7 +136,7 @@ public class SessionImpl implements Session, XAResource {
         try {
             fulltextParser = repository.fulltextParserClass.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
         saveTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "saves"));
         queryTimer = registry.timer(MetricRegistry.name("nuxeo", "repositories", repository.getName(), "queries"));
@@ -218,7 +218,7 @@ public class SessionImpl implements Session, XAResource {
     /**
      * Generates a new id, or used a pre-generated one (import).
      */
-    protected Serializable generateNewId(Serializable id) throws StorageException {
+    protected Serializable generateNewId(Serializable id) {
         return context.generateNewId(id);
     }
 
@@ -241,7 +241,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected void closeSession() throws StorageException {
+    protected void closeSession() {
         live = false;
         context.clearCaches();
         // close the mapper and therefore the connection
@@ -302,7 +302,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void save() throws StorageException {
+    public void save() {
         final Timer.Context timerContext = saveTimer.time();
         try {
             checkLive();
@@ -319,7 +319,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected void flush() throws StorageException {
+    protected void flush() {
         checkThread();
         List<Work> works;
         if (!repository.getRepositoryDescriptor().getFulltextDisabled()) {
@@ -348,7 +348,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected void doFlush() throws StorageException {
+    protected void doFlush() {
         List<Fragment> fragmentsToClearDirty = new ArrayList<>(0);
         RowBatch batch = context.getSaveBatch(fragmentsToClearDirty);
         if (!batch.isEmpty()) {
@@ -362,7 +362,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected Serializable getContainingDocument(Serializable id) throws StorageException {
+    protected Serializable getContainingDocument(Serializable id) {
         return context.getContainingDocument(id);
     }
 
@@ -371,7 +371,7 @@ public class SessionImpl implements Session, XAResource {
      *
      * @return a list of {@link Work} instances to schedule post-commit.
      */
-    protected List<Work> getFulltextWorks() throws StorageException {
+    protected List<Work> getFulltextWorks() {
         Set<Serializable> dirtyStrings = new HashSet<Serializable>();
         Set<Serializable> dirtyBinaries = new HashSet<Serializable>();
         context.findDirtyDocuments(dirtyStrings, dirtyBinaries);
@@ -385,7 +385,7 @@ public class SessionImpl implements Session, XAResource {
         return works;
     }
 
-    protected void getFulltextSimpleWorks(List<Work> works, Set<Serializable> dirtyStrings) throws StorageException {
+    protected void getFulltextSimpleWorks(List<Work> works, Set<Serializable> dirtyStrings) {
         // update simpletext on documents with dirty strings
         for (Serializable docId : dirtyStrings) {
             if (docId == null) {
@@ -433,8 +433,7 @@ public class SessionImpl implements Session, XAResource {
         }
     }
 
-    protected void getFulltextBinariesWorks(List<Work> works, final Set<Serializable> dirtyBinaries)
-            throws StorageException {
+    protected void getFulltextBinariesWorks(List<Work> works, final Set<Serializable> dirtyBinaries) {
         if (dirtyBinaries.isEmpty()) {
             return;
         }
@@ -491,7 +490,7 @@ public class SessionImpl implements Session, XAResource {
         /**
          * Parses the document for one index.
          */
-        protected String findFulltext(Set<String> paths) throws StorageException {
+        protected String findFulltext(Set<String> paths) {
             if (paths == null) {
                 return "";
             }
@@ -560,7 +559,7 @@ public class SessionImpl implements Session, XAResource {
      * <p>
      * Called post-transaction by session commit/rollback or transactionless save.
      */
-    protected void sendInvalidationsToOthers() throws StorageException {
+    protected void sendInvalidationsToOthers() {
         context.sendInvalidationsToOthers();
     }
 
@@ -569,14 +568,14 @@ public class SessionImpl implements Session, XAResource {
      * <p>
      * Called pre-transaction by start or transactionless save;
      */
-    protected void processReceivedInvalidations() throws StorageException {
+    protected void processReceivedInvalidations() {
         context.processReceivedInvalidations();
     }
 
     /**
      * Post transaction check invalidations processing.
      */
-    protected void checkInvalidationsConflict() throws StorageException {
+    protected void checkInvalidationsConflict() {
         // repository.receiveClusterInvalidations(this);
         context.checkInvalidationsConflict();
     }
@@ -587,7 +586,7 @@ public class SessionImpl implements Session, XAResource {
      * -------------------------------------------------------------
      */
 
-    protected Node getNodeById(Serializable id, boolean prefetch) throws StorageException {
+    protected Node getNodeById(Serializable id, boolean prefetch) {
         List<Node> nodes = getNodesByIds(Collections.singletonList(id), prefetch);
         Node node = nodes.get(0);
         // ((JDBCMapper) ((CachingMapper)
@@ -597,7 +596,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node getNodeById(Serializable id) throws StorageException {
+    public Node getNodeById(Serializable id) {
         checkLive();
         if (id == null) {
             throw new IllegalArgumentException("Illegal null id");
@@ -605,7 +604,7 @@ public class SessionImpl implements Session, XAResource {
         return getNodeById(id, true);
     }
 
-    public List<Node> getNodesByIds(List<Serializable> ids, boolean prefetch) throws StorageException {
+    public List<Node> getNodesByIds(List<Serializable> ids, boolean prefetch) {
         // get hier fragments
         List<RowId> hierRowIds = new ArrayList<RowId>(ids.size());
         for (Serializable id : ids) {
@@ -713,7 +712,7 @@ public class SessionImpl implements Session, XAResource {
      * Finds prefetched fragments for a hierarchy fragment, takes note of the ones that are proxies.
      */
     protected void findPrefetchedFragments(SimpleFragment hierFragment, List<RowId> bulkRowIds,
-            Set<Serializable> proxyIds) throws StorageException {
+            Set<Serializable> proxyIds) {
         Serializable id = hierFragment.row.id;
 
         // find type
@@ -746,13 +745,13 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public List<Node> getNodesByIds(List<Serializable> ids) throws StorageException {
+    public List<Node> getNodesByIds(List<Serializable> ids) {
         checkLive();
         return getNodesByIds(ids, true);
     }
 
     @Override
-    public Node getParentNode(Node node) throws StorageException {
+    public Node getParentNode(Node node) {
         checkLive();
         if (node == null) {
             throw new IllegalArgumentException("Illegal null node");
@@ -762,7 +761,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public String getPath(Node node) throws StorageException {
+    public String getPath(Node node) {
         checkLive();
         String path = node.getPath();
         if (path == null) {
@@ -784,7 +783,7 @@ public class SessionImpl implements Session, XAResource {
 
     /* Does not apply to properties for now (no use case). */
     @Override
-    public Node getNodeByPath(String path, Node node) throws StorageException {
+    public Node getNodeByPath(String path, Node node) {
         // TODO optimize this to use a dedicated path-based table
         checkLive();
         if (path == null) {
@@ -819,7 +818,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public boolean addMixinType(Node node, String mixin) throws StorageException {
+    public boolean addMixinType(Node node, String mixin) {
         if (model.getMixinPropertyInfos(mixin) == null) {
             throw new IllegalArgumentException("No such mixin: " + mixin);
         }
@@ -845,7 +844,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public boolean removeMixinType(Node node, String mixin) throws StorageException {
+    public boolean removeMixinType(Node node, String mixin) {
         List<String> list = new ArrayList<String>(Arrays.asList(node.getMixinTypes()));
         if (!list.remove(mixin)) {
             return false; // not present in node
@@ -866,8 +865,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp)
-            throws StorageException {
+    public Node addChildNode(Node parent, String name, Long pos, String typeName, boolean complexProp) {
         if (pos == null && !complexProp && parent != null) {
             pos = context.getNextPos(parent.getId(), complexProp);
         }
@@ -875,8 +873,8 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName, boolean complexProp)
-            throws StorageException {
+    public Node addChildNode(Serializable id, Node parent, String name, Long pos, String typeName,
+            boolean complexProp) {
         checkLive();
         if (name == null) {
             throw new IllegalArgumentException("Illegal null name");
@@ -903,7 +901,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     protected Node addNode(Serializable id, Serializable parentId, String name, Long pos, String typeName,
-            boolean complexProp) throws StorageException {
+            boolean complexProp) {
         requireReadAclsUpdate();
         // main info
         Row hierRow = new Row(Model.HIER_TABLE_NAME, id);
@@ -918,10 +916,9 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node addProxy(Serializable targetId, Serializable versionableId, Node parent, String name, Long pos)
-            throws StorageException {
+    public Node addProxy(Serializable targetId, Serializable versionableId, Node parent, String name, Long pos) {
         if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
-            throw new StorageException("Proxies are disabled by configuration");
+            throw new NuxeoException("Proxies are disabled by configuration");
         }
         Node proxy = addChildNode(parent, name, pos, Model.PROXY_TYPE, false);
         proxy.setSimpleProperty(Model.PROXY_TARGET_PROP, targetId);
@@ -932,9 +929,9 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void setProxyTarget(Node proxy, Serializable targetId) throws StorageException {
+    public void setProxyTarget(Node proxy, Serializable targetId) {
         if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
-            throw new StorageException("Proxies are disabled by configuration");
+            throw new NuxeoException("Proxies are disabled by configuration");
         }
         SimpleProperty prop = proxy.getSimpleProperty(Model.PROXY_TARGET_PROP);
         Serializable oldTargetId = prop.getValue();
@@ -947,7 +944,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public boolean hasChildNode(Node parent, String name, boolean complexProp) throws StorageException {
+    public boolean hasChildNode(Node parent, String name, boolean complexProp) {
         checkLive();
         // TODO could optimize further by not fetching the fragment at all
         SimpleFragment fragment = context.getChildHierByName(parent.getId(), normalize(name), complexProp);
@@ -955,7 +952,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node getChildNode(Node parent, String name, boolean complexProp) throws StorageException {
+    public Node getChildNode(Node parent, String name, boolean complexProp) {
         checkLive();
         if (name == null || name.contains("/") || name.equals(".") || name.equals("..")) {
             throw new IllegalArgumentException("Illegal name: " + name);
@@ -966,14 +963,14 @@ public class SessionImpl implements Session, XAResource {
 
     // TODO optimize with dedicated backend call
     @Override
-    public boolean hasChildren(Node parent, boolean complexProp) throws StorageException {
+    public boolean hasChildren(Node parent, boolean complexProp) {
         checkLive();
         List<SimpleFragment> children = context.getChildren(parent.getId(), null, complexProp);
         return children.size() > 0;
     }
 
     @Override
-    public List<Node> getChildren(Node parent, String name, boolean complexProp) throws StorageException {
+    public List<Node> getChildren(Node parent, String name, boolean complexProp) {
         checkLive();
         List<SimpleFragment> fragments = context.getChildren(parent.getId(), name, complexProp);
         List<Node> nodes = new ArrayList<Node>(fragments.size());
@@ -990,13 +987,13 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void orderBefore(Node parent, Node source, Node dest) throws StorageException {
+    public void orderBefore(Node parent, Node source, Node dest) {
         checkLive();
         context.orderBefore(parent.getId(), source.getId(), dest == null ? null : dest.getId());
     }
 
     @Override
-    public Node move(Node source, Node parent, String name) throws StorageException {
+    public Node move(Node source, Node parent, String name) {
         checkLive();
         if (!parent.getId().equals(source.getParentId())) {
             flush(); // needed when doing many moves for circular stuff
@@ -1007,7 +1004,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node copy(Node source, Node parent, String name) throws StorageException {
+    public Node copy(Node source, Node parent, String name) {
         checkLive();
         flush();
         Serializable id = context.copy(source, parent.getId(), name);
@@ -1016,21 +1013,21 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void removeNode(Node node) throws StorageException {
+    public void removeNode(Node node) {
         checkLive();
         flush();
         context.removeNode(node.getHierFragment());
     }
 
     @Override
-    public void removePropertyNode(Node node) throws StorageException {
+    public void removePropertyNode(Node node) {
         checkLive();
         // no flush needed
         context.removePropertyNode(node.getHierFragment());
     }
 
     @Override
-    public Node checkIn(Node node, String label, String checkinComment) throws StorageException {
+    public Node checkIn(Node node, String label, String checkinComment) {
         checkLive();
         flush();
         Serializable id = context.checkIn(node, label, checkinComment);
@@ -1041,14 +1038,14 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void checkOut(Node node) throws StorageException {
+    public void checkOut(Node node) {
         checkLive();
         context.checkOut(node);
         requireReadAclsUpdate();
     }
 
     @Override
-    public void restore(Node node, Node version) throws StorageException {
+    public void restore(Node node, Node version) {
         checkLive();
         // save done inside method
         context.restoreVersion(node, version);
@@ -1056,7 +1053,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node getVersionByLabel(Serializable versionSeriesId, String label) throws StorageException {
+    public Node getVersionByLabel(Serializable versionSeriesId, String label) {
         if (label == null) {
             return null;
         }
@@ -1071,14 +1068,14 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Node getLastVersion(Serializable versionSeriesId) throws StorageException {
+    public Node getLastVersion(Serializable versionSeriesId) {
         checkLive();
         List<Serializable> ids = context.getVersionIds(versionSeriesId);
         return ids.isEmpty() ? null : getNodeById(ids.get(ids.size() - 1));
     }
 
     @Override
-    public List<Node> getVersions(Serializable versionSeriesId) throws StorageException {
+    public List<Node> getVersions(Serializable versionSeriesId) {
         checkLive();
         List<Serializable> ids = context.getVersionIds(versionSeriesId);
         List<Node> nodes = new ArrayList<Node>(ids.size());
@@ -1089,7 +1086,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public List<Node> getProxies(Node document, Node parent) throws StorageException {
+    public List<Node> getProxies(Node document, Node parent) {
         checkLive();
         if (!repository.getRepositoryDescriptor().getProxiesEnabled()) {
             return Collections.emptyList();
@@ -1137,7 +1134,7 @@ public class SessionImpl implements Session, XAResource {
      *
      * @param ids the fragment ids
      */
-    protected List<Fragment> getHierarchyAndAncestors(Collection<Serializable> ids) throws StorageException {
+    protected List<Fragment> getHierarchyAndAncestors(Collection<Serializable> ids) {
         Set<Serializable> allIds = mapper.getAncestorsIds(ids);
         allIds.addAll(ids);
         List<RowId> rowIds = new ArrayList<RowId>(allIds.size());
@@ -1148,8 +1145,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, QueryFilter queryFilter, boolean countTotal) {
         final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, NXQL.NXQL, queryFilter, countTotal);
@@ -1159,8 +1155,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.query(query, queryType, queryFilter, countUpTo);
@@ -1186,8 +1181,8 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-            throws StorageException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            Object... params) {
         final Timer.Context timerContext = queryTimer.time();
         try {
             return mapper.queryAndFetch(query, queryType, queryFilter, params);
@@ -1229,7 +1224,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void updateReadAcls() throws StorageException {
+    public void updateReadAcls() {
         final Timer.Context timerContext = aclrUpdateTimer.time();
         try {
             mapper.updateReadAcls();
@@ -1240,12 +1235,12 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public void rebuildReadAcls() throws StorageException {
+    public void rebuildReadAcls() {
         mapper.rebuildReadAcls();
         readAclsChanged = false;
     }
 
-    private void computeRootNode() throws StorageException {
+    private void computeRootNode() {
         String repositoryId = repository.getName();
         Serializable rootId = mapper.getRootId(repositoryId);
         if (rootId == null && COMPAT_REPOSITORY_NAME) {
@@ -1265,12 +1260,12 @@ public class SessionImpl implements Session, XAResource {
     }
 
     // TODO factor with addChildNode
-    private Node addRootNode() throws StorageException {
+    private Node addRootNode() {
         Serializable id = generateNewId(null);
         return addNode(id, null, "", null, Model.ROOT_TYPE, false);
     }
 
-    private void addRootACP() throws StorageException {
+    private void addRootACP() {
         ACLRow[] aclrows = new ACLRow[3];
         // TODO put groups in their proper place. like that now for consistency.
         aclrows[0] = new ACLRow(0, ACL.LOCAL_ACL, true, SecurityConstants.EVERYTHING, SecurityConstants.ADMINISTRATORS,
@@ -1284,13 +1279,13 @@ public class SessionImpl implements Session, XAResource {
 
     // public Node newNodeInstance() needed ?
 
-    public void checkPermission(String absPath, String actions) throws StorageException {
+    public void checkPermission(String absPath, String actions) {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");
     }
 
-    public boolean hasPendingChanges() throws StorageException {
+    public boolean hasPendingChanges() {
         checkLive();
         // TODO Auto-generated method stub
         throw new RuntimeException("Not implemented");
@@ -1298,11 +1293,7 @@ public class SessionImpl implements Session, XAResource {
 
     public void markReferencedBinaries(BinaryGarbageCollector gc) {
         checkLive();
-        try {
-            mapper.markReferencedBinaries(gc);
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
+        mapper.markReferencedBinaries(gc);
     }
 
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {
@@ -1310,11 +1301,7 @@ public class SessionImpl implements Session, XAResource {
         if (!repository.getRepositoryDescriptor().getSoftDeleteEnabled()) {
             return 0;
         }
-        try {
-            return mapper.cleanupDeletedRows(max, beforeTime);
-        } catch (StorageException e) {
-            throw new RuntimeException(e);
-        }
+        return mapper.cleanupDeletedRows(max, beforeTime);
     }
 
     /*
@@ -1331,7 +1318,7 @@ public class SessionImpl implements Session, XAResource {
         if (flags == TMNOFLAGS) {
             try {
                 processReceivedInvalidations();
-            } catch (StorageException e) {
+            } catch (NuxeoException e) {
                 log.error("Could not start transaction", e);
                 throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
             }
@@ -1355,7 +1342,7 @@ public class SessionImpl implements Session, XAResource {
                     // a spurious log in Geronimo TransactionImpl and has the same effect
                     TransactionHelper.setTransactionRollbackOnly();
                     return;
-                } catch (StorageException e) {
+                } catch (NuxeoException e) {
                     log.error("Exception during transaction commit", e);
                     throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
                 }
@@ -1402,7 +1389,7 @@ public class SessionImpl implements Session, XAResource {
             } finally {
                 checkThreadEnd();
             }
-        } catch (StorageException e) {
+        } catch (NuxeoException e) {
             log.error("Could not send invalidations", e);
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         }
@@ -1460,7 +1447,7 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(Serializable id) throws StorageException {
+    public Map<String, String> getBinaryFulltext(Serializable id) {
         if (repository.getRepositoryDescriptor().getFulltextDisabled()) {
             return null;
         }

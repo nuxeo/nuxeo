@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.core.query.QueryParseException;
+
 /**
  * Structured fulltext query analyzer.
  */
@@ -45,14 +47,6 @@ public class FulltextQueryAnalyzer {
      */
     public enum Op {
         OR, AND, WORD, NOTWORD
-    }
-
-    public static class FulltextQueryException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public FulltextQueryException(String message) {
-            super(message);
-        }
     }
 
     /**
@@ -114,7 +108,7 @@ public class FulltextQueryAnalyzer {
                         word = word.substring(0, word.length() - 1).trim();
                     }
                     if (word.contains(DOUBLE_QUOTES)) {
-                        throw new FulltextQueryException("Invalid fulltext query (double quotes in word): " + query);
+                        throw new QueryParseException("Invalid fulltext query (double quotes in word): " + query);
                     }
                     if (word.length() != 0) {
                         if (phrase == null) {
@@ -128,7 +122,7 @@ public class FulltextQueryAnalyzer {
                         break;
                     }
                     if (!it.hasNext()) {
-                        throw new FulltextQueryException("Invalid fulltext query (unterminated phrase): " + query);
+                        throw new QueryParseException("Invalid fulltext query (unterminated phrase): " + query);
                     }
                     word = it.next();
                 }
@@ -138,10 +132,10 @@ public class FulltextQueryAnalyzer {
                 word = phrase.toString();
             } else if (word.equalsIgnoreCase(OR)) {
                 if (wasOr) {
-                    throw new FulltextQueryException("Invalid fulltext query (OR OR): " + query);
+                    throw new QueryParseException("Invalid fulltext query (OR OR): " + query);
                 }
                 if (terms.isEmpty()) {
-                    throw new FulltextQueryException("Invalid fulltext query (standalone OR): " + query);
+                    throw new QueryParseException("Invalid fulltext query (standalone OR): " + query);
                 }
                 wasOr = true;
                 continue;
@@ -149,13 +143,13 @@ public class FulltextQueryAnalyzer {
             FulltextQuery w = new FulltextQuery();
             if (minus) {
                 if (word.length() == 0) {
-                    throw new FulltextQueryException("Invalid fulltext query (standalone -): " + query);
+                    throw new QueryParseException("Invalid fulltext query (standalone -): " + query);
                 }
                 w.op = Op.NOTWORD;
             } else {
                 if (plus) {
                     if (word.length() == 0) {
-                        throw new FulltextQueryException("Invalid fulltext query (standalone +): " + query);
+                        throw new QueryParseException("Invalid fulltext query (standalone +): " + query);
                     }
                 }
                 w.op = Op.WORD;
@@ -168,7 +162,7 @@ public class FulltextQueryAnalyzer {
             terms.add(w);
         }
         if (wasOr) {
-            throw new FulltextQueryException("Invalid fulltext query (final OR): " + query);
+            throw new QueryParseException("Invalid fulltext query (final OR): " + query);
         }
         // final terms
         endAnd();

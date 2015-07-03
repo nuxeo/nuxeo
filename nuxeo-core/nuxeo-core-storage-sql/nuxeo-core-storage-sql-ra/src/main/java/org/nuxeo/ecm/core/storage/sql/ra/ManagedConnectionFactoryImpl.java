@@ -33,7 +33,6 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
@@ -286,7 +285,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
         }
     }
 
-    public void shutdown() throws StorageException {
+    public void shutdown() {
         try {
             repository.close();
         } finally {
@@ -298,7 +297,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
      * Gets the repository descriptor provided by the repository extension point. It's where clustering, indexing, etc.
      * are configured.
      */
-    protected static RepositoryDescriptor getRepositoryDescriptor(String name) throws StorageException {
+    protected static RepositoryDescriptor getRepositoryDescriptor(String name) {
         SQLRepositoryService sqlRepositoryService = Framework.getLocalService(SQLRepositoryService.class);
         return sqlRepositoryService.getRepositoryDescriptor(name);
     }
@@ -306,7 +305,7 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
     /**
      * Called by the {@link ManagedConnectionImpl} constructor to get a new physical connection.
      */
-    protected SessionImpl getConnection() throws StorageException {
+    protected SessionImpl getConnection() {
         return repository.getConnection();
     }
 

@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -332,7 +333,7 @@ public class TestSQLRepositoryQuery {
         try {
             session.query("SELECT * FROM File", "NOSUCHQUERYTYPE", null, 0, 0, false);
             fail("Unknown query type should be rejected");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             String m = e.getMessage();
             assertTrue(m, m.contains("No QueryMaker accepts"));
         }

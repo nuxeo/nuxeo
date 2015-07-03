@@ -11,13 +11,15 @@
  */
 package org.nuxeo.ecm.core.storage;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
- * A storage exception thrown if the connection was reset (and should be working again). Helpful for callers that may
- * want to retry things.
+ * An exception thrown if the connection was reset (and should be working again). Helpful for callers that may want to
+ * retry things.
  *
  * @since 5.6
  */
-public class ConnectionResetException extends StorageException {
+public class ConnectionResetException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

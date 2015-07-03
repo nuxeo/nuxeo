@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.resource.ResourceException;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
 import javax.transaction.xa.XAException;
@@ -25,8 +24,8 @@ import javax.transaction.xa.XAResource;
 
 import org.nuxeo.common.utils.JDBCUtils;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
@@ -100,7 +99,7 @@ public class JDBCConnection {
      * @param xadatasource the XA datasource to use to get connections
      */
     public JDBCConnection(Model model, SQLInfo sqlInfo, XADataSource xadatasource,
-            JDBCConnectionPropagator connectionPropagator, boolean noSharing) throws StorageException {
+            JDBCConnectionPropagator connectionPropagator, boolean noSharing) {
         this.model = model;
         this.sqlInfo = sqlInfo;
         this.xadatasource = xadatasource;
@@ -135,17 +134,17 @@ public class JDBCConnection {
         }
     }
 
-    protected void openConnections() throws StorageException {
+    protected void openConnections() {
         try {
             openBaseConnection();
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             dialect.performPostOpenStatements(connection);
-        } catch (SQLException | ResourceException cause) {
-            throw new StorageException("Cannot connect to database", cause);
+        } catch (SQLException cause) {
+            throw new NuxeoException("Cannot connect to database: " + model.getRepositoryDescriptor().name, cause);
         }
     }
 
-    protected void openBaseConnection() throws SQLException, ResourceException {
+    protected void openBaseConnection() throws SQLException {
         // try single-datasource non-XA mode
         String repositoryName = model.getRepositoryDescriptor().name;
         String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName);
@@ -201,7 +200,7 @@ public class JDBCConnection {
     /**
      * Opens a new connection if the previous ones was broken or timed out.
      */
-    protected void resetConnection() throws StorageException {
+    protected void resetConnection() {
         logger.error("Resetting connection");
         closeConnections();
         openConnections();
@@ -217,7 +216,7 @@ public class JDBCConnection {
     /**
      * Checks that the connection is valid, and tries to reset it if not.
      */
-    protected void checkConnectionValid() throws StorageException {
+    protected void checkConnectionValid() {
         if (checkConnectionValid) {
             if (connection == null) {
                 resetConnection();
@@ -231,7 +230,7 @@ public class JDBCConnection {
                 if (dialect.isConnectionClosedException(e)) {
                     resetConnection();
                 } else {
-                    throw new StorageException(e);
+                    throw new NuxeoException(e);
                 }
             } finally {
                 if (st != null) {
@@ -252,7 +251,7 @@ public class JDBCConnection {
      *
      * @param e the exception
      */
-    protected void checkConnectionReset(SQLException e) throws StorageException {
+    protected void checkConnectionReset(SQLException e) {
         checkConnectionReset(e, false);
     }
 
@@ -264,8 +263,7 @@ public class JDBCConnection {
      *            reset
      * @since 5.6
      */
-    protected void checkConnectionReset(SQLException e, boolean throwIfReset) throws StorageException,
-            ConnectionResetException {
+    protected void checkConnectionReset(SQLException e, boolean throwIfReset) throws ConnectionResetException {
         if (connection == null || dialect.isConnectionClosedException(e)) {
             resetConnection();
             if (throwIfReset) {
@@ -279,11 +277,7 @@ public class JDBCConnection {
      */
     protected void checkConnectionReset(XAException e) {
         if (connection == null || dialect.isConnectionClosedException(e)) {
-            try {
-                resetConnection();
-            } catch (StorageException ee) {
-                // swallow, exception already thrown by caller
-            }
+            resetConnection();
         }
     }
 

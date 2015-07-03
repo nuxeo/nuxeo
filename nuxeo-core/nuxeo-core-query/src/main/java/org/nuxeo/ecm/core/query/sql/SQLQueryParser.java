@@ -50,7 +50,8 @@ public final class SQLQueryParser {
             query.setQueryString(string);
             return query;
         } catch (QueryParseException e) {
-            throw new QueryParseException(e.getMessage() + " in query: " + string, e);
+            e.addInfo("In query: " + string);
+            throw e;
         }
     }
 

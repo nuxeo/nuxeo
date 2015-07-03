@@ -25,7 +25,6 @@ import javax.transaction.xa.Xid;
 
 import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ACLRow.ACLRowPositionComparator;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -124,13 +123,13 @@ public class SoftRefCachingRowMapper implements RowMapper {
                 "sor", "get"));
     }
 
-    public void close() throws StorageException {
+    public void close() {
         clearCache();
         cachePropagator.removeQueue(cacheQueue);
     }
 
     @Override
-    public Serializable generateNewId() throws StorageException {
+    public Serializable generateNewId() {
         return rowMapper.generateNewId();
     }
 
@@ -205,7 +204,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public Invalidations receiveInvalidations() throws StorageException {
+    public Invalidations receiveInvalidations() {
         // invalidations from the underlying mapper (remote, cluster)
         Invalidations invals = rowMapper.receiveInvalidations();
 
@@ -235,7 +234,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     // propagate invalidations
     @Override
-    public void sendInvalidations(Invalidations invalidations) throws StorageException {
+    public void sendInvalidations(Invalidations invalidations) {
         // add local invalidations
         if (!localInvalidations.isEmpty()) {
             if (invalidations == null) {
@@ -284,7 +283,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Use those from the cache if available, read from the mapper for the rest.
      */
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         // find which are in cache, and which not
         List<RowId> todo = new LinkedList<RowId>();
@@ -325,7 +324,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
      * Save in the cache then pass all the writes to the mapper.
      */
     @Override
-    public void write(RowBatch batch) throws StorageException {
+    public void write(RowBatch batch) {
         for (Row row : batch.creates) {
             cachePut(row);
             // we need to send modified invalidations for created
@@ -361,7 +360,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public Row readSimpleRow(RowId rowId) throws StorageException {
+    public Row readSimpleRow(RowId rowId) {
         Row row = cacheGet(rowId);
         if (row == null) {
             row = rowMapper.readSimpleRow(rowId);
@@ -375,12 +374,12 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException {
+    public Map<String, String> getBinaryFulltext(RowId rowId) {
         return rowMapper.getBinaryFulltext(rowId);
     }
 
     @Override
-    public Serializable[] readCollectionRowArray(RowId rowId) throws StorageException {
+    public Serializable[] readCollectionRowArray(RowId rowId) {
         Row row = cacheGet(rowId);
         if (row == null) {
             Serializable[] array = rowMapper.readCollectionRowArray(rowId);
@@ -397,7 +396,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     @Override
     public List<Row> readSelectionRows(SelectionType selType, Serializable selId, Serializable filter,
-            Serializable criterion, boolean limitToOne) throws StorageException {
+            Serializable criterion, boolean limitToOne) {
         List<Row> rows = rowMapper.readSelectionRows(selType, selId, filter, criterion, limitToOne);
         for (Row row : rows) {
             cachePut(row);
@@ -410,8 +409,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
      */
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow)
-            throws StorageException {
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow) {
         CopyResult result = rowMapper.copy(source, destParentId, destName, overwriteRow);
         Invalidations invalidations = result.invalidations;
         if (invalidations.modified != null) {
@@ -430,7 +428,7 @@ public class SoftRefCachingRowMapper implements RowMapper {
     }
 
     @Override
-    public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
+    public List<NodeInfo> remove(NodeInfo rootInfo) {
         List<NodeInfo> infos = rowMapper.remove(rootInfo);
         for (NodeInfo info : infos) {
             for (String fragmentName : model.getTypeFragments(new IdWithTypes(info.id, info.primaryType, null))) {

@@ -18,7 +18,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMakerDescriptor;
@@ -44,7 +43,7 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
 
         @Override
         public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
-                QueryFilter queryFilter, Object... params) throws StorageException {
+                QueryFilter queryFilter, Object... params) {
             throw new UnsupportedOperationException();
         }
     }
@@ -62,7 +61,7 @@ public class TestQueryMakerService extends NXRuntimeTestCase {
 
         @Override
         public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
-                QueryFilter queryFilter, Object... params) throws StorageException {
+                QueryFilter queryFilter, Object... params) {
             throw new UnsupportedOperationException();
         }
     }

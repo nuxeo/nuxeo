@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo.SQLInfoSelect;
@@ -57,7 +56,7 @@ public interface QueryMaker {
      * @param params additional parameters, maker-specific
      */
     Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query, QueryFilter queryFilter,
-            Object... params) throws StorageException;
+            Object... params);
 
     /**
      * A SQL query that can be executed by the backend.
@@ -68,22 +67,6 @@ public interface QueryMaker {
 
         public List<Serializable> selectParams = new LinkedList<Serializable>();
 
-    }
-
-    public static class QueryMakerException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
-
-        public QueryMakerException(String message) {
-            super(message);
-        }
-
-        public QueryMakerException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public QueryMakerException(Throwable cause) {
-            super(cause);
-        }
     }
 
     public static class QueryCannotMatchException extends RuntimeException {

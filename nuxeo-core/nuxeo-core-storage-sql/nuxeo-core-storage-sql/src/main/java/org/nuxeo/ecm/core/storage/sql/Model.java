@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.PrefetchInfo;
@@ -44,7 +45,6 @@ import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.storage.FulltextConfiguration;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FieldDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor.FulltextIndexDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RowMapper.IdWithTypes;
@@ -415,7 +415,7 @@ public class Model {
 
     private final boolean supportsArrayColumns;
 
-    public Model(ModelSetup modelSetup) throws StorageException {
+    public Model(ModelSetup modelSetup) {
         repositoryDescriptor = modelSetup.repositoryDescriptor;
         materializeFulltextSyntheticColumn = modelSetup.materializeFulltextSyntheticColumn;
         supportsArrayColumns = modelSetup.supportsArrayColumns;
@@ -1176,7 +1176,7 @@ public class Model {
     /**
      * Creates all the models.
      */
-    private void initModels() throws StorageException {
+    private void initModels() {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         log.debug("Schemas fields from descriptor: " + repositoryDescriptor.schemaFields);
         // document types
@@ -1203,7 +1203,7 @@ public class Model {
         initNoPerDocumentQueryFacets(schemaManager);
     }
 
-    private void initProxySchemas(List<Schema> proxySchemas) throws StorageException {
+    private void initProxySchemas(List<Schema> proxySchemas) {
         Map<String, Set<String>> allSchemas = new HashMap<String, Set<String>>();
         Map<String, Set<String>> allFragments = new HashMap<String, Set<String>>();
         Map<String, Map<String, String>> allChildren = new HashMap<String, Map<String, String>>();
@@ -1245,7 +1245,7 @@ public class Model {
     private void initDocTypeOrMixinModel(String typeName, Collection<Schema> schemas,
             Map<String, Set<String>> schemasMap, Map<String, Set<String>> fragmentsMap,
             Map<String, Map<String, ModelProperty>> propertyInfoMap,
-            Map<String, Map<String, String>> complexChildrenMap, boolean addCommonFragments) throws StorageException {
+            Map<String, Map<String, String>> complexChildrenMap, boolean addCommonFragments) {
         Set<String> schemaNames = new HashSet<String>();
         Set<String> fragmentNames = new HashSet<String>();
         Map<String, String> complexChildren = new HashMap<String, String>();
@@ -1261,9 +1261,10 @@ public class Model {
             schemaNames.add(schema.getName());
             try {
                 fragmentNames.addAll(initSchemaModel(schema));
-            } catch (StorageException e) {
-                throw new StorageException(String.format("Error initializing schema '%s' for composite type '%s'",
-                        schema.getName(), typeName), e);
+            } catch (NuxeoException e) {
+                e.addInfo(String.format("Error initializing schema '%s' for composite type '%s'", schema.getName(),
+                        typeName));
+                throw e;
             }
             inferSchemaPropertyPaths(schema);
             complexChildren.putAll(schemaComplexChildren.get(schema.getName()));
@@ -1475,7 +1476,7 @@ public class Model {
     /**
      * Creates the model for a schema.
      */
-    private Set<String> initSchemaModel(Schema schema) throws StorageException {
+    private Set<String> initSchemaModel(Schema schema) {
         initComplexTypeModel(schema);
         return schemaFragments.get(schema.getName());
     }
@@ -1485,7 +1486,7 @@ public class Model {
      * <p>
      * Adds the simple+collection fragments to {@link #typeFragments} or {@link #schemaFragments}.
      */
-    private void initComplexTypeModel(ComplexType complexType) throws StorageException {
+    private void initComplexTypeModel(ComplexType complexType) {
         String typeName = complexType.getName();
         boolean isSchema = complexType instanceof Schema;
         if (isSchema && schemaFragments.containsKey(typeName)) {
@@ -1632,7 +1633,7 @@ public class Model {
                     if (MAIN_KEY.equalsIgnoreCase(fragmentKey)) {
                         String msg = "A property cannot be named '" + fragmentKey
                                 + "' because this is a reserved name, in type: " + typeName;
-                        throw new StorageException(msg);
+                        throw new NuxeoException(msg);
                     }
                     if (fragmentName.equals(UID_SCHEMA_NAME)
                             && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {

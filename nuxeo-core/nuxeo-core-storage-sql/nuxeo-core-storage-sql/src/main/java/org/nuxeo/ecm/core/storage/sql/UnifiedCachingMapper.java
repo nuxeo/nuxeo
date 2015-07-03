@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 
 /**
  * A {@link Mapper} that uses a {@link UnifiedCachingRowMapper} for row-related operation, and delegates to the
@@ -48,66 +47,65 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
-    public Identification getIdentification() throws StorageException {
+    public Identification getIdentification() {
         return mapper.getIdentification();
     }
 
     @Override
-    public void close() throws StorageException {
+    public void close() {
         super.close();
         mapper.close();
     }
 
     @Override
-    public int getTableSize(String tableName) throws StorageException {
+    public int getTableSize(String tableName) {
         return mapper.getTableSize(tableName);
     }
 
     @Override
-    public void createDatabase() throws StorageException {
+    public void createDatabase() {
         mapper.createDatabase();
     }
 
     @Override
-    public Serializable getRootId(String repositoryId) throws StorageException {
+    public Serializable getRootId(String repositoryId) {
         return mapper.getRootId(repositoryId);
     }
 
     @Override
-    public void setRootId(Serializable repositoryId, Serializable id) throws StorageException {
+    public void setRootId(Serializable repositoryId, Serializable id) {
         mapper.setRootId(repositoryId, id);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, boolean countTotal)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter,
+            boolean countTotal) {
         return mapper.query(query, queryType, queryFilter, countTotal);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         return mapper.query(query, queryType, queryFilter, countUpTo);
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-            throws StorageException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            Object... params) {
         return mapper.queryAndFetch(query, queryType, queryFilter, params);
     }
 
     @Override
-    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids) throws StorageException {
+    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids) {
         return mapper.getAncestorsIds(ids);
     }
 
     @Override
-    public void updateReadAcls() throws StorageException {
+    public void updateReadAcls() {
         mapper.updateReadAcls();
     }
 
     @Override
-    public void rebuildReadAcls() throws StorageException {
+    public void rebuildReadAcls() {
         mapper.rebuildReadAcls();
     }
 
@@ -117,47 +115,47 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
-    public void createClusterNode(Serializable nodeId) throws StorageException {
+    public void createClusterNode(Serializable nodeId) {
         mapper.createClusterNode(nodeId);
     }
 
     @Override
-    public void removeClusterNode(Serializable nodeId) throws StorageException {
+    public void removeClusterNode(Serializable nodeId) {
         mapper.removeClusterNode(nodeId);
     }
 
     @Override
-    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) throws StorageException {
+    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
         mapper.insertClusterInvalidations(nodeId, invalidations);
     }
 
     @Override
-    public Invalidations getClusterInvalidations(Serializable nodeId) throws StorageException {
+    public Invalidations getClusterInvalidations(Serializable nodeId) {
         return mapper.getClusterInvalidations(nodeId);
     }
 
     @Override
-    public Lock getLock(Serializable id) throws StorageException {
+    public Lock getLock(Serializable id) {
         return mapper.getLock(id);
     }
 
     @Override
-    public Lock setLock(Serializable id, Lock lock) throws StorageException {
+    public Lock setLock(Serializable id, Lock lock) {
         return mapper.setLock(id, lock);
     }
 
     @Override
-    public Lock removeLock(Serializable id, String owner, boolean force) throws StorageException {
+    public Lock removeLock(Serializable id, String owner, boolean force) {
         return mapper.removeLock(id, owner, force);
     }
 
     @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException {
+    public void markReferencedBinaries(BinaryGarbageCollector gc) {
         mapper.markReferencedBinaries(gc);
     }
 
     @Override
-    public int cleanupDeletedRows(int max, Calendar beforeTime) throws StorageException {
+    public int cleanupDeletedRows(int max, Calendar beforeTime) {
         return mapper.cleanupDeletedRows(max, beforeTime);
     }
 
@@ -215,7 +213,7 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     }
 
     @Override
-    public void connect() throws StorageException {
+    public void connect() {
         mapper.connect();
     }
 

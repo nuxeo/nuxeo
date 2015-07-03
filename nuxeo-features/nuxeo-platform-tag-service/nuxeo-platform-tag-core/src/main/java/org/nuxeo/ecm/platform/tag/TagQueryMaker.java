@@ -20,7 +20,7 @@ package org.nuxeo.ecm.platform.tag;
 import java.util.List;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -75,7 +75,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
 
     @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
-            QueryFilter queryFilter, Object... params) throws StorageException {
+            QueryFilter queryFilter, Object... params) {
         if (query.startsWith(TAG_IS_TARGET)) {
             type = TAG_IS_TARGET;
         } else if (query.startsWith(COUNT_SOURCE)) {
@@ -91,7 +91,7 @@ public class TagQueryMaker extends NXQLQueryMaker {
             // AND ("DUBLINCORE"."CREATOR" = 'Administrator')
             // GROUP BY "_C1"
         } else {
-            throw new QueryMakerException("Bad query: " + query);
+            throw new QueryParseException("Bad query: " + query);
         }
         query = query.substring(type.length());
         return super.buildQuery(sqlInfo, model, pathResolver, query, queryFilter, params);

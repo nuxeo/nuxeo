@@ -39,8 +39,8 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
@@ -76,9 +76,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
     private final InvalidationsQueue queue;
 
-    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource,
-            ClusterNodeHandler clusterNodeHandler, JDBCConnectionPropagator connectionPropagator, boolean noSharing)
-            throws StorageException {
+    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
+            JDBCConnectionPropagator connectionPropagator, boolean noSharing) {
         super(model, sqlInfo, xadatasource, connectionPropagator, noSharing);
         this.clusterNodeHandler = clusterNodeHandler;
         if (clusterNodeHandler != null) {
@@ -98,7 +97,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Invalidations receiveInvalidations() throws StorageException {
+    public Invalidations receiveInvalidations() {
         if (clusterNodeHandler != null && connection != null) {
             receiveClusterInvalidations();
             return queue.getInvalidations();
@@ -107,7 +106,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void receiveClusterInvalidations() throws StorageException {
+    protected void receiveClusterInvalidations() {
         Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
         // send received invalidations to all mappers
         if (invalidations != null && !invalidations.isEmpty()) {
@@ -116,7 +115,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public void sendInvalidations(Invalidations invalidations) throws StorageException {
+    public void sendInvalidations(Invalidations invalidations) {
         if (clusterNodeHandler != null) {
             clusterNodeHandler.sendClusterInvalidations(invalidations);
         }
@@ -147,17 +146,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Serializable generateNewId() throws StorageException {
+    public Serializable generateNewId() {
         try {
-            return generateNewIdInternal();
+            return dialect.getGeneratedId(connection);
         } catch (SQLException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
-    }
-
-    // same but throwing SQLException
-    protected Serializable generateNewIdInternal() throws SQLException {
-        return dialect.getGeneratedId(connection);
     }
 
     /*
@@ -165,7 +159,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      */
 
     @Override
-    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) throws StorageException {
+    public List<? extends RowId> read(Collection<RowId> rowIds, boolean cacheOnly) {
         List<RowId> res = new ArrayList<RowId>(rowIds.size());
         if (cacheOnly) {
             // return no data
@@ -236,7 +230,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * @param ids the ids
      * @return the list of rows, without the missing ones
      */
-    protected List<Row> readSimpleRows(String tableName, Collection<Serializable> ids) throws StorageException {
+    protected List<Row> readSimpleRows(String tableName, Collection<Serializable> ids) {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
@@ -251,7 +245,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * @param tableName the table name
      * @param ids the ids
      */
-    protected List<Row> readCollectionArrays(String tableName, Collection<Serializable> ids) throws StorageException {
+    protected List<Row> readCollectionArrays(String tableName, Collection<Serializable> ids) {
         if (ids.isEmpty()) {
             return Collections.emptyList();
         }
@@ -324,7 +318,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not select: " + sql, e);
+            throw new NuxeoException("Could not select: " + sql, e);
         }
     }
 
@@ -333,7 +327,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * returned rows, and a joinMap for other criteria).
      */
     protected List<Row> getSelectRows(String tableName, SQLInfoSelect select, Map<String, Serializable> criteriaMap,
-            Map<String, Serializable> joinMap, boolean limitToOne) throws StorageException {
+            Map<String, Serializable> joinMap, boolean limitToOne) {
         List<Row> list = new LinkedList<Row>();
         if (select.whatColumns.isEmpty()) {
             // happens when we fetch a fragment whose columns are all opaque
@@ -379,7 +373,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     throw new RuntimeException(key);
                 }
                 if (v == null) {
-                    throw new StorageException("Null value for key: " + key);
+                    throw new NuxeoException("Null value for key: " + key);
                 }
                 if (v instanceof Collection<?>) {
                     // allow insert of several values, for the IN (...) case
@@ -435,7 +429,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } catch (SQLException e) {
             checkConnectionReset(e, true);
             checkConcurrentUpdate(e);
-            throw new StorageException("Could not select: " + select.sql, e);
+            throw new NuxeoException("Could not select: " + select.sql, e);
         } finally {
             try {
                 closeStatement(ps, rs);
@@ -446,7 +440,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public void write(RowBatch batch) throws StorageException {
+    public void write(RowBatch batch) {
         if (!batch.creates.isEmpty()) {
             writeCreates(batch.creates);
         }
@@ -459,7 +453,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         // batch.deletesDependent not executed
     }
 
-    protected void writeCreates(List<Row> creates) throws StorageException {
+    protected void writeCreates(List<Row> creates) {
         // reorganize by table
         Map<String, List<Row>> tableRows = new LinkedHashMap<String, List<Row>>();
         // hierarchy table first because there are foreign keys to it
@@ -483,7 +477,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void writeUpdates(Set<RowUpdate> updates) throws StorageException {
+    protected void writeUpdates(Set<RowUpdate> updates) {
         // reorganize by table
         Map<String, List<RowUpdate>> tableRows = new HashMap<String, List<RowUpdate>>();
         for (RowUpdate rowu : updates) {
@@ -505,7 +499,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void writeDeletes(Collection<RowId> deletes) throws StorageException {
+    protected void writeDeletes(Collection<RowId> deletes) {
         // reorganize by table
         Map<String, Set<Serializable>> tableIds = new HashMap<String, Set<Serializable>>();
         for (RowId rowId : deletes) {
@@ -526,13 +520,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Inserts multiple rows, all for the same table.
      */
-    protected void insertSimpleRows(String tableName, List<Row> rows) throws StorageException {
+    protected void insertSimpleRows(String tableName, List<Row> rows) {
         if (rows.isEmpty()) {
             return;
         }
         String sql = sqlInfo.getInsertSql(tableName);
         if (sql == null) {
-            throw new StorageException("Unknown table: " + tableName);
+            throw new NuxeoException("Unknown table: " + tableName);
         }
         String loggedSql = supportsBatchUpdates && rows.size() > 1 ? sql + " -- BATCHED" : sql;
         List<Column> columns = sqlInfo.getInsertColumns(tableName);
@@ -577,14 +571,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
             checkConcurrentUpdate(e);
-            throw new StorageException("Could not insert: " + sql, e);
+            throw new NuxeoException("Could not insert: " + sql, e);
         }
     }
 
     /**
      * Updates multiple collection rows, all for the same table.
      */
-    protected void insertCollectionRows(String tableName, List<Row> rows) throws StorageException {
+    protected void insertCollectionRows(String tableName, List<Row> rows) {
         if (rows.isEmpty()) {
             return;
         }
@@ -600,14 +594,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not insert: " + sql, e);
+            throw new NuxeoException("Could not insert: " + sql, e);
         }
     }
 
     /**
      * Updates multiple simple rows, all for the same table.
      */
-    protected void updateSimpleRows(String tableName, List<RowUpdate> rows) throws StorageException {
+    protected void updateSimpleRows(String tableName, List<RowUpdate> rows) {
         if (rows.isEmpty()) {
             return;
         }
@@ -687,12 +681,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             } catch (SQLException e) {
                 checkConnectionReset(e);
-                throw new StorageException("Could not update: " + update.sql, e);
+                throw new NuxeoException("Could not update: " + update.sql, e);
             }
         }
     }
 
-    protected void updateCollectionRows(String tableName, List<RowUpdate> rowus) throws StorageException {
+    protected void updateCollectionRows(String tableName, List<RowUpdate> rowus) {
         Set<Serializable> ids = new HashSet<Serializable>(rowus.size());
         List<Row> rows = new ArrayList<Row>(rowus.size());
         for (RowUpdate rowu : rowus) {
@@ -706,7 +700,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     /**
      * Deletes multiple rows, all for the same table.
      */
-    protected void deleteRows(String tableName, Set<Serializable> ids) throws StorageException {
+    protected void deleteRows(String tableName, Set<Serializable> ids) {
         if (ids.isEmpty()) {
             return;
         }
@@ -728,7 +722,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         }
     }
 
-    protected void deleteRowsSoft(List<NodeInfo> nodeInfos) throws StorageException {
+    protected void deleteRowsSoft(List<NodeInfo> nodeInfos) {
         try {
             int size = nodeInfos.size();
             List<Serializable> ids = new ArrayList<Serializable>(size);
@@ -750,7 +744,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not soft delete", e);
+            throw new NuxeoException("Could not soft delete", e);
         }
     }
 
@@ -812,9 +806,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
      * @param max the maximum number of rows to delete at a time
      * @param beforeTime the maximum deletion time of the rows to delete
      * @return the number of rows deleted
-     * @throws StorageException
      */
-    public int cleanupDeletedRows(int max, Calendar beforeTime) throws StorageException {
+    public int cleanupDeletedRows(int max, Calendar beforeTime) {
         if (max < 0) {
             max = 0;
         }
@@ -849,7 +842,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     ResultSet rs = ps.executeQuery();
                     countExecute();
                     if (!rs.next()) {
-                        throw new StorageException("Cannot get result");
+                        throw new NuxeoException("Cannot get result");
                     }
                     int count = rs.getInt(1);
                     logger.logCount(count);
@@ -860,11 +853,11 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not purge soft delete", e);
+            throw new NuxeoException("Could not purge soft delete", e);
         }
     }
 
-    protected void deleteRowsDirect(String tableName, Collection<Serializable> ids) throws StorageException {
+    protected void deleteRowsDirect(String tableName, Collection<Serializable> ids) {
         try {
             String sql = sqlInfo.getDeleteSql(tableName, ids.size());
             if (logger.isLogEnabled()) {
@@ -885,12 +878,12 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         } catch (SQLException e) {
             checkConnectionReset(e);
             checkConcurrentUpdate(e);
-            throw new StorageException("Could not delete: " + tableName, e);
+            throw new NuxeoException("Could not delete: " + tableName, e);
         }
     }
 
     @Override
-    public Row readSimpleRow(RowId rowId) throws StorageException {
+    public Row readSimpleRow(RowId rowId) {
         SQLInfoSelect select = sqlInfo.selectFragmentById.get(rowId.tableName);
         Map<String, Serializable> criteriaMap = Collections.singletonMap(model.MAIN_KEY, rowId.id);
         List<Row> maps = getSelectRows(rowId.tableName, select, criteriaMap, null, true);
@@ -898,7 +891,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(RowId rowId) throws StorageException {
+    public Map<String, String> getBinaryFulltext(RowId rowId) {
         ArrayList<String> columns = new ArrayList<String>();
         for (String index : model.getFulltextConfiguration().indexesAllBinary) {
             String col = Model.FULLTEXT_BINARYTEXT_KEY + model.getFulltextIndexSuffix(index);
@@ -934,13 +927,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not select: " + sql, e);
+            throw new NuxeoException("Could not select: " + sql, e);
         }
         return ret;
     }
 
     @Override
-    public Serializable[] readCollectionRowArray(RowId rowId) throws StorageException {
+    public Serializable[] readCollectionRowArray(RowId rowId) {
         String tableName = rowId.tableName;
         Serializable id = rowId.id;
         String sql = sqlInfo.selectFragmentById.get(tableName).sql;
@@ -977,13 +970,13 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not select: " + sql, e);
+            throw new NuxeoException("Could not select: " + sql, e);
         }
     }
 
     @Override
     public List<Row> readSelectionRows(SelectionType selType, Serializable selId, Serializable filter,
-            Serializable criterion, boolean limitToOne) throws StorageException {
+            Serializable criterion, boolean limitToOne) {
         SQLInfoSelection selInfo = sqlInfo.getSelection(selType);
         Map<String, Serializable> criteriaMap = new HashMap<String, Serializable>();
         criteriaMap.put(selType.selKey, selId);
@@ -1001,8 +994,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow)
-            throws StorageException {
+    public CopyResult copy(IdWithTypes source, Serializable destParentId, String destName, Row overwriteRow) {
         // assert !model.separateMainTable; // other case not implemented
         Invalidations invalidations = new Invalidations();
         try {
@@ -1061,14 +1053,14 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return new CopyResult(newRootId, invalidations, proxyIds);
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not copy: " + source.id.toString(), e);
+            throw new NuxeoException("Could not copy: " + source.id.toString(), e);
         }
     }
 
     /**
      * Updates a row in the database with given explicit values.
      */
-    protected void updateSimpleRowWithValues(String tableName, Row row) throws StorageException {
+    protected void updateSimpleRowWithValues(String tableName, Row row) {
         Update update = sqlInfo.getUpdateByIdForKeys(tableName, row.getKeys());
         Table table = update.getTable();
         String sql = update.getStatement();
@@ -1099,7 +1091,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not update: " + sql, e);
+            throw new NuxeoException("Could not update: " + sql, e);
         }
     }
 
@@ -1152,7 +1144,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         SQLInfoSelect copy = sqlInfo.getCopyHier(explicitName, resetVersion);
         PreparedStatement ps = connection.prepareStatement(copy.sql);
         try {
-            Serializable newId = generateNewIdInternal();
+            Serializable newId = generateNewId();
 
             List<Serializable> debugValues = null;
             if (logger.isLogEnabled()) {
@@ -1322,7 +1314,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     }
 
     @Override
-    public List<NodeInfo> remove(NodeInfo rootInfo) throws StorageException {
+    public List<NodeInfo> remove(NodeInfo rootInfo) {
         Serializable rootId = rootInfo.id;
         List<NodeInfo> info = getDescendantsInfo(rootId);
         info.add(rootInfo);
@@ -1334,7 +1326,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
         return info;
     }
 
-    protected List<NodeInfo> getDescendantsInfo(Serializable rootId) throws StorageException {
+    protected List<NodeInfo> getDescendantsInfo(Serializable rootId) {
         List<NodeInfo> descendants = new LinkedList<NodeInfo>();
         String sql = sqlInfo.getSelectDescendantsInfoSql();
         if (logger.isLogEnabled()) {
@@ -1394,7 +1386,7 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             return descendants;
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Failed to get descendants", e);
+            throw new NuxeoException("Failed to get descendants", e);
         } finally {
             try {
                 closeStatement(ps);

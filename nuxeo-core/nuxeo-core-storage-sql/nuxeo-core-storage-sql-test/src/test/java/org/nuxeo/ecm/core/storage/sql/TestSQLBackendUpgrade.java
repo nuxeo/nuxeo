@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 public class TestSQLBackendUpgrade extends SQLBackendTestCase {
@@ -179,7 +178,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
     }
 
     @Test
-    public void testLastContributorUpgrade() throws StorageException {
+    public void testLastContributorUpgrade() {
         setUpTestProp(JDBCMapper.TEST_UPGRADE_LAST_CONTRIBUTOR);
 
         Node ver;

@@ -33,9 +33,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.FulltextQueryAnalyzer.FulltextQuery;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -86,8 +86,7 @@ public class DialectSQLServer extends Dialect {
 
     protected boolean azure;
 
-    public DialectSQLServer(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+    public DialectSQLServer(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         super(metadata, repositoryDescriptor);
         try {
             checkDatabaseConfiguration(metadata.getConnection());
@@ -95,7 +94,7 @@ public class DialectSQLServer extends Dialect {
             engineEdition = getEngineEdition(metadata.getConnection());
 
         } catch (SQLException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
         if (engineEdition == 5) { // 5 = SQL Azure
             azure = true;
@@ -128,7 +127,7 @@ public class DialectSQLServer extends Dialect {
                 idSequenceName = "hierarchy_seq";
             }
         } else {
-            throw new StorageException("Unknown id type: '" + idt + "'");
+            throw new NuxeoException("Unknown id type: '" + idt + "'");
         }
 
     }

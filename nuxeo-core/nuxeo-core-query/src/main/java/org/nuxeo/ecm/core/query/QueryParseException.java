@@ -14,12 +14,17 @@
 
 package org.nuxeo.ecm.core.query;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class QueryParseException extends RuntimeException {
+public class QueryParseException extends NuxeoException {
 
-    private static final long serialVersionUID = -3557588796412733083L;
+    private static final long serialVersionUID = 1L;
+
+    public QueryParseException() {
+    }
 
     public QueryParseException(String message) {
         super(message);

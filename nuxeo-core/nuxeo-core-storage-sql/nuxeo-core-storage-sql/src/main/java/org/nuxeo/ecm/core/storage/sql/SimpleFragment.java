@@ -18,8 +18,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.storage.StorageException;
-
 /**
  * A type of fragment corresponding to a single row in a table and its associated in-memory information (state, dirty
  * fields, attached context).
@@ -44,7 +42,7 @@ public final class SimpleFragment extends Fragment {
     }
 
     @Override
-    protected State refetch() throws StorageException {
+    protected State refetch() {
         Row newrow = context.mapper.readSimpleRow(row);
         if (newrow == null) {
             row.size = 0;
@@ -57,7 +55,7 @@ public final class SimpleFragment extends Fragment {
     }
 
     @Override
-    protected State refetchDeleted() throws StorageException {
+    protected State refetchDeleted() {
         row.size = 0;
         return State.ABSENT;
     }
@@ -68,7 +66,7 @@ public final class SimpleFragment extends Fragment {
      * @param key the key
      * @return the value
      */
-    public Serializable get(String key) throws StorageException {
+    public Serializable get(String key) {
         accessed();
         return row.get(key);
     }
@@ -79,7 +77,7 @@ public final class SimpleFragment extends Fragment {
      * @param key the key
      * @param value the value
      */
-    public void put(String key, Serializable value) throws StorageException {
+    public void put(String key, Serializable value) {
         accessed(); // maybe refetch other values
         row.put(key, value);
         // resize olddata to follow row if needed
@@ -102,7 +100,7 @@ public final class SimpleFragment extends Fragment {
      * @return the value as a {@code String}
      * @throws ClassCastException if the value is not a {@code String}
      */
-    public String getString(String key) throws StorageException {
+    public String getString(String key) {
         return (String) get(key);
     }
 
@@ -152,24 +150,19 @@ public final class SimpleFragment extends Fragment {
         // which is incompatible with the super signature
         @SuppressWarnings("unchecked")
         public <T> int doCompare(SimpleFragment frag1, SimpleFragment frag2) {
-            try {
-                Comparable<T> value1 = (Comparable<T>) frag1.get(key);
-                T value2 = (T) frag2.get(key);
-                if (value1 == null && value2 == null) {
-                    // coherent sort
-                    return frag1.hashCode() - frag2.hashCode();
-                }
-                if (value1 == null) {
-                    return 1;
-                }
-                if (value2 == null) {
-                    return -1;
-                }
-                return value1.compareTo(value2);
-            } catch (StorageException e) {
-                // shouldn't happen
+            Comparable<T> value1 = (Comparable<T>) frag1.get(key);
+            T value2 = (T) frag2.get(key);
+            if (value1 == null && value2 == null) {
+                // coherent sort
                 return frag1.hashCode() - frag2.hashCode();
             }
+            if (value1 == null) {
+                return 1;
+            }
+            if (value2 == null) {
+                return -1;
+            }
+            return value1.compareTo(value2);
         }
     }
 

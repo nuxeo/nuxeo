@@ -21,7 +21,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.map.AbstractReferenceMap;
 import org.apache.commons.collections.map.ReferenceMap;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.runtime.metrics.MetricsService;
 
 import com.codahale.metrics.Counter;
@@ -116,7 +115,7 @@ public class SelectionContext {
         return new Selection(selId, selType.tableName, false, selType.filterKey, context, softMap, hardMap);
     }
 
-    public boolean applicable(SimpleFragment fragment) throws StorageException {
+    public boolean applicable(SimpleFragment fragment) {
         // check table name
         if (!fragment.row.tableName.equals(selType.tableName)) {
             return false;
@@ -134,7 +133,7 @@ public class SelectionContext {
     /**
      * Records the fragment as a just-created selection member.
      */
-    public void recordCreated(SimpleFragment fragment) throws StorageException {
+    public void recordCreated(SimpleFragment fragment) {
         Serializable id = fragment.getId();
         // add as a new fragment in the selection
         Serializable selId = fragment.get(selType.selKey);
@@ -156,7 +155,7 @@ public class SelectionContext {
      * @param invalidate {@code true} if this is for a fragment newly created by internal database process (copy, etc.)
      *            and must notified to other session; {@code false} if this is a normal read
      */
-    public void recordExisting(SimpleFragment fragment, boolean invalidate) throws StorageException {
+    public void recordExisting(SimpleFragment fragment, boolean invalidate) {
         Serializable selId = fragment.get(selType.selKey);
         if (selId != null) {
             getSelection(selId).addExisting(fragment.getId());
@@ -168,12 +167,12 @@ public class SelectionContext {
     }
 
     /** Removes a selection item from the selection. */
-    public void recordRemoved(SimpleFragment fragment) throws StorageException {
+    public void recordRemoved(SimpleFragment fragment) {
         recordRemoved(fragment.getId(), fragment.get(selType.selKey));
     }
 
     /** Removes a selection item from the selection. */
-    public void recordRemoved(Serializable id, Serializable selId) throws StorageException {
+    public void recordRemoved(Serializable id, Serializable selId) {
         if (selId != null) {
             getSelection(selId).remove(id);
             modifiedInTransaction.add(selId);
@@ -182,7 +181,7 @@ public class SelectionContext {
     }
 
     /** Records a selection as removed. */
-    public void recordRemovedSelection(Serializable selId) throws StorageException {
+    public void recordRemovedSelection(Serializable selId) {
         softMap.remove(selId);
         hardMap.remove(selId);
         modifiedInTransaction.add(selId);
@@ -198,7 +197,7 @@ public class SelectionContext {
      * @param filter the value to filter on
      * @return the fragment, or {@code null} if not found
      */
-    public SimpleFragment getSelectionFragment(Serializable selId, String filter) throws StorageException {
+    public SimpleFragment getSelectionFragment(Serializable selId, String filter) {
         SimpleFragment fragment = getSelection(selId).getFragmentByValue(filter);
         if (fragment == SimpleFragment.UNKNOWN) {
             // read it through the mapper
@@ -218,7 +217,7 @@ public class SelectionContext {
      * @param filter the value to filter on, or {@code null} for all
      * @return the list of fragments
      */
-    public List<SimpleFragment> getSelectionFragments(Serializable selId, String filter) throws StorageException {
+    public List<SimpleFragment> getSelectionFragments(Serializable selId, String filter) {
         Selection selection = getSelection(selId);
         List<SimpleFragment> fragments = selection.getFragmentsByValue(filter);
         if (fragments == null) {
@@ -288,7 +287,7 @@ public class SelectionContext {
      * <p>
      * Called pre-transaction.
      */
-    public void processReceivedInvalidations(Set<RowId> modified) throws StorageException {
+    public void processReceivedInvalidations(Set<RowId> modified) {
         for (RowId rowId : modified) {
             if (selType.invalidationTableName.equals(rowId.tableName)) {
                 Serializable id = rowId.id;

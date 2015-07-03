@@ -25,7 +25,7 @@ import javax.sql.XADataSource;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Model.IdType;
@@ -70,7 +70,7 @@ public class JDBCBackend implements RepositoryBackend {
     protected boolean isPooledDataSource;
 
     @Override
-    public void initialize(RepositoryImpl repository) throws StorageException {
+    public void initialize(RepositoryImpl repository) {
         this.repository = repository;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
         pseudoDataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryDescriptor.name);
@@ -91,7 +91,7 @@ public class JDBCBackend implements RepositoryBackend {
                 return;
             }
         } catch (SQLException cause) {
-            throw new StorageException("Connection error", cause);
+            throw new NuxeoException("Connection error", cause);
         }
 
         // standard XA mode
@@ -101,16 +101,16 @@ public class JDBCBackend implements RepositoryBackend {
         try {
             klass = Class.forName(className);
         } catch (ClassNotFoundException e) {
-            throw new StorageException("Unknown class: " + className, e);
+            throw new NuxeoException("Unknown class: " + className, e);
         }
         Object instance;
         try {
             instance = klass.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new StorageException("Cannot instantiate class: " + className, e);
+            throw new NuxeoException("Cannot instantiate class: " + className, e);
         }
         if (!(instance instanceof XADataSource)) {
-            throw new StorageException("Not a XADataSource: " + className);
+            throw new NuxeoException("Not a XADataSource: " + className);
         }
         xadatasource = (XADataSource) instance;
 
@@ -140,7 +140,7 @@ public class JDBCBackend implements RepositoryBackend {
      * Opens a connection to get the dialect and finish initializing the {@link ModelSetup}.
      */
     @Override
-    public void initializeModelSetup(ModelSetup modelSetup) throws StorageException {
+    public void initializeModelSetup(ModelSetup modelSetup) {
         try {
             XAConnection xaconnection = null;
             // try single-datasource non-XA mode
@@ -160,8 +160,8 @@ public class JDBCBackend implements RepositoryBackend {
                     xaconnection.close();
                 }
             }
-        } catch (SQLException | ResourceException cause) {
-            throw new StorageException("Cannot connect to database", cause);
+        } catch (SQLException cause) {
+            throw new NuxeoException("Cannot connect to database", cause);
         }
         modelSetup.materializeFulltextSyntheticColumn = dialect.getMaterializeFulltextSyntheticColumn();
         modelSetup.supportsArrayColumns = dialect.supportsArrayColumns();
@@ -184,12 +184,12 @@ public class JDBCBackend implements RepositoryBackend {
      * Creates the {@link SQLInfo} from the model and the dialect.
      */
     @Override
-    public void initializeModel(Model model) throws StorageException {
+    public void initializeModel(Model model) {
         sqlInfo = new SQLInfo(model, dialect);
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) throws StorageException {
+    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) {
         boolean noSharing = kind == MapperKind.LOCK_MANAGER || kind == MapperKind.CLUSTER_NODE_HANDLER;
         boolean noInvalidationPropagation = kind == MapperKind.LOCK_MANAGER;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
@@ -226,7 +226,7 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     @Override
-    public void shutdown() throws StorageException {
+    public void shutdown() {
         if (clusterNodeHandler != null) {
             clusterNodeHandler.close();
         }

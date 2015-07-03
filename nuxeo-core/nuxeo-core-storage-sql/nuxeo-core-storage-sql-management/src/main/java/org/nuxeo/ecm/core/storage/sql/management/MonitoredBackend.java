@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelSetup;
@@ -30,27 +29,27 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) throws StorageException {
+    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) {
         return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver, kind), Mapper.class);
     }
 
     @Override
-    public void initialize(RepositoryImpl repository) throws StorageException {
+    public void initialize(RepositoryImpl repository) {
         wrapped.initialize(repository);
     }
 
     @Override
-    public void initializeModel(Model model) throws StorageException {
+    public void initializeModel(Model model) {
         wrapped.initializeModel(model);
     }
 
     @Override
-    public void initializeModelSetup(ModelSetup modelSetup) throws StorageException {
+    public void initializeModelSetup(ModelSetup modelSetup) {
         wrapped.initializeModelSetup(modelSetup);
     }
 
     @Override
-    public void shutdown() throws StorageException {
+    public void shutdown() {
         wrapped.shutdown();
     }
 

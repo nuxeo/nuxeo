@@ -21,7 +21,6 @@ import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 
 /**
@@ -45,8 +44,8 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
 
     private final JDBCLogger logger;
 
-    public ResultSetQueryResult(QueryMaker queryMaker, String query, QueryFilter queryFilter,
-            PathResolver pathResolver, JDBCMapper mapper, Object... params) throws StorageException, SQLException {
+    public ResultSetQueryResult(QueryMaker queryMaker, String query, QueryFilter queryFilter, PathResolver pathResolver,
+            JDBCMapper mapper, Object... params) throws SQLException {
         logger = mapper.logger;
         q = queryMaker.buildQuery(mapper.sqlInfo, mapper.model, pathResolver, query, queryFilter, params);
         if (q == null) {
@@ -180,7 +179,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
         return this;
     }
 
-    protected Map<String, Serializable> fetchNext() throws StorageException, SQLException {
+    protected Map<String, Serializable> fetchNext() throws SQLException {
         checkLife();
         if (!rs.next()) {
             if (logger.isLogEnabled()) {
@@ -211,7 +210,7 @@ public class ResultSetQueryResult implements IterableQueryResult, Iterator<Map<S
         }
         try {
             next = fetchNext();
-        } catch (StorageException | SQLException e) {
+        } catch (SQLException e) {
             logger.error("Error fetching next: " + e.getMessage(), e);
         }
         eof = next == null;

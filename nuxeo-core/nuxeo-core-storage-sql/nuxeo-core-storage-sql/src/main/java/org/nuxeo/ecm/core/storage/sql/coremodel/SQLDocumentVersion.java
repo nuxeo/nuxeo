@@ -19,7 +19,6 @@ import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 
@@ -69,11 +68,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
         if (versionableNode == null) {
             return false;
         }
-        try {
-            return !Boolean.TRUE.equals(versionableNode.getSimpleProperty(Model.MAIN_CHECKED_IN_PROP).getValue());
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
+        return !Boolean.TRUE.equals(versionableNode.getSimpleProperty(Model.MAIN_CHECKED_IN_PROP).getValue());
     }
 
     @Override

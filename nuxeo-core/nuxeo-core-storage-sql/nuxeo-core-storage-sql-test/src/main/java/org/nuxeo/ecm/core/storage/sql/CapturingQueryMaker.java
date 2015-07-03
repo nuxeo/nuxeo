@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql;
 
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker;
 import org.nuxeo.ecm.core.storage.sql.jdbc.SQLInfo;
@@ -48,7 +47,7 @@ public class CapturingQueryMaker implements QueryMaker {
 
     @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String query,
-            QueryFilter queryFilter, Object... params) throws StorageException {
+            QueryFilter queryFilter, Object... params) {
         Captured captured = (Captured) params[0];
         captured.sqlInfo = sqlInfo;
         captured.model = model;

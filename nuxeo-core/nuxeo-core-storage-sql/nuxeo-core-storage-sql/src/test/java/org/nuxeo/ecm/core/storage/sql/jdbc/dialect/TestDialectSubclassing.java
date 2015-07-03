@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import org.jmock.Expectations;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -67,8 +66,7 @@ public class TestDialectSubclassing extends NXRuntimeTestCase {
     }
 
     protected static class DialectDummy extends DialectH2 {
-        public DialectDummy(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
-                throws StorageException {
+        public DialectDummy(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
             super(metadata, repositoryDescriptor);
         }
     }

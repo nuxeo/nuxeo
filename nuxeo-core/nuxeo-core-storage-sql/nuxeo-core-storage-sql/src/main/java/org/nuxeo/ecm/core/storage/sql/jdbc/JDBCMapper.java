@@ -47,11 +47,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.PartialList;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
@@ -116,7 +116,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, XADataSource xadatasource,
             ClusterNodeHandler clusterNodeHandler, JDBCConnectionPropagator connectionPropagator, boolean noSharing,
-            RepositoryImpl repository) throws StorageException {
+            RepositoryImpl repository) {
         super(model, sqlInfo, xadatasource, clusterNodeHandler, connectionPropagator, noSharing);
         this.pathResolver = pathResolver;
         this.repository = repository;
@@ -141,12 +141,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      */
 
     @Override
-    public void createDatabase() throws StorageException {
+    public void createDatabase() {
         try {
             createTables();
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -366,7 +366,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void createClusterNode(Serializable nodeId) throws StorageException {
+    public void createClusterNode(Serializable nodeId) {
         Calendar now = Calendar.getInstance();
         try {
             String sql = sqlInfo.getCreateClusterNodeSql();
@@ -384,12 +384,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
     @Override
-    public void removeClusterNode(Serializable nodeId) throws StorageException {
+    public void removeClusterNode(Serializable nodeId) {
         try {
             // delete from cluster_nodes
             String sql = sqlInfo.getDeleteClusterNodeSql();
@@ -408,7 +408,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             deleteClusterInvals(nodeId);
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -436,7 +436,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) throws StorageException {
+    public void insertClusterInvalidations(Serializable nodeId, Invalidations invalidations) {
         String sql = dialect.getClusterInsertInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
         PreparedStatement ps = null;
@@ -484,7 +484,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not invalidate", e);
+            throw new NuxeoException("Could not invalidate", e);
         } finally {
             try {
                 closeStatement(ps);
@@ -516,7 +516,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Invalidations getClusterInvalidations(Serializable nodeId) throws StorageException {
+    public Invalidations getClusterInvalidations(Serializable nodeId) {
         Invalidations invalidations = new Invalidations();
         String sql = dialect.getClusterGetInvalidations();
         List<Column> columns = sqlInfo.getClusterInvalidationsColumns();
@@ -556,12 +556,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return invalidations;
         } catch (SQLException e) {
             checkConnectionReset(e, true);
-            throw new StorageException("Could not invalidate", e);
+            throw new NuxeoException("Could not invalidate", e);
         }
     }
 
     @Override
-    public Serializable getRootId(String repositoryId) throws StorageException {
+    public Serializable getRootId(String repositoryId) {
         String sql = sqlInfo.getSelectRootIdSql();
         try {
             if (logger.isLogEnabled()) {
@@ -586,7 +586,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
                 // check that we didn't get several rows
                 if (rs.next()) {
-                    throw new StorageException("Row query for " + repositoryId + " returned several rows: " + sql);
+                    throw new NuxeoException("Row query for " + repositoryId + " returned several rows: " + sql);
                 }
                 return id;
             } finally {
@@ -594,12 +594,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not select: " + sql, e);
+            throw new NuxeoException("Could not select: " + sql, e);
         }
     }
 
     @Override
-    public void setRootId(Serializable repositoryId, Serializable id) throws StorageException {
+    public void setRootId(Serializable repositoryId, Serializable id) {
         String sql = sqlInfo.getInsertRootIdSql();
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
@@ -637,17 +637,17 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Could not insert: " + sql, e);
+            throw new NuxeoException("Could not insert: " + sql, e);
         }
     }
 
-    protected QueryMaker findQueryMaker(String queryType) throws StorageException {
+    protected QueryMaker findQueryMaker(String queryType) {
         for (Class<? extends QueryMaker> klass : queryMakerService.getQueryMakers()) {
             QueryMaker queryMaker;
             try {
                 queryMaker = klass.newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new StorageException(e);
+                throw new NuxeoException(e);
             }
             if (queryMaker.accepts(queryType)) {
                 return queryMaker;
@@ -656,7 +656,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         return null;
     }
 
-    protected void prepareUserReadAcls(QueryFilter queryFilter) throws StorageException {
+    protected void prepareUserReadAcls(QueryFilter queryFilter) {
         String sql = dialect.getPrepareUserReadAclsSql();
         Serializable principals = queryFilter.getPrincipals();
         if (sql == null || principals == null) {
@@ -676,7 +676,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             countExecute();
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Failed to prepare user read acl cache", e);
+            throw new NuxeoException("Failed to prepare user read acl cache", e);
         } finally {
             try {
                 closeStatement(ps);
@@ -687,20 +687,19 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, boolean countTotal)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter,
+            boolean countTotal) {
         return query(query, queryType, queryFilter, countTotal ? -1 : 0);
     }
 
     @Override
-    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws StorageException {
+    public PartialList<Serializable> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         if (dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
         QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
-            throw new StorageException("No QueryMaker accepts query: " + queryType + ": " + query);
+            throw new NuxeoException("No QueryMaker accepts query: " + queryType + ": " + query);
         }
         QueryMaker.Query q = queryMaker.buildQuery(sqlInfo, model, pathResolver, query, queryFilter);
 
@@ -795,7 +794,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return new PartialList<Serializable>(ids, totalSize);
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Invalid query: " + query, e);
+            throw new NuxeoException("Invalid query: " + query, e);
         } finally {
             try {
                 closeStatement(ps, rs);
@@ -847,27 +846,25 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     // queryFilter used for principals and permissions
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-            throws StorageException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter,
+            Object... params) {
         if (dialect.needsPrepareUserReadAcls()) {
             prepareUserReadAcls(queryFilter);
         }
         QueryMaker queryMaker = findQueryMaker(queryType);
         if (queryMaker == null) {
-            throw new StorageException("No QueryMaker accepts query: " + queryType + ": " + query);
+            throw new NuxeoException("No QueryMaker accepts query: " + queryType + ": " + query);
         }
         try {
             return new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, params);
-        } catch (StorageException e) {
-            throw e;
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Invalid query: " + queryType + ": " + query, e);
+            throw new NuxeoException("Invalid query: " + queryType + ": " + query, e);
         }
     }
 
     @Override
-    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids) throws StorageException {
+    public Set<Serializable> getAncestorsIds(Collection<Serializable> ids) {
         SQLInfoSelect select = sqlInfo.getSelectAncestorsIds();
         if (select == null) {
             return getAncestorsIdsIterative(ids);
@@ -916,7 +913,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return res;
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Failed to get ancestors ids", e);
+            throw new NuxeoException("Failed to get ancestors ids", e);
         } finally {
             try {
                 closeStatement(ps, rs);
@@ -929,7 +926,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     /**
      * Uses iterative parentid selection.
      */
-    protected Set<Serializable> getAncestorsIdsIterative(Collection<Serializable> ids) throws StorageException {
+    protected Set<Serializable> getAncestorsIdsIterative(Collection<Serializable> ids) {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
@@ -977,7 +974,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             return res;
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Failed to get ancestors ids", e);
+            throw new NuxeoException("Failed to get ancestors ids", e);
         } finally {
             try {
                 closeStatement(ps, rs);
@@ -988,7 +985,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void updateReadAcls() throws StorageException {
+    public void updateReadAcls() {
         if (!dialect.supportsReadAcl()) {
             return;
         }
@@ -1006,7 +1003,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             countExecute();
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Failed to update read acls", e);
+            throw new NuxeoException("Failed to update read acls", e);
         } finally {
             try {
                 closeStatement(st);
@@ -1020,7 +1017,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void rebuildReadAcls() throws StorageException {
+    public void rebuildReadAcls() {
         if (!dialect.supportsReadAcl()) {
             return;
         }
@@ -1034,7 +1031,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             countExecute();
         } catch (SQLException e) {
             checkConnectionReset(e);
-            throw new StorageException("Failed to rebuild read acls", e);
+            throw new NuxeoException("Failed to rebuild read acls", e);
         } finally {
             try {
                 closeStatement(st);
@@ -1049,12 +1046,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * ----- Locking -----
      */
 
-    protected Connection connection(boolean autocommit) throws StorageException {
+    protected Connection connection(boolean autocommit) {
         checkConnectionValid();
         try {
             connection.setAutoCommit(autocommit);
         } catch (SQLException e) {
-            throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
+            throw new NuxeoException("Cannot set auto commit mode onto " + this + "'s connection", e);
         }
         return connection;
     }
@@ -1064,7 +1061,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * <p>
      * Called under {@link #serializationLock}.
      */
-    protected Lock callInTransaction(LockCallable callable, boolean tx) throws StorageException {
+    protected Lock callInTransaction(LockCallable callable, boolean tx) {
         boolean ok = false;
         checkConnectionValid();
         try {
@@ -1073,7 +1070,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             connection.setAutoCommit(!tx);
         } catch (SQLException e) {
-            throw new StorageException("Cannot set auto commit mode onto " + this + "'s connection", e);
+            throw new NuxeoException("Cannot set auto commit mode onto " + this + "'s connection", e);
         }
         try {
             Lock result = callable.call();
@@ -1102,7 +1099,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                         connection.setAutoCommit(true);
                     }
                 } catch (SQLException e) {
-                    throw new StorageException(e);
+                    throw new NuxeoException(e);
                 }
             }
         }
@@ -1110,11 +1107,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
     public interface LockCallable extends Callable<Lock> {
         @Override
-        public Lock call() throws StorageException;
+        public Lock call();
     }
 
     @Override
-    public Lock getLock(Serializable id) throws StorageException {
+    public Lock getLock(Serializable id) {
         if (log.isDebugEnabled()) {
             try {
                 log.debug("getLock " + id + " while autoCommit=" + connection.getAutoCommit());
@@ -1135,7 +1132,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Lock setLock(final Serializable id, final Lock lock) throws StorageException {
+    public Lock setLock(final Serializable id, final Lock lock) {
         if (log.isDebugEnabled()) {
             log.debug("setLock " + id + " owner=" + lock.getOwner());
         }
@@ -1155,7 +1152,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
 
         @Override
-        public Lock call() throws StorageException {
+        public Lock call() {
             Lock oldLock = getLock(id);
             if (oldLock == null) {
                 Row row = new Row(Model.LOCK_TABLE_NAME, id);
@@ -1168,7 +1165,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public Lock removeLock(final Serializable id, final String owner, final boolean force) throws StorageException {
+    public Lock removeLock(final Serializable id, final String owner, final boolean force) {
         if (log.isDebugEnabled()) {
             log.debug("removeLock " + id + " owner=" + owner + " force=" + force);
         }
@@ -1191,7 +1188,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         }
 
         @Override
-        public Lock call() throws StorageException {
+        public Lock call() {
             Lock oldLock = force ? null : getLock(id);
             if (!force && owner != null) {
                 if (oldLock == null) {
@@ -1211,7 +1208,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) throws StorageException {
+    public void markReferencedBinaries(BinaryGarbageCollector gc) {
         log.debug("Starting binaries GC mark");
         Statement st = null;
         ResultSet rs = null;
@@ -1268,7 +1265,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             if (logger.isLogEnabled()) {
                 logger.log("XA start on " + systemToString(xid));
             }
-        } catch (StorageException e) {
+        } catch (NuxeoException e) {
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
             checkConnectionReset(e);
@@ -1349,7 +1346,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void connect() throws StorageException {
+    public void connect() {
         openConnections();
     }
 

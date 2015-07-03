@@ -31,8 +31,8 @@ import org.apache.geronimo.connector.outbound.AbstractConnectionManager.Intercep
 import org.apache.geronimo.connector.outbound.ConnectionInfo;
 import org.apache.geronimo.connector.outbound.ConnectionInterceptor;
 import org.apache.log4j.MDC;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Mapper.Identification;
 import org.nuxeo.ecm.core.storage.sql.SessionImpl;
@@ -215,7 +215,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
         }
         try {
             return mapper.getIdentification();
-        } catch (StorageException e) {
+        } catch (NuxeoException e) {
             log.error("Cannot fetch mapper identification", e);
             return null;
         }

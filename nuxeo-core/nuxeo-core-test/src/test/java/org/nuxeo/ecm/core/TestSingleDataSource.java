@@ -28,7 +28,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
@@ -91,7 +90,7 @@ public class TestSingleDataSource extends SQLRepositoryTestCase {
         return !(database.isVCSH2() || database.isVCSDerby());
     }
 
-    protected String getValidationQuery(Connection connection) throws StorageException {
+    protected String getValidationQuery(Connection connection) {
         return Dialect.createDialect(connection, null).getValidationQuery();
     }
 

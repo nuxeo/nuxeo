@@ -25,9 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
-import org.nuxeo.ecm.core.storage.lock.LockException;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -107,7 +105,7 @@ public class VCSLockManager extends AbstractLockManager {
      * <p>
      * {@link #close} must be called when done with the lock manager.
      */
-    public VCSLockManager(String repositoryName) throws StorageException {
+    public VCSLockManager(String repositoryName) {
         SQLRepositoryService repositoryService = Framework.getService(SQLRepositoryService.class);
         repository = repositoryService.getRepositoryImpl(repositoryName);
         clusteringEnabled = repository.getRepositoryDescriptor().getClusteringEnabled();
@@ -119,7 +117,7 @@ public class VCSLockManager extends AbstractLockManager {
     /**
      * Delay mapper acquisition until the repository has been fully initialized.
      */
-    protected Mapper getMapper() throws StorageException {
+    protected Mapper getMapper() {
         if (mapper == null) {
             mapper = repository.getBackend().newMapper(repository.getModel(), null, MapperKind.LOCK_MANAGER);
         }
@@ -134,11 +132,7 @@ public class VCSLockManager extends AbstractLockManager {
     public void close() {
         serializationLock.lock();
         try {
-            try {
-                getMapper().close();
-            } catch (StorageException e) {
-                throw new NuxeoException(e);
-            }
+            getMapper().close();
         } finally {
             serializationLock.unlock();
         }
@@ -153,11 +147,7 @@ public class VCSLockManager extends AbstractLockManager {
                 return lock == NULL_LOCK ? null : lock;
             }
             // no transaction needed, single operation
-            try {
-                lock = getMapper().getLock(idFromString(id));
-            } catch (StorageException e) {
-                throw new LockException(e);
-            }
+            lock = getMapper().getLock(idFromString(id));
             if (caching) {
                 lockCache.put(id, lock == null ? NULL_LOCK : lock);
             }
@@ -180,7 +170,7 @@ public class VCSLockManager extends AbstractLockManager {
             }
             try {
                 return setLockInternal(id, lock);
-            } catch (StorageException | ConcurrentUpdateException e) {
+            } catch (NuxeoException e) {
                 suppressed.add(e);
                 if (shouldRetry(e)) {
                     // cluster: two simultaneous inserts
@@ -196,14 +186,14 @@ public class VCSLockManager extends AbstractLockManager {
                     continue;
                 }
                 // not something to retry
-                LockException exception = new LockException(e);
+                NuxeoException exception = new NuxeoException(e);
                 for (Throwable t : suppressed) {
                     exception.addSuppressed(t);
                 }
                 throw exception;
             }
         }
-        LockException exception = new LockException("Failed to lock " + id + ", too much concurrency (tried "
+        NuxeoException exception = new NuxeoException("Failed to lock " + id + ", too much concurrency (tried "
                 + LOCK_RETRIES + " times)");
         for (Throwable t : suppressed) {
             exception.addSuppressed(t);
@@ -249,7 +239,7 @@ public class VCSLockManager extends AbstractLockManager {
         return false;
     }
 
-    protected Lock setLockInternal(String id, Lock lock) throws StorageException {
+    protected Lock setLockInternal(String id, Lock lock) {
         serializationLock.lock();
         try {
             Lock oldLock;
@@ -278,16 +268,12 @@ public class VCSLockManager extends AbstractLockManager {
                 // existing mismatched lock, flag failure
                 oldLock = new Lock(oldLock, true);
             } else {
-                try {
-                    if (oldLock == null) {
-                        oldLock = getMapper().removeLock(idFromString(id), owner, false);
-                    } else {
-                        // we know the previous lock, we can force
-                        // no transaction needed, single operation
-                        getMapper().removeLock(idFromString(id), owner, true);
-                    }
-                } catch (StorageException e) {
-                    throw new LockException(e);
+                if (oldLock == null) {
+                    oldLock = getMapper().removeLock(idFromString(id), owner, false);
+                } else {
+                    // we know the previous lock, we can force
+                    // no transaction needed, single operation
+                    getMapper().removeLock(idFromString(id), owner, true);
                 }
             }
             if (caching) {

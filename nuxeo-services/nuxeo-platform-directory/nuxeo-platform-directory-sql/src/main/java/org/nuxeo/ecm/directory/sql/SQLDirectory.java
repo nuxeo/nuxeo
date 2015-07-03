@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Table;
@@ -214,8 +213,6 @@ public class SQLDirectory extends AbstractDirectory {
             } catch (SQLException e) {
                 throw new DirectoryException(e);
             }
-        } catch (StorageException e) {
-            throw new DirectoryException(e);
         } finally {
             try {
                 sqlConnection.close();

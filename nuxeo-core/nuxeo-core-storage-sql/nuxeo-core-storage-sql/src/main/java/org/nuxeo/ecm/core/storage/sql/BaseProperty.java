@@ -12,7 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql;
 
-import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 
 /**
  * A {@code Property} gives access to a scalar or array value stored in an underlying table. This base class contains
@@ -50,21 +50,21 @@ public abstract class BaseProperty {
 
     // ----- modification -----
 
-    public void refresh(boolean keepChanges) throws StorageException {
+    public void refresh(boolean keepChanges) {
         throw new UnsupportedOperationException();
     }
 
-    public void remove() throws StorageException {
+    public void remove() {
         throw new UnsupportedOperationException();
     }
 
-    public void save() throws StorageException {
+    public void save() {
         throw new UnsupportedOperationException();
     }
 
-    protected void checkWritable() throws StorageException {
+    protected void checkWritable() {
         if (readonly) {
-            throw new StorageException("Cannot write property: " + name);
+            throw new ReadOnlyPropertyException(name);
         }
     }
 

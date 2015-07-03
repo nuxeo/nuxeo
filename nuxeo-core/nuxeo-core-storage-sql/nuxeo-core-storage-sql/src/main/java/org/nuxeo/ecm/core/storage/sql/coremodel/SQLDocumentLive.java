@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.BaseDocument;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
 import org.nuxeo.runtime.api.Framework;
@@ -179,20 +178,12 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     protected Node getChild(Node node, String name, Type type) throws PropertyException {
-        try {
-            return session.getChildProperty(node, name, type.getName());
-        } catch (StorageException e) {
-            throw new PropertyException(e.getMessage(), e);
-        }
+        return session.getChildProperty(node, name, type.getName());
     }
 
     @Override
     protected Node getChildForWrite(Node node, String name, Type type) throws PropertyException {
-        try {
-            return session.getChildPropertyForWrite(node, name, type.getName());
-        } catch (StorageException e) {
-            throw new PropertyException(e.getMessage(), e);
-        }
+        return session.getChildPropertyForWrite(node, name, type.getName());
     }
 
     @Override
@@ -292,20 +283,12 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     public Serializable getPropertyValue(String name) throws DocumentException {
-        try {
-            return getNode().getSimpleProperty(name).getValue();
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
+        return getNode().getSimpleProperty(name).getValue();
     }
 
     @Override
     public void setPropertyValue(String name, Serializable value) throws DocumentException {
-        try {
-            getNode().setSimpleProperty(name, value);
-        } catch (StorageException e) {
-            throw new DocumentException(e);
-        }
+        getNode().setSimpleProperty(name, value);
     }
 
     protected static final Map<String, String> systemPropNameMap;

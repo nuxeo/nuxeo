@@ -14,8 +14,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.storage.StorageException;
-
 /**
  * A SimpleProperty gives access to a scalar value stored in an underlying {@link SimpleFragment}.
  *
@@ -40,11 +38,11 @@ public class SimpleProperty extends BaseProperty {
 
     // ----- getters -----
 
-    public Serializable getValue() throws StorageException {
+    public Serializable getValue() {
         return fragment.get(key);
     }
 
-    public String getString() throws StorageException {
+    public String getString() {
         switch (type) {
         case STRING:
         case BINARY:
@@ -54,7 +52,7 @@ public class SimpleProperty extends BaseProperty {
         }
     }
 
-    public Long getLong() throws StorageException {
+    public Long getLong() {
         switch (type) {
         case LONG:
             return (Long) fragment.get(key);
@@ -65,7 +63,7 @@ public class SimpleProperty extends BaseProperty {
 
     // ----- setters -----
 
-    public void setValue(Object value) throws StorageException {
+    public void setValue(Object value) {
         checkWritable();
         fragment.put(key, type.normalize(value));
         // mark fragment dirty!

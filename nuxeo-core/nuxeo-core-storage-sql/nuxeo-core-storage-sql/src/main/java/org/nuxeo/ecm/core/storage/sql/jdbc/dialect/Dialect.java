@@ -38,11 +38,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.storage.StorageException;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
-import org.nuxeo.ecm.core.storage.sql.jdbc.QueryMaker.QueryMakerException;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Column;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Database;
 import org.nuxeo.ecm.core.storage.sql.jdbc.db.Join;
@@ -173,18 +173,15 @@ public abstract class Dialect {
 
     /**
      * Creates a {@code Dialect} by connecting to the datasource to check what database is used.
-     *
-     * @throws StorageException if a SQL connection problem occurs
      */
-    public static Dialect createDialect(Connection connection, RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+    public static Dialect createDialect(Connection connection, RepositoryDescriptor repositoryDescriptor) {
         DatabaseMetaData metadata;
         String databaseName;
         try {
             metadata = connection.getMetaData();
             databaseName = metadata.getDatabaseProductName();
         } catch (SQLException e) {
-            throw new StorageException(e);
+            throw new NuxeoException(e);
         }
         if (databaseName.contains("/")) {
             // DB2/LINUX, DB2/DARWIN, etc.
@@ -198,7 +195,7 @@ public abstract class Dialect {
         if (dialectClassName == null) {
             dialectClass = DIALECTS.get(databaseName);
             if (dialectClass == null) {
-                throw new StorageException("Unsupported database: " + databaseName);
+                throw new NuxeoException("Unsupported database: " + databaseName);
             }
         } else {
             Class<?> klass;
@@ -206,10 +203,10 @@ public abstract class Dialect {
                 ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 klass = cl.loadClass(dialectClassName);
             } catch (ClassNotFoundException e) {
-                throw new StorageException(e);
+                throw new NuxeoException(e);
             }
             if (!Dialect.class.isAssignableFrom(klass)) {
-                throw new StorageException("Not a Dialect: " + dialectClassName);
+                throw new NuxeoException("Not a Dialect: " + dialectClassName);
             }
             dialectClass = (Class<? extends Dialect>) klass;
         }
@@ -217,30 +214,29 @@ public abstract class Dialect {
         try {
             ctor = dialectClass.getConstructor(DatabaseMetaData.class, RepositoryDescriptor.class);
         } catch (ReflectiveOperationException e) {
-            throw new StorageException("Bad constructor signature for: " + dialectClassName, e);
+            throw new NuxeoException("Bad constructor signature for: " + dialectClassName, e);
         }
         Dialect dialect;
         try {
             dialect = ctor.newInstance(metadata, repositoryDescriptor);
         } catch (InvocationTargetException e) {
             Throwable t = e.getTargetException();
-            if (t instanceof StorageException) {
-                throw (StorageException) t;
+            if (t instanceof NuxeoException) {
+                throw (NuxeoException) t;
             } else {
-                throw new StorageException(t.getMessage(), t);
+                throw new NuxeoException(t);
             }
         } catch (ReflectiveOperationException e) {
-            throw new StorageException("Cannot construct dialect: " + dialectClassName, e);
+            throw new NuxeoException("Cannot construct dialect: " + dialectClassName, e);
         }
         return dialect;
     }
 
-    public Dialect(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor)
-            throws StorageException {
+    public Dialect(DatabaseMetaData metadata, RepositoryDescriptor repositoryDescriptor) {
         try {
             storesUpperCaseIdentifiers = metadata.storesUpperCaseIdentifiers();
         } catch (SQLException e) {
-            throw new StorageException("An error has occured.", e);
+            throw new NuxeoException(e);
         }
         if (repositoryDescriptor == null) {
             fulltextDisabled = true;
@@ -913,47 +909,36 @@ public abstract class Dialect {
     /**
      * Gets the dialect-specific subquery for an array column.
      */
-    public ArraySubQuery getArraySubQuery(Column arrayColumn, String subQueryAlias) throws QueryMakerException {
-        throw new QueryMakerException("Not supported");
+    public ArraySubQuery getArraySubQuery(Column arrayColumn, String subQueryAlias) {
+        throw new QueryParseException("Array sub-query not supported");
     }
 
     /**
      * Get SQL Array Element Subscripted string.
-     *
-     * @throws QueryMakerException
      */
-    public String getArrayElementString(String arrayColumnName, int arrayElementIndex) throws QueryMakerException {
-        throw new QueryMakerException("Not supported");
+    public String getArrayElementString(String arrayColumnName, int arrayElementIndex) {
+        throw new QueryParseException("Array element not supported");
     }
 
     /**
      * Gets the SQL string for an array column IN expression.
-     *
-     * @throws QueryMakerException
      */
-    public String getArrayInSql(Column arrayColumn, String cast, boolean positive, List<Serializable> params)
-            throws QueryMakerException {
-        throw new QueryMakerException("Not supported");
+    public String getArrayInSql(Column arrayColumn, String cast, boolean positive, List<Serializable> params) {
+        throw new QueryParseException("Array IN not supported");
     }
 
     /**
      * Gets the SQL string for an array column LIKE expression.
-     *
-     * @throws QueryMakerException
      */
-    public String getArrayLikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable)
-            throws QueryMakerException {
-        throw new QueryMakerException("Not supported");
+    public String getArrayLikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable) {
+        throw new QueryParseException("Array LIKE not supported");
     }
 
     /**
      * Gets the SQL string for an array column ILIKE expression.
-     *
-     * @throws QueryMakerException
      */
-    public String getArrayIlikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable)
-            throws QueryMakerException {
-        throw new QueryMakerException("Not supported");
+    public String getArrayIlikeSql(Column arrayColumn, String refName, boolean positive, Table dataHierTable) {
+        throw new QueryParseException("Array ILIKE not supported");
     }
 
     /**

@@ -15,8 +15,6 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.nuxeo.ecm.core.storage.StorageException;
-
 /**
  * A type of fragment corresponding to several rows with the same id.
  */
@@ -40,7 +38,7 @@ public class CollectionFragment extends Fragment {
      *
      * @param value the value
      */
-    public void set(Serializable[] value) throws StorageException {
+    public void set(Serializable[] value) {
         // unless invalidated (in which case don't try to refetch the value just
         // to compare state), don't mark modified or dirty if there is no change
         if (getState() != State.INVALIDATED_MODIFIED) {
@@ -58,7 +56,7 @@ public class CollectionFragment extends Fragment {
      *
      * @return the value
      */
-    public Serializable[] get() throws StorageException {
+    public Serializable[] get() {
         accessed();
         return row.values.clone();
     }
@@ -73,14 +71,14 @@ public class CollectionFragment extends Fragment {
     }
 
     @Override
-    protected State refetch() throws StorageException {
+    protected State refetch() {
         row.values = context.mapper.readCollectionRowArray(row);
         clearDirty();
         return State.PRISTINE;
     }
 
     @Override
-    protected State refetchDeleted() throws StorageException {
+    protected State refetchDeleted() {
         row.values = context.model.getCollectionFragmentType(row.tableName).getEmptyArray();
         clearDirty();
         return State.PRISTINE;
