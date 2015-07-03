@@ -1,0 +1,9 @@
+{
+  "realm": "demo",
+  "realm-public-key": "paste your certificate here",
+  "auth-server-url": "paste your authentication server url here",
+  "ssl-required": "paste the value of your ssl required mode here",
+  "resource": "paste the name of your nuxeo application resource here",
+  "public-client": true,
+  "enable-basic-auth": false
+}

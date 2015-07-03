@@ -26,6 +26,7 @@
     <module>nuxeo-platform-login-openid</module>
     <module>nuxeo-platform-login-kerberos</module>
     <module>nuxeo-platform-login-saml2</module>
+    <module>nuxeo-platform-login-keycloak</module>
     <module>nuxeo-scim-server</module>
   </modules>
 
