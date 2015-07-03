@@ -92,7 +92,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     protected boolean createAnotherUser = false;
 
-	protected String defaultRepositoryName = null;
+    protected String defaultRepositoryName = null;
 
     @Override
     protected String computeListingMode() throws ClientException {
@@ -232,8 +232,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
                 // Wrap the form as an invitation to the user
                 UserAdapter newUserAdapter = new UserAdapterImpl(newUser, userManager);
                 DocumentModel userRegistrationDoc = wrapToUserRegistration(newUserAdapter);
-                userRegistrationService.submitRegistrationRequest(userRegistrationDoc,
-                        additionalInfos , EMAIL, true);
+                userRegistrationService.submitRegistrationRequest(userRegistrationDoc, additionalInfos, EMAIL, true);
 
                 facesMessages.add(StatusMessage.Severity.INFO,
                         resourcesAccessor.getMessages().get("info.userManager.userInvited"));
@@ -248,21 +247,17 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
             }
             newUser = null;
 
-
         } catch (UserAlreadyExistsException e) {
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("error.userManager.userAlreadyExists"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             String message = e.getLocalizedMessage();
-            if(e.getCause() != null)
-            {
+            if (e.getCause() != null) {
                 message += e.getCause().getLocalizedMessage();
             }
-            log.error(message,e);
+            log.error(message, e);
 
-            facesMessages.add(StatusMessage.Severity.ERROR,
-                    message);
+            facesMessages.add(StatusMessage.Severity.ERROR, message);
 
         }
     }
@@ -270,8 +265,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     private String getDefaultRepositoryName() {
         if (defaultRepositoryName == null) {
             try {
-                defaultRepositoryName = Framework.getService(
-                        RepositoryManager.class).getDefaultRepository().getName();
+                defaultRepositoryName = Framework.getService(RepositoryManager.class).getDefaultRepository().getName();
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -280,9 +274,9 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public void updateUser() throws ClientException {
-    	UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
+        UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
         runner.runUnrestricted();
-         
+
         detailsMode = DETAILS_VIEW_MODE;
         fireSeamEvent(USERS_LISTING_CHANGED);
     }
@@ -307,8 +301,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
 
     public void validateUserName(FacesContext context, UIComponent component, Object value) {
         if (!(value instanceof String) || !StringUtils.containsOnly((String) value, VALID_CHARS)) {
-            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                    "label.userManager.wrong.username"), null);
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    ComponentUtils.translate(context, "label.userManager.wrong.username"), null);
             // also add global message
             context.addMessage(null, message);
             throw new ValidatorException(message);
@@ -376,8 +370,8 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      * @since 5.9.2
      */
     private void throwValidationException(FacesContext context, String message, Object... messageArgs) {
-        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR, ComponentUtils.translate(context,
-                message, messageArgs), null);
+        FacesMessage fmessage = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                ComponentUtils.translate(context, message, messageArgs), null);
         throw new ValidatorException(fmessage);
     }
 
