@@ -64,7 +64,6 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.security.SecurityPolicy;
 import org.nuxeo.ecm.core.security.SecurityPolicy.QueryTransformer;
 import org.nuxeo.ecm.core.security.SecurityPolicyService;
-import org.nuxeo.ecm.core.storage.StorageException;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelProperty;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
@@ -220,7 +219,7 @@ public class CMISQLQueryMaker implements QueryMaker {
      */
     @Override
     public Query buildQuery(SQLInfo sqlInfo, Model model, PathResolver pathResolver, String statement,
-            QueryFilter queryFilter, Object... params) throws StorageException {
+            QueryFilter queryFilter, Object... params) {
         database = sqlInfo.database;
         dialect = sqlInfo.dialect;
         this.model = model;
@@ -1575,7 +1574,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             if (opType == CmisQlStrictLexer.EQ_ANY) {
                 include = true;
                 if (literalNode.getType() != CmisQlStrictLexer.STRING_LIT) {
-                    throw new QueryMakerException(colNodel.getText() + " = requires literal string as right argument");
+                    throw new QueryParseException(colNodel.getText() + " = requires literal string as right argument");
                 }
                 String value = super.walkString(literalNode).toString();
                 mixins = Collections.singleton(value);
@@ -1586,7 +1585,7 @@ public class CMISQLQueryMaker implements QueryMaker {
                     mixins.add(super.walkString(literalNode.getChild(i)).toString());
                 }
             } else {
-                throw new QueryMakerException(colNodel.getText() + " unsupported operator: " + opNode.getText());
+                throw new QueryParseException(colNodel.getText() + " unsupported operator: " + opNode.getText());
             }
 
             /*
