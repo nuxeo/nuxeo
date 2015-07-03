@@ -16,20 +16,18 @@
  */
 package org.nuxeo.theme.styling.service;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.theme.services.ThemeService;
+import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
 import org.nuxeo.theme.styling.service.descriptors.Page;
 
 /**
- * Service handling the mapping between a theme page and its resources (styling and flavors)
+ * Service handling the mapping between a page and its resources and flavors.
  * <p>
- * Registers corresponding contributions to the {@link ThemeService} so that styling of the page is handled as if
- * styling was provided by the theme definition. Also handles related flavors as theme collections.
+ * Registers some contributions to the {@link WebResourceManager} for compatibility.
  *
  * @see Flavor
  * @since 5.5
@@ -64,8 +62,7 @@ public interface ThemeStylingService {
     /**
      * Returns the flavor for given name, or null if not found.
      * <p>
-     * If not defined on the local flavor, flavor attributes will be resolved from the extended flavor if any (except
-     * presets that just need to be resolved at registration to the {@link ThemeService}.
+     * If not defined on the local flavor, flavor attributes will be resolved from the extended flavor if any.
      * </p>
      *
      * @param flavorName
@@ -96,19 +93,5 @@ public interface ThemeStylingService {
      * @since 7.4
      */
     Page getPage(String name);
-
-    /**
-     * Hook to notify the service that a theme has been registered
-     *
-     * @param themeName
-     */
-    void themeRegistered(String themeName);
-
-    /**
-     * Hook to notify the service that global resources for a theme need to be registered
-     *
-     * @param themeUrl
-     */
-    void themeGlobalResourcesRegistered(URL themeUrl);
 
 }

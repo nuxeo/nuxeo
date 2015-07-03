@@ -1,6 +1,9 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxthemes="http://nuxeo.org/nxthemes"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets">
   <f:view contentType="text/html" />
@@ -20,6 +23,14 @@
       id="theme_view_styles" name="theme_view_styles" />
     <nxthemes:resources target="head"
       id="theme_view_resources" name="theme_view_resources" />
+
+    <nxu:set var="name" value="#{facesContext.externalContext.requestMap['org.nuxeo.theme.negotiation.result.theme']}">
+    <nxu:set var="flavor" value="#{facesContext.externalContext.requestMap['org.nuxeo.theme.negotiation.result.collection']}">
+    <nxu:set var="page" value="#{themeStylingService.getPage(name)}">
+      <ui:include src="/incl/page_resources.xhtml" />
+    </nxu:set>
+    </nxu:set>
+    </nxu:set>
 
   </h:head>
   [nxthemes markup]

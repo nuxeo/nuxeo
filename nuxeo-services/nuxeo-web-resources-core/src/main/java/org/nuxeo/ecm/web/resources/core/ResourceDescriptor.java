@@ -90,13 +90,61 @@ public class ResourceDescriptor implements Resource {
     }
 
     @Override
+    public boolean isShrinkable() {
+        return shrinkable;
+    }
+
     public void setURI(String uri) {
         this.uri = uri;
     }
 
-    @Override
-    public boolean isShrinkable() {
-        return shrinkable;
+    /**
+     * @since 7.4
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setDependencies(List<String> dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setProcessors(List<String> processors) {
+        this.processors = processors;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setShrinkable(boolean shrinkable) {
+        this.shrinkable = shrinkable;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
 }

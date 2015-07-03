@@ -22,8 +22,9 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
-import org.nuxeo.theme.services.ThemeService;
+import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
 
 /**
  * Descriptor to associate resources and flavors to a page.
@@ -32,6 +33,8 @@ import org.nuxeo.theme.services.ThemeService;
  */
 @XObject("page")
 public class Page {
+
+    public static final String RESOURCE_BUNDLE_PREFIX = "pageResourceBundle_";
 
     @XNode("@name")
     String name;
@@ -83,11 +86,6 @@ public class Page {
     @XNodeList(value = "resources/bundle", type = ArrayList.class, componentType = String.class)
     List<String> bundles;
 
-    /**
-     * boolean handling the descriptor status: has it been already loaded to the {@link ThemeService}?
-     */
-    boolean loaded = false;
-
     public String getName() {
         return name;
     }
@@ -138,7 +136,10 @@ public class Page {
         return appendResources;
     }
 
-    // FIXME: wro does not serve single resources -> need to use bundles instead
+    public boolean hasResources() {
+        return !getResources().isEmpty();
+    }
+
     public List<String> getResources() {
         List<String> res = new ArrayList<String>();
         // BBB
@@ -164,11 +165,33 @@ public class Page {
         this.resources = resources;
     }
 
+    public String getComputedResourceBundleName() {
+        return RESOURCE_BUNDLE_PREFIX + getName().replaceAll("[^a-zA-Z]+", "_");
+    }
+
+    public ResourceBundle getComputedResourceBundle() {
+        if (hasResources()) {
+            ResourceBundleDescriptor bundle = new ResourceBundleDescriptor();
+            bundle.setName(getComputedResourceBundleName());
+            bundle.setResources(getResources());
+            bundle.setAppend(getAppendResources());
+            return bundle;
+        }
+        return null;
+    }
+
     /**
      * @since 7.4
      */
     public List<String> getResourceBundles() {
-        return bundles;
+        List<String> all = new ArrayList<String>();
+        if (bundles != null) {
+            all.addAll(bundles);
+        }
+        if (hasResources()) {
+            all.add(getComputedResourceBundleName());
+        }
+        return all;
     }
 
     /**
@@ -176,14 +199,6 @@ public class Page {
      */
     public void setResourceBundles(List<String> bundles) {
         this.bundles = bundles;
-    }
-
-    public boolean isLoaded() {
-        return loaded;
-    }
-
-    public void setLoaded(boolean loaded) {
-        this.loaded = loaded;
     }
 
     public void setAppendStyles(boolean appendStyles) {
@@ -336,7 +351,6 @@ public class Page {
         if (bundles != null) {
             clone.setResourceBundles(new ArrayList<String>(bundles));
         }
-        clone.setLoaded(isLoaded());
         return clone;
     }
 
