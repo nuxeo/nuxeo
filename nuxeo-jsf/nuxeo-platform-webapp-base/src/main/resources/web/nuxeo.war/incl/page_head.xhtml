@@ -14,11 +14,7 @@
       <c:forEach var="fav" items="#{page.favicons}">
         <nxr:favicon name="#{fav.name}" src="#{fav.value}" />
       </c:forEach>
-      <c:forEach var="bundle" items="#{page.resourceBundles}">
-        <nxr:resourceBundle name="#{bundle}" target="#{target}">
-          <f:param name="flavor" value="#{empty flavor? 'default': flavor}" />
-        </nxr:resourceBundle>
-      </c:forEach>
+      <ui:include src="page_resources.xhtml" />
     </c:if>
   </nxu:set>
 
