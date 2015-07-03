@@ -287,7 +287,7 @@ public class CoreProviderTest {
         } catch (OperationException e) {
             assertNotNull(e.getMessage());
             assertTrue(e.getMessage().contains(
-                    "Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title"));
+                    "In query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
         }
     }
 
@@ -320,7 +320,7 @@ public class CoreProviderTest {
         } catch (OperationException e) {
             assertNotNull(e.getMessage());
             assertTrue(e.getMessage().contains(
-                    "Lexical Error: Illegal character <:> at offset 38 in query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title"));
+                    "In query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38"));
         }
     }
 
