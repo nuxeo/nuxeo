@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -187,16 +188,25 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
 
     protected void buildQuery() {
         try {
-            PageProviderDefinition def = getDefinition();
-            String originalQuery = def.getPattern();
-
             SortInfo[] sortArray = null;
             if (sortInfos != null) {
                 sortArray = sortInfos.toArray(new SortInfo[] {});
             }
-            String newQuery = NXQLQueryBuilder.getQuery(originalQuery, getParameters(),
-                    def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
-                    sortArray);
+            String newQuery;
+            PageProviderDefinition def = getDefinition();
+            if (def.getWhereClause() == null) {
+                newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(),
+                        def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
+                        sortArray);
+            } else {
+                DocumentModel searchDocumentModel = getSearchDocumentModel();
+                if (searchDocumentModel == null) {
+                    throw new ClientException(String.format("Cannot build query of provider '%s': "
+                            + "no search document model is set", getName()));
+                }
+                newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
+                        sortArray);
+            }
 
             if (query != null && newQuery != null && !newQuery.equals(query)) {
                 // query has changed => refresh
