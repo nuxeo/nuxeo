@@ -44,7 +44,7 @@ public class TestSequenceGeneratorWithElasticSearch {
 
     @Test
     public void testIncrement() throws Exception {
-        UIDSequencer seq = uidGeneratorService.getSequencer(ESUIDSequencer.SEQUENCER_CONTRIB);
+        UIDSequencer seq = uidGeneratorService.getSequencer();
         Assert.assertNotNull(seq);
         Assert.assertTrue(seq.getClass().isAssignableFrom(ESUIDSequencer.class));
 
@@ -61,7 +61,7 @@ public class TestSequenceGeneratorWithElasticSearch {
         final String seqName = "mt";
         int nbCalls = 5000;
 
-        final UIDSequencer seq = uidGeneratorService.getSequencer(ESUIDSequencer.SEQUENCER_CONTRIB);
+        final UIDSequencer seq = uidGeneratorService.getSequencer();
         ThreadPoolExecutor tpe = new ThreadPoolExecutor(5, 5, 500L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(nbCalls + 1));
 
