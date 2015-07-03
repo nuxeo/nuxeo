@@ -29,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -154,22 +155,24 @@ public class EasyShare extends ModuleRoot {
 
                         // Email notification
                         String email = docFolder.getProperty("eshare:contactEmail").getValue(String.class);
-                        String fileName = blob.getFilename();
-                        String shareName = docFolder.getName();
-                        try {
-                            log.debug("Easyshare: starting email");
-                            EmailHelper emailer = new EmailHelper();
-                            Map<String, Object> mailProps = new Hashtable<String, Object>();
-                            mailProps.put("mail.from", "system@nuxeo.com");
-                            mailProps.put("mail.to", email);
-                            mailProps.put("subject", "EasyShare Download Notification");
-                            mailProps.put("body", "File " + fileName + " from " + shareName + " downloaded by "
-                                    + request.getRemoteAddr());
-                            mailProps.put("template", "easyShareEmail");
-                            emailer.sendmail(mailProps);
-                            log.debug("Easyshare: completed email");
-                        } catch (MessagingException ex) {
-                            log.error("Cannot send easyShare notification email", ex);
+                        if (!StringUtils.isBlank(email)) {
+                            String fileName = blob.getFilename();
+                            String shareName = docFolder.getName();
+                            try {
+                                log.debug("Easyshare: starting email");
+                                EmailHelper emailer = new EmailHelper();
+                                Map<String, Object> mailProps = new Hashtable<String, Object>();
+                                mailProps.put("mail.from", "system@nuxeo.com");
+                                mailProps.put("mail.to", email);
+                                mailProps.put("subject", "EasyShare Download Notification");
+                                mailProps.put("body", "File " + fileName + " from " + shareName + " downloaded by "
+                                        + request.getRemoteAddr());
+                                mailProps.put("template", "easyShareEmail");
+                                emailer.sendmail(mailProps);
+                                log.debug("Easyshare: completed email");
+                            } catch (MessagingException ex) {
+                                log.error("Cannot send easyShare notification email", ex);
+                            }
                         }
 
                         return Response.ok(blob.getStream(), blob.getMimeType()).build();
