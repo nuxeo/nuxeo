@@ -155,7 +155,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public boolean getAllowEditUser() throws ClientException {
-        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
+        return selectedUser != null && getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     protected boolean getCanEditUsers(boolean allowCurrentUser) throws ClientException {
@@ -193,7 +193,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public boolean getAllowChangePassword() throws ClientException {
-        return getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
+        return selectedUser != null && getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public boolean getAllowCreateUser() throws ClientException {
@@ -201,7 +201,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     public boolean getAllowDeleteUser() throws ClientException {
-        return getCanEditUsers(false) && !BaseSession.isReadOnlyEntry(selectedUser);
+        return selectedUser != null && getCanEditUsers(false) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
     public void clearSearch() {
