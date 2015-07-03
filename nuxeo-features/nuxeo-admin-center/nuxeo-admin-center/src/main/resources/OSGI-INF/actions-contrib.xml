@@ -153,6 +153,20 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="Rights" link="/view_admin-fragment.xhtml"
+      type="admin_rest_document_link"
+      label="admcommand.rights" order="40">
+      <category>NUXEO_ADMIN</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
+    <action id="SearchRights" link="/incl/rights/searchRights.xhtml" label="tab.rights.search"
+      type="admin_rest_document_link"
+      order="10">
+      <category>Rights_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <!-- Users and Groups management -->
     <action id="UsersGroupsManager" link="/view_admin-fragment.xhtml"
       type="admin_rest_document_link"

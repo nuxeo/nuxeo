@@ -1616,6 +1616,218 @@
         <property name="label">label.setup.table.title.custom</property>
       </properties>
     </layout>
+
+    <!-- rights search -->
+    <layout name="rights_search_filter">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>username</widget>
+        </row>
+        <row>
+          <widget>creator</widget>
+        </row>
+        <row>
+          <widget>permission</widget>
+        </row>
+        <row>
+          <widget>date_range</widget>
+        </row>
+        <row>
+          <widget>aclName</widget>
+        </row>
+        <row>
+          <widget>path</widget>
+        </row>
+      </rows>
+      <widget name="username" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">label.rights.search.username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ace_username</field>
+        </fields>
+        <properties mode="any">
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="creator" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">label.rights.search.creator</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ace_creator</field>
+        </fields>
+        <properties mode="any">
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="permission" type="selectManyListbox">
+        <labels>
+          <label mode="any">label.ace.permission</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ace_permission</field>
+        </fields>
+        <selectOptions>
+          <options value="#{securityActions.getUserVisiblePermissionSelectItems('')}"
+            var="item" itemValue="#{item.value}" itemLabel="#{item.label}" />
+        </selectOptions>
+      </widget>
+      <widget name="date_range" type="datetimeRange">
+        <labels>
+          <label mode="any">label.rights.search.date.range</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ace_begin</field>
+          <field>rs:ace_end</field>
+        </fields>
+        <properties widgetMode="edit">
+          <property name="styleClass">dataInputTextDate</property>
+          <property name="format">#{nxu:basicDateAndTimeFormatter()}</property>
+        </properties>
+      </widget>
+      <widget name="aclName" type="text">
+        <labels>
+          <label mode="any">label.rights.search.aclName</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ace_acl_name</field>
+        </fields>
+      </widget>
+      <widget name="path" type="select_path_tree">
+        <labels>
+          <label mode="any">label.rights.search.path</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ecm_path</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="showAllDomains">true</property>
+        </properties>
+      </widget>
+    </layout>
+
+    <layout name="rights_search_listing">
+      <templates>
+        <template mode="any">/layouts/layout_listing_ajax_template.xhtml
+        </template>
+        <template mode="csv">/layouts/layout_listing_csv_template.xhtml
+        </template>
+        <template mode="pdf">/layouts/layout_listing_pdf_template.xhtml
+        </template>
+      </templates>
+      <properties mode="any">
+        <property name="showListingHeader">true</property>
+        <property name="showRowEvenOddClass">true</property>
+      </properties>
+      <columns>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">dc:title</property>
+          </properties>
+          <widget>document_title</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">ecm:acl/*1/creator</property>
+          </properties>
+          <widget>ace_creator</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">ecm:acl/*1/permission</property>
+          </properties>
+          <widget>ace_permission</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">ecm:acl/*1/begin</property>
+          </properties>
+          <widget>ace_begin</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">ecm:acl/*1/end</property>
+          </properties>
+          <widget>ace_end</widget>
+        </column>
+      </columns>
+      <widget name="document_title" type="text">
+        <labels>
+          <label mode="any">label.dublincore.title</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["dc:title"]</field>
+        </fields>
+      </widget>
+      <widget name="ace_creator" type="text">
+        <labels>
+          <label mode="any">label.ace.creator</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/creator"]</field>
+        </fields>
+      </widget>
+      <widget name="ace_permission" type="text">
+        <labels>
+          <label mode="any">label.ace.permission</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/permission"]</field>
+        </fields>
+      </widget>
+      <widget name="ace_begin" type="datetime">
+        <labels>
+          <label mode="any">label.ace.begin</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/begin"].time</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+        </properties>
+        <properties mode="csv">
+          <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+          <property name="csv_forceType">date</property>
+        </properties>
+      </widget>
+      <widget name="ace_end" type="datetime">
+        <labels>
+          <label mode="any">label.ace.end</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/end"].time</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="pattern">#{nxu:basicDateFormatter()}</property>
+        </properties>
+        <properties mode="csv">
+          <property name="csv_formatMask">#{nxu:basicDateFormatter()}</property>
+          <property name="csv_forceType">date</property>
+        </properties>
+      </widget>
+    </layout>
   </extension>
 
 </component>

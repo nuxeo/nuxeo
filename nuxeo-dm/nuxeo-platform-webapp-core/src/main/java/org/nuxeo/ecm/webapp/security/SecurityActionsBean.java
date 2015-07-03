@@ -429,13 +429,29 @@ public class SecurityActionsBean extends InputController implements SecurityActi
             }
         }
 
-        List<SelectItem> permissions = new ArrayList<SelectItem>();
-        for (String perm : settablePermissions) {
+        return asSelectItems(settablePermissions);
+    }
+
+    protected List<SelectItem> asSelectItems(String... permissions) {
+        List<SelectItem> items = new ArrayList<SelectItem>();
+        for (String perm : permissions) {
             String label = labeler.makeLabel(perm);
             SelectItem it = new SelectItem(perm, resourcesAccessor.getMessages().get(label));
-            permissions.add(it);
+            items.add(it);
         }
-        return permissions;
+        return items;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public List<SelectItem> getUserVisiblePermissionSelectItems(String documentType) {
+        List<UserVisiblePermission> userVisiblePermissions = getVisibleUserPermissions(documentType);
+        List<String> permissions = new ArrayList<>();
+        for (UserVisiblePermission userVisiblePermission : userVisiblePermissions) {
+            permissions.add(userVisiblePermission.getId());
+        }
+        return asSelectItems(permissions.toArray(new String[permissions.size()]));
     }
 
     @Override
