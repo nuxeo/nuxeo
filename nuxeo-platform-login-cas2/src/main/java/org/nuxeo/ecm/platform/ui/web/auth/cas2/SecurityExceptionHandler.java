@@ -98,7 +98,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         super.handleException(request, response, t);
     }
 
-    protected Cas2Authenticator getCasAuthenticator() throws ClientException {
+    protected Cas2Authenticator getCasAuthenticator() {
         if (cas2Authenticator != null) {
             return cas2Authenticator;
         }

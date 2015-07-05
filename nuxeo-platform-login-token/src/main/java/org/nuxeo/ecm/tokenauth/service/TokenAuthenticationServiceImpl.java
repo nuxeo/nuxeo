@@ -292,7 +292,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         }
     }
 
-    protected DocumentModel getBareAuthTokenModel(DirectoryService directoryService) throws ClientException {
+    protected DocumentModel getBareAuthTokenModel(DirectoryService directoryService) {
 
         String directorySchema = directoryService.getDirectorySchema(DIRECTORY_NAME);
         return BaseSession.createEntryModel(null, directorySchema, null, null);

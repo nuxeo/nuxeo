@@ -64,7 +64,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         return directorySchema;
     }
 
-    protected void initPersistentService() throws ClientException {
+    protected void initPersistentService() {
 
         if (directoryService == null) {
             try {
@@ -98,7 +98,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         dirSession = null;
     }
 
-    public void resetDeputies() throws ClientException {
+    public void resetDeputies() {
         initPersistentService();
 
         try {
@@ -118,7 +118,7 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     @Override
-    public List<String> getPossiblesAlternateLogins(String userName) throws ClientException {
+    public List<String> getPossiblesAlternateLogins(String userName) {
         List<String> users = new ArrayList<String>();
         List<String> outdatedEntriesId = new ArrayList<String>();
 
@@ -167,7 +167,7 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     @Override
-    public List<String> getAvalaibleDeputyIds(String userName) throws ClientException {
+    public List<String> getAvalaibleDeputyIds(String userName) {
         List<String> deputies = new ArrayList<String>();
 
         for (DocumentModel entry : getAvalaibleMandates(userName)) {
@@ -179,7 +179,7 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     @Override
-    public List<DocumentModel> getAvalaibleMandates(String userName) throws ClientException {
+    public List<DocumentModel> getAvalaibleMandates(String userName) {
         List<DocumentModel> deputies = new ArrayList<DocumentModel>();
 
         initPersistentService();
@@ -199,7 +199,7 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     @Override
-    public DocumentModel newMandate(String username, String deputy) throws ClientException {
+    public DocumentModel newMandate(String username, String deputy) {
 
         initPersistentService();
 
@@ -215,7 +215,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         }
     }
 
-    protected DocumentModel newEntry(String username, String deputy) throws ClientException {
+    protected DocumentModel newEntry(String username, String deputy) {
         DataModel data = new DataModelImpl(directorySchema, new HashMap<String, Object>());
         DocumentModelImpl entry = new DocumentModelImpl(null, directorySchema, "0", null, null, null, null,
                 new String[] { directorySchema }, null, null, null);
@@ -228,7 +228,7 @@ public class DeputyManagementStorageService implements DeputyManager {
 
     @Override
     public DocumentModel newMandate(String username, String deputy, Calendar start, Calendar end)
-            throws ClientException {
+            {
 
         initPersistentService();
 
@@ -244,7 +244,7 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     @Override
-    public void addMandate(DocumentModel entry) throws ClientException {
+    public void addMandate(DocumentModel entry) {
 
         initPersistentService();
 
@@ -269,7 +269,7 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     @Override
-    public void removeMandate(String username, String deputy) throws ClientException {
+    public void removeMandate(String username, String deputy) {
 
         initPersistentService();
 
@@ -281,7 +281,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         }
     }
 
-    protected String id(DocumentModel entry) throws ClientException {
+    protected String id(DocumentModel entry) {
         return id((String) entry.getProperty(directorySchema, "userid"),
                 (String) entry.getProperty(directorySchema, "deputy"));
     }

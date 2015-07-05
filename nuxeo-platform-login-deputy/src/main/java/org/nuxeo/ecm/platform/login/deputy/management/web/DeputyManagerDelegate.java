@@ -43,7 +43,7 @@ public class DeputyManagerDelegate implements Serializable {
     private transient DeputyManager deputyManager;
 
     @Unwrap
-    public DeputyManager factoryForDeputyManager() throws ClientException {
+    public DeputyManager factoryForDeputyManager() {
         if (deputyManager == null) {
             try {
                 deputyManager = Framework.getService(DeputyManager.class);

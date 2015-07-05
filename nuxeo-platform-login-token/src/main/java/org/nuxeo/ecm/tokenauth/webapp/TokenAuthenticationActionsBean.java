@@ -75,7 +75,7 @@ public class TokenAuthenticationActionsBean implements Serializable {
         facesMessages.add(StatusMessage.Severity.INFO, messages.get("label.tokenauth.revoked"));
     }
 
-    public void deleteAllTokenBindings() throws PropertyException, ClientException {
+    public void deleteAllTokenBindings() throws PropertyException {
         reset();
         TokenAuthenticationService tokenAuthenticationService = Framework.getLocalService(TokenAuthenticationService.class);
         for (DocumentModel tokenBinding : getCurrentUserAuthTokenBindings()) {

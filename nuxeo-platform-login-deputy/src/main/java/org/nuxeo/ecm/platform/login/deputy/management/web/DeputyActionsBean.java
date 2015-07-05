@@ -77,12 +77,12 @@ public class DeputyActionsBean implements Serializable {
 
     protected DocumentModel editableDeputy;
 
-    public String createDeputy() throws ClientException {
+    public String createDeputy() {
         editableDeputy = deputyManager.newMandate(currentUser.getName(), null);
         return VIEW_DEPUTIES;
     }
 
-    public String setNewDeputy(String deputyId) throws ClientException {
+    public String setNewDeputy(String deputyId) {
         String schemaName = deputyManager.getDeputySchemaName();
         editableDeputy.setProperty(schemaName, "deputy", deputyId);
         return VIEW_DEPUTIES;
@@ -93,7 +93,7 @@ public class DeputyActionsBean implements Serializable {
         return VIEW_DEPUTIES;
     }
 
-    public String saveDeputy() throws ClientException {
+    public String saveDeputy() {
         if (editableDeputy == null) {
             return null;
         }
@@ -109,7 +109,7 @@ public class DeputyActionsBean implements Serializable {
         return VIEW_DEPUTIES;
     }
 
-    public String editDeputy(String deputyId) throws ClientException {
+    public String editDeputy(String deputyId) {
         if (deputyId == null) {
             return null;
         }
@@ -134,7 +134,7 @@ public class DeputyActionsBean implements Serializable {
         }
     }
 
-    public String deleteDeputy(String deputyId) throws ClientException {
+    public String deleteDeputy(String deputyId) {
         deputyManager.removeMandate(currentUser.getName(), deputyId);
         FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_INFO, messages.get("message.deputy.deleted"),
                 messages.get("message.deputy.deleted"));
@@ -144,12 +144,12 @@ public class DeputyActionsBean implements Serializable {
     }
 
     @Factory(value = "userDeputies", scope = EVENT)
-    public List<DocumentModel> getUserDeputies() throws ClientException {
+    public List<DocumentModel> getUserDeputies() {
         return deputyManager.getAvalaibleMandates(currentUser.getName());
     }
 
     @Factory(value = "alternateLogins", scope = EVENT)
-    public List<Principal> getAlternatePrincipals() throws ClientException {
+    public List<Principal> getAlternatePrincipals() {
         List<Principal> result = new ArrayList<Principal>();
         List<String> logins = deputyManager.getPossiblesAlternateLogins(currentUser.getName());
 
@@ -163,7 +163,7 @@ public class DeputyActionsBean implements Serializable {
         return result;
     }
 
-    public String loginAsDeputy(String login) throws ClientException, IOException, ServletException {
+    public String loginAsDeputy(String login) throws IOException, ServletException {
         NuxeoPrincipal nxUser = (NuxeoPrincipal) currentUser;
 
         if ((!nxUser.isAdministrator())
@@ -254,7 +254,7 @@ public class DeputyActionsBean implements Serializable {
         return adminLogin;
     }
 
-    public String adminLoginAsDeputy() throws ClientException, IOException, ServletException {
+    public String adminLoginAsDeputy() throws IOException, ServletException {
 
         if (adminLogin == null) {
             return null;

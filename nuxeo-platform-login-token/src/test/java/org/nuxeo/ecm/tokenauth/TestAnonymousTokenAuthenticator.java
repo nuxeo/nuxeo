@@ -95,7 +95,7 @@ public class TestAnonymousTokenAuthenticator {
                 "OSGI-INF/test-token-authentication-allow-anonymous-token-contrib.xml");
     }
 
-    protected void setPermission(DocumentModel doc, ACE ace) throws ClientException {
+    protected void setPermission(DocumentModel doc, ACE ace) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(ace);

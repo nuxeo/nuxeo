@@ -24,10 +24,10 @@ import org.nuxeo.ecm.core.event.EventProducer;
 
 public class MockEventService implements EventProducer {
 
-    public void fireEvent(Event event) throws ClientException {
+    public void fireEvent(Event event) {
     }
 
-    public void fireEventBundle(EventBundle event) throws ClientException {
+    public void fireEventBundle(EventBundle event) {
     }
 
 }
