@@ -74,7 +74,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
             CACHE_CONCURRENCY_LEVEL).maximumSize(CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     @Override
-    public DocumentModel getUserProfileDocument(CoreSession session) throws ClientException {
+    public DocumentModel getUserProfileDocument(CoreSession session) {
         DocumentModel userWorkspace = getUserWorkspaceService().getCurrentUserPersonalWorkspace(session, null);
         String uid = profileUidCache.getIfPresent(session.getPrincipal().getName());
         final IdRef ref = new IdRef(uid);
@@ -88,7 +88,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public DocumentModel getUserProfileDocument(String userName, CoreSession session) throws ClientException {
+    public DocumentModel getUserProfileDocument(String userName, CoreSession session) {
         DocumentModel userWorkspace = getUserWorkspaceService().getUserPersonalWorkspace(userName,
                 session.getRootDocument());
 
@@ -104,7 +104,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
     }
 
     @Override
-    public DocumentModel getUserProfile(DocumentModel userModel, CoreSession session) throws ClientException {
+    public DocumentModel getUserProfile(DocumentModel userModel, CoreSession session) {
         DocumentModel userProfileDoc = getUserProfileDocument(userModel.getId(), session);
         userProfileDoc.detach(true);
         userProfileDoc.getDataModels().putAll(userModel.getDataModels());
@@ -130,7 +130,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             String query = "select * from " + USER_PROFILE_DOCTYPE + " where ecm:parentId='" + userWorkspace.getId()
                     + "' " + " AND ecm:isProxy = 0 "
@@ -152,7 +152,7 @@ public class UserProfileServiceImpl extends DefaultComponent implements UserProf
             }
         }
 
-        public DocumentModel getOrCreate() throws ClientException {
+        public DocumentModel getOrCreate() {
             if (session.hasPermission(userWorkspace.getRef(), ADD_CHILDREN)) {
                 run();
             } else {

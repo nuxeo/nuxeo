@@ -38,7 +38,7 @@ public class UserLocaleSelectorListener implements EventListener {
     public static final Log log = LogFactory.getLog(UserLocaleSelectorListener.class);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext ctx = (DocumentEventContext) event.getContext();
         DocumentModel userProfileDocument = ctx.getSourceDocument();
 

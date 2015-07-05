@@ -218,7 +218,7 @@ public class UserProfileImporter {
      */
     protected boolean importLine(CSVRecord record, final long lineNumber, Integer nameIndex, DocumentType docType,
             CoreSession session, UserProfileService userProfileService, Map<String, Integer> headerValues)
-            throws ClientException {
+            {
         final String name = record.get(nameIndex);
         if (StringUtils.isBlank(name)) {
             logImportError(lineNumber, "Missing 'name' value", "label.csv.importer.missingNameValue");
@@ -344,7 +344,7 @@ public class UserProfileImporter {
     }
 
     protected boolean updateDocument(long lineNumber, String name, DocumentType docType, CoreSession session,
-            UserProfileService userProfileService, Map<String, Serializable> properties) throws ClientException {
+            UserProfileService userProfileService, Map<String, Serializable> properties) {
 
         DocumentModel doc = userProfileService.getUserProfileDocument(name, session);
         Calendar createdDate = (Calendar) doc.getPropertyValue("dc:created");
