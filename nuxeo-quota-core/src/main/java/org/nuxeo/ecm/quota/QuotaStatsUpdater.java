@@ -39,7 +39,7 @@ public interface QuotaStatsUpdater {
      * 
      * @param session an unrestricted {@link CoreSession} to be used
      */
-    void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event) throws ClientException;
+    void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event);
 
     /**
      * Compute the initial statistics on the whole repository for this {@code QuotaStatsUpdater}.

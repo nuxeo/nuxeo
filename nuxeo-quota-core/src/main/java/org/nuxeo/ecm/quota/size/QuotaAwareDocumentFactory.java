@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
  */
 public class QuotaAwareDocumentFactory implements DocumentAdapterFactory {
 
-    public static QuotaAwareDocument make(DocumentModel doc, boolean save) throws ClientException {
+    public static QuotaAwareDocument make(DocumentModel doc, boolean save) {
         if (!doc.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
             doc.addFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET);
             if (save) {

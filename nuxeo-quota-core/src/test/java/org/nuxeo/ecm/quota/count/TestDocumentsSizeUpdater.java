@@ -1802,57 +1802,50 @@ public class TestDocumentsSizeUpdater {
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getWorkspace() throws ClientException {
+    protected DocumentModel getWorkspace() {
         return session.getDocument(wsRef);
     }
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getFirstSubFolder() throws ClientException {
+    protected DocumentModel getFirstSubFolder() {
         return session.getDocument(firstSubFolderRef);
     }
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getSecondSubFolder() throws ClientException {
+    protected DocumentModel getSecondSubFolder() {
         return session.getDocument(secondSubFolderRef);
     }
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getFirstFolder() throws ClientException {
+    protected DocumentModel getFirstFolder() {
         return session.getDocument(firstFolderRef);
     }
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getSecondFolder() throws ClientException {
+    protected DocumentModel getSecondFolder() {
         return session.getDocument(secondFolderRef);
     }
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getSecondFile() throws ClientException {
+    protected DocumentModel getSecondFile() {
         return session.getDocument(secondFileRef);
     }
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getFirstFile() throws ClientException {
+    protected DocumentModel getFirstFile() {
         return session.getDocument(firstFileRef);
     }
 

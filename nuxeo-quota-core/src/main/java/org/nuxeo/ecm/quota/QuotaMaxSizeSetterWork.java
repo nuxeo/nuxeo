@@ -65,7 +65,7 @@ public class QuotaMaxSizeSetterWork extends AbstractWork {
         new UnrestrictedSessionRunner(repositoryName) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 for (String docId : docIds) {
                     DocumentModel doc = session.getDocument(new IdRef(docId));
                     QuotaAware qa = doc.getAdapter(QuotaAware.class);

@@ -77,7 +77,7 @@ public class TestDocumentsCountUpdater {
     }
 
     @Before
-    public void addFiles() throws ClientException {
+    public void addFiles() {
         session.save();
         DocumentModel ws = session.createDocumentModel("/", "ws", "Workspace");
         ws = session.createDocument(ws);

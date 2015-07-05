@@ -84,12 +84,12 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public void updateStatistics(final DocumentEventContext docCtx, final Event event) throws ClientException {
+    public void updateStatistics(final DocumentEventContext docCtx, final Event event) {
         // Open via session rather than repo name so that session.save and sync
         // is done automatically
         new UnrestrictedSessionRunner(docCtx.getCoreSession()) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 List<QuotaStatsUpdater> quotaStatsUpdaters = quotaStatsUpdaterRegistry.getQuotaStatsUpdaters();
                 for (QuotaStatsUpdater updater : quotaStatsUpdaters) {
                     log.debug("Calling updateStatistics of " + updater.getName() + " FOR " + event.getName() + " ON " + docCtx.getSourceDocument().getPathAsString());
@@ -148,7 +148,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public long getQuotaFromParent(DocumentModel doc, CoreSession session) throws ClientException {
+    public long getQuotaFromParent(DocumentModel doc, CoreSession session) {
         List<DocumentModel> parents = getParentsInReverseOrder(doc, session);
         // if a user workspace, only interested in the qouta on its direct
         // parent
@@ -169,11 +169,11 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public void activateQuotaOnUserWorkspaces(final long maxQuota, CoreSession session) throws ClientException {
+    public void activateQuotaOnUserWorkspaces(final long maxQuota, CoreSession session) {
         final String userWorkspacesRootId = getUserWorkspaceRootId(session.getRootDocument(), session);
         new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel uwRoot = session.getDocument(new IdRef(userWorkspacesRootId));
                 QuotaAware qa = uwRoot.getAdapter(QuotaAware.class);
                 if (qa == null) {
@@ -186,19 +186,19 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public long getQuotaSetOnUserWorkspaces(CoreSession session) throws ClientException {
+    public long getQuotaSetOnUserWorkspaces(CoreSession session) {
         final String userWorkspacesRootId = getUserWorkspaceRootId(session.getRootDocument(), session);
         return new UnrestrictedSessionRunner(session) {
 
             long quota = -1;
 
-            public long getsQuotaSetOnUserWorkspaces() throws ClientException {
+            public long getsQuotaSetOnUserWorkspaces() {
                 runUnrestricted();
                 return quota;
             }
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel uwRoot = session.getDocument(new IdRef(userWorkspacesRootId));
                 QuotaAware qa = uwRoot.getAdapter(QuotaAware.class);
                 if (qa == null) {
@@ -211,19 +211,19 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     protected List<DocumentModel> getParentsInReverseOrder(DocumentModel doc, CoreSession session)
-            throws ClientException {
+            {
         UnrestrictedParentsFetcher parentsFetcher = new UnrestrictedParentsFetcher(doc, session);
         return parentsFetcher.getParents();
     }
 
     @Override
     public void launchSetMaxQuotaOnUserWorkspaces(final long maxSize, DocumentModel context, CoreSession session)
-            throws ClientException {
+            {
         final String userWorkspacesId = getUserWorkspaceRootId(context, session);
         new UnrestrictedSessionRunner(session) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 IterableQueryResult results = session.queryAndFetch(String.format(
                         "Select ecm:uuid from Workspace where ecm:parentId = '%s'  "
                                 + "AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' ",
@@ -254,7 +254,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
         }.runUnrestricted();
     }
 
-    public String getUserWorkspaceRootId(DocumentModel context, CoreSession session) throws ClientException {
+    public String getUserWorkspaceRootId(DocumentModel context, CoreSession session) {
         // get only the userworkspaces root under the first domain
         // it should be only one
         DocumentModel currentUserWorkspace = Framework.getLocalService(UserWorkspaceService.class).getUserPersonalWorkspace(
@@ -264,7 +264,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
     }
 
     @Override
-    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session) throws ClientException {
+    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session) {
         QuotaAware qa = null;
         DocumentModel parent = null;
         if ("UserWorkspacesRoot".equals(doc.getType())) {
@@ -323,18 +323,18 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             quotaOnChildren = canSetMaxQuotaOnChildrenTree(maxAllowedOnChildrenToSetQuota, quotaOnChildren, parent,
                     currentDocIdToIgnore, session);
         }
 
-        public long quotaOnChildren() throws ClientException {
+        public long quotaOnChildren() {
             runUnrestricted();
             return quotaOnChildren;
         }
 
         protected Long canSetMaxQuotaOnChildrenTree(Long maxAllowedOnChildrenToSetQuota, Long quotaOnChildren,
-                DocumentModel doc, String currentDocIdToIgnore, CoreSession session) throws ClientException {
+                DocumentModel doc, String currentDocIdToIgnore, CoreSession session) {
             if (quotaOnChildren > 0 && quotaOnChildren > maxAllowedOnChildrenToSetQuota) {
                 // quota can not be set, don't continue
                 return quotaOnChildren;
@@ -379,7 +379,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             parents = new ArrayList<DocumentModel>();
             DocumentRef[] parentRefs = session.getParentDocumentRefs(doc.getRef());
             for (DocumentRef documentRef : parentRefs) {
@@ -390,7 +390,7 @@ public class QuotaStatsServiceImpl extends DefaultComponent implements QuotaStat
             }
         }
 
-        public List<DocumentModel> getParents() throws ClientException {
+        public List<DocumentModel> getParents() {
             runUnrestricted();
             return parents;
         }

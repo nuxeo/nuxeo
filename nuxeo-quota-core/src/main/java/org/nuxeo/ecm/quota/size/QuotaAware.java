@@ -38,30 +38,30 @@ public interface QuotaAware {
 
     long getMaxQuota();
 
-    void setInnerSize(long size, boolean save) throws ClientException;
+    void setInnerSize(long size, boolean save);
 
-    void addInnerSize(long additionalSize, boolean save) throws ClientException;
+    void addInnerSize(long additionalSize, boolean save);
 
-    void addTotalSize(long additionalSize, boolean save) throws ClientException;
+    void addTotalSize(long additionalSize, boolean save);
 
-    void addTrashSize(long additionalSize, boolean save) throws ClientException;
+    void addTrashSize(long additionalSize, boolean save);
 
-    void addVersionsSize(long additionalSize, boolean save) throws ClientException;
+    void addVersionsSize(long additionalSize, boolean save);
 
-    void save() throws ClientException;
+    void save();
 
     /**
      * @since 5.7 allows to save the document without notifying DublincoreListener and the notification service
      */
-    void save(boolean disableNotifications) throws ClientException;
+    void save(boolean disableNotifications);
 
     DocumentModel getDoc();
 
-    void setMaxQuota(long maxSize, boolean save) throws ClientException;
+    void setMaxQuota(long maxSize, boolean save);
 
-    void setMaxQuota(long maxSize, boolean save, boolean skipValidation) throws ClientException;
+    void setMaxQuota(long maxSize, boolean save, boolean skipValidation);
 
     QuotaInfo getQuotaInfo();
 
-    void resetInfos(boolean save) throws ClientException;
+    void resetInfos(boolean save);
 }

@@ -40,7 +40,7 @@ public interface QuotaStatsService {
      * <p>
      * Call all the registered {@link org.nuxeo.ecm.quota.QuotaStatsUpdater}s.
      */
-    void updateStatistics(DocumentEventContext docCtx, Event event) throws ClientException;
+    void updateStatistics(DocumentEventContext docCtx, Event event);
 
     /**
      * Compute the initial statistics for the given @{code updaterName}.
@@ -63,34 +63,32 @@ public interface QuotaStatsService {
      *
      * @since 5.7
      */
-    public long getQuotaFromParent(DocumentModel doc, CoreSession session) throws ClientException;
+    public long getQuotaFromParent(DocumentModel doc, CoreSession session);
 
     /**
      * Test to see if quota allowed. Skip user worskpaces, where validation rules don't apply.
      *
      * @since 5.7
      */
-    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session) throws ClientException;
+    public boolean canSetMaxQuota(long maxQuota, DocumentModel doc, CoreSession session);
 
     /**
      * Sets this maxQuota on all user workspaces
      *
-     * @throws ClientException
      * @since 5.7
      */
-    public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota, DocumentModel context, CoreSession session)
-            throws ClientException;
+    public void launchSetMaxQuotaOnUserWorkspaces(long maxQuota, DocumentModel context, CoreSession session);
 
     /**
      * Activates the quota on user personal workspaces
      *
      * @since 5.7
      */
-    public void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session) throws ClientException;
+    public void activateQuotaOnUserWorkspaces(long maxQuota, CoreSession session);
 
     /**
      * @since 5.7
      */
-    public long getQuotaSetOnUserWorkspaces(CoreSession session) throws ClientException;
+    public long getQuotaSetOnUserWorkspaces(CoreSession session);
 
 }

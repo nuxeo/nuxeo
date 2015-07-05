@@ -149,9 +149,8 @@ public class TestExcludedBlob {
 
     /**
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel getDocument() throws ClientException {
+    protected DocumentModel getDocument() {
         return session.getDocument(fileRef);
     }
 
