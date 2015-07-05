@@ -56,7 +56,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
         this.realBackendFactory = realBackendFactory;
     }
 
-    protected void registerSimpleBackends(List<DocumentModel> docs) throws ClientException {
+    protected void registerSimpleBackends(List<DocumentModel> docs) {
         List<String> paths = new ArrayList<String>();
         for (DocumentModel doc : docs) {
             paths.add(doc.getPathAsString());
@@ -126,7 +126,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     }
 
     @Override
-    public LinkedList<String> getVirtualFolderNames() throws ClientException {
+    public LinkedList<String> getVirtualFolderNames() {
         initIfNeed();
         if (orderedBackendNames == null) {
             return new LinkedList<String>();
@@ -181,32 +181,32 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     protected abstract void init();
 
     @Override
-    public boolean isLocked(DocumentRef ref) throws ClientException {
+    public boolean isLocked(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean canUnlock(DocumentRef ref) throws ClientException {
+    public boolean canUnlock(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String lock(DocumentRef ref) throws ClientException {
+    public String lock(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean unlock(DocumentRef ref) throws ClientException {
+    public boolean unlock(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getCheckoutUser(DocumentRef ref) throws ClientException {
+    public String getCheckoutUser(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel resolveLocation(String location) throws ClientException {
+    public DocumentModel resolveLocation(String location) {
         throw new UnsupportedOperationException(location);
     }
 
@@ -216,47 +216,47 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     }
 
     @Override
-    public void removeItem(String location) throws ClientException {
+    public void removeItem(String location) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeItem(DocumentRef ref) throws ClientException {
+    public void removeItem(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void renameItem(DocumentModel source, String destinationName) throws ClientException {
+    public void renameItem(DocumentModel source, String destinationName) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    public DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException {
+    public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFolder(String parentPath, String name) throws ClientException {
+    public DocumentModel createFolder(String parentPath, String name) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException {
+    public DocumentModel createFile(String parentPath, String name, Blob content) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel createFile(String parentPath, String name) throws ClientException {
+    public DocumentModel createFile(String parentPath, String name) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<DocumentModel> getChildren(DocumentRef ref) throws ClientException {
+    public List<DocumentModel> getChildren(DocumentRef ref) {
         throw new UnsupportedOperationException();
     }
 
@@ -276,28 +276,28 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     }
 
     @Override
-    public boolean hasPermission(DocumentRef docRef, String permission) throws ClientException {
+    public boolean hasPermission(DocumentRef docRef, String permission) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel getDocument(String location) throws ClientException {
+    public DocumentModel getDocument(String location) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException {
+    public DocumentModel updateDocument(DocumentModel doc, String name, Blob content) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
-            throws ClientException {
+            {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getVirtualPath(String path) throws ClientException {
+    public String getVirtualPath(String path) {
         initIfNeed();
         for (String backendName : orderedBackendNames) {
             Backend backend = backendMap.get(backendName);
@@ -310,7 +310,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
     }
 
     @Override
-    public LinkedList<String> getOrderedBackendNames() throws ClientException {
+    public LinkedList<String> getOrderedBackendNames() {
         initIfNeed();
         return orderedBackendNames;
     }

@@ -33,59 +33,59 @@ public interface Backend {
 
     String getRootUrl();
 
-    CoreSession getSession() throws ClientException;
+    CoreSession getSession();
 
-    CoreSession getSession(boolean synchronize) throws ClientException;
+    CoreSession getSession(boolean synchronize);
 
     String getBackendDisplayName();
 
-    void saveChanges() throws ClientException;
+    void saveChanges();
 
-    boolean isLocked(DocumentRef ref) throws ClientException;
+    boolean isLocked(DocumentRef ref);
 
-    boolean canUnlock(DocumentRef ref) throws ClientException;
+    boolean canUnlock(DocumentRef ref);
 
-    String lock(DocumentRef ref) throws ClientException;
+    String lock(DocumentRef ref);
 
-    boolean unlock(DocumentRef ref) throws ClientException;
+    boolean unlock(DocumentRef ref);
 
-    String getCheckoutUser(DocumentRef ref) throws ClientException;
+    String getCheckoutUser(DocumentRef ref);
 
     Path parseLocation(String location);
 
-    DocumentModel resolveLocation(String location) throws ClientException;
+    DocumentModel resolveLocation(String location);
 
-    void removeItem(String location) throws ClientException;
+    void removeItem(String location);
 
-    void removeItem(DocumentRef ref) throws ClientException;
+    void removeItem(DocumentRef ref);
 
-    void renameItem(DocumentModel source, String destinationName) throws ClientException;
+    void renameItem(DocumentModel source, String destinationName);
 
-    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+    DocumentModel moveItem(DocumentModel source, PathRef targetParentRef);
 
-    DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name) throws ClientException;
+    DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name);
 
-    DocumentModel updateDocument(DocumentModel doc, String name, Blob content) throws ClientException;
+    DocumentModel updateDocument(DocumentModel doc, String name, Blob content);
 
-    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) throws ClientException;
+    DocumentModel copyItem(DocumentModel source, PathRef targetParentRef);
 
-    DocumentModel createFolder(String parentPath, String name) throws ClientException;
+    DocumentModel createFolder(String parentPath, String name);
 
-    DocumentModel createFile(String parentPath, String name, Blob content) throws ClientException;
+    DocumentModel createFile(String parentPath, String name, Blob content);
 
-    DocumentModel createFile(String parentPath, String name) throws ClientException;
+    DocumentModel createFile(String parentPath, String name);
 
-    List<DocumentModel> getChildren(DocumentRef ref) throws ClientException;
+    List<DocumentModel> getChildren(DocumentRef ref);
 
     boolean isRename(String source, String destination);
 
     boolean exists(String location);
 
-    boolean hasPermission(DocumentRef docRef, String permission) throws ClientException;
+    boolean hasPermission(DocumentRef docRef, String permission);
 
     String getDisplayName(DocumentModel doc);
 
-    LinkedList<String> getVirtualFolderNames() throws ClientException;
+    LinkedList<String> getVirtualFolderNames();
 
     Backend getBackend(String path);
 
@@ -93,8 +93,8 @@ public interface Backend {
 
     boolean isRoot();
 
-    String getVirtualPath(String path) throws ClientException;
+    String getVirtualPath(String path);
 
-    DocumentModel getDocument(String location) throws ClientException;
+    DocumentModel getDocument(String location);
 
 }

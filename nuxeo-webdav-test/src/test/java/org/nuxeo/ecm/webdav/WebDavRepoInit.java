@@ -32,7 +32,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 public class WebDavRepoInit implements RepositoryInit {
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         LogFactory.getLog(WebDavRepoInit.class).trace("enter populate webdav");
         DocumentModel ws = session.createDocumentModel("/", "workspaces", "WorkspaceRoot");
         ws.setPropertyValue("dc:title", "Workspaces");
@@ -49,7 +49,7 @@ public class WebDavRepoInit implements RepositoryInit {
     }
 
     protected void createFile(DocumentModel folder, String name, String mimeType, CoreSession session)
-            throws ClientException {
+            {
         DocumentModel file = session.createDocumentModel(folder.getPathAsString(), name, "File");
         file.setProperty("dublincore", "title", name);
         String testDocsPath = Thread.currentThread().getContextClassLoader().getResource("testdocs").getPath();
