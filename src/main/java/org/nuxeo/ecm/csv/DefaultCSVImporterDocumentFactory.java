@@ -44,7 +44,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
 
     @Override
     public void createDocument(CoreSession session, String parentPath, String name, String type,
-            Map<String, Serializable> values) throws ClientException {
+            Map<String, Serializable> values) {
         DocumentModel doc = session.createDocumentModel(parentPath, name, type);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             if (NXQL.ECM_LIFECYCLESTATE.equals(entry.getKey())) {
@@ -58,7 +58,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
 
     @Override
     public void updateDocument(CoreSession session, DocumentRef docRef, Map<String, Serializable> values)
-            throws ClientException {
+            {
         DocumentModel doc = session.getDocument(docRef);
         for (Map.Entry<String, Serializable> entry : values.entrySet()) {
             if (!IGNORE_FIELDS_ON_UPDATE.contains(entry.getKey())) {
@@ -70,7 +70,7 @@ public class DefaultCSVImporterDocumentFactory implements CSVImporterDocumentFac
 
     @Override
     public boolean exists(CoreSession session, String parentPath, String name, String type,
-            Map<String, Serializable> values) throws ClientException {
+            Map<String, Serializable> values) {
         String targetPath = new Path(parentPath).append(name).toString();
         DocumentRef docRef = new PathRef(targetPath);
         return session.exists(docRef);

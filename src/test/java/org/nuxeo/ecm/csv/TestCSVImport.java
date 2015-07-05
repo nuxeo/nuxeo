@@ -91,7 +91,7 @@ public class TestCSVImport {
     }
 
     @Test
-    public void shouldCreateAllDocuments() throws InterruptedException, ClientException, IOException {
+    public void shouldCreateAllDocuments() throws InterruptedException, IOException {
         CSVImporterOptions options = CSVImporterOptions.DEFAULT_OPTIONS;
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -170,7 +170,7 @@ public class TestCSVImport {
     }
 
     @Test
-    public void shouldSkipExistingDocuments() throws InterruptedException, ClientException {
+    public void shouldSkipExistingDocuments() throws InterruptedException {
         DocumentModel doc = session.createDocumentModel("/", "mynote", "Note");
         doc.setPropertyValue("dc:title", "Existing Note");
         session.createDocument(doc);
@@ -214,7 +214,7 @@ public class TestCSVImport {
     }
 
     @Test
-    public void shouldStoreLineWithErrors() throws InterruptedException, ClientException {
+    public void shouldStoreLineWithErrors() throws InterruptedException {
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(false).build();
         TransactionHelper.commitOrRollbackTransaction();
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_NOT_OK_CSV), DOCS_NOT_OK_CSV, options);
@@ -267,7 +267,7 @@ public class TestCSVImport {
     }
 
     @Test
-    public void shouldImportDirectoryStructure() throws InterruptedException, ClientException {
+    public void shouldImportDirectoryStructure() throws InterruptedException {
         CSVImporterOptions options = new CSVImporterOptions.Builder().updateExisting(false).build();
         TransactionHelper.commitOrRollbackTransaction();
         String importId = csvImporter.launchImport(session, "/", getCSVFile(DOCS_WITH_FOLDERS_OK_CSV),
