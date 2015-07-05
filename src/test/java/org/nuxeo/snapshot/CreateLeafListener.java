@@ -15,7 +15,7 @@ public class CreateLeafListener implements EventListener {
     public static final String DO_NOT_CHANGE_CHILD_FLAG = "hold";
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!event.getName().equals(ABOUT_TO_CREATE_LEAF_VERSION_EVENT)) {
             return;
         }

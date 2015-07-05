@@ -28,7 +28,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
     // helper method that provides children listing using different technics
     // in the target solution this should probably be encapsulated in a
     // PageProvider ...
-    protected List<DocumentModel> getChildren(DocumentModel parent) throws ClientException {
+    protected List<DocumentModel> getChildren(DocumentModel parent) {
 
         String query = "select * from Document where ecm:parentId = ";
 
@@ -252,7 +252,7 @@ public class TestSnapshotingAndProxies extends AbstractTestSnapshot {
 
     }
 
-    private boolean contains(DocumentModelList docList, DocumentModel lookedForDoc) throws ClientException {
+    private boolean contains(DocumentModelList docList, DocumentModel lookedForDoc) {
         for (DocumentModel child : docList) {
             if (child.getPath().equals(lookedForDoc.getPath())) {
                 return true;

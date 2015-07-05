@@ -30,7 +30,7 @@ public class VFolderActionBean implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    public String restoreToVersion() throws ClientException {
+    public String restoreToVersion() {
         String vuuid = versionedActions.getSelectedVersionId();
         if (vuuid != null) {
 

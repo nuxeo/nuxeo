@@ -10,13 +10,13 @@ public interface Snapshot extends Snapshotable {
 
     public static final String FACET = "Snapshot";
 
-    List<DocumentModel> getChildren() throws ClientException;
+    List<DocumentModel> getChildren();
 
-    List<Snapshot> getChildrenSnapshots() throws ClientException;
+    List<Snapshot> getChildrenSnapshots();
 
-    List<Snapshot> getFlatTree() throws ClientException;
+    List<Snapshot> getFlatTree();
 
-    DocumentModel restore(String versionLabel) throws ClientException;
+    DocumentModel restore(String versionLabel);
 
     DocumentModel getDocument();
 

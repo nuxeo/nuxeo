@@ -47,7 +47,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return doc.getRef();
     }
 
-    protected DocumentRef createLeafVersion(DocumentModel targetDoc, VersioningOption option) throws ClientException {
+    protected DocumentRef createLeafVersion(DocumentModel targetDoc, VersioningOption option) {
         if (targetDoc.isFolder() && !targetDoc.hasSchema(SCHEMA)) {
             throw new ClientException("Can not version a folder that has not snapshot schema");
         }
@@ -87,7 +87,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return targetDoc.getCoreSession().checkIn(targetDoc.getRef(), option, null);
     }
 
-    protected DocumentModel createLeafVersionAndFetch(VersioningOption option) throws ClientException {
+    protected DocumentModel createLeafVersionAndFetch(VersioningOption option) {
         DocumentRef versionRef = createLeafVersion(doc, option);
 
         DocumentModel version = doc.getCoreSession().getDocument(versionRef);
@@ -100,7 +100,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     @Override
-    public Snapshot createSnapshot(VersioningOption option) throws ClientException {
+    public Snapshot createSnapshot(VersioningOption option) {
 
         if (!doc.isFolder()) {
             if (doc.isCheckedOut()) {
@@ -165,7 +165,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
     }
 
-    protected List<DocumentModel> getChildren(DocumentModel target) throws ClientException {
+    protected List<DocumentModel> getChildren(DocumentModel target) {
         if (!target.isVersion()) {
             throw new ClientException("Not a version:");
         }
@@ -197,12 +197,12 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     @Override
-    public List<DocumentModel> getChildren() throws ClientException {
+    public List<DocumentModel> getChildren() {
         return getChildren(doc);
     }
 
     @Override
-    public List<Snapshot> getChildrenSnapshots() throws ClientException {
+    public List<Snapshot> getChildrenSnapshots() {
 
         List<Snapshot> snaps = new ArrayList<Snapshot>();
 
@@ -213,7 +213,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return snaps;
     }
 
-    protected void fillFlatTree(List<Snapshot> list) throws ClientException {
+    protected void fillFlatTree(List<Snapshot> list) {
         for (Snapshot snap : getChildrenSnapshots()) {
             list.add(snap);
             if (snap.getDocument().isFolder()) {
@@ -222,7 +222,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
     }
 
-    public List<Snapshot> getFlatTree() throws ClientException {
+    public List<Snapshot> getFlatTree() {
         List<Snapshot> list = new ArrayList<Snapshot>();
 
         fillFlatTree(list);
@@ -256,7 +256,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return sb.toString();
     }
 
-    protected DocumentModel getVersionForLabel(DocumentModel target, String versionLabel) throws ClientException {
+    protected DocumentModel getVersionForLabel(DocumentModel target, String versionLabel) {
         List<DocumentModel> versions = target.getCoreSession().getVersions(target.getRef());
         for (DocumentModel version : versions) {
             if (version.getVersionLabel().equals(versionLabel)) {
@@ -266,7 +266,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         return null;
     }
 
-    protected DocumentModel getCheckoutDocument(DocumentModel target) throws ClientException {
+    protected DocumentModel getCheckoutDocument(DocumentModel target) {
         if (target.isVersion()) {
             target = target.getCoreSession().getDocument(new IdRef(doc.getSourceId()));
         }
@@ -274,7 +274,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     protected DocumentModel restore(DocumentModel leafVersion, DocumentModel target, boolean first,
-            DocumentModelList olddocs) throws ClientException {
+            DocumentModelList olddocs) {
 
         CoreSession session = doc.getCoreSession();
 
@@ -327,8 +327,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
                     name = (String) child.getPropertyValue(NAME_PROP);
                 }
                 if (name == null && child.getTitle() != null) {
-                    name = IdUtils.generateId(child.getTitle(), "-", true, 24);
-                    ;
+                    name = IdUtils.generateId(child.getTitle(), "-", true, 24);;
                 }
                 if (name == null) {
                     name = child.getType() + System.currentTimeMillis();
@@ -354,7 +353,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     @Override
-    public DocumentModel restore(String versionLabel) throws ClientException {
+    public DocumentModel restore(String versionLabel) {
         DocumentModel target = getCheckoutDocument(doc);
         DocumentModel leafVersion = getVersionForLabel(target, versionLabel);
         DocumentModel restoredDoc = restore(leafVersion, target, true, null);

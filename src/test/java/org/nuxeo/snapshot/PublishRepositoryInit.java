@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 public class PublishRepositoryInit extends DefaultRepositoryInit {
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         super.populate(session);
 
         DocumentModel doc = session.createDocumentModel("/default-domain/sections", "section1", "Section");
