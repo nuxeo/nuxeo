@@ -11,6 +11,6 @@ public interface Snapshotable {
 
     public static final String ROOT_DOCUMENT_PROPERTY = "leafRootDocument";
 
-    Snapshot createSnapshot(VersioningOption option) throws ClientException;
+    Snapshot createSnapshot(VersioningOption option);
 
 }

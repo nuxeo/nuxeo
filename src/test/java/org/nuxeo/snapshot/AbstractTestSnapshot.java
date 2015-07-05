@@ -172,7 +172,7 @@ public class AbstractTestSnapshot {
         return proxy;
     }
 
-    protected void dumpAllContent() throws ClientException {
+    protected void dumpAllContent() {
         System.out.println("\nDumping all docs in repository");
         DocumentModelList docs = session.query("select * from Document order by ecm:path");
         for (DocumentModel doc : docs) {

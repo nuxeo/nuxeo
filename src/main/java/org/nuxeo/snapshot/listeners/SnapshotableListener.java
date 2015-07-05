@@ -26,7 +26,7 @@ public class SnapshotableListener implements EventListener {
     public static final String SNAPSHOT_VERSIONING_OPTION_KEY = "snapshotVersioningOption";
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         String eventName = event.getName();
         if (!DOCUMENT_UPDATED.equals(eventName)) {
             return;

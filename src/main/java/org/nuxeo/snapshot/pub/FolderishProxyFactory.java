@@ -17,7 +17,7 @@ import org.nuxeo.snapshot.Snapshotable;
 public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
 
     protected DocumentModel subPublish(CoreSession session, DocumentModel parentProxy, Snapshot tree, boolean skipParent)
-            throws ClientException {
+            {
 
         DocumentModel newFolderishProxy = null;
         if (skipParent) {
@@ -36,7 +36,7 @@ public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
 
     @Override
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
 
         Snapshot snapshot = null;
 
@@ -56,7 +56,7 @@ public class FolderishProxyFactory extends CoreProxyWithWorkflowFactory {
 
             UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getCoreSession()) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     // force cleanup of the tree !!!
                     session.removeChildren(parent.getRef());
                     subPublish(session, parent, tree, true);

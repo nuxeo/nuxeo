@@ -20,7 +20,7 @@ public class CreateTreeSnapshot {
     String versioningOption = MINOR.name();
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         Snapshotable adapter = doc.getAdapter(Snapshotable.class);
         if (adapter == null) {
             throw new ClientException("Unable to get Snapshotable adapter with document: " + doc.getPathAsString());
