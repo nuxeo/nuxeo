@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements BundleInfo {
 
     public static BundleInfoDocAdapter create(BundleInfo bundleInfo, CoreSession session, String containerPath)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName("bundle-" + bundleInfo.getId());

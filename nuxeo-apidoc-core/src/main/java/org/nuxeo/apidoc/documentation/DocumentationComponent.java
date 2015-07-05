@@ -95,7 +95,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel root = session.createDocumentModel(Root_PATH, Root_NAME, "Folder");
             root.setProperty("dublincore", "title", Root_NAME);
             root = session.createDocument(root);
@@ -114,7 +114,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     }
 
-    protected DocumentModel getDocumentationRoot(CoreSession session) throws ClientException {
+    protected DocumentModel getDocumentationRoot(CoreSession session) {
 
         DocumentRef rootRef = new PathRef(Root_PATH + Root_NAME);
 
@@ -199,7 +199,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     @Override
-    public List<DocumentationItem> findDocumentItems(CoreSession session, NuxeoArtifact nxItem) throws ClientException {
+    public List<DocumentationItem> findDocumentItems(CoreSession session, NuxeoArtifact nxItem) {
 
         String id = nxItem.getId();
         String type = nxItem.getArtifactType();
@@ -245,7 +245,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     @Override
     public List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item)
-            throws ClientException {
+            {
 
         List<DocumentationItem> result = new ArrayList<DocumentationItem>();
         List<DocumentModel> docs = findDocumentModelVariants(session, item);
@@ -264,7 +264,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     public List<DocumentModel> findDocumentModelVariants(CoreSession session, DocumentationItem item)
-            throws ClientException {
+            {
         String id = item.getId();
         String type = item.getTargetType();
         String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME + " WHERE "
@@ -278,7 +278,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     @Override
     public DocumentationItem createDocumentationItem(CoreSession session, NuxeoArtifact item, String title,
             String content, String type, List<String> applicableVersions, boolean approved, String renderingType)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel(DocumentationItem.TYPE_NAME);
 
@@ -307,7 +307,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
     }
 
     @Override
-    public void deleteDocumentationItem(CoreSession session, String uuid) throws ClientException {
+    public void deleteDocumentationItem(CoreSession session, String uuid) {
         DocumentModel doc = session.getDocument(new IdRef(uuid));
         // check type
         if (!doc.getType().equals(DocumentationItem.TYPE_NAME)) {
@@ -323,7 +323,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
         session.removeDocument(doc.getRef());
     }
 
-    protected DocumentModel updateDocumentModel(DocumentModel doc, DocumentationItem item) throws ClientException {
+    protected DocumentModel updateDocumentModel(DocumentModel doc, DocumentationItem item) {
 
         doc.setPropertyValue("dc:title", item.getTitle());
         Blob content = Blobs.createBlob(item.getContent());
@@ -355,7 +355,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
 
     @Override
     public DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem)
-            throws ClientException {
+            {
 
         DocumentModel existingDoc = session.getDocument(new IdRef(docItem.getUUID()));
         DocumentationItem existingDocItem = existingDoc.getAdapter(DocumentationItem.class);

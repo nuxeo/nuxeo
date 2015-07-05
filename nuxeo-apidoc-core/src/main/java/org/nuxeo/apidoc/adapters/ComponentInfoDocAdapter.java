@@ -46,7 +46,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     }
 
     public static ComponentInfoDocAdapter create(ComponentInfo componentInfo, CoreSession session, String containerPath)
-            throws ClientException, IOException {
+            throws IOException {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

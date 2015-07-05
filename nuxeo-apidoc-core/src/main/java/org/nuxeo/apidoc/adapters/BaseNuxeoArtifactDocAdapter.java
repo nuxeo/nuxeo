@@ -55,7 +55,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
         return IdUtils.generateId(name, "-", true, 500);
     }
 
-    protected static String getRootPath(CoreSession session, String basePath, String suffix) throws ClientException {
+    protected static String getRootPath(CoreSession session, String basePath, String suffix) {
         PathRef rootRef = new PathRef(basePath);
         if (session.exists(rootRef)) {
             Path path = new Path(basePath).append(suffix);
