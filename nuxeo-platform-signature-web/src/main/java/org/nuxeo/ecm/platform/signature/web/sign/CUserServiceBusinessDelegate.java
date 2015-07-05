@@ -48,7 +48,7 @@ public class CUserServiceBusinessDelegate implements Serializable {
     protected CUserService cUserService;
 
     @Unwrap
-    public CUserService getService() throws ClientException {
+    public CUserService getService() {
         if (cUserService == null) {
             try {
                 cUserService = Framework.getService(CUserService.class);

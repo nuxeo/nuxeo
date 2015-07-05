@@ -109,9 +109,8 @@ public class CertActions implements Serializable {
      * Retrieves a user certificate and returns a certificate's document model object
      * 
      * @return
-     * @throws ClientException
      */
-    public DocumentModel getCertificate() throws ClientException {
+    public DocumentModel getCertificate() {
         String userID = (String) getCurrentUserModel().getPropertyValue("user:username");
         return cUserService.getCertificate(userID);
     }
@@ -121,9 +120,8 @@ public class CertActions implements Serializable {
      * 
      * @param user
      * @return
-     * @throws ClientException
      */
-    public boolean hasCertificate(DocumentModel user) throws ClientException {
+    public boolean hasCertificate(DocumentModel user) {
         String userID = (String) user.getPropertyValue("user:username");
         return cUserService.hasCertificate(userID);
     }
@@ -133,9 +131,8 @@ public class CertActions implements Serializable {
      * 
      * @param userID
      * @return
-     * @throws ClientException
      */
-    public boolean hasCertificate(String userID) throws ClientException {
+    public boolean hasCertificate(String userID) {
         return cUserService.hasCertificate(userID);
     }
 
@@ -143,9 +140,8 @@ public class CertActions implements Serializable {
      * Checks if a specified user has a certificate
      * 
      * @return
-     * @throws ClientException
      */
-    public boolean hasCertificate() throws ClientException {
+    public boolean hasCertificate() {
         return hasCertificate(getCurrentUserModel());
     }
 
@@ -154,9 +150,8 @@ public class CertActions implements Serializable {
      * 
      * @param user
      * @return
-     * @throws ClientException
      */
-    public boolean canGenerateCertificate() throws ClientException {
+    public boolean canGenerateCertificate() {
         boolean canGenerateCertificate = false;
         // TODO currently allows generating certificates but will be used for
         // tightening security
@@ -171,7 +166,7 @@ public class CertActions implements Serializable {
      * @param firstPassword
      * @param secondPassword
      */
-    public void createCertificate(String firstPassword, String secondPassword) throws ClientException {
+    public void createCertificate(String firstPassword, String secondPassword) {
         boolean areRequirementsMet = false;
 
         try {
@@ -203,7 +198,7 @@ public class CertActions implements Serializable {
     /**
      * @since 5.8 - action to remove certificate.
      */
-    public void deleteCertificate() throws ClientException {
+    public void deleteCertificate() {
         try {
             cUserService.deleteCertificate((String) getCurrentUserModel().getPropertyValue("user:username"));
             facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("label.cert.deleted"));
@@ -226,7 +221,7 @@ public class CertActions implements Serializable {
      * @param firstPassword
      * @param secondPassword
      */
-    public void validatePasswords(String firstPassword, String secondPassword) throws ClientException {
+    public void validatePasswords(String firstPassword, String secondPassword) {
 
         if (firstPassword == null || secondPassword == null) {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR, resourcesAccessor.getMessages().get(
@@ -265,7 +260,7 @@ public class CertActions implements Serializable {
      * Validates user identity fields required for certificate generation NXP-6485
      * <p>
      */
-    public void validateRequiredUserFields() throws ClientException {
+    public void validateRequiredUserFields() {
 
         DocumentModel user = userManager.getUserModel(currentUser.getName());
         // first name
@@ -318,7 +313,7 @@ public class CertActions implements Serializable {
         return "view_home";
     }
 
-    public String backToDocument() throws ClientException {
+    public String backToDocument() {
         if (lastVisitedDocument != null) {
             webActions.setCurrentTabIds("sign_view");
             return navigationContext.navigateToDocument(lastVisitedDocument);
@@ -327,7 +322,7 @@ public class CertActions implements Serializable {
         }
     }
 
-    protected DocumentModel getCurrentUserModel() throws ClientException {
+    protected DocumentModel getCurrentUserModel() {
         return userManager.getUserModel(currentUser.getName());
     }
 }

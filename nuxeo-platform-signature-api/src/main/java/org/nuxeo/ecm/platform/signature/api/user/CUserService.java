@@ -36,10 +36,8 @@ public interface CUserService {
      * @param user
      * @param userKeyPassword
      * @throws CertException
-     * @throws ClientException
      */
-    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException,
-            ClientException;
+    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves a UserInfo object containing information needed for certificate generation.
@@ -56,7 +54,7 @@ public interface CUserService {
      * @param certificate
      * @return Simple certificate string.
      */
-    public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException, ClientException;
+    public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves user keystore from the directory.
@@ -65,27 +63,24 @@ public interface CUserService {
      * @param userKeyPassword
      * @return User KeyStore object
      * @throws CertException
-     * @throws ClientException
      */
-    public KeyStore getUserKeystore(String userID, String userKeyPassword) throws CertException, ClientException;
+    public KeyStore getUserKeystore(String userID, String userKeyPassword) throws CertException;
 
     /**
      * Retrieves a user certificate from the directory.
      *
      * @param user
      * @return certificate document model
-     * @throws ClientException
      */
-    public DocumentModel getCertificate(String userID) throws ClientException;
+    public DocumentModel getCertificate(String userID);
 
     /**
      * Retrieves the public root certificate.
      *
      * @param user
      * @return certificate document model
-     * @throws ClientException
      */
-    public byte[] getRootCertificateData() throws ClientException;
+    public byte[] getRootCertificateData();
 
     /**
      * Checks if the user is present in the certificate directory.
@@ -94,7 +89,7 @@ public interface CUserService {
      * @return
      * @throws CertException
      */
-    public boolean hasCertificate(String userID) throws CertException, ClientException;
+    public boolean hasCertificate(String userID) throws CertException;
 
     /**
      * Deletes user entry from the certificate directory.
@@ -109,6 +104,6 @@ public interface CUserService {
      * @param user
      * @throws CertException
      */
-    public void deleteCertificate(String userID) throws CertException, ClientException;
+    public void deleteCertificate(String userID) throws CertException;
 
 }

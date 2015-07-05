@@ -139,7 +139,7 @@ public class SignActions implements Serializable {
         return resourcesAccessor.getMessages().get(msg);
     }
 
-    protected DocumentModel getCurrentUserModel() throws ClientException {
+    protected DocumentModel getCurrentUserModel() {
         return userManager.getUserModel(currentUser.getName());
     }
 
@@ -150,9 +150,8 @@ public class SignActions implements Serializable {
      * @param signingReason
      * @param password
      * @throws SignException
-     * @throws ClientException
      */
-    public void signCurrentDoc(String signingReason, String password) throws ClientException {
+    public void signCurrentDoc(String signingReason, String password) {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         DocumentModel currentUserModel = getCurrentUserModel();
@@ -230,9 +229,8 @@ public class SignActions implements Serializable {
      * Gets the signing status for the current document.
      *
      * @return the signing status
-     * @throws ClientException
      */
-    public StatusWithBlob getSigningStatus() throws ClientException {
+    public StatusWithBlob getSigningStatus() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return signatureService.getSigningStatus(currentDoc, getCurrentUserModel());
     }
@@ -240,7 +238,7 @@ public class SignActions implements Serializable {
     /**
      * Returns info about the certificates contained in the current document.
      */
-    public List<X509Certificate> getCertificateList() throws SignException, ClientException {
+    public List<X509Certificate> getCertificateList() throws SignException {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
@@ -255,7 +253,7 @@ public class SignActions implements Serializable {
     }
 
     protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> properties,
-            String comment) throws ClientException {
+            String comment) {
         properties.put(DocumentEventContext.COMMENT_PROPERTY_KEY, comment);
         properties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
 
