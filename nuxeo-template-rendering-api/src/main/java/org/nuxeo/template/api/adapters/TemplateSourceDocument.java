@@ -41,9 +41,8 @@ public interface TemplateSourceDocument {
      * 
      * @return
      * @throws PropertyException
-     * @throws ClientException
      */
-    public String getParamsAsString() throws PropertyException, ClientException;
+    public String getParamsAsString() throws PropertyException;
 
     /**
      * Add or update a {@link TemplateInput} to the list of template parameters.
@@ -85,18 +84,16 @@ public interface TemplateSourceDocument {
      * 
      * @return
      * @throws PropertyException
-     * @throws ClientException
      */
-    public Blob getTemplateBlob() throws PropertyException, ClientException;
+    public Blob getTemplateBlob() throws PropertyException;
 
     /**
      * Retrieve the parameters associated to the Template file
      * 
      * @return
      * @throws PropertyException
-     * @throws ClientException
      */
-    public List<TemplateInput> getParams() throws PropertyException, ClientException;
+    public List<TemplateInput> getParams() throws PropertyException;
 
     /**
      * Save parameters changes
@@ -119,9 +116,8 @@ public interface TemplateSourceDocument {
      * Save changes in the underlying {@link DocumentModel}
      * 
      * @return
-     * @throws ClientException
      */
-    public DocumentModel save() throws ClientException;
+    public DocumentModel save();
 
     /**
      * Return flag to indicate if Documents associated to this template can override parametes value
@@ -135,7 +131,7 @@ public interface TemplateSourceDocument {
      * 
      * @return
      */
-    public boolean hasEditableParams() throws ClientException;
+    public boolean hasEditableParams();
 
     /**
      * Get List of Document Types than can be associated to this Template.
@@ -155,27 +151,24 @@ public interface TemplateSourceDocument {
      * Get the list of {@link TemplateBasedDocument}s associated to this template
      * 
      * @return
-     * @throws ClientException
      */
-    public List<TemplateBasedDocument> getTemplateBasedDocuments() throws ClientException;
+    public List<TemplateBasedDocument> getTemplateBasedDocuments();
 
     /**
      * Remove Type mapping for this template
      * 
      * @param type
      * @param save
-     * @throws ClientException
      */
-    public void removeForcedType(String type, boolean save) throws ClientException;
+    public void removeForcedType(String type, boolean save);
 
     /**
      * Update the Type mapping for this template
      * 
      * @param forcedTypes
      * @param save
-     * @throws ClientException
      */
-    public void setForcedTypes(String[] forcedTypes, boolean save) throws ClientException;
+    public void setForcedTypes(String[] forcedTypes, boolean save);
 
     /**
      * Sets the expected output mime-type. If the expected mime-type is different from the output of the rendering,
@@ -212,17 +205,15 @@ public interface TemplateSourceDocument {
      * Shortcut to access the underlying {@link Blob} filename
      * 
      * @return name
-     * @throws ClientException
      */
-    public String getFileName() throws ClientException;
+    public String getFileName();
 
     /**
      * Shortcut to access the underlying {@link DocumentModel} title
      * 
      * @return template filename
-     * @throws ClientException
      */
-    public String getTitle() throws ClientException;
+    public String getTitle();
 
     /**
      * Shortcut to access the underlying {@link DocumentModel} versionLabel
@@ -242,26 +233,23 @@ public interface TemplateSourceDocument {
      * Return label key used for template
      * 
      * @return
-     * @throws ClientException
      */
-    public String getLabel() throws ClientException;
+    public String getLabel();
 
     /**
      * Associate Template to a Rendition
      * 
      * @param renditionName
      * @param save
-     * @throws ClientException
      */
-    public void setTargetRenditioName(String renditionName, boolean save) throws ClientException;
+    public void setTargetRenditioName(String renditionName, boolean save);
 
     /**
      * Get the associated Rendition if any
      * 
      * @return Rendition name or null
-     * @throws ClientException
      */
-    public String getTargetRenditionName() throws ClientException;
+    public String getTargetRenditionName();
 
     /**
      * Write accessor to the {@link Blob} used to store the template

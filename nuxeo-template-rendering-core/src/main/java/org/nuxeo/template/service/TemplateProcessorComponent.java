@@ -253,7 +253,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     @Override
-    public List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) throws ClientException {
+    public List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) {
         String query = buildTemplateSearchQuery(targetType);
         return session.query(query);
     }
@@ -271,7 +271,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType)
-            throws ClientException {
+            {
         String query = buildTemplateSearchQuery(targetType);
         query = query + " AND tmpl:useAsMainContent=1";
         List<DocumentModel> docs = session.query(query);
@@ -280,13 +280,13 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType)
-            throws ClientException {
+            {
         List<DocumentModel> filtredResult = getAvailableTemplateDocs(session, targetType);
         return wrap(filtredResult, TemplateSourceDocument.class);
     }
 
     @Override
-    public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException {
+    public List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) {
         StringBuffer sb = new StringBuffer(
                 "select * from Document where ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0 AND ");
         sb.append(TemplateBindings.BINDING_PROP_NAME + "/*/" + TemplateBinding.TEMPLATE_ID_KEY);
@@ -330,7 +330,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
     }
 
     @Override
-    public synchronized void registerTypeMapping(DocumentModel doc) throws ClientException {
+    public synchronized void registerTypeMapping(DocumentModel doc) {
         TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
         if (tmpl != null) {
             Map<String, List<String>> mapping = getTypeMapping();
@@ -367,7 +367,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc,
-            boolean save) throws ClientException {
+            boolean save) {
         targetDoc.addFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET);
         TemplateBasedDocument tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);
         // bind the template
@@ -376,7 +376,7 @@ public class TemplateProcessorComponent extends DefaultComponent implements Temp
 
     @Override
     public DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save)
-            throws ClientException {
+            {
         DocumentModel docAfterDetach = null;
         TemplateBasedDocument tbd = targetDoc.getAdapter(TemplateBasedDocument.class);
         if (tbd != null) {

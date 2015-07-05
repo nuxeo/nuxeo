@@ -38,7 +38,7 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
     }
 
     @Override
-    public void handleEvent(EventBundle eventBundle) throws ClientException {
+    public void handleEvent(EventBundle eventBundle) {
         if (eventBundle.containsEventName(DOCUMENT_CREATED) || eventBundle.containsEventName(DOCUMENT_UPDATED)) {
 
             TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);

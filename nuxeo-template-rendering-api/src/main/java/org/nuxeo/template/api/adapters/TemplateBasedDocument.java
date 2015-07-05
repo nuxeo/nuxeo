@@ -42,9 +42,8 @@ public interface TemplateBasedDocument {
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the updated DocumentModel
      * @throws PropertyException
-     * @throws ClientException
      */
-    public DocumentModel setTemplate(DocumentModel template, boolean save) throws PropertyException, ClientException;
+    public DocumentModel setTemplate(DocumentModel template, boolean save) throws PropertyException;
 
     /**
      * Retrieve the {@link TemplateSourceDocument} for a given template name
@@ -122,18 +121,16 @@ public interface TemplateBasedDocument {
      * 
      * @param templateName
      * @return
-     * @throws ClientException
      */
-    public boolean hasParams(String templateName) throws ClientException;
+    public boolean hasParams(String templateName);
 
     /**
      * Retrieve parameters for the associated template
      * 
      * @param templateName
      * @return
-     * @throws ClientException
      */
-    public List<TemplateInput> getParams(String templateName) throws ClientException;
+    public List<TemplateInput> getParams(String templateName);
 
     /**
      * Save parameters changes.
@@ -167,9 +164,8 @@ public interface TemplateBasedDocument {
      * 
      * @param templateName
      * @return
-     * @throws ClientException
      */
-    public boolean hasEditableParams(String templateName) throws ClientException;
+    public boolean hasEditableParams(String templateName);
 
     /**
      * Find the template associated to a given RenditionName
@@ -192,7 +188,6 @@ public interface TemplateBasedDocument {
      * @param templateName
      * @param save
      * @return
-     * @throws ClientException
      */
-    public DocumentModel removeTemplateBinding(String templateName, boolean save) throws ClientException;
+    public DocumentModel removeTemplateBinding(String templateName, boolean save);
 }

@@ -210,7 +210,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return Framework.getLocalService(TemplateProcessorService.class).getOutputFormats();
     }
 
-    public List<String> getTemplateAndVersionsUUIDs() throws ClientException {
+    public List<String> getTemplateAndVersionsUUIDs() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);

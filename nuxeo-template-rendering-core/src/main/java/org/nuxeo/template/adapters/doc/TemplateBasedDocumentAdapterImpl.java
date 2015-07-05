@@ -56,12 +56,12 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
 
     protected final TemplateBindings bindings;
 
-    public TemplateBasedDocumentAdapterImpl(DocumentModel doc) throws ClientException {
+    public TemplateBasedDocumentAdapterImpl(DocumentModel doc) {
         this.adaptedDoc = doc;
         bindings = new TemplateBindings(doc);
     }
 
-    public DocumentModel setTemplate(DocumentModel template, boolean save) throws ClientException {
+    public DocumentModel setTemplate(DocumentModel template, boolean save) {
 
         TemplateSourceDocument source = template.getAdapter(TemplateSourceDocument.class);
         if (source == null) {
@@ -91,7 +91,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return adaptedDoc;
     }
 
-    public DocumentModel removeTemplateBinding(String templateName, boolean save) throws ClientException {
+    public DocumentModel removeTemplateBinding(String templateName, boolean save) {
         if (bindings.containsTemplateName(templateName)) {
             bindings.removeByName(templateName);
             bindings.save(adaptedDoc);
@@ -216,12 +216,12 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
     }
 
     @Override
-    protected void doSave() throws ClientException {
+    protected void doSave() {
         bindings.save(adaptedDoc);
         super.doSave();
     }
 
-    protected void setBlob(Blob blob) throws ClientException {
+    protected void setBlob(Blob blob) {
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
@@ -320,11 +320,11 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         }
     }
 
-    public boolean hasParams(String templateName) throws ClientException {
+    public boolean hasParams(String templateName) {
         return getParams(templateName).size() > 0;
     }
 
-    public List<TemplateInput> getParams(String templateName) throws ClientException {
+    public List<TemplateInput> getParams(String templateName) {
 
         TemplateBinding binding = bindings.get(templateName);
         if (binding != null) {
@@ -361,7 +361,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return tps.getOutputFormatDescriptor(outputFormat);
     }
 
-    public boolean hasEditableParams(String templateName) throws ClientException {
+    public boolean hasEditableParams(String templateName) {
         for (TemplateInput param : getParams(templateName)) {
             if (!param.isReadOnly()) {
                 return true;

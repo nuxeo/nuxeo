@@ -17,14 +17,14 @@ import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
 /**
  * This is the service interface to manage {@link TemplateProcessor} and associated templates.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public interface TemplateProcessorService {
 
     /**
      * Finds the template processor name for a given {@link Blob}. The template processor is found based on mime-types.
-     * 
+     *
      * @param templateBlob
      * @return the {@link TemplateProcessor} name
      */
@@ -33,7 +33,7 @@ public interface TemplateProcessorService {
     /**
      * Finds the {@link TemplateProcessor} for a given {@link Blob}. The template processor is found based on
      * mime-types.
-     * 
+     *
      * @param templateBlob
      * @return the {@link TemplateProcessor}
      */
@@ -41,7 +41,7 @@ public interface TemplateProcessorService {
 
     /**
      * Get a {@link TemplateProcessor} by it's name. Name is defined in the associated descriptor.
-     * 
+     *
      * @param name
      * @return the {@link TemplateProcessor}
      */
@@ -49,92 +49,82 @@ public interface TemplateProcessorService {
 
     /**
      * Returns all registered {@link TemplateProcessor}s
-     * 
+     *
      * @return collection of registered {@link TemplateProcessorDescriptor}
      */
     Collection<TemplateProcessorDescriptor> getRegisteredTemplateProcessors();
 
     /**
      * Find {@link TemplateSourceDocument}s that can be bound to a given doc type.
-     * 
+     *
      * @param session
      * @param targetType the target Document Type
      * @return List of applicable DocumentModel
-     * @throws ClientException
      */
-    List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType) throws ClientException;
+    List<DocumentModel> getAvailableTemplateDocs(CoreSession session, String targetType);
 
     /**
      * Find {@link TemplateSourceDocument}s that can be bound to a given doc type.
-     * 
+     *
      * @param session
      * @param targetType the target Document Type
      * @return List of applicable {@link TemplateSourceDocument}
-     * @throws ClientException
      */
-    List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType) throws ClientException;
+    List<TemplateSourceDocument> getAvailableTemplates(CoreSession session, String targetType);
 
     /**
      * Retrieve the {@link TemplateSourceDocument} that can be used as an Office template (i.e that support to store the
      * template file as main blob of target DocumentModel)
-     * 
+     *
      * @param session
      * @param targetType
      * @return
-     * @throws ClientException
      */
-    List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType)
-            throws ClientException;
+    List<TemplateSourceDocument> getAvailableOfficeTemplates(CoreSession session, String targetType);
 
     /**
      * Retrieve the DocumentModels using a given {@link TemplateSourceDocument}
-     * 
+     *
      * @param source the {@link TemplateSourceDocument}
      * @return
-     * @throws ClientException
      */
-    List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source) throws ClientException;
+    List<TemplateBasedDocument> getLinkedTemplateBasedDocuments(DocumentModel source);
 
     /**
      * Retrieve the Map used for mapping Document Types to Template Names. This Map represent the Templates that must be
      * automatically bound at creation time for each Document Type.
-     * 
+     *
      * @return the Type2Template mapping
      */
     Map<String, List<String>> getTypeMapping();
 
     /**
      * Update Type2Template Mapping from the data contained in the source DocumentModel.
-     * 
+     *
      * @param doc
-     * @throws ClientException
      */
-    void registerTypeMapping(DocumentModel doc) throws ClientException;
+    void registerTypeMapping(DocumentModel doc);
 
     /**
      * Associate a {@link DocumentModel} to a {@link TemplateSourceDocument}. If the DocumentModel is not already a
      * {@link TemplateBasedDocument}, the associated facet will be automatically added.
-     * 
+     *
      * @param targetDoc the DocumentModel to associate to a template
      * @param sourceTemplateDoc the DocumentModel holding the template
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the updated DocumentModel
-     * @throws ClientException
      */
-    DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save)
-            throws ClientException;
+    DocumentModel makeTemplateBasedDocument(DocumentModel targetDoc, DocumentModel sourceTemplateDoc, boolean save);
 
     /**
      * Detach a Template from a {@link DocumentModel}
-     * 
+     *
      * @param targetDoc the DocumentModel to detach
      * @param templateName the name of the template to detach
      * @param save save flag to indicate if target DocumentModel must be saved or not
      * @return the updated DocumentModel
-     * @throws ClientException
      */
-    DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save)
-            throws ClientException;
+    DocumentModel detachTemplateBasedDocument(DocumentModel targetDoc, String templateName, boolean save);
 
     void addContextExtensions(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx);
 
@@ -150,9 +140,10 @@ public interface TemplateProcessorService {
     /**
      * The returned {@link OutputFormatDescriptor} contains either an operation chain or a mime-type use to convert the
      * output of a rendered document.
-     * 
+     *
      * @param outputFormatId
      * @return {@link OutputFormatDescriptor}
      */
     OutputFormatDescriptor getOutputFormatDescriptor(String outputFormatId);
+
 }

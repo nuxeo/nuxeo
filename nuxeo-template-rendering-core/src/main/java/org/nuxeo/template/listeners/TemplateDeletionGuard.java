@@ -16,7 +16,7 @@ import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 public class TemplateDeletionGuard implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         EventContext ctx = event.getContext();
 

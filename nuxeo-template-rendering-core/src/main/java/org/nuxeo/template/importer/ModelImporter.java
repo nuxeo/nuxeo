@@ -93,11 +93,11 @@ public class ModelImporter {
         return RESOURCES_ROOT;
     }
 
-    protected DocumentModel getTargetDomain() throws ClientException {
+    protected DocumentModel getTargetDomain() {
         return getTargetDomain(true);
     }
 
-    protected DocumentModel getTargetDomain(boolean canRetry) throws ClientException {
+    protected DocumentModel getTargetDomain(boolean canRetry) {
         DocumentModelList domains = session.query(DOMAIN_QUERY);
         if (domains.size() > 0) {
             return domains.get(0);
@@ -111,7 +111,7 @@ public class ModelImporter {
         return null;
     }
 
-    protected DocumentModel getOrCreateTemplateContainer() throws ClientException {
+    protected DocumentModel getOrCreateTemplateContainer() {
         DocumentModel rootDomain = getTargetDomain();
 
         if (rootDomain != null) {
@@ -123,7 +123,7 @@ public class ModelImporter {
         return null;
     }
 
-    protected DocumentModel getOrCreateSampleContainer() throws ClientException {
+    protected DocumentModel getOrCreateSampleContainer() {
         DocumentModel rootDomain = getTargetDomain();
         DocumentModel container = null;
 
