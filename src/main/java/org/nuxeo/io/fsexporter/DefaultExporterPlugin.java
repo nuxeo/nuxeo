@@ -41,7 +41,7 @@ public class DefaultExporterPlugin implements FSExporterPlugin {
 
     @Override
     public DocumentModelList getChildren(CoreSession session, DocumentModel doc, String myPageProvider)
-            throws ClientException, Exception {
+            throws Exception {
 
         PageProviderService ppService = null;
         try {

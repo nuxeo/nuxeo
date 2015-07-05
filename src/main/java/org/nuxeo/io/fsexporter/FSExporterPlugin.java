@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 
 public interface FSExporterPlugin {
 
-    DocumentModelList getChildren(CoreSession session, DocumentModel doc, String PageProvider) throws ClientException,
+    DocumentModelList getChildren(CoreSession session, DocumentModel doc, String PageProvider) throws
             Exception;
 
     File serialize(CoreSession session, DocumentModel docfrom, String fsPath) throws Exception;

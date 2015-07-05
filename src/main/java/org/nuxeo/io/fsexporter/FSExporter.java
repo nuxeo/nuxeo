@@ -49,13 +49,13 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
 
     @Override
     public void export(CoreSession session, String rootPath, String fspath, String PageProvider)
-            throws ClientException, IOException, Exception {
+            throws IOException, Exception {
         DocumentModel root = session.getDocument(new PathRef(rootPath));
         serializeStructure(session, fspath, root, PageProvider);
     }
 
     private void serializeStructure(CoreSession session, String fsPath, DocumentModel doc, String PageProvider)
-            throws ClientException, IOException, Exception {
+            throws IOException, Exception {
 
         exporter.serialize(session, doc, fsPath);
 
@@ -71,7 +71,7 @@ public class FSExporter extends DefaultComponent implements FSExporterService {
     }
 
     @Override
-    public void exportXML(CoreSession session, String rootName, String fileSystemTarget) throws ClientException,
+    public void exportXML(CoreSession session, String rootName, String fileSystemTarget) throws
             Exception {
         // TODO Auto-generated method stub
         //
