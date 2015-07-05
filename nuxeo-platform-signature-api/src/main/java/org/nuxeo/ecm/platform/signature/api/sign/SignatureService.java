@@ -112,9 +112,8 @@ public interface SignatureService {
      *
      * @param doc the document
      * @return the signing status
-     * @throws ClientException
      */
-    StatusWithBlob getSigningStatus(DocumentModel doc, DocumentModel currentUser) throws ClientException;
+    StatusWithBlob getSigningStatus(DocumentModel doc, DocumentModel currentUser);
 
     enum SigningDisposition {
         /** Replace the main blob with the signed one. */
@@ -142,10 +141,9 @@ public interface SignatureService {
      * @return a blob containing the signed PDF
      * @throws SignException
      * @throws ConversionException
-     * @throws ClientException
      */
     Blob signDocument(DocumentModel doc, DocumentModel user, String userKeyPassword, String reason, boolean pdfa,
-            SigningDisposition disposition, String archiveFilename) throws ClientException;
+            SigningDisposition disposition, String archiveFilename);
 
     /**
      * Signs a PDF document with a user certificate. Requires a password to retrieve the certificate from the user
@@ -157,18 +155,15 @@ public interface SignatureService {
      * @param reason the signing reason
      * @return a blob containing the signed PDF
      * @throws SignException
-     * @throws ClientException
      */
-    Blob signPDF(Blob pdfBlob, DocumentModel user, String userKeyPassword, String reason) throws SignException,
-            ClientException;
+    Blob signPDF(Blob pdfBlob, DocumentModel user, String userKeyPassword, String reason) throws SignException;
 
     /**
      * Returns a list of certificates associated with a given document.
      *
      * @param doc the document
      * @return the list of certificates (may be empty)
-     * @throws ClientException
      */
-    List<X509Certificate> getCertificates(DocumentModel doc) throws ClientException;
+    List<X509Certificate> getCertificates(DocumentModel doc);
 
 }

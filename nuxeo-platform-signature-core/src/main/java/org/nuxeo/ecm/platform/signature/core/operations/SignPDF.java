@@ -50,7 +50,7 @@ public class SignPDF {
     protected String reason;
 
     @OperationMethod
-    public Blob run(Blob blob) throws ClientException {
+    public Blob run(Blob blob) {
         DocumentModel user = userManager.getUserModel(username);
         return signatureService.signPDF(blob, user, password, reason);
     }

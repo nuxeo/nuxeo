@@ -57,7 +57,7 @@ public class CUserDescriptor {
         return countryCode;
     }
 
-    public void setCountryCode(String countryCode) throws ClientException {
+    public void setCountryCode(String countryCode) {
         if (!validateCountryCode(countryCode)) {
             throw new ClientException("Invalid country code for user certificate");
         }

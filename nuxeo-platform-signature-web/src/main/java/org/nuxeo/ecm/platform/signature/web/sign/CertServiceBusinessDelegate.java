@@ -49,10 +49,9 @@ public class CertServiceBusinessDelegate implements Serializable {
 
     /**
      * @return CertService
-     * @throws ClientException
      */
     @Unwrap
-    public CertService getService() throws ClientException {
+    public CertService getService() {
         if (certService == null) {
             try {
                 certService = Framework.getService(CertService.class);

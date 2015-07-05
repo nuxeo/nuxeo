@@ -148,7 +148,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     //
 
     @Override
-    public StatusWithBlob getSigningStatus(DocumentModel doc, DocumentModel user) throws ClientException {
+    public StatusWithBlob getSigningStatus(DocumentModel doc, DocumentModel user) {
         if (doc == null) {
             return new StatusWithBlob(UNSIGNABLE, null, null, null);
         }
@@ -164,7 +164,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
         return new StatusWithBlob(UNSIGNED, blob, mbh, FILE_CONTENT);
     }
 
-    protected int getSigningStatus(Blob pdfBlob, DocumentModel user) throws ClientException {
+    protected int getSigningStatus(Blob pdfBlob, DocumentModel user) {
         if (pdfBlob == null) {
             return UNSIGNED;
         }
@@ -197,7 +197,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     /**
      * Finds the first signed PDF blob.
      */
-    protected StatusWithBlob getSignedPdfBlobAndStatus(DocumentModel doc, DocumentModel user) throws ClientException {
+    protected StatusWithBlob getSignedPdfBlobAndStatus(DocumentModel doc, DocumentModel user) {
         BlobHolder mbh = doc.getAdapter(BlobHolder.class);
         if (mbh != null) {
             Blob blob = mbh.getBlob();
@@ -231,7 +231,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
 
     @Override
     public Blob signDocument(DocumentModel doc, DocumentModel user, String keyPassword, String reason, boolean pdfa,
-            SigningDisposition disposition, String archiveFilename) throws ClientException {
+            SigningDisposition disposition, String archiveFilename) {
 
         StatusWithBlob blobAndStatus = getSignedPdfBlobAndStatus(doc, user);
         if (blobAndStatus != null) {
@@ -304,7 +304,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     }
 
     @Override
-    public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword, String reason) throws ClientException {
+    public Blob signPDF(Blob pdfBlob, DocumentModel user, String keyPassword, String reason) {
         CertService certService = Framework.getLocalService(CertService.class);
         CUserService cUserService = Framework.getLocalService(CUserService.class);
         try {
@@ -488,7 +488,7 @@ public class SignatureServiceImpl extends DefaultComponent implements SignatureS
     }
 
     @Override
-    public List<X509Certificate> getCertificates(DocumentModel doc) throws ClientException {
+    public List<X509Certificate> getCertificates(DocumentModel doc) {
         StatusWithBlob signedBlob = getSignedPdfBlobAndStatus(doc, null);
         if (signedBlob == null) {
             return Collections.emptyList();

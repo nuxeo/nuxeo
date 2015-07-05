@@ -103,7 +103,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public KeyStore getUserKeystore(String userID, String userKeystorePassword) throws CertException, ClientException {
+    public KeyStore getUserKeystore(String userID, String userKeystorePassword) throws CertException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -139,8 +139,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException,
-            ClientException {
+    public DocumentModel createCertificate(DocumentModel user, String userKeyPassword) throws CertException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -193,7 +192,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
     }
 
-    protected static DirectoryService getDirectoryService() throws ClientException {
+    protected static DirectoryService getDirectoryService() {
         DirectoryService service = null;
         try {
             service = Framework.getService(DirectoryService.class);
@@ -204,14 +203,14 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException, ClientException {
+    public String getUserCertInfo(DocumentModel user, String userKeyPassword) throws CertException {
         String userKeystorePassword = userKeyPassword;
         String userID = (String) user.getPropertyValue("user:username");
         KeyStore keystore = getUserKeystore(userID, userKeystorePassword);
         return getUserCertInfo(keystore, user);
     }
 
-    private String getUserCertInfo(KeyStore keystore, DocumentModel user) throws CertException, ClientException {
+    private String getUserCertInfo(KeyStore keystore, DocumentModel user) throws CertException {
         String userCertInfo = null;
         if (null != keystore) {
             String userID = (String) user.getPropertyValue("user:username");
@@ -223,7 +222,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public DocumentModel getCertificate(String userID) throws ClientException {
+    public DocumentModel getCertificate(String userID) {
         // Log in as system user
         LoginContext lc;
         try {
@@ -250,13 +249,13 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public byte[] getRootCertificateData() throws ClientException {
+    public byte[] getRootCertificateData() {
         byte[] certificateData = getRootService().getRootPublicCertificate();
         return certificateData;
     }
 
     @Override
-    public boolean hasCertificate(String userID) throws CertException, ClientException {
+    public boolean hasCertificate(String userID) throws CertException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -282,7 +281,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     @Override
-    public void deleteCertificate(String userID) throws CertException, ClientException {
+    public void deleteCertificate(String userID) throws CertException {
         // Log in as system user
         LoginContext lc;
         try {
@@ -321,7 +320,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         }
     }
 
-    protected CertService getCertService() throws ClientException {
+    protected CertService getCertService() {
         if (certService == null) {
             try {
                 certService = Framework.getService(CertService.class);
@@ -334,7 +333,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         return certService;
     }
 
-    protected RootService getRootService() throws ClientException {
+    protected RootService getRootService() {
         if (rootService == null) {
             try {
                 rootService = Framework.getService(RootService.class);

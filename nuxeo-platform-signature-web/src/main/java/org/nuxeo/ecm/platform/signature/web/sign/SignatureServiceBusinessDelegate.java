@@ -48,7 +48,7 @@ public class SignatureServiceBusinessDelegate implements Serializable {
     protected transient SignatureService signatureService;
 
     @Unwrap
-    public SignatureService getService() throws ClientException {
+    public SignatureService getService() {
         if (signatureService == null) {
             try {
                 signatureService = Framework.getService(SignatureService.class);
