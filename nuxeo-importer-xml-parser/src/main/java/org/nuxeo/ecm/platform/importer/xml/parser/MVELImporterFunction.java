@@ -68,7 +68,7 @@ public class MVELImporterFunction extends CoreFunctions {
     }
 
     public DocumentModel mkdir(DocumentModel parent, String regexp, String data, String typeName)
-            throws ClientException {
+            {
 
         String[] parts = data.split(regexp);
         List<DocumentModel> result = new ArrayList<DocumentModel>();

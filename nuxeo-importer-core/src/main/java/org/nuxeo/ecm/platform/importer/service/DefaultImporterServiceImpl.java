@@ -53,7 +53,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     @Override
     public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,
-            int batchSize, int noImportingThreads) throws ClientException {
+            int batchSize, int noImportingThreads) {
         SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
         if (sourceNode == null) {
             log.error("Need to set a sourceNode to be used by this importer");
@@ -72,7 +72,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     @Override
     public String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
             boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive)
-            throws ClientException {
+            {
 
         SourceNode sourceNode = createNewSourceNodeInstanceForSourcePath(sourcePath);
         if (sourceNode == null) {
@@ -97,7 +97,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     @Override
     public String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
             String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
-            int noImportingThreads, boolean interactive) throws ClientException {
+            int noImportingThreads, boolean interactive) {
         ImporterDocumentModelFactory docModelFactory = getDocumentModelFactory();
         if (docModelFactory instanceof DefaultDocumentModelFactory) {
             DefaultDocumentModelFactory defaultDocModelFactory = (DefaultDocumentModelFactory) docModelFactory;
