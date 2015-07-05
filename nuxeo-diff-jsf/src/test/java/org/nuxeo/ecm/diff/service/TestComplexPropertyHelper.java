@@ -46,7 +46,7 @@ public class TestComplexPropertyHelper {
     protected CoreSession session;
 
     @Test
-    public void testGetField() throws ClientException {
+    public void testGetField() {
 
         Field field = ComplexPropertyHelper.getField("simpletypes", "string");
         assertNotNull(field);

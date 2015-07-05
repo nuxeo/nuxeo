@@ -159,9 +159,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the current document selection.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareCurrentDocumentSelectionDiff() throws ClientException {
+    public String prepareCurrentDocumentSelectionDiff() {
 
         diffSelectionType = DiffSelectionType.content.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
@@ -171,9 +170,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the current document trash selection.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareCurrentTrashSelectionDiff() throws ClientException {
+    public String prepareCurrentTrashSelectionDiff() {
 
         diffSelectionType = DiffSelectionType.trash.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_TRASH_SELECTION);
@@ -183,9 +181,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the current section selection.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareCurrentSectionSelectionDiff() throws ClientException {
+    public String prepareCurrentSectionSelectionDiff() {
 
         diffSelectionType = DiffSelectionType.content.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_DOCUMENT_SECTION_SELECTION);
@@ -195,9 +192,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the current version selection.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareCurrentVersionSelectionDiff() throws ClientException {
+    public String prepareCurrentVersionSelectionDiff() {
 
         diffSelectionType = DiffSelectionType.version.name();
         return prepareWorkingListDiff(DocumentsListsManager.CURRENT_VERSION_SELECTION);
@@ -207,9 +203,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the current default selection.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareCurrentDefaultSelectionDiff() throws ClientException {
+    public String prepareCurrentDefaultSelectionDiff() {
 
         diffSelectionType = DiffSelectionType.content.name();
         return prepareWorkingListDiff(DocumentsListsManager.DEFAULT_WORKING_LIST);
@@ -219,9 +214,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the {@code listName} working list.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareWorkingListDiff(String listName) throws ClientException {
+    public String prepareWorkingListDiff(String listName) {
 
         List<DocumentModel> workingList = getWorkingList(listName);
 
@@ -238,7 +232,7 @@ public class DiffActionsBean implements Serializable {
      *            .DiffActionsBean#LAST_VERSION_PROPERTY
      * @throws ClientException if current document is null or if the expected version is missing.
      */
-    public String prepareCurrentVersionDiff(String versionLabel) throws ClientException {
+    public String prepareCurrentVersionDiff(String versionLabel) {
         if (StringUtils.isBlank(versionLabel)) {
             versionLabel = LAST_VERSION_PROPERTY;
         }
@@ -280,9 +274,8 @@ public class DiffActionsBean implements Serializable {
      * Prepares a diff of the selected version with the live doc.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String prepareCurrentVersionDiff() throws ClientException {
+    public String prepareCurrentVersionDiff() {
 
         String selectedVersionId = versionedActions.getSelectedVersionId();
         if (selectedVersionId != null) {
@@ -314,9 +307,8 @@ public class DiffActionsBean implements Serializable {
      * Refreshes the diff between leftDoc and rightDoc.
      * 
      * @return the view id
-     * @throws ClientException the client exception
      */
-    public String refresh() throws ClientException {
+    public String refresh() {
 
         // Fetch docs from repository
         if (isDocumentDiffAvailable()) {
@@ -340,10 +332,9 @@ public class DiffActionsBean implements Serializable {
      * Gets the document diff.
      * 
      * @return the document diff between leftDoc and rightDoc if leftDoc and rightDoc aren't null, else null
-     * @throws ClientException the client exception
      */
     @Factory(value = "defaultDiffDisplayBlocks", scope = PAGE)
-    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks() throws ClientException {
+    public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks() {
 
         if (leftDoc == null || rightDoc == null) {
             return new ArrayList<DiffDisplayBlock>();
@@ -361,7 +352,7 @@ public class DiffActionsBean implements Serializable {
      * @return the content diff fancybox URL
      * @throws ClientException if the content diff fancybox URL cannot be retrieved
      */
-    public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath) throws ClientException {
+    public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath) {
 
         return getContentDiffFancyBoxURL(propertyLabel, propertyXPath, null);
     }
@@ -377,7 +368,7 @@ public class DiffActionsBean implements Serializable {
      * @throws ClientException if the content diff fancybox URL cannot be retrieved
      */
     public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath, String conversionType)
-            throws ClientException {
+            {
 
         if (StringUtils.isEmpty(propertyXPath)) {
             log.error("Cannot get content diff fancybox URL with a null propertyXPath.");
@@ -395,10 +386,9 @@ public class DiffActionsBean implements Serializable {
      * @param propertyXPath
      * @param conversionTypeParam
      * @return
-     * @throws ClientException
      */
     public String getContentDiffURL(String docLeftId, String docRightId, String propertyXPath,
-            String conversionTypeParam) throws ClientException {
+            String conversionTypeParam) {
         DocumentModel leftDoc = null;
         DocumentModel rightDoc = null;
         if (!StringUtils.isBlank(docLeftId)) {
@@ -482,9 +472,8 @@ public class DiffActionsBean implements Serializable {
      * Gets the {@code listName} working list.
      * 
      * @return the {@code listName} working list
-     * @throws ClientException the client exception
      */
-    protected final List<DocumentModel> getWorkingList(String listName) throws ClientException {
+    protected final List<DocumentModel> getWorkingList(String listName) {
 
         List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(listName);
 
@@ -502,7 +491,7 @@ public class DiffActionsBean implements Serializable {
      * @return the document diff service
      * @throws ClientException if cannot get the document diff service
      */
-    protected final DocumentDiffService getDocumentDiffService() throws ClientException {
+    protected final DocumentDiffService getDocumentDiffService() {
 
         DocumentDiffService documentDiffService;
 
@@ -521,9 +510,8 @@ public class DiffActionsBean implements Serializable {
      * Gets the diff display service.
      * 
      * @return the diff display service
-     * @throws ClientException the client exception
      */
-    protected final DiffDisplayService getDiffDisplayService() throws ClientException {
+    protected final DiffDisplayService getDiffDisplayService() {
 
         DiffDisplayService diffDisplayService;
 

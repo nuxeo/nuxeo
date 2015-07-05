@@ -51,6 +51,6 @@ public interface DiffDisplayService extends Serializable {
 
     DiffBlockDefinition getDiffBlockDefinition(String name);
 
-    List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc)
-            throws ClientException;
+    List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc);
+
 }

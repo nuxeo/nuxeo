@@ -40,9 +40,8 @@ public interface DocumentDiffService extends Serializable {
      * @param leftDoc the left doc
      * @param rightDoc the right doc
      * @return the document diff
-     * @throws ClientException the client exception
      */
-    DocumentDiff diff(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException;
+    DocumentDiff diff(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc);
 
     /**
      * Makes a diff between leftXML and rightXML. Returns a DocumentDiff object that wraps the differences, schema by
@@ -51,9 +50,8 @@ public interface DocumentDiffService extends Serializable {
      * @param leftXML the left XML
      * @param rightXML the right XML
      * @return the document diff
-     * @throws ClientException the client exception
      */
-    DocumentDiff diff(String leftXML, String rightXML) throws ClientException;
+    DocumentDiff diff(String leftXML, String rightXML);
 
     /**
      * Configures XMLUnit.

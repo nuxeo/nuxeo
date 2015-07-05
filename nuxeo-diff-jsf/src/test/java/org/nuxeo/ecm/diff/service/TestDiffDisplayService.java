@@ -86,10 +86,9 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
     /**
      * Tests diff display block schemas.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testDiffDisplayBlockSchemas() throws ClientException, ParseException {
+    public void testDiffDisplayBlockSchemas() throws ParseException {
 
         // --------------------------------------------------------------------
         // Check diff display for 2 documents of a different type: Note / File
@@ -269,10 +268,9 @@ public class TestDiffDisplayService extends DiffDisplayServiceTestCase {
     /**
      * Tests diff display blocks.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testDiffDisplayBlocks() throws ClientException {
+    public void testDiffDisplayBlocks() {
 
         // Get left and right docs
         DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getLeftDocPath()));

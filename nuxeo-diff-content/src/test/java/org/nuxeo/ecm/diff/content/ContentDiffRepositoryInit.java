@@ -73,7 +73,7 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
     }
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
 
         createFileDoc(session, "leftPlainTextDoc", "Left plain text doc", "left_doc.txt", "text/plain");
         createFileDoc(session, "rightPlainTextDoc", "Right plain text doc", "right_doc.txt", "text/plain");
@@ -99,7 +99,7 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
      * @throws ClientException if an error occurs while creating the document
      */
     protected DocumentModel createFileDoc(CoreSession session, String id, String title, String filePath, String mimeType)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel("/", id, "File");
 

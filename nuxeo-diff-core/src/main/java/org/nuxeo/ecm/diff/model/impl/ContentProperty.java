@@ -81,7 +81,7 @@ public class ContentProperty implements Serializable {
         this.digest = digest;
     }
 
-    public void setSubProperty(String subPropertyName, String subPropertyValue) throws ClientException {
+    public void setSubProperty(String subPropertyName, String subPropertyValue) {
         if (ExportConstants.BLOB_ENCODING.equals(subPropertyName)) {
             setEncoding(subPropertyValue);
         } else if (ExportConstants.BLOB_MIME_TYPE.equals(subPropertyName)) {

@@ -114,10 +114,9 @@ public final class FieldDiffHelper {
      * @param fieldDifferenceCount the field difference countadd
      * @param difference the difference
      * @return true if a field diff has been found
-     * @throws ClientException the client exception
      */
     public static boolean computeFieldDiff(DocumentDiff docDiff, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail, int fieldDifferenceCount, Difference difference) throws ClientException {
+            NodeDetail testNodeDetail, int fieldDifferenceCount, Difference difference) {
 
         // Use control node or if null test node to detect schema and
         // field elements
@@ -259,10 +258,9 @@ public final class FieldDiffHelper {
      * @param firstPropertyDiff the first property diff
      * @param propertyHierarchy the property hierarchy
      * @return the property diff
-     * @throws ClientException the client exception
      */
     public static PropertyDiff applyPropertyHierarchyToDiff(PropertyDiff firstPropertyDiff,
-            List<PropertyHierarchyNode> propertyHierarchy) throws ClientException {
+            List<PropertyHierarchyNode> propertyHierarchy) {
 
         if (propertyHierarchy.isEmpty()) {
             throw new ClientException("Empty property hierarchy.");
@@ -331,11 +329,10 @@ public final class FieldDiffHelper {
      * @param differenceId the difference id
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @throws ClientException the client exception
      */
     private static void computeFieldDiff(DocumentDiff docDiff, String schema, String field,
             List<PropertyHierarchyNode> propertyHierarchy, int differenceId, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail) throws ClientException {
+            NodeDetail testNodeDetail) {
 
         if (propertyHierarchy.isEmpty()) {
             throw new ClientException("Empty property hierarchy.");
@@ -407,10 +404,9 @@ public final class FieldDiffHelper {
      * @param fieldDiff the field diff
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @throws ClientException the client exception
      */
     private static void computeTextValueDiff(PropertyDiff fieldDiff, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail) throws ClientException {
+            NodeDetail testNodeDetail) {
 
         String leftValue = controlNodeDetail.getValue();
         String rightValue = testNodeDetail.getValue();
@@ -455,10 +451,9 @@ public final class FieldDiffHelper {
      * @param fieldDiff the field diff
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @throws ClientException the client exception
      */
     private static void computeChildNodeNotFoundDiff(PropertyDiff fieldDiff, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail) throws ClientException {
+            NodeDetail testNodeDetail) {
 
         Node childNode;
         boolean isTestNodeNotFound = "null".equals(testNodeDetail.getValue());
@@ -500,10 +495,9 @@ public final class FieldDiffHelper {
      * @param fieldDiff the field diff
      * @param controlNodeDetail the control node detail
      * @param testNodeDetail the test node detail
-     * @throws ClientException the client exception
      */
     private static void computeHasChildNodesDiff(PropertyDiff fieldDiff, NodeDetail controlNodeDetail,
-            NodeDetail testNodeDetail) throws ClientException {
+            NodeDetail testNodeDetail) {
 
         Node nodeWithChildren;
         boolean hasControlNodeChildNodes = Boolean.valueOf(controlNodeDetail.getValue());
@@ -557,10 +551,9 @@ public final class FieldDiffHelper {
      *
      * @param node the node
      * @param hasControlNodeChildNodes the test node was not found
-     * @throws ClientException the client exception
      */
     private static PropertyDiff getChildNodePropertyDiff(Node node, boolean hasControlNodeChildNodes)
-            throws ClientException {
+            {
 
         PropertyDiff propertyDiff;
 
@@ -629,7 +622,7 @@ public final class FieldDiffHelper {
      * @throws ClientException if content sub property cannot be set
      */
     private static void setContentPropertyDiff(ContentPropertyDiff fieldDiff, Node textNode,
-            boolean hasControlNodeContent) throws ClientException {
+            boolean hasControlNodeContent) {
 
         String textNodeValue = textNode.getTextContent();
 
@@ -640,7 +633,7 @@ public final class FieldDiffHelper {
     }
 
     protected static void setContentSubPropertyDiff(ContentPropertyDiff fieldDiff, String subPropertyName,
-            String leftSubPropertyValue, String rightSubPropertyValue) throws ClientException {
+            String leftSubPropertyValue, String rightSubPropertyValue) {
 
         // Get or initialize left and right content
         ContentProperty leftContent = fieldDiff.getLeftContent();

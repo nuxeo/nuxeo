@@ -62,10 +62,9 @@ public class TestDocumentDiffNotSameType extends DiffTestCase {
     /**
      * Tests doc diff.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testDocDiffNotSameType() throws ClientException {
+    public void testDocDiffNotSameType() {
 
         // Get left and right docs
         DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffNotSameTypeRepositoryInit.getLeftDocPath()));

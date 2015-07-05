@@ -58,7 +58,7 @@ public class TestContentDiffHelper {
      * Tests {@link ContentDiffHelper#getContentDiffFancyBoxURL(DocumentModel, String, String, String)} .
      */
     @Test
-    public void testGetContentDiffFancyBoxURL() throws ClientException {
+    public void testGetContentDiffFancyBoxURL() {
         DocumentModel doc = createDoc(session, "testDoc", "File", "Test doc");
         String fancyBoxURL = ContentDiffHelper.getContentDiffFancyBoxURL(doc, "my.property.label", "file:content",
                 ContentDiffConversionType.html.name());
@@ -73,7 +73,7 @@ public class TestContentDiffHelper {
      * {@link ContentDiffHelper#getContentDiffURL(DocumentModel, DocumentModel, String, ContentDiffConversionType)}
      */
     @Test
-    public void testGetContentDiffURL() throws ClientException {
+    public void testGetContentDiffURL() {
         DocumentModel leftDoc = createDoc(session, "leftDoc", "File", "Left doc");
         DocumentModel rightDoc = createDoc(session, "rightDoc", "File", "Right doc");
         String contentDiffURL = ContentDiffHelper.getContentDiffURL(leftDoc, rightDoc, "file:content",
@@ -151,7 +151,7 @@ public class TestContentDiffHelper {
      * @return the document model
      * @throws ClientException if an arror occurs while document creation
      */
-    protected DocumentModel createDoc(CoreSession session, String id, String type, String title) throws ClientException {
+    protected DocumentModel createDoc(CoreSession session, String id, String type, String title) {
 
         DocumentModel doc = session.createDocumentModel("/", id, type);
         doc.setPropertyValue("dc:title", title);

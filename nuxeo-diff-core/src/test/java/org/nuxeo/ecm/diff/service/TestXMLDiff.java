@@ -125,10 +125,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests schema diff. Schemas that are not shared by the 2 docs should not be considered as differences.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testSchemaDiff() throws ClientException {
+    public void testSchemaDiff() {
 
         String leftXML = "<schema xmlns:dc=\"dcNS\" name=\"dublincore\"><dc:title type=\"string\">joe</dc:title></schema>"
                 + "<schema name=\"uid\"><minor_version type=\"integer\">0</minor_version><major_version type=\"integer\">0</major_version></schema>";
@@ -150,10 +149,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests a TEXT_VALUE diff in a simple property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testTextValueSimplePropertyDiff() throws ClientException {
+    public void testTextValueSimplePropertyDiff() {
 
         String leftXML = "<dc:title type=\"string\">joe</dc:title>";
         String rightXML = "<dc:title type=\"string\">jack</dc:title>";
@@ -172,10 +170,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests a TEXT_VALUE diff in a list property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testTextValueListPropertyDiff() throws ClientException {
+    public void testTextValueListPropertyDiff() {
 
         // Simple list
         String leftXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item><item type=\"string\">jack</item><item type=\"string\">bob</item></dc:contributors>";
@@ -313,10 +310,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests a TEXT_VALUE diff in a complex property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testTextValueComplexPropertyDiff() throws ClientException {
+    public void testTextValueComplexPropertyDiff() {
 
         // Simple complex type
         String leftXML = "<dc:complex type=\"complex\"><stringItem type=\"string\">joe</stringItem><booleanItem type=\"boolean\">true</booleanItem></dc:complex>";
@@ -392,10 +388,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests a TEXT_VALUE diff in a content property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testTextValueContentPropertyDiff() throws ClientException {
+    public void testTextValueContentPropertyDiff() {
 
         // Different filename but same digest
         String leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>test_joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
@@ -460,10 +455,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests CHILD_NODE_NOT_FOUND diff in a list type property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testChildNodeNotFoundListPropertyDiff() throws ClientException {
+    public void testChildNodeNotFoundListPropertyDiff() {
 
         // Simple list
         String leftXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item></dc:contributors>";
@@ -530,10 +524,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests CHILD_NODE_NOT_FOUND diff in a complex type property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testChildNodeNotFoundComplexPropertyDiff() throws ClientException {
+    public void testChildNodeNotFoundComplexPropertyDiff() {
 
         // Complex type => should never happen
         String leftXML = "<dc:complexType type=\"complex\"><stringItem type=\"string\">joe</stringItem><booleanItem type=\"boolean\">true</booleanItem></dc:complexType>";
@@ -551,10 +544,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests CHILD_NODE_NOT_FOUND diff in a content type property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testChildNodeNotFoundContentPropertyDiff() throws ClientException {
+    public void testChildNodeNotFoundContentPropertyDiff() {
 
         // Complex type => should never happen
         String leftXML = "<dc:content type=\"content\"><encoding>UTF-8</encoding><mime-type>text/plain</mime-type><filename>Joe.txt</filename><digest>5dafdabf966043c8c8cef20011e939a2</digest></dc:content>";
@@ -572,10 +564,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests HAS_CHILD_NODES diff in a simple property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testHasChildNodesSimplePropertyDiff() throws ClientException {
+    public void testHasChildNodesSimplePropertyDiff() {
 
         String leftXML = "<dc:title type=\"string\">joe</dc:title>";
         String rightXML = "<dc:title type=\"string\"/>";
@@ -588,10 +579,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests HAS_CHILD_NODES diff in a list property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testHasChildNodesListPropertyDiff() throws ClientException {
+    public void testHasChildNodesListPropertyDiff() {
 
         // Simple list (no child nodes on the right side)
         String leftXML = "<dc:contributors type=\"scalarList\"><item type=\"string\">joe</item><item type=\"string\">jack</item></dc:contributors>";
@@ -753,10 +743,9 @@ public class TestXMLDiff extends DiffTestCase {
     /**
      * Tests HAS_CHILD_NODES diff in a complex property.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testHasChildNodesComplexPropertyDiff() throws ClientException {
+    public void testHasChildNodesComplexPropertyDiff() {
 
         // Simple complex type
         String leftXML = "<dc:complexType type=\"complex\"><stringItem type=\"string\">joe</stringItem><booleanItem type=\"boolean\">true</booleanItem></dc:complexType>";
@@ -817,7 +806,7 @@ public class TestXMLDiff extends DiffTestCase {
     }
 
     @Test
-    public void testHasChildNodesContentPropertyDiff() throws ClientException {
+    public void testHasChildNodesContentPropertyDiff() {
 
         // Empty content property
         String leftXML = "<dc:file type=\"content\">"
@@ -889,10 +878,9 @@ public class TestXMLDiff extends DiffTestCase {
      * @param diffCount the diff count
      * @param field the field
      * @return the property diff
-     * @throws ClientException the client exception
      */
     protected final PropertyDiff getPropertyDiff(String leftXML, String rightXML, int diffCount, String field)
-            throws ClientException {
+            {
 
         DocumentDiff docDiff = docDiffService.diff(wrapXMLIntoSchema(leftXML), wrapXMLIntoSchema(rightXML));
         SchemaDiff schemaDiff = checkSchemaDiff(docDiff, "dublincore", diffCount);

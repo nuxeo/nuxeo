@@ -47,10 +47,9 @@ public class TestFieldDiffHelper extends DiffTestCase {
     /**
      * Tests {@link FieldDiffHelper#getPropertyType(org.w3c.dom.Node)}.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testGetPropertyType() throws ClientException {
+    public void testGetPropertyType() {
 
         // Simple type
         String xml = "<title type=\"string\">joe</title>";
@@ -182,10 +181,9 @@ public class TestFieldDiffHelper extends DiffTestCase {
     /**
      * Tests {@link FieldDiffHelper#applyPropertyHierarchyToDiff(PropertyDiff, List)}.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testApplyPropertyHierarchyToDiff() throws ClientException {
+    public void testApplyPropertyHierarchyToDiff() {
 
         // Complex list
         PropertyDiff propertyDiff = new ListPropertyDiff(PropertyType.COMPLEX_LIST);
@@ -249,9 +247,8 @@ public class TestFieldDiffHelper extends DiffTestCase {
      *
      * @param xml the XML
      * @param xPath the x path
-     * @throws ClientException the client exception
      */
-    protected final Node getNode(String xml, String xPath) throws ClientException {
+    protected final Node getNode(String xml, String xPath) {
 
         NodeList matchingNodes;
         try {

@@ -80,7 +80,7 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
      *             blocks
      */
     @Test
-    public void testDefaultDiffDisplay() throws ClientException {
+    public void testDefaultDiffDisplay() {
 
         // Create left and right docs
         DocumentModel leftDoc = session.createDocumentModel("/", "MySampleType", "SampleType");

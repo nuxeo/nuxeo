@@ -72,7 +72,7 @@ public final class ContentDiffHelper {
      * @throws ClientException if URL cannot be retrieved from current doc view
      */
     public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel,
-            String propertyXPath, String conversionType) throws ClientException {
+            String propertyXPath, String conversionType) {
 
         DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation, CONTENT_DIFF_FANCYBOX_VIEW);

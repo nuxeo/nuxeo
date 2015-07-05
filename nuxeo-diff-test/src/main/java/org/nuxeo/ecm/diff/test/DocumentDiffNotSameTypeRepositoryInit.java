@@ -36,9 +36,8 @@ public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositor
      *
      * @param session the session
      * @return the document model
-     * @throws ClientException the client exception
      */
-    protected DocumentModel createLeftDoc(CoreSession session) throws ClientException {
+    protected DocumentModel createLeftDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "leftDoc", "SampleType");
 
@@ -68,9 +67,8 @@ public class DocumentDiffNotSameTypeRepositoryInit extends DocumentDiffRepositor
      *
      * @param session the session
      * @return the document model
-     * @throws ClientException the client exception
      */
-    protected DocumentModel createRightDoc(CoreSession session) throws ClientException {
+    protected DocumentModel createRightDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "rightDoc", "OtherSampleType");
 
