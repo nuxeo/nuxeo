@@ -13,6 +13,7 @@
  *
  * Contributors:
  *     Antoine Taillefer <ataillefer@nuxeo.com>
+ *     Thibaud Arguillere
  */
 
 package org.nuxeo.ecm.diff.content.adapter;
@@ -22,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nuxeo.diff.pictures.DiffPictures;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,6 +39,15 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
  * @since 7.4
  */
 public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
+	
+	private static final Log log = LogFactory.getLog(ImageMagickContentDiffer.class);
+
+	protected static final String TMPL_HEAD = "__HEAD__";
+	
+	protected static final String TMPL_BODY = "__BODY__";
+	
+	protected static final String HTML_BASE = "<html><head>" + TMPL_HEAD
+			+ "</head><body>" + TMPL_BODY + "</body></html>";
 
 	public MimeTypeContentDiffer.TYPE_OF_PARAMETERS getTypeOfParameters() {
 		return TYPE_OF_PARAMETERS.DOCUMENT;
@@ -46,22 +59,12 @@ public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
 			throws ContentDiffException {
 
 		try {
-			String leftDocId = leftDoc.getId();
-			String rightDocId = rightDoc.getId();
-			String url = VirtualHostHelper.getContextPathProperty();
-
-			url += "/diffPictures?action=diff&leftDocId=" + leftDocId
-					+ "&rightDocId=" + rightDocId + "&xpath=" + xpath;
-
 			List<Blob> blobResults = new ArrayList<Blob>();
 			StringWriter sw = new StringWriter();
 
-			sw.write("<html>");
-			sw.write("<body>");
-			sw.write("<div><img src='" + url + "'></img></div>");
-			sw.write("</body>");
-			sw.write("</html>");
-
+			String html = DiffPictures.buildDiffHtml(leftDoc, rightDoc, xpath);			
+			sw.write(html);
+			
 			String stringBlob = sw.toString();
 			Blob mainBlob = Blobs.createBlob(stringBlob);
 			sw.close();
@@ -71,6 +74,57 @@ public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
 
 			blobResults.add(mainBlob);
 			return blobResults;
+	
+			/*
+			String leftDocId = leftDoc.getId();
+			String rightDocId = rightDoc.getId();
+			String contextPath = VirtualHostHelper.getContextPathProperty();
+			
+			
+			String url;
+
+			url = contextPath + "/diffPictures?action=diff&leftDocId="
+					+ leftDocId + "&rightDocId=" + rightDocId + "&xpath="
+					+ xpath;
+
+			List<Blob> blobResults = new ArrayList<Blob>();
+			StringWriter sw = new StringWriter();
+
+			String html = HTML_BASE;
+
+			String str = "<script src='" + contextPath + "/scripts/nuxeo-diff-pictures.js'></script>";
+			String str = "<script src='" + contextPath + "/scripts/nuxeo-diff-pictures.js'></script>";
+			html = html.replace(TMPL_HEAD, str);
+
+			//str = "<div><img src='" + url + "'></img></div>";
+			str = "<div id='diff-pictures'></div>";
+			str += "<script></script>"
+			html = html.replace(TMPL_BODY, str);
+			
+			log.warn(html);
+
+			sw.write(html);
+*/
+			/*
+			 * sw.write("<html>"); sw.write("<head>"); sw.write("<head>");
+			 * 
+			 * sw.write("<head>"); sw.write("</head>"); sw.write("<body>");
+			 * sw.write("<div><img src='" + url + "'></img></div>");
+			 * sw.write("</body>"); sw.write("</html>");
+			 */
+
+			/*
+			String stringBlob = sw.toString();
+			Blob mainBlob = Blobs.createBlob(stringBlob);
+			sw.close();
+
+			mainBlob.setFilename("contentDiff.html");
+			mainBlob.setMimeType("text/html");
+
+			blobResults.add(mainBlob);
+			return blobResults;
+			*/
+
 		} catch (Exception e) {
 			throw new ContentDiffException(e);
 		}

@@ -58,8 +58,11 @@ import org.nuxeo.runtime.api.Framework;
  * </li>
  * <li>cleanup
  * <ul>
- * <li>Tells the code to delete the temporary files. It is a good habit to ask for the cleanup</li>
- * <li><code>leftDocId</code> and <code>rightDocId</code> are required</li>
+ * <li>Tells the code to delete the temporary files. It is a good habit to ask
+ * for the cleanup<br/>
+ * Returns a text message letting the caller knows everything went well.</li>
+ * <li><code>leftDocId</code> and <code>rightDocId</code> are required (used to
+ * build unique file names)</li>
  * <li>Other parameters are not used</li>
  * </ul>
  * </li>
@@ -102,19 +105,19 @@ public class DiffPicturesServlet extends HttpServlet {
 					"you must specify 'right' used for comparison against the left document.");
 			return;
 		}
-		
-		if(StringUtils.isBlank(action)) {
+
+		if (StringUtils.isBlank(action)) {
 			action = "diff";
 		}
 		action = action.toLowerCase();
-		
-		switch(action) {
+
+		switch (action) {
 		case "cleanup":
 			TempFilesHandler.deleteTempFolder(leftDocId, rightDocId);
 			sendTextResponse(resp, "Temporaty files deleted");
 			return;
 		}
-		
+
 		// Ok, not a special action, let's diff.
 
 		String repo = req.getParameter("repo");
