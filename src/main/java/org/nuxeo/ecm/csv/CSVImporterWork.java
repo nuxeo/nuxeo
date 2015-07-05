@@ -437,7 +437,7 @@ public class CSVImporterWork extends AbstractWork {
     }
 
     protected boolean createOrUpdateDocument(long lineNumber, String name, String type,
-            Map<String, Serializable> properties) throws ClientException {
+            Map<String, Serializable> properties) {
         Path targetPath = new Path(parentPath).append(name);
         name = targetPath.lastSegment();
         String newParentPath = targetPath.removeLastSegments(1).toString();
