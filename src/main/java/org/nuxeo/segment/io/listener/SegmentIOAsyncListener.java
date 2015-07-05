@@ -30,7 +30,7 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
     }
 
     @Override
-    public void handleEvent(EventBundle bundle) throws ClientException {
+    public void handleEvent(EventBundle bundle) {
 
         SegmentIOComponent component = getComponent();
 
