@@ -80,7 +80,7 @@ public class SuggesterGroupMergeTest {
      */
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
-    public void testSuggesterGroupMerge() throws ClientException {
+    public void testSuggesterGroupMerge() {
 
         // check service implementation
         assertTrue(suggestionService instanceof SuggestionServiceImpl);

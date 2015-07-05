@@ -50,7 +50,7 @@ public class SuggesterGroupContribTest {
      */
     @Test
     // TODO change the test when the redirection to the new search tab will be handled
-    public void testSuggesterGroupContrib() throws ClientException {
+    public void testSuggesterGroupContrib() {
 
         // check service implementation
         assertTrue(suggestionService instanceof SuggestionServiceImpl);
