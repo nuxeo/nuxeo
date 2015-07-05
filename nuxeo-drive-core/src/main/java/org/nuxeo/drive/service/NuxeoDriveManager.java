@@ -25,7 +25,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
  * Manage list of NuxeoDrive synchronization roots and devices for a given nuxeo user.

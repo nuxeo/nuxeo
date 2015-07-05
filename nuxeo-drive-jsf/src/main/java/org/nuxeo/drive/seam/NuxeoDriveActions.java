@@ -54,7 +54,6 @@ import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -270,7 +269,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
-    public String synchronizeCurrentDocument() throws ClientException, SecurityException {
+    public String synchronizeCurrentDocument() throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();

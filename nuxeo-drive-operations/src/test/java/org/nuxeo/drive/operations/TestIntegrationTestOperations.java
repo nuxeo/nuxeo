@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -167,15 +168,15 @@ public class TestIntegrationTestOperations {
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-joe"));
             fail("User workspace should not exist.");
-        } catch (ClientException e) {
-            assertEquals("Failed to get document " + userWorkspaceParentPath + "/nuxeoDriveTestUser-joe",
+        } catch (NoSuchDocumentException e) {
+            assertEquals("No such document: " + userWorkspaceParentPath + "/nuxeoDriveTestUser-joe",
                     e.getMessage());
         }
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-jack"));
             fail("User workspace should not exist.");
-        } catch (ClientException e) {
-            assertEquals("Failed to get document " + userWorkspaceParentPath + "/nuxeoDriveTestUser-jack",
+        } catch (NoSuchDocumentException e) {
+            assertEquals("No such document: " + userWorkspaceParentPath + "/nuxeoDriveTestUser-jack",
                     e.getMessage());
         }
 
@@ -239,8 +240,8 @@ public class TestIntegrationTestOperations {
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah"));
             fail("User workspace should not exist.");
-        } catch (ClientException e) {
-            assertEquals("Failed to get document " + userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah",
+        } catch (NoSuchDocumentException e) {
+            assertEquals("No such document: " + userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah",
                     e.getMessage());
         }
         assertFalse(session.exists(testWorkspaceRef));

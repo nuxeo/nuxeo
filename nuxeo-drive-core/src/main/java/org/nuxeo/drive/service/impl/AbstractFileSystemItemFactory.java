@@ -141,15 +141,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocumentById(docId, session);
             return isFileSystemItem(doc);
-        } catch (ClientException e) {
-            if (e.getCause() instanceof NoSuchDocumentException) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("No doc related to id %s, returning false.", id));
-                }
-                return false;
-            } else {
-                throw e;
+        } catch (NoSuchDocumentException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("No doc related to id %s, returning false.", id));
             }
+            return false;
         }
     }
 
@@ -161,15 +157,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc);
-        } catch (ClientException e) {
-            if (e.getCause() instanceof NoSuchDocumentException) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("No doc related to id %s, returning null.", id));
-                }
-                return null;
-            } else {
-                throw e;
+        } catch (NoSuchDocumentException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("No doc related to id %s, returning null.", id));
             }
+            return null;
         }
     }
 
@@ -186,15 +178,11 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             }
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc, (FolderItem) parentItem);
-        } catch (ClientException e) {
-            if (e.getCause() instanceof NoSuchDocumentException) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("No doc related to id %s, returning null.", id));
-                }
-                return null;
-            } else {
-                throw e;
+        } catch (NoSuchDocumentException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("No doc related to id %s, returning null.", id));
             }
+            return null;
         }
     }
 

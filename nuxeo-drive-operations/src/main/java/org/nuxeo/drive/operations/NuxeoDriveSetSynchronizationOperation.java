@@ -13,7 +13,6 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -31,7 +30,7 @@ public class NuxeoDriveSetSynchronizationOperation {
     protected boolean enable;
 
     @OperationMethod
-    public void run(DocumentModel doc) throws ClientException, SecurityException {
+    public void run(DocumentModel doc) throws ClientException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         if (enable) {
             driveManager.registerSynchronizationRoot(session.getPrincipal(), doc, session);
