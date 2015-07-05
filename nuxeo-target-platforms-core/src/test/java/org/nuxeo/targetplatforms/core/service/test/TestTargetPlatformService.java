@@ -74,7 +74,7 @@ public class TestTargetPlatformService {
         // remove all entries from directory
         new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
             @Override
-            public void run(DirectoryService service, Session session) throws ClientException {
+            public void run(DirectoryService service, Session session) {
                 for (DocumentModel doc : session.getEntries()) {
                     session.deleteEntry(doc.getId());
                 }
@@ -88,7 +88,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetDefaultTargetPlatform() throws ClientException {
+    public void testGetDefaultTargetPlatform() {
         TargetPlatform tp;
         tp = service.getDefaultTargetPlatform(null);
         assertNotNull(tp);
@@ -243,7 +243,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatformDirOverride() throws ClientException {
+    public void testGetTargetPlatformDirOverride() {
         String id = "cap-5.8";
         TargetPlatform tp = service.getTargetPlatform(id);
         assertNotNull(tp);
@@ -400,7 +400,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatformInfo() throws ClientException {
+    public void testGetTargetPlatformInfo() {
         TargetPlatformInfo tp = service.getTargetPlatformInfo("cap-5.8");
         assertNotNull(tp);
         List<String> pkgids = tp.getAvailablePackagesIds();
@@ -491,7 +491,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetTargetPlatformInstance() throws ClientException {
+    public void testGetTargetPlatformInstance() {
         TargetPlatformInstance tpi;
 
         tpi = service.getTargetPlatformInstance("cap-5.8", null);
@@ -547,7 +547,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetAvailableTargetPlatforms() throws ClientException {
+    public void testGetAvailableTargetPlatforms() {
         // filter all
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true,
                 false, null));
@@ -605,7 +605,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetAvailableTargetPlatformsOverride() throws ClientException {
+    public void testGetAvailableTargetPlatformsOverride() {
         List<TargetPlatform> tps = service.getAvailableTargetPlatforms(new TargetPlatformFilterImpl(true, true, true,
                 false, null));
         assertEquals(4, tps.size());
@@ -649,7 +649,7 @@ public class TestTargetPlatformService {
     }
 
     @Test
-    public void testGetAvailableTargetPlatformsInfo() throws ClientException {
+    public void testGetAvailableTargetPlatformsInfo() {
         // filter all
         List<TargetPlatformInfo> tps = service.getAvailableTargetPlatformsInfo(new TargetPlatformFilterImpl(true, true,
                 true, false, null));

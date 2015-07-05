@@ -50,9 +50,9 @@ public abstract class DirectoryUpdater {
         this.dirName = dirName;
     }
 
-    public abstract void run(DirectoryService service, Session session) throws ClientException;
+    public abstract void run(DirectoryService service, Session session);
 
-    public void run() throws ClientException {
+    public void run() {
         Session session = null;
         try {
             // check if entry already exists

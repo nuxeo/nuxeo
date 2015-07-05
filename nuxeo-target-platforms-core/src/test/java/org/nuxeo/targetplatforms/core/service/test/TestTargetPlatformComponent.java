@@ -63,14 +63,14 @@ public class TestTargetPlatformComponent {
     protected RuntimeHarness harness;
 
     @Test
-    public void testPlatformRegistration() throws ClientException {
+    public void testPlatformRegistration() {
         TargetPlatform tp = service.getTargetPlatform("cap-5.8");
         assertNotNull(tp);
         assertTrue(tp.isEnabled());
     }
 
     @Test
-    public void testPackageRegistration() throws ClientException {
+    public void testPackageRegistration() {
         TargetPackage tp = service.getTargetPackage("nuxeo-dm-5.8");
         assertNotNull(tp);
         assertTrue(tp.isEnabled());

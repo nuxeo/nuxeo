@@ -40,7 +40,7 @@ public class TargetPlatformActions {
     @In(create = true)
     protected TargetPlatformService targetPlatformService;
 
-    public List<TargetPlatformInfo> getPlatforms() throws ClientException {
+    public List<TargetPlatformInfo> getPlatforms() {
         List<TargetPlatformInfo> res = targetPlatformService.getAvailableTargetPlatformsInfo(null);
         Collections.sort(res);
         return res;

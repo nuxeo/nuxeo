@@ -77,7 +77,7 @@ public class TestJsonExporter {
         // remove all entries from directory
         new DirectoryUpdater(DirectoryUpdater.DEFAULT_DIR) {
             @Override
-            public void run(DirectoryService service, Session session) throws ClientException {
+            public void run(DirectoryService service, Session session) {
                 for (DocumentModel doc : session.getEntries()) {
                     session.deleteEntry(doc.getId());
                 }

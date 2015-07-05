@@ -136,7 +136,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     // Service API
 
     @Override
-    public TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter) throws ClientException {
+    public TargetPlatform getDefaultTargetPlatform(TargetPlatformFilter filter) {
         List<TargetPlatform> tps = getAvailableTargetPlatforms(filter);
         if (tps.isEmpty()) {
             return null;
@@ -173,7 +173,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public TargetPlatform getTargetPlatform(String id) throws ClientException {
+    public TargetPlatform getTargetPlatform(String id) {
         if (id == null) {
             return null;
         }
@@ -181,7 +181,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         return getTargetPlatform(desc);
     }
 
-    protected TargetPlatform getTargetPlatform(TargetPlatformDescriptor desc) throws ClientException {
+    protected TargetPlatform getTargetPlatform(TargetPlatformDescriptor desc) {
         if (desc == null) {
             return null;
         }
@@ -275,7 +275,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public TargetPlatformInfo getTargetPlatformInfo(String id) throws ClientException {
+    public TargetPlatformInfo getTargetPlatformInfo(String id) {
         if (id == null) {
             return null;
         }
@@ -284,7 +284,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         return tpi;
     }
 
-    protected TargetPlatformInfo getTargetPlatformInfo(TargetPlatformDescriptor desc) throws ClientException {
+    protected TargetPlatformInfo getTargetPlatformInfo(TargetPlatformDescriptor desc) {
         if (desc == null) {
             return null;
         }
@@ -383,7 +383,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public TargetPlatformInstance getTargetPlatformInstance(String id, List<String> packages) throws ClientException {
+    public TargetPlatformInstance getTargetPlatformInstance(String id, List<String> packages) {
         if (id == null) {
             return null;
         }
@@ -405,7 +405,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter) throws ClientException {
+    public List<TargetPlatform> getAvailableTargetPlatforms(TargetPlatformFilter filter) {
         List<TargetPlatform> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatform tp = getTargetPlatform(desc);
@@ -428,7 +428,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(TargetPlatformFilter filter) throws ClientException {
+    public List<TargetPlatformInfo> getAvailableTargetPlatformsInfo(TargetPlatformFilter filter) {
         List<TargetPlatformInfo> tps = new ArrayList<>();
         for (TargetPlatformDescriptor desc : platforms.getTargetPlatforms()) {
             TargetPlatformInfo tp = getTargetPlatformInfo(desc);
@@ -450,50 +450,50 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public void deprecateTargetPlatform(boolean deprecate, final String id) throws ClientException {
+    public void deprecateTargetPlatform(boolean deprecate, final String id) {
         Integer val = deprecate ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.DEPRECATED_PROP, val);
     }
 
     @Override
-    public void enableTargetPlatform(boolean enable, final String id) throws ClientException {
+    public void enableTargetPlatform(boolean enable, final String id) {
         Integer val = enable ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.ENABLED_PROP, val);
     }
 
     @Override
-    public void restrictTargetPlatform(boolean restrict, final String id) throws ClientException {
+    public void restrictTargetPlatform(boolean restrict, final String id) {
         Integer val = restrict ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.RESTRICTED_PROP, val);
     }
 
     @Override
-    public void setTrialTargetPlatform(boolean trial, final String id) throws ClientException {
+    public void setTrialTargetPlatform(boolean trial, final String id) {
         Integer val = trial ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.TRIAL_PROP, val);
     }
 
     @Override
-    public void setDefaultTargetPlatform(boolean isDefault, final String id) throws ClientException {
+    public void setDefaultTargetPlatform(boolean isDefault, final String id) {
         Integer val = isDefault ? Integer.valueOf(1) : Integer.valueOf(0);
         updateOrCreateEntry(id, DirectoryUpdater.DEFAULT_PROP, val);
     }
 
     @Override
-    public void restoreTargetPlatform(final String id) throws ClientException {
+    public void restoreTargetPlatform(final String id) {
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
-            public void run(DirectoryService service, Session session) throws ClientException {
+            public void run(DirectoryService service, Session session) {
                 session.deleteEntry(id);
             }
         }.run();
     }
 
     @Override
-    public void restoreAllTargetPlatforms() throws ClientException {
+    public void restoreAllTargetPlatforms() {
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
-            public void run(DirectoryService service, Session session) throws ClientException {
+            public void run(DirectoryService service, Session session) {
                 for (DocumentModel entry : session.getEntries()) {
                     session.deleteEntry(entry.getId());
                 }
@@ -501,10 +501,10 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         }.run();
     }
 
-    protected void updateOrCreateEntry(final String id, final String prop, final Integer value) throws ClientException {
+    protected void updateOrCreateEntry(final String id, final String prop, final Integer value) {
         new DirectoryUpdater(getOverrideDirectory()) {
             @Override
-            public void run(DirectoryService service, Session session) throws ClientException {
+            public void run(DirectoryService service, Session session) {
                 DocumentModel doc = session.getEntry(id);
                 if (doc != null) {
                     doc.setProperty(DirectoryUpdater.SCHEMA, prop, value);
@@ -519,7 +519,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
         }.run();
     }
 
-    protected DocumentModel getDirectoryEntry(String id) throws ClientException {
+    protected DocumentModel getDirectoryEntry(String id) {
         Session dirSession = null;
         try {
             // check if entry already exists
@@ -537,7 +537,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
     }
 
     @Override
-    public TargetPlatformInstance getDefaultTargetPlatformInstance(boolean restricted) throws ClientException {
+    public TargetPlatformInstance getDefaultTargetPlatformInstance(boolean restricted) {
         TargetPlatformInstance tpi = null;
         TargetPlatformFilterImpl filter = new TargetPlatformFilterImpl();
         filter.setFilterRestricted(restricted);
@@ -554,7 +554,7 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
      *
      * @since 5.9.3-NXP-15602
      */
-    protected TargetPlatformInstanceImpl createTargetPlatformInstanceFromId(String id) throws ClientException {
+    protected TargetPlatformInstanceImpl createTargetPlatformInstanceFromId(String id) {
         TargetPlatformDescriptor desc = platforms.getTargetPlatform(id);
         if (desc == null) {
             return null;
