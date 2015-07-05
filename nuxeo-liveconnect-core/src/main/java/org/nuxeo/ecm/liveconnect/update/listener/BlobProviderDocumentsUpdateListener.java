@@ -34,7 +34,7 @@ public class BlobProviderDocumentsUpdateListener implements PostCommitEventListe
     public static final String BLOB_PROVIDER_DOCUMENT_UPDATE_EVENT = "blobProviderDocumentUpdateEvent";
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
 
         for (Event each : events) {
             onEvent(each);
