@@ -145,7 +145,7 @@ public class SmartNXQLQueryActions implements Serializable {
      * <p>
      * if request parameters {@link #updateQueryPart} is true, the field {@link #queryPart} will also be edited.
      */
-    public void queryPartChanged(ActionEvent event) throws ClientException {
+    public void queryPartChanged(ActionEvent event) {
         UIComponent comp = event.getComponent();
         UIComponent parent = comp.getParent();
         if (parent instanceof EditableValueHolder) {
@@ -179,7 +179,7 @@ public class SmartNXQLQueryActions implements Serializable {
      *            on it.
      * @throws ClientException if target JSF component is not found in the JSF tree.
      */
-    protected void setQueryPart(ActionEvent event, String newQuery, boolean rebuildSmartQuery) throws ClientException {
+    protected void setQueryPart(ActionEvent event, String newQuery, boolean rebuildSmartQuery) {
         if (currentSmartQuery != null) {
             UIComponent component = event.getComponent();
             if (component == null) {
@@ -219,7 +219,7 @@ public class SmartNXQLQueryActions implements Serializable {
      *
      * @see #setQueryPart(ActionEvent, String)
      */
-    public void buildQueryPart(ActionEvent event) throws ClientException {
+    public void buildQueryPart(ActionEvent event) {
         if (currentSmartQuery != null) {
             String newQuery = currentSmartQuery.buildQuery();
             setQueryPart(event, newQuery, true);
@@ -231,7 +231,7 @@ public class SmartNXQLQueryActions implements Serializable {
      *
      * @see #setQueryPart(ActionEvent, String)
      */
-    public void clearQueryPart(ActionEvent event) throws ClientException {
+    public void clearQueryPart(ActionEvent event) {
         setQueryPart(event, "", false);
     }
 
@@ -263,7 +263,7 @@ public class SmartNXQLQueryActions implements Serializable {
     }
 
     public void undoHistoryChanges(ActionEvent event, HistoryList<String> history, HistoryList<String> redoHistory)
-            throws ClientException {
+            {
         if (!hasQueryPartHistory(history)) {
             return;
         }
@@ -283,14 +283,14 @@ public class SmartNXQLQueryActions implements Serializable {
         }
     }
 
-    public void undoQueryPartChanges(ActionEvent event) throws ClientException {
+    public void undoQueryPartChanges(ActionEvent event) {
         if (redoQueryPartHistory == null) {
             redoQueryPartHistory = new HistoryList<String>(HISTORY_CAPACITY);
         }
         undoHistoryChanges(event, queryPartHistory, redoQueryPartHistory);
     }
 
-    public void redoQueryPartChanges(ActionEvent event) throws ClientException {
+    public void redoQueryPartChanges(ActionEvent event) {
         undoHistoryChanges(event, redoQueryPartHistory, null);
     }
 

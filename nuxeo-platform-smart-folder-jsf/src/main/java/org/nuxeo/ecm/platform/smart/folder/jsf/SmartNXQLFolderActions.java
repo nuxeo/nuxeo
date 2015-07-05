@@ -59,7 +59,7 @@ public class SmartNXQLFolderActions implements Serializable {
      * <p>
      * Assumes the document type holds the 'content_view_display' and 'smart_folder' schemas.
      */
-    public String saveQueryAsDocument(String docType) throws ClientException {
+    public String saveQueryAsDocument(String docType) {
         documentActions.createDocument(docType);
         // fill in information from smart search
         DocumentModel doc = navigationContext.getChangeableDocument();
