@@ -33,6 +33,7 @@ import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 
 /**
  * Some helper function that are injected inside MVEL context
@@ -77,7 +78,7 @@ public class MVELImporterFunction extends CoreFunctions {
             DocumentModel child = null;
             try {
                 child = session.getChild(root.getRef(), part);
-            } catch (ClientException e) {
+            } catch (NoSuchDocumentException e) {
                 child = session.createDocumentModel(root.getPathAsString(), part, typeName);
                 child.setPropertyValue("dc:title", part);
                 child = session.createDocument(child);
