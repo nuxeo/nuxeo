@@ -32,7 +32,7 @@ public class DemoFolderTemplateFactory extends SimpleTemplateBasedFactory {
             "aaaiii", "aaaajjj", "aaakkk", };
 
     @Override
-    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) {
         initSession(eventDoc);
 
         if (eventDoc.isVersion() || !isTargetEmpty(eventDoc)) {

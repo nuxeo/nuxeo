@@ -53,7 +53,7 @@ public class LayoutPreviewActions {
     public static final String LAYOUT_CATEGORY = "jsf";
 
     public String getPreviewLayoutURL(PreviewLayoutDefinition previewLayoutDef, String layoutMode, String layoutTemplate)
-            throws UnsupportedEncodingException, ClientException {
+            throws UnsupportedEncodingException {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("layoutDefinition", getEncodedLayoutDefinition(previewLayoutDef));
         parameters.put("layoutMode", layoutMode);
@@ -89,7 +89,7 @@ public class LayoutPreviewActions {
     }
 
     public LayoutDefinition getDecodedLayoutDefinition(String jsonEncodedLayoutDef)
-            throws UnsupportedEncodingException, ClientException {
+            throws UnsupportedEncodingException {
         if (StringUtils.isBlank(jsonEncodedLayoutDef)) {
             return null;
         }

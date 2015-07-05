@@ -110,7 +110,7 @@ public class LayoutDemoActions implements Serializable {
     protected Map<String, String> messages;
 
     @Factory(value = "layoutDemoDocument", scope = EVENT)
-    public DocumentModel getDemoDocument() throws ClientException {
+    public DocumentModel getDemoDocument() {
         if (layoutDemoDocument == null) {
             try {
                 layoutDemoDocument = layoutBareDemoDocument.clone();
@@ -121,7 +121,7 @@ public class LayoutDemoActions implements Serializable {
         return layoutDemoDocument;
     }
 
-    public String initContextFromRestRequest(DocumentView docView) throws ClientException {
+    public String initContextFromRestRequest(DocumentView docView) {
 
         DemoWidgetType widgetType = null;
         boolean isPreviewFrame = false;

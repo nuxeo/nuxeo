@@ -141,7 +141,7 @@ public class LayoutDemoContext implements Serializable {
         return layoutDemoManager.getWidgetTypes("action");
     }
 
-    protected DocumentModel generateBareDemoDocument() throws ClientException {
+    protected DocumentModel generateBareDemoDocument() {
         try {
             return demoCoreSession.createDocumentModel(DEMO_DOCUMENT_TYPE);
         } catch (Exception e) {
@@ -152,7 +152,7 @@ public class LayoutDemoContext implements Serializable {
     /**
      * @since 7.2
      */
-    protected DocumentModel generateValidationDocument() throws ClientException {
+    protected DocumentModel generateValidationDocument() {
         try {
             DocumentModel doc = demoCoreSession.createDocumentModel(VALIDATION_DOCUMENT_TYPE);
             doc.setPropertyValue("dc:title", "My title");
@@ -163,7 +163,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutBareDemoDocument", scope = EVENT)
-    public DocumentModel getBareDemoDocument() throws ClientException {
+    public DocumentModel getBareDemoDocument() {
         if (bareDemoDocument == null) {
             bareDemoDocument = generateBareDemoDocument();
             bareDemoDocument.setPropertyValue("dc:title", "My title");
@@ -176,7 +176,7 @@ public class LayoutDemoContext implements Serializable {
      * @since 7.2
      */
     @Factory(value = "layoutValidationDocument", scope = EVENT)
-    public DocumentModel getValidationDocument() throws ClientException {
+    public DocumentModel getValidationDocument() {
         if (validationDocument == null) {
             validationDocument = generateValidationDocument();
         }
@@ -191,7 +191,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutPreviewDocument", scope = EVENT)
-    public DocumentModel getPreviewDocument() throws ClientException {
+    public DocumentModel getPreviewDocument() {
         if (previewDocument == null) {
             try {
                 previewDocument = generateBareDemoDocument();
@@ -206,7 +206,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutDemoDocuments", scope = EVENT)
-    public PageSelections<DocumentModel> getDemoDocuments() throws ClientException, Exception {
+    public PageSelections<DocumentModel> getDemoDocuments() throws Exception {
         if (demoDocuments == null) {
             try {
                 List<PageSelection<DocumentModel>> docs = new ArrayList<PageSelection<DocumentModel>>();
@@ -222,7 +222,7 @@ public class LayoutDemoContext implements Serializable {
         return demoDocuments;
     }
 
-    protected DocumentModel fillPreviewDocumentProperties(DocumentModel doc, int index) throws ClientException {
+    protected DocumentModel fillPreviewDocumentProperties(DocumentModel doc, int index) {
         // fill all fields used in preview
         if (index <= 1) {
             doc.setPropertyValue("lds:textField", "Some sample text");
@@ -293,7 +293,7 @@ public class LayoutDemoContext implements Serializable {
         return doc;
     }
 
-    protected DocumentModel fillListingDocumentProperties(DocumentModel doc, int index) throws ClientException {
+    protected DocumentModel fillListingDocumentProperties(DocumentModel doc, int index) {
         if (index <= 1) {
             doc.prefetchCurrentLifecycleState("project");
         } else {
@@ -327,7 +327,7 @@ public class LayoutDemoContext implements Serializable {
         return doc;
     }
 
-    protected DocumentModel getListingDemoDocument(int index) throws ClientException {
+    protected DocumentModel getListingDemoDocument(int index) {
         DocumentModel doc = generateBareDemoDocument();
         doc.setPathInfo("/", "demoDoc_" + index);
         fillListingDocumentProperties(doc, index);
@@ -341,7 +341,7 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutDemoCustomActions", scope = EVENT)
-    public List<Action> getLayoutDemoCustomActions() throws ClientException, Exception {
+    public List<Action> getLayoutDemoCustomActions() throws Exception {
         if (layoutDemoCustomActions == null) {
             try {
                 layoutDemoCustomActions = new ArrayList<Action>();
@@ -365,7 +365,7 @@ public class LayoutDemoContext implements Serializable {
      * @since 6.0
      */
     @Factory(value = "layoutDemoAggregates", scope = EVENT)
-    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates() throws ClientException, Exception {
+    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates() throws Exception {
         if (layoutDemoAggregates == null) {
             layoutDemoAggregates = new HashMap<>();
 
