@@ -38,7 +38,7 @@ public class DocUIDGeneratorListener implements EventListener {
     private static final Log log = LogFactory.getLog(DocUIDGeneratorListener.class);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         if (!DOCUMENT_CREATED.equals(event.getName())) {
             return;

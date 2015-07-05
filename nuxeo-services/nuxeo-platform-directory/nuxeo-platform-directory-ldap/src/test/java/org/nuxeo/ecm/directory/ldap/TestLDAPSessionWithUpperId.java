@@ -115,7 +115,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testQuery1() throws ClientException {
+    public void testQuery1() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             DocumentModelList entries;

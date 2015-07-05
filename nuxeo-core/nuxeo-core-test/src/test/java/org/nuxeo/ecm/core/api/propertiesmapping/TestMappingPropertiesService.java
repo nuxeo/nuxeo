@@ -51,7 +51,7 @@ public class TestMappingPropertiesService {
     CoreSession session;
 
     @Test
-    public void testMapping() throws ClientException {
+    public void testMapping() {
 
         assertNotNull(mappingService.getMapping("testMapping"));
         DocumentModel doc1 = createDocument("/", "doc1", "MappingDoc");
@@ -104,7 +104,7 @@ public class TestMappingPropertiesService {
         assertNotNull(e);
     }
 
-    protected DocumentModel createDocument(String parentPath, String id, String type) throws ClientException {
+    protected DocumentModel createDocument(String parentPath, String id, String type) {
         DocumentModel doc = session.createDocumentModel(parentPath, id, type);
         doc = session.createDocument(doc);
         return session.saveDocument(doc);

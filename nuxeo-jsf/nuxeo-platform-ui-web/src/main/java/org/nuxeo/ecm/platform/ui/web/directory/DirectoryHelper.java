@@ -209,7 +209,7 @@ public final class DirectoryHelper {
         return displayValue.toString();
     }
 
-    private static DocumentModel getEntryThrows(String directoryName, String entryId) throws ClientException {
+    private static DocumentModel getEntryThrows(String directoryName, String entryId) {
         DirectoryService dirService = getDirectoryService();
         if (dirService == null) {
             throw new ClientException("Could not lookup DirectoryService");

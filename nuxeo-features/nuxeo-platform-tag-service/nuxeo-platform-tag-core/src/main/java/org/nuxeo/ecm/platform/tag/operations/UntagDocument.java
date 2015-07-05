@@ -48,7 +48,7 @@ public class UntagDocument {
     protected StringList tags;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel document) throws ClientException {
+    public DocumentModel run(DocumentModel document) {
         if (tags != null) {
             for (String tag : tags) {
                 tagService.untag(session, document.getId(), tag, session.getPrincipal().getName());

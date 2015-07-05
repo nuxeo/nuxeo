@@ -285,14 +285,14 @@ public interface PageProvider<T> extends Serializable {
      *
      * @throws ClientException if entry is not found within current page.
      */
-    void setCurrentEntry(T entry) throws ClientException;
+    void setCurrentEntry(T entry);
 
     /**
      * Sets the current entry index.
      *
      * @throws ClientException if index is not found within current page.
      */
-    void setCurrentEntryIndex(long index) throws ClientException;
+    void setCurrentEntryIndex(long index);
 
     /**
      * Returns true if there is a next entry.

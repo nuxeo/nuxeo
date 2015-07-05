@@ -49,7 +49,7 @@ public class ExternalCorePublishedDocument implements PublishedDocument {
 
     protected boolean isPending;
 
-    public ExternalCorePublishedDocument(DocumentModel doc) throws ClientException {
+    public ExternalCorePublishedDocument(DocumentModel doc) {
         ExtendedDocumentLocation xLoc = ExtendedDocumentLocation.extractFromDoc(doc);
         this.sourceServer = xLoc.getOriginalServer();
         this.repositoryName = xLoc.getServerName();

@@ -26,13 +26,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface ThreadAdapter {
 
-    List<DocumentModel> getAllPosts() throws ClientException;
+    List<DocumentModel> getAllPosts();
 
-    List<DocumentModel> getPendingPosts() throws ClientException;
+    List<DocumentModel> getPendingPosts();
 
-    List<DocumentModel> getPublishedPosts() throws ClientException;
+    List<DocumentModel> getPublishedPosts();
 
-    DocumentModel getLastPublishedPost() throws ClientException;
+    DocumentModel getLastPublishedPost();
 
     DocumentModel getThreadDoc();
 

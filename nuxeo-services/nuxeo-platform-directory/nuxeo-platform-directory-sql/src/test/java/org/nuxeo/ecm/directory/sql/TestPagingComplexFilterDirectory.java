@@ -53,7 +53,7 @@ public class TestPagingComplexFilterDirectory {
     protected DirectoryService directoryService;
 
     @Test
-    public void testPaging() throws ClientException {
+    public void testPaging() {
         try (Session session = directoryService.open(DIR)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("label", "Label");
@@ -82,7 +82,7 @@ public class TestPagingComplexFilterDirectory {
     }
 
     @Test
-    public void testComplexFilter() throws ClientException {
+    public void testComplexFilter() {
         try (Session session = directoryService.open(DIR)) {
             Calendar d121110 = new DateTime(2012, 11, 10, 0, 0, 0, 0).toGregorianCalendar();
             Calendar d121211 = new DateTime(2012, 12, 11, 0, 0, 0, 0).toGregorianCalendar();

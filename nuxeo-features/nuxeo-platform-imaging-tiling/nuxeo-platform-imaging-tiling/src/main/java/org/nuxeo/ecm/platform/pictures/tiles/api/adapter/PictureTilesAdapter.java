@@ -30,7 +30,7 @@ import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
  */
 public interface PictureTilesAdapter {
 
-    PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles) throws ClientException;
+    PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles);
 
     void setXPath(String path);
 

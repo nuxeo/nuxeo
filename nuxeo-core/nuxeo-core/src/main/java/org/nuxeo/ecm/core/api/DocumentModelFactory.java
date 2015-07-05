@@ -220,7 +220,7 @@ public class DocumentModelFactory {
     /**
      * Writes a document model to a document. Returns the re-read document model.
      */
-    public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) throws ClientException {
+    public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) {
         if (!(docModel instanceof DocumentModelImpl)) {
             throw new ClientRuntimeException("Must be a DocumentModelImpl: " + docModel);
         }

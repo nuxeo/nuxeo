@@ -44,7 +44,7 @@ public class AnnotationsFulltextInjector {
 
     public static final String ANNOTATION_RESOURCE_ID_PREFIX = "annotation_";
 
-    public boolean removeAnnotationText(DocumentModel doc, String annotationId) throws ClientException {
+    public boolean removeAnnotationText(DocumentModel doc, String annotationId) {
         @SuppressWarnings("unchecked")
         List<Map<String, String>> relatedResources = doc.getProperty(RELATED_TEXT_LIST_PROPERTY).getValue(List.class);
         String resourceIdToRemove = annotationId == null ? null : makeResourceId(annotationId);
@@ -70,7 +70,7 @@ public class AnnotationsFulltextInjector {
         return false;
     }
 
-    public void setAnnotationText(DocumentModel doc, String annotationId, String annotationBody) throws ClientException {
+    public void setAnnotationText(DocumentModel doc, String annotationId, String annotationBody) {
         if (annotationBody == null) {
             return;
         }

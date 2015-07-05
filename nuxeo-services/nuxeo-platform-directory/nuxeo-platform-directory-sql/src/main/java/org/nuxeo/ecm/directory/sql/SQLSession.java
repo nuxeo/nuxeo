@@ -175,7 +175,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws ClientException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) {
 
         if (isReadOnly()) {
             log.warn(READ_ONLY_VOCABULARY_WARN);
@@ -463,13 +463,13 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList getEntries() throws ClientException {
+    public DocumentModelList getEntries() {
         Map<String, Serializable> emptyMap = Collections.emptyMap();
         return query(emptyMap);
     }
 
     @Override
-    public void updateEntry(DocumentModel docModel) throws ClientException {
+    public void updateEntry(DocumentModel docModel) {
 
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return;
@@ -590,12 +590,12 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public void deleteEntry(DocumentModel docModel) throws ClientException {
+    public void deleteEntry(DocumentModel docModel) {
         deleteEntry(docModel.getId());
     }
 
     @Override
-    public void deleteEntry(String id) throws ClientException {
+    public void deleteEntry(String id) {
         acquireConnection();
 
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
@@ -746,20 +746,20 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            throws ClientException {
+            {
         // XXX not fetch references by default: breaks current behavior
         return query(filter, fulltext, orderBy, false);
     }
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws ClientException {
+            boolean fetchReferences) {
         return query(filter, fulltext, orderBy, fetchReferences, -1, -1);
     }
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException {
+            boolean fetchReferences, int limit, int offset) throws DirectoryException {
 
         if (!isCurrentUserAllowed(SecurityConstants.READ)) {
             return new DocumentModelListImpl();
@@ -1006,7 +1006,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter) throws ClientException {
+    public DocumentModelList query(Map<String, Serializable> filter) {
         return query(filter, emptySet);
     }
 
@@ -1089,7 +1089,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     @Override
     public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws ClientException {
+            {
         DocumentModelList docList = query(filter, fulltext);
         List<String> result = new ArrayList<String>();
         for (DocumentModel docModel : docList) {
@@ -1106,12 +1106,12 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws ClientException {
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) {
         return getProjection(filter, emptySet, columnName);
     }
 
     @Override
-    public boolean authenticate(String username, String password) throws ClientException {
+    public boolean authenticate(String username, String password) {
         DocumentModel entry = getEntry(username);
         if (entry == null) {
             return false;
@@ -1121,7 +1121,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public boolean isAuthenticating() throws ClientException {
+    public boolean isAuthenticating() {
         return schemaFieldMap.containsKey(getPasswordField());
     }
 
@@ -1141,18 +1141,18 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) {
         return query(filter, fulltext, new HashMap<String, String>());
     }
 
     @Override
-    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) {
         Map<String, Object> fieldMap = entry.getProperties(schemaName);
         return createEntry(fieldMap);
     }
 
     @Override
-    public boolean hasEntry(String id) throws ClientException {
+    public boolean hasEntry(String id) {
         acquireConnection();
         Select select = new Select(table);
         select.setFrom(table.getQuotedName());

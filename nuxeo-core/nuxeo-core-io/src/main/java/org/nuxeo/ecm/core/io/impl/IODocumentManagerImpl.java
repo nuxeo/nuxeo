@@ -50,7 +50,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     @Override
     public DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root)
-            throws ImportDocumentException, ClientException {
+            throws ImportDocumentException {
         DocumentReader reader = null;
         DocumentModelWriter writer = null;
         try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
@@ -104,7 +104,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     @Override
     public DocumentTranslationMap exportDocuments(OutputStream out, String repo, Collection<DocumentRef> sources,
-            boolean recurse, String format) throws ExportDocumentException, ClientException {
+            boolean recurse, String format) throws ExportDocumentException {
         DocumentReader reader = null;
         DocumentWriter writer = null;
         try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {

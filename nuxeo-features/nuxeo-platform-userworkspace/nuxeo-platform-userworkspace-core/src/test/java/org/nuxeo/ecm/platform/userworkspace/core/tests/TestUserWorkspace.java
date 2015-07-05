@@ -203,7 +203,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testAnotherUserWorkspaceFinder() throws ClientException {
+    public void testAnotherUserWorkspaceFinder() {
         UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);
         assertNotNull(service);
 
@@ -234,7 +234,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testUnrestrictedFinderCorrectlyCreateWorkspace() throws ClientException {
+    public void testUnrestrictedFinderCorrectlyCreateWorkspace() {
         UserWorkspaceService service = Framework.getLocalService(UserWorkspaceService.class);
         assertNotNull(service);
 

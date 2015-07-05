@@ -62,13 +62,13 @@ public class ServerActionsBean implements ServerActions, Serializable {
      */
     @Override
     @Factory("availableCoreRepositories")
-    public List<Repository> getAvailableRepositories() throws ClientException {
+    public List<Repository> getAvailableRepositories() {
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         return new ArrayList<Repository>(repositoryManager.getRepositories());
     }
 
     @Override
-    public String selectRepository(String repositoryName) throws ClientException {
+    public String selectRepository(String repositoryName) {
         boolean found = false;
         RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
         for (String name : repositoryManager.getRepositoryNames()) {

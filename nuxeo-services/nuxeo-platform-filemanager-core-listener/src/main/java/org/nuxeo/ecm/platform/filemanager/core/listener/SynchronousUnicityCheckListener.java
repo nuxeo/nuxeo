@@ -39,7 +39,7 @@ public class SynchronousUnicityCheckListener extends AbstractUnicityChecker impl
 
     private static final Log log = LogFactory.getLog(SynchronousUnicityCheckListener.class);
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!isUnicityCheckEnabled()) {
             return;
         }

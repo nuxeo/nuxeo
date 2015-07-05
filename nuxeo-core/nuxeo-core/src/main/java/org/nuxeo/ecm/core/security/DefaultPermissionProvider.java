@@ -57,7 +57,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
 
     @Override
     public synchronized List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName)
-            throws ClientException {
+            {
         if (mergedPermissionsVisibility == null) {
             computeMergedPermissionsVisibility();
         }
@@ -74,7 +74,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors() throws ClientException {
+    public List<UserVisiblePermission> getUserVisiblePermissionDescriptors() {
         return getUserVisiblePermissionDescriptors("");
     }
 
@@ -100,19 +100,19 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
     }
 
     @Override
-    public synchronized String[] getSubPermissions(String perm) throws ClientException {
+    public synchronized String[] getSubPermissions(String perm) {
         List<String> permissions = getPermission(perm).getSubPermissions();
         return permissions.toArray(new String[permissions.size()]);
     }
 
     @Override
-    public synchronized String[] getAliasPermissions(String perm) throws ClientException {
+    public synchronized String[] getAliasPermissions(String perm) {
         List<String> permissions = getPermission(perm).getSubPermissions();
         return permissions.toArray(new String[permissions.size()]);
     }
 
     // called synchronized
-    protected MergedPermissionDescriptor getPermission(String perm) throws ClientException {
+    protected MergedPermissionDescriptor getPermission(String perm) {
         if (mergedPermissions == null) {
             computeMergedPermissions();
         }

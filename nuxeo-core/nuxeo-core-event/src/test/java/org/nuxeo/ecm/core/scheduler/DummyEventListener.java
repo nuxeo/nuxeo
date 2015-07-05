@@ -29,7 +29,7 @@ public class DummyEventListener implements EventListener {
     protected static AtomicLong newCount = new AtomicLong(0);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (event.getName().equals("testEvent")) {
             String flag = (String) event.getContext().getProperty("flag");
             if ("1".equals(flag)) {

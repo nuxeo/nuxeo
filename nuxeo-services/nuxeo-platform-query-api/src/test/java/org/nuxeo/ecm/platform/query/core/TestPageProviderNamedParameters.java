@@ -65,7 +65,7 @@ public class TestPageProviderNamedParameters {
     CoreSession session;
 
     @Before
-    public void createTestDocuments() throws ClientException {
+    public void createTestDocuments() {
         final DocumentModel root = session.getRootDocument();
         // create docs in descending order so that docs are not ordered by
         // title by default

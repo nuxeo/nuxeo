@@ -63,7 +63,7 @@ public class EmailResolutionTest {
     }
 
     @Test
-    public void shouldResolveEmail() throws ClientException {
+    public void shouldResolveEmail() {
         List<MailBox> mailBoxes = MailBox.fetchPersonsFromString("unknown@example.com", true);
 
         assertEquals(1, mailBoxes.size());
@@ -76,7 +76,7 @@ public class EmailResolutionTest {
     }
 
     @Test
-    public void shouldResolveCommaSeparatedEmailsAsEmails() throws ClientException {
+    public void shouldResolveCommaSeparatedEmailsAsEmails() {
         List<MailBox> mailBoxes = MailBox.fetchPersonsFromString("unknown@example.com,unknown2@example.com", true);
 
         assertEquals(1, mailBoxes.size());
@@ -90,7 +90,7 @@ public class EmailResolutionTest {
     }
 
     @Test
-    public void shouldResolveUserWithoutPrefix() throws ClientException {
+    public void shouldResolveUserWithoutPrefix() {
         List<MailBox> mailBoxes = MailBox.fetchPersonsFromString("user1", true);
         assertEquals(1, mailBoxes.size());
         // As strict is considered as email address
@@ -106,7 +106,7 @@ public class EmailResolutionTest {
     }
 
     @Test
-    public void shouldResolveUserWithPrefix() throws ClientException {
+    public void shouldResolveUserWithPrefix() {
         List<MailBox> mailBoxes = MailBox.fetchPersonsFromString("user:user1", true);
 
         assertEquals(1, mailBoxes.size());
@@ -119,7 +119,7 @@ public class EmailResolutionTest {
     }
 
     @Test
-    public void shouldResolveUsersWithoutPrefix() throws ClientException {
+    public void shouldResolveUsersWithoutPrefix() {
         List<MailBox> mailBoxes = MailBox.fetchPersonsFromString("user1,user2", true);
         assertEquals(1, mailBoxes.size());
         // As strict is considered as email
@@ -132,7 +132,7 @@ public class EmailResolutionTest {
     }
 
     @Test
-    public void shouldResolveUsersWithPrefix() throws ClientException {
+    public void shouldResolveUsersWithPrefix() {
         List<MailBox> mailBoxes = MailBox.fetchPersonsFromString("user:user1,user:user2", true);
         assertEquals(1, mailBoxes.size());
         assertEquals("user:user1,user:user2", mailBoxes.get(0).toString());

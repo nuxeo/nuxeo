@@ -38,7 +38,7 @@ public class UnrestrictedDocFetcher extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
 
         if(docId != null) {
             doc = session.getDocument(new IdRef(docId));

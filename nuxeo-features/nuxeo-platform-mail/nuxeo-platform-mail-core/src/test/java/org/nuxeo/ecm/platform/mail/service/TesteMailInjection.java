@@ -157,7 +157,7 @@ public class TesteMailInjection {
         return FileUtils.getResourcePathFromContext(filePath);
     }
 
-    private void createMailFolders() throws ClientException {
+    private void createMailFolders() {
         mailFolder1 = session.createDocumentModel("/", "mailFolder1", MailCoreConstants.MAIL_FOLDER_TYPE);
         session.createDocument(mailFolder1);
         session.saveDocument(mailFolder1);

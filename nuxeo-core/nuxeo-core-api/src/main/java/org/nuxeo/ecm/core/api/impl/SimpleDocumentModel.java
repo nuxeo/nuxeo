@@ -190,13 +190,13 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Object getProperty(String schemaName, String name) throws ClientException {
+    public Object getProperty(String schemaName, String name) {
         DataModel dm = getDataModelInternal(schemaName);
         return dm != null ? dm.getData(name) : null;
     }
 
     @Override
-    public void setProperty(String schemaName, String name, Object value) throws ClientException {
+    public void setProperty(String schemaName, String name, Object value) {
         if (name.contains(":")) {
             name = name.substring(name.indexOf(":"), name.length());
         }
@@ -204,12 +204,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Map<String, Object> getProperties(String schemaName) throws ClientException {
+    public Map<String, Object> getProperties(String schemaName) {
         return getDataModelInternal(schemaName).getMap();
     }
 
     @Override
-    public void setProperties(String schemaName, Map<String, Object> data) throws ClientException {
+    public void setProperties(String schemaName, Map<String, Object> data) {
         DataModel dm = getDataModelInternal(schemaName);
         dm.setMap(data);
         // force dirty for updated properties
@@ -252,7 +252,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Property getProperty(String xpath) throws PropertyException, ClientException {
+    public Property getProperty(String xpath) throws PropertyException {
         if (xpath == null) {
             throw new PropertyNotFoundException("null", "Invalid null xpath");
         }
@@ -286,12 +286,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Serializable getPropertyValue(String xpath) throws PropertyException, ClientException {
+    public Serializable getPropertyValue(String xpath) throws PropertyException {
         return getProperty(xpath).getValue();
     }
 
     @Override
-    public void setPropertyValue(String xpath, Serializable value) throws ClientException {
+    public void setPropertyValue(String xpath, Serializable value) {
         getProperty(xpath).setValue(value);
     }
 
@@ -360,7 +360,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         throw new UnsupportedOperationException();
     }
 
@@ -394,7 +394,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public DataModel getDataModel(String schema) throws ClientException {
+    public DataModel getDataModel(String schema) {
         return getDataModelInternal(schema);
     }
 
@@ -414,37 +414,37 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void setLock(String key) throws ClientException {
+    public void setLock(String key) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void unlock() throws ClientException {
+    public void unlock() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Lock setLock() throws ClientException {
+    public Lock setLock() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Lock getLockInfo() throws ClientException {
+    public Lock getLockInfo() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Lock removeLock() throws ClientException {
+    public Lock removeLock() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ACP getACP() throws ClientException {
+    public ACP getACP() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void setACP(ACP acp, boolean overwrite) throws ClientException {
+    public void setACP(ACP acp, boolean overwrite) {
         throw new UnsupportedOperationException();
     }
 
@@ -479,7 +479,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public boolean isDownloadable() throws ClientException {
+    public boolean isDownloadable() {
         throw new UnsupportedOperationException();
     }
 
@@ -504,7 +504,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void accept(PropertyVisitor visitor, Object arg) throws ClientException {
+    public void accept(PropertyVisitor visitor, Object arg) {
         throw new UnsupportedOperationException();
     }
 
@@ -519,27 +519,27 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getCurrentLifeCycleState() throws ClientException {
+    public String getCurrentLifeCycleState() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getLifeCyclePolicy() throws ClientException {
+    public String getLifeCyclePolicy() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean followTransition(String transition) throws ClientException {
+    public boolean followTransition(String transition) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions() throws ClientException {
+    public Collection<String> getAllowedStateTransitions() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void copyContent(DocumentModel sourceDoc) throws ClientException {
+    public void copyContent(DocumentModel sourceDoc) {
         throw new UnsupportedOperationException();
     }
 
@@ -549,7 +549,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public String getCacheKey() throws ClientException {
+    public String getCacheKey() {
         throw new UnsupportedOperationException();
     }
 
@@ -594,12 +594,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException {
+    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentPart getPart(String schema) throws ClientException {
+    public DocumentPart getPart(String schema) {
         DataModel dm = getDataModel(schema);
         if (dm != null) {
             return ((DataModelImpl) dm).getDocumentPart();
@@ -608,7 +608,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public DocumentPart[] getParts() throws ClientException {
+    public DocumentPart[] getParts() {
         throw new UnsupportedOperationException();
     }
 
@@ -618,12 +618,12 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public void refresh(int refreshFlags, String[] schemas) throws ClientException {
+    public void refresh(int refreshFlags, String[] schemas) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void refresh() throws ClientException {
+    public void refresh() {
         throw new UnsupportedOperationException();
     }
 
@@ -633,42 +633,42 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public boolean isCheckedOut() throws ClientException {
+    public boolean isCheckedOut() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void checkOut() throws ClientException {
+    public void checkOut() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public DocumentRef checkIn(VersioningOption option, String description) throws ClientException {
+    public DocumentRef checkIn(VersioningOption option, String description) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public String getVersionSeriesId() throws ClientException {
+    public String getVersionSeriesId() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isLatestVersion() throws ClientException {
+    public boolean isLatestVersion() {
         return false;
     }
 
     @Override
-    public boolean isMajorVersion() throws ClientException {
+    public boolean isMajorVersion() {
         return false;
     }
 
     @Override
-    public boolean isLatestMajorVersion() throws ClientException {
+    public boolean isLatestMajorVersion() {
         return false;
     }
 
     @Override
-    public boolean isVersionSeriesCheckedOut() throws ClientException {
+    public boolean isVersionSeriesCheckedOut() {
         return true;
     }
 
@@ -678,7 +678,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext() throws ClientException {
+    public Map<String, String> getBinaryFulltext() {
         return null;
     }
 

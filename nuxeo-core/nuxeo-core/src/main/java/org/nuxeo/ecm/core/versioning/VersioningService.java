@@ -73,7 +73,7 @@ public interface VersioningService {
      * @param doc the document
      * @return the options, the first being the default
      */
-    List<VersioningOption> getSaveOptions(DocumentModel doc) throws ClientException;
+    List<VersioningOption> getSaveOptions(DocumentModel doc);
 
     /**
      * Applies versioning after document creation.

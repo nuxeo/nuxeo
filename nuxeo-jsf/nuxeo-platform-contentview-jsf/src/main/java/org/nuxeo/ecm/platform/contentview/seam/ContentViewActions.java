@@ -185,7 +185,7 @@ public class ContentViewActions implements Serializable {
         globalPageSize = pageSize;
     }
 
-    public ContentView getContentView(String name) throws ClientException {
+    public ContentView getContentView(String name) {
         return getContentView(name, null);
     }
 
@@ -203,9 +203,8 @@ public class ContentViewActions implements Serializable {
      * The content view is put in a cache map so that it's not rebuilt at each call. It is rebuilt when its cache key
      * changes (if defined).
      *
-     * @throws ClientException
      */
-    public ContentView getContentView(String name, DocumentModel searchDocumentModel) throws ClientException {
+    public ContentView getContentView(String name, DocumentModel searchDocumentModel) {
         ContentView cView = cache.get(name);
         if (cView == null) {
             cView = contentViewService.getContentView(name);
@@ -222,22 +221,22 @@ public class ContentViewActions implements Serializable {
         return cView;
     }
 
-    public ContentView getContentViewWithProvider(String name) throws ClientException {
+    public ContentView getContentViewWithProvider(String name) {
         return getContentViewWithProvider(name, null, null, null, null);
     }
 
     public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel)
-            throws ClientException {
+            {
         return getContentViewWithProvider(name, searchDocumentModel, null, null, null);
     }
 
     public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage) throws ClientException {
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage) {
         return getContentViewWithProvider(name, searchDocumentModel, sortInfos, pageSize, currentPage, (Object[]) null);
     }
 
     public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel,
-            List<SortInfo> sortInfos, Long defaultPageSize, Long pageSize, Long currentPage) throws ClientException {
+            List<SortInfo> sortInfos, Long defaultPageSize, Long pageSize, Long currentPage) {
         return getContentViewWithProvider(name, searchDocumentModel, sortInfos, defaultPageSize, pageSize, currentPage,
                 (Object[]) null);
     }
@@ -246,7 +245,7 @@ public class ContentViewActions implements Serializable {
      * @since 5.6
      */
     public ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel,
-            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Object... params) throws ClientException {
+            List<SortInfo> sortInfos, Long pageSize, Long currentPage, Object... params) {
         return getContentViewWithProvider(name, searchDocumentModel, sortInfos, Long.valueOf(-1), pageSize,
                 currentPage, params);
     }
@@ -259,7 +258,7 @@ public class ContentViewActions implements Serializable {
      */
     protected ContentView getContentViewWithProvider(String name, DocumentModel searchDocumentModel,
             List<SortInfo> sortInfos, Long defaultPageSize, Long pageSize, Long currentPage, Object... params)
-            throws ClientException {
+            {
         ContentView cView = getContentView(name, searchDocumentModel);
         if (cView != null) {
             if (cView.getUseGlobalPageSize()) {
@@ -283,7 +282,7 @@ public class ContentViewActions implements Serializable {
      * @since 5.7
      */
     public ContentView restoreContentView(String contentViewName, Long currentPage, Long pageSize,
-            List<SortInfo> sortInfos, String jsonContentViewState) throws UnsupportedEncodingException, ClientException {
+            List<SortInfo> sortInfos, String jsonContentViewState) throws UnsupportedEncodingException {
         ContentView cv = contentViewRestActions.restoreContentView(contentViewName, currentPage, pageSize, sortInfos,
                 jsonContentViewState);
         cache.add(cv);
@@ -298,7 +297,7 @@ public class ContentViewActions implements Serializable {
      *
      * @since 6.0
      */
-    public ContentView restoreContentView(ContentViewState state) throws UnsupportedEncodingException, ClientException {
+    public ContentView restoreContentView(ContentViewState state) throws UnsupportedEncodingException {
         ContentView cv = contentViewService.restoreContentView(state);
         cache.add(cv);
         return cv;

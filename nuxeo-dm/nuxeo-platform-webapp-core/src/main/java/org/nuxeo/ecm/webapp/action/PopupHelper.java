@@ -168,7 +168,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String getNavigationURL(String docId, String tabId) throws ClientException {
+    public String getNavigationURL(String docId, String tabId) {
         Map<String, String> params = new HashMap<String, String>();
 
         if (tabId != null) {
@@ -246,7 +246,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String deleteDocument(String docId) throws ClientException {
+    public String deleteDocument(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         currentParent = getFirstParentAfterDelete(doc);
         List<DocumentModel> docsToDelete = new ArrayList<DocumentModel>(1);
@@ -255,7 +255,7 @@ public class PopupHelper implements Serializable {
     }
 
     @WebRemote
-    public String editTitle(String docId, String newTitle) throws ClientException {
+    public String editTitle(String docId, String newTitle) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         doc.setProperty("dublincore", "title", newTitle);
         documentManager.saveDocument(doc);
@@ -263,7 +263,7 @@ public class PopupHelper implements Serializable {
         return "OK";
     }
 
-    public boolean getIsCurrentContainerDirectParent() throws ClientException {
+    public boolean getIsCurrentContainerDirectParent() {
         if (documentManager != null && currentContainer != null && currentPopupDocument != null) {
             DocumentModel parent = documentManager.getParentDocument(currentPopupDocument.getRef());
             return currentContainer.equals(parent);
@@ -271,7 +271,7 @@ public class PopupHelper implements Serializable {
         return false;
     }
 
-    public boolean isDocumentHasBlobAttached(DocumentModel documentModel) throws ClientException {
+    public boolean isDocumentHasBlobAttached(DocumentModel documentModel) {
         if (documentModel.hasSchema("file")) {
             Blob blob = (Blob) documentModel.getProperty("file", "content");
             return blob != null;
@@ -280,7 +280,7 @@ public class PopupHelper implements Serializable {
         }
     }
 
-    public boolean isDocumentHasBlobs(DocumentModel documentModel) throws ClientException {
+    public boolean isDocumentHasBlobs(DocumentModel documentModel) {
         BlobHolder bh = documentModel.getAdapter(BlobHolder.class);
         if (bh != null) {
             List<Blob> docBlobs = bh.getBlobs();
@@ -296,31 +296,31 @@ public class PopupHelper implements Serializable {
 
     @WebRemote
     public String downloadDocument(String docId, String blobPropertyName, String filenamePropertyName)
-            throws ClientException {
+            {
         DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         String filename = (String) documentModel.getPropertyValue(filenamePropertyName);
         return DocumentModelFunctions.fileUrl("downloadFile", documentModel, blobPropertyName, filename);
     }
 
     @WebRemote
-    public String lockDocument(String docId) throws ClientException {
+    public String lockDocument(String docId) {
         DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         return lockActions.lockDocument(documentModel);
     }
 
     @WebRemote
-    public String unlockDocument(String docId) throws ClientException {
+    public String unlockDocument(String docId) {
         DocumentModel documentModel = documentManager.getDocument(new IdRef(docId));
         return lockActions.unlockDocument(documentModel);
     }
 
     @WebRemote
-    public String sendEmail(String docId) throws ClientException {
+    public String sendEmail(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         return DocumentModelFunctions.documentUrl(null, doc, "send_notification_email", null, false);
     }
 
-    private DocumentModel getFirstParentAfterDelete(DocumentModel doc) throws ClientException {
+    private DocumentModel getFirstParentAfterDelete(DocumentModel doc) {
         List<DocumentModel> parents = documentManager.getParentDocuments(doc.getRef());
         parents.remove(doc);
         Collections.reverse(parents);

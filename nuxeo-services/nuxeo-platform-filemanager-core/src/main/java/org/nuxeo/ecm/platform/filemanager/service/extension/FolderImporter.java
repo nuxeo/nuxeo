@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 public interface FolderImporter {
 
     DocumentModel create(CoreSession documentManager, String fullname, String path, boolean overwrite,
-            TypeManager typeManager) throws ClientException, IOException;
+            TypeManager typeManager) throws IOException;
 
     String getName();
 

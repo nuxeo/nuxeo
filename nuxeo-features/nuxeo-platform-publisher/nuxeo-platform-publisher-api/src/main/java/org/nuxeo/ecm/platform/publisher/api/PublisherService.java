@@ -27,7 +27,7 @@ import java.util.Map;
 
 /**
  * Main publication Service.
- * 
+ *
  * @author tiry
  */
 public interface PublisherService {
@@ -42,23 +42,22 @@ public interface PublisherService {
     Map<String, String> getAvailablePublicationTrees();
 
     PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params)
-            throws ClientException, PublicationTreeNotAvailable;
+            throws PublicationTreeNotAvailable;
 
     PublicationTree getPublicationTree(String treeName, CoreSession coreSession, Map<String, String> params,
-            DocumentModel currentDocument) throws ClientException, PublicationTreeNotAvailable;
+            DocumentModel currentDocument) throws PublicationTreeNotAvailable;
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode);
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException;
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params);
 
-    void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+    void unpublish(DocumentModel doc, PublicationNode targetNode);
 
     boolean isPublishedDocument(DocumentModel documentModel);
 
-    PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession) throws ClientException;
+    PublicationTree getPublicationTreeFor(DocumentModel doc, CoreSession coreSession);
 
-    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws ClientException,
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel, CoreSession coreSession) throws
             PublicationTreeNotAvailable;
 
     Map<String, String> getParametersFor(String treeConfigName);
@@ -66,4 +65,5 @@ public interface PublisherService {
     void releaseAllTrees(String sessionId);
 
     RootSectionFinder getRootSectionFinder(CoreSession session);
+
 }

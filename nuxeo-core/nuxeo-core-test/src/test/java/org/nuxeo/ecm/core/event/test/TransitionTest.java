@@ -72,7 +72,7 @@ public class TransitionTest implements EventListener {
     }
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
             lastComment = (String) event.getContext().getProperty("comment");
         }

@@ -50,7 +50,7 @@ public class TagDocument {
     protected StringList tags;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel document) throws ClientException {
+    public DocumentModel run(DocumentModel document) {
         if (tags != null) {
             tags.removeAll(Collections.singleton(""));
             for (String tag : tags) {

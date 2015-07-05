@@ -116,7 +116,7 @@ public class MagickTiler implements PictureTiler {
 
     public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
             int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
-            throws ClientException {
+            {
 
         int[] cropCoords = computeCropCoords(input, maxTiles, tileWidth, tileHeight, xCenter, yCenter);
 

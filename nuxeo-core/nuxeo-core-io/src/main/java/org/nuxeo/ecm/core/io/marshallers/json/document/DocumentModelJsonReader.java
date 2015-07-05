@@ -129,7 +129,7 @@ public class DocumentModelJsonReader extends EntityJsonReader<DocumentModel> {
         return doc;
     }
 
-    public static void applyPropertyValues(DocumentModel src, DocumentModel dst) throws ClientException {
+    public static void applyPropertyValues(DocumentModel src, DocumentModel dst) {
         for (String schema : src.getSchemas()) {
             DataModelImpl dataModel = (DataModelImpl) dst.getDataModel(schema);
             DataModelImpl fromDataModel = (DataModelImpl) src.getDataModel(schema);

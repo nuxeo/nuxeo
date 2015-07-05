@@ -49,7 +49,7 @@ public class ZipUtilsTest {
     @Inject
     protected CoreSession session;
 
-    protected DocumentModel createTestFolder() throws ClientException {
+    protected DocumentModel createTestFolder() {
         DocumentModel parent = new DocumentModelImpl("/", "parent", "Folder");
         parent.setPropertyValue("dc:title", "Parent");
         parent = session.createDocument(parent);
@@ -65,7 +65,7 @@ public class ZipUtilsTest {
         return parent;
     }
 
-    protected DocumentModel createHeavyFile() throws ClientException {
+    protected DocumentModel createHeavyFile() {
         DocumentModel heavyFile = session.createDocumentModel("/", "heavyFile", "File");
         heavyFile.setPropertyValue("dc:title", "Heavy File");
 

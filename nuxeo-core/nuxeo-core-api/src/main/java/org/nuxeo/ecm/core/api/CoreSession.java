@@ -122,9 +122,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param repositoryName the repository name
      * @param principal the principal
-     * @throws ClientException
      */
-    void connect(String repositoryName, NuxeoPrincipal principal) throws ClientException;
+    void connect(String repositoryName, NuxeoPrincipal principal);
 
     /**
      * Returns true if the session is currently connected to the repository.
@@ -134,16 +133,14 @@ public interface CoreSession extends AutoCloseable {
     /**
      * Cancels any pending change made through this session.
      *
-     * @throws ClientException
      */
-    void cancel() throws ClientException;
+    void cancel();
 
     /**
      * Saves any pending changes done until now through this session.
      *
-     * @throws ClientException
      */
-    void save() throws ClientException;
+    void save();
 
     /**
      * Gets the current session id.
@@ -172,9 +169,8 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef
      * @param permission
      * @return
-     * @throws ClientException
      */
-    boolean hasPermission(DocumentRef docRef, String permission) throws ClientException;
+    boolean hasPermission(DocumentRef docRef, String permission);
 
     /**
      * Checks if a given principal has the given privilege on the referred document.
@@ -183,17 +179,15 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef
      * @param permission
      * @return
-     * @throws ClientException
      */
-    boolean hasPermission(Principal principal, DocumentRef docRef, String permission) throws ClientException;
+    boolean hasPermission(Principal principal, DocumentRef docRef, String permission);
 
     /**
      * Gets the root document of this repository.
      *
      * @return the root document. cannot be null
-     * @throws ClientException
      */
-    DocumentModel getRootDocument() throws ClientException;
+    DocumentModel getRootDocument();
 
     /**
      * Gets a document model given its reference.
@@ -205,16 +199,15 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the document reference
      * @return the document
-     * @throws ClientException
      */
-    DocumentModel getDocument(DocumentRef docRef) throws ClientException;
+    DocumentModel getDocument(DocumentRef docRef);
 
     /**
      * Gets a list of documents given their references.
      * <p>
      * Documents that are not accessible are skipped.
      */
-    DocumentModelList getDocuments(DocumentRef[] docRefs) throws ClientException;
+    DocumentModelList getDocuments(DocumentRef[] docRefs);
 
     /**
      * Gets a child document given its name and the parent reference.
@@ -228,9 +221,9 @@ public interface CoreSession extends AutoCloseable {
      * @param parent the reference to the parent document
      * @param name the name of the child document to retrieve
      * @return the named child if exists, raises a ClientException otherwise
-     * @throws ClientException if there is no child with the given name
+     * @throws NoSuchDocumentException if there is no child with the given name
      */
-    DocumentModel getChild(DocumentRef parent, String name) throws ClientException;
+    DocumentModel getChild(DocumentRef parent, String name);
 
     /**
      * Tests if the document has a child with the given name.
@@ -243,7 +236,7 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 7.3
      */
-    boolean hasChild(DocumentRef parent, String name) throws ClientException;
+    boolean hasChild(DocumentRef parent, String name);
 
     /**
      * Gets the children of the given parent.
@@ -251,18 +244,16 @@ public interface CoreSession extends AutoCloseable {
      * @param parent the parent reference
      * @return the children if any, an empty list if no children or null if the specified parent document is not a
      *         folder
-     * @throws ClientException
      */
-    DocumentModelList getChildren(DocumentRef parent) throws ClientException;
+    DocumentModelList getChildren(DocumentRef parent);
 
     /**
      * Gets an iterator to the children of the given parent.
      *
      * @param parent the parent reference
      * @return iterator over the children collection or null if the specified parent document is not a folder
-     * @throws ClientException
      */
-    DocumentModelIterator getChildrenIterator(DocumentRef parent) throws ClientException;
+    DocumentModelIterator getChildrenIterator(DocumentRef parent);
 
     /**
      * Gets the children of the given parent filtered according to the given document type.
@@ -270,14 +261,13 @@ public interface CoreSession extends AutoCloseable {
      * @param parent the parent reference
      * @param type the wanted document type
      * @return the documents if any, an empty list if none were found or null if the parent document is not a folder
-     * @throws ClientException
      */
-    DocumentModelList getChildren(DocumentRef parent, String type) throws ClientException;
+    DocumentModelList getChildren(DocumentRef parent, String type);
 
     /**
      * Gets an iterator to the children of the given parent filtered according to the given document type.
      */
-    DocumentModelIterator getChildrenIterator(DocumentRef parent, String type) throws ClientException;
+    DocumentModelIterator getChildrenIterator(DocumentRef parent, String type);
 
     /**
      * Gets the children of the given parent filtered according to the given document type and permission.
@@ -286,9 +276,8 @@ public interface CoreSession extends AutoCloseable {
      * @param type the wanted document type
      * @param type the permission the user must have
      * @return the documents if any, an empty list if none were found or null if the parent document is not a folder
-     * @throws ClientException
      */
-    DocumentModelList getChildren(DocumentRef parent, String type, String perm) throws ClientException;
+    DocumentModelList getChildren(DocumentRef parent, String type, String perm);
 
     /**
      * Same as {@link #getChildren(DocumentRef, String, String)} but the result is filtered and then sorted using the
@@ -301,10 +290,8 @@ public interface CoreSession extends AutoCloseable {
      * @param sorter the sorter to use if any, null otherwise
      * @return the list of the children or an empty list if no children were found or null if the given parent is not a
      *         folder
-     * @throws ClientException
      */
-    DocumentModelList getChildren(DocumentRef parent, String type, String perm, Filter filter, Sorter sorter)
-            throws ClientException;
+    DocumentModelList getChildren(DocumentRef parent, String type, String perm, Filter filter, Sorter sorter);
 
     /**
      * Gets the references of the children. No permission is checked if perm is null.
@@ -312,10 +299,9 @@ public interface CoreSession extends AutoCloseable {
      * @param parentRef the parent reference
      * @param perm the permission to check on the children (usually READ); if null, <b>no permission is checked</b>
      * @return a list of children references
-     * @throws ClientException
      * @since 1.4.1
      */
-    List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm) throws ClientException;
+    List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm);
 
     /**
      * Gets the children of the given parent filtered according to the given document type and permission. Long result
@@ -326,10 +312,8 @@ public interface CoreSession extends AutoCloseable {
      * @param perm
      * @param filter
      * @return
-     * @throws ClientException
      */
-    DocumentModelIterator getChildrenIterator(DocumentRef parent, String type, String perm, Filter filter)
-            throws ClientException;
+    DocumentModelIterator getChildrenIterator(DocumentRef parent, String type, String perm, Filter filter);
 
     /**
      * Same as {@link #getChildren(DocumentRef, String, String, Filter, Sorter)} without specific permission filtering.
@@ -340,18 +324,16 @@ public interface CoreSession extends AutoCloseable {
      * @param sorter the sorter to use if any, null otherwise
      * @return the list of the children or an empty list if no children were found or null if the given parent is not a
      *         folder
-     * @throws ClientException
      */
-    DocumentModelList getChildren(DocumentRef parent, String type, Filter filter, Sorter sorter) throws ClientException;
+    DocumentModelList getChildren(DocumentRef parent, String type, Filter filter, Sorter sorter);
 
     /**
      * Same as {@link CoreSession#getChildren(DocumentRef)} but returns only folder documents.
      *
      * @param parent the parent ref
      * @return a list of children if any, an empty one if none or null if the given parent is not a folder
-     * @throws ClientException
      */
-    DocumentModelList getFolders(DocumentRef parent) throws ClientException;
+    DocumentModelList getFolders(DocumentRef parent);
 
     /**
      * Same as {@link CoreSession#getFolders(DocumentRef)} but uses an optional filter and sorter on the result.
@@ -360,18 +342,16 @@ public interface CoreSession extends AutoCloseable {
      * @param filter the filter to use or null if none
      * @param sorter the sorter to use or null if none
      * @return a list of children if any, an empty one if none or null if the given parent is not a folder
-     * @throws ClientException
      */
-    DocumentModelList getFolders(DocumentRef parent, Filter filter, Sorter sorter) throws ClientException;
+    DocumentModelList getFolders(DocumentRef parent, Filter filter, Sorter sorter);
 
     /**
      * Same as {@link CoreSession#getChildren(DocumentRef)} but returns only non-folder documents.
      *
      * @param parent the parent reference
      * @return a list of children if any, an empty one if none or null if the given parent is not a folder
-     * @throws ClientException
      */
-    DocumentModelList getFiles(DocumentRef parent) throws ClientException;
+    DocumentModelList getFiles(DocumentRef parent);
 
     /**
      * Same as {@link #getFiles} but uses an optional filter and sorter on the result.
@@ -380,9 +360,8 @@ public interface CoreSession extends AutoCloseable {
      * @param filter the filter to use or null if none
      * @param sorter the sorter to use or null if none
      * @return a list of children if any, an empty one if none or null if the given parent is not a folder
-     * @throws ClientException
      */
-    DocumentModelList getFiles(DocumentRef parent, Filter filter, Sorter sorter) throws ClientException;
+    DocumentModelList getFiles(DocumentRef parent, Filter filter, Sorter sorter);
 
     /**
      * Returns the parent ref of the document referenced by {@code docRef} or {@code null} if this is the root document.
@@ -391,15 +370,14 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 5.4.2
      */
-    public DocumentRef getParentDocumentRef(DocumentRef docRef) throws ClientException;
+    public DocumentRef getParentDocumentRef(DocumentRef docRef);
 
     /**
      * Gets the parent document or null if this is the root document.
      *
      * @return the parent document or null if this is the root document
-     * @throws ClientException
      */
-    DocumentModel getParentDocument(DocumentRef docRef) throws ClientException;
+    DocumentModel getParentDocument(DocumentRef docRef);
 
     /**
      * Gets the parent documents in path from the root to the given document or empty list if this is the root document.
@@ -407,9 +385,8 @@ public interface CoreSession extends AutoCloseable {
      * Documents the principal is is not allowed to browse are filtered out the parents list.
      *
      * @return the list with parent documents or empty list if this is the root document
-     * @throws ClientException
      */
-    List<DocumentModel> getParentDocuments(DocumentRef docRef) throws ClientException;
+    List<DocumentModel> getParentDocuments(DocumentRef docRef);
 
     /**
      * Tests if the document pointed by the given reference exists and is accessible.
@@ -420,9 +397,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the reference to the document to test for existence
      * @return true if the referenced document exists, false otherwise
-     * @throws ClientException
      */
-    boolean exists(DocumentRef docRef) throws ClientException;
+    boolean exists(DocumentRef docRef);
 
     /**
      * Tests if the document has any children.
@@ -433,9 +409,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the reference to the document to test
      * @return true if document has children, false otherwise
-     * @throws ClientException
      */
-    boolean hasChildren(DocumentRef docRef) throws ClientException;
+    boolean hasChildren(DocumentRef docRef);
 
     /**
      * Creates a document model using type name.
@@ -447,9 +422,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param typeName
      * @return the initial document model
-     * @throws ClientException
      */
-    DocumentModel createDocumentModel(String typeName) throws ClientException;
+    DocumentModel createDocumentModel(String typeName);
 
     /**
      * Creates a document model using required information.
@@ -463,9 +437,8 @@ public interface CoreSession extends AutoCloseable {
      * @param name The destination name
      * @param typeName
      * @return the initial document model
-     * @throws ClientException
      */
-    DocumentModel createDocumentModel(String parentPath, String name, String typeName) throws ClientException;
+    DocumentModel createDocumentModel(String parentPath, String name, String typeName);
 
     /**
      * Creates a document model using required information.
@@ -478,9 +451,8 @@ public interface CoreSession extends AutoCloseable {
      * @param typeName
      * @param options additional contextual data provided to core event listeners
      * @return the initial document model
-     * @throws ClientException
      */
-    DocumentModel createDocumentModel(String typeName, Map<String, Object> options) throws ClientException;
+    DocumentModel createDocumentModel(String typeName, Map<String, Object> options);
 
     /**
      * Creates a document using given document model for initialization.
@@ -490,18 +462,16 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param model the document model to use for initialization
      * @return the created document
-     * @throws ClientException
      */
-    DocumentModel createDocument(DocumentModel model) throws ClientException;
+    DocumentModel createDocument(DocumentModel model);
 
     /**
      * Bulk creation of documents.
      *
      * @param docModels the document models to use for intialization
      * @return the created documents
-     * @throws ClientException
      */
-    DocumentModel[] createDocument(DocumentModel[] docModels) throws ClientException;
+    DocumentModel[] createDocument(DocumentModel[] docModels);
 
     /**
      * Low-level import of documents, reserved for the administrator.
@@ -524,25 +494,22 @@ public interface CoreSession extends AutoCloseable {
      * {@link #IMPORT_VERSION_MAJOR} (Long) and {@link #IMPORT_VERSION_MINOR} (Long).
      *
      * @param docModels the documents to create
-     * @throws ClientException
      */
-    void importDocuments(List<DocumentModel> docModels) throws ClientException;
+    void importDocuments(List<DocumentModel> docModels);
 
     /**
      * Saves changes done on the given document model.
      *
      * @param docModel the document model that needs modified
-     * @throws ClientException
      */
-    DocumentModel saveDocument(DocumentModel docModel) throws ClientException;
+    DocumentModel saveDocument(DocumentModel docModel);
 
     /**
      * Bulk document saving.
      *
      * @param docModels the document models that needs to be saved
-     * @throws ClientException
      */
-    void saveDocuments(DocumentModel[] docModels) throws ClientException;
+    void saveDocuments(DocumentModel[] docModels);
 
     /**
      * Check if a document can be removed. This needs the REMOVE permission on the document and the REMOVE_CHILDREN
@@ -555,15 +522,14 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document
      * @return true if the document can be removed
      */
-    boolean canRemoveDocument(DocumentRef docRef) throws ClientException;
+    boolean canRemoveDocument(DocumentRef docRef);
 
     /**
      * Removes this document and all its children, if any.
      *
      * @param docRef the reference to the document to remove
-     * @throws ClientException
      */
-    void removeDocument(DocumentRef docRef) throws ClientException;
+    void removeDocument(DocumentRef docRef);
 
     /**
      * Bulk method to remove documents.
@@ -573,17 +539,15 @@ public interface CoreSession extends AutoCloseable {
      * </p>
      *
      * @param docRefs the refs to the document to remove
-     * @throws ClientException
      */
-    void removeDocuments(DocumentRef[] docRefs) throws ClientException;
+    void removeDocuments(DocumentRef[] docRefs);
 
     /**
      * Removes all children from the given document.
      *
      * @param docRef the reference to the document to remove
-     * @throws ClientException
      */
-    void removeChildren(DocumentRef docRef) throws ClientException;
+    void removeChildren(DocumentRef docRef);
 
     /**
      * Copies the source document to the destination folder under the given name. If the name is null the original name
@@ -596,9 +560,8 @@ public interface CoreSession extends AutoCloseable {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
-     * @throws ClientException
      */
-    DocumentModel copy(DocumentRef src, DocumentRef dst, String name) throws ClientException;
+    DocumentModel copy(DocumentRef src, DocumentRef dst, String name);
 
     /**
      * Copies the source document to the destination folder under the given name. If the name is null the original name
@@ -613,19 +576,17 @@ public interface CoreSession extends AutoCloseable {
      * @param name the new name of the file or null if the original name must be preserved
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
-     * @throws ClientException
      * @since 5.7
      */
-    DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) throws ClientException;
+    DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
 
     /**
      * Bulk copy. Destination must be a folder document.
      *
      * @param src the documents to copy
      * @param dst the destination folder
-     * @throws ClientException
      */
-    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst) throws ClientException;
+    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst);
 
     /**
      * Bulk copy. Destination must be a folder document.
@@ -634,10 +595,9 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
-     * @throws ClientException
      * @since 5.7
      */
-    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) throws ClientException;
+    List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
 
     /**
      * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
@@ -646,9 +606,8 @@ public interface CoreSession extends AutoCloseable {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
-     * @throws ClientException
      */
-    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) throws ClientException;
+    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name);
 
     /**
      * Work like copy but in the case of a source proxy the destination will be a new document instead of a proxy.
@@ -658,20 +617,17 @@ public interface CoreSession extends AutoCloseable {
      * @param name the new name of the file or null if the original name must be preserved
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
-     * @throws ClientException
      * @since 5.7
      */
-    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
-            throws ClientException;
+    DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle);
 
     /**
      * Bulk copyProxyAsDocument. Destination must be a folder document.
      *
      * @param src the documents to copy
      * @param dst the destination folder
-     * @throws ClientException
      */
-    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst) throws ClientException;
+    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst);
 
     /**
      * Bulk copyProxyAsDocument. Destination must be a folder document.
@@ -680,11 +636,9 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder
      * @param resetLifeCycle the property that flagged whether reset destination document lifecycle or not
      * @return
-     * @throws ClientException
      * @since 5.7
      */
-    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
-            throws ClientException;
+    List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle);
 
     /**
      * Moves the source document to the destination folder under the given name. If the name is {@code null} or if there
@@ -695,18 +649,16 @@ public interface CoreSession extends AutoCloseable {
      * @param src the source document reference
      * @param dst the destination folder reference
      * @param name the new name of the file, or {@code null}
-     * @throws ClientException
      */
-    DocumentModel move(DocumentRef src, DocumentRef dst, String name) throws ClientException;
+    DocumentModel move(DocumentRef src, DocumentRef dst, String name);
 
     /**
      * Bulk move. Destination must be a folder document.
      *
      * @param src the documents to move
      * @param dst the destination folder
-     * @throws ClientException
      */
-    void move(List<DocumentRef> src, DocumentRef dst) throws ClientException;
+    void move(List<DocumentRef> src, DocumentRef dst);
 
     /**
      * Gets the document access control policy.
@@ -723,9 +675,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the doc ref to retrieve ACP or null if none
      * @return the ACP
-     * @throws ClientException
      */
-    ACP getACP(DocumentRef docRef) throws ClientException;
+    ACP getACP(DocumentRef docRef);
 
     /**
      * Sets the ACP for this document.
@@ -753,9 +704,8 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef
      * @param acp
      * @param overwrite
-     * @throws ClientException
      */
-    void setACP(DocumentRef docRef, ACP acp, boolean overwrite) throws ClientException;
+    void setACP(DocumentRef docRef, ACP acp, boolean overwrite);
 
     /**
      * Returns {@code true} if negative ACLs are allowed.
@@ -779,7 +729,7 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 5.4.2
      */
-    DataModel getDataModel(DocumentRef docRef, Schema schema) throws ClientException;
+    DataModel getDataModel(DocumentRef docRef, Schema schema);
 
     // -------- Versioning API ---------------
 
@@ -788,57 +738,51 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the reference to the document
      * @return the version
-     * @throws ClientException if any error occurs
      * @deprecated use {@link #getLastDocumentVersion} instead
      */
     @Deprecated
-    VersionModel getLastVersion(DocumentRef docRef) throws ClientException;
+    VersionModel getLastVersion(DocumentRef docRef);
 
     /**
      * Gets the document corresponding to the last version for the given document.
      *
      * @param docRef the reference to the document
      * @return the document model corresponding to the version
-     * @throws ClientException
      */
-    DocumentModel getLastDocumentVersion(DocumentRef docRef) throws ClientException;
+    DocumentModel getLastDocumentVersion(DocumentRef docRef);
 
     /**
      * Gets the document reference corresponding to the last version for the given document.
      *
      * @param docRef the reference to the document
      * @return the document reference corresponding to the last version
-     * @throws ClientException
      */
-    DocumentRef getLastDocumentVersionRef(DocumentRef docRef) throws ClientException;
+    DocumentRef getLastDocumentVersionRef(DocumentRef docRef);
 
     /**
      * Gets the head (live) document for this document.
      *
      * @param docRef the reference to the document
      * @return the version
-     * @throws ClientException if any error occurs
      */
-    DocumentModel getSourceDocument(DocumentRef docRef) throws ClientException;
+    DocumentModel getSourceDocument(DocumentRef docRef);
 
     /**
      * Gets the references of the versions of the document.
      *
      * @param docRef the reference to the document
      * @return a list of version references
-     * @throws ClientException
      * @since 1.4.1
      */
-    List<DocumentRef> getVersionsRefs(DocumentRef docRef) throws ClientException;
+    List<DocumentRef> getVersionsRefs(DocumentRef docRef);
 
     /**
      * Retrieves all the versions for a specified document.
      *
      * @param docRef the reference to the document
      * @return the list of {@link DocumentModel} representing versions, empty list if none is found.
-     * @throws ClientException
      */
-    List<DocumentModel> getVersions(DocumentRef docRef) throws ClientException;
+    List<DocumentModel> getVersions(DocumentRef docRef);
 
     /**
      * Retrieves all the versions for a specified document.
@@ -846,7 +790,7 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the reference to the document
      * @return the list of {@link VersionModel} representing versions, empty list if none is found.
      */
-    List<VersionModel> getVersionsForDocument(DocumentRef docRef) throws ClientException;
+    List<VersionModel> getVersionsForDocument(DocumentRef docRef);
 
     /**
      * Gets a document version, given the versionable id and label.
@@ -859,11 +803,10 @@ public interface CoreSession extends AutoCloseable {
      * @param versionableId the versionable id
      * @param versionModel the version model holding the label
      * @return the version, or {@code null} if not found
-     * @throws ClientException
      * @deprecated use version ids directly
      */
     @Deprecated
-    DocumentModel getVersion(String versionableId, VersionModel versionModel) throws ClientException;
+    DocumentModel getVersion(String versionableId, VersionModel versionModel);
 
     /**
      * Gets the version label for a document, according to the versioning service.
@@ -871,7 +814,7 @@ public interface CoreSession extends AutoCloseable {
      * @param docModel the document
      * @return the version label
      */
-    String getVersionLabel(DocumentModel docModel) throws ClientException;
+    String getVersionLabel(DocumentModel docModel);
 
     /**
      * Returns a document that represents the specified version of the document.
@@ -879,9 +822,8 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the reference to the document
      * @param version the version for which we want the corresponding document
      * @return
-     * @throws ClientException
      */
-    DocumentModel getDocumentWithVersion(DocumentRef docRef, VersionModel version) throws ClientException;
+    DocumentModel getDocumentWithVersion(DocumentRef docRef, VersionModel version);
 
     /**
      * Restores the given document to the specified version.
@@ -893,7 +835,7 @@ public interface CoreSession extends AutoCloseable {
      * @since 5.4
      */
     DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef, boolean skipSnapshotCreation,
-            boolean skipCheckout) throws ClientException;
+            boolean skipCheckout);
 
     /**
      * Restores the given document to the specified version permitting to skip the creation of the snapshot for current
@@ -905,8 +847,7 @@ public interface CoreSession extends AutoCloseable {
      * @deprecated use {@link #restoreToVersion(DocumentRef, DocumentRef, boolean, boolean)} instead
      */
     @Deprecated
-    DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation)
-            throws ClientException;
+    DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation);
 
     /**
      * Restores the given document to the specified version.
@@ -915,7 +856,7 @@ public interface CoreSession extends AutoCloseable {
      * @param versionRef the reference to the version
      * @since 5.4
      */
-    DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) throws ClientException;
+    DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef);
 
     /**
      * Restores the given document to the specified version.
@@ -925,7 +866,7 @@ public interface CoreSession extends AutoCloseable {
      * @deprecated use {@link #restoreToVersion(DocumentRef, DocumentRef)} instead
      */
     @Deprecated
-    DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version) throws ClientException;
+    DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version);
 
     /**
      * Gets the version to which a checked in document is linked.
@@ -934,15 +875,14 @@ public interface CoreSession extends AutoCloseable {
      *
      * @return the version, or {@code null}
      */
-    DocumentRef getBaseVersion(DocumentRef docRef) throws ClientException;
+    DocumentRef getBaseVersion(DocumentRef docRef);
 
     /**
      * Checks out a versioned document.
      *
      * @param docRef the reference to the document
-     * @throws ClientException
      */
-    void checkOut(DocumentRef docRef) throws ClientException;
+    void checkOut(DocumentRef docRef);
 
     /**
      * Checks in a modified document, creating a new version.
@@ -950,11 +890,10 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the reference to the document
      * @param version the version descriptor
      * @return the version document just created
-     * @throws ClientException
      * @deprecated use {@link #checkIn(DocumentRef, VersioningOption, String)} instead
      */
     @Deprecated
-    DocumentModel checkIn(DocumentRef docRef, VersionModel version) throws ClientException;
+    DocumentModel checkIn(DocumentRef docRef, VersionModel version);
 
     /**
      * Checks in a modified document, creating a new version.
@@ -964,19 +903,17 @@ public interface CoreSession extends AutoCloseable {
      *            during check in
      * @param checkinComment the checkin comment
      * @return the version just created
-     * @throws ClientException
      * @since 5.4
      */
-    DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment) throws ClientException;
+    DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment);
 
     /**
      * Returns whether the current document is checked-out or not.
      *
      * @param docRef the reference to the document
      * @return
-     * @throws ClientException
      */
-    boolean isCheckedOut(DocumentRef docRef) throws ClientException;
+    boolean isCheckedOut(DocumentRef docRef);
 
     /**
      * Gets the version series id for a document.
@@ -988,7 +925,7 @@ public interface CoreSession extends AutoCloseable {
      * @return the version series id
      * @since 5.4
      */
-    String getVersionSeriesId(DocumentRef docRef) throws ClientException;
+    String getVersionSeriesId(DocumentRef docRef);
 
     /**
      * Gets the working copy (live document) for a proxy or a version.
@@ -997,7 +934,7 @@ public interface CoreSession extends AutoCloseable {
      * @return the working copy, or {@code null} if not found
      * @since 5.4
      */
-    DocumentModel getWorkingCopy(DocumentRef docRef) throws ClientException;
+    DocumentModel getWorkingCopy(DocumentRef docRef);
 
     /**
      * Creates a generic proxy to the given document inside the given folder.
@@ -1006,7 +943,7 @@ public interface CoreSession extends AutoCloseable {
      *
      * @since 1.6.1 (5.3.1)
      */
-    DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef) throws ClientException;
+    DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef);
 
     /** -------------------------- Query API --------------------------- * */
 
@@ -1015,9 +952,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param query the query to execute
      * @return the query result
-     * @throws ClientException
      */
-    DocumentModelList query(String query) throws ClientException;
+    DocumentModelList query(String query);
 
     /**
      * Executes the given NXQL query an returns the result.
@@ -1025,9 +961,8 @@ public interface CoreSession extends AutoCloseable {
      * @param query the query to execute
      * @param max number of document to retrieve
      * @return the query result
-     * @throws ClientException
      */
-    DocumentModelList query(String query, int max) throws ClientException;
+    DocumentModelList query(String query, int max);
 
     /**
      * Executes the given NXQL query and returns the result that matches the filter.
@@ -1035,9 +970,8 @@ public interface CoreSession extends AutoCloseable {
      * @param query the query to execute
      * @param filter the filter to apply to result
      * @return the query result
-     * @throws ClientException
      */
-    DocumentModelList query(String query, Filter filter) throws ClientException;
+    DocumentModelList query(String query, Filter filter);
 
     /**
      * Executes the given NXQL query and returns the result that matches the filter.
@@ -1046,9 +980,8 @@ public interface CoreSession extends AutoCloseable {
      * @param filter the filter to apply to result
      * @param max number of document to retrieve
      * @return the query result
-     * @throws ClientException
      */
-    DocumentModelList query(String query, Filter filter, int max) throws ClientException;
+    DocumentModelList query(String query, Filter filter, int max);
 
     /**
      * Executes the given NXQL query and returns the result that matches the filter.
@@ -1060,10 +993,8 @@ public interface CoreSession extends AutoCloseable {
      * @param countTotal if {@code true}, return a {@link DocumentModelList} that includes a total size of the
      *            underlying list (size if there was no limit or offset)
      * @return the query result
-     * @throws ClientException
      */
-    DocumentModelList query(String query, Filter filter, long limit, long offset, boolean countTotal)
-            throws ClientException;
+    DocumentModelList query(String query, Filter filter, long limit, long offset, boolean countTotal);
 
     /**
      * Executes the given NXQL query and returns the result that matches the filter.
@@ -1077,11 +1008,9 @@ public interface CoreSession extends AutoCloseable {
      *            If {@code n}, count the total number if there are less than n documents otherwise set the size to
      *            {@code -1}.
      * @return the query result
-     * @throws ClientException
      * @Since 5.6
      */
-    DocumentModelList query(String query, Filter filter, long limit, long offset, long countUpTo)
-            throws ClientException;
+    DocumentModelList query(String query, Filter filter, long limit, long offset, long countUpTo);
 
     /**
      * Executes the given query and returns the result that matches the filter.
@@ -1094,11 +1023,9 @@ public interface CoreSession extends AutoCloseable {
      * @param countTotal if {@code true}, return a {@link DocumentModelList} that includes a total size of the
      *            underlying list (size if there was no limit or offset)
      * @return the query result
-     * @throws ClientException
      * @since 5.5
      */
-    DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset, boolean countTotal)
-            throws ClientException;
+    DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset, boolean countTotal);
 
     /**
      * Executes the given query and returns the result that matches the filter.
@@ -1114,16 +1041,13 @@ public interface CoreSession extends AutoCloseable {
      *            If {@code n}, return the total size of the underlying list when the size is smaller than {@code n}
      *            else return a total size of {@code -1}.
      * @return the query result
-     * @throws ClientException
      * @since 5.6
      */
-    DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset, long countUpTo)
-            throws ClientException;
+    DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset, long countUpTo);
 
     /**
-     * @throws ClientException
      */
-    IterableQueryResult queryAndFetch(String query, String queryType, Object... params) throws ClientException;
+    IterableQueryResult queryAndFetch(String query, String queryType, Object... params);
 
     /** -------------------------- Security API --------------------------- * */
 
@@ -1132,11 +1056,10 @@ public interface CoreSession extends AutoCloseable {
      * <p>
      *
      * @return a raw list of permission names, either basic or group names
-     * @throws ClientException
      */
     // TODO: (Hardcoded at the moment. In the future wil get data from
     // LDAP/database.)
-    List<String> getAvailableSecurityPermissions() throws ClientException;
+    List<String> getAvailableSecurityPermissions();
 
     /**
      * Returns the life cycle of the document.
@@ -1144,9 +1067,8 @@ public interface CoreSession extends AutoCloseable {
      * @see org.nuxeo.ecm.core.lifecycle
      * @param docRef the document reference
      * @return the life cycle as a string
-     * @throws ClientException
      */
-    String getCurrentLifeCycleState(DocumentRef docRef) throws ClientException;
+    String getCurrentLifeCycleState(DocumentRef docRef);
 
     /**
      * Returns the life cycle policy of the document.
@@ -1154,9 +1076,8 @@ public interface CoreSession extends AutoCloseable {
      * @see org.nuxeo.ecm.core.lifecycle
      * @param docRef the document reference
      * @return the life cycle policy
-     * @throws ClientException
      */
-    String getLifeCyclePolicy(DocumentRef docRef) throws ClientException;
+    String getLifeCyclePolicy(DocumentRef docRef);
 
     /**
      * Follows a given life cycle transition.
@@ -1166,9 +1087,8 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document reference
      * @param transition the name of the transition to follow
      * @return a boolean representing the status if the operation
-     * @throws ClientException
      */
-    boolean followTransition(DocumentRef docRef, String transition) throws ClientException;
+    boolean followTransition(DocumentRef docRef, String transition);
 
     /**
      * Follows a given life cycle transition.
@@ -1178,9 +1098,8 @@ public interface CoreSession extends AutoCloseable {
      * @param doc the document model
      * @param transition the name of the transition to follow
      * @return a boolean representing the status if the operation
-     * @throws ClientException
      */
-    boolean followTransition(DocumentModel doc, String transition) throws ClientException;
+    boolean followTransition(DocumentModel doc, String transition);
 
     /**
      * Gets the allowed state transitions for this document.
@@ -1188,7 +1107,7 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document reference
      * @return a collection of state transitions as string
      */
-    Collection<String> getAllowedStateTransitions(DocumentRef docRef) throws ClientException;
+    Collection<String> getAllowedStateTransitions(DocumentRef docRef);
 
     /**
      * Reinitializes the life cycle state of the document to its default state.
@@ -1196,7 +1115,7 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document
      * @since 5.4.2
      */
-    void reinitLifeCycleState(DocumentRef docRef) throws ClientException;
+    void reinitLifeCycleState(DocumentRef docRef);
 
     /**
      * Retrieves the given field value from the given schema for all the given documents.
@@ -1205,10 +1124,8 @@ public interface CoreSession extends AutoCloseable {
      * @param schema the schema
      * @param field the field name
      * @return the field values in the same order as the given docRefs
-     * @throws ClientException
-     * @throws ClientException
      */
-    Object[] getDataModelsField(DocumentRef[] docRefs, String schema, String field) throws ClientException;
+    Object[] getDataModelsField(DocumentRef[] docRefs, String schema, String field);
 
     /**
      * Creates an array with all parent refs starting from the given document up to the root. So the return value will
@@ -1216,9 +1133,8 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef
      * @return an array with ancestor documents ref
-     * @throws ClientException
      */
-    DocumentRef[] getParentDocumentRefs(DocumentRef docRef) throws ClientException;
+    DocumentRef[] getParentDocumentRefs(DocumentRef docRef);
 
     /**
      * Retrieves the given field value from the given schema for the given document along with all its parent documents.
@@ -1227,9 +1143,8 @@ public interface CoreSession extends AutoCloseable {
      * @param schema the schema
      * @param field the field name
      * @return an array with field values of all documents on the path from the given document to the root
-     * @throws ClientException
      */
-    Object[] getDataModelsFieldUp(DocumentRef docRef, String schema, String field) throws ClientException;
+    Object[] getDataModelsFieldUp(DocumentRef docRef, String schema, String field);
 
     /**
      * Gets the lock key on the given document if a lock exists or null otherwise.
@@ -1238,11 +1153,10 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param doc the document reference
      * @return the lock key if the document is locked, null otherwise
-     * @throws ClientException
      * @deprecated since 5.4.2, use {@link #getLockInfo} instead
      */
     @Deprecated
-    String getLock(DocumentRef doc) throws ClientException;
+    String getLock(DocumentRef doc);
 
     /**
      * Sets a lock on the given document using the given key.
@@ -1255,7 +1169,7 @@ public interface CoreSession extends AutoCloseable {
      * @deprecated since 5.4.2, use {@link #setLock(DocumentRef)} instead
      */
     @Deprecated
-    void setLock(DocumentRef doc, String key) throws ClientException;
+    void setLock(DocumentRef doc, String key);
 
     /**
      * Removes the lock if one exists.
@@ -1270,7 +1184,7 @@ public interface CoreSession extends AutoCloseable {
      * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
-    String unlock(DocumentRef docRef) throws ClientException;
+    String unlock(DocumentRef docRef);
 
     /**
      * Sets a lock on the given document.
@@ -1280,7 +1194,7 @@ public interface CoreSession extends AutoCloseable {
      * @throws ClientException if a lock was already set
      * @since 5.4.2
      */
-    Lock setLock(DocumentRef docRef) throws ClientException;
+    Lock setLock(DocumentRef docRef);
 
     /**
      * Gets the lock info on the given document.
@@ -1292,7 +1206,7 @@ public interface CoreSession extends AutoCloseable {
      * @return the lock info if the document is locked, or {@code null} otherwise
      * @since 5.4.2
      */
-    Lock getLockInfo(DocumentRef docRef) throws ClientException;
+    Lock getLockInfo(DocumentRef docRef);
 
     /**
      * Removes the lock on the given document.
@@ -1308,7 +1222,7 @@ public interface CoreSession extends AutoCloseable {
      * @return the removed lock info, or {@code null} if there was no lock
      * @since 5.4.2
      */
-    Lock removeLock(DocumentRef docRef) throws ClientException;
+    Lock removeLock(DocumentRef docRef);
 
     /**
      * Applies default Read permissions on root JCR Document for the given user or group name. It can only be called by
@@ -1318,20 +1232,18 @@ public interface CoreSession extends AutoCloseable {
      * default reading permissions on the root document of the repository for the newly created users/groups.
      *
      * @param userOrGroupName
-     * @throws ClientException
      */
-    void applyDefaultPermissions(String userOrGroupName) throws ClientException;
+    void applyDefaultPermissions(String userOrGroupName);
 
     /**
      * Checks if the given document is dirty.
      *
      * @param doc the doc reference
      * @return true if dirty false otherwise
-     * @throws ClientException
      * @deprecated since 5.4, use {@link #isCheckedOut} instead
      */
     @Deprecated
-    boolean isDirty(DocumentRef doc) throws ClientException;
+    boolean isDirty(DocumentRef doc);
 
     /**
      * Publishes the document in a section overwriting any existing proxy to the same document. This is simmilar to
@@ -1340,10 +1252,9 @@ public interface CoreSession extends AutoCloseable {
      * @param docToPublish
      * @param section
      * @return The proxy document that was created
-     * @throws ClientException
      * @since 1.4.1 for the case where docToPublish is a proxy
      */
-    DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section) throws ClientException;
+    DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section);
 
     /**
      * Publishes the document in a section.
@@ -1352,10 +1263,8 @@ public interface CoreSession extends AutoCloseable {
      * @param section
      * @param overwriteExistingProxy
      * @return The proxy document that was created
-     * @throws ClientException
      */
-    DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section, boolean overwriteExistingProxy)
-            throws ClientException;
+    DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section, boolean overwriteExistingProxy);
 
     /**
      * Finds the proxies for a document. If the parent is not null, the search will be limited to its direct children.
@@ -1368,10 +1277,9 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the target document for the proxies
      * @param folderRef the folder where proxies are located or {@code null}
      * @return the list of the proxies. An empty list is returned if no proxy are found
-     * @throws ClientException if any error occurs
      * @since 1.4.1 for the case where docRef is a proxy
      */
-    DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef) throws ClientException;
+    DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef);
 
     /**
      * Gets all proxy versions to document docRef inside folder folderRef.
@@ -1382,11 +1290,10 @@ public interface CoreSession extends AutoCloseable {
      * @param folderRef the folder where proxies are located
      * @return an array of the proxy versions, with an empty string being used for a live proxy. {@code null} is
      *         returned if no proxies are found the specified folder
-     * @throws ClientException if any error occurs
      * @deprecated since 5.4, use {@link #getProxies} instead
      */
     @Deprecated
-    String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef) throws ClientException;
+    String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef);
 
     /**
      * Returns the type of his parent SuperSpace (workspace, section, etc.). SuperSpace is qualified by the SuperSpace
@@ -1395,16 +1302,15 @@ public interface CoreSession extends AutoCloseable {
      * @param doc
      * @return
      */
-    String getSuperParentType(DocumentModel doc) throws ClientException;
+    String getSuperParentType(DocumentModel doc);
 
     /**
      * Returns the parent SuperSpace (workspace, section, etc.). SuperSpace is qualified by the SuperSpace facet.
      *
      * @param doc
      * @return DocumentModel of SuperSpace
-     * @throws ClientException
      */
-    DocumentModel getSuperSpace(DocumentModel doc) throws ClientException;
+    DocumentModel getSuperSpace(DocumentModel doc);
 
     /**
      * Returns the repository name against which this core session is bound.
@@ -1421,10 +1327,8 @@ public interface CoreSession extends AutoCloseable {
      * @param systemProperty
      * @param type
      * @return
-     * @throws ClientException
      */
-    <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type)
-            throws ClientException;
+    <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type);
 
     /**
      * Sets given value as a system property.
@@ -1433,10 +1337,8 @@ public interface CoreSession extends AutoCloseable {
      * @param ref
      * @param systemProperty
      * @param value
-     * @throws ClientException
      */
-    <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value)
-            throws ClientException;
+    <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value);
 
     /**
      * Given a parent document, order the source child before the destination child. The source and destination must be
@@ -1448,9 +1350,8 @@ public interface CoreSession extends AutoCloseable {
      * @param src the document to be moved (ordered)
      * @param dest the document before which the reordered document will be placed If null the source document will be
      *            placed at the end of the children list
-     * @throws ClientException if the parent document is not an orderable folder or other error occurs
      */
-    void orderBefore(DocumentRef parent, String src, String dest) throws ClientException;
+    void orderBefore(DocumentRef parent, String src, String dest);
 
     /**
      * Internal method - it is used internally by {@link DocumentModel#refresh()}
@@ -1467,9 +1368,8 @@ public interface CoreSession extends AutoCloseable {
      * @param refreshFlags refresh flags as defined in {@link DocumentModel}
      * @param schemas the schema names if a partial content refresh is required
      * @return a DocumentModelRefresh object
-     * @throws ClientException
      */
-    DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas) throws ClientException;
+    DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas);
 
     /**
      * Provides the full list of all permissions or groups of permissions that contain the given one (inclusive). It
@@ -1492,16 +1392,15 @@ public interface CoreSession extends AutoCloseable {
      * @since 5.4.2
      */
     <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
-            Class<T> adapterClass) throws ClientException;
+            Class<T> adapterClass);
 
     /**
      * Gets the fulltext extracted from the binary fields.
      *
      * @param doc the document reference
      * @return the fulltext map or {@code null} if not supported.
-     * @throws ClientException
      * @since 5.9.3
      */
-    Map<String, String> getBinaryFulltext(DocumentRef ref) throws ClientException;
+    Map<String, String> getBinaryFulltext(DocumentRef ref);
 
 }

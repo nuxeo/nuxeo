@@ -25,7 +25,7 @@ public class TestBusinessArray {
     public static final String ID = "Business.TestBusinessArray";
 
     @OperationMethod
-    public BusinessBean[] run() throws ClientException {
+    public BusinessBean[] run() {
         BusinessBean[] businessBeans = new BusinessBean[] { new BusinessBean(), new BusinessBean() };
         return businessBeans;
     }

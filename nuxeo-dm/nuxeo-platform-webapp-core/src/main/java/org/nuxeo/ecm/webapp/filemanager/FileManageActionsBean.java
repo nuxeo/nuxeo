@@ -161,7 +161,7 @@ public class FileManageActionsBean implements FileManageActions {
      * temporary file.
      */
     @Override
-    public String addFile() throws ClientException {
+    public String addFile() {
         NxUploadedFile uploadedFile = fileUploadHolder.getUploadedFiles().iterator().next();
         Blob blob = uploadedFile.getBlob();
         if (blob == null || blob.getFilename() == null) {
@@ -191,7 +191,7 @@ public class FileManageActionsBean implements FileManageActions {
     // TODO: update the Seam remoting-based desktop plugins to stop calling
     // this method
     @WebRemote
-    public boolean canWrite() throws ClientException {
+    public boolean canWrite() {
         // let the FolderImporter and FileImporter plugin handle the security
         // checks to avoid hardcoded behavior
         return true;
@@ -212,7 +212,7 @@ public class FileManageActionsBean implements FileManageActions {
     @Deprecated
     @WebRemote
     public String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64)
-            throws ClientException {
+            {
         try {
             byte[] bcontent;
             if (UseBase64.booleanValue()) {
@@ -234,7 +234,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String addBinaryFileFromPlugin(Blob blob, String fullName, String morePath) throws ClientException {
+    public String addBinaryFileFromPlugin(Blob blob, String fullName, String morePath) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String curPath = currentDocument.getPathAsString();
 
@@ -245,11 +245,11 @@ public class FileManageActionsBean implements FileManageActions {
     @Override
     @WebRemote
     public String addBinaryFileFromPlugin(Blob blob, String fullName, DocumentModel targetContainer)
-            throws ClientException {
+            {
         return createDocumentFromBlob(blob, fullName, targetContainer.getPathAsString());
     }
 
-    protected String createDocumentFromBlob(Blob blob, String fullName, String path) throws ClientException {
+    protected String createDocumentFromBlob(Blob blob, String fullName, String path) {
         DocumentModel createdDoc;
         try {
             createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fullName);
@@ -286,14 +286,14 @@ public class FileManageActionsBean implements FileManageActions {
      */
     @Deprecated
     public String addBinaryFileFromPlugin(byte[] content, String mimetype, String fullName, String morePath)
-            throws ClientException {
+            {
         Blob blob = Blobs.createBlob(content);
         return addBinaryFileFromPlugin(blob, fullName, morePath);
     }
 
     @Override
     @WebRemote
-    public String addFolderFromPlugin(String fullName, String morePath) throws ClientException {
+    public String addFolderFromPlugin(String fullName, String morePath) {
         try {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
@@ -335,7 +335,7 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     @WebRemote
-    protected String checkMoveAllowed(DocumentRef docRef, DocumentRef containerRef) throws ClientException {
+    protected String checkMoveAllowed(DocumentRef docRef, DocumentRef containerRef) {
 
         DocumentModel doc = documentManager.getDocument(docRef);
         DocumentModel container = documentManager.getDocument(containerRef);
@@ -399,7 +399,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String moveWithId(String docId, String containerId) throws ClientException {
+    public String moveWithId(String docId, String containerId) {
         try {
             String debug = "move " + docId + " into " + containerId;
             log.debug(debug);
@@ -464,7 +464,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String copyWithId(String docId) throws ClientException {
+    public String copyWithId(String docId) {
         try {
             String debug = "copying " + docId;
             log.debug(debug);
@@ -494,7 +494,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String pasteWithId(String docId) throws ClientException {
+    public String pasteWithId(String docId) {
         try {
             String debug = "pasting " + docId;
             log.debug(debug);
@@ -559,13 +559,13 @@ public class FileManageActionsBean implements FileManageActions {
         }
     }
 
-    public void validateMultiplesUpload() throws ClientException, FileNotFoundException, IOException {
+    public void validateMultiplesUpload() throws FileNotFoundException, IOException {
         DocumentModel current = navigationContext.getCurrentDocument();
         validateMultipleUploadForDocument(current);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void validateMultipleUploadForDocument(DocumentModel current) throws ClientException, FileNotFoundException,
+    public void validateMultipleUploadForDocument(DocumentModel current) throws FileNotFoundException,
             IOException {
         if (!current.hasSchema(FILES_SCHEMA)) {
             return;
@@ -622,7 +622,7 @@ public class FileManageActionsBean implements FileManageActions {
         }
     }
 
-    public String validate() throws ClientException {
+    public String validate() {
 
         NxUploadedFile uploadedFile;
         if (fileUploadHolder == null || fileUploadHolder.getUploadedFiles().isEmpty()
@@ -708,7 +708,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String removeSingleUploadedFile() throws ClientException {
+    public String removeSingleUploadedFile() {
         return removeAllUploadedFile();
     }
 
@@ -718,7 +718,7 @@ public class FileManageActionsBean implements FileManageActions {
     }
 
     @Override
-    public String removeOneOrAllUploadedFiles(ActionEvent action) throws ClientException {
+    public String removeOneOrAllUploadedFiles(ActionEvent action) {
         if (StringUtils.isBlank(fileToRemove)) {
             return removeAllUploadedFile();
         } else {
@@ -728,7 +728,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String removeAllUploadedFile() throws ClientException {
+    public String removeAllUploadedFile() {
         if (fileUploadHolder != null) {
             Collection<NxUploadedFile> files = getUploadedFiles();
             if (files != null) {
@@ -743,7 +743,7 @@ public class FileManageActionsBean implements FileManageActions {
 
     @Override
     @WebRemote
-    public String removeUploadedFile(String fileName) throws ClientException {
+    public String removeUploadedFile(String fileName) {
         NxUploadedFile fileToDelete = null;
 
         // Retrieve only the real filename

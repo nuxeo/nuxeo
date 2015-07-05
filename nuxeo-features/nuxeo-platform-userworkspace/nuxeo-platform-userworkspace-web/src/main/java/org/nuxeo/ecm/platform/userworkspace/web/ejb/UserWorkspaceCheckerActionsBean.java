@@ -68,7 +68,7 @@ public class UserWorkspaceCheckerActionsBean implements Serializable {
     }
 
     @Factory(value = "currentPersonalWorkspacePath", scope = EVENT)
-    public String getCurrentPersonalWorkspace() throws ClientException {
+    public String getCurrentPersonalWorkspace() {
         if (currentPersonalWorkspacePath == null && Boolean.TRUE.equals(isUserWorkspace)) {
             // Do not compute path if not necessary
             Path path = navigationContext.getCurrentDocument().getPath();

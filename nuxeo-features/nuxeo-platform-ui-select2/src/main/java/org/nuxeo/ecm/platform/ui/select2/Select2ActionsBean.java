@@ -364,7 +364,7 @@ public class Select2ActionsBean implements Serializable {
         return result;
     }
 
-    protected CoreSession getRepositorySession(String repoName) throws ClientException {
+    protected CoreSession getRepositorySession(String repoName) {
 
         if (repoName == null || repoName.isEmpty()) {
             RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
@@ -588,8 +588,7 @@ public class Select2ActionsBean implements Serializable {
      * @since 5.9.3
      */
     protected String getParentAbsoluteLabel(final String entryId, final String keySeparator, final Session session,
-            final QName labelFieldName, final boolean localize, final boolean dbl10n) throws PropertyException,
-            ClientException {
+            final QName labelFieldName, final boolean localize, final boolean dbl10n) throws PropertyException {
         String[] split = entryId.split(keySeparator);
         String result = "";
         for (int i = 0; i < split.length; i++) {
@@ -833,7 +832,7 @@ public class Select2ActionsBean implements Serializable {
         return doc;
     }
 
-    protected void processDocumentNotFound(String id, JsonGenerator jg) throws ClientException {
+    protected void processDocumentNotFound(String id, JsonGenerator jg) {
         if (StringUtils.isEmpty(id)) {
             return;
         }

@@ -46,15 +46,15 @@ public class TestIndexingCommandsStacker extends IndexingCommandsStacker {
         flushedAsyncCommands = new ArrayList<>();
     }
 
-    protected void fireSyncIndexing(List<IndexingCommand> syncCommands) throws ClientException {
+    protected void fireSyncIndexing(List<IndexingCommand> syncCommands) {
         flushedSyncCommands.addAll(syncCommands);
     }
 
-    protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands) throws ClientException {
+    protected void fireAsyncIndexing(List<IndexingCommand> asyncCommands) {
         flushedAsyncCommands.addAll(asyncCommands);
     }
 
-    protected void flushCommands() throws ClientException {
+    protected void flushCommands() {
         Map<String, IndexingCommands> allCmds = getAllCommands();
 
         List<IndexingCommand> syncCommands = new ArrayList<>();

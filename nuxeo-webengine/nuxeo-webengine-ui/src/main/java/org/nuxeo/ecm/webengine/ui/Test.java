@@ -47,7 +47,7 @@ public class Test extends ModuleRoot {
 
     @GET
     @Path("tree")
-    public Response getContent(@QueryParam("root") String root) throws ClientException {
+    public Response getContent(@QueryParam("root") String root) {
         // TODO here you may want to put tree in httpsession to have state
         // preserved after reload
         UserSession us = UserSession.getCurrentSession(ctx.getRequest());

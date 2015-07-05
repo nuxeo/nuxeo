@@ -122,7 +122,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     @Factory(autoCreate = true, value = "currentDocumentVersionInfo", scope = EVENT)
-    public VersionInfo getCurrentDocumentVersionInfo() throws ClientException {
+    public VersionInfo getCurrentDocumentVersionInfo() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
             return null;
@@ -190,7 +190,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     @Override
-    public String getVersionLabel(DocumentModel doc) throws ClientException {
+    public String getVersionLabel(DocumentModel doc) {
         return versioningManager.getVersionLabel(doc);
     }
 
@@ -213,13 +213,13 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     @Deprecated
     @Override
-    public void setVersioningOptionInstanceId(String optionId) throws ClientException {
+    public void setVersioningOptionInstanceId(String optionId) {
         setVersioningOptionInstanceId(navigationContext.getCurrentDocument(), optionId);
     }
 
     @Deprecated
     @Override
-    public void setVersioningOptionInstanceId(DocumentModel docModel, String optionId) throws ClientException {
+    public void setVersioningOptionInstanceId(DocumentModel docModel, String optionId) {
         if (optionId != null) {
             selectedOption = VersioningActions.valueOf(optionId);
             setVersioningOptionInstanceId(docModel, selectedOption);
@@ -231,7 +231,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
 
     @Deprecated
     @Override
-    public void setVersioningOptionInstanceId(DocumentModel docModel, VersioningActions option) throws ClientException {
+    public void setVersioningOptionInstanceId(DocumentModel docModel, VersioningActions option) {
         // add version inc option to document context so it will be
         // taken into consideration on the server side
         VersioningOption vo;

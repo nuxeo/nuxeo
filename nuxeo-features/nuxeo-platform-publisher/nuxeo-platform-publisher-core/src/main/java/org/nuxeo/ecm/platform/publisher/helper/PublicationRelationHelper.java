@@ -55,7 +55,7 @@ public class PublicationRelationHelper {
     }
 
     public static void addPublicationRelation(DocumentModel documentModel, PublicationTree publicationTree)
-            throws ClientException {
+            {
         RelationManager rm = RelationHelper.getRelationManager();
         QNameResource docResource = RelationHelper.getDocumentResource(documentModel);
         QNameResource treeResource = new QNameResourceImpl(PUBLICATION_TREE_NAMESPACE, publicationTree.getConfigName());
@@ -63,7 +63,7 @@ public class PublicationRelationHelper {
         rm.getGraphByName(PUBLICATION_GRAPH_NAME).add(stmt);
     }
 
-    public static void removePublicationRelation(DocumentModel documentModel) throws ClientException {
+    public static void removePublicationRelation(DocumentModel documentModel) {
         List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
         RelationManager rm = RelationHelper.getRelationManager();
         if (stmts != null) {
@@ -77,7 +77,7 @@ public class PublicationRelationHelper {
     }
 
     public static PublicationTree getPublicationTreeUsedForPublishing(DocumentModel documentModel,
-            CoreSession coreSession) throws ClientException {
+            CoreSession coreSession) {
         if (!isPublished(documentModel)) {
             throw new ClientException("The document " + documentModel.getPathAsString()
                     + " is not a published document");

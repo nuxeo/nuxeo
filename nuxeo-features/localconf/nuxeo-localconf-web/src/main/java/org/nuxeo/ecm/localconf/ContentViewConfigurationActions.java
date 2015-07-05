@@ -73,7 +73,7 @@ public class ContentViewConfigurationActions implements Serializable {
         return schemaManager;
     }
 
-    public List<SelectItem> getAvailableDocTypes() throws ClientException {
+    public List<SelectItem> getAvailableDocTypes() {
         List<SelectItem> items = new ArrayList<SelectItem>();
         Set<String> folderishDocTypeNames = getSchemaManager().getDocumentTypeNamesForFacet(FOLDERISH);
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -101,7 +101,7 @@ public class ContentViewConfigurationActions implements Serializable {
         return items;
     }
 
-    public List<SelectItem> getAvailableContentViews() throws ClientException {
+    public List<SelectItem> getAvailableContentViews() {
         List<SelectItem> items = new ArrayList<SelectItem>();
         for (String cvName : contentViewService.getContentViewNames()) { // TODO : use flag ?
             ContentViewHeader contentViewHeader = contentViewService.getContentViewHeader(cvName);

@@ -88,10 +88,9 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
      * @return
      * @throws IOException
      * @throws JsonParseException
-     * @throws ClientException
      */
     private NuxeoGroup readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders) throws JsonParseException,
-            IOException, ClientException {
+            IOException {
         JsonToken tok = jp.nextToken();
 
         // skip {

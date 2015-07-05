@@ -82,7 +82,7 @@ public class CollectionActionsBean implements Serializable {
 
     private String selectedCollectionUid;
 
-    public void addCurrentDocumentToSelectedCollection() throws ClientException {
+    public void addCurrentDocumentToSelectedCollection() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -103,12 +103,12 @@ public class CollectionActionsBean implements Serializable {
         }
     }
 
-    public void addCurrentSelectionToSelectedCollection() throws ClientException {
+    public void addCurrentSelectionToSelectedCollection() {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
         addToSelectedCollection(documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION));
     }
 
-    public void addDocUidsToBeAddedToCurrentCollection() throws ClientException {
+    public void addDocUidsToBeAddedToCurrentCollection() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
@@ -127,7 +127,7 @@ public class CollectionActionsBean implements Serializable {
         addFacesMessage(StatusMessage.Severity.INFO, "collection.allAddedToCollection", currentDocument.getTitle());
     }
 
-    public void addToSelectedCollection(final List<DocumentModel> documentListToBeAdded) throws ClientException {
+    public void addToSelectedCollection(final List<DocumentModel> documentListToBeAdded) {
         if (documentListToBeAdded != null && !documentListToBeAdded.isEmpty()) {
             final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
             final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
@@ -159,7 +159,7 @@ public class CollectionActionsBean implements Serializable {
         return true;
     }
 
-    public boolean canAddToCollection(DocumentModel collection) throws ClientException {
+    public boolean canAddToCollection(DocumentModel collection) {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         final boolean result = collection != null && collectionManager.isCollection(collection)
@@ -167,7 +167,7 @@ public class CollectionActionsBean implements Serializable {
         return result;
     }
 
-    public boolean canAddToDocsToCurrentCollection() throws ClientException {
+    public boolean canAddToDocsToCurrentCollection() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
@@ -175,7 +175,7 @@ public class CollectionActionsBean implements Serializable {
         return collectionManager.canAddToCollection(currentDocument, session);
     }
 
-    public boolean canAddToSelectedCollection() throws ClientException {
+    public boolean canAddToSelectedCollection() {
         final boolean result = canAddToCollection(getSelectedCollection()) || isCreateNewCollection();
         return result;
     }
@@ -194,13 +194,13 @@ public class CollectionActionsBean implements Serializable {
         return collectionManager.isCollectable(currentDocument);
     }
 
-    public boolean canManage(final DocumentModel collection) throws ClientException {
+    public boolean canManage(final DocumentModel collection) {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         return collectionManager.canManage(collection, session);
     }
 
-    public boolean canRemoveFromCollection() throws ClientException {
+    public boolean canRemoveFromCollection() {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
         final List<DocumentModel> doccumentListToBeRemoved = documentsListsManager.getWorkingList(COLLECTION_CURRENT_SELECTION);
         if (doccumentListToBeRemoved == null || doccumentListToBeRemoved.isEmpty()) {
@@ -211,7 +211,7 @@ public class CollectionActionsBean implements Serializable {
         return canAddToCollection(currentDocument);
     }
 
-    public boolean canRemoveFromCollection(DocumentModel collection) throws ClientException {
+    public boolean canRemoveFromCollection(DocumentModel collection) {
         return canAddToCollection(collection);
     }
 
@@ -248,7 +248,7 @@ public class CollectionActionsBean implements Serializable {
         return selectedCollection;
     }
 
-    public String getSelectedCollectionDescription() throws PropertyException, ClientException {
+    public String getSelectedCollectionDescription() throws PropertyException {
         if (isCreateNewCollection()) {
             return null;
         } else {
@@ -260,7 +260,7 @@ public class CollectionActionsBean implements Serializable {
         return selectedCollectionUid;
     }
 
-    public boolean hasCurrentDocumentVisibleCollection() throws ClientException {
+    public boolean hasCurrentDocumentVisibleCollection() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return hasVisibleCollection(currentDocument);
@@ -292,7 +292,7 @@ public class CollectionActionsBean implements Serializable {
         return collectionManager.isCollection(currentDocument);
     }
 
-    public void removeCurrentDocumentFromCollection(final ActionEvent event) throws ClientException {
+    public void removeCurrentDocumentFromCollection(final ActionEvent event) {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext eContext = context.getExternalContext();
         String collectionId = eContext.getRequestParameterMap().get("collectionId");
@@ -317,7 +317,7 @@ public class CollectionActionsBean implements Serializable {
         }
     }
 
-    public void removeCurrentSelectionFromCollection() throws ClientException {
+    public void removeCurrentSelectionFromCollection() {
         final DocumentsListsManager documentsListsManager = getDocumentsListsManager();
         final List<DocumentModel> doccumentListToBeRemoved = documentsListsManager.getWorkingList(COLLECTION_CURRENT_SELECTION);
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
@@ -327,7 +327,7 @@ public class CollectionActionsBean implements Serializable {
     }
 
     public void removeFromCollection(DocumentModel collection, List<DocumentModel> documentListToBeRemoved)
-            throws ClientException {
+            {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         collectionManager.removeAllFromCollection(collection, documentListToBeRemoved, session);

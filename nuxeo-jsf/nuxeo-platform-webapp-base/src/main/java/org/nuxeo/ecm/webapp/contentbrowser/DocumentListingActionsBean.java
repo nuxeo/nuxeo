@@ -188,7 +188,7 @@ public class DocumentListingActionsBean implements Serializable {
     // API for AJAX selection in listings of content views
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getCurrentPageDocuments(String contentViewName) throws ClientException {
+    protected List<DocumentModel> getCurrentPageDocuments(String contentViewName) {
         List<DocumentModel> documents = null;
         ContentView cView = contentViewActions.getContentView(contentViewName);
         if (cView != null) {
@@ -205,7 +205,7 @@ public class DocumentListingActionsBean implements Serializable {
         return documents;
     }
 
-    public void processSelectPage(String contentViewName, String listName, Boolean selection) throws ClientException {
+    public void processSelectPage(String contentViewName, String listName, Boolean selection) {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         if (documents != null) {
             String lName = (listName == null) ? DocumentsListsManager.CURRENT_DOCUMENT_SELECTION : listName;
@@ -224,7 +224,7 @@ public class DocumentListingActionsBean implements Serializable {
      * @throws ClientException if currentDocRef is not a valid document
      */
     public void checkCurrentDocAndProcessSelectPage(String contentViewName, String listName, Boolean selection,
-            String currentDocRef) throws ClientException {
+            String currentDocRef) {
         DocumentRef currentDocumentRef = new IdRef(currentDocRef);
         if (!currentDocumentRef.equals(navigationContext.getCurrentDocument().getRef())) {
             navigationContext.navigateToRef(currentDocumentRef);
@@ -233,7 +233,7 @@ public class DocumentListingActionsBean implements Serializable {
     }
 
     public void processSelectRow(String docRef, String contentViewName, String listName, Boolean selection)
-            throws ClientException {
+            {
         List<DocumentModel> documents = getCurrentPageDocuments(contentViewName);
         DocumentModel doc = null;
         if (documents != null) {
@@ -264,7 +264,7 @@ public class DocumentListingActionsBean implements Serializable {
      * @throws ClientException if currentDocRef is not a valid document
      */
     public void checkCurrentDocAndProcessSelectRow(String docRef, String providerName, String listName,
-            Boolean selection, String requestedCurrentDocRef) throws ClientException {
+            Boolean selection, String requestedCurrentDocRef) {
         DocumentRef requestedCurrentDocumentRef = new IdRef(requestedCurrentDocRef);
         DocumentRef currentDocumentRef = null;
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -287,7 +287,7 @@ public class DocumentListingActionsBean implements Serializable {
      * @since 5.6
      */
     public void checkCurrentDocAndProcessVersionSelectRow(PageSelection<VersionModel> versionModelSelection,
-            String requestedCurrentDocRef) throws ClientException {
+            String requestedCurrentDocRef) {
 
         DocumentRef requestedCurrentDocumentRef = new IdRef(requestedCurrentDocRef);
         DocumentRef currentDocumentRef = null;
@@ -305,10 +305,9 @@ public class DocumentListingActionsBean implements Serializable {
      * Processes the version selection row.
      *
      * @param versionModelSelection the version model selection
-     * @throws ClientException the client exception
      */
     protected final void processVersionSelectRow(PageSelection<VersionModel> versionModelSelection)
-            throws ClientException {
+            {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {

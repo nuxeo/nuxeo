@@ -58,7 +58,7 @@ public interface EditorImageActions {
     @Deprecated
     String getUploadedImageName();
 
-    String uploadImage() throws ClientException;
+    String uploadImage();
 
     boolean getIsImageUploaded();
 
@@ -67,9 +67,9 @@ public interface EditorImageActions {
     String getUrlForImage();
 
     // image searching related methods
-    String searchImages() throws ClientException;
+    String searchImages();
 
-    String searchVideos() throws ClientException;
+    String searchVideos();
 
     List<DocumentModel> getSearchImageResults();
 
@@ -111,5 +111,5 @@ public interface EditorImageActions {
      * @return The URL of the selected video.
      * @since 5.9.5
      */
-    String getURLVideo(DocumentModel video, String type) throws ClientException;
+    String getURLVideo(DocumentModel video, String type);
 }

@@ -74,7 +74,7 @@ public class CanTraceChainsTest {
     DocumentModel src;
 
     @Before
-    public void setup() throws OperationException, ClientException {
+    public void setup() throws OperationException {
         service.putOperation(DummyOperation.class);
         // Setup a document
         src = session.createDocumentModel("/", "src", "Workspace");

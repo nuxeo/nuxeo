@@ -60,7 +60,7 @@ public class TestDataModelProperties {
     }
 
     @Test
-    public void shouldWorkWithDocumentModel() throws ClientException {
+    public void shouldWorkWithDocumentModel() {
         DataModelProperties properties = new DataModelProperties(doc.getDataModel("dublincore"));
         Map<String, Serializable> map = properties.getMap();
         assertFalse(map.isEmpty());
@@ -76,7 +76,7 @@ public class TestDataModelProperties {
     }
 
     @Test
-    public void shouldWorkWithSimpleDocumentModel() throws ClientException {
+    public void shouldWorkWithSimpleDocumentModel() {
         SimpleDocumentModel documentModel = new SimpleDocumentModel();
         documentModel.setPropertyValue("dc:title", "Doc2");
         documentModel.setPropertyValue("dc:description", "desc2");

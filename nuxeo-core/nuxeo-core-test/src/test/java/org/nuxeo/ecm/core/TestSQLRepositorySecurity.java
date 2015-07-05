@@ -103,7 +103,7 @@ public class TestSQLRepositorySecurity {
     }
 
     // assumes that the global "session" belongs to an Administrator
-    protected void setPermissionToAnonymous(String perm) throws ClientException {
+    protected void setPermissionToAnonymous(String perm) {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {
@@ -116,7 +116,7 @@ public class TestSQLRepositorySecurity {
         session.save();
     }
 
-    protected void setPermissionToEveryone(String... perms) throws ClientException {
+    protected void setPermissionToEveryone(String... perms) {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {
@@ -131,7 +131,7 @@ public class TestSQLRepositorySecurity {
         session.save();
     }
 
-    protected void removePermissionToAnonymous() throws ClientException {
+    protected void removePermissionToAnonymous() {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         acp.removeACL("test");
@@ -139,7 +139,7 @@ public class TestSQLRepositorySecurity {
         session.save();
     }
 
-    protected void removePermissionToEveryone() throws ClientException {
+    protected void removePermissionToEveryone() {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         acp.removeACL("test");
@@ -148,7 +148,7 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
-    public void testSecurity() throws ClientException {
+    public void testSecurity() {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
@@ -267,7 +267,7 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
-    public void testACLEscaping() throws ClientException {
+    public void testACLEscaping() {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
@@ -299,7 +299,7 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
-    public void testGetParentDocuments() throws ClientException {
+    public void testGetParentDocuments() {
 
         setPermissionToAnonymous(EVERYTHING);
 
@@ -459,7 +459,7 @@ public class TestSQLRepositorySecurity {
 
     }
 
-    protected DocumentRef createDocumentModelWithSamplePermissions(String name) throws ClientException {
+    protected DocumentRef createDocumentModelWithSamplePermissions(String name) {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         doc = session.createDocument(doc);
@@ -494,7 +494,7 @@ public class TestSQLRepositorySecurity {
 
     @Test
     @Ignore
-    public void testGetAvailableSecurityPermissions() throws ClientException {
+    public void testGetAvailableSecurityPermissions() {
         List<String> permissions = session.getAvailableSecurityPermissions();
 
         // TODO
@@ -502,7 +502,7 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
-    public void testReadAclSecurity() throws ClientException {
+    public void testReadAclSecurity() {
         // Check that all permissions that contain Browse enable to list a
         // document using aclOptimization
         SecurityService securityService = NXCore.getSecurityService();
@@ -562,7 +562,7 @@ public class TestSQLRepositorySecurity {
     }
 
     @Test
-    public void testReadAclSecurityUpdate() throws ClientException {
+    public void testReadAclSecurityUpdate() {
         // check that aclOptimization update the user aclr cache
         // NXP-13109
         DocumentModel root = session.getRootDocument();

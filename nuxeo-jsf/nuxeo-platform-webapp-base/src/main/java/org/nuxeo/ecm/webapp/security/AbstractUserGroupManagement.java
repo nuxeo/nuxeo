@@ -90,7 +90,7 @@ public abstract class AbstractUserGroupManagement {
         this.searchString = searchString;
     }
 
-    public String getListingMode() throws ClientException {
+    public String getListingMode() {
         if (listingMode == null) {
             listingMode = computeListingMode();
             if (listingMode == null || listingMode.trim().isEmpty()) {
@@ -100,7 +100,7 @@ public abstract class AbstractUserGroupManagement {
         return listingMode;
     }
 
-    protected abstract String computeListingMode() throws ClientException;
+    protected abstract String computeListingMode();
 
     public void setListingMode(String listingMode) {
         this.listingMode = listingMode;
@@ -139,10 +139,9 @@ public abstract class AbstractUserGroupManagement {
      * Retrieve recursively the list of all groups that are admins.
      *
      * @return
-     * @throws ClientException
      * @since 5.9.3
      */
-    protected List<String> getAllAdminGroups() throws ClientException {
+    protected List<String> getAllAdminGroups() {
         List<String> adminGroups = new ArrayList<>();
         for (String adminGroup : userManager.getAdministratorsGroups()) {
             adminGroups.add(adminGroup);
@@ -156,10 +155,9 @@ public abstract class AbstractUserGroupManagement {
      *
      * @param groupName
      * @return
-     * @throws ClientException
      * @since 5.9.3
      */
-    private List<String> getAllSubGroups(String groupName) throws ClientException {
+    private List<String> getAllSubGroups(String groupName) {
         return getAllSubGroups(groupName, new ArrayList<String>());
     }
 
@@ -169,10 +167,9 @@ public abstract class AbstractUserGroupManagement {
      * @param groupName
      * @param accumulator
      * @return
-     * @throws ClientException
      * @since 5.9.3
      */
-    private List<String> getAllSubGroups(String groupName, List<String> accumulator) throws ClientException {
+    private List<String> getAllSubGroups(String groupName, List<String> accumulator) {
         List<String> subGroups = userManager.getGroupsInGroup(groupName);
         if (!subGroups.isEmpty()) {
             accumulator.addAll(subGroups);

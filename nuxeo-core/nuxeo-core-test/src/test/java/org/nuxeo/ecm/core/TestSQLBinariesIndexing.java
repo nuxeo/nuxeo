@@ -72,7 +72,7 @@ public class TestSQLBinariesIndexing {
     }
 
     /** Creates doc, doesn't do a session save. */
-    protected void createDocument() throws ClientException {
+    protected void createDocument() {
         DocumentModel doc = session.createDocumentModel("/", "source", "File");
         BlobHolder holder = doc.getAdapter(BlobHolder.class);
         holder.setBlob(Blobs.createBlob("test"));
@@ -124,18 +124,18 @@ public class TestSQLBinariesIndexing {
         blockingWork.readyLatch.await();
     }
 
-    protected void allowFulltextUpdating() throws ClientException {
+    protected void allowFulltextUpdating() {
         blockingWork.startLatch.countDown();
         blockingWork = null;
         waitForFulltextIndexing();
     }
 
-    protected int indexedDocs() throws ClientException {
+    protected int indexedDocs() {
         DocumentModelList res = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'test'");
         return res.size();
     }
 
-    protected int jobDocs() throws ClientException {
+    protected int jobDocs() {
         String request = String.format("SELECT * from Document where ecm:fulltextJobId = '%s'", docId);
         return session.query(request).size();
     }

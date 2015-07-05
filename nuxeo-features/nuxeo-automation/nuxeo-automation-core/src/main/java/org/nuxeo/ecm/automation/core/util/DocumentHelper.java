@@ -54,7 +54,7 @@ public class DocumentHelper {
     /**
      * Saves the document and clear context data to avoid incrementing version in next operations if not needed.
      */
-    public static DocumentModel saveDocument(CoreSession session, DocumentModel doc) throws ClientException {
+    public static DocumentModel saveDocument(CoreSession session, DocumentModel doc) {
         doc = session.saveDocument(doc);
         return session.getDocument(doc.getRef());
     }
@@ -64,7 +64,7 @@ public class DocumentHelper {
      * cleared. If the path points to a blob in a list the property is removed from the list. Otherwise the xpath should
      * point to a non list property that will be removed.
      */
-    public static void removeProperty(DocumentModel doc, String xpath) throws ClientException {
+    public static void removeProperty(DocumentModel doc, String xpath) {
         Property p = doc.getProperty(xpath);
         if (p instanceof ListProperty) {
             ((ListProperty) p).clear();
@@ -106,7 +106,7 @@ public class DocumentHelper {
     }
 
     public static void setProperties(CoreSession session, DocumentModel doc, Properties properties)
-            throws ClientException, IOException {
+            throws IOException {
         if (properties instanceof DataModelProperties) {
             DataModelProperties dataModelProperties = (DataModelProperties) properties;
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {
@@ -128,7 +128,7 @@ public class DocumentHelper {
      * not yet supported
      */
     public static void setProperties(CoreSession session, DocumentModel doc, Map<String, String> values)
-            throws ClientException, IOException {
+            throws IOException {
         for (Map.Entry<String, String> entry : values.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
@@ -137,11 +137,11 @@ public class DocumentHelper {
     }
 
     public static void setProperty(CoreSession session, DocumentModel doc, String key, String value)
-            throws ClientException, IOException {
+            throws IOException {
         setProperty(session, doc, key, value, false);
     }
 
-    protected static void setLocalAcl(CoreSession session, DocumentModel doc, String value) throws ClientException {
+    protected static void setLocalAcl(CoreSession session, DocumentModel doc, String value) {
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl(ACL.LOCAL_ACL);
         acp.addACL(acl);
@@ -265,12 +265,11 @@ public class DocumentHelper {
      * @param session
      * @param doc
      * @param properties
-     * @throws ClientException
      * @throws IOException
      * @since 5.9.2
      */
     public static void setJSONProperties(CoreSession session, DocumentModel doc, Properties properties)
-            throws ClientException, IOException {
+            throws IOException {
 
         for (Map.Entry<String, String> entry : properties.entrySet()) {
             String key = entry.getKey();
@@ -285,12 +284,11 @@ public class DocumentHelper {
      * @param key
      * @param value
      * @param decodeStringListAsJSON
-     * @throws ClientException
      * @throws IOException
      * @since 5.9.2
      */
     public static void setProperty(CoreSession session, DocumentModel doc, String key, String value,
-            boolean decodeStringListAsJSON) throws ClientException, IOException {
+            boolean decodeStringListAsJSON) throws IOException {
         if ("ecm:acl".equals(key)) {
             setLocalAcl(session, doc, value);
         }

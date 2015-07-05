@@ -64,7 +64,7 @@ public class NoteActions implements Serializable {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             liveDocumentRef = proxy.getRef().toString();
             if (proxy.getSourceId() != null) {
                 liveDocumentRef = proxy.getSourceId();
@@ -75,7 +75,7 @@ public class NoteActions implements Serializable {
             }
         }
 
-        public String getLiveDocumentRef() throws ClientException {
+        public String getLiveDocumentRef() {
             if (liveDocumentRef == null) {
                 runUnrestricted();
             }
@@ -91,7 +91,7 @@ public class NoteActions implements Serializable {
      * @param note the note content
      * @return the translated note content
      */
-    public String translateImageLinks(String note) throws ClientException {
+    public String translateImageLinks(String note) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!(currentDocument.isProxy() || currentDocument.isVersion())) {
             return note;

@@ -57,7 +57,7 @@ public class ModerateCommentOperation {
         return session.getDocument(docRef);
     }
 
-    protected void moderate(DocumentRef docRef) throws ClientException {
+    protected void moderate(DocumentRef docRef) {
         DocumentModel taskDoc = (DocumentModel) ctx.get(OperationTaskVariableName.taskDocument.name());
         Task task = taskDoc.getAdapter(Task.class);
         DocumentRef targetDocRef = new IdRef(task.getVariable(CommentsConstants.COMMENT_ID));

@@ -42,7 +42,7 @@ public class AdministrativeStatusChangeListener implements EventListener {
     }
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         String eventId = event.getName();
         String serviceId = (String) event.getContext().getProperty(
                 AdministrativeStatusManager.ADMINISTRATIVE_EVENT_SERVICE);

@@ -42,7 +42,7 @@ public class DomainEventsListener implements EventListener {
 
     public static final String DISABLE_DOMAIN_LISTENER = "disableDomainListener";
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         Boolean disableListener = (Boolean) ctx.getProperty(DISABLE_DOMAIN_LISTENER);
         if (Boolean.TRUE.equals(disableListener)) {
@@ -70,17 +70,17 @@ public class DomainEventsListener implements EventListener {
         }
     }
 
-    protected void registerNewPublicationTrees(DocumentModel doc) throws ClientException {
+    protected void registerNewPublicationTrees(DocumentModel doc) {
         PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
         service.registerTreeConfigFor(doc);
     }
 
-    protected void unregisterPublicationTrees(DocumentModel doc) throws ClientException {
+    protected void unregisterPublicationTrees(DocumentModel doc) {
         PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);
         service.unRegisterTreeConfigFor(doc);
     }
 
-    protected void handleDomainLifeCycleChanged(DocumentEventContext docCtx, DocumentModel doc) throws ClientException {
+    protected void handleDomainLifeCycleChanged(DocumentEventContext docCtx, DocumentModel doc) {
         String from = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM);
         String to = (String) docCtx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TO);
 
@@ -91,18 +91,18 @@ public class DomainEventsListener implements EventListener {
         }
     }
 
-    protected void handleDomainGoesToDeletedState(DocumentModel doc) throws ClientException {
+    protected void handleDomainGoesToDeletedState(DocumentModel doc) {
         unregisterPublicationTrees(doc);
     }
 
-    protected void handleDomainGoesFromDeletedState(DocumentModel doc) throws ClientException {
+    protected void handleDomainGoesFromDeletedState(DocumentModel doc) {
         registerNewPublicationTrees(doc);
     }
 
     /**
      * @since 7.3
      */
-    protected void handleDomainMoved(DocumentEventContext docCtx, DocumentModel doc) throws ClientException {
+    protected void handleDomainMoved(DocumentEventContext docCtx, DocumentModel doc) {
         String originalName = (String) docCtx.getProperty(CoreEventConstants.ORIGINAL_NAME);
         if (originalName != null) {
             PublisherServiceImpl service = (PublisherServiceImpl) Framework.getService(PublisherService.class);

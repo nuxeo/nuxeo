@@ -30,7 +30,7 @@ public class UpdateThumbnailCounter implements EventListener {
     protected static int count;
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
         DocumentModel doc = context.getSourceDocument();
         if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {

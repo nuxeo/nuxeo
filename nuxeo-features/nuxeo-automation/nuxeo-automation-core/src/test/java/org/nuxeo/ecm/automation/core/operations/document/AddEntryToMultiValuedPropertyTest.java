@@ -46,7 +46,7 @@ public class AddEntryToMultiValuedPropertyTest {
     private AddEntryToMultiValuedProperty operation;
 
     @Before
-    public void setup() throws ClientException {
+    public void setup() {
         doc = session.createDocumentModel("/", "test", "MyDocument");
         session.createDocument(doc);
         session.save();

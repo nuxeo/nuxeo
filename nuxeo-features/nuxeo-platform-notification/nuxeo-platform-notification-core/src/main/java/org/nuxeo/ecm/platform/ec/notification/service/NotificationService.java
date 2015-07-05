@@ -237,12 +237,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
      * @deprecated since 7.3
      * @see NotificationService#getSubscribers(String, DocumentModel)
      */
-    public List<String> getSubscribers(String notification, String docId) throws ClientException {
+    public List<String> getSubscribers(String notification, String docId) {
         return getSubscribers(notification, UnrestrictedDocFetcher.fetch(docId));
     }
 
     @Override
-    public List<String> getSubscribers(String notification, DocumentModel doc) throws ClientException {
+    public List<String> getSubscribers(String notification, DocumentModel doc) {
         return doc.getAdapter(SubscriptionAdapter.class).getNotificationSubscribers(notification);
     }
 
@@ -269,12 +269,12 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     public void addSubscription(String username, String notification, DocumentModel doc, Boolean sendConfirmationEmail,
-            NuxeoPrincipal principal, String notificationName) throws ClientException {
+            NuxeoPrincipal principal, String notificationName) {
 
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 doc.getAdapter(SubscriptionAdapter.class).addSubscription(username, notification);
                 disableEvents(doc);
                 session.saveDocument(doc);
@@ -291,11 +291,11 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     public void addSubscriptions(String username, DocumentModel doc, Boolean sendConfirmationEmail,
-            NuxeoPrincipal principal) throws ClientException {
+            NuxeoPrincipal principal) {
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 doc.getAdapter(SubscriptionAdapter.class).addSubscriptionsToAll(username);
                 disableEvents(doc);
                 session.saveDocument(doc);
@@ -309,16 +309,16 @@ public class NotificationService extends DefaultComponent implements Notificatio
         }
     }
 
-    public void removeSubscriptions(String username, List<String> notifications, String docId) throws ClientException {
+    public void removeSubscriptions(String username, List<String> notifications, String docId) {
         removeSubscriptions(username, notifications, UnrestrictedDocFetcher.fetch(docId));
     }
 
     public void removeSubscriptions(String username, List<String> notifications, DocumentModel doc)
-            throws ClientException {
+            {
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(doc.getRepositoryName()) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 SubscriptionAdapter sa = doc.getAdapter(SubscriptionAdapter.class);
                 for (String notification : notifications) {
                     sa.removeUserNotificationSubscription(username, notification);
@@ -333,7 +333,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     protected EventProducer producer;
 
-    protected void doFireEvent(Event event) throws ClientException {
+    protected void doFireEvent(Event event) {
         if (producer == null) {
             producer = Framework.getService(EventProducer.class);
         }
@@ -369,7 +369,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     @Override
-    public void removeSubscription(String username, String notification, String docId) throws ClientException {
+    public void removeSubscription(String username, String notification, String docId) {
         removeSubscription(username, notification, UnrestrictedDocFetcher.fetch(docId));
     }
 
@@ -382,12 +382,11 @@ public class NotificationService extends DefaultComponent implements Notificatio
      * @param notification
      * @param docId
      * @return
-     * @throws ClientException
      * @deprecated
      * @see NotificationService#getSubscribers(String, DocumentModel)
      */
     public List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId)
-            throws ClientException {
+            {
         return getSubscribers(notification, docId);
     }
 
@@ -431,7 +430,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
     }
 
     public void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal)
-            throws ClientException {
+            {
 
         Notification notif = getNotificationByName(notificationName);
 
@@ -538,7 +537,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
     @Override
     public List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc)
-            throws ClientException {
+            {
         return getSubscribers(notification, doc);
     }
 

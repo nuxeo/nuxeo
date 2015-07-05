@@ -37,7 +37,7 @@ public class ACLUtils {
     }
 
     public static void removePermission(CoreSession session, DocumentRef docRef, String username, String permission)
-            throws ClientException {
+            {
         ACP acp = session.getACP(docRef);
         if (acp == null) {
             return;

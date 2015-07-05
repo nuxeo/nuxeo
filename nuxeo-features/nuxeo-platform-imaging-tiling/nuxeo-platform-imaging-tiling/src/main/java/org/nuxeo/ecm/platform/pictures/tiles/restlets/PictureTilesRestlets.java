@@ -215,7 +215,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         response.setHeader("Content-Disposition", "inline");
     }
 
-    protected void updateCache(DocumentModel doc, PictureTilesAdapter adapter, String xpath) throws ClientException {
+    protected void updateCache(DocumentModel doc, PictureTilesAdapter adapter, String xpath) {
 
         Calendar modified = (Calendar) doc.getProperty("dublincore", "modified");
         PictureTilesCachedEntry entry = new PictureTilesCachedEntry(modified, adapter, xpath);
@@ -245,7 +245,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         return Math.abs(t1 - t2) <= 1;
     }
 
-    protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath) throws ClientException {
+    protected PictureTilesAdapter getFromCache(DocumentModel doc, String xpath) {
         if (cachedAdapters.containsKey(doc.getId())) {
             if (xpath == null) {
                 xpath = "";

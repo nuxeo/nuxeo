@@ -173,12 +173,12 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     @Override
-    public void fireEvent(String name, EventContext context) throws ClientException {
+    public void fireEvent(String name, EventContext context) {
         fireEvent(new EventImpl(name, context));
     }
 
     @Override
-    public void fireEvent(Event event) throws ClientException {
+    public void fireEvent(Event event) {
 
         String ename = event.getName();
         EventStats stats = Framework.getService(EventStats.class);
@@ -249,7 +249,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     @Override
-    public void fireEventBundle(EventBundle event) throws ClientException {
+    public void fireEventBundle(EventBundle event) {
         boolean comesFromJMS = false;
 
         if (event instanceof ReconnectedEventBundle) {
@@ -304,7 +304,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
     }
 
     @Override
-    public void fireEventBundleSync(EventBundle event) throws ClientException {
+    public void fireEventBundleSync(EventBundle event) {
         for (EventListenerDescriptor desc : listenerDescriptors.getEnabledSyncPostCommitListenersDescriptors()) {
             desc.asPostCommitListener().handleEvent(event);
         }

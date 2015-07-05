@@ -43,7 +43,7 @@ public class ContentCreationListener implements EventListener {
         return service;
     }
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         DocumentEventContext docCtx = null;
         if (event.getContext() instanceof DocumentEventContext) {

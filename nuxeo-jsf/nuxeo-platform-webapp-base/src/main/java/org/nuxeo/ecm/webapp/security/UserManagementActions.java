@@ -95,7 +95,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     protected String defaultRepositoryName = null;
 
     @Override
-    protected String computeListingMode() throws ClientException {
+    protected String computeListingMode() {
         return userManager.getUserListingMode();
     }
 
@@ -113,7 +113,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      * @deprecated since version 5.5, use {@link #setSelectedUserName} instead.
      */
     @Deprecated
-    public void setSelectedUser(String userName) throws ClientException {
+    public void setSelectedUser(String userName) {
         setSelectedUser(refreshUser(userName));
     }
 
@@ -122,16 +122,16 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      *
      * @since 5.5
      */
-    public void setSelectedUserName(String userName) throws ClientException {
+    public void setSelectedUserName(String userName) {
         setSelectedUser(refreshUser(userName));
     }
 
-    public String getSelectedUserName() throws ClientException {
+    public String getSelectedUserName() {
         return selectedUser.getId();
     }
 
     // refresh to get references
-    protected DocumentModel refreshUser(String userName) throws ClientException {
+    protected DocumentModel refreshUser(String userName) {
         return userManager.getUserModel(userName);
     }
 
@@ -147,18 +147,18 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         this.selectedLetter = selectedLetter;
     }
 
-    public DocumentModel getNewUser() throws ClientException {
+    public DocumentModel getNewUser() {
         if (newUser == null) {
             newUser = userManager.getBareUserModel();
         }
         return newUser;
     }
 
-    public boolean getAllowEditUser() throws ClientException {
+    public boolean getAllowEditUser() {
         return selectedUser != null && getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
-    protected boolean getCanEditUsers(boolean allowCurrentUser) throws ClientException {
+    protected boolean getCanEditUsers(boolean allowCurrentUser) {
         if (userManager.areUsersReadOnly()) {
             return false;
         }
@@ -192,15 +192,15 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return false;
     }
 
-    public boolean getAllowChangePassword() throws ClientException {
+    public boolean getAllowChangePassword() {
         return selectedUser != null && getCanEditUsers(true) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
-    public boolean getAllowCreateUser() throws ClientException {
+    public boolean getAllowCreateUser() {
         return getCanEditUsers(false);
     }
 
-    public boolean getAllowDeleteUser() throws ClientException {
+    public boolean getAllowDeleteUser() {
         return selectedUser != null && getCanEditUsers(false) && !BaseSession.isReadOnlyEntry(selectedUser);
     }
 
@@ -209,7 +209,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         fireSeamEvent(USERS_SEARCH_CHANGED);
     }
 
-    public void createUser() throws ClientException {
+    public void createUser() {
         try {
             if (immediateCreation) {
                 // Create the user with password
@@ -273,7 +273,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return defaultRepositoryName;
     }
 
-    public void updateUser() throws ClientException {
+    public void updateUser() {
         UpdateUserUnrestricted runner = new UpdateUserUnrestricted(getDefaultRepositoryName(), selectedUser);
         runner.runUnrestricted();
 
@@ -281,7 +281,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         fireSeamEvent(USERS_LISTING_CHANGED);
     }
 
-    public String changePassword() throws ClientException {
+    public String changePassword() {
         updateUser();
         detailsMode = DETAILS_VIEW_MODE;
 
@@ -292,7 +292,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return null;
     }
 
-    public void deleteUser() throws ClientException {
+    public void deleteUser() {
         userManager.deleteUser(selectedUser);
         selectedUser = null;
         showUserOrGroup = false;
@@ -342,10 +342,9 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
      *
      * @param groups
      * @return
-     * @throws ClientException
      * @since 5.9.2
      */
-    boolean isAllowedToAdminGroups(List<String> groups) throws ClientException {
+    boolean isAllowedToAdminGroups(List<String> groups) {
         NuxeoPrincipalImpl nuxeoPrincipal = (NuxeoPrincipalImpl) currentUser;
 
         if (!nuxeoPrincipal.isAdministrator()) {
@@ -442,7 +441,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return !Framework.isBooleanPropertyTrue("org.nuxeo.ecm.webapp.readonly.mode");
     }
 
-    public List<String> getUserVirtualGroups(String userId) throws ClientException {
+    public List<String> getUserVirtualGroups(String userId) {
         NuxeoPrincipal principal = userManager.getPrincipal(userId);
         if (principal instanceof NuxeoPrincipalImpl) {
             NuxeoPrincipalImpl user = (NuxeoPrincipalImpl) principal;
@@ -451,14 +450,14 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         return null;
     }
 
-    public String viewUser(String userName) throws ClientException {
+    public String viewUser(String userName) {
         webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + USERS_TAB);
         setSelectedUser(userName);
         setShowUser(Boolean.TRUE.toString());
         return VIEW_HOME;
     }
 
-    public String viewUser() throws ClientException {
+    public String viewUser() {
         if (selectedUser != null) {
             return viewUser(selectedUser.getId());
         } else {
@@ -481,7 +480,7 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
     }
 
     @Factory(value = "anonymousUserDefined", scope = APPLICATION)
-    public boolean anonymousUserDefined() throws ClientException {
+    public boolean anonymousUserDefined() {
         return userManager.getAnonymousUserId() != null;
     }
 

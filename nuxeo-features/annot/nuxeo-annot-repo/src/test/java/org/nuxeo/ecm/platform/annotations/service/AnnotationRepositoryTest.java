@@ -143,7 +143,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     }
 
     protected void newVersionSameAnnotations(CoreSession session, DocumentModel myfile, String uriAnnotatedDoc)
-            throws AnnotationException, URISyntaxException, ClientException {
+            throws AnnotationException, URISyntaxException {
         List<Annotation> annotations = service.queryAnnotations(new URI(uriAnnotatedDoc), null, user);
         log.debug(annotations.size() + " annotations for: " + uriAnnotatedDoc);
         assertEquals(0, annotations.size());
@@ -157,7 +157,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         assertEquals(1, annotations.size());
     }
 
-    protected void createVersion(CoreSession session, DocumentModel myfile, String comment) throws ClientException {
+    protected void createVersion(CoreSession session, DocumentModel myfile, String comment) {
         session.checkIn(myfile.getRef(), VersioningOption.MAJOR, comment);
         session.checkOut(myfile.getRef());
         session.save();

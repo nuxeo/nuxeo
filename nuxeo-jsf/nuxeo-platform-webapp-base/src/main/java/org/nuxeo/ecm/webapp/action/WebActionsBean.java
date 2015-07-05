@@ -426,7 +426,7 @@ public class WebActionsBean implements WebActions, Serializable {
     }
 
     @Deprecated
-    public String getCurrentLifeCycleState() throws ClientException {
+    public String getCurrentLifeCycleState() {
         // only user of documentManager in this bean, look it up by hand
         CoreSession documentManager = (CoreSession) Component.getInstance("documentManager");
         return documentManager.getCurrentLifeCycleState(navigationContext.getCurrentDocument().getRef());

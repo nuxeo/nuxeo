@@ -67,7 +67,7 @@ public class PictureMigrationHandler extends RepositoryInitializationHandler {
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
+    public void doInitializeRepository(CoreSession session) {
         boolean txStarted = false;
         if (!TransactionHelper.isTransactionActive()) {
             txStarted = true;

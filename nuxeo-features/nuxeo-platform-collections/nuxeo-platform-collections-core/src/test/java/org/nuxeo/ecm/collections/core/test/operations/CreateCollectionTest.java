@@ -44,7 +44,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class CreateCollectionTest extends CollectionOperationsTestCase {
 
     @Before
-    public void setup() throws ClientException {
+    public void setup() {
         testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         session.save();

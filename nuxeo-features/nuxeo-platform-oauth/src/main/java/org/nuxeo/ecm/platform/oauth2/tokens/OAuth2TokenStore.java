@@ -164,7 +164,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         }
     }
 
-    public NuxeoOAuth2Token refresh(String refreshToken, String clientId) throws ClientException {
+    public NuxeoOAuth2Token refresh(String refreshToken, String clientId) {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("clientId", clientId);
         filter.put("refreshToken", refreshToken);
@@ -192,7 +192,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         }
     }
 
-    public void delete(String token, String clientId) throws ClientException {
+    public void delete(String token, String clientId) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -210,7 +210,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
     /**
      * Retrieve an entry by it's accessToken
      */
-    public NuxeoOAuth2Token getToken(String token) throws ClientException {
+    public NuxeoOAuth2Token getToken(String token) {
         Map<String, Serializable> filter = new HashMap<>();
         filter.put("accessToken", token);
 
@@ -236,11 +236,11 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         }
     }
 
-    protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) throws ClientException {
+    protected NuxeoOAuth2Token getTokenFromDirectoryEntry(DocumentModel entry) {
         return new NuxeoOAuth2Token(entry);
     }
 
-    protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(NuxeoOAuth2Token aToken) throws ClientException {
+    protected NuxeoOAuth2Token storeTokenAsDirectoryEntry(NuxeoOAuth2Token aToken) {
         DirectoryService ds = Framework.getLocalService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.createEntry(aToken.toMap());

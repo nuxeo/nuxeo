@@ -254,13 +254,12 @@ public class DirectoryTest extends BaseTest {
 
     }
 
-    private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException, JsonGenerationException,
-            ClientException {
+    private String getDirectoryEntryAsJson(DocumentModel dirEntry) throws IOException, JsonGenerationException {
         return getDirectoryEntryAsJson(TESTDIRNAME, dirEntry);
     }
 
     private String getDirectoryEntryAsJson(String dirName, DocumentModel dirEntry) throws IOException,
-            JsonGenerationException, ClientException {
+            JsonGenerationException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(out);
         DirectoryEntryWriter dew = new DirectoryEntryWriter();

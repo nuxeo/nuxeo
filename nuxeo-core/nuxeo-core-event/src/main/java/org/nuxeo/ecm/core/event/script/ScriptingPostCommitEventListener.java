@@ -31,7 +31,7 @@ public class ScriptingPostCommitEventListener implements PostCommitEventListener
     }
 
     @Override
-    public void handleEvent(EventBundle bundle) throws ClientException {
+    public void handleEvent(EventBundle bundle) {
         Bindings bindings = new SimpleBindings();
         bindings.put("bundle", bundle);
         try {

@@ -26,7 +26,7 @@ public interface PathSegmentService {
      * @param doc the document
      * @return the path segment, which must not contain any {@code /} character
      */
-    String generatePathSegment(DocumentModel doc) throws ClientException;
+    String generatePathSegment(DocumentModel doc);
 
     /**
      * Generate the path segment to use from a string.
@@ -35,6 +35,6 @@ public interface PathSegmentService {
      * @return the path segment, which must not contain any {@code /} character
      * @since 5.9.2
      */
-    String generatePathSegment(String s) throws ClientException;
+    String generatePathSegment(String s);
 
 }

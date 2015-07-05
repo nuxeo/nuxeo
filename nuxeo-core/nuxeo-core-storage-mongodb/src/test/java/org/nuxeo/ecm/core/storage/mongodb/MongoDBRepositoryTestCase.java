@@ -169,7 +169,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         // DatabaseHelper.DATABASE.sleepForFulltext();
     }
 
-    public void openSession() throws ClientException {
+    public void openSession() {
         if (session != null) {
             log.warn("Closing session for you");
             closeSession();
@@ -178,11 +178,11 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         assertNotNull(session);
     }
 
-    public CoreSession openSessionAs(String username) throws ClientException {
+    public CoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(repositoryName, username);
     }
 
-    public CoreSession openSessionAs(NuxeoPrincipal principal) throws ClientException {
+    public CoreSession openSessionAs(NuxeoPrincipal principal) {
         return CoreInstance.openCoreSession(repositoryName, principal);
     }
 

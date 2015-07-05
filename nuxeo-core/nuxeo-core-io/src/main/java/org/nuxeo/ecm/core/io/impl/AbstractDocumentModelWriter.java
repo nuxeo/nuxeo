@@ -95,7 +95,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
         return translationMap;
     }
 
-    protected void saveIfNeeded() throws ClientException {
+    protected void saveIfNeeded() {
         if (unsavedDocuments >= saveInterval) {
             session.save();
             unsavedDocuments = 0;
@@ -123,7 +123,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
      * @param xdoc the document containing
      * @param toPath the path of the doc to create
      */
-    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath) throws ClientException {
+    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath) {
         Path parentPath = toPath.removeLastSegments(1);
         String name = toPath.lastSegment();
 
@@ -158,7 +158,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     /**
      * Updates an existing document.
      */
-    protected DocumentModel updateDocument(ExportedDocument xdoc, DocumentModel doc) throws ClientException {
+    protected DocumentModel updateDocument(ExportedDocument xdoc, DocumentModel doc) {
         // load schemas data
         loadSchemas(xdoc, doc, xdoc.getDocument());
 
@@ -181,7 +181,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean loadFacetsInfo(DocumentModel docModel, Document doc) throws ClientException {
+    protected boolean loadFacetsInfo(DocumentModel docModel, Document doc) {
         boolean added = false;
         Element system = doc.getRootElement().element(ExportConstants.SYSTEM_TAG);
         if (system == null) {
@@ -202,7 +202,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadSystemInfo(DocumentModel docModel, Document doc) throws ClientException {
+    protected void loadSystemInfo(DocumentModel docModel, Document doc) {
         Element system = doc.getRootElement().element(ExportConstants.SYSTEM_TAG);
 
         Element accessControl = system.element(ExportConstants.ACCESS_CONTROL_TAG);
@@ -237,7 +237,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     }
 
     @SuppressWarnings("unchecked")
-    protected void loadSchemas(ExportedDocument xdoc, DocumentModel docModel, Document doc) throws ClientException {
+    protected void loadSchemas(ExportedDocument xdoc, DocumentModel docModel, Document doc) {
         SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
         Iterator<Element> it = doc.getRootElement().elementIterator(ExportConstants.SCHEMA_TAG);
         while (it.hasNext()) {
@@ -253,7 +253,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
 
     @SuppressWarnings("unchecked")
     protected static void loadSchema(ExportedDocument xdoc, Schema schema, DocumentModel doc, Element schemaElement)
-            throws ClientException {
+            {
         String schemaName = schemaElement.attributeValue(ExportConstants.NAME_ATTR);
         Map<String, Object> data = new HashMap<String, Object>();
         Iterator<Element> it = schemaElement.elementIterator();

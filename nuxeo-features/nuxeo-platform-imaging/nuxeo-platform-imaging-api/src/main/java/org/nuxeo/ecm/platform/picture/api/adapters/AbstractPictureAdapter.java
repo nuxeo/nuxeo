@@ -167,7 +167,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         return Framework.getLocalService(ImagingService.class);
     }
 
-    protected ConversionService getConversionService() throws ClientException {
+    protected ConversionService getConversionService() {
         if (converionService == null) {
             converionService = Framework.getService(ConversionService.class);
         }
@@ -184,7 +184,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         return session;
     }
 
-    protected void setMetadata() throws IOException, ClientException {
+    protected void setMetadata() throws IOException {
         boolean imageInfoUsed = false;
         ImageInfo imageInfo = getImageInfo();
         if (imageInfo != null) {
@@ -277,13 +277,13 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         doc.setPropertyValue("iptc:writer", (String) metadata.get(META_WRITER));
     }
 
-    protected void clearViews() throws ClientException {
+    protected void clearViews() {
         List<Map<String, Object>> viewsList = new ArrayList<>();
         doc.getProperty(VIEWS_PROPERTY).setValue(viewsList);
     }
 
     protected void addViews(List<Map<String, Object>> pictureConversions, String filename, String title)
-            throws IOException, ClientException {
+            throws IOException {
         doc.setProperty("dublincore", "title", title);
         if (pictureConversions != null) {
             // Use PictureBook Properties
@@ -304,7 +304,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     public void createPictureimpl(String description, String tag, String title, Integer maxsize, String filename,
-            Integer width, Integer height, Integer depth, Blob fileContent) throws IOException, ClientException {
+            Integer width, Integer height, Integer depth, Blob fileContent) throws IOException {
         if (fileContent.getFilename() == null) {
             fileContent.setFilename(filename);
         }
@@ -341,7 +341,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
     }
 
     @Override
-    public boolean fillPictureViews(Blob blob, String filename, String title) throws IOException, ClientException {
+    public boolean fillPictureViews(Blob blob, String filename, String title) throws IOException {
         return fillPictureViews(blob, filename, title, null);
     }
 
@@ -417,11 +417,11 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
         }
     }
 
-    protected Blob getContentFromViews(Integer i) throws ClientException {
+    protected Blob getContentFromViews(Integer i) {
         return (Blob) doc.getPropertyValue(String.format(CONTENT_XPATH, i));
     }
 
-    protected Blob crop(Blob blob, Map<String, Serializable> coords) throws ClientException {
+    protected Blob crop(Blob blob, Map<String, Serializable> coords) {
         try {
             BlobHolder bh = new SimpleBlobHolder(blob);
             String type = blob.getMimeType();

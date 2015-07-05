@@ -89,7 +89,7 @@ public class CommentManagerImpl implements CommentManager {
         commentConverter = config.getCommentConverter();
     }
 
-    public List<DocumentModel> getComments(DocumentModel docModel) throws ClientException {
+    public List<DocumentModel> getComments(DocumentModel docModel) {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
                 ResourceAdapter.CORE_SESSION_CONTEXT_KEY, docModel.getCoreSession());
         RelationManager relationManager = Framework.getService(RelationManager.class);
@@ -135,7 +135,7 @@ public class CommentManagerImpl implements CommentManager {
         return commentList;
     }
 
-    public DocumentModel createComment(DocumentModel docModel, String comment, String author) throws ClientException {
+    public DocumentModel createComment(DocumentModel docModel, String comment, String author) {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel commentDM = session.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
             commentDM.setPropertyValue(CommentsConstants.COMMENT_TEXT, comment);
@@ -148,7 +148,7 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    public DocumentModel createComment(DocumentModel docModel, String comment) throws ClientException {
+    public DocumentModel createComment(DocumentModel docModel, String comment) {
         String author = getCurrentUser(docModel);
         return createComment(docModel, comment, author);
     }
@@ -158,9 +158,8 @@ public class CommentManagerImpl implements CommentManager {
      *
      * @param docModel The document model that holds the session id
      * @param comment The comment to update
-     * @throws ClientException
      */
-    private static String updateAuthor(DocumentModel docModel, DocumentModel comment) throws ClientException {
+    private static String updateAuthor(DocumentModel docModel, DocumentModel comment) {
         // update the author if not set
         String author = (String) comment.getProperty("comment", "author");
         if (author == null) {
@@ -171,7 +170,7 @@ public class CommentManagerImpl implements CommentManager {
         return author;
     }
 
-    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws ClientException {
+    public DocumentModel createComment(DocumentModel docModel, DocumentModel comment) {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel doc = internalCreateComment(session, docModel, comment, null);
             session.save();
@@ -181,7 +180,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     protected DocumentModel internalCreateComment(CoreSession session, DocumentModel docModel, DocumentModel comment,
-            String path) throws ClientException {
+            String path) {
         String author = updateAuthor(docModel, comment);
         DocumentModel createdComment;
 
@@ -222,7 +221,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     private DocumentModel createCommentDocModel(CoreSession mySession, DocumentModel docModel, DocumentModel comment,
-            String path) throws ClientException {
+            String path) {
 
         String domainPath;
         updateAuthor(docModel, comment);
@@ -278,7 +277,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     private static void notifyEvent(CoreSession session, DocumentModel docModel, String eventType,
-            DocumentModel parent, DocumentModel child, NuxeoPrincipal principal) throws ClientException {
+            DocumentModel parent, DocumentModel child, NuxeoPrincipal principal) {
 
         DocumentEventContext ctx = new DocumentEventContext(session, principal, docModel);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -341,7 +340,7 @@ public class CommentManagerImpl implements CommentManager {
      * @deprecated if the caller is remote, we cannot obtain the session
      */
     @Deprecated
-    private static String getCurrentUser(DocumentModel target) throws ClientException {
+    private static String getCurrentUser(DocumentModel target) {
         CoreSession userSession = target.getCoreSession();
         if (userSession == null) {
             throw new ClientException("userSession is null, do not invoke this method when the user is not local");
@@ -349,7 +348,7 @@ public class CommentManagerImpl implements CommentManager {
         return userSession.getPrincipal().getName();
     }
 
-    private String getCommentName(DocumentModel target, DocumentModel comment) throws ClientException {
+    private String getCommentName(DocumentModel target, DocumentModel comment) {
         String author = (String) comment.getProperty("comment", "author");
         if (author == null) {
             author = getCurrentUser(target);
@@ -371,7 +370,7 @@ public class CommentManagerImpl implements CommentManager {
         return creationDate.getTime();
     }
 
-    public void deleteComment(DocumentModel docModel, DocumentModel comment) throws ClientException {
+    public void deleteComment(DocumentModel docModel, DocumentModel comment) {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef ref = comment.getRef();
             if (!session.exists(ref)) {
@@ -388,7 +387,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child)
-            throws ClientException {
+            {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel parentDocModel = session.getDocument(parent.getRef());
             DocumentModel newComment = internalCreateComment(session, parentDocModel, child, null);
@@ -409,11 +408,11 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) throws ClientException {
+    public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) {
         return getComments(parent);
     }
 
-    public List<DocumentModel> getDocumentsForComment(DocumentModel comment) throws ClientException {
+    public List<DocumentModel> getDocumentsForComment(DocumentModel comment) {
         Map<String, Object> ctxMap = Collections.<String, Object> singletonMap(
                 ResourceAdapter.CORE_SESSION_CONTEXT_KEY, comment.getCoreSession());
         RelationManager relationManager = Framework.getService(RelationManager.class);
@@ -450,7 +449,7 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
-            throws ClientException {
+            {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentModel createdComment = internalCreateComment(session, docModel, comment, path);
             session.save();
@@ -458,7 +457,7 @@ public class CommentManagerImpl implements CommentManager {
         }
     }
 
-    public DocumentModel getThreadForComment(DocumentModel comment) throws ClientException {
+    public DocumentModel getThreadForComment(DocumentModel comment) {
         List<DocumentModel> threads = getDocumentsForComment(comment);
         if (threads.size() > 0) {
             DocumentModel thread = (DocumentModel) threads.get(0);

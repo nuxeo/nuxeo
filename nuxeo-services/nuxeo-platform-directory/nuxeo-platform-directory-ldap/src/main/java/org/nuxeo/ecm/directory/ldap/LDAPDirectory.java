@@ -89,7 +89,7 @@ public class LDAPDirectory extends AbstractDirectory {
     // the following attribute is only used for testing purpose
     protected ContextProvider testServer;
 
-    public LDAPDirectory(LDAPDirectoryDescriptor config) throws ClientException {
+    public LDAPDirectory(LDAPDirectoryDescriptor config) {
         super(config.name);
         this.config = config;
         factory = (LDAPDirectoryFactory) Framework.getRuntime().getComponent(LDAPDirectoryFactory.NAME);

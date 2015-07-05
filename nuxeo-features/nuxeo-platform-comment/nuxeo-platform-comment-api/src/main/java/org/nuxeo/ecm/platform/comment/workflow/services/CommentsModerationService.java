@@ -30,10 +30,8 @@ public interface CommentsModerationService {
      * @param session the coreSession
      * @param document the document were the comment is posted
      * @param commentId the commentId
-     * @throws ClientException
      */
-    void startModeration(CoreSession session, DocumentModel document, String commentId, ArrayList<String> moderators)
-            throws ClientException;
+    void startModeration(CoreSession session, DocumentModel document, String commentId, ArrayList<String> moderators);
 
     /**
      * Approve the comment with the given commentId.
@@ -41,9 +39,8 @@ public interface CommentsModerationService {
      * @param session the coreSession
      * @param document the document were the comment is posted
      * @param commentId the commentId
-     * @throws ClientException
      */
-    void approveComent(CoreSession session, DocumentModel document, String commentId) throws ClientException;
+    void approveComent(CoreSession session, DocumentModel document, String commentId);
 
     /**
      * Reject the comment with the given commentId.
@@ -51,17 +48,15 @@ public interface CommentsModerationService {
      * @param session the coreSession
      * @param document the document were the comment is posted
      * @param commentId the commentId
-     * @throws ClientException
      */
-    void rejectComment(CoreSession session, DocumentModel document, String commentId) throws ClientException;
+    void rejectComment(CoreSession session, DocumentModel document, String commentId);
 
     /**
      * Publish the given comment.
      *
      * @param session the coreSession
      * @param comment the comment to publish
-     * @throws ClientException
      */
-    void publishComment(CoreSession session, DocumentModel comment) throws ClientException;
+    void publishComment(CoreSession session, DocumentModel comment);
 
 }

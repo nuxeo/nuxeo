@@ -63,11 +63,10 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param dueDate the due date, set on the task instance
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
-     * @throws ClientException
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document, String taskName,
             List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) throws ClientException;
+            Date dueDate, Map<String, String> taskVariables, String parentPath);
 
     /**
      * Creates a task and starts it. Notifies events with names {@link TaskEventNames#WORKFLOW_TASK_ASSIGNED} and
@@ -88,13 +87,11 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param dueDate the due date, set on the task instance
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
-     * @throws ClientException
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document, String taskName,
             String taskType, String processId, List<String> prefixedActorIds, boolean createOneTaskPerActor,
-            String directive, String comment, Date dueDate, Map<String, String> taskVariables, String parentPath)
-            throws ClientException;
+            String directive, String comment, Date dueDate, Map<String, String> taskVariables, String parentPath);
 
     /**
      * Creates a task of the given document type and starts it. Notifies events with names
@@ -118,14 +115,12 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
      * @param eventInfo
-     * @throws ClientException
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
-            throws ClientException;
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo);
 
     /**
      * Creates a task of the given documents type and starts it. Notifies events with names
@@ -149,31 +144,26 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param taskVariables additional task variables
      * @param parentPath /task-root if null
      * @param eventInfo
-     * @throws ClientException
      * @since 5.6
      */
     List<Task> createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo)
-            throws ClientException;
+            Map<String, String> taskVariables, String parentPath, Map<String, Serializable> eventInfo);
 
     /**
      * Returns true if user is an administrator, the initiator of the task, or an actor of the task.
      *
-     * @throws ClientException
      */
-    boolean canEndTask(NuxeoPrincipal principal, Task task) throws ClientException;
+    boolean canEndTask(NuxeoPrincipal principal, Task task);
 
     /**
      * Ends the task using event name {@link TaskEventNames#WORKFLOW_TASK_COMPLETED} and marking the task as validated.
      *
      * @see #endTask(CoreSession, NuxeoPrincipal, Task, String, String, boolean)
      * @return the name of the Seam event to raise
-     * @throws ClientException
      */
-    String acceptTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment)
-            throws ClientException;
+    String acceptTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment);
 
     /**
      * Ends the task using event name {@link TaskEventNames#WORKFLOW_TASK_REJECTED} and marking the task as not
@@ -181,10 +171,8 @@ public interface TaskService extends Serializable, TaskProvider {
      *
      * @see #endTask(CoreSession, NuxeoPrincipal, Task, String, String, boolean)
      * @return the name of the Seam event to raise
-     * @throws ClientException
      */
-    String rejectTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment)
-            throws ClientException;
+    String rejectTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment);
 
     /**
      * Ends the task
@@ -201,32 +189,30 @@ public interface TaskService extends Serializable, TaskProvider {
      */
     @Override
     String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment, String eventName,
-            boolean isValidated) throws ClientException;
+            boolean isValidated);
 
     /**
      * Remove the documentTask identified by the given taskId if coreSession's principal has the Remove permission.
      *
      * @param coreSession
      * @param taskId
-     * @throws ClientException
      * @Since 5.5
      */
-    void deleteTask(CoreSession coreSession, String taskId) throws ClientException;
+    void deleteTask(CoreSession coreSession, String taskId);
 
     /**
      * @param ti the task.
      * @param user the user.
      * @return the task's target document.
      */
-    DocumentModel getTargetDocumentModel(Task ti, CoreSession coreSession) throws ClientException;
+    DocumentModel getTargetDocumentModel(Task ti, CoreSession coreSession);
 
     /**
      * @param coreSession
      * @param taskId
      * @return the taskDocument with the given taskId
-     * @throws ClientException
      */
-    Task getTask(CoreSession coreSession, String taskId) throws ClientException;
+    Task getTask(CoreSession coreSession, String taskId);
 
     /**
      * Default value is /task-root
@@ -245,7 +231,7 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param actors
      * @since 5.7.3
      */
-    void reassignTask(CoreSession session, String taskId, List<String> actors, String comment) throws ClientException;
+    void reassignTask(CoreSession session, String taskId, List<String> actors, String comment);
 
     /**
      * Delegates the given task to the list of actors. The new actors are granted 'Manage everything' on the task
@@ -256,6 +242,6 @@ public interface TaskService extends Serializable, TaskProvider {
      * @param actors
      * @since 5.8
      */
-    void delegateTask(CoreSession session, String taskId, List<String> actors, String comment) throws ClientException;
+    void delegateTask(CoreSession session, String taskId, List<String> actors, String comment);
 
 }

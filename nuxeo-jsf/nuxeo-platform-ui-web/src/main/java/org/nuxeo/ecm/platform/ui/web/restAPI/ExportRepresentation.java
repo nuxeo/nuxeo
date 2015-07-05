@@ -79,8 +79,7 @@ public abstract class ExportRepresentation extends OutputRepresentation {
      * @param root the root of the export
      * @return the document reader
      */
-    protected abstract DocumentReader makeDocumentReader(CoreSession documentManager, DocumentModel root)
-            throws ClientException;
+    protected abstract DocumentReader makeDocumentReader(CoreSession documentManager, DocumentModel root);
 
     /**
      * Create a {@link DocumentWriter} for the export.

@@ -58,7 +58,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     }
 
     @Override
-    protected boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data) throws ClientException {
+    protected boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data) {
 
         for (Event event : events) {
             if (VirusScanConsts.VIRUS_SCAN_NEEDED_EVENT.equals(event.getName())) {
@@ -87,7 +87,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     }
 
     @Override
-    protected boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data) throws ClientException {
+    protected boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data) {
 
         boolean doContinue = false;
         ScanService scanService = Framework.getLocalService(ScanService.class);
@@ -112,7 +112,7 @@ public class VirusScannerProcessor extends AbstractLongRunningListener {
     }
 
     @Override
-    protected void handleEventPostprocessing(EventBundle events, Map<String, Object> data) throws ClientException {
+    protected void handleEventPostprocessing(EventBundle events, Map<String, Object> data) {
 
         for (Event event : events) {
             if (VirusScanConsts.VIRUS_SCAN_NEEDED_EVENT.equals(event.getName())) {

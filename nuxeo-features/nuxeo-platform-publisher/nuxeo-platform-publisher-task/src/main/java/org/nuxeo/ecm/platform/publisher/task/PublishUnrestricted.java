@@ -46,7 +46,7 @@ public class PublishUnrestricted extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         newProxy = session.publishDocument(docToPublish, sectionToPublishTo, overwriteProxy);
         session.save();
     }

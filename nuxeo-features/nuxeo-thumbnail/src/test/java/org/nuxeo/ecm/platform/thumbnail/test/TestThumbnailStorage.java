@@ -73,7 +73,7 @@ public class TestThumbnailStorage {
     }
 
     @Test
-    public void testCreation() throws ClientException, IOException {
+    public void testCreation() throws IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
         // Attach a blob
@@ -95,7 +95,7 @@ public class TestThumbnailStorage {
     }
 
     @Test
-    public void testUpdate() throws ClientException, IOException {
+    public void testUpdate() throws IOException {
         DocumentModel root = session.getRootDocument();
         DocumentModel file = new DocumentModelImpl(root.getPathAsString(), "File", "File");
         file = session.createDocument(file);

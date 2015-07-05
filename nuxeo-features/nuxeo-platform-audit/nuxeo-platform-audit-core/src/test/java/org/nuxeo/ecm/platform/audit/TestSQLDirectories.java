@@ -57,7 +57,7 @@ public class TestSQLDirectories extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.audit.tests", "OSGI-INF/test-directories-contrib.xml");
     }
 
-    protected static Session getSession(String dirName) throws ClientException {
+    protected static Session getSession(String dirName) {
         DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         return dirService.open(dirName);
     }

@@ -115,7 +115,7 @@ public class TestSecurityPolicy {
         syncMode = false;
     }
 
-    protected void buildDocs() throws ClientException {
+    protected void buildDocs() {
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc.setPropertyValue("dc:title", "folder");
         session.createDocument(doc);

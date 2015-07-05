@@ -43,7 +43,7 @@ public class TestNuxeoPrincipalImpl extends NXRuntimeTestCase {
 
     @SuppressWarnings({ "SimplifiableJUnitAssertion", "ObjectEqualsNull" })
     @Test
-    public void testEquals() throws ClientException {
+    public void testEquals() {
         NuxeoPrincipalImpl a = new NuxeoPrincipalImpl("foo");
         NuxeoPrincipalImpl b = new NuxeoPrincipalImpl("foo");
         NuxeoPrincipalImpl c = new NuxeoPrincipalImpl("bar");

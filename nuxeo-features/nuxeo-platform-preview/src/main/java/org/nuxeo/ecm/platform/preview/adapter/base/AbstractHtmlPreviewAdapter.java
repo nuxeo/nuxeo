@@ -71,7 +71,7 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
         return PreviewHelper.getPreviewURL(adaptedDoc, xpath);
     }
 
-    protected String updateTitleInHtml(String htmlContent) throws ClientException {
+    protected String updateTitleInHtml(String htmlContent) {
         Matcher m = TITLE_PATTERN.matcher(htmlContent);
         // if (m.matches())
         // return m.replaceFirst("<title>" + getPreviewTitle() + "</title>");
@@ -83,13 +83,13 @@ public abstract class AbstractHtmlPreviewAdapter implements HtmlPreviewAdapter {
         return htmlContent;
     }
 
-    protected void updateTitleInHtml(File file) throws IOException, ClientException {
+    protected void updateTitleInHtml(File file) throws IOException {
         String htmlContent = FileUtils.readFile(file);
         htmlContent = updateTitleInHtml(htmlContent);
         FileUtils.writeFile(file, htmlContent);
     }
 
-    protected String getPreviewTitle() throws ClientException {
+    protected String getPreviewTitle() {
         StringBuilder sb = new StringBuilder();
 
         sb.append(adaptedDoc.getTitle());

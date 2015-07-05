@@ -68,7 +68,7 @@ public class DirectoryEntryObject extends DefaultObject {
         return withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
             @Override
-            DirectoryEntry run(Session session) throws ClientException {
+            DirectoryEntry run(Session session) {
                 DocumentModel docEntry = entry.getDocumentModel();
                 session.updateEntry(docEntry);
 
@@ -91,7 +91,7 @@ public class DirectoryEntryObject extends DefaultObject {
         withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
             @Override
-            DirectoryEntry run(Session session) throws ClientException {
+            DirectoryEntry run(Session session) {
                 session.deleteEntry(entry.getDocumentModel());
                 return null;
             }

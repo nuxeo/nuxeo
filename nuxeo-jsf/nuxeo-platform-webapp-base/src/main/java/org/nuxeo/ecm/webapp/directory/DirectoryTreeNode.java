@@ -125,7 +125,7 @@ public class DirectoryTreeNode {
     }
 
     @SuppressWarnings("unchecked")
-    public String selectNode() throws ClientException {
+    public String selectNode() {
         if (config.hasContentViewSupport()) {
             DocumentModel searchDoc = getContentViewSearchDocumentModel();
             if (searchDoc != null) {
@@ -155,7 +155,7 @@ public class DirectoryTreeNode {
     }
 
     @SuppressWarnings("unchecked")
-    public boolean isSelected() throws ClientException {
+    public boolean isSelected() {
         if (config.hasContentViewSupport()) {
             DocumentModel searchDoc = getContentViewSearchDocumentModel();
             if (searchDoc != null) {
@@ -241,7 +241,7 @@ public class DirectoryTreeNode {
         return label;
     }
 
-    protected DocumentModelList getChildrenEntries() throws ClientException {
+    protected DocumentModelList getChildrenEntries() {
         if (childrenEntries != null) {
             // memorized directory lookup since directory content is not
             // suppose to change
@@ -317,7 +317,7 @@ public class DirectoryTreeNode {
         return directoryService;
     }
 
-    protected String getDirectoryName() throws ClientException {
+    protected String getDirectoryName() {
         String name = config.getDirectories()[level];
         if (name == null) {
             throw new ClientException("could not find directory name for level=" + level);
@@ -325,15 +325,15 @@ public class DirectoryTreeNode {
         return name;
     }
 
-    protected String getDirectorySchema() throws ClientException {
+    protected String getDirectorySchema() {
         return getDirectoryService().getDirectorySchema(getDirectoryName());
     }
 
-    protected Session getDirectorySession() throws ClientException {
+    protected Session getDirectorySession() {
         return getDirectoryService().open(getDirectoryName());
     }
 
-    protected void lookupContentView() throws ClientException {
+    protected void lookupContentView() {
         if (contentView != null) {
             return;
         }
@@ -345,7 +345,7 @@ public class DirectoryTreeNode {
         }
     }
 
-    protected DocumentModel getContentViewSearchDocumentModel() throws ClientException {
+    protected DocumentModel getContentViewSearchDocumentModel() {
         lookupContentView();
         if (contentView != null) {
             return contentView.getSearchDocumentModel();

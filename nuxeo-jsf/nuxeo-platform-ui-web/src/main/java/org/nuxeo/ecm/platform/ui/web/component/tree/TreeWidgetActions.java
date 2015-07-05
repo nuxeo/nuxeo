@@ -98,7 +98,7 @@ public class TreeWidgetActions implements Serializable {
     /**
      * Returns the {@code DocumentModel} referenced by the given path if exists, {@code null} otherwise.
      */
-    public DocumentModel getDocumentFromPath(String path) throws ClientException {
+    public DocumentModel getDocumentFromPath(String path) {
         // handle root document differently as user may not have browse rights
         // on it
         if ("/".equals(path)) {

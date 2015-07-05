@@ -35,38 +35,36 @@ public interface CommentableDocument extends Serializable {
      *
      * @return the list of comments
      */
-    List<DocumentModel> getComments() throws ClientException;
+    List<DocumentModel> getComments();
 
     /**
      * Returns the comments for this document that are replied to a parent comment.
      *
      * @param parent the parent comment
      * @return the comments for the parent comment
-     * @throws ClientException
      */
-    List<DocumentModel> getComments(DocumentModel parent) throws ClientException;
+    List<DocumentModel> getComments(DocumentModel parent);
 
     /**
      * Removes a comment from the document comment list.
      *
      * @param comment
      */
-    void removeComment(DocumentModel comment) throws ClientException;
+    void removeComment(DocumentModel comment);
 
     /**
      * Creates a new comment.
      *
      * @param comment
      */
-    DocumentModel addComment(DocumentModel comment) throws ClientException;
+    DocumentModel addComment(DocumentModel comment);
 
     /**
      * Creates a new comment as a reply to an existing comment.
      *
      * @param parent the parent comment, which must exist
      * @param comment the comment to be added
-     * @throws ClientException
      */
-    DocumentModel addComment(DocumentModel parent, DocumentModel comment) throws ClientException;
+    DocumentModel addComment(DocumentModel parent, DocumentModel comment);
 
 }

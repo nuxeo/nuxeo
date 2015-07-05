@@ -183,8 +183,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
         for (DocumentModel doc : lst) {
 
             if (desc.getPersistent()) {
-                if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc))
-                    ;
+                if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc));
                 docList.remove(doc);
             } else
                 docList.remove(doc);
@@ -202,8 +201,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
 
         // FIXME needs to be checked
         if (desc.getPersistent()) {
-            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc))
-                ;
+            if (getPersistenceManager().removeDocumentFromPersistentList(userName, listName, doc));
             docList.remove(doc);
         } else
             docList.remove(doc);
@@ -238,8 +236,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
             if (!docRefList.contains(doc.getRef())) {
                 if (currentListIsPersistent) {
                     if (getPersistenceManager().addDocumentToPersistentList(userName, listName, doc)) {
-                        // Strange, CHECKME
-                        ;
+                        // Strange, CHECKME;
                     }
                     currentDocList.add(doc);
                 } else {
@@ -268,8 +265,7 @@ public abstract class BaseDocumentsListsManager implements Serializable {
         if (!docRefList.contains(doc.getRef())) {
             if (currentListIsPersistent) {
                 if (getPersistenceManager().addDocumentToPersistentList(userName, listName, doc)) {
-                    // Strange, CHECKME
-                    ;
+                    // Strange, CHECKME;
                 }
                 docList.add(doc);
             } else {

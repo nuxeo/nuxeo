@@ -46,7 +46,7 @@ public class BusinessCreateOperation {
     protected String name;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException {
+    public BusinessAdapter run(BusinessAdapter input) {
         DocumentModel document = input.getDocument();
         DocumentModel createDocumentModel = session.createDocumentModel(parentPath, name, input.getType());
 

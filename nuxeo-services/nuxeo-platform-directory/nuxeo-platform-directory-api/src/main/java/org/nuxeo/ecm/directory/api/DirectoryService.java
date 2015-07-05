@@ -36,7 +36,7 @@ public interface DirectoryService {
 
     ComponentName NAME = new ComponentName("org.nuxeo.ecm.directory.DirectoryServiceImpl");
 
-    List<String> getDirectoryNames() throws ClientException;
+    List<String> getDirectoryNames();
 
     String getDirectorySchema(String directoryName) throws DirectoryException;
 

@@ -29,16 +29,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface CommentManager {
 
-    List<DocumentModel> getComments(DocumentModel docModel) throws ClientException;
+    List<DocumentModel> getComments(DocumentModel docModel);
 
-    List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) throws ClientException;
+    List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent);
 
     /**
      * @deprecated CommentManager cannot find the author if invoked remotely so one should use
      *             {@link #createComment(DocumentModel, String, String)}
      */
     @Deprecated
-    DocumentModel createComment(DocumentModel docModel, String comment) throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, String comment);
 
     /**
      * Creates a comment document model, filling its properties with given info and linking it to given document.
@@ -47,35 +47,31 @@ public interface CommentManager {
      * @param comment the comment content
      * @param author the comment author
      * @return the comment document model.
-     * @throws ClientException
      */
-    DocumentModel createComment(DocumentModel docModel, String comment, String author) throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, String comment, String author);
 
-    DocumentModel createComment(DocumentModel docModel, DocumentModel comment) throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, DocumentModel comment);
 
-    DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child)
-            throws ClientException;
+    DocumentModel createComment(DocumentModel docModel, DocumentModel parent, DocumentModel child);
 
-    void deleteComment(DocumentModel docModel, DocumentModel comment) throws ClientException;
+    void deleteComment(DocumentModel docModel, DocumentModel comment);
 
     /**
      * Gets documents in relation with a particular comment.
      *
      * @param comment the comment
      * @return the list of documents
-     * @throws ClientException
      */
-    List<DocumentModel> getDocumentsForComment(DocumentModel comment) throws ClientException;
+    List<DocumentModel> getDocumentsForComment(DocumentModel comment);
 
     /**
      * Gets thread in relation with a given comment (post or comment)
      *
      * @param comment
      * @return
-     * @throws ClientException
      * @since 5.5
      */
-    DocumentModel getThreadForComment(DocumentModel comment) throws ClientException;
+    DocumentModel getThreadForComment(DocumentModel comment);
 
     /**
      * Creates a comment document model. It gives opportunity to save the comments in a specified location.
@@ -84,9 +80,7 @@ public interface CommentManager {
      * @param comment the comment content
      * @param path the location path
      * @return the comment document model.
-     * @throws ClientException
      */
-    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path)
-            throws ClientException;
+    DocumentModel createLocatedComment(DocumentModel docModel, DocumentModel comment, String path);
 
 }

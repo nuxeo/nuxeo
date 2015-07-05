@@ -55,7 +55,7 @@ public class PlatformFunctionTest {
     }
 
     @Test
-    public void shouldConcatenateWithStringScalar() throws ClientException {
+    public void shouldConcatenateWithStringScalar() {
         List<String> result = pf.concatenateValuesAsNewList(listOfString, stringValue1);
         assertEquals(3, result.size());
         assertEquals("value list 1", result.get(0));
@@ -64,7 +64,7 @@ public class PlatformFunctionTest {
     }
 
     @Test
-    public void shouldConcatenateWithIntegerScalar() throws ClientException {
+    public void shouldConcatenateWithIntegerScalar() {
         List<Integer> result = pf.concatenateValuesAsNewList(listOfInteger, intValue1);
         assertEquals(3, result.size());
         assertEquals(new Integer(-1), result.get(0));
@@ -73,7 +73,7 @@ public class PlatformFunctionTest {
     }
 
     @Test
-    public void shouldConcatenateListString() throws ClientException {
+    public void shouldConcatenateListString() {
         List<String> result = pf.concatenateValuesAsNewList(listOfString, arrayOfString, stringValue1);
         assertEquals(5, result.size());
         assertEquals("value list 1", result.get(0));
@@ -84,7 +84,7 @@ public class PlatformFunctionTest {
     }
 
     @Test
-    public void shouldConcatenateListInteger() throws ClientException {
+    public void shouldConcatenateListInteger() {
         List<Integer> result = pf.concatenateValuesAsNewList(listOfInteger, arrayOfInteger, intValue1);
         assertEquals(5, result.size());
         assertEquals(new Integer(-1), result.get(0));

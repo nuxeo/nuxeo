@@ -73,7 +73,7 @@ public class AdminViewManager implements Serializable {
         return VIEW_ADMIN;
     }
 
-    public String exit() throws ClientException {
+    public String exit() {
         if (lastVisitedDocument != null) {
             return navigationContext.navigateToDocument(lastVisitedDocument);
         } else {

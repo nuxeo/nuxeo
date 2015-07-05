@@ -20,7 +20,7 @@ public class DirectoryServiceImplMock extends DirectoryServiceImpl {
         DirectoryConfiguration conf = new DirectoryConfiguration() {
 
             @Override
-            public void save(CoreSession session) throws ClientException {
+            public void save(CoreSession session) {
                 throw new UnsupportedOperationException();
             }
 

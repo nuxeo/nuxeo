@@ -346,7 +346,7 @@ public class TestContentViewState {
     }
 
     protected void checkContentViewStateWithSearchDoc(ContentViewState state, boolean withQueryParams,
-            boolean withSortInfos, boolean withPP) throws ClientException {
+            boolean withSortInfos, boolean withPP) {
         assertNotNull(state);
         assertEquals("CURRENT_DOCUMENT_CHILDREN_WITH_SEARCH_DOCUMENT", state.getContentViewName());
         if (withPP) {

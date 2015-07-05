@@ -162,7 +162,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
         }
     }
 
-    protected void setMimeType(BlobHolder result) throws ClientException {
+    protected void setMimeType(BlobHolder result) {
         for (Blob blob : result.getBlobs()) {
             if ((blob.getMimeType() == null || blob.getMimeType().startsWith("application/octet-stream"))
                     && blob.getFilename().endsWith("html")) {

@@ -57,7 +57,6 @@ public class TypeManagerBusinessDelegate implements Serializable {
      * Acquires a new {@link TypeManager} reference. The related EJB may be deployed on a local or remote AppServer.
      *
      * @return
-     * @throws ClientException
      */
     @Unwrap
     public TypeManager getTypeManager() {

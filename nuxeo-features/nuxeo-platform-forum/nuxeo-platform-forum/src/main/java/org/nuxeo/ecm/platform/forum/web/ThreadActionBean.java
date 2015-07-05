@@ -104,7 +104,7 @@ public class ThreadActionBean implements ThreadAction {
 
     protected NuxeoPrincipal principal;
 
-    public String addThread() throws ClientException {
+    public String addThread() {
 
         // The thread to be created
         DocumentModel docThread = getThreadModel();
@@ -131,7 +131,7 @@ public class ThreadActionBean implements ThreadAction {
     /**
      * Gets the Thread to create as a DocumentModel.
      */
-    protected DocumentModel getThreadModel() throws ClientException {
+    protected DocumentModel getThreadModel() {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String path = currentDocument.getPathAsString();
@@ -204,13 +204,13 @@ public class ThreadActionBean implements ThreadAction {
         return false;
     }
 
-    public boolean isCurrentThreadModerated() throws ClientException {
+    public boolean isCurrentThreadModerated() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
         return isThreadModerated(currentThread);
     }
 
     @Factory(value = "currentThreadPosts", scope = EVENT)
-    public List<ThreadEntry> getPostsAsThread() throws ClientException {
+    public List<ThreadEntry> getPostsAsThread() {
         List<ThreadEntry> basicCommentList = null;
 
         // Thread is not moderated, we return all Posts
@@ -261,7 +261,7 @@ public class ThreadActionBean implements ThreadAction {
         return adapter;
     }
 
-    public List<DocumentModel> getAllPosts(DocumentModel thread, String state) throws ClientException {
+    public List<DocumentModel> getAllPosts(DocumentModel thread, String state) {
 
         thread = getDocumentThreadModel(thread.getRef());
         List<DocumentModel> allPosts = Collections.emptyList();
@@ -285,11 +285,11 @@ public class ThreadActionBean implements ThreadAction {
         return allPosts;
     }
 
-    public List<DocumentModel> getPostsPublished(DocumentModel thread) throws ClientException {
+    public List<DocumentModel> getPostsPublished(DocumentModel thread) {
         return getAllPosts(thread, ForumConstants.PUBLISHED_STATE);
     }
 
-    public List<DocumentModel> getPostsPending(DocumentModel thread) throws ClientException {
+    public List<DocumentModel> getPostsPending(DocumentModel thread) {
         return getAllPosts(thread, ForumConstants.PENDING_STATE);
     }
 
@@ -333,7 +333,7 @@ public class ThreadActionBean implements ThreadAction {
         this.moderated = moderated;
     }
 
-    public DocumentModel getLastPostPublished(DocumentModel thread) throws ClientException {
+    public DocumentModel getLastPostPublished(DocumentModel thread) {
 
         thread = getDocumentThreadModel(thread.getRef());
         List<DocumentModel> posts = getPostsPublished(thread);
@@ -352,14 +352,14 @@ public class ThreadActionBean implements ThreadAction {
         return lastPost;
     }
 
-    public String getModerationAsString(DocumentModel thread) throws ClientException {
+    public String getModerationAsString(DocumentModel thread) {
         if (isThreadModerated(thread)) {
             return resourcesAccessor.getMessages().get("label.forum.thread.moderated.yes");
         }
         return resourcesAccessor.getMessages().get("label.forum.thread.moderated.no");
     }
 
-    public boolean isThreadModerated(DocumentModel thread) throws ClientException {
+    public boolean isThreadModerated(DocumentModel thread) {
         if (thread != null) {
             thread = getDocumentThreadModel(thread.getRef());
             if (thread != null) {
@@ -372,7 +372,7 @@ public class ThreadActionBean implements ThreadAction {
         return false;
     }
 
-    public DocumentModel getParentPost(int post) throws ClientException {
+    public DocumentModel getParentPost(int post) {
         DocumentModel parentPost = null;
 
         List<ThreadEntry> posts = getPostsAsThread();
@@ -386,7 +386,7 @@ public class ThreadActionBean implements ThreadAction {
         return parentPost;
     }
 
-    public boolean isParentPostPublished(int post) throws ClientException {
+    public boolean isParentPostPublished(int post) {
 
         DocumentModel parent = getParentPost(post);
         if (parent == null) {
@@ -400,7 +400,7 @@ public class ThreadActionBean implements ThreadAction {
     /**
      * Gets the thread for a given document reference.
      */
-    protected DocumentModel getDocumentThreadModel(DocumentRef threadRef) throws ClientException {
+    protected DocumentModel getDocumentThreadModel(DocumentRef threadRef) {
         DocumentModel thread = null;
         if (threadRef != null) {
             thread = documentManager.getDocument(threadRef);

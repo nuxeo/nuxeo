@@ -142,7 +142,7 @@ public class EventOperationsTest {
     }
 
     @Test
-    public void testShallowFiltering() throws ClientException {
+    public void testShallowFiltering() {
         DocumentModel doc = session.createDocumentModel("/src", "myfile", "File");
         doc.setPropertyValue("dc:description", "ChangeMySource");
         doc = session.createDocument(doc);
@@ -154,7 +154,7 @@ public class EventOperationsTest {
     }
 
     @Test
-    public void testDynamicHandlerRegistring() throws ClientException {
+    public void testDynamicHandlerRegistring() {
         EventHandler handler = new EventHandler("documentCreated", "changeSource");
         handler.setCondition("Document.getProperty(\"dc:description\") == \"/src/myfile\"");
         registry.putEventHandler(handler);

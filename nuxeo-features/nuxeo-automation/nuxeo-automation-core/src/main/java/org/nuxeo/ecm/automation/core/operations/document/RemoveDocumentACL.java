@@ -49,7 +49,7 @@ public class RemoveDocumentACL {
         return session.getDocument(doc);
     }
 
-    protected void deleteACL(DocumentRef ref) throws ClientException {
+    protected void deleteACL(DocumentRef ref) {
         ACP acp = session.getACP(ref);
         acp.removeACL(aclName);
         acp.removeACL("inherited"); // make sure to not save the inherited acl

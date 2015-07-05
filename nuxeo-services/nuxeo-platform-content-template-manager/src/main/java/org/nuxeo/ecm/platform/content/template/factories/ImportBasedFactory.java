@@ -117,7 +117,7 @@ public class ImportBasedFactory extends BaseContentFactory {
     }
 
     @Override
-    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) {
         initSession(eventDoc);
 
         if (eventDoc.isVersion()) {
@@ -138,7 +138,7 @@ public class ImportBasedFactory extends BaseContentFactory {
      * @param file to import
      * @param parentPath of the targetDocument
      */
-    protected void importBlob(File file, String parentPath) throws ClientException, IOException {
+    protected void importBlob(File file, String parentPath) throws IOException {
         if (file.isDirectory()) {
             DocumentModel createdFolder = getFileManagerService().createFolder(session, file.getAbsolutePath(),
                     parentPath);

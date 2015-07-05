@@ -50,12 +50,12 @@ public class CreateCollectionOperation {
     protected String description;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         return collectionManager.createCollection(session, name, description, doc.getPathAsString());
     }
 
     @OperationMethod
-    public DocumentModel run() throws ClientException {
+    public DocumentModel run() {
         return collectionManager.createCollection(session, name, description, null);
     }
 }

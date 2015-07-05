@@ -56,7 +56,7 @@ public class RelationHelper {
     /**
      * Returns the relation node corresponding to a document model.
      */
-    public static QNameResource getDocumentResource(DocumentModel document) throws ClientException {
+    public static QNameResource getDocumentResource(DocumentModel document) {
         QNameResource documentResource = null;
         RelationManager rm = getRelationManager();
         if (document != null && rm != null) {
@@ -68,7 +68,7 @@ public class RelationHelper {
     /**
      * Returns the document model corresponding to a relation node.
      */
-    public static DocumentModel getDocumentModel(Node node, CoreSession session) throws ClientException {
+    public static DocumentModel getDocumentModel(Node node, CoreSession session) {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
             Map<String, Object> context = Collections.<String, Object> singletonMap(

@@ -109,13 +109,13 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
         return new Object[] {};
     }
 
-    protected DocumentModel getSearchDocument() throws ClientException {
+    protected DocumentModel getSearchDocument() {
         return null;
     }
 
     @SuppressWarnings("unchecked")
     @GET
-    public Paginable<T> getPaginableEntries() throws ClientException {
+    public Paginable<T> getPaginableEntries() {
         PageProviderDefinition ppDefinition = getPageProviderDefinition();
         if (ppDefinition == null) {
             throw new ClientException("Page provider given not found");

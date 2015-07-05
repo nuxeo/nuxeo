@@ -51,7 +51,7 @@ public interface FileManager {
      * @return the created Document
      */
     DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path, boolean overwrite,
-            String fullName) throws ClientException, IOException;
+            String fullName) throws IOException;
 
     /**
      * Just applies the same actions as creation but does not changes the doc type.
@@ -70,7 +70,7 @@ public interface FileManager {
      * @param path the path were to create the folder
      * @return the Folder Created
      */
-    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws ClientException,
+    DocumentModel createFolder(CoreSession documentManager, String fullname, String path) throws
             IOException;
 
     /**
@@ -90,11 +90,11 @@ public interface FileManager {
     DocumentModelList getCreationContainers(CoreSession documentManager, String docType);
 
     List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
-            Principal principal) throws ClientException;
+            Principal principal);
 
-    boolean isUnicityEnabled() throws ClientException;
+    boolean isUnicityEnabled();
 
-    List<String> getFields() throws ClientException;
+    List<String> getFields();
 
     String getDigestAlgorithm();
 

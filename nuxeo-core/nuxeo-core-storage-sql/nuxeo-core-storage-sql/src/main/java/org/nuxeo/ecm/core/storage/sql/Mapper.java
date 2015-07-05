@@ -142,8 +142,7 @@ public interface Mapper extends RowMapper, XAResource {
      * @return an iterable, which <b>must</b> be closed when done
      */
     // queryFilter used for principals and permissions
-    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params)
-;
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object... params);
 
     /**
      * Gets the ids for all the ancestors of the given row ids.

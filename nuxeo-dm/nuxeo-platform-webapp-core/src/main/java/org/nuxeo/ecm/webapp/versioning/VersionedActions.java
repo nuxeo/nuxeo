@@ -38,19 +38,19 @@ public interface VersionedActions {
      *
      * @return the selected version list as a {@link PageSelections<VersionModel>}
      */
-    PageSelections<VersionModel> getVersionList() throws ClientException;
+    PageSelections<VersionModel> getVersionList();
 
     /**
      * Retrieves the versions for the current document.
      */
-    void retrieveVersions() throws ClientException;
+    void retrieveVersions();
 
     /**
      * Restored the document to the selected version. If there is no selected version it does nothing.
      *
      * @return the page that needs to be displayed next
      */
-    String restoreToVersion(VersionModel selectedVersion) throws ClientException;
+    String restoreToVersion(VersionModel selectedVersion);
 
     /**
      * Restores the version which id is returned by {@link #getSelectedVersionId()}.
@@ -59,19 +59,19 @@ public interface VersionedActions {
      * @throws ClientException if cannot fetch the version
      * @since 5.6
      */
-    String restoreToVersion() throws ClientException;
+    String restoreToVersion();
 
     /**
      * Security check to enable or disable the restore button.
      *
      * @return permission check result
      */
-    boolean getCanRestore() throws ClientException;
+    boolean getCanRestore();
 
     /**
      * Tells if the current selected document is checked out or not.
      */
-    String getCheckedOut() throws ClientException;
+    String getCheckedOut();
 
     /**
      * Changes the checked-out string.
@@ -86,12 +86,12 @@ public interface VersionedActions {
      * @return the next page
      */
     @SuppressWarnings({ "NonBooleanMethodNameMayNotStartWithQuestion" })
-    String checkOut() throws ClientException;
+    String checkOut();
 
     /**
      * Checks the selected document in, with the selected version.
      */
-    String checkIn() throws ClientException;
+    String checkIn();
 
     @Create
     void initialize();
@@ -108,7 +108,7 @@ public interface VersionedActions {
     /**
      * View an older version of the document.
      */
-    String viewArchivedVersion(VersionModel selectedVersion) throws ClientException;
+    String viewArchivedVersion(VersionModel selectedVersion);
 
     /**
      * Navigates to the version which id is returned by {@link #getSelectedVersionId()}.
@@ -117,11 +117,11 @@ public interface VersionedActions {
      * @throws ClientException if cannot fetch the version
      * @since 5.6
      */
-    String viewArchivedVersion() throws ClientException;
+    String viewArchivedVersion();
 
-    DocumentModel getSourceDocument() throws ClientException;
+    DocumentModel getSourceDocument();
 
-    DocumentModel getSourceDocument(DocumentModel document) throws ClientException;
+    DocumentModel getSourceDocument(DocumentModel document);
 
     /**
      * Check if a version can be removed. It won't be possible if a proxy is pointing to it.
@@ -136,21 +136,21 @@ public interface VersionedActions {
      * @throws ClientException if at least one of the selected versions cannot be retrieved from the repository
      * @since 5.6
      */
-    boolean getCanRemoveSelectedArchivedVersions() throws ClientException;
+    boolean getCanRemoveSelectedArchivedVersions();
 
     /**
      * Remove an archived version.
      *
      * @param selectedVersion the version model to remove
      */
-    String removeArchivedVersion(VersionModel selectedVersion) throws ClientException;
+    String removeArchivedVersion(VersionModel selectedVersion);
 
     /**
      * Remove currently selected archived versions.
      *
      * @since 5.6
      */
-    String removeSelectedArchivedVersions() throws ClientException;
+    String removeSelectedArchivedVersions();
 
     /**
      * Gets currently selected version id.

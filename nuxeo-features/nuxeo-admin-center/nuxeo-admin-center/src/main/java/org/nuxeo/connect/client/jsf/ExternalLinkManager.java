@@ -102,7 +102,7 @@ public class ExternalLinkManager implements Serializable {
         return pkg;
     }
 
-    protected void initMinimalContext() throws ClientException {
+    protected void initMinimalContext() {
         setupCurrentUser();
 
         // we try to select the server to go to the next screen
@@ -116,7 +116,7 @@ public class ExternalLinkManager implements Serializable {
         navigationContext.setCurrentDocument(domains.get(0));
     }
 
-    public String confirm() throws ClientException {
+    public String confirm() {
         initMinimalContext();
         webActions.setCurrentTabId(AdminViewManager.ADMIN_ACTION_CATEGORY, "ConnectApps", "ConnectAppsRemote");
         adminViews.addExternalPackageDownloadRequest(pkg.getId());

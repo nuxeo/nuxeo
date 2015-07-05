@@ -68,13 +68,11 @@ public class RedisEmbeddedFactory implements PooledObjectFactory<Jedis> {
     }
 
     @Override
-    public void activateObject(PooledObject<Jedis> p) throws Exception {
-        ;
+    public void activateObject(PooledObject<Jedis> p) throws Exception {;
     }
 
     @Override
-    public void passivateObject(PooledObject<Jedis> p) throws Exception {
-        ;
+    public void passivateObject(PooledObject<Jedis> p) throws Exception {;
     }
 
 }

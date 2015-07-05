@@ -64,7 +64,7 @@ public class SetDocumentACE {
         return session.getDocument(doc);
     }
 
-    protected void setACE(DocumentRef ref) throws ClientException {
+    protected void setACE(DocumentRef ref) {
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl(aclName);
         acp.addACL(acl);

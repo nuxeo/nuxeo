@@ -112,7 +112,7 @@ public class DirectoryUIActionsBean implements Serializable {
         }
     }
 
-    public List<String> getDirectoryNames() throws ClientException {
+    public List<String> getDirectoryNames() {
         if (directoryNames == null) {
             directoryNames = directoryUIManager.getDirectoryNames();
             if (directoryNames.size() > 0) {
@@ -135,7 +135,7 @@ public class DirectoryUIActionsBean implements Serializable {
     }
 
     @Deprecated
-    public String selectDirectory(String directoryName) throws ClientException {
+    public String selectDirectory(String directoryName) {
         resetSelectedDirectoryData();
         currentDirectoryInfo = directoryUIManager.getDirectoryInfo(directoryName);
         String view = currentDirectoryInfo.getView();
@@ -145,16 +145,16 @@ public class DirectoryUIActionsBean implements Serializable {
         return view;
     }
 
-    public void selectDirectory() throws ClientException {
+    public void selectDirectory() {
         resetSelectedDirectoryData();
         currentDirectoryInfo = directoryUIManager.getDirectoryInfo(selectedDirectoryName);
     }
 
-    public DirectoryUI getCurrentDirectory() throws ClientException {
+    public DirectoryUI getCurrentDirectory() {
         return currentDirectoryInfo;
     }
 
-    public DocumentModelList getCurrentDirectoryEntries() throws ClientException {
+    public DocumentModelList getCurrentDirectoryEntries() {
         if (currentDirectoryEntries == null) {
             currentDirectoryEntries = new DocumentModelListImpl();
             String dirName = currentDirectoryInfo.getName();
@@ -198,7 +198,7 @@ public class DirectoryUIActionsBean implements Serializable {
         showAddForm = !showAddForm;
     }
 
-    public DocumentModel getCreationDirectoryEntry() throws ClientException {
+    public DocumentModel getCreationDirectoryEntry() {
         if (creationDirectoryEntry == null) {
             try {
                 String dirName = currentDirectoryInfo.getName();
@@ -211,7 +211,7 @@ public class DirectoryUIActionsBean implements Serializable {
         return creationDirectoryEntry;
     }
 
-    public void createDirectoryEntry() throws ClientException {
+    public void createDirectoryEntry() {
         String dirName = currentDirectoryInfo.getName();
         try (Session dirSession = dirService.open(dirName)) {
             // check if entry already exists
@@ -241,7 +241,7 @@ public class DirectoryUIActionsBean implements Serializable {
         showAddForm = false;
     }
 
-    public void selectDirectoryEntry(String entryId) throws ClientException {
+    public void selectDirectoryEntry(String entryId) {
         String dirName = currentDirectoryInfo.getName();
         try (Session dirSession = dirService.open(dirName)) {
             selectedDirectoryEntry = dirSession.getEntry(entryId);
@@ -250,7 +250,7 @@ public class DirectoryUIActionsBean implements Serializable {
         }
     }
 
-    public DocumentModel getSelectedDirectoryEntry() throws ClientException {
+    public DocumentModel getSelectedDirectoryEntry() {
         return selectedDirectoryEntry;
     }
 
@@ -258,7 +258,7 @@ public class DirectoryUIActionsBean implements Serializable {
         selectedDirectoryEntry = null;
     }
 
-    public void editSelectedDirectoryEntry() throws ClientException {
+    public void editSelectedDirectoryEntry() {
         String dirName = currentDirectoryInfo.getName();
         try (Session dirSession = dirService.open(dirName)) {
             dirSession.updateEntry(selectedDirectoryEntry);
@@ -273,7 +273,7 @@ public class DirectoryUIActionsBean implements Serializable {
         }
     }
 
-    public void deleteDirectoryEntry(String entryId) throws ClientException {
+    public void deleteDirectoryEntry(String entryId) {
         String dirName = currentDirectoryInfo.getName();
         List<DirectoryUIDeleteConstraint> deleteConstraints = currentDirectoryInfo.getDeleteConstraints();
         if (deleteConstraints != null && !deleteConstraints.isEmpty()) {
@@ -296,7 +296,7 @@ public class DirectoryUIActionsBean implements Serializable {
         }
     }
 
-    public boolean isReadOnly(String directoryName) throws ClientException {
+    public boolean isReadOnly(String directoryName) {
         boolean isReadOnly;
 
         try (Session dirSession = dirService.open(directoryName)) {

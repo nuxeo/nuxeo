@@ -24,6 +24,6 @@ public interface RepositoryInit {
      *
      * @param session the session to use to create objects
      */
-    void populate(CoreSession session) throws ClientException;
+    void populate(CoreSession session);
 
 }

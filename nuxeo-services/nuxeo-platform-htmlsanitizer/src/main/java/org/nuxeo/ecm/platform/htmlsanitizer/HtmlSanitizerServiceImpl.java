@@ -176,7 +176,7 @@ public class HtmlSanitizerServiceImpl extends DefaultComponent implements HtmlSa
     // ----- HtmlSanitizerService -----
 
     @Override
-    public void sanitizeDocument(DocumentModel doc) throws ClientException {
+    public void sanitizeDocument(DocumentModel doc) {
         if (policy == null) {
             log.error("Cannot sanitize, no policy registered");
             return;

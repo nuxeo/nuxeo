@@ -171,16 +171,16 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     @Deprecated
-    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) throws ClientException {
+    public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) {
         return getTilesFromBlob(blob, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
 
     public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles)
-            throws ClientException {
+            {
         return getTiles(resource, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
 
-    public PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter) throws ClientException {
+    public PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter) {
 
         String outputDirPath = existingTiles.getTilesPath();
 
@@ -193,14 +193,14 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
 
     @Deprecated
     public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, boolean fullGeneration) throws ClientException {
+            int yCenter, boolean fullGeneration) {
 
         ImageResource resource = new BlobResource(blob);
         return getTiles(resource, tileWidth, tileHeight, maxTiles, xCenter, yCenter, fullGeneration);
     }
 
     public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, boolean fullGeneration) throws ClientException {
+            int yCenter, boolean fullGeneration) {
 
         log.debug("enter getTiles");
         String cacheKey = resource.getHash();
@@ -226,7 +226,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     protected PictureTiles getTilesWithSync(ImageResource resource, int tileWidth, int tileHeight, int maxTiles,
-            int xCenter, int yCenter, boolean fullGeneration) throws ClientException {
+            int xCenter, int yCenter, boolean fullGeneration) {
 
         String cacheKey = resource.getHash();
         String inputFilePath;
@@ -366,7 +366,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
 
     protected PictureTiles computeTiles(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
             int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
-            throws ClientException {
+            {
 
         PictureTiler pt = getDefaultTiler();
         return pt.getTilesFromFile(input, outputDirPath, tileWidth, tileHeight, maxTiles, xCenter, yCenter,
@@ -447,7 +447,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         // TODO
     }
 
-    public void removeCacheEntry(ImageResource resource) throws ClientException {
+    public void removeCacheEntry(ImageResource resource) {
         if (cache.containsKey(resource.getHash())) {
             PictureTilingCacheInfo cacheInfo = cache.remove(resource.getHash());
             cacheInfo.cleanUp();

@@ -41,7 +41,7 @@ public class RemoveACLUnrestricted extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         ACP acp = document.getACP();
         acp.removeACL(aclName);
         acp.removeACL(oldAclName);

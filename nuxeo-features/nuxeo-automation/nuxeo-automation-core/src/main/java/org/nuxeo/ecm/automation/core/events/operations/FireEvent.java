@@ -47,7 +47,7 @@ public class FireEvent {
     protected String name;
 
     @OperationMethod
-    public void run() throws ClientException {
+    public void run() {
         CoreSession session = ctx.getCoreSession();
         Object input = ctx.getInput();
         if (input instanceof DocumentModel) {
@@ -64,14 +64,14 @@ public class FireEvent {
         }
     }
 
-    protected void sendDocumentEvent(DocumentModel input) throws ClientException {
+    protected void sendDocumentEvent(DocumentModel input) {
         CoreSession session = ctx.getCoreSession();
         EventContextImpl evctx = new DocumentEventContext(session, session.getPrincipal(), input);
         Event event = evctx.newEvent(name);
         service.fireEvent(event);
     }
 
-    protected void sendUnknownEvent(Object input) throws ClientException {
+    protected void sendUnknownEvent(Object input) {
         CoreSession session = ctx.getCoreSession();
         EventContextImpl evctx = new EventContextImpl(session, session.getPrincipal(), input);
         Event event = evctx.newEvent(name);

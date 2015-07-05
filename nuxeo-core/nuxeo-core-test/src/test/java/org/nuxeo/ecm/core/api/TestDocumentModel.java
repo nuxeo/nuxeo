@@ -45,7 +45,7 @@ public class TestDocumentModel {
      * Tests on a DocumentModel that hasn't been created in the session yet.
      */
     @Test
-    public void testDocumentModelNotYetCreated() throws ClientException {
+    public void testDocumentModelNotYetCreated() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         assertTrue(doc.isCheckedOut());
         assertEquals("0.0", doc.getVersionLabel());

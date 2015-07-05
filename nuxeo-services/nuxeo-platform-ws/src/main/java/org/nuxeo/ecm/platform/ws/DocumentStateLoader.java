@@ -38,7 +38,7 @@ public class DocumentStateLoader implements DocumentLoader {
 
     @Override
     public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
-            throws ClientException {
+            {
         CoreSession repo = rs.getDocumentManager();
         DocumentRef ref = doc.getRef();
         DocumentModel.DocumentModelRefresh dmr = repo.refreshDocument(ref, DocumentModel.REFRESH_STATE, null);

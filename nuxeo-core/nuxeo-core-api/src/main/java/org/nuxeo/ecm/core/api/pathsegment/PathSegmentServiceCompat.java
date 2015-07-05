@@ -21,12 +21,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class PathSegmentServiceCompat implements PathSegmentService {
 
     @Override
-    public String generatePathSegment(DocumentModel doc) throws ClientException {
+    public String generatePathSegment(DocumentModel doc) {
         return generatePathSegment(doc.getTitle());
     }
 
     @Override
-    public String generatePathSegment(String s) throws ClientException {
+    public String generatePathSegment(String s) {
         return IdUtils.generateId(s, "-", true, 24);
     }
 }

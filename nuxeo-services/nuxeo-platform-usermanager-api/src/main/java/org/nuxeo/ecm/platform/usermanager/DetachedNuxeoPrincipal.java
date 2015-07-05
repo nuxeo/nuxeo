@@ -186,7 +186,7 @@ public class DetachedNuxeoPrincipal implements NuxeoPrincipal {
         throw new UnsupportedOperationException();
     }
 
-    public void setModel(DocumentModel model) throws ClientException {
+    public void setModel(DocumentModel model) {
         throw new UnsupportedOperationException();
 
     }

@@ -60,38 +60,38 @@ public class UserAdapterImpl implements UserAdapter {
     }
 
     @Override
-    public String getName() throws ClientException {
+    public String getName() {
         return (String) dataModel.getValue(userConfig.nameKey);
     }
 
     @Override
-    public String getFirstName() throws ClientException {
+    public String getFirstName() {
         return (String) dataModel.getValue(userConfig.firstNameKey);
     }
 
     @Override
-    public String getLastName() throws ClientException {
+    public String getLastName() {
         return (String) dataModel.getValue(userConfig.lastNameKey);
     }
 
     @Override
-    public String getEmail() throws ClientException {
+    public String getEmail() {
         return (String) dataModel.getValue(userConfig.emailKey);
     }
 
     @Override
-    public String getCompany() throws ClientException {
+    public String getCompany() {
         return (String) dataModel.getValue(userConfig.companyKey);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<String> getGroups() throws ClientException {
+    public List<String> getGroups() {
         return (List<String>) dataModel.getValue(userConfig.groupsKey);
     }
 
     @Override
-    public String getSchemaName() throws ClientException {
+    public String getSchemaName() {
         return userConfig.schemaName;
     }
 }

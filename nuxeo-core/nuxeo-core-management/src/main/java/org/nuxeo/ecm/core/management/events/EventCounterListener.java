@@ -55,7 +55,7 @@ public class EventCounterListener implements PostCommitEventListener {
             DocumentEventTypes.DOCUMENT_REMOVED, DocumentEventTypes.VERSION_REMOVED });
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         if (events instanceof ReconnectedEventBundleImpl) {
             ReconnectedEventBundleImpl bundle = (ReconnectedEventBundleImpl) events;
             updateCounters(bundle.getEventNames());

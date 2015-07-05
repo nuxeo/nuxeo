@@ -61,7 +61,7 @@ public class TestThumbnailFactories {
     CoreSession session;
 
     @Test
-    public void testThumbnailFactoryContribution() throws ClientException, IOException {
+    public void testThumbnailFactoryContribution() throws IOException {
         // Test folderish thumbnail factory
         DocumentModel root = session.getRootDocument();
         DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "Folder", "Folder");
@@ -81,7 +81,7 @@ public class TestThumbnailFactories {
 
     public static class DocumentTypeThumbnailFolderishFactory implements ThumbnailFactory {
 
-        public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+        public Blob getThumbnail(DocumentModel doc, CoreSession session) {
             if (!doc.isFolder()) {
                 throw new ClientException("Document is not folderish");
             }
@@ -96,7 +96,7 @@ public class TestThumbnailFactories {
     }
 
     public static class DocumentTypeThumbnailDocumentFactory implements ThumbnailFactory {
-        public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+        public Blob getThumbnail(DocumentModel doc, CoreSession session) {
             return defaultThumbnail;
         }
 

@@ -111,7 +111,7 @@ public interface FileImporter extends Serializable, Comparable<FileImporter> {
      * @param filename the filename of the File
      */
     DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite, String filename,
-            TypeManager typeService) throws ClientException, IOException;
+            TypeManager typeService) throws IOException;
 
     boolean isEnabled();
 

@@ -57,7 +57,7 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
         return getComponent().getConfiguration().getUserWorkspaceType();
     }
 
-    protected void setUserWorkspaceRootACL(DocumentModel doc) throws ClientException {
+    protected void setUserWorkspaceRootACL(DocumentModel doc) {
         ACP acp = new ACPImpl();
         ACE denyEverything = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false);
         ACL acl = new ACLImpl();
@@ -66,7 +66,7 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
         doc.setACP(acp, true);
     }
 
-    protected void setUserWorkspaceACL(DocumentModel doc, String userName) throws ClientException {
+    protected void setUserWorkspaceACL(DocumentModel doc, String userName) {
         ACP acp = new ACPImpl();
         ACE grantEverything = new ACE(userName, SecurityConstants.EVERYTHING, true);
         ACL acl = new ACLImpl();
@@ -76,7 +76,7 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
     }
 
     protected DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef)
-            throws ClientException {
+            {
 
         String parentPath = new Path(rootRef.toString()).removeLastSegments(1).toString();
         DocumentModel doc = unrestrictedSession.createDocumentModel(parentPath,
@@ -91,7 +91,7 @@ public class DefaultUserWorkspaceServiceImpl extends AbstractUserWorkspaceImpl i
     }
 
     protected DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef, Principal principal,
-            String userName) throws ClientException {
+            String userName) {
 
         String parentPath = new Path(wsRef.toString()).removeLastSegments(1).toString();
         String wsName = new Path(wsRef.toString()).lastSegment();

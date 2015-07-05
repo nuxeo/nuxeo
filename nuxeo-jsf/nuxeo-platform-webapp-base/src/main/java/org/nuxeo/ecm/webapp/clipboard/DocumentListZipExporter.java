@@ -35,7 +35,7 @@ public class DocumentListZipExporter {
     private static final String SUMMARY_FILENAME = "INDEX.txt";
 
     public File exportWorklistAsZip(List<DocumentModel> documents, CoreSession documentManager, boolean exportAllBlobs)
-            throws ClientException, IOException {
+            throws IOException {
         StringBuilder blobList = new StringBuilder();
 
         File tmpFile = File.createTempFile("NX-BigZipFile-", ".zip");
@@ -80,7 +80,7 @@ public class DocumentListZipExporter {
     }
 
     private void addFolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
-            CoreSession documentManager, StringBuilder blobList, boolean exportAllBlobs) throws ClientException,
+            CoreSession documentManager, StringBuilder blobList, boolean exportAllBlobs) throws
             IOException {
 
         String title = doc.getTitle();
@@ -105,7 +105,7 @@ public class DocumentListZipExporter {
         }
     }
 
-    private boolean isEmptyFolder(DocumentModel doc, CoreSession documentManager) throws ClientException {
+    private boolean isEmptyFolder(DocumentModel doc, CoreSession documentManager) {
 
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
@@ -139,7 +139,7 @@ public class DocumentListZipExporter {
     }
 
     private void addBlobHolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data,
-            StringBuilder blobList, BlobHolder bh, boolean exportAllBlobs) throws IOException, ClientException {
+            StringBuilder blobList, BlobHolder bh, boolean exportAllBlobs) throws IOException {
         List<Blob> blobs = new ArrayList<Blob>();
 
         if (exportAllBlobs) {

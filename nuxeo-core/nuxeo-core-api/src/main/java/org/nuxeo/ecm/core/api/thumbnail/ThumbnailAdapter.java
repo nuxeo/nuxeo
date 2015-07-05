@@ -38,12 +38,12 @@ public class ThumbnailAdapter implements Thumbnail {
     }
 
     @Override
-    public Blob getThumbnail(CoreSession session) throws ClientException {
+    public Blob getThumbnail(CoreSession session) {
         ThumbnailService thumbnailService = Framework.getLocalService(ThumbnailService.class);
         return thumbnailService.getThumbnail(doc, session);
     }
 
-    public void save(CoreSession session) throws ClientException {
+    public void save(CoreSession session) {
         session.saveDocument(doc);
     }
 
@@ -52,7 +52,7 @@ public class ThumbnailAdapter implements Thumbnail {
     }
 
     @Override
-    public Blob computeThumbnail(CoreSession session) throws ClientException {
+    public Blob computeThumbnail(CoreSession session) {
         ThumbnailService thumbnailService = Framework.getLocalService(ThumbnailService.class);
         return thumbnailService.computeThumbnail(doc, session);
     }

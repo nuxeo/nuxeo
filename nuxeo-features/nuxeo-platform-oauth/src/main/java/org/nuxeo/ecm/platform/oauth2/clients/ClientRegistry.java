@@ -15,15 +15,15 @@ public interface ClientRegistry {
 
     public static final String OAUTH2CLIENT_SCHEMA = "oauth2Client";
 
-    boolean hasClient(String clientId) throws ClientException;
+    boolean hasClient(String clientId);
 
-    boolean isValidClient(String clientId, String clientSecret) throws ClientException;
+    boolean isValidClient(String clientId, String clientSecret);
 
-    boolean registerClient(OAuth2Client client) throws ClientException;
+    boolean registerClient(OAuth2Client client);
 
-    boolean deleteClient(String clientId) throws ClientException;
+    boolean deleteClient(String clientId);
 
-    List<DocumentModel> listClients() throws ClientException;
+    List<DocumentModel> listClients();
 
-    OAuth2Client getClient(String clientId) throws ClientException;
+    OAuth2Client getClient(String clientId);
 }

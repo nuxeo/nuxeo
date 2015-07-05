@@ -44,12 +44,12 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         domains = getDomainsFiltered();
     }
 
     @SuppressWarnings("unchecked")
-    protected List<DocumentModel> getDomainsFiltered() throws ClientException {
+    protected List<DocumentModel> getDomainsFiltered() {
         PageProviderService pps = Framework.getService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
@@ -59,7 +59,7 @@ public class DomainsFinder extends UnrestrictedSessionRunner {
         return pageProvider.getCurrentPage();
     }
 
-    public List<DocumentModel> getDomains() throws ClientException {
+    public List<DocumentModel> getDomains() {
         if (domains == null) {
             runUnrestricted();
         }

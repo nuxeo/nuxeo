@@ -29,7 +29,7 @@ public class DummyAsyncRetryListener implements PostCommitEventListener {
     protected static int countOk;
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         countHandled++;
 
         // accessing the iterator reconnects the events

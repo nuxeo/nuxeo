@@ -81,7 +81,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
-            throws ClientException {
+            {
         NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
         return query(query);
     }
@@ -89,19 +89,19 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) throws ClientException {
+            SortInfo... sortInfos) {
         NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
                 sortInfos);
         return query(query);
     }
 
     @Override
-    public DocumentModelList query(NxQueryBuilder queryBuilder) throws ClientException {
+    public DocumentModelList query(NxQueryBuilder queryBuilder) {
         return queryAndAggregate(queryBuilder).getDocuments();
     }
 
     @Override
-    public EsResult queryAndAggregate(NxQueryBuilder queryBuilder) throws ClientException {
+    public EsResult queryAndAggregate(NxQueryBuilder queryBuilder) {
         SearchResponse response = search(queryBuilder);
         List<Aggregate> aggs = getAggregates(queryBuilder, response);
         if (queryBuilder.returnsDocuments()) {

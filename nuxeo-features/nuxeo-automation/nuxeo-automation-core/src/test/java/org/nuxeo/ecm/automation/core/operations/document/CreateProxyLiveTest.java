@@ -59,7 +59,7 @@ public class CreateProxyLiveTest {
     }
 
     @Test
-    public void shouldCreateProxyLive() throws ClientException {
+    public void shouldCreateProxyLive() {
         operation.run(doc);
 
         DocumentModelList docs = session.getChildren(folder.getRef());

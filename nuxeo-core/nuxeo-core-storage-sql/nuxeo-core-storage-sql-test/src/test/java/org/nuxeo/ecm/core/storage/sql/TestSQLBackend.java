@@ -2577,7 +2577,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
     }
 
-    protected void waitForIndexing() throws ClientException {
+    protected void waitForIndexing() {
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
         DatabaseHelper.DATABASE.sleepForFulltext();
     }

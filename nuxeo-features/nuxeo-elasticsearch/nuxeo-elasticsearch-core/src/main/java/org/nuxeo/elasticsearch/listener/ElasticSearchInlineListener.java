@@ -79,7 +79,7 @@ public class ElasticSearchInlineListener extends IndexingCommandsStacker impleme
     }
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         String eventId = event.getName();
         if (!isEnlisted.get()) {
             if (event.isCommitEvent()) {

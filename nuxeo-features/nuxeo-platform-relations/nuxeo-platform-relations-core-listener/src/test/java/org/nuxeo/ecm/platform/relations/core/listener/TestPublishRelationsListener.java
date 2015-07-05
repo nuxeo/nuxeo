@@ -115,7 +115,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         comment2 = cDoc.addComment(comment2);
     }
 
-    protected void addSomeRelations(Resource documentResource) throws ClientException {
+    protected void addSomeRelations(Resource documentResource) {
         Resource otherDocResource = relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE, doc2, null);
 
         List<Statement> originalStatements = new ArrayList<Statement>();
@@ -237,7 +237,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
     }
 
-    private DocumentModel createDocTestDoc(String title) throws ClientException {
+    private DocumentModel createDocTestDoc(String title) {
         DocumentModel doc = session.createDocumentModel("File");
         doc.setPropertyValue("dc:title", title);
         doc.setPathInfo("/workspace/", "file-1");
@@ -246,7 +246,7 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         return doc;
     }
 
-    private List<Statement> getRelations(Resource resource1, Resource resource2) throws ClientException {
+    private List<Statement> getRelations(Resource resource1, Resource resource2) {
         Graph graph = relationManager.getGraphByName(RelationConstants.GRAPH_NAME);
         List<Statement> statements = graph.getStatements(new StatementImpl(resource1, null, resource2));
         if (statements != null) {

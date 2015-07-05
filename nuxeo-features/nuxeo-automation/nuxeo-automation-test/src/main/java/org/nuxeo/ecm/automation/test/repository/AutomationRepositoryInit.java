@@ -34,7 +34,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class AutomationRepositoryInit extends DefaultRepositoryInit {
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         super.populate(session);
         DocumentModel doc = session.createDocumentModel("/", "testBlob", "File");
         doc.setPropertyValue("file:content", (Serializable) Blobs.createBlob("one"));

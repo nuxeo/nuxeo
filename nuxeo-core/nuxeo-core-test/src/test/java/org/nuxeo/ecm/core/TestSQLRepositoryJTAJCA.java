@@ -174,7 +174,7 @@ public class TestSQLRepositoryJTAJCA {
      * Cannot use session after close if no tx.
      */
     @Test
-    public void testAccessWithoutTx() throws ClientException {
+    public void testAccessWithoutTx() {
         TransactionHelper.commitOrRollbackTransaction();
         TxWarnChecker checker = new TxWarnChecker();
         Logger.getRootLogger().addAppender(checker);

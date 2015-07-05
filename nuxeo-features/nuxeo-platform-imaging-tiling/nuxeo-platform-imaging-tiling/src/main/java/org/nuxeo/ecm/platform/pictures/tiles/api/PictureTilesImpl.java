@@ -107,7 +107,7 @@ public class PictureTilesImpl implements PictureTiles, Serializable {
         return imageFile.exists();
     }
 
-    public Blob getTile(int x, int y) throws ClientException, IOException {
+    public Blob getTile(int x, int y) throws IOException {
         String imageFilePath = getTileFilePath(x, y);
         File imageFile = new File(imageFilePath);
         if (imageFile.exists())

@@ -206,8 +206,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
         }
 
         WebElement suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
-        AjaxRequestManager arm = new AjaxRequestManager(driver);
-        ;
+        AjaxRequestManager arm = new AjaxRequestManager(driver);;
         if (wait4A4J) {
             arm.watchAjaxRequests();
         }
@@ -350,4 +349,5 @@ public class Select2WidgetElement extends WebFragmentImpl {
 
         return AbstractTest.asPage(SearchPage.class);
     }
+
 }

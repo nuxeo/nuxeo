@@ -70,7 +70,7 @@ public interface OAuthTokenStore {
     /**
      * Deletes an ACCESS Token from the storage.
      */
-    void removeAccessToken(String token) throws ClientException;
+    void removeAccessToken(String token);
 
     /**
      * Lists ACCESS Token associated to a User.
@@ -93,11 +93,11 @@ public interface OAuthTokenStore {
     /**
      * Get a Access token for the Shindig Client.
      */
-    NuxeoOAuthToken getClientAccessToken(String appId, String owner) throws ClientException;
+    NuxeoOAuthToken getClientAccessToken(String appId, String owner);
 
     /**
      * Deletes a Client side Access Token.
      */
-    void removeClientAccessToken(String appId, String owner) throws ClientException;
+    void removeClientAccessToken(String appId, String owner);
 
 }

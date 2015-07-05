@@ -103,7 +103,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void indexNonRecursive(List<IndexingCommand> cmds) throws ClientException {
+    public void indexNonRecursive(List<IndexingCommand> cmds) {
         int nbCommands = cmds.size();
         if (nbCommands == 1) {
             indexNonRecursive(cmds.get(0));
@@ -137,7 +137,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         }
     }
 
-    void processBulkIndexCommands(List<IndexingCommand> cmds) throws ClientException {
+    void processBulkIndexCommands(List<IndexingCommand> cmds) {
         BulkRequestBuilder bulkRequest = esa.getClient().prepareBulk();
         for (IndexingCommand cmd : cmds) {
             if (cmd.getType() == Type.DELETE) {
@@ -185,7 +185,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     }
 
     @Override
-    public void indexNonRecursive(IndexingCommand cmd) throws ClientException {
+    public void indexNonRecursive(IndexingCommand cmd) {
         Context stopWatch = null;
         try {
             if (cmd.getType() == Type.DELETE) {
@@ -297,7 +297,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
      * @throws ClientException in case of pb to get the document or generate json
      * @throws java.lang.IllegalStateException if the command is not attached to a session
      */
-    IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) throws ClientException {
+    IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) {
         DocumentModel doc = cmd.getTargetDocument();
         if (doc == null) {
             return null;

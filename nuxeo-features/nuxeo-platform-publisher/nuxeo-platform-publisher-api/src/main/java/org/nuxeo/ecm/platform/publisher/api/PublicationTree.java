@@ -32,20 +32,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface PublicationTree extends PublicationNode {
 
-    PublicationNode getNodeByPath(String path) throws ClientException;
+    PublicationNode getNodeByPath(String path);
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode);
 
-    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException;
+    PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params);
 
-    void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+    void unpublish(DocumentModel doc, PublicationNode targetNode);
 
-    void unpublish(PublishedDocument publishedDocument) throws ClientException;
+    void unpublish(PublishedDocument publishedDocument);
 
-    List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException;
+    List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc);
 
-    List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException;
+    List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node);
 
     String getConfigName();
 
@@ -54,7 +53,7 @@ public interface PublicationTree extends PublicationNode {
     String getTreeTitle();
 
     void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException;
+            PublishedDocumentFactory factory, String configName, String title);
 
     /**
      * Sets the current document on which the tree will be based, if needed.
@@ -63,7 +62,7 @@ public interface PublicationTree extends PublicationNode {
      *
      * @param currentDocument the current document
      */
-    void setCurrentDocument(DocumentModel currentDocument) throws ClientException;
+    void setCurrentDocument(DocumentModel currentDocument);
 
     void release();
 
@@ -77,7 +76,7 @@ public interface PublicationTree extends PublicationNode {
      * @param publishedDocument the current published document that will be approved
      * @param comment
      */
-    void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException;
+    void validatorPublishDocument(PublishedDocument publishedDocument, String comment);
 
     /**
      * A validator (the current user) rejects the publication.
@@ -85,43 +84,43 @@ public interface PublicationTree extends PublicationNode {
      * @param publishedDocument the currently published document that will be rejected
      * @param comment
      */
-    void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException;
+    void validatorRejectPublication(PublishedDocument publishedDocument, String comment);
 
     /**
      * Returns {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
      *
      * @return {@code true} if the current user can publish to the specified publicationNode, {@code false} otherwise.
      */
-    boolean canPublishTo(PublicationNode publicationNode) throws ClientException;
+    boolean canPublishTo(PublicationNode publicationNode);
 
     /**
      * Returns {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
      *
      * @return {@code true} if the current user can unpublish the given publishedDocument, {@code false} otherwise.
      */
-    boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException;
+    boolean canUnpublish(PublishedDocument publishedDocument);
 
-    boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException;
+    boolean hasValidationTask(PublishedDocument publishedDocument);
 
     /**
      * Returns {@code true} if the current user can manage the publishing of the given publishedDocument, ie approve or
      * reject the document.
      */
-    boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
+    boolean canManagePublishing(PublishedDocument publishedDocument);
 
-    PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException;
+    PublishedDocument wrapToPublishedDocument(DocumentModel documentModel);
 
     /**
      * Returns {@code true} if the given {@code documentModel} is a PublicationNode of the current tree, {@code false}
      * otherwise.
      */
-    boolean isPublicationNode(DocumentModel documentModel) throws ClientException;
+    boolean isPublicationNode(DocumentModel documentModel);
 
     /**
      * Returns a PublicationNode for the current tree built on the given {@code documentModel}.
      *
      * @throws ClientException if the given documentModel cannot be a PublicationNode
      */
-    PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException;
+    PublicationNode wrapToPublicationNode(DocumentModel documentModel);
 
 }

@@ -37,14 +37,14 @@ public interface ElasticSearchService {
      *
      * @since 5.9.5
      */
-    DocumentModelList query(NxQueryBuilder queryBuilder) throws ClientException;
+    DocumentModelList query(NxQueryBuilder queryBuilder);
 
     /**
      * Returns documents and aggregates.
      *
      * @since 6.0
      */
-    EsResult queryAndAggregate(NxQueryBuilder queryBuilder) throws ClientException;
+    EsResult queryAndAggregate(NxQueryBuilder queryBuilder);
 
     /**
      * Returns a document list using an NXQL query. Fetch documents from the VCS repository.
@@ -53,8 +53,7 @@ public interface ElasticSearchService {
      * @deprecated since 6.0, use query with NxQueryBuilder
      */
     @Deprecated
-    DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
-            throws ClientException;
+    DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos);
 
     /**
      * Returns a document list using an ElasticSearch {@link QueryBuilder}. Fetch documents from the VCS repository.
@@ -64,6 +63,6 @@ public interface ElasticSearchService {
      */
     @Deprecated
     DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) throws ClientException;
+            SortInfo... sortInfos);
 
 }

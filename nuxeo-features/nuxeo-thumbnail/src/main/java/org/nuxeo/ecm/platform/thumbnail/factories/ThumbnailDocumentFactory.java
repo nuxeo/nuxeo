@@ -48,7 +48,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
     private static final Log log = LogFactory.getLog(ThumbnailDocumentFactory.class);
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         Blob thumbnailBlob = null;
         try {
             if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {

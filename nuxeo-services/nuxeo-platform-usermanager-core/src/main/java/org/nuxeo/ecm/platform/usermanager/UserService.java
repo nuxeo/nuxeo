@@ -45,7 +45,7 @@ public class UserService extends DefaultComponent {
 
     private UserManager userManager;
 
-    public UserManager getUserManager() throws ClientException {
+    public UserManager getUserManager() {
         if (userManager == null) {
             recomputeUserManager(false);
             EventService eventService = Framework.getLocalService(EventService.class);
@@ -54,7 +54,7 @@ public class UserService extends DefaultComponent {
         return userManager;
     }
 
-    protected void recomputeUserManager(boolean lazy) throws ClientException {
+    protected void recomputeUserManager(boolean lazy) {
         if (lazy && userManager == null) {
             return;
         }
@@ -133,14 +133,14 @@ public class UserService extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            throws ClientException {
+            {
         descriptors.add((UserManagerDescriptor) contribution);
         recomputeUserManager(true);
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            throws ClientException {
+            {
         descriptors.remove(contribution);
         // recomputeUserManager(true);
     }

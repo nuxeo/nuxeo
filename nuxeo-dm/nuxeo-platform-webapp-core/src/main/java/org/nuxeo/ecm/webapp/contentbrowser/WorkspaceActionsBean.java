@@ -168,7 +168,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
 
     @Override
     @Factory(value = "availableWorkspaceTemplates")
-    public DocumentModelList getTemplates() throws ClientException {
+    public DocumentModelList getTemplates() {
         availableTemplates = documentTemplatesActions.getTemplates("Workspace");
         return availableTemplates;
     }
@@ -227,7 +227,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     // @End(beforeRedirect = true)
     @Override
     @End
-    public String createWorkspace() throws ClientException {
+    public String createWorkspace() {
         String navResult = null;
 
         if (useTemplateFlag == null || !useTemplateFlag || selectedTemplateId == null
@@ -270,7 +270,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     }
 
     @End(beforeRedirect = true)
-    public String createWorkspaceOld() throws ClientException {
+    public String createWorkspaceOld() {
         String navResult = null;
 
         if (!useTemplateFlag || selectedTemplateId.equals("none")) {
@@ -339,7 +339,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
 
     @Override
     @End(beforeRedirect = true)
-    public String exitWizard() throws ClientException {
+    public String exitWizard() {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument());
     }
 

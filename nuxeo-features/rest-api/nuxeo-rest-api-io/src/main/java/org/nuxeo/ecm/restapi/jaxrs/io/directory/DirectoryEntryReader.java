@@ -97,17 +97,15 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
      * @return
      * @throws IOException
      * @throws JsonParseException
-     * @throws ClientException
      */
-    private DirectoryEntry readRequest(String content, MultivaluedMap<String, String> httpHeaders) throws IOException,
-            ClientException {
+    private DirectoryEntry readRequest(String content, MultivaluedMap<String, String> httpHeaders) throws IOException {
 
         JsonParser jp = factory.createJsonParser(content);
         return readJson(jp, httpHeaders);
     }
 
     public static DirectoryEntry readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders)
-            throws IOException, ClientException {
+            throws IOException {
 
         JsonToken tok = jp.nextToken();
 
@@ -150,7 +148,7 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
     }
 
     private static DirectoryEntry getDirectoryEntryFromNode(JsonNode propertiesNode, Directory directory)
-            throws DirectoryException, ClientException, IOException {
+            throws DirectoryException, IOException {
 
         String schema = directory.getSchema();
         String id = propertiesNode.get(directory.getIdField()).getTextValue();

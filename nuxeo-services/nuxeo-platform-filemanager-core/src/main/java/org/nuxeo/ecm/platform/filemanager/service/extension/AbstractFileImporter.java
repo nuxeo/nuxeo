@@ -139,7 +139,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * Default implementation sets the title.
      */
-    public void createDocument(DocumentModel doc, Blob content, String title) throws ClientException {
+    public void createDocument(DocumentModel doc, Blob content, String title) {
         doc.setPropertyValue("dc:title", title);
     }
 
@@ -160,17 +160,17 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * Default implementation sets the content.
      */
-    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) {
         doc.getAdapter(BlobHolder.class).setBlob(content);
     }
 
-    public Blob getBlob(DocumentModel doc) throws ClientException {
+    public Blob getBlob(DocumentModel doc) {
         return doc.getAdapter(BlobHolder.class).getBlob();
     }
 
     @Override
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String fullname,
-            TypeManager typeService) throws ClientException, IOException {
+            TypeManager typeService) throws IOException {
         path = getNearestContainerPath(session, path);
         DocumentModel container = session.getDocument(new PathRef(path));
         String docType = getDocType(container); // from override or descriptor
@@ -275,7 +275,7 @@ public abstract class AbstractFileImporter implements FileImporter {
      * <p>
      * If given path points to a folderish document, return it. Else, return parent path.
      */
-    protected String getNearestContainerPath(CoreSession documentManager, String path) throws ClientException {
+    protected String getNearestContainerPath(CoreSession documentManager, String path) {
         DocumentModel currentDocument = documentManager.getDocument(new PathRef(path));
         if (!currentDocument.isFolder()) {
             path = path.substring(0, path.lastIndexOf('/'));
@@ -283,7 +283,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         return path;
     }
 
-    protected void checkIn(DocumentModel doc) throws ClientException {
+    protected void checkIn(DocumentModel doc) {
         VersioningOption option = fileManagerService.getVersioningOption();
         if (option != null && option != VersioningOption.NONE) {
             if (doc.isCheckedOut()) {
@@ -292,7 +292,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
     }
 
-    protected void checkInAfterAdd(DocumentModel doc) throws ClientException {
+    protected void checkInAfterAdd(DocumentModel doc) {
         if (fileManagerService.doVersioningAfterAdd()) {
             checkIn(doc);
         }
@@ -303,13 +303,13 @@ public abstract class AbstractFileImporter implements FileImporter {
      */
     @Deprecated
     protected DocumentModel overwriteAndIncrementversion(CoreSession documentManager, DocumentModel doc)
-            throws ClientException {
+            {
         doc.putContextData(VersioningService.VERSIONING_OPTION, fileManagerService.getVersioningOption());
         return documentManager.saveDocument(doc);
     }
 
     protected void doSecurityCheck(CoreSession documentManager, String path, String typeName, TypeManager typeService)
-            throws DocumentSecurityException, ClientException {
+            throws DocumentSecurityException {
         // perform the security checks
         PathRef containerRef = new PathRef(path);
         if (!documentManager.hasPermission(containerRef, READ_PROPERTIES)

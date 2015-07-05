@@ -111,7 +111,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
      */
     public abstract void initFulltextConfigurationAndParser();
 
-    protected void extractBinaryText() throws ClientException {
+    protected void extractBinaryText() {
         IdRef docRef = new IdRef(docId);
         if (!session.exists(docRef)) {
             // doc is gone

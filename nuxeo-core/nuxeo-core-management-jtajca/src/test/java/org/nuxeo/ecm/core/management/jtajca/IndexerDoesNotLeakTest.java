@@ -41,7 +41,7 @@ public class IndexerDoesNotLeakTest {
     ConnectionPoolMonitor dbMonitor;
 
     @Test
-    public void indexerWorkDoesNotLeak() throws ClientException, InterruptedException {
+    public void indexerWorkDoesNotLeak() throws InterruptedException {
         int repoCount = repoMonitor.getConnectionCount();
         int dbCount = dbMonitor.getConnectionCount();
         DocumentModel doc = repo.createDocumentModel("/", "note", "Note");

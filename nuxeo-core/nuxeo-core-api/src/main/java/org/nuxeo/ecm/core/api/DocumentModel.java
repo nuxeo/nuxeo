@@ -131,7 +131,7 @@ public interface DocumentModel extends Serializable {
      * @param loadAll if {@code true}, load all data and ACP from the session before detaching
      * @since 5.6
      */
-    void detach(boolean loadAll) throws ClientException;
+    void detach(boolean loadAll);
 
     /**
      * Reattaches a document impl to an existing session.
@@ -139,7 +139,7 @@ public interface DocumentModel extends Serializable {
      * @param sid the session id
      * @since 5.6
      */
-    void attach(String sid) throws ClientException;
+    void attach(String sid);
 
     /**
      * Gets a reference to the core document that can be used either remotely or locally (opens the core JVM).
@@ -181,9 +181,8 @@ public interface DocumentModel extends Serializable {
      * Get a text suitable to be shown in a UI for this document.
      *
      * @return the title or the internal name if no title could be found
-     * @throws ClientException
      */
-    String getTitle() throws ClientException;
+    String getTitle();
 
     /**
      * Gets the document path as a string.
@@ -301,9 +300,8 @@ public interface DocumentModel extends Serializable {
      *
      * @param schema the schema name
      * @return the data model or null if no such schema is supported
-     * @throws ClientException
      */
-    DataModel getDataModel(String schema) throws ClientException;
+    DataModel getDataModel(String schema);
 
     /**
      * Sets path info.
@@ -347,7 +345,7 @@ public interface DocumentModel extends Serializable {
      * @deprecated since 5.4.2, use {@link #setLock} instead
      */
     @Deprecated
-    void setLock(String key) throws ClientException;
+    void setLock(String key);
 
     /**
      * Unlocks the given document.
@@ -356,7 +354,7 @@ public interface DocumentModel extends Serializable {
      * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
-    void unlock() throws ClientException;
+    void unlock();
 
     /**
      * Sets a lock on the document.
@@ -365,7 +363,7 @@ public interface DocumentModel extends Serializable {
      * @throws ClientException if a lock was already set
      * @since 5.4.2
      */
-    Lock setLock() throws ClientException;
+    Lock setLock();
 
     /**
      * Gets the lock info on the document.
@@ -376,7 +374,7 @@ public interface DocumentModel extends Serializable {
      * @return the lock info if the document is locked, or {@code null} otherwise
      * @since 5.4.2
      */
-    Lock getLockInfo() throws ClientException;
+    Lock getLockInfo();
 
     /**
      * Removes the lock on the document.
@@ -391,7 +389,7 @@ public interface DocumentModel extends Serializable {
      * @return the removed lock info, or {@code null} if there was no lock
      * @since 5.4.2
      */
-    Lock removeLock() throws ClientException;
+    Lock removeLock();
 
     /**
      * Tests if the document is checked out.
@@ -404,7 +402,7 @@ public interface DocumentModel extends Serializable {
      * @return {@code true} if the document is checked out, {@code false} if it is checked in
      * @since 5.4
      */
-    boolean isCheckedOut() throws ClientException;
+    boolean isCheckedOut();
 
     /**
      * Checks out a document.
@@ -415,7 +413,7 @@ public interface DocumentModel extends Serializable {
      *
      * @since 5.4
      */
-    void checkOut() throws ClientException;
+    void checkOut();
 
     /**
      * Checks in a document and returns the created version.
@@ -430,7 +428,7 @@ public interface DocumentModel extends Serializable {
      * @return the version just created
      * @since 5.4
      */
-    DocumentRef checkIn(VersioningOption option, String checkinComment) throws ClientException;
+    DocumentRef checkIn(VersioningOption option, String checkinComment);
 
     /**
      * Returns the version label.
@@ -447,7 +445,7 @@ public interface DocumentModel extends Serializable {
      * @return the checkin comment, or {@code null}
      * @since 5.4
      */
-    String getCheckinComment() throws ClientException;
+    String getCheckinComment();
 
     /**
      * Gets the version series id for this document.
@@ -458,35 +456,35 @@ public interface DocumentModel extends Serializable {
      * @return the version series id
      * @since 5.4
      */
-    String getVersionSeriesId() throws ClientException;
+    String getVersionSeriesId();
 
     /**
      * Checks if a document is the latest version in the version series.
      *
      * @since 5.4
      */
-    boolean isLatestVersion() throws ClientException;
+    boolean isLatestVersion();
 
     /**
      * Checks if a document is a major version.
      *
      * @since 5.4
      */
-    boolean isMajorVersion() throws ClientException;
+    boolean isMajorVersion();
 
     /**
      * Checks if a document is the latest major version in the version series.
      *
      * @since 5.4
      */
-    boolean isLatestMajorVersion() throws ClientException;
+    boolean isLatestMajorVersion();
 
     /**
      * Checks if there is a checked out working copy for the version series of this document.
      *
      * @since 5.4
      */
-    boolean isVersionSeriesCheckedOut() throws ClientException;
+    boolean isVersionSeriesCheckedOut();
 
     /**
      * Gets the access control policy (ACP) for this document.
@@ -499,9 +497,8 @@ public interface DocumentModel extends Serializable {
      * later usage.
      *
      * @return the security data model or null if none
-     * @throws ClientException
      */
-    ACP getACP() throws ClientException;
+    ACP getACP();
 
     /**
      * Sets the ACP for this document model.
@@ -511,9 +508,8 @@ public interface DocumentModel extends Serializable {
      * @see {@link CoreSession#setACP(DocumentRef, ACP, boolean)}
      * @param acp the ACP to set
      * @param overwrite whether to overwrite the old ACP or not
-     * @throws ClientException
      */
-    void setACP(ACP acp, boolean overwrite) throws ClientException;
+    void setACP(ACP acp, boolean overwrite);
 
     /**
      * Gets a property from the given schema.
@@ -523,9 +519,8 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @return the property value or null if no such property exists
-     * @throws ClientException
      */
-    Object getProperty(String schemaName, String name) throws ClientException;
+    Object getProperty(String schemaName, String name);
 
     /**
      * Sets the property value from the given schema.
@@ -535,9 +530,8 @@ public interface DocumentModel extends Serializable {
      * @param schemaName the schema name
      * @param name the property name
      * @param value the property value
-     * @throws ClientException
      */
-    void setProperty(String schemaName, String name, Object value) throws ClientException;
+    void setProperty(String schemaName, String name, Object value);
 
     /**
      * Gets the values from the given data model as a map.
@@ -546,9 +540,8 @@ public interface DocumentModel extends Serializable {
      *
      * @param schemaName the data model schema name
      * @return the values map
-     * @throws ClientException
      */
-    Map<String, Object> getProperties(String schemaName) throws ClientException;
+    Map<String, Object> getProperties(String schemaName);
 
     /**
      * Sets values for the given data model.
@@ -557,9 +550,8 @@ public interface DocumentModel extends Serializable {
      *
      * @param schemaName the schema name
      * @param data the values to set
-     * @throws ClientException
      */
-    void setProperties(String schemaName, Map<String, Object> data) throws ClientException;
+    void setProperties(String schemaName, Map<String, Object> data);
 
     /**
      * Checks if this document is a folder.
@@ -579,9 +571,8 @@ public interface DocumentModel extends Serializable {
      * Checks if this document can be downloaded.
      *
      * @return true if the document has downloadable content, false otherwise
-     * @throws ClientException
      */
-    boolean isDownloadable() throws ClientException;
+    boolean isDownloadable();
 
     /**
      * Checks if this document is a version.
@@ -621,10 +612,9 @@ public interface DocumentModel extends Serializable {
      * @param visitor the visitor to accept
      * @param arg an argument passed to the visitor. This should be used by the visitor to carry on the visiting
      *            context.
-     * @throws ClientException
      * @since 5.5
      */
-    void accept(PropertyVisitor visitor, Object arg) throws ClientException;
+    void accept(PropertyVisitor visitor, Object arg);
 
     /**
      * Adapts the document to the given interface.
@@ -654,7 +644,7 @@ public interface DocumentModel extends Serializable {
      * @see org.nuxeo.ecm.core.lifecycle
      * @return the life cycle as a string
      */
-    String getCurrentLifeCycleState() throws ClientException;
+    String getCurrentLifeCycleState();
 
     /**
      * Returns the life cycle policy of the document.
@@ -662,7 +652,7 @@ public interface DocumentModel extends Serializable {
      * @see org.nuxeo.ecm.core.lifecycle
      * @return the life cycle policy
      */
-    String getLifeCyclePolicy() throws ClientException;
+    String getLifeCyclePolicy();
 
     /**
      * Follows a given life cycle transition.
@@ -672,14 +662,14 @@ public interface DocumentModel extends Serializable {
      * @param transition the name of the transition to follow
      * @return a boolean representing the status if the operation
      */
-    boolean followTransition(String transition) throws ClientException;
+    boolean followTransition(String transition);
 
     /**
      * Gets the allowed state transitions for this document.
      *
      * @return a collection of state transitions as string
      */
-    Collection<String> getAllowedStateTransitions() throws ClientException;
+    Collection<String> getAllowedStateTransitions();
 
     /**
      * Gets the context data associated to this document.
@@ -725,7 +715,7 @@ public interface DocumentModel extends Serializable {
     /**
      * Copies all the data from a source document.
      */
-    void copyContent(DocumentModel sourceDoc) throws ClientException;
+    void copyContent(DocumentModel sourceDoc);
 
     /**
      * Returns the name of the repository in which the document is stored.
@@ -747,9 +737,8 @@ public interface DocumentModel extends Serializable {
      * interfere with cache key comparisons.
      *
      * @return the cache key as a string
-     * @throws ClientException
      */
-    String getCacheKey() throws ClientException;
+    String getCacheKey();
 
     /**
      * Returns the source document identifier.
@@ -796,22 +785,21 @@ public interface DocumentModel extends Serializable {
      * Gets system property of the specified type. This is not a lazy loaded property, thus the request is made directly
      * to the server. This is needed as some critical system properties might be changed directly in the core.
      */
-    <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException;
+    <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type);
 
     /**
      * Get a document part given its schema name
      *
      * @param schema the schema
      * @return the document aprt or null if none exists for that schema
-     * @throws ClientException
      */
     // TODO throw an exception if schema is not impl by the doc?
-    DocumentPart getPart(String schema) throws ClientException;
+    DocumentPart getPart(String schema);
 
     /**
      * Gets this document's parts.
      */
-    DocumentPart[] getParts() throws ClientException;
+    DocumentPart[] getParts();
 
     /**
      * Gets a property given a xpath.
@@ -825,7 +813,7 @@ public interface DocumentModel extends Serializable {
      * The latter is possible because in Nuxeo lists of complex elements are homogenous, so the name of the second-level
      * element is implied.
      */
-    Property getProperty(String xpath) throws PropertyException, ClientException;
+    Property getProperty(String xpath) throws PropertyException;
 
     /**
      * Gets a property value given a xpath.
@@ -839,12 +827,12 @@ public interface DocumentModel extends Serializable {
      * The latter is possible because in Nuxeo lists of complex elements are homogenous, so the name of the second-level
      * element is implied.
      */
-    Serializable getPropertyValue(String xpath) throws PropertyException, ClientException;
+    Serializable getPropertyValue(String xpath) throws PropertyException;
 
     /**
      * Sets a property value given a xpath.
      */
-    void setPropertyValue(String xpath, Serializable value) throws PropertyException, ClientException;
+    void setPropertyValue(String xpath, Serializable value) throws PropertyException;
 
     /**
      * Clears any prefetched or cached document data.
@@ -886,7 +874,7 @@ public interface DocumentModel extends Serializable {
      * @param refreshFlags the refresh flags
      * @param schemas the document parts (schemas) that should be refreshed now
      */
-    void refresh(int refreshFlags, String[] schemas) throws ClientException;
+    void refresh(int refreshFlags, String[] schemas);
 
     /** Info fetched internally during a refresh. */
     public static class DocumentModelRefresh {
@@ -921,7 +909,7 @@ public interface DocumentModel extends Serializable {
     /**
      * Same as {@code DocumentModel.refresh(REFRESH_DEFAULT)}.
      */
-    void refresh() throws ClientException;
+    void refresh();
 
     /**
      * Clone operation. Must be made public instead of just protected as in Object.
@@ -944,7 +932,7 @@ public interface DocumentModel extends Serializable {
      *
      * @since 5.9.3
      */
-    Map<String, String> getBinaryFulltext() throws ClientException;
+    Map<String, String> getBinaryFulltext();
 
     /**
      * @param xpath the property xpath

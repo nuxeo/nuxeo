@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.io.DocumentReaderFactory;
 public class DocumentTreeReaderFactory implements DocumentReaderFactory {
 
     @Override
-    public DocumentReader createDocReader(Map<String, Object> params) throws ClientException {
+    public DocumentReader createDocReader(Map<String, Object> params) {
         CoreSession session = null;
         DocumentRef root = null;
         return new DocumentTreeReader(session, root);

@@ -47,7 +47,7 @@ public class MailBox {
     /**
      * Fetch for each string given the mailbox target associated see
      */
-    public static List<MailBox> fetchPersonsFromList(List<String> values, boolean isStrict) throws ClientException {
+    public static List<MailBox> fetchPersonsFromList(List<String> values, boolean isStrict) {
         if (values == null) {
             return new ArrayList<MailBox>();
         }
@@ -67,7 +67,7 @@ public class MailBox {
      * if the substring startswith by "user:" then try to resolve the user email, otherwise try to fetch the user
      * without prefix if not found considered the string as an email address.
      */
-    public static List<MailBox> fetchPersonsFromString(String value, boolean isStrict) throws ClientException {
+    public static List<MailBox> fetchPersonsFromString(String value, boolean isStrict) {
         List<MailBox> result = new ArrayList<MailBox>();
 
         // if strict waiting simply the user account or direct email address
@@ -126,17 +126,17 @@ public class MailBox {
         return result;
     }
 
-    public MailBox(String address, String firstname, String lastname) throws ClientException {
+    public MailBox(String address, String firstname, String lastname) {
         this.address = address;
         this.firstname = firstname == null ? "" : firstname;
         this.lastname = lastname == null ? "" : lastname;
     }
 
-    public MailBox(DocumentModel user, boolean isStrict) throws ClientException {
+    public MailBox(DocumentModel user, boolean isStrict) {
         initFromDocumentModel(user);
     }
 
-    public MailBox(String info, boolean isStrict) throws ClientException {
+    public MailBox(String info, boolean isStrict) {
         if (info.startsWith(USER_PREFIX)) {
             String userId = info.substring(USER_PREFIX.length());
             DocumentModel user = getUmgr().getUserModel(userId);
@@ -161,7 +161,7 @@ public class MailBox {
 
     }
 
-    private void initFromDocumentModel(DocumentModel user) throws ClientException {
+    private void initFromDocumentModel(DocumentModel user) {
         if (user != null && user.getPropertyValue("email") != null
                 && ((String) user.getPropertyValue("email")).contains("@")) {
             address = (String) user.getPropertyValue("email");

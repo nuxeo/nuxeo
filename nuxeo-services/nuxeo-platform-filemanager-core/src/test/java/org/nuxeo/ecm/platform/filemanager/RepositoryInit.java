@@ -33,7 +33,7 @@ public class RepositoryInit extends DefaultRepositoryInit {
     public static final String PATH_FOLDER = "/default-domain/workspaces/ws1/folder1";
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         super.populate(session);
 
         DocumentModel doc = session.createDocumentModel(PATH_WORKSPACE_ROOT, "ws1", "Workspace");

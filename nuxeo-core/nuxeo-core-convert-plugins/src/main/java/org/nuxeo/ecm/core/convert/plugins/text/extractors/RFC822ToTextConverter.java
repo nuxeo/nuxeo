@@ -150,7 +150,7 @@ public class RFC822ToTextConverter implements Converter {
         }
     }
 
-    protected static byte[] extractTextFromMessagePart(Part p) throws ClientException, MessagingException, IOException {
+    protected static byte[] extractTextFromMessagePart(Part p) throws MessagingException, IOException {
         ContentType contentType = new ContentType(p.getContentType());
         String baseType = contentType.getBaseType();
         if (TXT_MT.equals(baseType)) {

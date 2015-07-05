@@ -167,7 +167,7 @@ public class ImportActions implements Serializable {
         return importOptions;
     }
 
-    public String getSelectedImportFolderId() throws ClientException {
+    public String getSelectedImportFolderId() {
         if (selectedImportFolderId == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument == null) {
@@ -288,7 +288,7 @@ public class ImportActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> importDocumentsThroughBatchManager(String chainOrOperationId,
-            Map<String, Object> contextParams) throws ClientException {
+            Map<String, Object> contextParams) {
         BatchManager bm = Framework.getLocalService(BatchManager.class);
         return (List<DocumentModel>) bm.execute(currentBatchId, chainOrOperationId, documentManager, contextParams,
                 null);
@@ -296,7 +296,7 @@ public class ImportActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> importDocumentsThroughUploadItems(String chainOrOperationId,
-            Map<String, Object> contextParams) throws ClientException {
+            Map<String, Object> contextParams) {
         if (uploadedFiles == null) {
             return Collections.emptyList();
         }
@@ -361,7 +361,7 @@ public class ImportActions implements Serializable {
     }
 
     @Observer(value = USER_ALL_DOCUMENT_TYPES_SELECTION_CHANGED)
-    public void invalidateSelectedImportFolder() throws ClientException {
+    public void invalidateSelectedImportFolder() {
         selectedImportFolderId = null;
     }
 

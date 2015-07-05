@@ -86,7 +86,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     }
 
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String usedUsername,
-            DocumentModel currentDocument) throws ClientException {
+            DocumentModel currentDocument) {
         String domainName = getDomainName(userCoreSession, currentDocument);
         if (domainName == null) {
             throw new ClientException("Unable to find root domain for UserWorkspace");
@@ -97,7 +97,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     }
 
     protected String computePathForUserWorkspace(CoreSession userCoreSession, String userName,
-            DocumentModel currentDocument) throws ClientException {
+            DocumentModel currentDocument) {
         String rootPath = computePathUserWorkspaceRoot(userCoreSession, userName, currentDocument);
         Path path = new Path(rootPath);
         path = path.append(getUserWorkspaceNameForUser(userName));
@@ -106,7 +106,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     @Override
     public DocumentModel getCurrentUserPersonalWorkspace(String userName, DocumentModel currentDocument)
-            throws ClientException {
+            {
         if (currentDocument == null) {
             return null;
         }
@@ -115,7 +115,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     @Override
     public DocumentModel getCurrentUserPersonalWorkspace(CoreSession userCoreSession, DocumentModel context)
-            throws ClientException {
+            {
         return getCurrentUserPersonalWorkspace(userCoreSession.getPrincipal(), null, userCoreSession, context);
     }
 
@@ -126,7 +126,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
      * @since 5.7 "userWorkspaceCreated" is triggered
      */
     protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String userName,
-            CoreSession userCoreSession, DocumentModel context) throws ClientException {
+            CoreSession userCoreSession, DocumentModel context) {
         if (principal == null && StringUtils.isEmpty(userName)) {
             throw new ClientException("You should pass at least one principal or one username");
         }
@@ -155,7 +155,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     }
 
     protected synchronized PathRef createUserWorkspace(PathRef rootRef, PathRef userWSRef, CoreSession userCoreSession,
-            Principal principal, String userName) throws ClientException {
+            Principal principal, String userName) {
 
         UnrestrictedUWSCreator creator = new UnrestrictedUWSCreator(rootRef, userWSRef, userCoreSession, principal,
                 userName);
@@ -166,12 +166,12 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     @Override
     public DocumentModel getUserPersonalWorkspace(NuxeoPrincipal principal, DocumentModel context)
-            throws ClientException {
+            {
         return getCurrentUserPersonalWorkspace(principal, null, context.getCoreSession(), context);
     }
 
     @Override
-    public DocumentModel getUserPersonalWorkspace(String userName, DocumentModel context) throws ClientException {
+    public DocumentModel getUserPersonalWorkspace(String userName, DocumentModel context) {
         try {
             UnrestrictedUserWorkspaceFinder finder = new UnrestrictedUserWorkspaceFinder(userName, context);
             finder.runUnrestricted();
@@ -240,7 +240,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     }
 
     protected void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal,
-            String eventId, Map<String, Serializable> properties) throws ClientException {
+            String eventId, Map<String, Serializable> properties) {
         if (properties == null) {
             properties = new HashMap<String, Serializable>();
         }
@@ -278,7 +278,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             // create root if needed
             if (!session.exists(rootRef)) {
@@ -321,14 +321,14 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             userWorkspace = getCurrentUserPersonalWorkspace(null, userName, session, context);
             if (userWorkspace != null) {
                 userWorkspace.detach(true);
             }
         }
 
-        public DocumentModel getDetachedUserWorkspace() throws ClientException {
+        public DocumentModel getDetachedUserWorkspace() {
             return userWorkspace;
         }
     }
@@ -342,7 +342,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         protected String domaineName;
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             String targetName = getComponent().getTargetDomainName();
             PathRef ref = new PathRef("/" + targetName);
@@ -364,10 +364,9 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 UserWorkspaceServiceImplComponent.NAME);
     }
 
-    protected abstract DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef)
-            throws ClientException;
+    protected abstract DocumentModel doCreateUserWorkspacesRoot(CoreSession unrestrictedSession, PathRef rootRef);
 
     protected abstract DocumentModel doCreateUserWorkspace(CoreSession unrestrictedSession, PathRef wsRef,
-            Principal principal, String userName) throws ClientException;
+            Principal principal, String userName);
 
 }

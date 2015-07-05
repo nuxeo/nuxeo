@@ -103,7 +103,7 @@ public final class FileManagerUtils {
      * Looks if an existing Document with the same filename exists.
      */
     public static DocumentModel getExistingDocByFileName(CoreSession documentManager, String path, String filename)
-            throws ClientException {
+            {
         // We must use the "file:content/name" sub-property which is the only
         // one on which we can rely (and not "file:filename" which can possibly
         // not be set), see https://jira.nuxeo.com/browse/NXP-10565
@@ -117,7 +117,7 @@ public final class FileManagerUtils {
      * Looks if an existing Document with the same title exists.
      */
     public static DocumentModel getExistingDocByTitle(CoreSession documentManager, String path, String title)
-            throws ClientException {
+            {
         return getExistingDocByPropertyName(documentManager, path, title, "dc:title");
     }
 
@@ -125,7 +125,7 @@ public final class FileManagerUtils {
      * Looks if an existing Document has the same value for a given property.
      */
     public static DocumentModel getExistingDocByPropertyName(CoreSession documentManager, String path, String value,
-            String propertyName) throws ClientException {
+            String propertyName) {
         value = Normalizer.normalize(value, Normalizer.Form.NFC);
         DocumentModel existing = null;
         String parentId = documentManager.getDocument(new PathRef(path)).getId();

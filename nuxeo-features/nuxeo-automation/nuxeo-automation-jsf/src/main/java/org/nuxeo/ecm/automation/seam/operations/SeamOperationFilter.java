@@ -104,7 +104,7 @@ public class SeamOperationFilter {
     }
 
     protected static void initializeSeamContext(OperationContext context, String conversationId, CoreSession session)
-            throws ClientException {
+            {
 
         HttpServletRequest request = getRequest(context);
         if (request == null) {

@@ -277,12 +277,12 @@ public class MemoryDirectorySession extends BaseSession {
         return results;
     }
 
-    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) {
         Map<String, Object> fieldMap = entry.getProperties(directory.schemaName);
         return createEntry(fieldMap);
     }
 
-    public boolean hasEntry(String id) throws ClientException {
+    public boolean hasEntry(String id) {
         return data.containsKey(id);
     }
 

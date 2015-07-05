@@ -62,7 +62,7 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         this.readOnly = true;
     }
 
-    public static NuxeoOAuthServiceProvider createFromDirectoryEntry(DocumentModel entry) throws ClientException {
+    public static NuxeoOAuthServiceProvider createFromDirectoryEntry(DocumentModel entry) {
 
         String requestTokenURL = (String) entry.getProperty(SCHEMA, "requestTokenURL");
         String userAuthorizationURL = (String) entry.getProperty(SCHEMA, "userAuthorizationURL");
@@ -85,7 +85,7 @@ public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {
         return provider;
     }
 
-    protected DocumentModel asDocumentModel(DocumentModel entry) throws ClientException {
+    protected DocumentModel asDocumentModel(DocumentModel entry) {
 
         entry.setProperty(SCHEMA, "gadgetUrl", gadgetUrl);
         entry.setProperty(SCHEMA, "serviceName", serviceName);

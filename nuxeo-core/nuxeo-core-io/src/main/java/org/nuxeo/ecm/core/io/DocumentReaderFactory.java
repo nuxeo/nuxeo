@@ -26,6 +26,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface DocumentReaderFactory {
 
-    DocumentReader createDocReader(Map<String, Object> params) throws ClientException;
+    DocumentReader createDocReader(Map<String, Object> params);
 
 }

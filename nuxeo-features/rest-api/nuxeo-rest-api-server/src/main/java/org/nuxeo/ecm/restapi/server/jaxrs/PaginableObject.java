@@ -65,12 +65,12 @@ public abstract class PaginableObject<T> extends DefaultObject {
         return new Object[] {};
     }
 
-    protected DocumentModel getSearchDocument() throws ClientException {
+    protected DocumentModel getSearchDocument() {
         return null;
     }
 
     @SuppressWarnings("unchecked")
-    public Paginable<T> getPaginableEntries() throws ClientException {
+    public Paginable<T> getPaginableEntries() {
         PageProviderDefinition ppDefinition = getPageProviderDefinition();
         if (ppDefinition == null) {
             throw new ClientException("Page provider given not found");

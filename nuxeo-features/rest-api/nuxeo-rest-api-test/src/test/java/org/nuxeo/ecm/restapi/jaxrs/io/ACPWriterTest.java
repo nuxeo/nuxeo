@@ -74,9 +74,8 @@ public class ACPWriterTest {
      * @param acp
      * @return
      * @throws IOException
-     * @throws ClientException
      */
-    private JsonNode writeAcpAsJson(ACP acp) throws IOException, ClientException {
+    private JsonNode writeAcpAsJson(ACP acp) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
 

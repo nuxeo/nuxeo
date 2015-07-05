@@ -64,7 +64,7 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
         }
     }
 
-    protected CoreSession _createSession(HttpServletRequest request, String repoName) throws ClientException {
+    protected CoreSession _createSession(HttpServletRequest request, String repoName) {
         if (request.getUserPrincipal() == null) {
             throw new java.lang.IllegalStateException("Not authenticated user is trying to get a core session");
         }

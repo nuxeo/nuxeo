@@ -75,7 +75,7 @@ public class PictureTilesAdapterImpl implements PictureTilesAdapter {
         return pts;
     }
 
-    public PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles) throws ClientException {
+    public PictureTiles getTiles(int tileWidth, int tileHeight, int maxTiles) {
 
         String key = tileWidth + "-" + tileHeight + "-" + maxTiles;
 

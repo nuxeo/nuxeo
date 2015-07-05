@@ -125,7 +125,7 @@ public class TestMashalingWithCore {
     }
 
     @Test
-    public void testComplexMarshaling() throws ClientException {
+    public void testComplexMarshaling() {
         RemotePublisherMarshaler marshaler = new DefaultMarshaler();
         marshaler.setAssociatedCoreSession(session);
 

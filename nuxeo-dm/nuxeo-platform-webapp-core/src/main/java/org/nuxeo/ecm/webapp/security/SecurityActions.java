@@ -39,7 +39,7 @@ public interface SecurityActions {
      *
      * @return the page that will be displayed next
      */
-    String updateSecurityOnDocument() throws ClientException;
+    String updateSecurityOnDocument();
 
     /**
      * Adds a permission to the list of permissions for the current document. After all client side changes are made,
@@ -47,7 +47,7 @@ public interface SecurityActions {
      *
      * @return the page that needs to be displayed next
      */
-    String addPermission() throws ClientException;
+    String addPermission();
 
     /**
      * Adds a list of permission to the list of permissions for the current document. After all client side changes are
@@ -56,9 +56,9 @@ public interface SecurityActions {
      *
      * @return the page that needs to be displayed next
      */
-    String addPermissions() throws ClientException;
+    String addPermissions();
 
-    String addPermission(String principalName, String permissionName, boolean grant) throws ClientException;
+    String addPermission(String principalName, String permissionName, boolean grant);
 
     /**
      * Removes a permission from the list of permissions for the current document. After all client side changes are
@@ -75,7 +75,7 @@ public interface SecurityActions {
      *
      * @return the page that needs to be displayed next
      */
-    String addPermissionAndUpdate() throws ClientException;
+    String addPermissionAndUpdate();
 
     /**
      * Adds a list of permissions to the list of permissions for the current document and automatically update the
@@ -83,7 +83,7 @@ public interface SecurityActions {
      *
      * @return the page that needs to be displayed next
      */
-    String addPermissionsAndUpdate() throws ClientException;
+    String addPermissionsAndUpdate();
 
     /**
      * Removes a permission from the list of permissions for the current document and automatically update the backend
@@ -91,9 +91,9 @@ public interface SecurityActions {
      *
      * @return the page that needs to be displayed next
      */
-    String removePermissionAndUpdate() throws ClientException;
+    String removePermissionAndUpdate();
 
-    String removePermissionsAndUpdate() throws ClientException;
+    String removePermissionsAndUpdate();
 
     /**
      * Marks the current security data info as obsolete so that it gets lazily recomputed from the backend the next time
@@ -104,34 +104,34 @@ public interface SecurityActions {
     /**
      * Rebuilds the security displayable data from the current selected document.
      */
-    void rebuildSecurityData() throws ClientException;
+    void rebuildSecurityData();
 
     /**
      * @return a PageSelections used to build a checkboxable listing of managed permissions
      */
-    PageSelections<String> getDataTableModel() throws ClientException;
+    PageSelections<String> getDataTableModel();
 
     /**
      * @return the SecurityData object that manages a stateful representation of the permissions mapping that apply to
      *         the current document (inherited or not)
      */
-    SecurityData getSecurityData() throws ClientException;
+    SecurityData getSecurityData();
 
     /**
      * Returns true if the implementator if the principal has the permission to add new security rules on currentItem.
      */
-    boolean getCanAddSecurityRules() throws ClientException;
+    boolean getCanAddSecurityRules();
 
     /**
      * Returns true if the implementator can provide a list of permissions delete now and the principal has
      * WriteSecurity permission on the currentItem.
      */
-    boolean getCanRemoveSecurityRules() throws ClientException;
+    boolean getCanRemoveSecurityRules();
 
     /**
      * @return the list of permissions the users can set through the rights management tab
      */
-    List<SelectItem> getSettablePermissions() throws ClientException;
+    List<SelectItem> getSettablePermissions();
 
     /**
      * Maps the principal type to the icon path.
@@ -145,26 +145,26 @@ public interface SecurityActions {
 
     Boolean getBlockRightInheritance();
 
-    void setBlockRightInheritance(Boolean blockRightInheritance) throws ClientException;
+    void setBlockRightInheritance(Boolean blockRightInheritance);
 
     /**
      * @deprecated use {@link #getDisplayInheritedPermissions()}
      */
     @Deprecated
-    Boolean displayInheritedPermissions() throws ClientException;
+    Boolean displayInheritedPermissions();
 
     /**
      * Returns true if inherited permissions have to be displayed (depending on rights blocking)
      */
-    boolean getDisplayInheritedPermissions() throws ClientException;
+    boolean getDisplayInheritedPermissions();
 
-    List<String> getCurrentDocumentUsers() throws ClientException;
+    List<String> getCurrentDocumentUsers();
 
-    List<String> getParentDocumentsUsers() throws ClientException;
+    List<String> getParentDocumentsUsers();
 
-    String removePermissions() throws ClientException;
+    String removePermissions();
 
-    String saveSecurityUpdates() throws ClientException;
+    String saveSecurityUpdates();
 
     /**
      * Returns selected entry used in add/remove methods

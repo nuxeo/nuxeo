@@ -36,8 +36,7 @@ public class BucketRangeDate implements Bucket {
     public BucketRangeDate(String key, DateTime from, DateTime to, long docCount) {
         if (key == null) {
             throw new IllegalArgumentException("key is null");
-        }
-        ;
+        };
         // fromDate.
         range = new BucketRange(key, from != null ? from.getMillis() : null, to != null ? to.getMillis() : null,
                 docCount);
@@ -81,4 +80,5 @@ public class BucketRangeDate implements Bucket {
     public String toString() {
         return String.format("BucketRangeDate(%s, %d, %s, %s)", getKey(), getDocCount(), fromDate, toDate);
     }
+
 }

@@ -126,7 +126,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public DocumentModel getUserRegistrationModel(String configurationName) throws ClientException {
+    public DocumentModel getUserRegistrationModel(String configurationName) {
         // Test if the configuration is defined
         if (StringUtils.isEmpty(configurationName)) {
             configurationName = DEFAULT_CONFIGURATION_NAME;
@@ -139,12 +139,12 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public DocumentModel getRegistrationRulesDocument(CoreSession session, String configurationName)
-            throws ClientException {
+            {
         // By default, configuration is hold by the root request document
         return getOrCreateRootDocument(session, configurationName);
     }
 
-    public DocumentModel getOrCreateRootDocument(CoreSession session, String configurationName) throws ClientException {
+    public DocumentModel getOrCreateRootDocument(CoreSession session, String configurationName) {
         UserRegistrationConfiguration configuration = getConfiguration(configurationName);
 
         String targetPath = configuration.getContainerParentPath() + configuration.getContainerName();
@@ -182,7 +182,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             userRegistrationModel = session.createDocumentModel(configuration.getRequestDocType());
         }
 
@@ -217,7 +217,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             String title = "registration request for "
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoUsernameField()) + " ("
@@ -268,7 +268,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             DocumentModel doc = session.getDocument(new IdRef(uuid));
             String validationMethod = (String) doc.getPropertyValue("registration:validationMethod");
@@ -302,7 +302,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             DocumentModel doc = session.getDocument(new IdRef(uuid));
 
@@ -336,7 +336,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentRef idRef = new IdRef(uuid);
 
             DocumentModel registrationDoc = session.getDocument(idRef);
@@ -390,7 +390,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentRef idRef = new IdRef(uuid);
             // Check if the id matches an existing document
             if (!session.exists(idRef)) {
@@ -427,14 +427,14 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     protected void sendValidationEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc)
-            throws ClientException {
+            {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         sendEmail(additionnalInfo, registrationDoc, configuration.getValidationEmailTemplate(),
                 configuration.getValidationEmailTitle());
     }
 
     protected void sendEmail(Map<String, Serializable> additionnalInfo, DocumentModel registrationDoc,
-            String emailTemplatePath, String emailTitle) throws ClientException {
+            String emailTemplatePath, String emailTitle) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
 
         String emailAdress = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());
@@ -501,7 +501,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         return Framework.isTestModeSet() || !isBlank(Framework.getProperty("org.nuxeo.ecm.tester.name"));
     }
 
-    protected boolean checkUserFromRegistrationExistence(DocumentModel registrationDoc) throws ClientException {
+    protected boolean checkUserFromRegistrationExistence(DocumentModel registrationDoc) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         return null != Framework.getLocalService(UserManager.class).getPrincipal(
                 (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField()));
@@ -530,18 +530,18 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     @Override
     public String submitRegistrationRequest(DocumentModel userRegistrationModel,
             Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
-            throws ClientException {
+            {
         return submitRegistrationRequest(DEFAULT_CONFIGURATION_NAME, userRegistrationModel, additionnalInfo,
                 validationMethod, autoAccept);
     }
 
     @Override
     public DocumentModelList getRegistrationsForUser(final String docId, final String username,
-            final String configurationName) throws ClientException {
+            final String configurationName) {
         final DocumentModelList registrationDocs = new DocumentModelListImpl();
         new UnrestrictedSessionRunner(getTargetRepositoryName()) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 String query = "SELECT * FROM Document WHERE ecm:currentLifeCycleState != 'validated' AND"
                         + " ecm:mixinType = '" + getConfiguration(configurationName).getRequestDocType()
                         + "' AND docinfo:documentId = '%s' AND"
@@ -570,7 +570,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     @Override
     public String submitRegistrationRequest(String configurationName, DocumentModel userRegistrationModel,
             Map<String, Serializable> additionnalInfo, ValidationMethod validationMethod, boolean autoAccept)
-            throws ClientException {
+            {
         RegistrationCreator creator = new RegistrationCreator(configurationName, userRegistrationModel,
                 additionnalInfo, validationMethod);
         creator.runUnrestricted();
@@ -615,7 +615,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public void acceptRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo)
-            throws ClientException, UserRegistrationException {
+            throws UserRegistrationException {
         RegistrationApprover acceptor = new RegistrationApprover(requestId, additionnalInfo);
         acceptor.runUnrestricted();
 
@@ -623,7 +623,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public void rejectRegistrationRequest(String requestId, Map<String, Serializable> additionnalInfo)
-            throws ClientException, UserRegistrationException {
+            throws UserRegistrationException {
 
         RegistrationRejector rejector = new RegistrationRejector(requestId, additionnalInfo);
         rejector.runUnrestricted();
@@ -632,7 +632,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public Map<String, Serializable> validateRegistration(String requestId, Map<String, Serializable> additionnalInfo)
-            throws ClientException, UserRegistrationException {
+            throws UserRegistrationException {
         RegistrationAcceptator validator = new RegistrationAcceptator(requestId, additionnalInfo);
         validator.runUnrestricted();
         return validator.getRegistrationData();
@@ -640,7 +640,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException {
+            Map<String, Serializable> additionnalInfo) throws UserRegistrationException {
 
         Map<String, Serializable> registrationInfo = validateRegistration(requestId, additionnalInfo);
 
@@ -711,7 +711,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws ClientException,
+    public NuxeoPrincipal createUser(CoreSession session, DocumentModel registrationDoc) throws
             UserRegistrationException {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         return getRegistrationUserFactory(configuration).doCreateUser(session, registrationDoc, configuration);
@@ -729,7 +729,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             doc = getOrCreateRootDocument(session, configurationName);
             ((DocumentModelImpl) doc).detach(true);
         }
@@ -774,7 +774,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public RegistrationRules getRegistrationRules(String configurationName) throws ClientException {
+    public RegistrationRules getRegistrationRules(String configurationName) {
         RootDocumentGetter rdg = new RootDocumentGetter(configurationName);
         rdg.runUnrestricted();
         return rdg.getDoc().getAdapter(RegistrationRules.class);
@@ -782,14 +782,14 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public void reviveRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
-            throws ClientException {
+            {
         for (DocumentModel registrationDoc : registrationDocs) {
             reviveRegistrationRequest(session, registrationDoc, new HashMap<String, Serializable>());
         }
     }
 
     protected void reviveRegistrationRequest(CoreSession session, DocumentModel registrationDoc,
-            Map<String, Serializable> additionalInfos) throws ClientException {
+            Map<String, Serializable> additionalInfos) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         // Build validationBaseUrl with nuxeo.url property as request is not
         // accessible.
@@ -802,7 +802,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
 
     @Override
     public void deleteRegistrationRequests(CoreSession session, List<DocumentModel> registrationDocs)
-            throws ClientException {
+            {
         for (DocumentModel registration : registrationDocs) {
             UserRegistrationConfiguration configuration = getConfiguration(registration);
             if (!registration.hasSchema(configuration.getUserInfoSchemaName())) {
@@ -819,7 +819,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     @Override
-    public void checkRequestId(final String requestId) throws ClientException, UserRegistrationException {
+    public void checkRequestId(final String requestId) throws UserRegistrationException {
         RequestIdValidator runner = new RequestIdValidator(requestId);
         runner.runUnrestricted();
     }

@@ -24,62 +24,62 @@ import org.nuxeo.ecm.platform.picture.api.PictureView;
 
 public interface MultiviewPicture {
 
-    PictureView getView(String name) throws ClientException;
+    PictureView getView(String name);
 
-    void removeView(String name) throws ClientException;
+    void removeView(String name);
 
-    void addView(PictureView view) throws ClientException;
+    void addView(PictureView view);
 
-    PictureView[] getViews() throws ClientException;
+    PictureView[] getViews();
 
-    void removeAllView() throws ClientException;
+    void removeAllView();
 
-    String getHeadline() throws ClientException;
+    String getHeadline();
 
-    void setHeadline(String headline) throws ClientException;
+    void setHeadline(String headline);
 
-    String getSubheadline() throws ClientException;
+    String getSubheadline();
 
-    void setSubheadline(String subheadline) throws ClientException;
+    void setSubheadline(String subheadline);
 
-    String getByline() throws ClientException;
+    String getByline();
 
-    void setByline(String byline) throws ClientException;
+    void setByline(String byline);
 
-    String getDateline() throws ClientException;
+    String getDateline();
 
-    void setDateline(String dateline) throws ClientException;
+    void setDateline(String dateline);
 
-    String getSlugline() throws ClientException;
+    String getSlugline();
 
-    void setSlugline(String slugline) throws ClientException;
+    void setSlugline(String slugline);
 
-    String getCredit() throws ClientException;
+    String getCredit();
 
-    void setCredit(String credit) throws ClientException;
+    void setCredit(String credit);
 
-    String getLanguage() throws ClientException;
+    String getLanguage();
 
-    void setLanguage(String language) throws ClientException;
+    void setLanguage(String language);
 
-    String getSource() throws ClientException;
+    String getSource();
 
-    void setSource(String source) throws ClientException;
+    void setSource(String source);
 
-    String getOrigin() throws ClientException;
+    String getOrigin();
 
-    void setOrigin(String origin) throws ClientException;
+    void setOrigin(String origin);
 
-    String getGenre() throws ClientException;
+    String getGenre();
 
-    void setGenre(String genre) throws ClientException;
+    void setGenre(String genre);
 
-    String getCaption() throws ClientException;
+    String getCaption();
 
-    void setCaption(String caption) throws ClientException;
+    void setCaption(String caption);
 
-    String getTypage() throws ClientException;
+    String getTypage();
 
-    void setTypage(String typage) throws ClientException;
+    void setTypage(String typage);
 
 }

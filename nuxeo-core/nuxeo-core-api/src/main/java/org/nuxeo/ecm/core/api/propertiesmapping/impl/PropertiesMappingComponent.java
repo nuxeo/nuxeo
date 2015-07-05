@@ -63,7 +63,7 @@ public class PropertiesMappingComponent extends DefaultComponent implements Prop
 
     @Override
     public void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mapping)
-            throws ClientException {
+            {
         Map<String, String> properties = getMapping(mapping);
         for (String keyProp : properties.keySet()) {
             try {

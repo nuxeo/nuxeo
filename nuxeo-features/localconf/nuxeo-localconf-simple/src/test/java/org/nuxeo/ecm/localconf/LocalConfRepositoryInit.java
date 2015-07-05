@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 public class LocalConfRepositoryInit extends DefaultRepositoryInit {
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         super.populate(session);
 
         DocumentModel doc = session.createDocumentModel("/default-domain/workspaces", "workspace", "Workspace");

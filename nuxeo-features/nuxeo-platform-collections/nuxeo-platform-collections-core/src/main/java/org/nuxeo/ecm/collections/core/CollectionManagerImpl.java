@@ -85,7 +85,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void addToCollection(final DocumentModel collection, final DocumentModel documentToBeAdded,
-            final CoreSession session) throws ClientException, DocumentSecurityException {
+            final CoreSession session) throws DocumentSecurityException {
         checkCanAddToCollection(collection, documentToBeAdded, session);
         final Map<String, Serializable> props = new HashMap<>();
         props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, collection.getRef());
@@ -97,7 +97,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         new UnrestrictedSessionRunner(session) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
 
                 DocumentModel temp = documentToBeAdded;
 
@@ -122,7 +122,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void addToCollection(final DocumentModel collection, final List<DocumentModel> documentListToBeAdded,
-            final CoreSession session) throws ClientException {
+            final CoreSession session) {
         for (DocumentModel documentToBeAdded : documentListToBeAdded) {
             addToCollection(collection, documentToBeAdded, session);
         }
@@ -130,14 +130,14 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void addToNewCollection(final String newTitle, final String newDescription,
-            final DocumentModel documentToBeAdded, final CoreSession session) throws ClientException {
+            final DocumentModel documentToBeAdded, final CoreSession session) {
         addToCollection(createCollection(newTitle, newDescription, documentToBeAdded, session), documentToBeAdded,
                 session);
     }
 
     @Override
     public void addToNewCollection(final String newTitle, final String newDescription,
-            final List<DocumentModel> documentListToBeAdded, CoreSession session) throws ClientException {
+            final List<DocumentModel> documentListToBeAdded, CoreSession session) {
         DocumentModel newCollection = createCollection(newTitle, newDescription, documentListToBeAdded.get(0), session);
         for (DocumentModel documentToBeAdded : documentListToBeAdded) {
             addToCollection(newCollection, documentToBeAdded, session);
@@ -145,18 +145,18 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public boolean canAddToCollection(final DocumentModel collection, final CoreSession session) throws ClientException {
+    public boolean canAddToCollection(final DocumentModel collection, final CoreSession session) {
         return isCollection(collection)
                 && session.hasPermission(collection.getRef(), SecurityConstants.WRITE_PROPERTIES);
     }
 
     @Override
-    public boolean canManage(final DocumentModel collection, final CoreSession session) throws ClientException {
+    public boolean canManage(final DocumentModel collection, final CoreSession session) {
         return isCollection(collection) && session.hasPermission(collection.getRef(), SecurityConstants.EVERYTHING);
     }
 
     public void checkCanAddToCollection(final DocumentModel collection, final DocumentModel documentToBeAdded,
-            final CoreSession session) throws ClientException {
+            final CoreSession session) {
         if (!isCollectable(documentToBeAdded)) {
             throw new IllegalArgumentException(String.format("Document %s is not collectable",
                     documentToBeAdded.getTitle()));
@@ -172,7 +172,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     protected DocumentModel createCollection(final String newTitle, final String newDescription,
-            final DocumentModel context, final CoreSession session) throws ClientException {
+            final DocumentModel context, final CoreSession session) {
         DocumentModel defaultCollections = getUserDefaultCollections(context, session);
         DocumentModel newCollection = session.createDocumentModel(defaultCollections.getPath().toString(), newTitle,
                 CollectionConstants.COLLECTION_TYPE);
@@ -182,7 +182,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     protected DocumentModel createDefaultCollections(final CoreSession session, DocumentModel userWorkspace)
-            throws ClientException {
+            {
         DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
                 CollectionConstants.DEFAULT_COLLECTIONS_NAME, CollectionConstants.COLLECTIONS_TYPE);
         String title = null;
@@ -209,7 +209,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session)
-            throws ClientException {
+            {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
         final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
@@ -240,13 +240,13 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final CoreSession session)
-            throws ClientException {
+            {
         return getVisibleCollection(collectionMember, CollectionConstants.MAX_COLLECTION_RETURNED, session);
     }
 
     @Override
     public List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, int maxResult,
-            CoreSession session) throws ClientException {
+            CoreSession session) {
         List<DocumentModel> result = new ArrayList<DocumentModel>();
         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
         List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
@@ -266,7 +266,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public boolean hasVisibleCollection(final DocumentModel collectionMember, CoreSession session)
-            throws ClientException {
+            {
         CollectionMember collectionMemberAdapter = collectionMember.getAdapter(CollectionMember.class);
         List<String> collectionIds = collectionMemberAdapter.getCollectionIds();
         for (final String collectionId : collectionIds) {
@@ -295,7 +295,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public boolean isInCollection(DocumentModel collection, DocumentModel document, CoreSession session)
-            throws ClientException {
+            {
         if (isCollected(document)) {
             final CollectionMember collectionMemberAdapter = document.getAdapter(CollectionMember.class);
             return collectionMemberAdapter.getCollectionIds().contains(collection.getId());
@@ -304,7 +304,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public void processCopiedCollection(final DocumentModel collection) throws ClientException {
+    public void processCopiedCollection(final DocumentModel collection) {
         Collection collectionAdapter = collection.getAdapter(Collection.class);
         List<String> documentIds = collectionAdapter.getCollectedDocumentIds();
 
@@ -338,7 +338,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     @Override
-    public void processRestoredCollection(DocumentModel collection, DocumentModel version) throws ClientException {
+    public void processRestoredCollection(DocumentModel collection, DocumentModel version) {
         final Set<String> collectionMemberIdsToBeRemoved = new TreeSet<String>(
                 collection.getAdapter(Collection.class).getCollectedDocumentIds());
         collectionMemberIdsToBeRemoved.removeAll(version.getAdapter(Collection.class).getCollectedDocumentIds());
@@ -373,7 +373,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void removeAllFromCollection(final DocumentModel collection,
-            final List<DocumentModel> documentListToBeRemoved, final CoreSession session) throws ClientException {
+            final List<DocumentModel> documentListToBeRemoved, final CoreSession session) {
         for (DocumentModel documentToBeRemoved : documentListToBeRemoved) {
             removeFromCollection(collection, documentToBeRemoved, session);
         }
@@ -381,7 +381,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public void removeFromCollection(final DocumentModel collection, final DocumentModel documentToBeRemoved,
-            final CoreSession session) throws ClientException {
+            final CoreSession session) {
         checkCanAddToCollection(collection, documentToBeRemoved, session);
         Map<String, Serializable> props = new HashMap<>();
         props.put(CollectionConstants.COLLECTION_REF_EVENT_CTX_PROP, new IdRef(collection.getId()));
@@ -393,7 +393,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         new UnrestrictedSessionRunner(session) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 doRemoveFromCollection(documentToBeRemoved, collection.getId(), session);
             }
 
@@ -416,7 +416,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
 
     @Override
     public DocumentModel createCollection(final CoreSession session, String title, String description, String path)
-            throws ClientException {
+            {
         DocumentModel newCollection = null;
         // Test if the path is null or empty
         if (StringUtils.isEmpty(path)) {
@@ -437,7 +437,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         return newCollection;
     }
 
-    protected Locale getLocale(final CoreSession session) throws ClientException {
+    protected Locale getLocale(final CoreSession session) {
         Locale locale = null;
         locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
@@ -447,7 +447,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
     }
 
     protected void fireEvent(DocumentModel doc, CoreSession session, String eventName, Map<String, Serializable> props)
-            throws ClientException {
+            {
         EventService eventService = Framework.getService(EventService.class);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());

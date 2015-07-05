@@ -50,7 +50,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements Public
         this.sid = sid;
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
 
         List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
         List<File> children = Arrays.asList(folder.listFiles());
@@ -67,7 +67,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements Public
         return childrenDocs;
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
         List<File> children = Arrays.asList(folder.listFiles());
         Collections.sort(children);
@@ -79,7 +79,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements Public
         return childrenNodes;
     }
 
-    public String getName() throws ClientException {
+    public String getName() {
         return folder.getName();
     }
 
@@ -93,7 +93,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements Public
         return folder.getAbsolutePath();
     }
 
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         return getName();
     }
 

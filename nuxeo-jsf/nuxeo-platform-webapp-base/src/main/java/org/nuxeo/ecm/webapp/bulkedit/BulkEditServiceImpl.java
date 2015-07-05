@@ -52,7 +52,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
 
     @Override
     public void updateDocuments(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
-            throws ClientException {
+            {
         List<String> propertiesToCopy = getPropertiesToCopy(sourceDoc);
         if (propertiesToCopy.isEmpty()) {
             return;
@@ -101,7 +101,7 @@ public class BulkEditServiceImpl extends DefaultComponent implements BulkEditSer
      * @deprecated since 7.3. The option is passed to the CoreSession#saveDocument method.
      */
     @Deprecated
-    protected void checkIn(DocumentModel doc) throws ClientException {
+    protected void checkIn(DocumentModel doc) {
         if (defaultVersioningOption != null && defaultVersioningOption != VersioningOption.NONE) {
             if (doc.isCheckedOut()) {
                 doc.checkIn(defaultVersioningOption, null);

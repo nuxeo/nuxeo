@@ -47,7 +47,7 @@ public class GetCollectionsTest extends CollectionOperationsTestCase {
     List<DocumentModel> listCollections;
 
     @Before
-    public void setUp() throws ClientException {
+    public void setUp() {
         testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace", "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
         // Create a list of collections

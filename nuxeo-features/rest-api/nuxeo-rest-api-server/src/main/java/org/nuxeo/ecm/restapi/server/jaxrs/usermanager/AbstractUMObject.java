@@ -78,7 +78,7 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
         }
     }
 
-    protected void checkUpdateGuardPreconditions() throws ClientException {
+    protected void checkUpdateGuardPreconditions() {
         NuxeoPrincipal principal = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();
         if (!principal.isAdministrator()) {
             if ((!principal.isMemberOf("powerusers")) || !isAPowerUserEditableArtifact()) {
@@ -101,15 +101,13 @@ public abstract class AbstractUMObject<T> extends DefaultObject {
      *
      * @param artifact the artifact that has been retrieved from request.
      * @return the updated artifact.
-     * @throws ClientException
      */
-    protected abstract T updateArtifact(T artifact) throws ClientException;
+    protected abstract T updateArtifact(T artifact);
 
     /**
      * Deletes the current artifact in the underlying persistence system.
      *
-     * @throws ClientException
      */
-    protected abstract void deleteArtifact() throws ClientException;
+    protected abstract void deleteArtifact();
 
 }

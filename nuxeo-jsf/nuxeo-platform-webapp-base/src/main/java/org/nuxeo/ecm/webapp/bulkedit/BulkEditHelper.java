@@ -113,7 +113,7 @@ public class BulkEditHelper {
      */
     @Deprecated
     public static void copyMetadata(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
-            throws ClientException {
+            {
         Framework.getLocalService(BulkEditService.class).updateDocuments(session, sourceDoc, targetDocs);
     }
 

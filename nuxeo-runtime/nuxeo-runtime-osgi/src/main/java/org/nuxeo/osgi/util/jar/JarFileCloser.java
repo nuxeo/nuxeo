@@ -10,8 +10,8 @@ public interface JarFileCloser {
     public static final JarFileCloser NOOP = new JarFileCloser() {
 
         @Override
-        public void close(JarFile file) throws IOException {
-            ;
+        public void close(JarFile file) throws IOException {;
         }
     };
+
 }

@@ -347,7 +347,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             version = documentManager.getSourceDocument(document.getRef());
             if (version != null) {
                 sourceDocForVersionId = session.getSourceDocument(version.getRef()).getId();

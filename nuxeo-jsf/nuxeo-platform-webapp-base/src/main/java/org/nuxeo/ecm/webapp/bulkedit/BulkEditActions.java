@@ -111,7 +111,7 @@ public class BulkEditActions implements Serializable {
         return fictiveDocumentModel;
     }
 
-    public String bulkEditSelection() throws ClientException {
+    public String bulkEditSelection() {
         if (fictiveDocumentModel != null) {
             List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION);
             Framework.getLocalService(BulkEditService.class).updateDocuments(documentManager, fictiveDocumentModel,
@@ -134,11 +134,11 @@ public class BulkEditActions implements Serializable {
      * @deprecated since 5.7. Use {@link org.nuxeo.ecm.webapp.bulkedit.BulkEditActions#bulkEditSelection()} .
      */
     @Deprecated
-    public void bulkEditSelectionNoRedirect() throws ClientException {
+    public void bulkEditSelectionNoRedirect() {
         bulkEditSelection();
     }
 
-    public boolean getCanEdit() throws ClientException {
+    public boolean getCanEdit() {
         if (documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return false;
         }

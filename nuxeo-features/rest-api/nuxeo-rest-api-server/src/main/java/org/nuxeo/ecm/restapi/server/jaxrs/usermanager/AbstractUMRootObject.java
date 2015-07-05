@@ -77,7 +77,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
 
     @GET
     @Path("search")
-    public List<T> search() throws ClientException {
+    public List<T> search() {
         return getPaginableEntries();
     }
 
@@ -89,7 +89,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     /**
      * Returns the artifact given its id.
      */
-    protected abstract T getArtifact(String id) throws ClientException;
+    protected abstract T getArtifact(String id);
 
     /**
      * Returns the type of the current artifact needed for {@link #newObject(String, Object...)}.
@@ -99,12 +99,12 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
     /**
      * Checks the precondition to create an artifact (for instance validity, duplicate detection, guards...).
      */
-    protected abstract void checkPrecondition(T artifact) throws ClientException;
+    protected abstract void checkPrecondition(T artifact);
 
     /**
      * Persist an artifact in the underlying persistence system.
      */
-    protected abstract T createArtifact(T artifact) throws ClientException;
+    protected abstract T createArtifact(T artifact);
 
     protected void checkCurrentUserCanCreateArtifact(T artifact) {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) getContext().getCoreSession().getPrincipal();

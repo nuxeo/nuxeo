@@ -662,7 +662,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         }
     }
 
-    protected Task getTask(final String taskId) throws ClientException {
+    protected Task getTask(final String taskId) {
         DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
         if (taskDoc != null) {
             return taskDoc.getAdapter(Task.class);

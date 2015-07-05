@@ -169,7 +169,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
 
     @Override
     @SuppressWarnings("unchecked")
-    public String uploadImage() throws ClientException {
+    public String uploadImage() {
         if (uploadedImage == null) {
             return null;
         }
@@ -244,7 +244,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
     }
 
     @Override
-    public String searchImages() throws ClientException {
+    public String searchImages() {
         // Init the list of results
         resultDocuments = null;
         // Search the images
@@ -258,7 +258,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
      * @since 5.9.5
      */
     @Override
-    public String searchVideos() throws ClientException {
+    public String searchVideos() {
         // Init the list of results
         resultVideos = null;
         // Search the videos
@@ -273,11 +273,10 @@ public class EditorImageActionsBean extends InputController implements EditorIma
      * Generic method to search a media.
      *
      * @param typeDocument The type of document to search.
-     * @throws ClientException
      * @since 5.9.5
      */
     @SuppressWarnings("unchecked")
-    private List<DocumentModel> searchMedia(String typeDocument) throws ClientException {
+    private List<DocumentModel> searchMedia(String typeDocument) {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
         // use page providers
@@ -330,7 +329,7 @@ public class EditorImageActionsBean extends InputController implements EditorIma
     }
 
     @Override
-    public String getURLVideo(DocumentModel video, String type) throws ClientException {
+    public String getURLVideo(DocumentModel video, String type) {
 
         if (video == null || type == null) {
             return null;

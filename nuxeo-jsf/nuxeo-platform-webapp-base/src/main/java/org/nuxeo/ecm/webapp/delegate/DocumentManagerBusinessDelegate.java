@@ -72,7 +72,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
     }
 
     @Unwrap
-    public CoreSession getDocumentManager() throws ClientException {
+    public CoreSession getDocumentManager() {
         /*
          * Explicit lookup, as this method is the only user of the Seam component. Also, in some cases (Seam remoting),
          * it seems that the injection is not done correctly.
@@ -81,7 +81,7 @@ public class DocumentManagerBusinessDelegate implements Serializable {
         return getDocumentManager(currentServerLocation);
     }
 
-    public CoreSession getDocumentManager(RepositoryLocation serverLocation) throws ClientException {
+    public CoreSession getDocumentManager(RepositoryLocation serverLocation) {
 
         if (serverLocation == null) {
             /*

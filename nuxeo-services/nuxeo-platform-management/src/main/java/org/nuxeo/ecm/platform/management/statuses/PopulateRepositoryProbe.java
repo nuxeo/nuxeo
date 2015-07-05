@@ -34,7 +34,7 @@ public class PopulateRepositoryProbe implements Probe {
         protected String info;
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel rootDocument = session.getRootDocument();
             String name = String.format("%s:%x", PopulateRepositoryProbe.class.getSimpleName(),
                     Calendar.getInstance().getTimeInMillis());

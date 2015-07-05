@@ -58,7 +58,7 @@ public class DublinCoreListener implements EventListener {
      * @param event event fired at core layer
      */
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
@@ -146,7 +146,7 @@ public class DublinCoreListener implements EventListener {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel doc = session.getSourceDocument(docRef);
             if (doc != null) {
                 doc.setPropertyValue(xpath, value);

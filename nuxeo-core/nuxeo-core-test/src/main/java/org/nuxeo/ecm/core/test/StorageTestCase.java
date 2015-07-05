@@ -108,7 +108,7 @@ public abstract class StorageTestCase extends NXRuntimeTestCase {
         database.waitForFulltextIndexing();
     }
 
-    public void openSession() throws ClientException {
+    public void openSession() {
         if (session != null) {
             log.warn("Closing session for you");
             closeSession();
@@ -117,11 +117,11 @@ public abstract class StorageTestCase extends NXRuntimeTestCase {
         assertNotNull(session);
     }
 
-    public CoreSession openSessionAs(String username) throws ClientException {
+    public CoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(database.getRepositoryName(), username);
     }
 
-    public CoreSession openSessionAs(NuxeoPrincipal principal) throws ClientException {
+    public CoreSession openSessionAs(NuxeoPrincipal principal) {
         return CoreInstance.openCoreSession(database.getRepositoryName(), principal);
     }
 

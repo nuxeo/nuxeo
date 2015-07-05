@@ -212,7 +212,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
         localeSelector.setLocale(locale);
     }
 
-    private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing) throws ClientException {
+    private List<Blob> initCachedBlob(Response res, String xpath, boolean blobPostProcessing) {
 
         HtmlPreviewAdapter preview = null; // getFromCache(targetDocument,
                                            // xpath);
@@ -296,13 +296,13 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
     }
 
     /*
-     * protected void updateCache(DocumentModel doc, HtmlPreviewAdapter adapter, String xpath) throws ClientException {
+     * protected void updateCache(DocumentModel doc, HtmlPreviewAdapter adapter, String xpath) {
      * String docKey = doc.getId(); try { Calendar modified = (Calendar) doc.getProperty("dublincore", "modified");
      * PreviewCacheEntry entry = new PreviewCacheEntry(modified, adapter, xpath); synchronized (cachedAdapters) {
      * cachedAdapters.put(docKey, entry); } cacheGC(); } finally { previewInProcessing.remove(docKey); } } protected
      * void removeFromCache(String key) { PreviewCacheEntry entry = cachedAdapters.get(key); if (entry != null) {
      * entry.getAdapter().cleanup(); } synchronized (cachedAdapters) { cachedAdapters.remove(key); } } protected
-     * HtmlPreviewAdapter getFromCache(DocumentModel doc, String xpath) throws ClientException { String docKey =
+     * HtmlPreviewAdapter getFromCache(DocumentModel doc, String xpath) { String docKey =
      * doc.getId(); while (previewInProcessing.contains(docKey)) { try { Thread.sleep(200); } catch
      * (InterruptedException e) { log.error(e, e); } } if (cachedAdapters.containsKey(docKey)) { Calendar modified =
      * (Calendar) doc.getProperty("dublincore", "modified"); PreviewCacheEntry entry = cachedAdapters.get(doc.getId());

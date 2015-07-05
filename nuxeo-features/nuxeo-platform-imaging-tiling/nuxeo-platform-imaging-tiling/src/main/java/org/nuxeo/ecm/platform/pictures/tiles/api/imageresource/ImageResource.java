@@ -33,10 +33,10 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface ImageResource extends Serializable {
 
-    Blob getBlob() throws ClientException;
+    Blob getBlob();
 
-    String getHash() throws ClientException;
+    String getHash();
 
-    Calendar getModificationDate() throws ClientException;
+    Calendar getModificationDate();
 
 }

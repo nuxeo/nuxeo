@@ -61,7 +61,7 @@ public class DocumentImageResource implements ImageResource {
         return clean;
     }
 
-    protected void compute() throws PropertyException, ClientException {
+    protected void compute() throws PropertyException {
 
         blob = (Blob) doc.getProperty(xPath).getValue();
         modified = (Calendar) doc.getProperty("dublincore", "modified");
@@ -75,7 +75,7 @@ public class DocumentImageResource implements ImageResource {
         }
     }
 
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         if (blob == null) {
             compute();
         }
@@ -85,14 +85,14 @@ public class DocumentImageResource implements ImageResource {
         return blob;
     }
 
-    public String getHash() throws ClientException {
+    public String getHash() {
         if (hash == null) {
             compute();
         }
         return hash;
     }
 
-    public Calendar getModificationDate() throws ClientException {
+    public Calendar getModificationDate() {
         if (modified == null) {
             compute();
         }

@@ -600,7 +600,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public void setCurrentEntry(T entry) throws ClientException {
+    public void setCurrentEntry(T entry) {
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
             throw new ClientException(String.format("Entry '%s' not found in current page", entry));
@@ -613,7 +613,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     }
 
     @Override
-    public void setCurrentEntryIndex(long index) throws ClientException {
+    public void setCurrentEntryIndex(long index) {
         int intIndex = new Long(index).intValue();
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {

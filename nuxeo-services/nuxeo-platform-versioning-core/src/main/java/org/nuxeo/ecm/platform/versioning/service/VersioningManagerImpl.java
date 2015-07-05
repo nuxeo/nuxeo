@@ -35,7 +35,7 @@ public class VersioningManagerImpl extends DefaultComponent implements Versionin
     public static final String COMPONENT_ID = "org.nuxeo.ecm.platform.versioning.VersioningManager";
 
     @Override
-    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc) throws ClientException {
+    public VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc) {
         VersionIncEditOptions options = new VersionIncEditOptions();
         VersioningService service = Framework.getService(VersioningService.class);
         for (VersioningOption option : service.getSaveOptions(doc)) {
@@ -66,24 +66,24 @@ public class VersioningManagerImpl extends DefaultComponent implements Versionin
 
     @Override
     @Deprecated
-    public DocumentModel incrementMajor(DocumentModel doc) throws ClientException {
+    public DocumentModel incrementMajor(DocumentModel doc) {
         setVersion(doc, getValidMajor(doc) + 1, 0);
         return doc;
     }
 
     @Override
     @Deprecated
-    public DocumentModel incrementMinor(DocumentModel doc) throws ClientException {
+    public DocumentModel incrementMinor(DocumentModel doc) {
         doc.setPropertyValue(VersioningService.MINOR_VERSION_PROP, Long.valueOf(getValidMinor(doc) + 1));
         return doc;
     }
 
-    private static void setVersion(DocumentModel doc, long major, long minor) throws ClientException {
+    private static void setVersion(DocumentModel doc, long major, long minor) {
         doc.setPropertyValue(VersioningService.MAJOR_VERSION_PROP, Long.valueOf(major));
         doc.setPropertyValue(VersioningService.MINOR_VERSION_PROP, Long.valueOf(minor));
     }
 
-    private static long getValidVersion(DocumentModel doc, String propName) throws ClientException {
+    private static long getValidVersion(DocumentModel doc, String propName) {
         Object propVal = doc.getPropertyValue(propName);
         if (propVal == null || !(propVal instanceof Long)) {
             return 0;
@@ -92,11 +92,11 @@ public class VersioningManagerImpl extends DefaultComponent implements Versionin
         }
     }
 
-    private static long getValidMajor(DocumentModel doc) throws ClientException {
+    private static long getValidMajor(DocumentModel doc) {
         return getValidVersion(doc, VersioningService.MAJOR_VERSION_PROP);
     }
 
-    private static long getValidMinor(DocumentModel doc) throws ClientException {
+    private static long getValidMinor(DocumentModel doc) {
         return getValidVersion(doc, VersioningService.MINOR_VERSION_PROP);
     }
 

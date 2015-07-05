@@ -140,7 +140,7 @@ public class TestSQLRepositoryReadAcls {
         }
     }
 
-    protected static void checkOneDoc(CoreSession session, String name) throws ClientException {
+    protected static void checkOneDoc(CoreSession session, String name) {
         String query = "SELECT * FROM File WHERE ecm:isProxy = 0 AND ecm:name = '" + name + "'";
         DocumentModelList res = session.query(query, NXQL.NXQL, null, 0, 0, false);
         assertEquals(1, res.size());

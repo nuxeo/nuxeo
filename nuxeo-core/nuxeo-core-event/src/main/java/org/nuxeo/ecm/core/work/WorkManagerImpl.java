@@ -385,8 +385,7 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
         }
 
         @Override
-        public void beforeCompletion() {
-            ;
+        public void beforeCompletion() {;
         }
 
         @Override

@@ -176,7 +176,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         return null;
     }
 
-    private LibrarySelector getLibrarySelectorService() throws ClientException {
+    private LibrarySelector getLibrarySelectorService() {
         if (librarySelector == null) {
             librarySelector = Framework.getRuntime().getService(LibrarySelector.class);
         }
@@ -243,13 +243,13 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     @Override
     public PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, boolean convert)
-            throws IOException, ClientException {
+            throws IOException {
         return computeViewFor(blob, pictureConversion, null, convert);
     }
 
     @Override
     public PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException {
+            boolean convert) throws IOException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
@@ -263,13 +263,13 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     @Override
     public List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, boolean convert)
-            throws IOException, ClientException {
+            throws IOException {
         return computeViewsFor(blob, pictureConversions, null, convert);
     }
 
     @Override
     public List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions,
-            ImageInfo imageInfo, boolean convert) throws IOException, ClientException {
+            ImageInfo imageInfo, boolean convert) throws IOException {
         String mimeType = blob.getMimeType();
         if (mimeType == null) {
             blob.setMimeType(getImageMimeType(blob));
@@ -286,12 +286,12 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
     }
 
     protected PictureView computeView(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException {
+            boolean convert) throws IOException {
         return computeView(null, blob, pictureConversion, imageInfo, convert);
     }
 
     protected PictureView computeView(DocumentModel doc, Blob blob, PictureConversion pictureConversion,
-            ImageInfo imageInfo, boolean convert) throws IOException, ClientException {
+            ImageInfo imageInfo, boolean convert) throws IOException {
         if (convert) {
             return computeView(doc, blob, pictureConversion, imageInfo);
         } else {
@@ -340,7 +340,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
      */
     @Deprecated
     protected PictureView computeOriginalJpegView(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo)
-            throws ClientException, IOException {
+            throws IOException {
         String filename = blob.getFilename();
         String title = pictureConversion.getId();
         int width = imageInfo.getWidth();
@@ -474,7 +474,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     @Override
     public List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert)
-            throws ClientException, IOException {
+            throws IOException {
         List<PictureConversion> pictureConversions = getPictureConversions();
         List<PictureView> pictureViews = new ArrayList<>(pictureConversions.size());
 
@@ -537,13 +537,13 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     @Override
     public List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
-            boolean convert) throws IOException, ClientException {
+            boolean convert) throws IOException {
         return computeViewsFor(blobs, pictureConversions, null, convert);
     }
 
     @Override
     public List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
-            ImageInfo imageInfo, boolean convert) throws IOException, ClientException {
+            ImageInfo imageInfo, boolean convert) throws IOException {
         List<List<PictureView>> allViews = new ArrayList<List<PictureView>>();
         for (Blob blob : blobs) {
             allViews.add(computeViewsFor(blob, pictureConversions, imageInfo, convert));

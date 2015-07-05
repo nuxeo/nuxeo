@@ -78,7 +78,7 @@ public final class DirectoryFunctions {
         return items.length;
     }
 
-    public static DocumentModel getDirectoryEntry(String directoryName, String entryId) throws ClientException {
+    public static DocumentModel getDirectoryEntry(String directoryName, String entryId) {
         if (entryId == null) {
             return null;
         }
@@ -89,7 +89,7 @@ public final class DirectoryFunctions {
     }
 
     public static DocumentModelList getDirectoryEntries(String directoryName, String... entryIds)
-            throws ClientException {
+            {
         if (entryIds == null) {
             return null;
         }
@@ -107,7 +107,7 @@ public final class DirectoryFunctions {
     }
 
     public static DocumentModelList getDirectoryListEntries(String directoryName, Collection<String> entryIds)
-            throws ClientException {
+            {
         if (entryIds == null) {
             return null;
         }

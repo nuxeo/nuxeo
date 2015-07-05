@@ -201,7 +201,7 @@ public class BaseTest {
      *
      * @since 5.9.3
      */
-    protected void fetchInvalidations() throws ClientException {
+    protected void fetchInvalidations() {
         session.save();
         if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
             TransactionHelper.commitOrRollbackTransaction();

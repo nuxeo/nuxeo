@@ -116,7 +116,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         try (Session directorySession = ds.open(getDirectoryName())) {
             UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     directorySession.updateEntry(editableEntry);
                 }
             };
@@ -131,7 +131,7 @@ public abstract class DirectoryBasedEditor implements Serializable {
         try (Session directorySession = ds.open(getDirectoryName())) {
             UnrestrictedSessionRunner sessionRunner = new UnrestrictedSessionRunner(documentManager) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     directorySession.deleteEntry(entryId);
                 }
             };

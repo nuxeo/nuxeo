@@ -72,15 +72,14 @@ public abstract class RepositoryInitializationHandler {
      */
     protected RepositoryInitializationHandler next;
 
-    public abstract void doInitializeRepository(CoreSession session) throws ClientException;
+    public abstract void doInitializeRepository(CoreSession session);
 
     /**
      * Must be implemented by custom initializers.
      *
      * @param session the current session
-     * @throws ClientException
      */
-    public void initializeRepository(CoreSession session) throws ClientException {
+    public void initializeRepository(CoreSession session) {
         synchronized (RepositoryInitializationHandler.class) {
             if (previous != null) {
                 previous.initializeRepository(session);

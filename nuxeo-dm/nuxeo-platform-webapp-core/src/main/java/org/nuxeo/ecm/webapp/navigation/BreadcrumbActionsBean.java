@@ -112,7 +112,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
     }
 
     @Override
-    public String navigateToParent() throws ClientException {
+    public String navigateToParent() {
         List<PathElement> documentsFormingPath = getBackendPath();
         int nbDocInList = documentsFormingPath.size();
         // if there is the case, remove the starting
@@ -156,7 +156,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
         return outcome;
     }
 
-    protected String navigateToPathElement(PathElement pathElement) throws ClientException {
+    protected String navigateToPathElement(PathElement pathElement) {
         // the bijection is not dynamic, i.e. the variables are injected
         // before the action listener code is called.
         String elementType = pathElement.getType();
@@ -188,7 +188,7 @@ public class BreadcrumbActionsBean implements BreadcrumbActions, Serializable {
      */
     @Override
     @Factory(value = "backendPath", scope = EVENT)
-    public List<PathElement> getBackendPath() throws ClientException {
+    public List<PathElement> getBackendPath() {
         String viewId = FacesContext.getCurrentInstance().getViewRoot().getViewId();
         String viewIdLabel = Pages.instance().getPage(viewId).getDescription();
         if (viewIdLabel != null && viewIdLabel.startsWith(BREADCRUMB_PREFIX)) {

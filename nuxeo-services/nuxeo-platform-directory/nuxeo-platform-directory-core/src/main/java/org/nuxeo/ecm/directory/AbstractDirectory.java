@@ -108,7 +108,7 @@ public abstract class AbstractDirectory implements Directory {
         return references.containsKey(referenceFieldName);
     }
 
-    public void addReference(Reference reference) throws ClientException {
+    public void addReference(Reference reference) {
         reference.setSourceDirectoryName(getName());
         String fieldName = reference.getFieldName();
         List<Reference> fieldRefs;
@@ -120,7 +120,7 @@ public abstract class AbstractDirectory implements Directory {
         fieldRefs.add(reference);
     }
 
-    public void addReferences(Reference[] references) throws ClientException {
+    public void addReferences(Reference[] references) {
         for (Reference reference : references) {
             addReference(reference);
         }

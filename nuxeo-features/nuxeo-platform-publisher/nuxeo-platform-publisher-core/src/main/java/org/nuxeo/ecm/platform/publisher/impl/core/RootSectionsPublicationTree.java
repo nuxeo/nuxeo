@@ -40,13 +40,13 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
 
     @Override
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
         rootFinder = RootSectionsFinderHelper.getRootSectionsFinder(coreSession);
     }
 
     @Override
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         if (currentDocument != null && useRootSections) {
             DocumentModelList rootSections = rootFinder.getAccessibleSectionRoots(currentDocument);
             if (rootSections.isEmpty()) {
@@ -73,7 +73,7 @@ public class RootSectionsPublicationTree extends SectionPublicationTree {
     }
 
     @Override
-    public PublicationNode getNodeByPath(String path) throws ClientException {
+    public PublicationNode getNodeByPath(String path) {
         if (!useRootSections) {
             return super.getNodeByPath(path);
         }

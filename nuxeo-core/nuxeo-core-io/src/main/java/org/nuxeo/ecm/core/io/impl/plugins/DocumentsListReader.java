@@ -43,7 +43,7 @@ public class DocumentsListReader extends DocumentModelReader {
     }
 
     public static DocumentsListReader createDocumentsListReader(CoreSession session, Collection<DocumentRef> docRefsList)
-            throws ClientException {
+            {
 
         List<DocumentModel> list = new ArrayList<DocumentModel>();
 

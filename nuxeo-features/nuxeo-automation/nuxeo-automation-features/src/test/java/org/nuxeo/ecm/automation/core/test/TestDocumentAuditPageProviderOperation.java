@@ -52,7 +52,7 @@ public class TestDocumentAuditPageProviderOperation {
     public static class Populate implements RepositoryInit {
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
             AuditLogger auditLogger = Framework.getLocalService(AuditLogger.class);
 
             try {

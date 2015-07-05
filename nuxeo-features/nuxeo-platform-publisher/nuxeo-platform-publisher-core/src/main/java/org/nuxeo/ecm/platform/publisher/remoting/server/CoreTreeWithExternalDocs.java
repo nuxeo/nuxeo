@@ -44,7 +44,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements 
     private static final long serialVersionUID = 1L;
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
 
         List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
 
@@ -74,7 +74,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements 
     }
 
     protected List<DocumentModel> findDocumentsCommingFromExternalRef(DocumentModel root, String extRef)
-            throws ClientException {
+            {
         // XXX dummy impl : use Relations or Search to avoid this !!!!
 
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
@@ -93,7 +93,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements 
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(doc,
                 targetNode);
         return publishedDocument;
@@ -101,14 +101,14 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements 
 
     @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         ExternalCorePublishedDocument publishedDocument = (ExternalCorePublishedDocument) factory.publishDocument(doc,
                 targetNode, params);
         return publishedDocument;
     }
 
     @Override
-    public void unpublish(PublishedDocument publishedDocument) throws ClientException {
+    public void unpublish(PublishedDocument publishedDocument) {
         if (publishedDocument instanceof BasicPublishedDocument
                 || publishedDocument instanceof ExternalCorePublishedDocument) {
             String source = publishedDocument.getSourceRepositoryName() + "@" + publishedDocument.getSourceServer()
@@ -127,7 +127,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements 
     }
 
     @Override
-    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) {
         PublicationNode realPublciationNode = getNodeByPath(targetNode.getPath());
         List<PublishedDocument> publishedDocuments = getPublishedDocumentInNode(realPublciationNode);
         String source = (String) doc.getProperty("dublincore", "source");
@@ -142,7 +142,7 @@ public class CoreTreeWithExternalDocs extends SectionPublicationTree implements 
     }
 
     @Override
-    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) {
         return new ExternalCorePublishedDocument(documentModel);
     }
 

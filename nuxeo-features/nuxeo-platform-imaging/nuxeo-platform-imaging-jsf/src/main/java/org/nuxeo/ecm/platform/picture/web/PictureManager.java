@@ -41,19 +41,19 @@ public interface PictureManager {
     @Deprecated
     String addPicture();
 
-    String crop() throws ClientException, IOException;
+    String crop() throws IOException;
 
     /**
      * Turns every view of a picture 90 degrees to the left.
      */
-    String rotate90left() throws ClientException, IOException;
+    String rotate90left() throws IOException;
 
     /**
      * Turns every view of a picture 90 degrees to the right.
      */
-    String rotate90right() throws ClientException, IOException;
+    String rotate90right() throws IOException;
 
-    void download(DocumentView docView) throws ClientException;
+    void download(DocumentView docView);
 
     /**
      * Gets the content of the Picture. It's the uploaded file.
@@ -89,7 +89,7 @@ public interface PictureManager {
      *
      * @return a String holding the fileurl.
      */
-    String getFileurlPicture() throws ClientException;
+    String getFileurlPicture();
 
     /**
      * Sets the fileurl. FileUrl is used to create valid link expression for the download function from the index of the
@@ -127,7 +127,7 @@ public interface PictureManager {
      *
      * @return an Array holding the selectItems.
      */
-    ArrayList getSelectItems() throws ClientException;
+    ArrayList getSelectItems();
 
     String getCropCoords();
 

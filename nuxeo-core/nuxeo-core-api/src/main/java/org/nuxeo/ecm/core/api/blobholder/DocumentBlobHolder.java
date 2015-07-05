@@ -58,7 +58,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         Blob blob = (Blob) doc.getPropertyValue(xPath);
         if (blob != null && xPathFilename != null) {
             String filename = blob.getFilename();
@@ -71,7 +71,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public void setBlob(Blob blob) throws ClientException {
+    public void setBlob(Blob blob) {
         doc.getProperty(xPath).setValue(blob);
         if (xPathFilename != null) {
             String filename = blob == null ? null : blob.getFilename();
@@ -80,12 +80,12 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public Calendar getModificationDate() throws ClientException {
+    public Calendar getModificationDate() {
         return (Calendar) doc.getProperty("dublincore", "modified");
     }
 
     @Override
-    public String getHash() throws ClientException {
+    public String getHash() {
         Blob blob = getBlob();
         if (blob != null) {
             String h = blob.getDigest();
@@ -97,7 +97,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public Serializable getProperty(String name) throws ClientException {
+    public Serializable getProperty(String name) {
         return null;
     }
 
@@ -107,7 +107,7 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public List<Blob> getBlobs() throws ClientException {
+    public List<Blob> getBlobs() {
         if (blobList == null) {
             List<Blob> blobs = new BlobsExtractor().getBlobs(doc);
             Blob main = getBlob();

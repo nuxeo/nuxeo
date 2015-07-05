@@ -116,7 +116,7 @@ public class SuggestUserEntries {
     protected String lang;
 
     @OperationMethod
-    public Blob run() throws ClientException {
+    public Blob run() {
         JSONArray result = new JSONArray();
         boolean isGroupRestriction = !StringUtils.isBlank(groupRestriction);
         boolean groupOnly = false;

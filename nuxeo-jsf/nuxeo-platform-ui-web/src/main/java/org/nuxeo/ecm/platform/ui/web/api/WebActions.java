@@ -401,7 +401,7 @@ public interface WebActions {
      * @deprecated should be handled by a workflow related (or at least document) action listener.
      */
     @Deprecated
-    String getCurrentLifeCycleState() throws ClientException;
+    String getCurrentLifeCycleState();
 
     /**
      * @deprecated since 5.4.2: useless

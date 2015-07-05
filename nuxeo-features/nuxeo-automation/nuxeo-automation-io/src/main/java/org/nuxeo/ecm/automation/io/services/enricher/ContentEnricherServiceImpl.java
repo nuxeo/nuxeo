@@ -110,8 +110,7 @@ public class ContentEnricherServiceImpl extends DefaultComponent implements Cont
     }
 
     @Override
-    public void writeContext(JsonGenerator jg, RestEvaluationContext ec) throws JsonGenerationException, IOException,
-            ClientException {
+    public void writeContext(JsonGenerator jg, RestEvaluationContext ec) throws JsonGenerationException, IOException {
 
         for (String category : getCategoriesToActivate(ec)) {
             for (ContentEnricherDescriptor descriptor : getEnricherDescriptors(category, ec)) {

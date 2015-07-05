@@ -95,7 +95,7 @@ public class SubscriptionsAction extends InputController implements Serializable
      * Gets all the notifications the user may subscribe to.
      */
     @Factory("notificationList")
-    public void getNotificationsList() throws ClientException {
+    public void getNotificationsList() {
         log.debug("Factory for notifications list");
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -122,7 +122,7 @@ public class SubscriptionsAction extends InputController implements Serializable
      * Gets all the notifications the user may subscribe to.
      */
     @Factory("inheritedNotifications")
-    public void loadInheritedNotifications() throws ClientException, ClassNotFoundException {
+    public void loadInheritedNotifications() throws ClassNotFoundException {
         inheritedNotifications = new ArrayList<Notification>();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
@@ -139,7 +139,7 @@ public class SubscriptionsAction extends InputController implements Serializable
     /**
      * Registers the user's choices.
      */
-    public void updateSubscriptions() throws ClientException {
+    public void updateSubscriptions() {
 
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
@@ -185,14 +185,14 @@ public class SubscriptionsAction extends InputController implements Serializable
     /**
      * @return the previously selected notifications.
      */
-    public List<String> getSelectedNotifications() throws ClientException {
+    public List<String> getSelectedNotifications() {
         return getSubscriptionsForCurrentUser();
     }
 
     /**
      * Returns the notifications that the user already subscribed for.
      */
-    private List<String> getSubscriptionsForCurrentUser() throws ClientException {
+    private List<String> getSubscriptionsForCurrentUser() {
 
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();

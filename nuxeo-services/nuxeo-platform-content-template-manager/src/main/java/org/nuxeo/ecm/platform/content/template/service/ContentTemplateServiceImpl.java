@@ -163,7 +163,7 @@ public class ContentTemplateServiceImpl extends DefaultComponent implements Cont
         return factoryInstancesByFacet.get(facet);
     }
 
-    public void executeFactoryForType(DocumentModel createdDocument) throws ClientException {
+    public void executeFactoryForType(DocumentModel createdDocument) {
         ContentFactory factory = getFactoryForType(createdDocument.getType());
         if (factory != null) {
             factory.createContentStructure(createdDocument);

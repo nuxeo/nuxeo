@@ -233,23 +233,23 @@ public class SelectionActionsBean implements Serializable {
         }
     }
 
-    public void shiftSelectedUp(ActionEvent event) throws ClientException {
+    public void shiftSelectedUp(ActionEvent event) {
         shiftSelected(ShiftType.UP, event);
     }
 
-    public void shiftSelectedDown(ActionEvent event) throws ClientException {
+    public void shiftSelectedDown(ActionEvent event) {
         shiftSelected(ShiftType.DOWN, event);
     }
 
-    public void shiftSelectedFirst(ActionEvent event) throws ClientException {
+    public void shiftSelectedFirst(ActionEvent event) {
         shiftSelected(ShiftType.FIRST, event);
     }
 
-    public void shiftSelectedLast(ActionEvent event) throws ClientException {
+    public void shiftSelectedLast(ActionEvent event) {
         shiftSelected(ShiftType.LAST, event);
     }
 
-    public void addToSelection(ActionEvent event) throws ClientException {
+    public void addToSelection(ActionEvent event) {
         if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }
@@ -268,7 +268,7 @@ public class SelectionActionsBean implements Serializable {
         }
     }
 
-    public void removeFromSelection(ActionEvent event) throws ClientException {
+    public void removeFromSelection(ActionEvent event) {
         if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }
@@ -332,7 +332,7 @@ public class SelectionActionsBean implements Serializable {
         return null;
     }
 
-    public void removeAllFromSelection(ActionEvent event) throws ClientException {
+    public void removeAllFromSelection(ActionEvent event) {
         if (!checkLeftComponents() || !checkRightComponents() || !checkSubmittedList()) {
             return;
         }

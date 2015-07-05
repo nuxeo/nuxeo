@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 public class ThumbnailFolderishFactory extends ThumbnailDocumentFactory {
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.isFolder()) {
             throw new ClientException("Document is not folderish");
         }

@@ -60,12 +60,12 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
         initGroups();
     }
 
-    protected void initGroups() throws ClientException {
+    protected void initGroups() {
         userManager.createGroup(createGroup("group1"));
         userManager.createGroup(createGroup("group2"));
     }
 
-    protected DocumentModel createGroup(String groupName) throws ClientException {
+    protected DocumentModel createGroup(String groupName) {
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setProperty("group", "groupname", groupName);
         return newGroup;
@@ -73,7 +73,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGroupsPageProviderAllMode() throws ClientException {
+    public void testGroupsPageProviderAllMode() {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY, AbstractGroupsPageProvider.ALL_MODE);
         PageProvider<DocumentModel> groupsProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
@@ -96,7 +96,7 @@ public class TestGroupsPageProvider extends NXRuntimeTestCase {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void testGroupsPageProviderSearchMode() throws ClientException {
+    public void testGroupsPageProviderSearchMode() {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(AbstractGroupsPageProvider.GROUPS_LISTING_MODE_PROPERTY,
                 AbstractGroupsPageProvider.SEARCH_ONLY_MODE);

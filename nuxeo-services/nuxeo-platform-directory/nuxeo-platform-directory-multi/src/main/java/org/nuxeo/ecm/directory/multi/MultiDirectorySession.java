@@ -336,7 +336,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public boolean authenticate(String username, String password) throws ClientException {
+    public boolean authenticate(String username, String password) {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {
@@ -425,7 +425,7 @@ public class MultiDirectorySession extends BaseSession {
 
     @Override
     @SuppressWarnings("boxing")
-    public DocumentModelList getEntries() throws ClientException {
+    public DocumentModelList getEntries() {
         if (!isCurrentUserAllowed(SecurityConstants.READ)) {
             return null;
         }
@@ -521,7 +521,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws ClientException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return null;
         }
@@ -550,12 +550,12 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public void deleteEntry(DocumentModel docModel) throws ClientException {
+    public void deleteEntry(DocumentModel docModel) {
         deleteEntry(docModel.getId());
     }
 
     @Override
-    public void deleteEntry(String id) throws ClientException {
+    public void deleteEntry(String id) {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return;
         }
@@ -596,7 +596,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     private static void updateSubDirectoryEntry(SubDirectoryInfo dirInfo, Map<String, Object> fieldMap, String id,
-            boolean canCreateIfOptional) throws ClientException {
+            boolean canCreateIfOptional) {
         DocumentModel dirEntry = dirInfo.getSession().getEntry(id);
         if (dirInfo.getSession().isReadOnly() || (dirEntry != null && isReadOnlyEntry(dirEntry))) {
             return;
@@ -625,7 +625,7 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public void updateEntry(DocumentModel docModel) throws ClientException {
+    public void updateEntry(DocumentModel docModel) {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return;
         }
@@ -652,26 +652,26 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter) throws ClientException {
+    public DocumentModelList query(Map<String, Serializable> filter) {
         return query(filter, Collections.<String> emptySet());
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) {
         return query(filter, fulltext, Collections.<String, String> emptyMap());
     }
 
     @Override
     @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            throws ClientException {
+            {
         return query(filter, fulltext, orderBy, false);
     }
 
     @Override
     @SuppressWarnings("boxing")
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws ClientException {
+            boolean fetchReferences) {
         // list of entries
         final DocumentModelList results = new DocumentModelListImpl();
         if (!isCurrentUserAllowed(SecurityConstants.READ)) {
@@ -798,13 +798,13 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, String columnName) throws ClientException {
+    public List<String> getProjection(Map<String, Serializable> filter, String columnName) {
         return getProjection(filter, Collections.<String> emptySet(), columnName);
     }
 
     @Override
     public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws ClientException {
+            {
 
         // There's no way to do an efficient getProjection to a source with
         // multiple subdirectories given the current API (we'd need an API that
@@ -825,13 +825,13 @@ public class MultiDirectorySession extends BaseSession {
     }
 
     @Override
-    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) {
         Map<String, Object> fieldMap = entry.getProperties(schemaName);
         return createEntry(fieldMap);
     }
 
     @Override
-    public boolean hasEntry(String id) throws ClientException {
+    public boolean hasEntry(String id) {
         init();
         for (SourceInfo sourceInfo : sourceInfos) {
             for (SubDirectoryInfo dirInfo : sourceInfo.subDirectoryInfos) {

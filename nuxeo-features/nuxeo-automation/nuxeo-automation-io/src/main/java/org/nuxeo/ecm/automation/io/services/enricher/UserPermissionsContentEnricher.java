@@ -48,7 +48,7 @@ public class UserPermissionsContentEnricher extends AbstractContentEnricher {
     private List<String> availablePermissions = new ArrayList<>();
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
         final DocumentModel doc = ec.getDocumentModel();
         jg.writeStartArray();
         for (String permission : getPermissions(doc)) {

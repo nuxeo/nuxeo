@@ -345,8 +345,7 @@ public class ResourcePublisherService extends DefaultComponent implements Resour
         for (Resource resource : resourcesRegistry.registry.values()) {
             if (resource.mbean != null) {
                 resourcesRegistry.doUnbind(resource);
-            } else {
-                ;
+            } else {;
             }
         }
     }

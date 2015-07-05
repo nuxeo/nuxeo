@@ -55,7 +55,7 @@ public class PermissionListManager implements Serializable {
 
     protected String selectedPermission;
 
-    public SelectItem[] getAvailablePermissions() throws ClientException {
+    public SelectItem[] getAvailablePermissions() {
         if (null == availablePermissions) {
             log.debug("Factory method called...");
 

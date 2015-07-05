@@ -39,7 +39,7 @@ public interface BaseNuxeoWebService extends Serializable {
      * @param password the user password
      * @return a Nuxeo core session identifier.
      */
-    String connect(String username, String password) throws ClientException;
+    String connect(String username, String password);
 
     /**
      * Connects to a given nuxeo core repository.
@@ -50,15 +50,14 @@ public interface BaseNuxeoWebService extends Serializable {
      * @return a Nuxeo core session identifier.
      */
     /*
-     * String connect(String username, String password, String repository) throws ClientException;
+     * String connect(String username, String password, String repository);
      */
 
     /**
      * Disconnect the Nuxeo core given the session id.
      *
      * @param sid the Nuxeo core session id.
-     * @throws ClientException
      */
-    void disconnect(String sid) throws ClientException;
+    void disconnect(String sid);
 
 }

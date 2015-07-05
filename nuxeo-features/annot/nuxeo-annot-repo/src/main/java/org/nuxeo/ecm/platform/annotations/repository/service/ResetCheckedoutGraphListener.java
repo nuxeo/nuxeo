@@ -66,7 +66,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
     }
 
     protected void removeGraphFor(CoreSession session, String repositoryName, DocumentModel doc, NuxeoPrincipal user)
-            throws ClientException {
+            {
         URI uri = translator.getNuxeoUrn(repositoryName, doc.getId());
         AnnotationsService service = Framework.getLocalService(AnnotationsService.class);
 

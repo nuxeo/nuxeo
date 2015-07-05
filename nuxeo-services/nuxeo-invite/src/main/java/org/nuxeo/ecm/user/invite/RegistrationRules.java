@@ -46,7 +46,7 @@ public class RegistrationRules {
 
     private static final Log log = LogFactory.getLog(RegistrationRules.class);
 
-    public RegistrationRules(DocumentModel requestContainer) throws ClientException {
+    public RegistrationRules(DocumentModel requestContainer) {
         this.requestContainer = requestContainer;
     }
 

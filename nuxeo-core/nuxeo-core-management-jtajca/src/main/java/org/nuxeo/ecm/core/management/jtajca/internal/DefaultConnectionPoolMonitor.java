@@ -114,8 +114,7 @@ public class DefaultConnectionPoolMonitor implements ConnectionPoolMonitor {
             Field field = field(stack.getClass(), "next");
             ConnectionInterceptor next = fetch(field, stack);
             save(field, stack, enhanceStack(next));
-        } catch (RuntimeException e) {
-            ;
+        } catch (RuntimeException e) {;
         }
         return (ConnectionInterceptor) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
                 new Class[] { ConnectionInterceptor.class }, new StackHandler(stack));

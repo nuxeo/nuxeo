@@ -17,7 +17,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 public class CanTranscodeCharsetsTest extends NXRuntimeTestCase {
 
     @Test
-    public void transcodeLatin1() throws IOException, ClientException {
+    public void transcodeLatin1() throws IOException {
         Blob blob;
         try (InputStream in = CanTranscodeCharsetsTest.class.getResource("/latin1.txt").openStream()) {
             Blob latin1Blob = Blobs.createBlob(in, "text/plain");

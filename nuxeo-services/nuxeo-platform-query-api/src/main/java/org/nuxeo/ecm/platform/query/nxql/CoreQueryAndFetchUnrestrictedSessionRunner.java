@@ -41,7 +41,7 @@ public class CoreQueryAndFetchUnrestrictedSessionRunner extends UnrestrictedSess
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         result = session.queryAndFetch(query, language);
     }
 

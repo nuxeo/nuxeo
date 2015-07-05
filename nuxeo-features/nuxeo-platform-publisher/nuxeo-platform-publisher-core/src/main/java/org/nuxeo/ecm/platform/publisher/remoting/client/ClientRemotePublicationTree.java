@@ -96,7 +96,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree implement
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
+    protected PublicationNode switchToClientNode(PublicationNode node) {
         return new ClientRemotePublicationNode(configName, sessionId, node, serverSessionId, treeService,
                 getTargetTreeName());
     }
@@ -118,7 +118,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree implement
     }
 
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) {
 
         this.sessionId = sid;
         this.name = "Remote";
@@ -175,15 +175,15 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree implement
     }
 
     @Override
-    protected RemotePublicationTreeManager getTreeService() throws ClientException {
+    protected RemotePublicationTreeManager getTreeService() {
         return treeService;
     }
 
     /*
-     * public List<PublicationNode> getTree() throws ClientException { return rootNode.getChildrenNodes(); }
+     * public List<PublicationNode> getTree() { return rootNode.getChildrenNodes(); }
      */
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         return rootNode.getChildrenDocuments();
     }
 
@@ -229,13 +229,13 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree implement
     }
 
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
 
         doc = factory.snapshotDocumentBeforePublish(doc);
         return super.publish(doc, targetNode, params);
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         return rootNode.getChildrenNodes();
     }
 
@@ -244,7 +244,7 @@ public class ClientRemotePublicationTree extends AbstractRemotableTree implement
     }
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
 
         List<PublishedDocument> allPubDocs = new ArrayList<PublishedDocument>();
 

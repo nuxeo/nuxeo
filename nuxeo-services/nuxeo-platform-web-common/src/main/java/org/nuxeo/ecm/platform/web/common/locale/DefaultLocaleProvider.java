@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class DefaultLocaleProvider implements LocaleProvider {
 
     @Override
-    public Locale getLocale(CoreSession repo) throws ClientException {
+    public Locale getLocale(CoreSession repo) {
         return Locale.getDefault();
     }
 
@@ -41,7 +41,7 @@ public class DefaultLocaleProvider implements LocaleProvider {
     }
 
     @Override
-    public TimeZone getTimeZone(CoreSession repo) throws ClientException {
+    public TimeZone getTimeZone(CoreSession repo) {
         return TimeZone.getDefault();
     }
 

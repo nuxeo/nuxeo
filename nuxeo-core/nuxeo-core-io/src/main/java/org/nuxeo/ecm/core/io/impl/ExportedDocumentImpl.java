@@ -215,7 +215,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         return 1 + documents.size() + blobs.size();
     }
 
-    protected void readDocument(DocumentModel doc, boolean inlineBlobs) throws IOException, ClientException {
+    protected void readDocument(DocumentModel doc, boolean inlineBlobs) throws IOException {
         document = DocumentFactory.getInstance().createDocument();
         document.setName(doc.getName());
         Element rootElement = document.addElement(ExportConstants.DOCUMENT_TAG);
@@ -261,7 +261,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         }
     }
 
-    protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws ClientException,
+    protected void readDocumentSchemas(Element element, DocumentModel doc, boolean inlineBlobs) throws
             IOException {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         String[] schemaNames = doc.getSchemas();

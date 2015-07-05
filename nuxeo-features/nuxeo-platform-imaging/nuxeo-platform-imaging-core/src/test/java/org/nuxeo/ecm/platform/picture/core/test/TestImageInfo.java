@@ -71,7 +71,7 @@ public class TestImageInfo {
     }
 
     @Test
-    public void testGetImageInfo() throws ClientException {
+    public void testGetImageInfo() {
         DocumentModel picturebook = new DocumentModelImpl(root.getPathAsString(), "picturebook", "PictureBook");
         session.createDocument(picturebook);
         DocumentModel picture = new DocumentModelImpl(picturebook.getPathAsString(), "pic1", "Picture");

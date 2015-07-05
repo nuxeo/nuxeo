@@ -36,12 +36,12 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 public class TestUserRegistration extends AbstractUserRegistration {
 
     @Before
-    public void init() throws ClientException {
+    public void init() {
         initializeRegistrations();
     }
 
     @Test
-    public void testTestContribution() throws ClientException {
+    public void testTestContribution() {
         DocumentModel doc = session.createDocumentModel("TestRegistration");
         assertTrue(doc.hasFacet("UserInvitation"));
 
@@ -51,7 +51,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testBasicUserRegistration() throws ClientException {
+    public void testBasicUserRegistration() {
         UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
@@ -70,7 +70,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testBasicUserRegistrationWithLoginChanged() throws ClientException {
+    public void testBasicUserRegistrationWithLoginChanged() {
         UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());
@@ -96,7 +96,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     }
 
     @Test(expected = UserAlreadyExistsException.class)
-    public void testMultipleRegistrationWithSameEmail() throws ClientException {
+    public void testMultipleRegistrationWithSameEmail() {
         UserRegistrationConfiguration configuration = ((UserInvitationComponent) userRegistrationService).configurations.get(DEFAULT_CONFIGURATION_NAME);
         // User info
         DocumentModel userInfo = session.createDocumentModel(configuration.getRequestDocType());

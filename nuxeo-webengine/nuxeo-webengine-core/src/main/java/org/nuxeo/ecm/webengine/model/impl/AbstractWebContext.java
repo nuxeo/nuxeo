@@ -782,7 +782,7 @@ public abstract class AbstractWebContext implements WebContext {
     }
 
     @Override
-    public void setRepositoryName(String repoName) throws ClientException {
+    public void setRepositoryName(String repoName) {
         RepositoryManager rm = Framework.getLocalService(RepositoryManager.class);
         if (rm.getRepository(repoName) != null) {
             this.repoName = repoName;

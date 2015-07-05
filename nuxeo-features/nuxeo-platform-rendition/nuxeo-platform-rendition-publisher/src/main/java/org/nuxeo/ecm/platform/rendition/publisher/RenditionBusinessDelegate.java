@@ -50,7 +50,7 @@ public class RenditionBusinessDelegate implements Serializable {
      * @throws org.nuxeo.ecm.core.api.ClientException
      */
     @Unwrap
-    public RenditionService getService() throws ClientException {
+    public RenditionService getService() {
         if (renditionService == null) {
             try {
                 renditionService = Framework.getService(RenditionService.class);

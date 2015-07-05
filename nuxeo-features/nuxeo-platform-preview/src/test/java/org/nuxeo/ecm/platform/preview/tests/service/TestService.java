@@ -67,7 +67,7 @@ public class TestService {
     @Test
     // disabled because failing under windows, see NXP-12666
     @Ignore
-    public void testLatin1() throws IOException, ClientException, MimetypeNotFoundException, MimetypeDetectionException {
+    public void testLatin1() throws IOException, MimetypeNotFoundException, MimetypeDetectionException {
         DocumentModel doc = repo.createDocumentModel("/", "fake", "File");
         doc = repo.createDocument(doc);
         checkLatin1(doc, "latin1.txt", "text/plain");
@@ -80,7 +80,7 @@ public class TestService {
 
     protected final Pattern charsetPattern = Pattern.compile("content=\".*;\\s*charset=(.*)\"");
 
-    public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException, ClientException,
+    public void checkLatin1(DocumentModel doc, String name, String mtype) throws IOException,
             MimetypeNotFoundException, MimetypeDetectionException {
         File file = new File(getClass().getResource("/" + name).getPath());
         Blob blob = Blobs.createBlob(file);

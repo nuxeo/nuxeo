@@ -71,7 +71,7 @@ public class TestChainException {
     public static class Populate implements RepositoryInit {
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
             DocumentModel src = session.createDocumentModel("/", "src", "Folder");
             src.setPropertyValue("dc:title", "Source");
             src = session.createDocument(src);

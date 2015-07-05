@@ -113,7 +113,7 @@ public class FulltextUpdaterWork extends AbstractWork {
         setStatus("Done");
     }
 
-    protected void update() throws ClientException {
+    protected void update() {
         Collection<DocumentModel> docs;
         if (isJob) {
             String query = String.format("SELECT * FROM Document WHERE ecm:fulltextJobId = '%s' AND ecm:isProxy = 0",

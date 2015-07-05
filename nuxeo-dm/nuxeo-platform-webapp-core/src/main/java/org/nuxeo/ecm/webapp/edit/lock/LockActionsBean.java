@@ -182,14 +182,14 @@ public class LockActionsBean implements LockActions {
     }
 
     @Override
-    public String lockCurrentDocument() throws ClientException {
+    public String lockCurrentDocument() {
         String view = lockDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
         return view;
     }
 
     @Override
-    public String lockDocument(DocumentModel document) throws ClientException {
+    public String lockDocument(DocumentModel document) {
         log.debug("Lock a document ...");
         resetEventContext();
         String message = "document.lock.failed";
@@ -208,7 +208,7 @@ public class LockActionsBean implements LockActions {
     }
 
     @Override
-    public String unlockCurrentDocument() throws ClientException {
+    public String unlockCurrentDocument() {
         String view = unlockDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
         return view;
@@ -228,14 +228,14 @@ public class LockActionsBean implements LockActions {
          * Use an unrestricted session to unlock the document.
          */
         @Override
-        public void run() throws ClientException {
+        public void run() {
             session.removeLock(docRefToUnlock);
             session.save();
         }
     }
 
     @Override
-    public String unlockDocument(DocumentModel document) throws ClientException {
+    public String unlockDocument(DocumentModel document) {
         log.debug("Unlock a document ...");
         resetEventContext();
         String message;
@@ -287,7 +287,7 @@ public class LockActionsBean implements LockActions {
 
     @Override
     @Factory(value = "currentDocumentLockDetails", scope = ScopeType.EVENT)
-    public Map<String, Serializable> getCurrentDocLockDetails() throws ClientException {
+    public Map<String, Serializable> getCurrentDocLockDetails() {
         Map<String, Serializable> details = null;
         if (navigationContext.getCurrentDocument() != null) {
             details = getLockDetails(navigationContext.getCurrentDocument());
@@ -296,7 +296,7 @@ public class LockActionsBean implements LockActions {
     }
 
     @Override
-    public Map<String, Serializable> getLockDetails(DocumentModel document) throws ClientException {
+    public Map<String, Serializable> getLockDetails(DocumentModel document) {
         if (lockDetails == null || !StringUtils.equals(documentId, document.getId())) {
             lockDetails = new HashMap<String, Serializable>();
             documentId = document.getId();

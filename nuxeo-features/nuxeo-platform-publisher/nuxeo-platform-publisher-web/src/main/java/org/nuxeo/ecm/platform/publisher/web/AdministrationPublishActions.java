@@ -76,7 +76,7 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
     }
 
     @Factory(value = "defaultPublishingRoots", scope = ScopeType.EVENT)
-    public DocumentModelList getSectionRoots() throws ClientException {
+    public DocumentModelList getSectionRoots() {
         return getRootFinder().getDefaultSectionRoots(true, true);
     }
 
@@ -92,7 +92,7 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
         return currentSectionRootId;
     }
 
-    public List<DocumentTreeNode> getCurrentSectionsTree() throws ClientException {
+    public List<DocumentTreeNode> getCurrentSectionsTree() {
         DocumentModel sectionsRoot = null;
 
         sectionRoots = getSectionRoots();
@@ -113,11 +113,11 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
         this.currentSectionRootId = currentSectionRootId;
     }
 
-    public String getDomainNameFor(final DocumentModel sectionRoot) throws ClientException {
+    public String getDomainNameFor(final DocumentModel sectionRoot) {
         final List<String> domainName = new ArrayList<>();
         new UnrestrictedSessionRunner(documentManager) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel parent = session.getParentDocument(sectionRoot.getRef());
                 SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
                 while (parent != null && !"/".equals(parent.getPathAsString())) {
@@ -148,24 +148,24 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
         return treeManager;
     }
 
-    public boolean canAddSection(DocumentModel section) throws ClientException {
+    public boolean canAddSection(DocumentModel section) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return rootSectionsManager.canAddSection(section, currentDocument);
     }
 
-    public String addSection(String sectionId) throws ClientException {
+    public String addSection(String sectionId) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         rootSectionsManager.addSection(sectionId, currentDocument);
         getRootFinder().reset();
         return null;
     }
 
-    public DocumentModelList getSelectedSections() throws ClientException {
+    public DocumentModelList getSelectedSections() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getRootFinder().getSectionRootsForWorkspace(currentDocument, true);
     }
 
-    public String removeSection(String sectionId) throws ClientException {
+    public String removeSection(String sectionId) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         rootSectionsManager.removeSection(sectionId, currentDocument);
         getRootFinder().reset();
@@ -184,7 +184,7 @@ public class AdministrationPublishActions extends AbstractPublishActions impleme
     }
 
     @Override
-    protected DocumentModel getParentDocument(DocumentModel documentModel) throws ClientException {
+    protected DocumentModel getParentDocument(DocumentModel documentModel) {
         return documentManager.getDocument(documentModel.getParentRef());
     }
 

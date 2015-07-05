@@ -66,7 +66,7 @@ public class GetRelations {
         return getDocuments(res, predicate);
     }
 
-    protected QNameResource getDocumentResource(DocumentModel document) throws ClientException {
+    protected QNameResource getDocumentResource(DocumentModel document) {
         return (QNameResource) relations.getResource(RelationConstants.DOCUMENT_NAMESPACE, document, null);
     }
 
@@ -74,7 +74,7 @@ public class GetRelations {
         return predicate != null && predicate.length() > 0 ? new ResourceImpl(predicate) : null;
     }
 
-    protected DocumentModelList getDocuments(QNameResource res, Resource predicate) throws ClientException {
+    protected DocumentModelList getDocuments(QNameResource res, Resource predicate) {
         if (outgoing) {
             List<Statement> statements = getOutgoingStatements(res, predicate);
             DocumentModelList docs = new DocumentModelListImpl(statements.size());
@@ -98,15 +98,15 @@ public class GetRelations {
         }
     }
 
-    protected List<Statement> getIncomingStatements(QNameResource res, Resource predicate) throws ClientException {
+    protected List<Statement> getIncomingStatements(QNameResource res, Resource predicate) {
         return relations.getGraphByName(getGraphName()).getStatements(null, predicate, res);
     }
 
-    protected List<Statement> getOutgoingStatements(QNameResource res, Resource predicate) throws ClientException {
+    protected List<Statement> getOutgoingStatements(QNameResource res, Resource predicate) {
         return relations.getGraphByName(getGraphName()).getStatements(res, predicate, null);
     }
 
-    protected DocumentModel getDocumentModel(Node node) throws ClientException {
+    protected DocumentModel getDocumentModel(Node node) {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
             Map<String, Object> context = Collections.<String, Object> singletonMap(

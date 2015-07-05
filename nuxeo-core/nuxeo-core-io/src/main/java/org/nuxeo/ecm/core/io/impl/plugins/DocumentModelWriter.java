@@ -76,7 +76,7 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
         }
     }
 
-    private DocumentTranslationMap doWrite(ExportedDocument xdoc, Path targetPath) throws ClientException {
+    private DocumentTranslationMap doWrite(ExportedDocument xdoc, Path targetPath) {
 
         DocumentModel previousDoc = null;
         /*

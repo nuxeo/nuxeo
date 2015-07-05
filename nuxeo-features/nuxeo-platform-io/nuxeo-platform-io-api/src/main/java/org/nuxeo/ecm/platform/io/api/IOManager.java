@@ -44,17 +44,17 @@ public interface IOManager extends Serializable {
     /**
      * Returns the adapter with given name.
      */
-    IOResourceAdapter getAdapter(String name) throws ClientException;
+    IOResourceAdapter getAdapter(String name);
 
     /**
      * Adds an adapter with given name and definition.
      */
-    void addAdapter(String name, IOResourceAdapter adapter) throws ClientException;
+    void addAdapter(String name, IOResourceAdapter adapter);
 
     /**
      * Removes adapter with given name.
      */
-    void removeAdapter(String name) throws ClientException;
+    void removeAdapter(String name);
 
     /**
      * Import document and resources described by given input stream at given document location.
@@ -65,7 +65,7 @@ public interface IOManager extends Serializable {
      * @param root Optional location of document that must be taken as root of the import (can be null).
      */
     void importDocumentsAndResources(InputStream in, String repo, DocumentRef root) throws IOException,
-            ClientException, ImportDocumentException;
+            ImportDocumentException;
 
     /**
      * Export documents and resources.
@@ -78,7 +78,7 @@ public interface IOManager extends Serializable {
      * @param ioAdapters list of adapters to use for additional resources.
      */
     void exportDocumentsAndResources(OutputStream out, String repo, Collection<DocumentRef> sources, boolean recurse,
-            String format, Collection<String> ioAdapters) throws IOException, ClientException, ExportDocumentException;
+            String format, Collection<String> ioAdapters) throws IOException, ExportDocumentException;
 
     /**
      * Copy documents and resources to another location (on a same machine).
@@ -90,10 +90,9 @@ public interface IOManager extends Serializable {
      * @return the list of copied documents references.
      */
     Collection<DocumentRef> copyDocumentsAndResources(String repo, Collection<DocumentRef> sources,
-            DocumentLocation targetLocation, Collection<String> ioAdapters) throws ClientException;
+            DocumentLocation targetLocation, Collection<String> ioAdapters);
 
     void importFromStream(InputStream in, DocumentLocation targetLocation, String docReaderFactoryClassName,
-            Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
-            throws ClientException;
+            Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams);
 
 }

@@ -60,7 +60,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
 
     @Override
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
 
         DocumentRef ref = new PathRef(rootPath);
@@ -84,7 +84,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
         return CoreInstance.getInstance().getSession(coreSessionId);
     }
 
-    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
         List<PublishedDocument> publishedDocs = new ArrayList<PublishedDocument>();
         DocumentModelList proxies = getCoreSession().getProxies(docLoc.getDocRef(), null);
         for (DocumentModel proxy : proxies) {
@@ -96,7 +96,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode);
         PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
         return publishedDocument;
@@ -104,14 +104,14 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
 
     @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.publish(doc, targetNode,
                 params);
         PublicationRelationHelper.addPublicationRelation(publishedDocument.getProxy(), this);
         return publishedDocument;
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) {
         List<PublishedDocument> publishedDocs = getPublishedDocumentInNode(targetNode);
         for (PublishedDocument pubDoc : publishedDocs) {
             if (pubDoc.getSourceDocumentRef().equals(doc.getRef())) {
@@ -120,7 +120,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    public void unpublish(PublishedDocument publishedDocument) throws ClientException {
+    public void unpublish(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return;
         }
@@ -130,7 +130,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
         getCoreSession().save();
     }
 
-    public PublicationNode getNodeByPath(String path) throws ClientException {
+    public PublicationNode getNodeByPath(String path) {
         DocumentRef docRef = new PathRef(path);
         if (coreSession.hasPermission(docRef, SecurityConstants.READ)) {
             return new CoreFolderPublicationNode(coreSession.getDocument(new PathRef(path)), getConfigName(),
@@ -156,7 +156,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     }
 
     @Override
-    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+    public boolean canPublishTo(PublicationNode publicationNode) {
         if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
             return false;
@@ -166,7 +166,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     }
 
     @Override
-    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canUnpublish(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
         }
@@ -175,17 +175,17 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     }
 
     @Override
-    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) {
         return factory.wrapDocumentModel(documentModel);
     }
 
     @Override
-    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+    public boolean isPublicationNode(DocumentModel documentModel) {
         return documentModel.getPathAsString().startsWith(rootPath);
     }
 
     @Override
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         if (!isPublicationNode(documentModel)) {
             throw new ClientException("Document " + documentModel.getPathAsString()
                     + " is not a valid publication node.");

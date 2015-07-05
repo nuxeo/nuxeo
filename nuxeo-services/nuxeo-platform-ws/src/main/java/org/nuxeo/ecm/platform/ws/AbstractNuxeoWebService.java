@@ -65,7 +65,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     @WebMethod
     public String connectOnRepository(@WebParam(name = "userName") String username,
             @WebParam(name = "password") String password, @WebParam(name = "repositoryName") String repositoryName)
-            throws ClientException {
+            {
         String sid = null;
         try {
             // :FIXME: won't work all the time...
@@ -86,7 +86,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     @PermitAll
     @WebMethod
     public String connect(@WebParam(name = "userName") String username, @WebParam(name = "password") String password)
-            throws ClientException {
+            {
         return connectOnRepository(username, password, null);
     }
 
@@ -102,9 +102,8 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      * @param password the user password.
      * @param repository the repository name.
      * @return a Nuxeo core session identifier.
-     * @throws ClientException
      */
-    private String _connect(String username, String password, String repositoryName) throws ClientException {
+    private String _connect(String username, String password, String repositoryName) {
         // Login before doing anything.
         login(username, password);
         CoreSession session = CoreInstance.openCoreSession(repositoryName);
@@ -117,7 +116,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
 
     @Override
     @WebMethod
-    public void disconnect(@WebParam(name = "sessionId") String sid) throws ClientException {
+    public void disconnect(@WebParam(name = "sessionId") String sid) {
         WSRemotingSession rs = initSession(sid);
         rs.getDocumentManager().close();
     }
@@ -125,9 +124,8 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     /**
      * Initializes a new user session from the credentials bound the Web Service remote session.
      *
-     * @throws ClientException
      */
-    protected void login(String username, String password) throws ClientException {
+    protected void login(String username, String password) {
         try {
             Framework.login(username, password);
         } catch (LoginException e) {
@@ -140,9 +138,8 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
      *
      * @param sid the session identifier.
      * @return a Web Service remoting session instance.
-     * @throws ClientException
      */
-    protected WSRemotingSession initSession(String sid) throws ClientException {
+    protected WSRemotingSession initSession(String sid) {
         WSRemotingSession rs = getSessionsManager().getSession(sid);
         if (rs == null) {
             throw new ClientException("Invalid session id: " + sid);

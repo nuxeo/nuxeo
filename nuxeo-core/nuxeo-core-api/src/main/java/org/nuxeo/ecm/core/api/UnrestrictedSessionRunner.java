@@ -103,7 +103,7 @@ public abstract class UnrestrictedSessionRunner {
      * Calls the {@link #run()} method with an unrestricted {@link #session}. During this call, {@link #isUnrestricted}
      * is set to {@code true}.
      */
-    public void runUnrestricted() throws ClientException {
+    public void runUnrestricted() {
         isUnrestricted = true;
         try {
             if (sessionIsAlreadyUnrestricted) {
@@ -177,6 +177,6 @@ public abstract class UnrestrictedSessionRunner {
      * It can also be called directly in which case the {@link #session} available will be the one passed to
      * {@code #UnrestrictedSessionRunner(CoreSession)}.
      */
-    public abstract void run() throws ClientException;
+    public abstract void run();
 
 }

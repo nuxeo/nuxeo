@@ -42,7 +42,7 @@ public interface FileManageActions extends SimpleFileManager {
      *
      * @return the page that displays the documents
      */
-    String addFile() throws ClientException;
+    String addFile();
 
     void setFileUpload(InputStream fileUpload);
 
@@ -67,36 +67,34 @@ public interface FileManageActions extends SimpleFileManager {
      * JavaScript variables (see NXP-13234).
      *
      * @since 5.9.2
-     * @throws ClientException
      */
-    String removeOneOrAllUploadedFiles(ActionEvent action) throws ClientException;
+    String removeOneOrAllUploadedFiles(ActionEvent action);
 
     @WebRemote
-    String addFolderFromPlugin(String fullName, String morePath) throws ClientException;
+    String addFolderFromPlugin(String fullName, String morePath);
 
     @WebRemote
-    String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64)
-            throws ClientException;
+    String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64);
 
     @WebRemote
-    boolean canWrite() throws ClientException;
+    boolean canWrite();
 
     @WebRemote
-    String moveWithId(String docId, String containerId) throws ClientException;
+    String moveWithId(String docId, String containerId);
 
     @WebRemote
-    String copyWithId(String docId) throws ClientException;
+    String copyWithId(String docId);
 
     @WebRemote
-    String pasteWithId(String docId) throws ClientException;
+    String pasteWithId(String docId);
 
     @WebRemote
-    String removeUploadedFile(String fileName) throws ClientException;
+    String removeUploadedFile(String fileName);
 
     @WebRemote
-    String removeAllUploadedFile() throws ClientException;
+    String removeAllUploadedFile();
 
     @WebRemote
-    String removeSingleUploadedFile() throws ClientException;
+    String removeSingleUploadedFile();
 
 }

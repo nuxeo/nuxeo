@@ -53,7 +53,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
         this.hostTask = hostTask;
     }
 
-    private void recurse(DocumentModel doc) throws ClientException {
+    private void recurse(DocumentModel doc) {
         fetchInfoFromDoc(session, doc);
         if (doc.isFolder()) {
             long children = 0;
@@ -74,7 +74,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
         }
     }
 
-    private void fetchInfoFromDoc(CoreSession session, DocumentModel doc) throws ClientException {
+    private void fetchInfoFromDoc(CoreSession session, DocumentModel doc) {
 
         if (includeBlob) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
@@ -107,7 +107,7 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         try {
             DocumentModel root = session.getDocument(rootref);
             recurse(root);

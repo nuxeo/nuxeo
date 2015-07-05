@@ -50,19 +50,19 @@ public class RemovePermission {
     String aclName = ACL.LOCAL_ACL;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         removePermission(doc);
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef docRef) throws ClientException {
+    public DocumentModel run(DocumentRef docRef) {
         DocumentModel doc = session.getDocument(docRef);
         removePermission(doc);
         return doc;
     }
 
-    protected void removePermission(DocumentModel doc) throws ClientException {
+    protected void removePermission(DocumentModel doc) {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         boolean permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, user);
         if (permissionChanged) {

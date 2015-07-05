@@ -67,7 +67,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
         return null;
     }
 
-    private UserWorkspaceService getUserWorkspaceService() throws ClientException {
+    private UserWorkspaceService getUserWorkspaceService() {
         if (userWorkspaceService == null) {
             Class<?> klass = descriptor.getUserWorkspaceClass();
 
@@ -87,13 +87,13 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            throws ClientException {
+            {
         descriptor = (UserWorkspaceDescriptor) contribution;
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            throws ClientException {
+            {
         descriptor = null;
     }
 

@@ -79,7 +79,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
         protected IterableQueryResult result;
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             result = session.queryAndFetch("SELECT * from Document", "NXQL");
         }
 

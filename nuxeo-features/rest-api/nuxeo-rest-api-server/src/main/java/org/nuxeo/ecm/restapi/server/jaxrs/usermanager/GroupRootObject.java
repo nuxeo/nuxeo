@@ -39,7 +39,7 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     public static final String PAGE_PROVIDER_NAME = "nuxeo_groups_listing";
 
     @Override
-    protected NuxeoGroup getArtifact(String id) throws ClientException {
+    protected NuxeoGroup getArtifact(String id) {
         return um.getGroup(id);
     }
 
@@ -49,21 +49,21 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
     }
 
     @Override
-    protected void checkPrecondition(NuxeoGroup group) throws ClientException {
+    protected void checkPrecondition(NuxeoGroup group) {
         checkCurrentUserCanCreateArtifact(group);
         checkGroupHasAName(group);
         checkGroupDoesNotAlreadyExists(group, um);
     }
 
     @Override
-    protected NuxeoGroup createArtifact(NuxeoGroup group) throws ClientException {
+    protected NuxeoGroup createArtifact(NuxeoGroup group) {
         DocumentModel groupModel = buildModelFromGroup(group, um);
 
         um.createGroup(groupModel);
         return um.getGroup(group.getName());
     }
 
-    private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um) throws ClientException {
+    private DocumentModel buildModelFromGroup(NuxeoGroup group, UserManager um) {
         DocumentModel groupModel = um.getBareGroupModel();
         String schemaName = um.getGroupSchemaName();
         groupModel.setProperty(schemaName, um.getGroupIdField(), group.getName());
@@ -74,7 +74,7 @@ public class GroupRootObject extends AbstractUMRootObject<NuxeoGroup> {
         return groupModel;
     }
 
-    private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um) throws ClientException {
+    private void checkGroupDoesNotAlreadyExists(NuxeoGroup group, UserManager um) {
         if (um.getGroup(group.getName()) != null) {
             throw new WebException("Group already exists", Response.Status.PRECONDITION_FAILED.getStatusCode());
         }

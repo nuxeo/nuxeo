@@ -75,7 +75,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
     protected DocumentRef rootletRef;
 
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
+    public void doInitializeRepository(CoreSession session) {
         if (defaultRepositoryName == null) {
             RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
             defaultRepositoryName = mgr.getDefaultRepositoryName();
@@ -102,7 +102,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         }
     }
 
-    protected DocumentModel createRootlet(CoreSession session) throws ClientException {
+    protected DocumentModel createRootlet(CoreSession session) {
         DocumentModel rootlet = session.createDocumentModel("/", MANAGEMENT_ROOT_NAME, MANAGEMENT_ROOT_TYPE);
         rootlet = session.createDocument(rootlet);
 
@@ -122,7 +122,7 @@ public class DocumentStoreManager extends RepositoryInitializationHandler {
         return rootlet;
     }
 
-    protected DocumentRef setupRootlet(CoreSession session) throws ClientException {
+    protected DocumentRef setupRootlet(CoreSession session) {
         DocumentModel rootlet;
         if (!session.exists(new PathRef(MANAGEMENT_ROOT_PATH))) {
             rootlet = createRootlet(session);

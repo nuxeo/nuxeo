@@ -65,7 +65,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             doGetOrCreateDoc(status);
             session.save();
         }
@@ -74,7 +74,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
             return status;
         }
 
-        protected DocumentModel doGetOrCreateContainer() throws ClientException {
+        protected DocumentModel doGetOrCreateContainer() {
 
             DocumentRef admRootDocRef = DocumentStoreManager.newPath(ADMINISTRATIVE_INFO_CONTAINER);
 
@@ -89,7 +89,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
             return session.getDocument(admRootDocRef);
         }
 
-        protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status) throws ClientException {
+        protected DocumentModel doGetOrCreateDoc(AdministrativeStatus status) {
             DocumentModel administrativeContainer = doGetOrCreateContainer();
 
             DocumentRef statusDocRef = new PathRef(administrativeContainer.getPathAsString() + "/"
@@ -158,7 +158,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             StringBuilder sb = new StringBuilder("select * from ");
             sb.append(ADMINISTRATIVE_STATUS_DOCUMENT_TYPE);
 
@@ -194,7 +194,7 @@ public class DocumentModelStatusPersister implements AdministrativeStatusPersist
             }
         }
 
-        protected AdministrativeStatus wrap(DocumentModel doc) throws ClientException {
+        protected AdministrativeStatus wrap(DocumentModel doc) {
 
             String userLogin = (String) doc.getPropertyValue(LOGIN_PROPERTY);
             String id = (String) doc.getPropertyValue(INSTANCE_PROPERTY);

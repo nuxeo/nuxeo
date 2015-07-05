@@ -99,7 +99,7 @@ public class TestLocalConfiguration {
     protected LocalConfigurationService localConfigurationService;
 
     @Test
-    public void shouldNotTakeIntoAccountConfigurationIfNoCurrentDocumentIsGiven() throws ClientException {
+    public void shouldNotTakeIntoAccountConfigurationIfNoCurrentDocumentIsGiven() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FOLDER_TYPE, FILE_TYPE);
 
@@ -139,26 +139,26 @@ public class TestLocalConfiguration {
         assertFalse(typeManager.canCreate(SECTION_TYPE, workspace.getType(), workspace));
     }
 
-    protected void setDenyAllTypes(DocumentModel doc, boolean denyAllTypes) throws ClientException {
+    protected void setDenyAllTypes(DocumentModel doc, boolean denyAllTypes) {
         doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY, Boolean.valueOf(denyAllTypes));
         session.saveDocument(doc);
         session.save();
     }
 
-    protected void setAllowedTypes(DocumentModel doc, String... allowedTypes) throws ClientException {
+    protected void setAllowedTypes(DocumentModel doc, String... allowedTypes) {
         doc.setPropertyValue(UI_TYPES_CONFIGURATION_ALLOWED_TYPES_PROPERTY, (Serializable) Arrays.asList(allowedTypes));
         session.saveDocument(doc);
         session.save();
     }
 
-    protected void setDeniedTypes(DocumentModel doc, String... deniedTypes) throws ClientException {
+    protected void setDeniedTypes(DocumentModel doc, String... deniedTypes) {
         doc.setPropertyValue(UI_TYPES_CONFIGURATION_DENIED_TYPES_PROPERTY, (Serializable) Arrays.asList(deniedTypes));
         session.saveDocument(doc);
         session.save();
     }
 
     @Test
-    public void shouldNotAllowFolderType() throws ClientException {
+    public void shouldNotAllowFolderType() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FOLDER_TYPE);
 
@@ -176,7 +176,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void deniedTypesShouldPassFirst() throws ClientException {
+    public void deniedTypesShouldPassFirst() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setAllowedTypes(workspace, FOLDER_TYPE);
         setDeniedTypes(workspace, FOLDER_TYPE);
@@ -189,7 +189,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void noConfigurationShouldAllowEveryRegisteredSubTypes() throws ClientException {
+    public void noConfigurationShouldAllowEveryRegisteredSubTypes() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
 
         assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, workspace.getType(), workspace));
@@ -206,7 +206,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldNotAllowAnyTypeIfParentConfigurationDoNotAllowAnyType() throws ClientException {
+    public void shouldNotAllowAnyTypeIfParentConfigurationDoNotAllowAnyType() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDenyAllTypes(parentWorkspace, true);
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
@@ -226,7 +226,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldInheritDeniedTypes() throws ClientException {
+    public void shouldInheritDeniedTypes() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(parentWorkspace, FILE_TYPE);
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
@@ -246,7 +246,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldNotInheritAllowedTypes() throws ClientException {
+    public void shouldNotInheritAllowedTypes() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         setAllowedTypes(parentWorkspace, FILE_TYPE);
         DocumentModel childWorkspace = session.getDocument(CHILD_WORKSPACE_REF);
@@ -297,7 +297,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void shouldFindAllAllowedSubtypesWithoutConfiguration() throws ClientException {
+    public void shouldFindAllAllowedSubtypesWithoutConfiguration() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         Collection<Type> allowedSubTypes = typeManager.findAllAllowedSubTypesFrom(WORKSPACE_TYPE, workspace);
 
@@ -314,7 +314,7 @@ public class TestLocalConfiguration {
     }
 
     @Test
-    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration() throws ClientException {
+    public void userWithoutReadRightOnWorkspaceShouldRetrieveConfiguration() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         setDeniedTypes(workspace, FILE_TYPE);
 
@@ -329,7 +329,7 @@ public class TestLocalConfiguration {
         }
     }
 
-    protected void addReadForEveryone(DocumentRef ref) throws ClientException {
+    protected void addReadForEveryone(DocumentRef ref) {
         DocumentModel childWorkspace = session.getDocument(ref);
         ACP acp = childWorkspace.getACP();
         ACL acl = acp.getOrCreateACL();
@@ -340,7 +340,7 @@ public class TestLocalConfiguration {
         session.save();
     }
 
-    protected CoreSession openSessionAs(String username) throws ClientException {
+    protected CoreSession openSessionAs(String username) {
         return settings.openSessionAs(username);
     }
 

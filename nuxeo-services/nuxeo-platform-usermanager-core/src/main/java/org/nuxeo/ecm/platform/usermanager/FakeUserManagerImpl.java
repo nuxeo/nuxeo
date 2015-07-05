@@ -189,15 +189,15 @@ public class FakeUserManagerImpl implements UserManager {
         return groupParentGroupsField;
     }
 
-    public Boolean areGroupsReadOnly() throws ClientException {
+    public Boolean areGroupsReadOnly() {
         throw new UnsupportedOperationException();
     }
 
-    public Boolean areUsersReadOnly() throws ClientException {
+    public Boolean areUsersReadOnly() {
         throw new UnsupportedOperationException();
     }
 
-    public boolean checkUsernamePassword(String username, String password) throws ClientException {
+    public boolean checkUsernamePassword(String username, String password) {
         throw new UnsupportedOperationException();
     }
 
@@ -210,34 +210,34 @@ public class FakeUserManagerImpl implements UserManager {
         }
     }
 
-    public List<String> getGroupsInGroup(String parentId) throws ClientException {
+    public List<String> getGroupsInGroup(String parentId) {
         throw new UnsupportedOperationException();
     }
 
-    public NuxeoPrincipal getPrincipal(String username) throws ClientException {
+    public NuxeoPrincipal getPrincipal(String username) {
         NuxeoPrincipalImpl principal = new NuxeoPrincipalImpl(SecurityConstants.ADMINISTRATOR, false, true);
         principal.setGroups(Arrays.asList(SecurityConstants.ADMINISTRATORS));
         principal.setEmail("admin@example.com");
         return principal;
     }
 
-    public List<String> getTopLevelGroups() throws ClientException {
+    public List<String> getTopLevelGroups() {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getUsersInGroup(String groupId) throws ClientException {
+    public List<String> getUsersInGroup(String groupId) {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getUsersInGroupAndSubGroups(String groupId) throws ClientException {
+    public List<String> getUsersInGroupAndSubGroups(String groupId) {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchGroups(String pattern) throws ClientException {
+    public DocumentModelList searchGroups(String pattern) {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> searchPrincipals(String pattern) throws ClientException {
+    public List<NuxeoPrincipal> searchPrincipals(String pattern) {
         throw new UnsupportedOperationException();
     }
 
@@ -297,137 +297,137 @@ public class FakeUserManagerImpl implements UserManager {
         setVirtualUsers(descriptor.virtualUsers);
     }
 
-    public DocumentModel getBareUserModel() throws ClientException {
+    public DocumentModel getBareUserModel() {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel createGroup(DocumentModel groupModel) throws ClientException {
+    public DocumentModel createGroup(DocumentModel groupModel) {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel createUser(DocumentModel userModel) throws ClientException {
+    public DocumentModel createUser(DocumentModel userModel) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteGroup(DocumentModel groupModel) throws ClientException {
+    public void deleteGroup(DocumentModel groupModel) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteGroup(String groupId) throws ClientException {
+    public void deleteGroup(String groupId) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteUser(DocumentModel userModel) throws ClientException {
+    public void deleteUser(DocumentModel userModel) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteUser(String userId) throws ClientException {
+    public void deleteUser(String userId) {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel getBareGroupModel() throws ClientException {
+    public DocumentModel getBareGroupModel() {
         throw new UnsupportedOperationException();
     }
 
-    public NuxeoGroup getGroup(String groupName) throws ClientException {
+    public NuxeoGroup getGroup(String groupName) {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getGroupIds() throws ClientException {
+    public List<String> getGroupIds() {
         throw new UnsupportedOperationException();
     }
 
-    public List<String> getUserIds() throws ClientException {
+    public List<String> getUserIds() {
         throw new UnsupportedOperationException();
     }
 
     public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
-            throws ClientException {
+            {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException {
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext) {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModelList searchUsers(String pattern) throws ClientException {
+    public DocumentModelList searchUsers(String pattern) {
         throw new UnsupportedOperationException();
     }
 
-    public void updateGroup(DocumentModel groupModel) throws ClientException {
+    public void updateGroup(DocumentModel groupModel) {
         throw new UnsupportedOperationException();
     }
 
-    public void updateUser(DocumentModel userModel) throws ClientException {
+    public void updateUser(DocumentModel userModel) {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel getGroupModel(String groupName) throws ClientException {
+    public DocumentModel getGroupModel(String groupName) {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel getUserModel(String userName) throws ClientException {
+    public DocumentModel getUserModel(String userName) {
         throw new UnsupportedOperationException();
     }
 
-    public String getGroupIdField() throws ClientException {
+    public String getGroupIdField() {
         return "groupname";
     }
 
-    public String getGroupLabelField() throws ClientException {
+    public String getGroupLabelField() {
         return "grouplabel";
     }
 
-    public String getGroupSchemaName() throws ClientException {
+    public String getGroupSchemaName() {
         return "group";
     }
 
-    public String getUserIdField() throws ClientException {
+    public String getUserIdField() {
         return "username";
     }
 
-    public String getUserSchemaName() throws ClientException {
+    public String getUserSchemaName() {
         return "user";
     }
 
-    public void createGroup(NuxeoGroup group) throws ClientException {
+    public void createGroup(NuxeoGroup group) {
         throw new UnsupportedOperationException();
     }
 
-    public void createPrincipal(NuxeoPrincipal principal) throws ClientException {
+    public void createPrincipal(NuxeoPrincipal principal) {
         throw new UnsupportedOperationException();
     }
 
-    public void deleteGroup(NuxeoGroup group) throws ClientException {
+    public void deleteGroup(NuxeoGroup group) {
         throw new UnsupportedOperationException();
     }
 
-    public void deletePrincipal(NuxeoPrincipal principal) throws ClientException {
+    public void deletePrincipal(NuxeoPrincipal principal) {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoGroup> getAvailableGroups() throws ClientException {
+    public List<NuxeoGroup> getAvailableGroups() {
         throw new UnsupportedOperationException();
     }
 
-    public List<NuxeoPrincipal> getAvailablePrincipals() throws ClientException {
+    public List<NuxeoPrincipal> getAvailablePrincipals() {
         throw new UnsupportedOperationException();
     }
 
-    public DocumentModel getModelForUser(String name) throws ClientException {
+    public DocumentModel getModelForUser(String name) {
         throw new UnsupportedOperationException();
     }
 
     public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern)
-            throws ClientException {
+            {
         throw new UnsupportedOperationException();
     }
 
-    public void updateGroup(NuxeoGroup group) throws ClientException {
+    public void updateGroup(NuxeoGroup group) {
         throw new UnsupportedOperationException();
     }
 
-    public void updatePrincipal(NuxeoPrincipal principal) throws ClientException {
+    public void updatePrincipal(NuxeoPrincipal principal) {
         throw new UnsupportedOperationException();
     }
 
@@ -440,7 +440,7 @@ public class FakeUserManagerImpl implements UserManager {
     }
 
     @Override
-    public Principal authenticate(String name, String password) throws ClientException {
+    public Principal authenticate(String name, String password) {
         return checkUsernamePassword(name, password) ? getPrincipal(name) : null;
     }
 

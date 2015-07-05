@@ -51,7 +51,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
             + "AND ecm:path STARTSWITH '%s' " + "AND ecm:isProxy = 1";
 
     @Override
-    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
         List<PublishedDocument> publishedDocuments = super.getExistingPublishedDocument(docLoc);
 
         DocumentModel sourceDocument = coreSession.getDocument(docLoc.getDocRef());
@@ -71,7 +71,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
     }
 
     protected List<PublishedDocument> getPublishedDocumentsFromProxyDocument(DocumentRef docRef,
-            DocumentModel sourceDocument) throws ClientException {
+            DocumentModel sourceDocument) {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
         List<DocumentModel> docs = coreSession.query(String.format(RENDITION_PUBLISHED_DOCUMENTS_FROM_PROXY_DOCUMENT,
                 docRef, NXQL.escapeStringInner(rootPath)));
@@ -83,7 +83,7 @@ public class RenditionPublicationCoreTree extends RootSectionsPublicationTree {
         return publishedDocuments;
     }
 
-    protected List<PublishedDocument> getPublishedDocumentsFromLiveDocument(DocumentRef docRef) throws ClientException {
+    protected List<PublishedDocument> getPublishedDocumentsFromLiveDocument(DocumentRef docRef) {
         List<PublishedDocument> publishedDocuments = new ArrayList<PublishedDocument>();
         List<DocumentModel> docs = coreSession.query(String.format(RENDITION_PUBLISHED_DOCUMENTS_FROM_LIVE_DOCUMENT,
                 docRef, NXQL.escapeStringInner(rootPath)));

@@ -35,7 +35,7 @@ public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
     public static final String TEST_DOC_NAME = "testDoc";
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
 
         createTestDoc(session);
     }
@@ -45,9 +45,8 @@ public class ComplexDocRepositoryInit extends DefaultRepositoryInit {
      *
      * @param session the session
      * @return the document model
-     * @throws ClientException the client exception
      */
-    protected final DocumentModel createTestDoc(CoreSession session) throws ClientException {
+    protected final DocumentModel createTestDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", TEST_DOC_NAME, "CSDoc");
 

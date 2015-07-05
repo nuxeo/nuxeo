@@ -84,7 +84,7 @@ public class JsonDocumentListWriter extends EntityListWriter<DocumentModel> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, DocumentModel item) throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, DocumentModel item) throws IOException {
         // do nothing, everything is done in #writeTo
     }
 

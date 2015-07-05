@@ -43,7 +43,7 @@ public class RenditionLiveDocFetcher extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
 
         String targetUUID = (String) proxy.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY);
         liveDocument = session.getDocument(new IdRef(targetUUID));

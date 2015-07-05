@@ -108,7 +108,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public boolean getCanDeleteItem(DocumentModel container) throws ClientException {
+    public boolean getCanDeleteItem(DocumentModel container) {
         if (container == null) {
             return false;
         }
@@ -143,7 +143,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public boolean getCanPurge() throws ClientException {
+    public boolean getCanPurge() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         try {
             return getTrashService().canPurgeOrUndelete(docs, currentUser);
@@ -153,7 +153,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
         }
     }
 
-    public boolean getCanEmptyTrash() throws ClientException {
+    public boolean getCanEmptyTrash() {
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         if (selectedDocuments.size() == 0) {
             DocumentModelList currentTrashDocuments = trashService.getDocuments(navigationContext.getCurrentDocument());
@@ -179,7 +179,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public String deleteSelection() throws ClientException {
+    public String deleteSelection() {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SELECTION)) {
             return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SELECTION));
         } else {
@@ -189,7 +189,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public String deleteSelectionSections() throws ClientException {
+    public String deleteSelectionSections() {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_SECTION_SELECTION)) {
             return deleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION));
         } else {
@@ -201,7 +201,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     protected static final int OP_DELETE = 1, OP_PURGE = 2, OP_UNDELETE = 3;
 
     @Override
-    public String deleteSelection(List<DocumentModel> docs) throws ClientException {
+    public String deleteSelection(List<DocumentModel> docs) {
         int op = isTrashManagementEnabled() ? OP_DELETE : OP_PURGE;
         return actOnSelection(op, docs);
     }
@@ -212,12 +212,12 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public String purgeSelection() throws ClientException {
+    public String purgeSelection() {
         return purgeSelection(CURRENT_DOCUMENT_TRASH_SELECTION);
     }
 
     @Override
-    public String purgeSelection(String listName) throws ClientException {
+    public String purgeSelection(String listName) {
         if (!documentsListsManager.isWorkingListEmpty(listName)) {
             return purgeSelection(documentsListsManager.getWorkingList(listName));
         } else {
@@ -227,12 +227,12 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public String purgeSelection(List<DocumentModel> docs) throws ClientException {
+    public String purgeSelection(List<DocumentModel> docs) {
         return actOnSelection(OP_PURGE, docs);
     }
 
     @Override
-    public String undeleteSelection() throws ClientException {
+    public String undeleteSelection() {
         if (!documentsListsManager.isWorkingListEmpty(CURRENT_DOCUMENT_TRASH_SELECTION)) {
             return undeleteSelection(documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION));
         } else {
@@ -242,12 +242,12 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public String undeleteSelection(List<DocumentModel> docs) throws ClientException {
+    public String undeleteSelection(List<DocumentModel> docs) {
         return actOnSelection(OP_UNDELETE, docs);
 
     }
 
-    protected String actOnSelection(int op, List<DocumentModel> docs) throws ClientException {
+    protected String actOnSelection(int op, List<DocumentModel> docs) {
         if (docs == null) {
             return null;
         }
@@ -338,14 +338,14 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     }
 
     @Override
-    public void restoreCurrentDocument() throws ClientException {
+    public void restoreCurrentDocument() {
         List<DocumentModel> doc = new ArrayList<DocumentModel>();
         doc.add(navigationContext.getCurrentDocument());
         undeleteSelection(doc);
     }
 
     @Override
-    public boolean getCanRestoreCurrentDoc() throws ClientException {
+    public boolean getCanRestoreCurrentDoc() {
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc == null) {
             // this shouldn't happen, if it happens probably there is a
@@ -362,7 +362,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
 
     }
 
-    public boolean restoreActionDisplay() throws ClientException {
+    public boolean restoreActionDisplay() {
         return getCanRestoreCurrentDoc() && isTrashManagementEnabled();
     }
 }

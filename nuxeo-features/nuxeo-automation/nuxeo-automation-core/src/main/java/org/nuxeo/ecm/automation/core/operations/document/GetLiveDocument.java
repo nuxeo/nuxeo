@@ -35,7 +35,7 @@ public class GetLiveDocument {
     protected CoreSession session;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel input) throws ClientException {
+    public DocumentModel run(DocumentModel input) {
         DocumentModel doc = session.getSourceDocument(input.getRef());
         for (int i = 0; i < MAX_ITERATION && !isLive(doc); i++) {
             doc = session.getSourceDocument(doc.getRef());

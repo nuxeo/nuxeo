@@ -62,7 +62,7 @@ public class DefaultValidatorsRule implements ValidatorsRule {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             acp = session.getACP(docRef);
         }
     }

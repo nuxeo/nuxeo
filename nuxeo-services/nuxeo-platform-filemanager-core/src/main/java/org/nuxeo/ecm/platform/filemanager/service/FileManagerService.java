@@ -121,21 +121,21 @@ public class FileManagerService extends DefaultComponent implements FileManager 
         creationContainerListProviders = new LinkedList<CreationContainerListProvider>();
     }
 
-    private MimetypeRegistry getMimeService() throws ClientException {
+    private MimetypeRegistry getMimeService() {
         if (mimeService == null) {
             mimeService = Framework.getService(MimetypeRegistry.class);
         }
         return mimeService;
     }
 
-    private TypeManager getTypeService() throws ClientException {
+    private TypeManager getTypeService() {
         if (typeService == null) {
             typeService = Framework.getService(TypeManager.class);
         }
         return typeService;
     }
 
-    private Blob checkMimeType(Blob blob, String fullname) throws ClientException {
+    private Blob checkMimeType(Blob blob, String fullname) {
         final String mimeType = blob.getMimeType();
         if (mimeType != null && !mimeType.isEmpty() && !mimeType.equals("application/octet-stream")
                 && !mimeType.equals("application/octetstream")) {
@@ -151,7 +151,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModel createFolder(CoreSession documentManager, String fullname, String path)
-            throws ClientException, IOException {
+            throws IOException {
 
         if (folderImporters.isEmpty()) {
             return defaultCreateFolder(documentManager, fullname, path);
@@ -163,12 +163,12 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path)
-            throws ClientException {
+            {
         return defaultCreateFolder(documentManager, fullname, path, DEFAULT_FOLDER_TYPE_NAME, true);
     }
 
     public DocumentModel defaultCreateFolder(CoreSession documentManager, String fullname, String path,
-            String containerTypeName, boolean checkAllowedSubTypes) throws ClientException {
+            String containerTypeName, boolean checkAllowedSubTypes) {
 
         // Fetching filename
         String title = FileManagerUtils.fetchFileName(fullname);
@@ -210,7 +210,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModel createDocumentFromBlob(CoreSession documentManager, Blob input, String path,
-            boolean overwrite, String fullName) throws ClientException, IOException {
+            boolean overwrite, String fullName) throws IOException {
 
         // check mime type to be able to select the best importer plugin
         input = checkMimeType(input, fullName);
@@ -230,7 +230,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public DocumentModel updateDocumentFromBlob(CoreSession documentManager, Blob input, String path, String fullName)
-            throws ClientException {
+            {
         String filename = FileManagerUtils.fetchFileName(fullName);
         DocumentModel doc = FileManagerUtils.getExistingDocByFileName(documentManager, path, filename);
         if (doc != null) {
@@ -488,7 +488,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
     }
 
     public List<DocumentLocation> findExistingDocumentWithFile(CoreSession documentManager, String path, String digest,
-            Principal principal) throws ClientException {
+            Principal principal) {
         String nxql = String.format(QUERY, digest);
         DocumentModelList documentModelList = documentManager.query(nxql, MAX);
         List<DocumentLocation> docLocationList = new ArrayList<DocumentLocation>(documentModelList.size());

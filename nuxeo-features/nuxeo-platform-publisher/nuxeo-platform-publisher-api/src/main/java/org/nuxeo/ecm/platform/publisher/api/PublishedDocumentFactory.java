@@ -34,19 +34,17 @@ public interface PublishedDocumentFactory {
 
     String getName();
 
-    PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) throws ClientException;
+    PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode);
 
-    PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException;
+    PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params);
 
-    void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
-            throws ClientException;
+    void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters);
 
-    void init(CoreSession coreSession, Map<String, String> parameters) throws ClientException;
+    void init(CoreSession coreSession, Map<String, String> parameters);
 
-    DocumentModel snapshotDocumentBeforePublish(DocumentModel doc) throws ClientException;
+    DocumentModel snapshotDocumentBeforePublish(DocumentModel doc);
 
-    PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException;
+    PublishedDocument wrapDocumentModel(DocumentModel doc);
 
     /**
      * Computes the list of publishing validators given the document model of the document just published. The string
@@ -72,7 +70,7 @@ public interface PublishedDocumentFactory {
      * @param comment
      * @throws PublishingException
      */
-    void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException;
+    void validatorPublishDocument(PublishedDocument publishedDocument, String comment);
 
     /**
      * A validator (the current user) rejects the publication.
@@ -81,10 +79,10 @@ public interface PublishedDocumentFactory {
      * @param comment
      * @throws PublishingException
      */
-    void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException;
+    void validatorRejectPublication(PublishedDocument publishedDocument, String comment);
 
-    boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException;
+    boolean hasValidationTask(PublishedDocument publishedDocument);
 
-    boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException;
+    boolean canManagePublishing(PublishedDocument publishedDocument);
 
 }

@@ -56,7 +56,7 @@ public class ThumbnailManagerBean implements Serializable {
     /**
      * @since 5.7
      */
-    public void downloadThumbnail(DocumentView docView) throws ClientException {
+    public void downloadThumbnail(DocumentView docView) {
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
             if (documentManager == null) {

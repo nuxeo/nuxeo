@@ -35,7 +35,7 @@ public class TransientStorageGCTrigger implements EventListener {
     public static final String EVENT = "transientStoreGCStart";
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (event.getName().equals(EVENT)) {
 
             WorkManager wm = Framework.getService(WorkManager.class);

@@ -36,7 +36,7 @@ public class VersionEventListener implements PostCommitEventListener {
     public VersionEventListener() {
     }
 
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         AnnotationsRepositoryConfigurationService service = Framework.getLocalService(AnnotationsRepositoryConfigurationService.class);
         GraphManagerEventListener manager = service.getGraphManagerEventListener();
         List<String> eventNames = service.getEventIds();

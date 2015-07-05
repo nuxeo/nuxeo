@@ -140,13 +140,13 @@ public class SearchUIServiceImpl implements SearchUIService {
         return searchDoc;
     }
 
-    public List<DocumentModel> getCurrentUserSavedSearches(CoreSession session) throws ClientException {
+    public List<DocumentModel> getCurrentUserSavedSearches(CoreSession session) {
         return getDocuments(SAVED_SEARCHES_PROVIDER_NAME, session, session.getPrincipal().getName());
     }
 
     @SuppressWarnings("unchecked")
     protected List<DocumentModel> getDocuments(String pageProviderName, CoreSession session, Object... parameters)
-            throws ClientException {
+            {
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("coreSession", (Serializable) session);
@@ -155,7 +155,7 @@ public class SearchUIServiceImpl implements SearchUIService {
 
     }
 
-    public List<DocumentModel> getSharedSavedSearches(CoreSession session) throws ClientException {
+    public List<DocumentModel> getSharedSavedSearches(CoreSession session) {
         return getDocuments(SHARED_SEARCHES_PROVIDER_NAME, session, session.getPrincipal().getName());
     }
 

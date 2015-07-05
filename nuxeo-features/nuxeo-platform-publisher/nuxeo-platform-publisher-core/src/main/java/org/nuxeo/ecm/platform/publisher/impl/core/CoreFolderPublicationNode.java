@@ -67,7 +67,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
     protected String sid;
 
     public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree, PublishedDocumentFactory factory)
-            throws ClientException {
+            {
         this.folder = doc;
         this.treeConfigName = tree.getConfigName();
         this.factory = factory;
@@ -75,7 +75,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
     }
 
     public CoreFolderPublicationNode(DocumentModel doc, PublicationTree tree, PublicationNode parent,
-            PublishedDocumentFactory factory) throws ClientException {
+            PublishedDocumentFactory factory) {
         this.folder = doc;
         this.treeConfigName = tree.getConfigName();
         this.parent = parent;
@@ -84,7 +84,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
     }
 
     public CoreFolderPublicationNode(DocumentModel doc, String treeConfigName, String sid, PublicationNode parent,
-            PublishedDocumentFactory factory) throws ClientException {
+            PublishedDocumentFactory factory) {
         this.folder = doc;
         this.treeConfigName = treeConfigName;
         this.parent = parent;
@@ -93,7 +93,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
     }
 
     public CoreFolderPublicationNode(DocumentModel doc, String treeConfigName, String sid,
-            PublishedDocumentFactory factory) throws ClientException {
+            PublishedDocumentFactory factory) {
         this.folder = doc;
         this.treeConfigName = treeConfigName;
         this.factory = factory;
@@ -117,7 +117,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         return clause;
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         DocumentModelList children = getSortedChildren(true);
         List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
         for (DocumentModel child : children) {
@@ -131,7 +131,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         return childrenDocs;
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         DocumentModelList children = getSortedChildren(false);
 
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
@@ -141,7 +141,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         return childrenNodes;
     }
 
-    protected DocumentModelList getOrderedChildren() throws ClientException {
+    protected DocumentModelList getOrderedChildren() {
         return getCoreSession().getChildren(folder.getRef(), null, null, computeGetChildrenFilter(), null);
     }
 
@@ -152,7 +152,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         return new CompoundFilter(facetFilter, lfFilter);
     }
 
-    protected DocumentModelList getSortedChildren(boolean queryDocuments) throws ClientException {
+    protected DocumentModelList getSortedChildren(boolean queryDocuments) {
         String whereClause = buildChildrenWhereClause(queryDocuments);
         DocumentModelList children = getCoreSession().query("SELECT * FROM Document WHERE " + whereClause);
         if (!folder.hasFacet(FacetNames.ORDERABLE)) {
@@ -163,11 +163,11 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         return children;
     }
 
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         return folder.getTitle();
     }
 
-    public String getName() throws ClientException {
+    public String getName() {
         return folder.getName();
     }
 

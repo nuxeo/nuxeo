@@ -64,7 +64,7 @@ public class HierarchicalDirectoryUIDeleteConstraint extends AbstractDirectoryUI
         targetDirectoryField = properties.get(targetDirFieldKey);
     }
 
-    public boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException, ClientException {
+    public boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException {
         try (Session dirSession = dirService.open(targetDirectory)) {
             // search for given entry id usage in this directory
             Map<String, Serializable> filter = new HashMap<String, Serializable>();

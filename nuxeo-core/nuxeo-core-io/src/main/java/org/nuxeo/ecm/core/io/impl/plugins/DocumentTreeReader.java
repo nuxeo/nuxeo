@@ -33,17 +33,17 @@ public class DocumentTreeReader extends DocumentModelReader {
 
     protected int pathSegmentsToRemove = 0;
 
-    public DocumentTreeReader(CoreSession session, DocumentModel root, boolean excludeRoot) throws ClientException {
+    public DocumentTreeReader(CoreSession session, DocumentModel root, boolean excludeRoot) {
         super(session);
         iterator = new DocumentTreeIterator(session, root, excludeRoot);
         pathSegmentsToRemove = root.getPath().segmentCount() - (excludeRoot ? 0 : 1);
     }
 
-    public DocumentTreeReader(CoreSession session, DocumentRef root) throws ClientException {
+    public DocumentTreeReader(CoreSession session, DocumentRef root) {
         this(session, session.getDocument(root));
     }
 
-    public DocumentTreeReader(CoreSession session, DocumentModel root) throws ClientException {
+    public DocumentTreeReader(CoreSession session, DocumentModel root) {
         this(session, root, false);
     }
 

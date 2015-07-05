@@ -56,19 +56,19 @@ public class AddPermission {
     boolean blockInheritance = false;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         addPermission(doc);
         return session.getDocument(doc.getRef());
     }
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentRef docRef) throws ClientException {
+    public DocumentModel run(DocumentRef docRef) {
         DocumentModel doc = session.getDocument(docRef);
         addPermission(doc);
         return doc;
     }
 
-    protected void addPermission(DocumentModel doc) throws ClientException {
+    protected void addPermission(DocumentModel doc) {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
                 blockInheritance, session.getPrincipal().getName());

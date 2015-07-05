@@ -77,7 +77,7 @@ public class TestBulkEditHelper {
         assertFalse(commonSchemas.contains("file"));
     }
 
-    protected List<DocumentModel> createTestDocuments() throws ClientException {
+    protected List<DocumentModel> createTestDocuments() {
         DocumentModel file = session.createDocumentModel("/", "testFile", "File");
         file.setPropertyValue("dc:title", "testTitle");
         file = session.createDocument(file);

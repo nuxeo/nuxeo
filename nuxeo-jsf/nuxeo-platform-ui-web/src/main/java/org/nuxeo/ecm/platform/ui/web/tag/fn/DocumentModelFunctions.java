@@ -302,7 +302,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     /**
      * @since 6.0
      */
-    public static String titleFromId(final String documentId) throws ClientException {
+    public static String titleFromId(final String documentId) {
         final CoreSession coreSession = (CoreSession) Component.getInstance("documentManager");
         if (StringUtils.isNotBlank(documentId)) {
             try {
@@ -319,7 +319,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return value instanceof DocumentModel;
     }
 
-    public static boolean isDirty(DocumentModel doc) throws ClientException {
+    public static boolean isDirty(DocumentModel doc) {
         if (doc == null) {
             return false;
         }
@@ -382,7 +382,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return false;
     }
 
-    public static boolean hasPermission(DocumentModel document, String permission) throws ClientException {
+    public static boolean hasPermission(DocumentModel document, String permission) {
         if (document == null) {
             return false;
         }
@@ -406,9 +406,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param document
      * @return true if document can be modified.
-     * @throws ClientException
      */
-    public static boolean canModify(DocumentModel document) throws ClientException {
+    public static boolean canModify(DocumentModel document) {
         if (document == null) {
             return false;
         }
@@ -704,7 +703,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
     }
 
     protected static void addQueryParameter(StringBuilder sb, String name, String value, boolean isFirst)
-            throws ClientException {
+            {
         if (isFirst) {
             sb.append("?");
         } else {
@@ -729,7 +728,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveEditUrl(DocumentModel doc) throws ClientException {
+    public static String liveEditUrl(DocumentModel doc) {
         return liveEditUrl(doc, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
     }
 
@@ -740,7 +739,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @throws ClientException if the URL encoding fails
      */
     public static String liveEditUrl(DocumentModel doc, String schemaName, String blobFieldName,
-            String filenameFieldName) throws ClientException {
+            String filenameFieldName) {
         if (doc == null) {
             return ""; // JSF DebugUtil.printTree may call this
         }
@@ -767,7 +766,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @throws ClientException if the URL encoding fails
      */
     public static String complexLiveEditUrl(DocumentModel doc, String listPropertyName, int index,
-            String blobPropertyName, String filenamePropertyName) throws ClientException {
+            String blobPropertyName, String filenamePropertyName) {
 
         StringBuilder queryParamBuilder = new StringBuilder();
         addQueryParameter(queryParamBuilder, ACTION, ACTION_EDIT_DOCUMENT, true);
@@ -788,7 +787,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveCreateUrl(String mimetype) throws ClientException {
+    public static String liveCreateUrl(String mimetype) {
         return liveCreateUrl(mimetype, DEFAULT_DOCTYPE, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
     }
 
@@ -804,7 +803,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @throws ClientException if the URL encoding fails
      */
     public static String liveCreateUrl(String mimetype, String docType, String schemaName, String blobFieldName,
-            String filenameFieldName) throws ClientException {
+            String filenameFieldName) {
 
         StringBuilder queryParamBuilder = new StringBuilder();
         addQueryParameter(queryParamBuilder, ACTION, ACTION_CREATE_DOCUMENT, true);
@@ -823,7 +822,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @return the encoded URL string
      * @throws ClientException if the URL encoding fails
      */
-    public static String liveCreateFromTemplateUrl(DocumentModel template) throws ClientException {
+    public static String liveCreateFromTemplateUrl(DocumentModel template) {
         return liveCreateFromTemplateUrl(template, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_DOCTYPE, DEFAULT_SCHEMA,
                 DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
     }
@@ -843,7 +842,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      */
     public static String liveCreateFromTemplateUrl(DocumentModel template, String templateSchemaName,
             String templateBlobFieldName, String docType, String schemaName, String blobFieldName,
-            String filenameFieldName) throws ClientException {
+            String filenameFieldName) {
 
         StringBuilder queryParamBuilder = new StringBuilder();
         addQueryParameter(queryParamBuilder, ACTION, ACTION_CREATE_DOCUMENT_FROM_TEMPLATE, true);
@@ -858,7 +857,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         return buildNxEditUrl(queryParamBuilder.toString());
     }
 
-    private static String buildNxEditUrl(String queryParameters) throws ClientException {
+    private static String buildNxEditUrl(String queryParameters) {
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
 

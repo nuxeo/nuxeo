@@ -61,7 +61,7 @@ public class BulkDocumentsObject extends DefaultObject {
     }
 
     @DELETE
-    public Response doDelete() throws ClientException {
+    public Response doDelete() {
         CoreSession session = getContext().getCoreSession();
         for (DocumentModel doc : docs) {
             session.removeDocument(doc.getRef());
@@ -71,7 +71,7 @@ public class BulkDocumentsObject extends DefaultObject {
     }
 
     @PUT
-    public DocumentModelList doUpdate(DocumentModel updateDoc) throws ClientException {
+    public DocumentModelList doUpdate(DocumentModel updateDoc) {
         CoreSession session = getContext().getCoreSession();
 
         for (DocumentModel doc : docs) {
@@ -87,10 +87,9 @@ public class BulkDocumentsObject extends DefaultObject {
      *
      * @param srcDoc
      * @param dstDoc
-     * @throws ClientException
      * @since 5.7.3
      */
-    private void updateDirtyFields(DocumentModel srcDoc, DocumentModel dstDoc) throws ClientException {
+    private void updateDirtyFields(DocumentModel srcDoc, DocumentModel dstDoc) {
         for (Entry<String, DataModel> entry : srcDoc.getDataModels().entrySet()) {
             String schemaName = entry.getKey();
             for (String field : entry.getValue().getDirtyFields()) {

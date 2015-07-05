@@ -39,7 +39,7 @@ public class PreviewContentEnricher extends AbstractContentEnricher {
     public static final String PREVIEW_CONTENT_ID = "preview";
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
         DocumentModel doc = ec.getDocumentModel();
         String relativeUrl = PreviewHelper.getPreviewURL(doc);
         jg.writeStartObject();

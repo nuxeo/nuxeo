@@ -44,7 +44,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     /**
      * Writes the item in a JsonGenerator.
      */
-    protected abstract void writeItem(JsonGenerator jg, T item) throws ClientException, IOException;
+    protected abstract void writeItem(JsonGenerator jg, T item) throws IOException;
 
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -70,7 +70,7 @@ public abstract class EntityListWriter<T> extends EntityWriter<List<T>> {
     }
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, List<T> list) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, List<T> list) throws IOException {
         writePaginableHeader(jg, list);
         writeHeader(jg, list);
         jg.writeArrayFieldStart("entries");

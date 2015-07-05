@@ -127,7 +127,7 @@ public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<Simpl
     }
 
     @Override
-    public void save(CoreSession session) throws ClientException {
+    public void save(CoreSession session) {
         List<Map<String, String>> parametersForDocument = computeParametersForDocument(parameters);
         detachedDocument.setPropertyValue(SIMPLE_CONFIGURATION_PARAMETERS_PROPERTY,
                 (Serializable) parametersForDocument);

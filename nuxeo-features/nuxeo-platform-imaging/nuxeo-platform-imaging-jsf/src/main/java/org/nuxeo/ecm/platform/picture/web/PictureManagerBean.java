@@ -117,7 +117,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     @Override
     @SuppressWarnings("unchecked")
-    public String getFileurlPicture() throws ClientException {
+    public String getFileurlPicture() {
         ArrayList<Map<String, Object>> views = (ArrayList) getCurrentDocument().getProperty("picture", "views");
         return views.get(index).get("title") + ":content";
     }
@@ -128,7 +128,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected void initSelectItems() throws ClientException {
+    protected void initSelectItems() {
         selectItems = new ArrayList<Map<String, Object>>();
         DocumentModel doc = getCurrentDocument();
         ArrayList<Map<String, Object>> views = (ArrayList) doc.getProperty("picture", "views");
@@ -141,7 +141,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public ArrayList getSelectItems() throws ClientException {
+    public ArrayList getSelectItems() {
         if (selectItems == null) {
             initSelectItems();
             return selectItems;
@@ -213,7 +213,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public String rotate90left() throws ClientException, IOException {
+    public String rotate90left() throws IOException {
         DocumentModel doc = getCurrentDocument();
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
         picture.doRotate(-90);
@@ -224,7 +224,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public String rotate90right() throws ClientException, IOException {
+    public String rotate90right() throws IOException {
         DocumentModel doc = getCurrentDocument();
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
         picture.doRotate(90);
@@ -235,7 +235,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public String crop() throws ClientException, IOException {
+    public String crop() throws IOException {
         if (cropCoords != null && !cropCoords.equals("")) {
             DocumentModel doc = getCurrentDocument();
             PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
@@ -260,7 +260,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
     @WebRemote
     public String remoteDownload(String patternName, String docID, String blobPropertyName, String filename)
-            throws ClientException {
+            {
         IdRef docref = new IdRef(docID);
         DocumentModel doc = documentManager.getDocument(docref);
         return DocumentModelFunctions.fileUrl(patternName, doc, blobPropertyName, filename);
@@ -272,7 +272,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
     }
 
     @Override
-    public void download(DocumentView docView) throws ClientException {
+    public void download(DocumentView docView) {
         if (docView != null) {
             DocumentLocation docLoc = docView.getDocumentLocation();
             // fix for NXP-1799

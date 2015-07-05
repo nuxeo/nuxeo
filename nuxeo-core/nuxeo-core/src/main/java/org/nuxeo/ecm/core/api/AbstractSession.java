@@ -185,7 +185,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      *
      * @return the repository session
      */
-    public abstract Session getSession() throws ClientException;
+    public abstract Session getSession();
 
     @Override
     public DocumentType getDocumentType(String type) {
@@ -224,7 +224,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options,
-            String category, String comment, boolean withLifeCycle, boolean inline) throws ClientException {
+            String category, String comment, boolean withLifeCycle, boolean inline) {
 
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
@@ -280,7 +280,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param options additional info to pass to the event
      */
     protected void notifyVersionChange(DocumentModel oldDocument, DocumentModel newDocument,
-            Map<String, Serializable> options) throws ClientException {
+            Map<String, Serializable> options) {
         final Map<String, Serializable> info = new HashMap<String, Serializable>();
         if (options != null) {
             info.putAll(options);
@@ -292,7 +292,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean hasPermission(Principal principal, DocumentRef docRef, String permission) throws ClientException {
+    public boolean hasPermission(Principal principal, DocumentRef docRef, String permission) {
         Document doc = resolveReference(docRef);
         return hasPermission(principal, doc, permission);
     }
@@ -302,7 +302,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean hasPermission(DocumentRef docRef, String permission) throws ClientException {
+    public boolean hasPermission(DocumentRef docRef, String permission) {
         Document doc = resolveReference(docRef);
         return hasPermission(doc, permission);
     }
@@ -317,7 +317,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // getPrincipal().getName(), permission);
     }
 
-    protected Document resolveReference(DocumentRef docRef) throws ClientException {
+    protected Document resolveReference(DocumentRef docRef) {
         if (docRef == null) {
             throw new NuxeoException("Invalid reference (null)");
         }
@@ -342,7 +342,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param doc the document
      * @return the document model
      */
-    protected DocumentModel readModel(Document doc) throws ClientException {
+    protected DocumentModel readModel(Document doc) {
         return DocumentModelFactory.createDocumentModel(doc, null);
     }
 
@@ -352,7 +352,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param doc the document
      * @return the document model
      */
-    protected DocumentModel readModel(Document doc, DocumentModel docModel) throws ClientException {
+    protected DocumentModel readModel(Document doc, DocumentModel docModel) {
         DocumentModel newModel = readModel(doc);
         newModel.copyContextData(docModel);
         return newModel;
@@ -362,17 +362,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @deprecated unused
      */
     @Deprecated
-    protected DocumentModel readModel(Document doc, String[] schemas) throws ClientException {
+    protected DocumentModel readModel(Document doc, String[] schemas) {
         return DocumentModelFactory.createDocumentModel(doc, schemas);
     }
 
-    protected DocumentModel writeModel(Document doc, DocumentModel docModel) throws ClientException {
+    protected DocumentModel writeModel(Document doc, DocumentModel docModel) {
         return DocumentModelFactory.writeDocumentModel(docModel, doc);
     }
 
     @Override
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
-            throws ClientException {
+            {
         Document dstDoc = resolveReference(dst);
         checkPermission(dstDoc, ADD_CHILDREN);
 
@@ -417,13 +417,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) throws ClientException {
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name) {
         return copy(src, dst, name, false);
     }
 
     @Override
     public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
-            throws ClientException {
+            {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
@@ -434,13 +434,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst) throws ClientException {
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst) {
         return copy(src, dst, false);
     }
 
     @Override
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
-            throws ClientException {
+            {
         Document srcDoc = resolveReference(src);
         if (!srcDoc.isProxy()) {
             return copy(src, dst, name);
@@ -472,13 +472,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) throws ClientException {
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) {
         return copyProxyAsDocument(src, dst, name, false);
     }
 
     @Override
     public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
-            throws ClientException {
+            {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
@@ -489,12 +489,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst) throws ClientException {
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst) {
         return copyProxyAsDocument(src, dst, false);
     }
 
     @Override
-    public DocumentModel move(DocumentRef src, DocumentRef dst, String name) throws ClientException {
+    public DocumentModel move(DocumentRef src, DocumentRef dst, String name) {
         Document srcDoc = resolveReference(src);
         Document dstDoc;
         if (dst == null) {
@@ -545,21 +545,21 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void move(List<DocumentRef> src, DocumentRef dst) throws ClientException {
+    public void move(List<DocumentRef> src, DocumentRef dst) {
         for (DocumentRef ref : src) {
             move(ref, dst, null);
         }
     }
 
     @Override
-    public ACP getACP(DocumentRef docRef) throws ClientException {
+    public ACP getACP(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_SECURITY);
         return getSession().getMergedACP(doc);
     }
 
     @Override
-    public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite) throws ClientException {
+    public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_SECURITY);
         DocumentModel docModel = readModel(doc);
@@ -586,7 +586,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     private DocumentModel createDocumentModelFromTypeName(String typeName, Map<String, Serializable> options)
-            throws ClientException {
+            {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = schemaManager.getDocumentType(typeName);
         if (docType == null) {
@@ -603,13 +603,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel createDocumentModel(String typeName) throws ClientException {
+    public DocumentModel createDocumentModel(String typeName) {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         return createDocumentModelFromTypeName(typeName, options);
     }
 
     @Override
-    public DocumentModel createDocumentModel(String parentPath, String name, String typeName) throws ClientException {
+    public DocumentModel createDocumentModel(String parentPath, String name, String typeName) {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(CoreEventConstants.PARENT_PATH, parentPath);
         options.put(CoreEventConstants.DOCUMENT_MODEL_ID, name);
@@ -620,7 +620,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel createDocumentModel(String typeName, Map<String, Object> options) throws ClientException {
+    public DocumentModel createDocumentModel(String typeName, Map<String, Object> options) {
 
         Map<String, Serializable> serializableOptions = new HashMap<String, Serializable>();
 
@@ -631,7 +631,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel createDocument(DocumentModel docModel) throws ClientException {
+    public DocumentModel createDocument(DocumentModel docModel) {
         String typeName = docModel.getType();
         DocumentRef parentRef = docModel.getParentRef();
         if (typeName == null) {
@@ -702,7 +702,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected Document fillCreateOptions(DocumentRef parentRef, String childName, Map<String, Serializable> options)
-            throws ClientException, DocumentSecurityException {
+            throws DocumentSecurityException {
         Document folder;
         if (parentRef == null || EMPTY_PATH.equals(parentRef)) {
             folder = getSession().getNullDocument();
@@ -722,7 +722,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void importDocuments(List<DocumentModel> docModels) throws ClientException {
+    public void importDocuments(List<DocumentModel> docModels) {
         for (DocumentModel docModel : docModels) {
             importDocument(docModel);
         }
@@ -730,7 +730,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected static final PathRef EMPTY_PATH = new PathRef("");
 
-    protected void importDocument(DocumentModel docModel) throws ClientException {
+    protected void importDocument(DocumentModel docModel) {
         if (!isAdministrator()) {
             throw new DocumentSecurityException("Only Administrator can import");
         }
@@ -781,7 +781,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel[] createDocument(DocumentModel[] docModels) throws ClientException {
+    public DocumentModel[] createDocument(DocumentModel[] docModels) {
         DocumentModel[] models = new DocumentModel[docModels.length];
         int i = 0;
         // TODO: optimize this (do not call at each iteration createDocument())
@@ -792,7 +792,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean exists(DocumentRef docRef) throws ClientException {
+    public boolean exists(DocumentRef docRef) {
         try {
             Document doc = resolveReference(docRef);
             return hasPermission(doc, BROWSE);
@@ -802,7 +802,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
+    public DocumentModel getChild(DocumentRef parent, String name) {
         Document doc = resolveReference(parent);
         checkPermission(doc, READ_CHILDREN);
         Document child = doc.getChild(name);
@@ -811,36 +811,36 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean hasChild(DocumentRef parent, String name) throws ClientException {
+    public boolean hasChild(DocumentRef parent, String name) {
         Document doc = resolveReference(parent);
         checkPermission(doc, READ_CHILDREN);
         return doc.hasChild(name);
     }
 
     @Override
-    public DocumentModelList getChildren(DocumentRef parent) throws ClientException {
+    public DocumentModelList getChildren(DocumentRef parent) {
         return getChildren(parent, null, READ, null, null);
     }
 
     @Override
-    public DocumentModelList getChildren(DocumentRef parent, String type) throws ClientException {
+    public DocumentModelList getChildren(DocumentRef parent, String type) {
         return getChildren(parent, type, READ, null, null);
     }
 
     @Override
-    public DocumentModelList getChildren(DocumentRef parent, String type, String perm) throws ClientException {
+    public DocumentModelList getChildren(DocumentRef parent, String type, String perm) {
         return getChildren(parent, type, perm, null, null);
     }
 
     @Override
     public DocumentModelList getChildren(DocumentRef parent, String type, Filter filter, Sorter sorter)
-            throws ClientException {
+            {
         return getChildren(parent, type, null, filter, sorter);
     }
 
     @Override
     public DocumentModelList getChildren(DocumentRef parent, String type, String perm, Filter filter, Sorter sorter)
-            throws ClientException {
+            {
         if (perm == null) {
             perm = READ;
         }
@@ -864,7 +864,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm) throws ClientException {
+    public List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm) {
         if (perm != null) {
             // XXX TODO
             throw new ClientException("perm != null not implemented");
@@ -880,31 +880,31 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelIterator getChildrenIterator(DocumentRef parent) throws ClientException {
+    public DocumentModelIterator getChildrenIterator(DocumentRef parent) {
         return getChildrenIterator(parent, null, null, null);
     }
 
     @Override
-    public DocumentModelIterator getChildrenIterator(DocumentRef parent, String type) throws ClientException {
+    public DocumentModelIterator getChildrenIterator(DocumentRef parent, String type) {
         return getChildrenIterator(parent, type, null, null);
     }
 
     @Override
     public DocumentModelIterator getChildrenIterator(DocumentRef parent, String type, String perm, Filter filter)
-            throws ClientException {
+            {
         // perm unused, kept for API compat
         return new DocumentModelChildrenIterator(this, parent, type, filter);
     }
 
     @Override
-    public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
+    public DocumentModel getDocument(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         return readModel(doc);
     }
 
     @Override
-    public DocumentModelList getDocuments(DocumentRef[] docRefs) throws ClientException {
+    public DocumentModelList getDocuments(DocumentRef[] docRefs) {
         List<DocumentModel> docs = new ArrayList<DocumentModel>(docRefs.length);
         for (DocumentRef docRef : docRefs) {
             Document doc;
@@ -921,7 +921,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList getFiles(DocumentRef parent) throws ClientException {
+    public DocumentModelList getFiles(DocumentRef parent) {
         Document doc = resolveReference(parent);
         checkPermission(doc, READ_CHILDREN);
         DocumentModelList docs = new DocumentModelListImpl();
@@ -934,7 +934,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList getFiles(DocumentRef parent, Filter filter, Sorter sorter) throws ClientException {
+    public DocumentModelList getFiles(DocumentRef parent, Filter filter, Sorter sorter) {
         Document doc = resolveReference(parent);
         checkPermission(doc, READ_CHILDREN);
         DocumentModelList docs = new DocumentModelListImpl();
@@ -953,7 +953,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList getFolders(DocumentRef parent) throws ClientException {
+    public DocumentModelList getFolders(DocumentRef parent) {
         Document doc = resolveReference(parent);
         checkPermission(doc, READ_CHILDREN);
         DocumentModelList docs = new DocumentModelListImpl();
@@ -966,7 +966,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList getFolders(DocumentRef parent, Filter filter, Sorter sorter) throws ClientException {
+    public DocumentModelList getFolders(DocumentRef parent, Filter filter, Sorter sorter) {
         Document doc = resolveReference(parent);
         checkPermission(doc, READ_CHILDREN);
         DocumentModelList docs = new DocumentModelListImpl();
@@ -985,14 +985,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentRef getParentDocumentRef(DocumentRef docRef) throws ClientException {
+    public DocumentRef getParentDocumentRef(DocumentRef docRef) {
         final Document doc = resolveReference(docRef);
         Document parentDoc = doc.getParent();
         return parentDoc != null ? new IdRef(parentDoc.getUUID()) : null;
     }
 
     @Override
-    public DocumentModel getParentDocument(DocumentRef docRef) throws ClientException {
+    public DocumentModel getParentDocument(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         Document parentDoc = doc.getParent();
         if (parentDoc == null) {
@@ -1005,7 +1005,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentModel> getParentDocuments(final DocumentRef docRef) throws ClientException {
+    public List<DocumentModel> getParentDocuments(final DocumentRef docRef) {
 
         if (null == docRef) {
             throw new IllegalArgumentException("null docRef");
@@ -1027,12 +1027,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel getRootDocument() throws ClientException {
+    public DocumentModel getRootDocument() {
         return readModel(getSession().getRootDocument());
     }
 
     @Override
-    public boolean hasChildren(DocumentRef docRef) throws ClientException {
+    public boolean hasChildren(DocumentRef docRef) {
         // TODO: validate permission check with td
         Document doc = resolveReference(docRef);
         checkPermission(doc, BROWSE);
@@ -1040,34 +1040,34 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList query(String query) throws ClientException {
+    public DocumentModelList query(String query) {
         return query(query, null, 0, 0, false);
     }
 
     @Override
-    public DocumentModelList query(String query, int max) throws ClientException {
+    public DocumentModelList query(String query, int max) {
         return query(query, null, max, 0, false);
     }
 
     @Override
-    public DocumentModelList query(String query, Filter filter) throws ClientException {
+    public DocumentModelList query(String query, Filter filter) {
         return query(query, filter, 0, 0, false);
     }
 
     @Override
-    public DocumentModelList query(String query, Filter filter, int max) throws ClientException {
+    public DocumentModelList query(String query, Filter filter, int max) {
         return query(query, filter, max, 0, false);
     }
 
     @Override
     public DocumentModelList query(String query, Filter filter, long limit, long offset, boolean countTotal)
-            throws ClientException {
+            {
         return query(query, NXQL.NXQL, filter, limit, offset, countTotal);
     }
 
     @Override
     public DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset,
-            boolean countTotal) throws ClientException {
+            boolean countTotal) {
         long countUpTo;
         if (!countTotal) {
             countUpTo = 0;
@@ -1105,13 +1105,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModelList query(String query, Filter filter, long limit, long offset, long countUpTo)
-            throws ClientException {
+            {
         return query(query, NXQL.NXQL, filter, limit, offset, countUpTo);
     }
 
     @Override
     public DocumentModelList query(String query, String queryType, Filter filter, long limit, long offset,
-            long countUpTo) throws ClientException {
+            long countUpTo) {
         SecurityService securityService = getSecurityService();
         Principal principal = getPrincipal();
         try {
@@ -1180,7 +1180,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, Object... params) throws ClientException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, Object... params) {
         try {
             SecurityService securityService = getSecurityService();
             Principal principal = getPrincipal();
@@ -1219,7 +1219,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void removeChildren(DocumentRef docRef) throws ClientException {
+    public void removeChildren(DocumentRef docRef) {
         // TODO: check req permissions with td
         Document doc = resolveReference(docRef);
         checkPermission(doc, REMOVE_CHILDREN);
@@ -1243,12 +1243,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean canRemoveDocument(DocumentRef docRef) throws ClientException {
+    public boolean canRemoveDocument(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         return canRemoveDocument(doc);
     }
 
-    protected boolean canRemoveDocument(Document doc) throws ClientException {
+    protected boolean canRemoveDocument(Document doc) {
         // TODO must also check for proxies on live docs
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
@@ -1277,12 +1277,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void removeDocument(DocumentRef docRef) throws ClientException {
+    public void removeDocument(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         removeDocument(doc);
     }
 
-    protected void removeDocument(Document doc) throws ClientException {
+    protected void removeDocument(Document doc) {
         try {
             if (!canRemoveDocument(doc)) {
                 throw new DocumentSecurityException("Permission denied: cannot remove document " + doc.getUUID());
@@ -1295,7 +1295,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         deleteDocumentCount.inc();
     }
 
-    protected void removeNotifyOneDoc(Document doc) throws ClientException {
+    protected void removeNotifyOneDoc(Document doc) {
         // XXX notify with options if needed
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -1338,7 +1338,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * ordering.
      */
     @Override
-    public void removeDocuments(DocumentRef[] docRefs) throws ClientException {
+    public void removeDocuments(DocumentRef[] docRefs) {
         Document[] docs = new Document[docRefs.length];
 
         for (int i = 0; i < docs.length; i++) {
@@ -1362,7 +1362,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void save() throws ClientException {
+    public void save() {
         try {
             final Map<String, Serializable> options = new HashMap<String, Serializable>();
             getSession().save();
@@ -1373,7 +1373,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel saveDocument(DocumentModel docModel) throws ClientException {
+    public DocumentModel saveDocument(DocumentModel docModel) {
         if (docModel.getRef() == null) {
             throw new ClientException(String.format(
                     "cannot save document '%s' with null reference: " + "document has probably not yet been created "
@@ -1475,12 +1475,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     @Deprecated
-    public boolean isDirty(DocumentRef docRef) throws ClientException {
+    public boolean isDirty(DocumentRef docRef) {
         return resolveReference(docRef).isCheckedOut();
     }
 
     @Override
-    public void saveDocuments(DocumentModel[] docModels) throws ClientException {
+    public void saveDocuments(DocumentModel[] docModels) {
         // TODO: optimize this - avoid calling at each iteration saveDoc...
         for (DocumentModel docModel : docModels) {
             saveDocument(docModel);
@@ -1488,7 +1488,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel getSourceDocument(DocumentRef docRef) throws ClientException {
+    public DocumentModel getSourceDocument(DocumentRef docRef) {
         assert null != docRef;
 
         Document doc = resolveReference(docRef);
@@ -1510,7 +1510,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public VersionModel getLastVersion(DocumentRef docRef) throws ClientException {
+    public VersionModel getLastVersion(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         Document version = doc.getLastVersion();
@@ -1518,7 +1518,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel getLastDocumentVersion(DocumentRef docRef) throws ClientException {
+    public DocumentModel getLastDocumentVersion(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         Document version = doc.getLastVersion();
@@ -1526,7 +1526,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentRef getLastDocumentVersionRef(DocumentRef docRef) throws ClientException {
+    public DocumentRef getLastDocumentVersionRef(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         Document version = doc.getLastVersion();
@@ -1534,7 +1534,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentRef> getVersionsRefs(DocumentRef docRef) throws ClientException {
+    public List<DocumentRef> getVersionsRefs(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         List<String> ids = doc.getVersionsIds();
@@ -1546,7 +1546,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentModel> getVersions(DocumentRef docRef) throws ClientException {
+    public List<DocumentModel> getVersions(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         List<Document> docVersions = doc.getVersions();
@@ -1558,7 +1558,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<VersionModel> getVersionsForDocument(DocumentRef docRef) throws ClientException {
+    public List<VersionModel> getVersionsForDocument(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         List<Document> docVersions = doc.getVersions();
@@ -1571,7 +1571,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) throws ClientException {
+    public DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) {
         Document doc = resolveReference(docRef);
         Document ver = resolveReference(versionRef);
         return restoreToVersion(doc, ver, false, true);
@@ -1579,14 +1579,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     @Deprecated
-    public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version) throws ClientException {
+    public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version) {
         return restoreToVersion(docRef, version, false);
     }
 
     @Override
     @Deprecated
     public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation)
-            throws ClientException {
+            {
         Document doc = resolveReference(docRef);
         Document ver = doc.getVersion(version.getLabel());
         return restoreToVersion(doc, ver, skipSnapshotCreation, false);
@@ -1594,14 +1594,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef, boolean skipSnapshotCreation,
-            boolean skipCheckout) throws ClientException {
+            boolean skipCheckout) {
         Document doc = resolveReference(docRef);
         Document ver = resolveReference(versionRef);
         return restoreToVersion(doc, ver, skipSnapshotCreation, skipCheckout);
     }
 
     protected DocumentModel restoreToVersion(Document doc, Document version, boolean skipSnapshotCreation,
-            boolean skipCheckout) throws ClientException {
+            boolean skipCheckout) {
         checkPermission(doc, WRITE_VERSION);
 
         DocumentModel docModel = readModel(doc);
@@ -1654,7 +1654,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentRef getBaseVersion(DocumentRef docRef) throws ClientException {
+    public DocumentRef getBaseVersion(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         Document ver = doc.getBaseVersion();
@@ -1667,14 +1667,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     @Deprecated
-    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver) throws ClientException {
+    public DocumentModel checkIn(DocumentRef docRef, VersionModel ver) {
         DocumentRef verRef = checkIn(docRef, VersioningOption.MINOR, ver == null ? null : ver.getDescription());
         return readModel(resolveReference(verRef));
     }
 
     @Override
     public DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment)
-            throws ClientException {
+            {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_PROPERTIES);
         DocumentModel docModel = readModel(doc);
@@ -1701,10 +1701,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param checkedInVersionRef document ref of the new checked-in version
      * @param options initial option map, or null
      * @param checkinComment
-     * @throws ClientException
      */
     protected void notifyCheckedInVersion(DocumentModel docModel, DocumentRef checkedInVersionRef,
-            Map<String, Serializable> options, String checkinComment) throws ClientException {
+            Map<String, Serializable> options, String checkinComment) {
         String label = getVersioningService().getVersionLabel(docModel);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         if (options != null) {
@@ -1731,7 +1730,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void checkOut(DocumentRef docRef) throws ClientException {
+    public void checkOut(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         // TODO: add a new permission names CHECKOUT and use it instead of
         // WRITE_PROPERTIES
@@ -1749,7 +1748,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean isCheckedOut(DocumentRef docRef) throws ClientException {
+    public boolean isCheckedOut(DocumentRef docRef) {
         assert null != docRef;
         Document doc = resolveReference(docRef);
         checkPermission(doc, BROWSE);
@@ -1757,14 +1756,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public String getVersionSeriesId(DocumentRef docRef) throws ClientException {
+    public String getVersionSeriesId(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         return doc.getVersionSeriesId();
     }
 
     @Override
-    public DocumentModel getWorkingCopy(DocumentRef docRef) throws ClientException {
+    public DocumentModel getWorkingCopy(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_VERSION);
         Document pwc = doc.getWorkingCopy();
@@ -1773,7 +1772,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel getVersion(String versionableId, VersionModel versionModel) throws ClientException {
+    public DocumentModel getVersion(String versionableId, VersionModel versionModel) {
         String id = versionModel.getId();
         if (id != null) {
             return getDocument(new IdRef(id));
@@ -1788,12 +1787,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public String getVersionLabel(DocumentModel docModel) throws ClientException {
+    public String getVersionLabel(DocumentModel docModel) {
         return getVersioningService().getVersionLabel(docModel);
     }
 
     @Override
-    public DocumentModel getDocumentWithVersion(DocumentRef docRef, VersionModel version) throws ClientException {
+    public DocumentModel getDocumentWithVersion(DocumentRef docRef, VersionModel version) {
         String id = version.getId();
         if (id != null) {
             return getDocument(new IdRef(id));
@@ -1813,7 +1812,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef) throws ClientException {
+    public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef) {
         Document doc = resolveReference(docRef);
         Document fold = resolveReference(folderRef);
         checkPermission(doc, READ);
@@ -1822,7 +1821,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected DocumentModel createProxyInternal(Document doc, Document folder, Map<String, Serializable> options)
-            throws ClientException {
+            {
         // create the new proxy
         Document proxy = getSession().createProxy(doc, folder);
         DocumentModel proxyModel = readModel(proxy);
@@ -1837,7 +1836,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     /**
      * Remove proxies for the same base document in the folder. doc may be a normal document or a proxy.
      */
-    protected List<String> removeExistingProxies(Document doc, Document folder) throws ClientException {
+    protected List<String> removeExistingProxies(Document doc, Document folder) {
         Collection<Document> otherProxies = getSession().getProxies(doc, folder);
         List<String> removedProxyIds = new ArrayList<String>(otherProxies.size());
         for (Document otherProxy : otherProxies) {
@@ -1854,7 +1853,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return the proxy if it was updated, or {@code null} if none or several were found
      */
     protected DocumentModel updateExistingProxies(Document doc, Document folder, Document target)
-            throws ClientException {
+            {
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
@@ -1870,7 +1869,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef) throws ClientException {
+    public DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef) {
         Document folder = null;
         if (folderRef != null) {
             folder = resolveReference(folderRef);
@@ -1888,7 +1887,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef) throws ClientException {
+    public String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef) {
         Document folder = resolveReference(folderRef);
         Document doc = resolveReference(docRef);
         checkPermission(folder, READ_CHILDREN);
@@ -1912,19 +1911,19 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<String> getAvailableSecurityPermissions() throws ClientException {
+    public List<String> getAvailableSecurityPermissions() {
         // XXX: add security check?
         return Arrays.asList(getSecurityService().getPermissionProvider().getPermissions());
     }
 
     @Override
-    public DataModel getDataModel(DocumentRef docRef, Schema schema) throws ClientException {
+    public DataModel getDataModel(DocumentRef docRef, Schema schema) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         return DocumentModelFactory.createDataModel(doc, schema);
     }
 
-    protected Object getDataModelField(DocumentRef docRef, String schema, String field) throws ClientException {
+    protected Object getDataModelField(DocumentRef docRef, String schema, String field) {
         Document doc = resolveReference(docRef);
         if (doc != null) {
             checkPermission(doc, READ);
@@ -1945,14 +1944,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public String getCurrentLifeCycleState(DocumentRef docRef) throws ClientException {
+    public String getCurrentLifeCycleState(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_LIFE_CYCLE);
         return doc.getLifeCycleState();
     }
 
     @Override
-    public String getLifeCyclePolicy(DocumentRef docRef) throws ClientException {
+    public String getLifeCyclePolicy(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_LIFE_CYCLE);
         return doc.getLifeCyclePolicy();
@@ -1965,10 +1964,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @param transition the transition to follow
      * @param options an option map than can be used by callers to pass additional params
      * @return
-     * @throws ClientException
      * @since 5.9.3
      */
-    private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options) throws ClientException {
+    private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
@@ -1995,24 +1993,24 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean followTransition(DocumentModel docModel, String transition) throws ClientException {
+    public boolean followTransition(DocumentModel docModel, String transition) {
         return followTransition(docModel.getRef(), transition, docModel.getContextData());
     }
 
     @Override
-    public boolean followTransition(DocumentRef docRef, String transition) throws ClientException {
+    public boolean followTransition(DocumentRef docRef, String transition) {
         return followTransition(docRef, transition, new ScopedMap());
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions(DocumentRef docRef) throws ClientException {
+    public Collection<String> getAllowedStateTransitions(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ_LIFE_CYCLE);
         return doc.getAllowedStateTransitions();
     }
 
     @Override
-    public void reinitLifeCycleState(DocumentRef docRef) throws ClientException {
+    public void reinitLifeCycleState(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
         LifeCycleService service = NXCore.getLifeCycleService();
@@ -2020,7 +2018,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Object[] getDataModelsField(DocumentRef[] docRefs, String schema, String field) throws ClientException {
+    public Object[] getDataModelsField(DocumentRef[] docRefs, String schema, String field) {
 
         assert docRefs != null;
         assert schema != null;
@@ -2037,7 +2035,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentRef[] getParentDocumentRefs(DocumentRef docRef) throws ClientException {
+    public DocumentRef[] getParentDocumentRefs(DocumentRef docRef) {
         final List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
         final Document doc = resolveReference(docRef);
         Document parentDoc = doc.getParent();
@@ -2051,7 +2049,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Object[] getDataModelsFieldUp(DocumentRef docRef, String schema, String field) throws ClientException {
+    public Object[] getDataModelsFieldUp(DocumentRef docRef, String schema, String field) {
 
         final DocumentRef[] parentRefs = getParentDocumentRefs(docRef);
         final DocumentRef[] allRefs = new DocumentRef[parentRefs.length + 1];
@@ -2073,26 +2071,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     @Deprecated
-    public String getLock(DocumentRef docRef) throws ClientException {
+    public String getLock(DocumentRef docRef) {
         Lock lock = getLockInfo(docRef);
         return oldLockKey(lock);
     }
 
     @Override
     @Deprecated
-    public void setLock(DocumentRef docRef, String key) throws ClientException {
+    public void setLock(DocumentRef docRef, String key) {
         setLock(docRef);
     }
 
     @Override
     @Deprecated
-    public String unlock(DocumentRef docRef) throws ClientException {
+    public String unlock(DocumentRef docRef) {
         Lock lock = removeLock(docRef);
         return oldLockKey(lock);
     }
 
     @Override
-    public Lock setLock(DocumentRef docRef) throws ClientException {
+    public Lock setLock(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         // TODO: add a new permission named LOCK and use it instead of
         // WRITE_PROPERTIES
@@ -2110,14 +2108,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Lock getLockInfo(DocumentRef docRef) throws ClientException {
+    public Lock getLockInfo(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, READ);
         return doc.getLock();
     }
 
     @Override
-    public Lock removeLock(DocumentRef docRef) throws ClientException {
+    public Lock removeLock(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         String owner;
         if (hasPermission(docRef, UNLOCK)) {
@@ -2161,7 +2159,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void applyDefaultPermissions(String userOrGroupName) throws ClientException {
+    public void applyDefaultPermissions(String userOrGroupName) {
         if (null == userOrGroupName) {
             throw new ClientException("Null parameters received.");
         }
@@ -2180,13 +2178,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section) throws ClientException {
+    public DocumentModel publishDocument(DocumentModel docToPublish, DocumentModel section) {
         return publishDocument(docToPublish, section, true);
     }
 
     @Override
     public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section, boolean overwriteExistingProxy)
-            throws ClientException {
+            {
         Document doc = resolveReference(docModel.getRef());
         Document sec = resolveReference(section.getRef());
         checkPermission(doc, READ);
@@ -2251,7 +2249,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public String getSuperParentType(DocumentModel doc) throws ClientException {
+    public String getSuperParentType(DocumentModel doc) {
         DocumentModel superSpace = getSuperSpace(doc);
         if (superSpace == null) {
             return null;
@@ -2261,7 +2259,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel getSuperSpace(DocumentModel doc) throws ClientException {
+    public DocumentModel getSuperSpace(DocumentModel doc) {
         if (doc == null) {
             throw new ClientException("getSuperSpace: document is null");
         }
@@ -2280,7 +2278,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     // walk the tree up until a accessible doc is found
-    private DocumentModel getDirectAccessibleParent(DocumentRef docRef) throws ClientException {
+    private DocumentModel getDirectAccessibleParent(DocumentRef docRef) {
         Document doc = resolveReference(docRef);
         Document parentDoc = doc.getParent();
         if (parentDoc == null) {
@@ -2300,14 +2298,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type)
-            throws ClientException {
+            {
         Document doc = resolveReference(ref);
         return doc.getSystemProp(systemProperty, type);
     }
 
     @Override
     public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value)
-            throws ClientException {
+            {
         Document doc = resolveReference(ref);
         if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
             DocumentModel docModel = readModel(doc);
@@ -2319,7 +2317,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public void orderBefore(DocumentRef parent, String src, String dest) throws ClientException {
+    public void orderBefore(DocumentRef parent, String src, String dest) {
         if ((src == null) || (src.equals(dest))) {
             return;
         }
@@ -2336,7 +2334,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
-            throws ClientException {
+            {
         Document doc = resolveReference(ref);
         if (doc == null) {
             throw new ClientException("No Such Document: " + ref);
@@ -2368,7 +2366,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public <T extends DetachedAdapter> T adaptFirstMatchingDocumentWithFacet(DocumentRef docRef, String facet,
-            Class<T> adapterClass) throws ClientException {
+            Class<T> adapterClass) {
         Document doc = getFirstParentDocumentWithFacet(docRef, facet);
         if (doc != null) {
             DocumentModel docModel = readModel(doc);
@@ -2380,7 +2378,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     protected void loadDataModelsForFacet(DocumentModel docModel, Document doc, String facetName)
-            throws ClientException {
+            {
         // Load all the data related to facet's schemas
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         CompositeType facet = schemaManager.getFacet(facetName);
@@ -2401,7 +2399,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * <p>
      * This method does not check security rights.
      */
-    protected Document getFirstParentDocumentWithFacet(DocumentRef docRef, String facet) throws ClientException {
+    protected Document getFirstParentDocumentWithFacet(DocumentRef docRef, String facet) {
         Document doc = resolveReference(docRef);
         while (doc != null && !doc.hasFacet(facet)) {
             doc = doc.getParent();
@@ -2410,7 +2408,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(DocumentRef ref) throws ClientException {
+    public Map<String, String> getBinaryFulltext(DocumentRef ref) {
         Document doc = resolveReference(ref);
         checkPermission(doc, READ);
         return getSession().getBinaryFulltext(doc.getUUID());

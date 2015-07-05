@@ -68,21 +68,21 @@ public class TestUsersPageProvider extends UserManagerTestCase {
         super.tearDown();
     }
 
-    protected void initUsers() throws ClientException {
+    protected void initUsers() {
         userManager.createUser(createUser("jdoe"));
         userManager.createUser(createUser("jsmith"));
         userManager.createUser(createUser("bree"));
         userManager.createUser(createUser("lbramard"));
     }
 
-    protected DocumentModel createUser(String userName) throws ClientException {
+    protected DocumentModel createUser(String userName) {
         DocumentModel newUser = userManager.getBareUserModel();
         newUser.setProperty("user", "username", userName);
         return newUser;
     }
 
     @Test
-    public void testUsersPageProviderAllMode() throws ClientException {
+    public void testUsersPageProviderAllMode() {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.ALL_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
@@ -106,7 +106,7 @@ public class TestUsersPageProvider extends UserManagerTestCase {
     }
 
     @Test
-    public void testUsersPageProviderSearchMode() throws ClientException {
+    public void testUsersPageProviderSearchMode() {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.SEARCH_ONLY_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(
@@ -121,7 +121,7 @@ public class TestUsersPageProvider extends UserManagerTestCase {
     }
 
     @Test
-    public void testUsersPageProviderTabbedMode() throws ClientException {
+    public void testUsersPageProviderTabbedMode() {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(UsersPageProvider.USERS_LISTING_MODE_PROPERTY, UsersPageProvider.TABBED_MODE);
         PageProvider<DocumentModel> usersProvider = (PageProvider<DocumentModel>) ppService.getPageProvider(

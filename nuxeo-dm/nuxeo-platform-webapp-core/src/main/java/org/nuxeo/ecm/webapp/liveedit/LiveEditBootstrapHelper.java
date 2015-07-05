@@ -470,7 +470,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * @deprecated use {@link #isLiveEditable(DocumentModel doc, String blobXpath)}
      */
     @Deprecated
-    public boolean isLiveEditable(Blob blob) throws ClientException {
+    public boolean isLiveEditable(Blob blob) {
         if (blob == null) {
             return false;
         }
@@ -482,10 +482,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
      * @param document the document to edit.
      * @param blobXPath XPath to the blob property
      * @return true if the document is immutable and the blob's mime type is supported, false otherwise.
-     * @throws ClientException
      * @since 5.4
      */
-    public boolean isLiveEditable(DocumentModel document, Blob blob) throws ClientException {
+    public boolean isLiveEditable(DocumentModel document, Blob blob) {
         if (document.isImmutable()) {
             return false;
         }
@@ -500,7 +499,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         return isMimeTypeLiveEditable(mimetype);
     }
 
-    public boolean isMimeTypeLiveEditable(Blob blob) throws ClientException {
+    public boolean isMimeTypeLiveEditable(Blob blob) {
         if (blob == null) {
             return false;
         }
@@ -508,7 +507,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         return isMimeTypeLiveEditable(mimetype);
     }
 
-    public boolean isMimeTypeLiveEditable(String mimetype) throws ClientException {
+    public boolean isMimeTypeLiveEditable(String mimetype) {
 
         Boolean isEditable = cachedEditableStates.get(mimetype);
         if (isEditable == null) {
@@ -537,53 +536,53 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
     }
 
     @Factory(value = "msword_liveeditable", scope = ScopeType.SESSION)
-    public boolean isMSWordLiveEdititable() throws ClientException {
+    public boolean isMSWordLiveEdititable() {
         return isMimeTypeLiveEditable("application/msword");
     }
 
     @Factory(value = "msexcel_liveeditable", scope = ScopeType.SESSION)
-    public boolean isMSExcelLiveEdititable() throws ClientException {
+    public boolean isMSExcelLiveEdititable() {
         return isMimeTypeLiveEditable("application/vnd.ms-excel");
     }
 
     @Factory(value = "mspowerpoint_liveeditable", scope = ScopeType.SESSION)
-    public boolean isMSPowerpointLiveEdititable() throws ClientException {
+    public boolean isMSPowerpointLiveEdititable() {
         return isMimeTypeLiveEditable("application/vnd.ms-powerpoint");
     }
 
     @Factory(value = "ootext_liveeditable", scope = ScopeType.SESSION)
-    public boolean isOOTextLiveEdititable() throws ClientException {
+    public boolean isOOTextLiveEdititable() {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.text");
     }
 
     @Factory(value = "oocalc_liveeditable", scope = ScopeType.SESSION)
-    public boolean isOOCalcLiveEdititable() throws ClientException {
+    public boolean isOOCalcLiveEdititable() {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.spreadsheet");
     }
 
     @Factory(value = "oopresentation_liveeditable", scope = ScopeType.SESSION)
-    public boolean isOOPresentationLiveEdititable() throws ClientException {
+    public boolean isOOPresentationLiveEdititable() {
         return isMimeTypeLiveEditable("application/vnd.oasis.opendocument.presentation");
     }
 
-    public boolean isCurrentDocumentLiveEditable() throws ClientException {
+    public boolean isCurrentDocumentLiveEditable() {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(), DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD);
     }
 
-    public boolean isCurrentDocumentLiveEditable(String schemaName, String fieldName) throws ClientException {
+    public boolean isCurrentDocumentLiveEditable(String schemaName, String fieldName) {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(), schemaName, fieldName);
     }
 
-    public boolean isCurrentDocumentLiveEditable(String propertyName) throws ClientException {
+    public boolean isCurrentDocumentLiveEditable(String propertyName) {
         return isDocumentLiveEditable(navigationContext.getCurrentDocument(), propertyName);
     }
 
     public boolean isDocumentLiveEditable(DocumentModel documentModel, String schemaName, String fieldName)
-            throws ClientException {
+            {
         return isDocumentLiveEditable(documentModel, schemaName + ":" + fieldName);
     }
 
-    public boolean isDocumentLiveEditable(DocumentModel documentModel, String propertyName) throws ClientException {
+    public boolean isDocumentLiveEditable(DocumentModel documentModel, String propertyName) {
         if (documentModel == null) {
             log.warn("cannot check live editable state of null DocumentModel");
             return false;

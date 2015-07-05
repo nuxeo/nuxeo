@@ -37,7 +37,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
 
     @Override
     public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
-            throws ClientException {
+            {
         String[] schemas = doc.getSchemas();
         for (String schema : schemas) {
             DataModel dm = doc.getDataModel(schema);
@@ -49,7 +49,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
     }
 
     protected void collectNoBlobProperty(String prefix, String name, Object value, List<DocumentProperty> props)
-            throws ClientException {
+            {
         if (value instanceof Map) {
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) value;
@@ -75,7 +75,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
 
     @SuppressWarnings("unchecked")
     protected void collectProperty(String prefix, String name, Object value, List<DocumentProperty> props)
-            throws ClientException {
+            {
         final String STRINGS_LIST_SEP = ";";
         if (value instanceof Map) {
             Map<String, Object> map = (Map<String, Object>) value;

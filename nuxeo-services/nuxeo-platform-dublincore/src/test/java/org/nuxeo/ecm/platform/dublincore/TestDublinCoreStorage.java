@@ -68,7 +68,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testCreationDateAndCreator() throws ClientException {
+    public void testCreationDateAndCreator() {
         DocumentModel childFile = new DocumentModelImpl("/", "file-007", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         assertNotNull(childFile2.getPropertyValue("dc:created"));
@@ -76,7 +76,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testModificationDate() throws ClientException {
+    public void testModificationDate() {
         DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
 
@@ -101,7 +101,7 @@ public class TestDublinCoreStorage {
 
     // Wait until we can have a real list management
     @Test
-    public void testContributors() throws ClientException {
+    public void testContributors() {
         DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
@@ -139,7 +139,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testLastContributor() throws ClientException {
+    public void testLastContributor() {
         DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         DocumentModel childFile2 = session.createDocument(childFile);
         DataModel dm = childFile2.getDataModel("dublincore");
@@ -204,7 +204,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() throws ClientException {
+    public void testContributorsAndModifiedDoesntChangeIfTheresNoChanges() {
         DocumentModel childFile = new DocumentModelImpl("/", "file-008", "File");
         childFile = session.createDocument(childFile);
         DataModel dm = childFile.getDataModel("dublincore");
@@ -224,7 +224,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testIssuedDate() throws ClientException {
+    public void testIssuedDate() {
         DocumentModel folder1 = new DocumentModelImpl("/", "testfolder1", "Folder");
         folder1 = session.createDocument(folder1);
         DocumentModel file1 = new DocumentModelImpl("/testfolder1", "testfile1", "File");
@@ -240,7 +240,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testProxySchemas() throws ClientException {
+    public void testProxySchemas() {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = new DocumentModelImpl("/", "file", "File");
@@ -254,7 +254,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testProxySchemasWithComplex() throws ClientException {
+    public void testProxySchemasWithComplex() {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = new DocumentModelImpl("/", "file", "File");
@@ -272,7 +272,7 @@ public class TestDublinCoreStorage {
     }
 
     @Test
-    public void testDisableListener() throws ClientException {
+    public void testDisableListener() {
         DocumentModel childFile = new DocumentModelImpl("/", "file-007", "File");
         childFile.setPropertyValue("dc:creator", "Bender");
         Date now = new Date();
@@ -283,7 +283,7 @@ public class TestDublinCoreStorage {
         assertEquals("Bender", childFile2.getPropertyValue("dc:creator"));
     }
 
-    private static EventProducer getEventProducer() throws ClientException {
+    private static EventProducer getEventProducer() {
         try {
             return Framework.getService(EventProducer.class);
         } catch (Exception e) {
@@ -311,7 +311,7 @@ public class TestDublinCoreStorage {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             folder = new DocumentModelImpl("/", "testfolder1", "Folder");
             folder = session.createDocument(folder);
             session.saveDocument(folder);

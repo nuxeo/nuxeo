@@ -48,7 +48,7 @@ public class DeleteTaskForDeletedDocumentListener implements EventListener {
     }
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
             DocumentEventContext context = (DocumentEventContext) event.getContext();
             DocumentModel dm = context.getSourceDocument();

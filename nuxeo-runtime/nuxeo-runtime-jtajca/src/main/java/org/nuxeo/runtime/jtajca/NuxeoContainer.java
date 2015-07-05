@@ -714,8 +714,7 @@ public class NuxeoContainer {
                     try {
                         TransactionHelper.lookupSynchronizationRegistry().registerInterposedSynchronization(
                                 synchronization);
-                    } catch (NamingException e) {
-                        ;
+                    } catch (NamingException e) {;
                     }
                 }
             };

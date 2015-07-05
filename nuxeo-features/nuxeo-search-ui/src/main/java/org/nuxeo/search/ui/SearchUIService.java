@@ -52,17 +52,17 @@ public interface SearchUIService {
      * @param title the title of the being saved search
      * @return the saved search DocumentModel
      */
-    DocumentModel saveSearch(CoreSession session, ContentViewState searchContentViewState, String title) throws ClientException;
+    DocumentModel saveSearch(CoreSession session, ContentViewState searchContentViewState, String title);
 
     /**
      * Returns the current user saved searches, located into its own user workspace.
      */
-    List<DocumentModel> getCurrentUserSavedSearches(CoreSession session) throws ClientException;
+    List<DocumentModel> getCurrentUserSavedSearches(CoreSession session);
 
     /**
      * Returns all the accessible saved searches except the ones for the current user.
      */
-    List<DocumentModel> getSharedSavedSearches(CoreSession session) throws ClientException;
+    List<DocumentModel> getSharedSavedSearches(CoreSession session);
 
     /**
      * Load the content view state for a given saved search.

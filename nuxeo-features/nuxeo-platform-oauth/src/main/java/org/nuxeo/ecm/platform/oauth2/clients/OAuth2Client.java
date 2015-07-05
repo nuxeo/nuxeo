@@ -80,7 +80,7 @@ public class OAuth2Client {
         return doc;
     }
 
-    static OAuth2Client fromDocumentModel(DocumentModel doc) throws ClientException {
+    static OAuth2Client fromDocumentModel(DocumentModel doc) {
         String name = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":name");
         String id = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":clientId");
         String secret = (String) doc.getPropertyValue(OAUTH2CLIENT_SCHEMA + ":clientSecret");

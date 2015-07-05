@@ -63,7 +63,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Override
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetEntry2() throws ClientException {
+    public void testGetEntry2() {
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
@@ -242,7 +242,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
     @Override
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetEntry3() throws ClientException {
+    public void testGetEntry3() {
         if (!HAS_DYNGROUP_SCHEMA) {
             return;
         }
@@ -300,7 +300,7 @@ public class TestLDAPPOSIXSession extends TestLDAPSession {
 
     @Override
     @Test
-    public void testGetMandatoryAttributes() throws ClientException {
+    public void testGetMandatoryAttributes() {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();

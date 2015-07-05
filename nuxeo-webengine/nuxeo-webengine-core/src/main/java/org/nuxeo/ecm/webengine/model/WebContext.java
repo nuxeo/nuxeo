@@ -454,6 +454,6 @@ public interface WebContext extends Adaptable {
      * @throws ClientException if the repository is not found.
      * @since 5.7.3
      */
-    void setRepositoryName(String repoName) throws ClientException;
+    void setRepositoryName(String repoName);
 
 }

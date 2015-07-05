@@ -47,7 +47,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
 
     @Override
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) {
         super.initTree(sid, coreSession, parameters, factory, configName, title);
         try {
             rootNode = new FSPublicationNode(rootPath, getTreeConfigName(), sid);
@@ -84,7 +84,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
         List<PublishedDocument> pubDocs = null;
         pubDocs = loadExistingPublishedDocumentFromIndex(docLoc);
         if (pubDocs == null) {
@@ -99,7 +99,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
     }
 
     private List<PublishedDocument> loadExistingPublishedDocumentFromIndex(DocumentLocation docLoc)
-            throws ClientException {
+            {
         File indexFile = new File(rootPath, INDEX_FILENAME);
         if (!indexFile.exists() || !indexFile.isFile()) {
             return null;
@@ -134,7 +134,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         return pubDocs;
     }
 
-    private void createIndex(List<PublishedDocument> pubDocs) throws ClientException {
+    private void createIndex(List<PublishedDocument> pubDocs) {
         File indexFile = new File(rootPath, INDEX_FILENAME);
         BufferedWriter writer = null;
         try {
@@ -156,7 +156,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    private void addToIndex(PublishedDocument pubDoc) throws ClientException {
+    private void addToIndex(PublishedDocument pubDoc) {
         File fileIndex = new File(rootPath, INDEX_FILENAME);
         File fileIndexTmp = new File(rootPath, INDEX_FILENAME_TMP);
 
@@ -208,7 +208,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    private void moveFile(File srcFile, File destFile) throws ClientException {
+    private void moveFile(File srcFile, File destFile) {
         try {
             FileUtils.moveFile(srcFile, destFile);
         } catch (IOException e) {
@@ -216,7 +216,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    private void removeFromIndex(PublishedDocument pubDoc) throws ClientException {
+    private void removeFromIndex(PublishedDocument pubDoc) {
         File fileIndex = new File(rootPath, INDEX_FILENAME);
         File fileIndexTmp = new File(rootPath, INDEX_FILENAME_TMP);
 
@@ -258,12 +258,12 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    public PublicationNode getNodeByPath(String path) throws ClientException {
+    public PublicationNode getNodeByPath(String path) {
         return new FSPublicationNode(path, getTreeConfigName(), getSessionId());
     }
 
     @Override
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         PublishedDocument pubDoc = super.publish(doc, targetNode);
         addToIndex(pubDoc);
         return pubDoc;
@@ -271,13 +271,13 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
 
     @Override
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         PublishedDocument pubDoc = super.publish(doc, targetNode, params);
         addToIndex(pubDoc);
         return pubDoc;
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) {
         File container = new File(targetNode.getPath());
         for (File child : container.listFiles()) {
             try {
@@ -288,7 +288,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    private void unpublish(DocumentModel doc, File file) throws ClientException, NotFSPublishedDocumentException {
+    private void unpublish(DocumentModel doc, File file) throws NotFSPublishedDocumentException {
         FSPublishedDocument pubDoc = new FSPublishedDocument(file);
         if (pubDoc.getSourceRepositoryName().equals(doc.getRepositoryName())
                 && pubDoc.getSourceDocumentRef().equals(doc.getRef())) {
@@ -297,7 +297,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         }
     }
 
-    public void unpublish(PublishedDocument pubDoc) throws ClientException {
+    public void unpublish(PublishedDocument pubDoc) {
         if (!accept(pubDoc)) {
             return;
         }

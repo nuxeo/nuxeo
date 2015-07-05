@@ -54,7 +54,7 @@ public class FavoritesAddRemoveTest {
     protected CoreSession userSession;
 
     @Test
-    public void addRemoveToFavoritesTest() throws ClientException {
+    public void addRemoveToFavoritesTest() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);

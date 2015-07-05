@@ -75,7 +75,7 @@ public class CoreInstance {
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName) {
         return openCoreSession(repositoryName, getPrincipal((String) null));
     }
 
@@ -89,7 +89,7 @@ public class CoreInstance {
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName, String username) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, String username) {
         return openCoreSession(repositoryName, getPrincipal(username));
     }
 
@@ -102,7 +102,7 @@ public class CoreInstance {
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSessionSystem(String repositoryName) throws ClientException {
+    public static CoreSession openCoreSessionSystem(String repositoryName) {
         return openCoreSession(repositoryName, getPrincipal((SecurityConstants.SYSTEM_USERNAME)));
     }
 
@@ -110,7 +110,7 @@ public class CoreInstance {
      * @deprecated since 5.9.3, use {@link #openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open(String repositoryName, Map<String, Serializable> context) throws ClientException {
+    public CoreSession open(String repositoryName, Map<String, Serializable> context) {
         return openCoreSession(repositoryName, getPrincipal(context));
     }
 
@@ -124,7 +124,7 @@ public class CoreInstance {
      * @return the session
      */
     public static CoreSession openCoreSession(String repositoryName, Map<String, Serializable> context)
-            throws ClientException {
+            {
         return openCoreSession(repositoryName, getPrincipal(context));
     }
 
@@ -138,7 +138,7 @@ public class CoreInstance {
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName, Principal principal) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, Principal principal) {
         if (principal instanceof NuxeoPrincipal) {
             return openCoreSession(repositoryName, (NuxeoPrincipal) principal);
         } else {
@@ -156,7 +156,7 @@ public class CoreInstance {
      * @return the session
      * @since 5.9.3
      */
-    public static CoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) throws ClientException {
+    public static CoreSession openCoreSession(String repositoryName, NuxeoPrincipal principal) {
         if (repositoryName == null) {
             RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
             repositoryName = repositoryManager.getDefaultRepository().getName();
@@ -164,7 +164,7 @@ public class CoreInstance {
         return getInstance().acquireCoreSession(repositoryName, principal);
     }
 
-    protected CoreSession acquireCoreSession(String repositoryName, NuxeoPrincipal principal) throws ClientException {
+    protected CoreSession acquireCoreSession(String repositoryName, NuxeoPrincipal principal) {
         CoreSession session = Framework.getLocalService(CoreSession.class);
         session.connect(repositoryName, principal);
         sessions.put(session.getSessionId(), new RegistrationInfo(session));
@@ -205,7 +205,7 @@ public class CoreInstance {
         session.destroy();
     }
 
-    protected static NuxeoPrincipal getPrincipal(Map<String, Serializable> map) throws ClientException {
+    protected static NuxeoPrincipal getPrincipal(Map<String, Serializable> map) {
         if (map == null) {
             return getPrincipal((String) null); // logged-in principal
         }
@@ -216,7 +216,7 @@ public class CoreInstance {
         return principal;
     }
 
-    protected static NuxeoPrincipal getPrincipal(String username) throws ClientException {
+    protected static NuxeoPrincipal getPrincipal(String username) {
         if (username != null) {
             if (SYSTEM_USERNAME.equals(username)) {
                 return new SystemPrincipal(null);
@@ -277,7 +277,7 @@ public class CoreInstance {
         });
     }
 
-    public void cleanupThisThread() throws ClientException {
+    public void cleanupThisThread() {
         ClientException errors = new ClientException("disconnecting from storage for you");
         for (RegistrationInfo each : CoreInstance.getInstance().getRegistrationInfosLive(true)) {
             each.session.destroy();

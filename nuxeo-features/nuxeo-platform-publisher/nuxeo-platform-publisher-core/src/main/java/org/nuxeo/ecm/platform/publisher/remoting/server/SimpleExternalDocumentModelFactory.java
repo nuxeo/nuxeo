@@ -41,7 +41,7 @@ public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDoc
         PublishedDocumentFactory {
 
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
 
         PathSegmentService pss = Framework.getService(PathSegmentService.class);
         doc.setPathInfo(targetNode.getPath(), "remote_doc_" + pss.generatePathSegment(doc));
@@ -64,14 +64,14 @@ public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDoc
     }
 
     /*
-     * public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) throws ClientException { if (pubDoc
+     * public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) { if (pubDoc
      * instanceof SimpleCorePublishedDocument) { SimpleCorePublishedDocument pubProxy = (SimpleCorePublishedDocument)
      * pubDoc; return pubProxy.getProxy(); } if (pubDoc instanceof ExternalCorePublishedDocument) {
      * ExternalCorePublishedDocument pubExt = (ExternalCorePublishedDocument) pubDoc; return pubExt.getDocumentModel();
      * } throw new ClientException( "factory can not unwrap this PublishedDocument"); }
      */
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         if (doc.isProxy()) {
             return new SimpleCorePublishedDocument(doc);
         }

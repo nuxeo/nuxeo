@@ -41,31 +41,29 @@ public interface PermissionProvider {
     /**
      * @return get the sorted list of UserVisiblePermission objects to be used in the permission management screen of
      *         the UI (be it web based, a rich client or any-thing else)
-     * @throws ClientException
      */
-    List<UserVisiblePermission> getUserVisiblePermissionDescriptors() throws ClientException;
+    List<UserVisiblePermission> getUserVisiblePermissionDescriptors();
 
     /**
      * @param typeName the name of a Core type of the document whose ACP is to be edited by the user
      * @return get the sorted list of UserVisiblePermission objects to be used in the permission management screen of
      *         the UI (be it web based, a rich client or any-thing else) ; if no specific permissions are registered for
      *         typeName, the default list is returned
-     * @throws ClientException
      */
-    List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName) throws ClientException;
+    List<UserVisiblePermission> getUserVisiblePermissionDescriptors(String typeName);
 
     /**
      * @param perm the name of a registered compound permission
      * @return the list of permission names of sub-permissions of 'perm'
      * @throws ClientException if 'perm' is not a registered permission
      */
-    String[] getSubPermissions(String perm) throws ClientException;
+    String[] getSubPermissions(String perm);
 
     /**
      * @param perm the name of a registered permission
      * @return the list of alias permissions to 'perm'
      * @throws ClientException if 'perm' is not a registered permission
      */
-    String[] getAliasPermissions(String perm) throws ClientException;
+    String[] getAliasPermissions(String perm);
 
 }

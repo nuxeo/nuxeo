@@ -103,7 +103,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
     }
 
     @Override
-    public DocumentModelList getTemplates(String targetTypeName) throws ClientException {
+    public DocumentModelList getTemplates(String targetTypeName) {
         if (documentManager == null) {
             log.error("Unable to access documentManager");
             return null;
@@ -130,7 +130,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
     }
 
     @Override
-    public DocumentModelList getTemplates() throws ClientException {
+    public DocumentModelList getTemplates() {
         if (targetType == null || targetType.equals("")) {
             targetType = typesTool.getSelectedType().getId();
         }
@@ -138,13 +138,13 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
     }
 
     @Override
-    public String createDocumentFromTemplate(DocumentModel doc, String templateId) throws ClientException {
+    public String createDocumentFromTemplate(DocumentModel doc, String templateId) {
         selectedTemplateId = templateId;
         return createDocumentFromTemplate(doc);
     }
 
     @Override
-    public String createDocumentFromTemplate(DocumentModel doc) throws ClientException {
+    public String createDocumentFromTemplate(DocumentModel doc) {
 
         if (documentManager == null) {
             log.error("Unable to access documentManager");
@@ -198,7 +198,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
     }
 
     @Override
-    public String createDocumentFromTemplate() throws ClientException {
+    public String createDocumentFromTemplate() {
         return createDocumentFromTemplate(changeableDocument);
     }
 

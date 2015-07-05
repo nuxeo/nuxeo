@@ -35,21 +35,20 @@ public interface ServerActions {
     /**
      * Returns the list of available {@link RepositoryLocation}s the user can connect to.
      */
-    List<Repository> getAvailableRepositories() throws ClientException;
+    List<Repository> getAvailableRepositories();
 
     /**
      * Stores the selected location.
      *
      * @return the page that displays the domains ( found at the selected {@link RepositoryLocation}.
      */
-    String selectRepository(String repositoryName) throws ClientException;
+    String selectRepository(String repositoryName);
 
     /**
      * Select and Stores the first location.
      *
      * @return the RepositoryLocation.
-     * @throws ClientException
      */
-    // RepositoryLocation selectFirstLocation() throws ClientException;
+    // RepositoryLocation selectFirstLocation();
 
 }

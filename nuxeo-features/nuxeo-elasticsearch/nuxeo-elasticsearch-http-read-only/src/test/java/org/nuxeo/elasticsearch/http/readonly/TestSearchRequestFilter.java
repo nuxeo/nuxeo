@@ -164,7 +164,7 @@ public class TestSearchRequestFilter {
             }
 
             @Override
-            public void setModel(DocumentModel documentModel) throws ClientException {
+            public void setModel(DocumentModel documentModel) {
 
             }
 
@@ -308,7 +308,7 @@ public class TestSearchRequestFilter {
             }
 
             @Override
-            public void setModel(DocumentModel documentModel) throws ClientException {
+            public void setModel(DocumentModel documentModel) {
 
             }
 

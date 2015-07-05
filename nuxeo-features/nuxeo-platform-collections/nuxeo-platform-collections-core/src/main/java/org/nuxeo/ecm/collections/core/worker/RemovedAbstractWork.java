@@ -83,9 +83,9 @@ public abstract class RemovedAbstractWork extends AbstractWork {
         setStatus("Updating Done");
     }
 
-    protected abstract void updateDocument(final DocumentModel d) throws ClientException;
+    protected abstract void updateDocument(final DocumentModel d);
 
-    private List<DocumentModel> getNextResults() throws ClientException {
+    private List<DocumentModel> getNextResults() {
         List<DocumentModel> results;
         Object[] parameters = new Object[1];
         parameters[0] = docId;

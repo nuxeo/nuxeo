@@ -54,7 +54,7 @@ public class TestPermissionFilter {
     CoreSession session;
 
     @Before
-    public void initializePermissions() throws ClientException {
+    public void initializePermissions() {
         DocumentModel root = session.getRootDocument();
         ACP acp = root.getACP();
         ACL acl = acp.getOrCreateACL();
@@ -66,7 +66,7 @@ public class TestPermissionFilter {
     }
 
     @Test
-    public void testIncludedPermissions() throws ClientException {
+    public void testIncludedPermissions() {
         try (CoreSession newSession = openSessionAs("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
@@ -87,7 +87,7 @@ public class TestPermissionFilter {
     }
 
     @Test
-    public void testExcludedPermissions() throws ClientException {
+    public void testExcludedPermissions() {
         try (CoreSession newSession = openSessionAs("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
@@ -108,7 +108,7 @@ public class TestPermissionFilter {
     }
 
     @Test
-    public void testIncludedAndExcludedPermissions() throws ClientException {
+    public void testIncludedAndExcludedPermissions() {
         try (CoreSession newSession = openSessionAs("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
@@ -131,7 +131,7 @@ public class TestPermissionFilter {
         }
     }
 
-    protected CoreSession openSessionAs(String username) throws ClientException {
+    protected CoreSession openSessionAs(String username) {
         return settings.openSessionAs(username);
     }
 

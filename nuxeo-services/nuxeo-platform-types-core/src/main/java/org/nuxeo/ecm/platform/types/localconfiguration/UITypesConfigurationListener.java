@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 public class UITypesConfigurationListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
             return;
         }

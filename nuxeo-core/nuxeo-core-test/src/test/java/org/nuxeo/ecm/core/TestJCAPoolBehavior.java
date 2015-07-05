@@ -202,12 +202,12 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     }
 
     @Test
-    public void doesntLeakWithTx() throws ClientException {
+    public void doesntLeakWithTx() {
         checkSessionLeak();
     }
 
     @Test
-    public void doesntLeakWithoutTx() throws ClientException {
+    public void doesntLeakWithoutTx() {
         TransactionHelper.commitOrRollbackTransaction();
         try {
             checkSessionLeak();
@@ -216,7 +216,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
         }
     }
 
-    protected void checkSessionLeak() throws ClientException {
+    protected void checkSessionLeak() {
         closeSession();
         int count = threadAllocatedConnectionsCount();
         try (CoreSession session = openSessionAs("jdoe")) {
@@ -226,7 +226,7 @@ public class TestJCAPoolBehavior extends TXSQLRepositoryTestCase {
     }
 
     @Test
-    public void doesntReleaseBeforeCommit() throws ClientException {
+    public void doesntReleaseBeforeCommit() {
         TransactionHelper.commitOrRollbackTransaction();
         assertEquals(0, activeConnectionCount());
         assertEquals(0, threadAllocatedConnectionsCount());

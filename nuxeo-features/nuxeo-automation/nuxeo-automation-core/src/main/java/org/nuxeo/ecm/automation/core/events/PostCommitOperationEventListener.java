@@ -35,7 +35,7 @@ public class PostCommitOperationEventListener implements PostCommitFilteringEven
     }
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         EventHandlerRegistry registry = Framework.getLocalService(EventHandlerRegistry.class);
         boolean processEvents = false;
         for (String name : registry.getPostCommitEventNames()) {

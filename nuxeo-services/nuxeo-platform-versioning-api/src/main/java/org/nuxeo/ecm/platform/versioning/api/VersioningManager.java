@@ -32,7 +32,7 @@ public interface VersioningManager {
      * @param doc the document
      * @return a list of version increment options available for the given document
      */
-    VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc) throws ClientException;
+    VersionIncEditOptions getVersionIncEditOptions(DocumentModel doc);
 
     /**
      * Gets the label for the current version of a document, for the UI.
@@ -40,7 +40,7 @@ public interface VersioningManager {
      * @param doc the document
      * @return the version label
      */
-    String getVersionLabel(DocumentModel doc) throws ClientException;
+    String getVersionLabel(DocumentModel doc);
 
     /**
      * Returns the property name to use when setting the major version for this document type.
@@ -65,7 +65,7 @@ public interface VersioningManager {
      * @deprecated since 5.4
      */
     @Deprecated
-    DocumentModel incrementMinor(DocumentModel doc) throws ClientException;
+    DocumentModel incrementMinor(DocumentModel doc);
 
     /**
      * Increments the major version of a document and sets the minor to 0.
@@ -74,6 +74,6 @@ public interface VersioningManager {
      * @deprecated since 5.4
      */
     @Deprecated
-    DocumentModel incrementMajor(DocumentModel doc) throws ClientException;
+    DocumentModel incrementMajor(DocumentModel doc);
 
 }

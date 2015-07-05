@@ -55,7 +55,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
 
     @Override
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         if (params != null && params.containsKey(RENDITION_NAME_PARAMETER_KEY)) {
             String renditionName = params.get(RENDITION_NAME_PARAMETER_KEY);
             if (!StringUtils.isEmpty(renditionName)) {
@@ -85,7 +85,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
     }
 
     @Override
-    protected DocumentModel getLiveDocument(CoreSession session, DocumentModel proxy) throws ClientException {
+    protected DocumentModel getLiveDocument(CoreSession session, DocumentModel proxy) {
         if (!proxy.hasFacet(RENDITION_FACET)) {
             return super.getLiveDocument(session, proxy);
         }
@@ -110,7 +110,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
 
     }
 
-    protected RenditionService getRenditionService() throws ClientException {
+    protected RenditionService getRenditionService() {
         if (renditionService == null) {
             try {
                 renditionService = Framework.getService(RenditionService.class);
@@ -135,7 +135,7 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             ACP acp = new ACPImpl();
             session.setACP(docRef, acp, true);
         }

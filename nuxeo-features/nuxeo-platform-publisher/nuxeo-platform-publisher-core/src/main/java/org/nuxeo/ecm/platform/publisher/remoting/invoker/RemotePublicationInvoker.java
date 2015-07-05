@@ -31,6 +31,6 @@ public interface RemotePublicationInvoker {
 
     void init(String baseURL, String userName, String password, RemotePublisherMarshaler marshaler);
 
-    Object invoke(String methodName, List<Object> params) throws ClientException;
+    Object invoke(String methodName, List<Object> params);
 
 }

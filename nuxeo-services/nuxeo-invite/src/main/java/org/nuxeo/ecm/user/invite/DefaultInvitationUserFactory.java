@@ -35,13 +35,13 @@ public class DefaultInvitationUserFactory implements InvitationUserFactory {
 
     @Override
     public void doPostUserCreation(CoreSession session, DocumentModel registrationDoc, NuxeoPrincipal user)
-            throws ClientException, UserRegistrationException {
+            throws UserRegistrationException {
         // Nothing to do in the default implementation
     }
 
     @Override
     public NuxeoPrincipal doCreateUser(CoreSession session, DocumentModel registrationDoc,
-            UserRegistrationConfiguration configuration) throws ClientException, UserRegistrationException {
+            UserRegistrationConfiguration configuration) throws UserRegistrationException {
         UserManager userManager = Framework.getService(UserManager.class);
 
         String email = (String) registrationDoc.getPropertyValue(configuration.getUserInfoEmailField());

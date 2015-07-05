@@ -51,12 +51,12 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     private static final Log log = LogFactory.getLog(TrashServiceImpl.class);
 
     @Override
-    public boolean folderAllowsDelete(DocumentModel folder) throws ClientException {
+    public boolean folderAllowsDelete(DocumentModel folder) {
         return folder.getCoreSession().hasPermission(folder.getRef(), SecurityConstants.REMOVE_CHILDREN);
     }
 
     @Override
-    public boolean checkDeletePermOnParents(List<DocumentModel> docs) throws ClientException {
+    public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -75,7 +75,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     @Override
     public boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies)
-            throws ClientException {
+            {
         if (docs.isEmpty()) {
             return false;
         }
@@ -85,7 +85,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     @Override
-    public boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal) throws ClientException {
+    public boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -94,7 +94,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return info.docs.size() == docs.size();
     }
 
-    public boolean canUndelete(List<DocumentModel> docs) throws ClientException {
+    public boolean canUndelete(List<DocumentModel> docs) {
         if (docs.isEmpty()) {
             return false;
         }
@@ -104,7 +104,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     protected TrashInfo getInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies,
-            boolean checkDeleted) throws ClientException {
+            boolean checkDeleted) {
         TrashInfo info = new TrashInfo();
         info.docs = new ArrayList<DocumentModel>(docs.size());
         if (docs.isEmpty()) {
@@ -182,7 +182,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
 
     @Override
     public TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies,
-            boolean checkDeleted) throws ClientException {
+            boolean checkDeleted) {
         TrashInfo info = getInfo(docs, principal, checkProxies, checkDeleted);
         // Keep only common tree roots (see NXP-1411)
         // This is not strictly necessary with Nuxeo Core >= 1.3.2
@@ -208,7 +208,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     @Override
-    public DocumentModel getAboveDocument(DocumentModel doc, Set<Path> rootPaths) throws ClientException {
+    public DocumentModel getAboveDocument(DocumentModel doc, Set<Path> rootPaths) {
         CoreSession session = doc.getCoreSession();
         while (underOneOf(doc.getPath(), rootPaths)) {
             doc = session.getParentDocument(doc.getRef());
@@ -226,7 +226,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     @Override
-    public void trashDocuments(List<DocumentModel> docs) throws ClientException {
+    public void trashDocuments(List<DocumentModel> docs) {
         if (docs.isEmpty()) {
             return;
         }
@@ -257,7 +257,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     @Override
-    public void purgeDocuments(CoreSession session, List<DocumentRef> docRefs) throws ClientException {
+    public void purgeDocuments(CoreSession session, List<DocumentRef> docRefs) {
         if (docRefs.isEmpty()) {
             return;
         }
@@ -266,7 +266,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     @Override
-    public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) throws ClientException {
+    public Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) {
         Set<DocumentRef> undeleted = new HashSet<DocumentRef>();
         if (docs.isEmpty()) {
             return undeleted;
@@ -293,7 +293,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return parentRefs;
     }
 
-    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc) throws ClientException {
+    protected void notifyEvent(CoreSession session, String eventId, DocumentModel doc) {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         ctx.setCategory(DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
@@ -309,7 +309,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
      * Undeletes a list of documents. Session is not saved. Log about non-deletable documents.
      */
     protected Set<DocumentRef> undeleteDocumentList(CoreSession session, List<DocumentModel> docs)
-            throws ClientException {
+            {
         Set<DocumentRef> undeleted = new HashSet<DocumentRef>();
         for (DocumentModel doc : docs) {
             DocumentRef docRef = doc.getRef();
@@ -328,7 +328,7 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
      * Undeletes ancestors of a document. Session is not saved. Stops as soon as an ancestor is not undeletable.
      */
     protected void undeleteAncestors(CoreSession session, DocumentRef docRef, Set<DocumentRef> undeleted)
-            throws ClientException {
+            {
         for (DocumentRef ancestorRef : session.getParentDocumentRefs(docRef)) {
             // getting allowed state transitions and following a transition need
             // ReadLifeCycle and WriteLifeCycle
@@ -391,13 +391,13 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         return name;
     }
 
-    protected void trashDocument(CoreSession session, DocumentModel doc) throws ClientException {
+    protected void trashDocument(CoreSession session, DocumentModel doc) {
         String name = mangleName(doc);
         session.move(doc.getRef(), doc.getParentRef(), name);
         session.followTransition(doc, LifeCycleConstants.DELETE_TRANSITION);
     }
 
-    protected void undeleteDocument(CoreSession session, DocumentModel doc) throws ClientException {
+    protected void undeleteDocument(CoreSession session, DocumentModel doc) {
         String name = doc.getName();
         String newName = unmangleName(doc);
         if (!newName.equals(name)) {

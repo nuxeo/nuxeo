@@ -46,32 +46,28 @@ public interface LockActions extends Serializable {
     /**
      * Gets the lock of the current document.
      *
-     * @throws ClientException
      */
-    String lockCurrentDocument() throws ClientException;
+    String lockCurrentDocument();
 
     /**
      * Releases the lock of the current document.
      *
-     * @throws ClientException
      */
-    String unlockCurrentDocument() throws ClientException;
+    String unlockCurrentDocument();
 
     /**
      * Gets the lock of the document.
      *
      * @param document the document of which lock is to be taken
-     * @throws ClientException
      */
-    String lockDocument(DocumentModel document) throws ClientException;
+    String lockDocument(DocumentModel document);
 
     /**
      * Releases the lock of the document.
      *
      * @param document the document of which lock is to be released
-     * @throws ClientException
      */
-    String unlockDocument(DocumentModel document) throws ClientException;
+    String unlockDocument(DocumentModel document);
 
     /**
      * Tests if the user can get the lock of a document.
@@ -113,17 +109,15 @@ public interface LockActions extends Serializable {
      *
      * @param document the document for which this information is needed
      * @return the user who took the look and the time when he/she did this in a map
-     * @throws ClientException
      */
-    Map<String, Serializable> getLockDetails(DocumentModel document) throws ClientException;
+    Map<String, Serializable> getLockDetails(DocumentModel document);
 
     /**
      * Gets the details about the lock of the current document, who did the lock and when the lock took place.
      *
      * @return the user who took the look and the time when he/she did this in a map
-     * @throws ClientException
      */
-    Map<String, Serializable> getCurrentDocLockDetails() throws ClientException;
+    Map<String, Serializable> getCurrentDocLockDetails();
 
     void resetLockState();
 

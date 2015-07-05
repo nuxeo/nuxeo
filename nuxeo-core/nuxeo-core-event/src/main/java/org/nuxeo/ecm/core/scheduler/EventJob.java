@@ -67,7 +67,7 @@ public class EventJob implements Job {
     }
 
     @SuppressWarnings("unchecked")
-    protected void execute(JobDataMap dataMap) throws LoginException, ClientException {
+    protected void execute(JobDataMap dataMap) throws LoginException {
         String eventId = dataMap.getString("eventId");
         String eventCategory = dataMap.getString("eventCategory");
         String username = dataMap.getString("username");

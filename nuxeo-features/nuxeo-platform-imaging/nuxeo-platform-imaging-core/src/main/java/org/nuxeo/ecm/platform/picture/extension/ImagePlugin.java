@@ -40,7 +40,7 @@ public class ImagePlugin extends AbstractFileImporter {
     }
 
     @Override
-    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) {
         doc.setPropertyValue("file:content", (Serializable) content);
     }
 

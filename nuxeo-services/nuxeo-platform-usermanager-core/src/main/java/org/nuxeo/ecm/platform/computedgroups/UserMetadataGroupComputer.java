@@ -38,7 +38,7 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
 
     private String xpath;
 
-    public UserMetadataGroupComputer(String xpath, String groupPattern) throws ClientException {
+    public UserMetadataGroupComputer(String xpath, String groupPattern) {
         this.xpath = xpath;
         this.groupPattern = groupPattern;
 

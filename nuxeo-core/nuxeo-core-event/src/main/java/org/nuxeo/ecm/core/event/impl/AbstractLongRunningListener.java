@@ -53,7 +53,7 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
     protected static final Log log = LogFactory.getLog(AbstractLongRunningListener.class);
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
 
         Map<String, Object> data = new HashMap<String, Object>();
 
@@ -116,8 +116,7 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
      * @return true of processing should continue, false otherwise
      * @throws ClientExceptions
      */
-    protected abstract boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data)
-            throws ClientException;
+    protected abstract boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data);
 
     /**
      * Will be executed in a non transactional context
@@ -129,19 +128,15 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
      * @param eventNames list of event names
      * @param data an map that may have been filled by handleEventPreprocessing
      * @return true of processing should continue, false otherwise
-     * @throws ClientException
      */
-    protected abstract boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data)
-            throws ClientException;
+    protected abstract boolean handleEventLongRunning(List<String> eventNames, Map<String, Object> data);
 
     /**
      * Finish processing in a dedicated Transaction
      *
      * @param events {@link EventBundle} received
      * @param data an map that may have been filled by handleEventPreprocessing and handleEventLongRunning
-     * @throws ClientException
      */
-    protected abstract void handleEventPostprocessing(EventBundle events, Map<String, Object> data)
-            throws ClientException;
+    protected abstract void handleEventPostprocessing(EventBundle events, Map<String, Object> data);
 
 }

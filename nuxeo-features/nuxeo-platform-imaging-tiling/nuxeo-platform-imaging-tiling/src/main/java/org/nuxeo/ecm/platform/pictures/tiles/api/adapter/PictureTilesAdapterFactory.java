@@ -76,7 +76,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     }
 
     private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc, String blobProperty)
-            throws ClientException {
+            {
         if (blobProperty != null) {
             try {
                 return getPictureTilesAdapter(doc, blobProperty);
@@ -87,7 +87,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         return getPictureTilesAdapterForPicture(doc);
     }
 
-    private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc) throws ClientException {
+    private PictureTilesAdapter getPictureTilesAdapterForPicture(DocumentModel doc) {
         if (doc.hasSchema("picture")) {
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             // try OriginalJpeg view xpath
@@ -97,7 +97,7 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
         return null;
     }
 
-    private PictureTilesAdapter getPictureTilesAdapter(DocumentModel doc, String blobProperty) throws ClientException {
+    private PictureTilesAdapter getPictureTilesAdapter(DocumentModel doc, String blobProperty) {
         Blob blob = (Blob) doc.getPropertyValue(blobProperty);
         if (blob != null) {
             PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, blobProperty);

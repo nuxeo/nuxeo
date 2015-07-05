@@ -60,7 +60,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
     protected ContentViewRegistry contentViewReg = new ContentViewRegistry();
 
     @Override
-    public ContentView getContentView(String name) throws ClientException {
+    public ContentView getContentView(String name) {
         ContentViewDescriptor desc = contentViewReg.getContentView(name);
         if (desc == null) {
             return null;
@@ -202,7 +202,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
 
     @Override
     public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            DocumentModel searchDocument, Object... parameters) throws ClientException {
+            DocumentModel searchDocument, Object... parameters) {
         ContentViewDescriptor contentViewDesc = contentViewReg.getContentView(name);
         if (contentViewDesc == null) {
             return null;
@@ -218,7 +218,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
     }
 
     public Map<String, Serializable> resolvePageProviderProperties(Map<String, String> stringProps)
-            throws ClientException {
+            {
         // resolve properties
         Map<String, Serializable> resolvedProps = new HashMap<String, Serializable>();
         for (Map.Entry<String, String> prop : stringProps.entrySet()) {
@@ -318,7 +318,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
     }
 
     @Override
-    public ContentView restoreContentView(ContentViewState contentViewState) throws ClientException {
+    public ContentView restoreContentView(ContentViewState contentViewState) {
         if (contentViewState == null) {
             return null;
         }

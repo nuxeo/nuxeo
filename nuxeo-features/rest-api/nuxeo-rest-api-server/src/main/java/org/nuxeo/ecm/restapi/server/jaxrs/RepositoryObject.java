@@ -45,32 +45,31 @@ public class RepositoryObject extends DefaultObject {
      *
      * @param adapterName
      * @return
-     * @throws ClientException
      * @since 5.8
      */
     @Path("path/@{adapterName}")
-    public Object getRootPathAdapter(@PathParam("adapterName") String adapterName) throws ClientException {
+    public Object getRootPathAdapter(@PathParam("adapterName") String adapterName) {
         DocumentModel rootDocument = getContext().getCoreSession().getRootDocument();
 
         return ctx.newAdapter(newObject("Document", rootDocument), adapterName);
     }
 
     @Path("path{docPath:(/(?:(?!/@).)*)}")
-    public Object getDocsByPath(@PathParam("docPath") String docPath) throws ClientException {
+    public Object getDocsByPath(@PathParam("docPath") String docPath) {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new PathRef(docPath));
         return newObject("Document", doc);
     }
 
     @Path("id/{id}")
-    public Object getDocsById(@PathParam("id") String id) throws ClientException {
+    public Object getDocsById(@PathParam("id") String id) {
         CoreSession session = getContext().getCoreSession();
         DocumentModel doc = session.getDocument(new IdRef(id));
         return newObject("Document", doc);
     }
 
     @Path("bulk")
-    public Object getBulkDocuments(@MatrixParam("id") List<String> ids) throws ClientException {
+    public Object getBulkDocuments(@MatrixParam("id") List<String> ids) {
         CoreSession session = getContext().getCoreSession();
         List<DocumentModel> docs = new ArrayList<>(ids.size());
         for (String loopid : ids) {

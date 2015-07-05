@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
 
     @Test
-    public void shouldNotRetrieveSimpleConfiguration() throws ClientException {
+    public void shouldNotRetrieveSimpleConfiguration() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
 
         SimpleConfiguration simpleConfiguration = localConfigurationService.getConfiguration(SimpleConfiguration.class,
@@ -67,7 +67,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void shouldRetrieveSimpleConfigurationOnWorkspace() throws ClientException {
+    public void shouldRetrieveSimpleConfigurationOnWorkspace() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(workspace);
 
@@ -79,7 +79,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void shouldRetrieveSimpleConfigurationFromChildDocument() throws ClientException {
+    public void shouldRetrieveSimpleConfigurationFromChildDocument() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(workspace);
 
@@ -93,7 +93,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void shouldRetrieveParametersFromSimpleConfiguration() throws ClientException {
+    public void shouldRetrieveParametersFromSimpleConfiguration() {
         DocumentModel workspace = session.getDocument(PARENT_WORKSPACE_REF);
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("key1", "value1");
@@ -115,7 +115,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void shouldMergeSimpleConfigurations() throws ClientException {
+    public void shouldMergeSimpleConfigurations() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         Map<String, String> parentParameters = new HashMap<String, String>();
         parentParameters.put("key1", "value1");
@@ -145,7 +145,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void childSimpleConfigurationShouldOverriderParentSimpleConfiguration() throws ClientException {
+    public void childSimpleConfigurationShouldOverriderParentSimpleConfiguration() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         Map<String, String> parentParameters = new HashMap<String, String>();
         parentParameters.put("key1", "parentValue1");
@@ -175,7 +175,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void shouldBeAbleToPutNewParameter() throws ClientException {
+    public void shouldBeAbleToPutNewParameter() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
@@ -196,7 +196,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void shouldBeAbleToPutNewParameters() throws ClientException {
+    public void shouldBeAbleToPutNewParameters() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
@@ -222,7 +222,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test
-    public void newParametersShouldBeSavedOnTheDocument() throws ClientException {
+    public void newParametersShouldBeSavedOnTheDocument() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 
@@ -263,7 +263,7 @@ public class TestSimpleConfiguration extends AbstractSimpleConfigurationTest {
     }
 
     @Test(expected = DocumentSecurityException.class)
-    public void nonAuthorizedUserShouldNotBeAbleToSaveConfiguration() throws ClientException {
+    public void nonAuthorizedUserShouldNotBeAbleToSaveConfiguration() {
         DocumentModel parentWorkspace = session.getDocument(PARENT_WORKSPACE_REF);
         initializeSimpleConfiguration(parentWorkspace);
 

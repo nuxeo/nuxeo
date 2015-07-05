@@ -40,7 +40,7 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
 
     protected boolean isPending;
 
-    public SimpleCorePublishedDocument(DocumentModel doc) throws ClientException {
+    public SimpleCorePublishedDocument(DocumentModel doc) {
         if (!doc.isProxy()) {
             throw new ClientException("DocumentModel is not a proxy");
         }

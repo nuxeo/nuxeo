@@ -52,7 +52,7 @@ public class RenditionsRemover extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
 
         String targetUUID = (String) proxy.getPropertyValue(RENDITION_SOURCE_VERSIONABLE_ID_PROPERTY);
 
@@ -81,14 +81,14 @@ public class RenditionsRemover extends UnrestrictedSessionRunner {
         }
     }
 
-    protected void notifyRenditionPublished(List<String> removedProxyIds) throws ClientException {
+    protected void notifyRenditionPublished(List<String> removedProxyIds) {
         Map<String, Serializable> options = new HashMap<String, Serializable>();
         options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
         notifyEvent(RENDITION_PROXY_PUBLISHED, proxy, options);
     }
 
     protected void notifyEvent(String eventId, DocumentModel doc, Map<String, Serializable> options)
-            throws ClientException {
+            {
         CoreSession session = doc.getCoreSession();
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         if (options != null) {

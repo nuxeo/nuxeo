@@ -131,7 +131,7 @@ public class CommentService extends DefaultAdapter {
     }
 
     @DELETE
-    public Response deleteComment() throws ClientException {
+    public Response deleteComment() {
         DocumentObject dobj = (DocumentObject) getTarget();
         CoreSession session = dobj.getCoreSession();
         FormData form = ctx.getForm();
@@ -158,7 +158,7 @@ public class CommentService extends DefaultAdapter {
      * @return the comment created
      */
     protected DocumentModel createCommentDocument(CoreSession session, DocumentModel target, DocumentModel comment)
-            throws ClientException {
+            {
         return getCommentManager().createComment(target, comment);
     }
 
@@ -170,7 +170,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void publishComment(CoreSession session, DocumentModel target, DocumentModel comment)
-            throws ClientException {
+            {
         getCommentsModerationService().publishComment(session, comment);
     }
 
@@ -180,7 +180,7 @@ public class CommentService extends DefaultAdapter {
      * @param target commented document
      * @param comment comment itself
      */
-    protected void deleteComment(DocumentModel target, DocumentModel comment) throws ClientException {
+    protected void deleteComment(DocumentModel target, DocumentModel comment) {
         getCommentManager().deleteComment(target, comment);
     }
 
@@ -191,7 +191,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void rejectComment(CoreSession session, DocumentModel target, DocumentModel comment)
-            throws ClientException {
+            {
         getCommentsModerationService().rejectComment(session, target, comment.getId());
         getCommentManager().deleteComment(target, comment);
     }
@@ -203,7 +203,7 @@ public class CommentService extends DefaultAdapter {
      * @param comment comment itself
      */
     protected void approveComent(CoreSession session, DocumentModel target, DocumentModel comment)
-            throws ClientException {
+            {
         getCommentsModerationService().approveComent(session, target, comment.getId());
     }
 

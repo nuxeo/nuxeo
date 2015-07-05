@@ -29,7 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface EditorLinkActions {
 
-    String searchDocuments() throws ClientException;
+    String searchDocuments();
 
     List<DocumentModel> getSearchDocumentResults();
 

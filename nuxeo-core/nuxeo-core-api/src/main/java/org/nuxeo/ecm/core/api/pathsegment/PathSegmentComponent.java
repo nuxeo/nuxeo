@@ -101,7 +101,7 @@ public class PathSegmentComponent extends DefaultComponent implements PathSegmen
     }
 
     @Override
-    public String generatePathSegment(DocumentModel doc) throws ClientException {
+    public String generatePathSegment(DocumentModel doc) {
         if (recompute) {
             recompute();
             recompute = false;
@@ -109,7 +109,7 @@ public class PathSegmentComponent extends DefaultComponent implements PathSegmen
         return service.generatePathSegment(doc);
     }
 
-    protected void recompute() throws ClientException {
+    protected void recompute() {
         Class<? extends PathSegmentService> klass;
         if (contribs.isEmpty()) {
             klass = PathSegmentServiceDefault.class;
@@ -126,7 +126,7 @@ public class PathSegmentComponent extends DefaultComponent implements PathSegmen
     }
 
     @Override
-    public String generatePathSegment(String s) throws ClientException {
+    public String generatePathSegment(String s) {
         if (recompute) {
             recompute();
             recompute = false;

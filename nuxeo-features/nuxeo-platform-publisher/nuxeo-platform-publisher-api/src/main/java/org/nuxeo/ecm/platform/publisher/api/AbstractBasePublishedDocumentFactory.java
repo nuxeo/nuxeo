@@ -52,7 +52,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
     protected EventProducer eventProducer;
 
     public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
-            throws ClientException {
+            {
         this.coreSession = coreSession;
         this.parameters = parameters;
         this.validatorsRule = validatorsRule;
@@ -61,7 +61,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         }
     }
 
-    public void init(CoreSession coreSession, Map<String, String> parameters) throws ClientException {
+    public void init(CoreSession coreSession, Map<String, String> parameters) {
         init(coreSession, null, parameters);
     }
 
@@ -86,7 +86,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         return getParameter(TARGET_PUBLISHED_DOCUMENT_STATE);
     }
 
-    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) {
         return publishDocument(doc, targetNode, null);
     }
 
@@ -97,7 +97,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         return false;
     }
 
-    public DocumentModel snapshotDocumentBeforePublish(DocumentModel doc) throws ClientException {
+    public DocumentModel snapshotDocumentBeforePublish(DocumentModel doc) {
 
         if (isSnapshotingEnabled() && needToVersionDocument(doc)) {
             if (doc.isCheckedOut()) {
@@ -119,17 +119,17 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         return validatorsRule;
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
     }
 
-    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
     }
 
-    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(PublishedDocument publishedDocument) {
         return false;
     }
 
-    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+    public boolean hasValidationTask(PublishedDocument publishedDocument) {
         return false;
     }
 
@@ -147,7 +147,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
     }
 
     protected void notifyEvent(String eventId, Map<String, Serializable> properties, String comment, String category,
-            DocumentModel dm, CoreSession coreSession) throws ClientException {
+            DocumentModel dm, CoreSession coreSession) {
         // Default category
         if (category == null) {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;
@@ -168,7 +168,7 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         getEventProducer().fireEvent(event);
     }
 
-    protected EventProducer getEventProducer() throws ClientException {
+    protected EventProducer getEventProducer() {
         if (eventProducer == null) {
             eventProducer = Framework.getService(EventProducer.class);
         }

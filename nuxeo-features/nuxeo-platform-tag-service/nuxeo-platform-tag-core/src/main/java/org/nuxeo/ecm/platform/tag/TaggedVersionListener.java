@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TaggedVersionListener implements PostCommitFilteringEventListener {
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         for (Event event : events) {
             if (acceptEvent(event)) {
                 handleEvent(event);
@@ -55,7 +55,7 @@ public class TaggedVersionListener implements PostCommitFilteringEventListener {
         }
     }
 
-    protected void handleEvent(Event event) throws ClientException {
+    protected void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             String name = event.getName();

@@ -76,36 +76,36 @@ public class DocumentRelationService implements DocumentRelationManager {
         options.put(RelationEvents.STATEMENTS_EVENT_KEY, (Serializable) statements);
     }
 
-    private QNameResource getNodeFromDocumentModel(DocumentModel model) throws ClientException {
+    private QNameResource getNodeFromDocumentModel(DocumentModel model) {
         return (QNameResource) getRelationManager().getResource(RelationConstants.DOCUMENT_NAMESPACE, model, null);
     }
 
     @Override
     public void addRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate, boolean inverse)
-            throws ClientException {
+            {
         addRelation(session, from, getNodeFromDocumentModel(to), predicate, inverse);
     }
 
     @Override
-    public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate) throws ClientException {
+    public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate) {
         addRelation(session, from, to, predicate, false);
     }
 
     @Override
     public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse)
-            throws ClientException {
+            {
         addRelation(session, from, to, predicate, inverse, false);
     }
 
     @Override
     public void addRelation(CoreSession session, DocumentModel from, Node to, String predicate, boolean inverse,
-            boolean includeStatementsInEvents) throws ClientException {
+            boolean includeStatementsInEvents) {
         addRelation(session, from, to, predicate, inverse, includeStatementsInEvents, null);
     }
 
     @Override
     public void addRelation(CoreSession session, DocumentModel from, Node toResource, String predicate,
-            boolean inverse, boolean includeStatementsInEvents, String comment) throws ClientException {
+            boolean inverse, boolean includeStatementsInEvents, String comment) {
         Graph graph = getRelationManager().getGraph(RelationConstants.GRAPH_NAME, session);
         QNameResource fromResource = getNodeFromDocumentModel(from);
 
@@ -184,13 +184,13 @@ public class DocumentRelationService implements DocumentRelationManager {
 
     @Override
     public void deleteRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate)
-            throws ClientException {
+            {
         deleteRelation(session, from, to, predicate, false);
     }
 
     @Override
     public void deleteRelation(CoreSession session, DocumentModel from, DocumentModel to, String predicate,
-            boolean includeStatementsInEvents) throws ClientException {
+            boolean includeStatementsInEvents) {
         QNameResource fromResource = (QNameResource) getRelationManager().getResource(
                 RelationConstants.DOCUMENT_NAMESPACE, from, null);
         QNameResource toResource = (QNameResource) getRelationManager().getResource(
@@ -208,13 +208,13 @@ public class DocumentRelationService implements DocumentRelationManager {
     }
 
     @Override
-    public void deleteRelation(CoreSession session, Statement stmt) throws ClientException {
+    public void deleteRelation(CoreSession session, Statement stmt) {
         deleteRelation(session, stmt, false);
     }
 
     @Override
     public void deleteRelation(CoreSession session, Statement stmt, boolean includeStatementsInEvents)
-            throws ClientException {
+            {
 
         // notifications
         Map<String, Serializable> options = new HashMap<String, Serializable>();

@@ -35,9 +35,9 @@ public interface DocumentTemplatesActions {
     /**
      * @return list of DocumentModels of available templates of currently selected type.
      */
-    DocumentModelList getTemplates() throws ClientException;
+    DocumentModelList getTemplates();
 
-    DocumentModelList getTemplates(String targetTypeName) throws ClientException;
+    DocumentModelList getTemplates(String targetTypeName);
 
     /**
      * Factory accessor on the getter.
@@ -50,17 +50,17 @@ public interface DocumentTemplatesActions {
      * @param doc the DocumentModel with edited data
      * @param templateId the template id
      */
-    String createDocumentFromTemplate(DocumentModel doc, String templateId) throws ClientException;
+    String createDocumentFromTemplate(DocumentModel doc, String templateId);
 
     /**
      * Creates a Document from a template using the selectedTemplateId.
      */
-    String createDocumentFromTemplate(DocumentModel doc) throws ClientException;
+    String createDocumentFromTemplate(DocumentModel doc);
 
     /**
      * Creates a Document from a template using the selectedTemplateId and the changeableDocument.
      */
-    String createDocumentFromTemplate() throws ClientException;
+    String createDocumentFromTemplate();
 
     /**
      * Getter of the selected template id.

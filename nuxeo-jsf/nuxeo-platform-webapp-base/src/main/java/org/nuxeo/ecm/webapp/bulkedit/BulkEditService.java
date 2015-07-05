@@ -42,7 +42,6 @@ public interface BulkEditService {
      * @param sourceDoc the doc where to get the properties to copy
      * @param targetDocs the docs where to set the properties
      */
-    void updateDocuments(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs)
-            throws ClientException;
+    void updateDocuments(CoreSession session, DocumentModel sourceDoc, List<DocumentModel> targetDocs);
 
 }

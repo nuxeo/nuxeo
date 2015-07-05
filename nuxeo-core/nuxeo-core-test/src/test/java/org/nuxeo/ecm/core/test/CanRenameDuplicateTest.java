@@ -30,7 +30,7 @@ public class CanRenameDuplicateTest {
     CoreSession repo;
 
     @Test
-    public void duplicateAreRenamed() throws ClientException {
+    public void duplicateAreRenamed() {
         DocumentModel model = repo.createDocumentModel("/", "aFile", "File");
 
         DocumentModel original = repo.createDocument(model);
@@ -48,7 +48,7 @@ public class CanRenameDuplicateTest {
     }
 
     @Test
-    public void profileUnderLoad() throws ClientException {
+    public void profileUnderLoad() {
         Assume.assumeTrue(Boolean.parseBoolean(Framework.getProperty("profile", "false")));
         SimonManager.enable();
         try {
@@ -70,7 +70,7 @@ public class CanRenameDuplicateTest {
     EventServiceAdmin admin;
 
     @Test
-    public void profileUnderLoadWithoutDuplicateChecker() throws ClientException {
+    public void profileUnderLoadWithoutDuplicateChecker() {
         Assume.assumeTrue(Boolean.parseBoolean(Framework.getProperty("profile", "false")));
         admin.setListenerEnabledFlag("duplicatedNameFixer", false);
         profileUnderLoad();

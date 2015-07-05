@@ -63,7 +63,7 @@ public class PageProviderQueryBuilder {
      * Create a ES request from a PP whereClause
      */
     public static QueryBuilder makeQuery(final DocumentModel model, final WhereClauseDefinition whereClause,
-            final Object[] params, final boolean useNativeQuery) throws ClientException {
+            final Object[] params, final boolean useNativeQuery) {
         assert (model != null);
         assert (whereClause != null);
         NxqlQueryConverter.ExpressionBuilder eb = new NxqlQueryConverter.ExpressionBuilder("AND");

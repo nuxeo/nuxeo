@@ -35,7 +35,7 @@ public class TagsLoader implements DocumentLoader {
 
     @Override
     public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
-            throws ClientException {
+            {
         CoreSession session = rs.getDocumentManager();
         TagService srv = Framework.getLocalService(TagService.class);
         if (srv == null) {

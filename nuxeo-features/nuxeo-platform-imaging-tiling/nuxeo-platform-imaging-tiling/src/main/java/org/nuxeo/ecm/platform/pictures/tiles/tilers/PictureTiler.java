@@ -35,5 +35,5 @@ public interface PictureTiler {
     String getName();
 
     PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight, int maxTiles,
-            int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration) throws ClientException;
+            int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration);
 }

@@ -35,7 +35,7 @@ public interface TreeActions {
     /**
      * Returns tree roots according to current document first accessible parent.
      */
-    List<DocumentTreeNode> getTreeRoots() throws ClientException;
+    List<DocumentTreeNode> getTreeRoots();
 
     String getCurrentDocumentPath();
 

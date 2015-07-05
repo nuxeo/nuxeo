@@ -58,7 +58,7 @@ public class GroupComputerDescriptor implements Serializable {
         return enabled;
     }
 
-    public GroupComputer getComputer() throws ClientException {
+    public GroupComputer getComputer() {
         if (groupComputer == null) {
             if (computerClass != null) {
                 try {

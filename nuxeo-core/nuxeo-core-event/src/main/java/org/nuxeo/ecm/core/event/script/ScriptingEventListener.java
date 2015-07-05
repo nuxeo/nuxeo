@@ -31,7 +31,7 @@ public class ScriptingEventListener implements EventListener {
     }
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         Bindings bindings = new SimpleBindings();
         bindings.put("event", event);
         bindings.put("context", event.getContext());

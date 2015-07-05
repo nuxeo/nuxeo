@@ -76,7 +76,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
     }
 
     @Test
-    public void testAddManyDocsToNewCollectionAndRemove() throws ClientException {
+    public void testAddManyDocsToNewCollectionAndRemove() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -129,7 +129,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
      * Tests that we cannot add a document of type Collection to a document of Collection.
      */
     @Test
-    public void testCanAddToNotCollection() throws ClientException {
+    public void testCanAddToNotCollection() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);
@@ -154,7 +154,7 @@ public class CollectionAddRemoveTest extends CollectionTestCase {
      * Tests that we cannot add a document to a document which is not a document of type Collection.
      */
     @Test
-    public void testCanAddCollectionNotCollection() throws ClientException {
+    public void testCanAddCollectionNotCollection() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);

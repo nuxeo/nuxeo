@@ -78,7 +78,7 @@ public class NuxeoOAuthToken implements OAuthToken {
         this.creationDate = Calendar.getInstance();
     }
 
-    public NuxeoOAuthToken(DocumentModel entry) throws ClientException {
+    public NuxeoOAuthToken(DocumentModel entry) {
         this.appId = (String) entry.getProperty(SCHEMA, "appId");
         this.callbackUrl = (String) entry.getProperty(SCHEMA, "callbackUrl");
         this.nuxeoLogin = (String) entry.getProperty(SCHEMA, "nuxeoLogin");
@@ -97,7 +97,7 @@ public class NuxeoOAuthToken implements OAuthToken {
         this.clientId = (String) entry.getProperty(SCHEMA, "clientId");
     }
 
-    public void updateEntry(DocumentModel entry) throws ClientException {
+    public void updateEntry(DocumentModel entry) {
         entry.setProperty(SCHEMA, "appId", this.appId);
         entry.setProperty(SCHEMA, "callbackUrl", this.callbackUrl);
         entry.setProperty(SCHEMA, "nuxeoLogin", this.nuxeoLogin);

@@ -93,7 +93,7 @@ public class BlobObject extends DefaultObject {
         return super.getAdapter(adapter);
     }
 
-    protected Blob getBlob() throws ClientException {
+    protected Blob getBlob() {
         if (bh != null) {
             if (StringUtils.isBlank(fieldPath) || fieldPath.equals("0")) {
                 return bh.getBlob();
@@ -106,7 +106,7 @@ public class BlobObject extends DefaultObject {
     }
 
     @GET
-    public Object doGet(@Context Request request) throws ClientException {
+    public Object doGet(@Context Request request) {
         try {
             Blob blob = getBlob();
             if (blob == null) {

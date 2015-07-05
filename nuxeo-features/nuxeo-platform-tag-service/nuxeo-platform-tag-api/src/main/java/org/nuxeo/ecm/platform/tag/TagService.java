@@ -50,7 +50,7 @@ public interface TagService {
      * @param label the tag
      * @param username the user associated to the tagging
      */
-    void tag(CoreSession session, String docId, String label, String username) throws ClientException;
+    void tag(CoreSession session, String docId, String label, String username);
 
     /**
      * Untags a document of the given tag
@@ -60,7 +60,7 @@ public interface TagService {
      * @param label the tag, or {@code null} for all tags
      * @param username the user associated to the tagging
      */
-    void untag(CoreSession session, String docId, String label, String username) throws ClientException;
+    void untag(CoreSession session, String docId, String label, String username);
 
     /**
      * Gets the tags applied to a document by a given user, or by all users.
@@ -70,7 +70,7 @@ public interface TagService {
      * @param username the user name, or {@code null} for all users
      * @return the list of tags
      */
-    List<Tag> getDocumentTags(CoreSession session, String docId, String username) throws ClientException;
+    List<Tag> getDocumentTags(CoreSession session, String docId, String username);
 
     /**
      * Gets the tags applied to a document by a given user, or by all users.
@@ -84,15 +84,14 @@ public interface TagService {
      * @return the list of tags
      * @since 6.0
      */
-    List<Tag> getDocumentTags(CoreSession session, String docId, String username, boolean useCore)
-            throws ClientException;
+    List<Tag> getDocumentTags(CoreSession session, String docId, String username, boolean useCore);
 
     /**
      * Removes all the tags applied to a document.
      *
      * @since 5.7.3
      */
-    void removeTags(CoreSession session, String docId) throws ClientException;
+    void removeTags(CoreSession session, String docId);
 
     /**
      * Copy all the tags applied to the source document to the destination document.
@@ -103,7 +102,7 @@ public interface TagService {
      * @param dstDocId the destination document id
      * @since 5.7.3
      */
-    void copyTags(CoreSession session, String srcDocId, String dstDocId) throws ClientException;
+    void copyTags(CoreSession session, String srcDocId, String dstDocId);
 
     /**
      * Replace all the existing tags applied on the destination document by the ones applied on the source document.
@@ -112,7 +111,7 @@ public interface TagService {
      * @param dstDocId the destination document id
      * @since 5.7.3
      */
-    void replaceTags(CoreSession session, String srcDocId, String dstDocId) throws ClientException;
+    void replaceTags(CoreSession session, String srcDocId, String dstDocId);
 
     /**
      * Gets the documents to which a tag is applied.
@@ -122,7 +121,7 @@ public interface TagService {
      * @param username the user name, or {@code null} for all users
      * @return the set of document ids
      */
-    List<String> getTagDocumentIds(CoreSession session, String label, String username) throws ClientException;
+    List<String> getTagDocumentIds(CoreSession session, String label, String username);
 
     /**
      * Gets the tag cloud for a set of documents (tags with weight corresponding to their popularity).
@@ -138,7 +137,7 @@ public interface TagService {
      *            {@code TRUE} for logarithmic 0-100 normalization
      * @return the cloud (a list of weighted tags)
      */
-    List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize) throws ClientException;
+    List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize);
 
     /**
      * Gets suggestions for a given tag label prefix.
@@ -148,6 +147,6 @@ public interface TagService {
      * @param username the user name, or {@code null} for all users
      * @return a list of tags
      */
-    List<Tag> getSuggestions(CoreSession session, String label, String username) throws ClientException;
+    List<Tag> getSuggestions(CoreSession session, String label, String username);
 
 }

@@ -27,7 +27,7 @@ public class DummyBeforeModificationListener implements EventListener {
      * Called on aboutToCreate and beforeDocumentModification events.
      */
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
         // record previous title
         DocumentModel previous = (DocumentModel) context.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);

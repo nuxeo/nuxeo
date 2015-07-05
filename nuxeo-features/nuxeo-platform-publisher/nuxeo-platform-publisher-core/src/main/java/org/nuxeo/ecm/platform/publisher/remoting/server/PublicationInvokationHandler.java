@@ -29,6 +29,6 @@ public interface PublicationInvokationHandler {
 
     void init(RemotePublisherMarshaler marshaler);
 
-    String invoke(String methodDate, String params) throws ClientException;
+    String invoke(String methodDate, String params);
 
 }

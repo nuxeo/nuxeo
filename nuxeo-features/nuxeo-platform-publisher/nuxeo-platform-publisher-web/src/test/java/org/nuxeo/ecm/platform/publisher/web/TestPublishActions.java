@@ -49,7 +49,7 @@ public class TestPublishActions {
     private ResourcesAccessorBean resourcesAccessor;
 
     @Test
-    public void testGetPathFragments() throws ClientException {
+    public void testGetPathFragments() {
         // Create file in standard domain
         DocumentModel fileModel = documentManager.createDocumentModel("/default-domain/workspaces/", "myfile", "File");
         fileModel = documentManager.createDocument(fileModel);

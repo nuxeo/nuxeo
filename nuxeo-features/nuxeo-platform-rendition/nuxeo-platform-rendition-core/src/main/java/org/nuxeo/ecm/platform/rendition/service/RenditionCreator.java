@@ -90,7 +90,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         DocumentModel versionDocument = session.getDocument(versionDocumentRef);
         DocumentModel rendition = createRenditionDocument(versionDocument);
         removeBlobs(rendition);
@@ -118,7 +118,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         detachedDendition = rendition;
     }
 
-    protected DocumentModel createRenditionDocument(DocumentModel versionDocument) throws ClientException {
+    protected DocumentModel createRenditionDocument(DocumentModel versionDocument) {
         String doctype = versionDocument.getType();
         String renditionMimeType = renditionBlob.getMimeType();
         if (versionDocument.getAdapter(BlobHolder.class) instanceof DocumentStringBlobHolder
@@ -154,18 +154,18 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         return rendition;
     }
 
-    protected void removeBlobs(DocumentModel rendition) throws ClientException {
+    protected void removeBlobs(DocumentModel rendition) {
         if (rendition.hasSchema(FILES_SCHEMA)) {
             rendition.setPropertyValue(FILES_FILES_PROPERTY, new ArrayList<Map<String, Serializable>>());
         }
     }
 
-    protected void updateMainBlob(DocumentModel rendition) throws ClientException {
+    protected void updateMainBlob(DocumentModel rendition) {
         BlobHolder bh = rendition.getAdapter(BlobHolder.class);
         bh.setBlob(renditionBlob);
     }
 
-    private void updateIconAndSizeFields(DocumentModel rendition) throws ClientException {
+    private void updateIconAndSizeFields(DocumentModel rendition) {
         if (!rendition.hasSchema("common")) {
             return;
         }
@@ -183,7 +183,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition.setPropertyValue("common:size", renditionBlob.getLength());
     }
 
-    protected void giveReadRightToUser(DocumentModel rendition) throws ClientException {
+    protected void giveReadRightToUser(DocumentModel rendition) {
         ACP acp = new ACPImpl();
         ACL acl = new ACLImpl();
         acp.addACL(acl);
@@ -192,7 +192,7 @@ public class RenditionCreator extends UnrestrictedSessionRunner {
         rendition.setACP(acp, true);
     }
 
-    protected void setCorrectVersion(DocumentModel rendition, DocumentModel versionDocument) throws ClientException {
+    protected void setCorrectVersion(DocumentModel rendition, DocumentModel versionDocument) {
         Long minorVersion = (Long) versionDocument.getPropertyValue("uid:minor_version"); // -
                                                                                           // 1L;
         rendition.setPropertyValue("uid:minor_version", minorVersion);

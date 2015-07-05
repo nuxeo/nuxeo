@@ -193,12 +193,12 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     @Deprecated
     @Override
-    public String editDocument() throws ClientException {
+    public String editDocument() {
         navigationContext.setChangeableDocument(navigationContext.getCurrentDocument());
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument(), "edit");
     }
 
-    public String getFileName(DocumentModel doc) throws ClientException {
+    public String getFileName(DocumentModel doc) {
         String name = null;
         if (filename != null && !"".equals(filename)) {
             name = filename;
@@ -221,7 +221,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     }
 
     @Override
-    public void download(DocumentView docView) throws ClientException {
+    public void download(DocumentView docView) {
         if (docView == null) {
             return;
         }
@@ -277,12 +277,12 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     @Deprecated
     @Override
-    public String downloadFromList() throws ClientException {
+    public String downloadFromList() {
         return null;
     }
 
     @Override
-    public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs) throws ClientException {
+    public String updateDocument(DocumentModel doc, Boolean restoreCurrentTabs) {
         String tabId = null;
         String subTabId = null;
         boolean restoreTabs = Boolean.TRUE.equals(restoreCurrentTabs);
@@ -316,25 +316,25 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     }
 
     // kept for BBB
-    protected String updateDocument(DocumentModel doc) throws ClientException {
+    protected String updateDocument(DocumentModel doc) {
         return updateDocument(doc, restoreCurrentTabs);
     }
 
     @Override
-    public String updateCurrentDocument() throws ClientException {
+    public String updateCurrentDocument() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return updateDocument(currentDocument);
     }
 
     @Deprecated
     @Override
-    public String updateDocument() throws ClientException {
+    public String updateDocument() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         return updateDocument(changeableDocument);
     }
 
     @Override
-    public String updateDocumentAsNewVersion() throws ClientException {
+    public String updateDocumentAsNewVersion() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         changeableDocument.putContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
@@ -347,13 +347,13 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     }
 
     @Override
-    public String createDocument() throws ClientException {
+    public String createDocument() {
         Type docType = typesTool.getSelectedType();
         return createDocument(docType.getId());
     }
 
     @Override
-    public String createDocument(String typeName) throws ClientException {
+    public String createDocument(String typeName) {
         Type docType = typeManager.getType(typeName);
         // we cannot use typesTool as intermediary since the DataModel callback
         // will alter whatever type we set
@@ -366,7 +366,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     }
 
     @Override
-    public String saveDocument() throws ClientException {
+    public String saveDocument() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         return saveDocument(changeableDocument);
     }
@@ -375,7 +375,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     protected String parentDocumentPath;
 
     @Override
-    public String saveDocument(DocumentModel newDocument) throws ClientException {
+    public String saveDocument(DocumentModel newDocument) {
         // Document has already been created if it has an id.
         // This will avoid creation of many documents if user hit create button
         // too many times.
@@ -414,7 +414,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
     }
 
     @Override
-    public boolean getWriteRight() throws ClientException {
+    public boolean getWriteRight() {
         // TODO: WRITE is a high level compound permission (i.e. more like a
         // user profile), public methods of the Nuxeo framework should only
         // check atomic / specific permissions such as WRITE_PROPERTIES,
@@ -458,7 +458,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
 
     @Override
     @Observer(EventNames.BEFORE_DOCUMENT_CHANGED)
-    public void followTransition(DocumentModel changedDocument) throws ClientException {
+    public void followTransition(DocumentModel changedDocument) {
         String transitionToFollow = (String) changedDocument.getContextData(ScopeType.REQUEST,
                 LIFE_CYCLE_TRANSITION_KEY);
         if (transitionToFollow != null) {
@@ -482,7 +482,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
      * @since 7.3
      */
     @WebRemote
-    public List<AppLink> getAppLinks(String docId, String blobXPath) throws ClientException {
+    public List<AppLink> getAppLinks(String docId, String blobXPath) {
         DocumentRef docRef = new IdRef(docId);
         DocumentModel doc = documentManager.getDocument(docRef);
         Serializable value = doc.getPropertyValue(blobXPath);

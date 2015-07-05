@@ -136,17 +136,15 @@ public interface DashBoardItem extends Serializable {
      * Returns JSON representation of the item
      *
      * @return
-     * @throws ClientException
      */
-    JSONObject asJSON() throws ClientException;
+    JSONObject asJSON();
 
     /**
      * Return the link url to the target Document
      *
      * @param includeWorkflowTab
      * @return
-     * @throws ClientException
      */
-    String getDocumentLink(boolean includeWorkflowTab) throws ClientException;
+    String getDocumentLink(boolean includeWorkflowTab);
 
 }

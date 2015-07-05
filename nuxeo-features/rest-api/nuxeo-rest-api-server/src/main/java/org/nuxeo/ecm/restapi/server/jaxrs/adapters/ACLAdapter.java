@@ -32,7 +32,7 @@ import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 public class ACLAdapter extends DefaultAdapter {
 
     @GET
-    public ACP doGetACP() throws ClientException {
+    public ACP doGetACP() {
         DefaultObject target = (DefaultObject) getTarget();
         DocumentModel doc = target.getAdapter(DocumentModel.class);
 

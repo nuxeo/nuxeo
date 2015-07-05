@@ -68,7 +68,7 @@ public class Select2DirectoryActionsBean implements Serializable {
         this.directoryName = directoryName;
     }
 
-    public DocumentModel getCreationDirectoryEntry(String directoryName) throws ClientException {
+    public DocumentModel getCreationDirectoryEntry(String directoryName) {
         if (newDirectoryEntry == null || (directoryName != null && !directoryName.equals(getDirectoryName()))) {
             setDirectoryName(directoryName);
             DirectoryService dirService = DirectoryHelper.getDirectoryService();
@@ -78,7 +78,7 @@ public class Select2DirectoryActionsBean implements Serializable {
         return newDirectoryEntry;
     }
 
-    public String getCreationDirectoryEntryLayout(String directoryName) throws ClientException {
+    public String getCreationDirectoryEntryLayout(String directoryName) {
         DirectoryUI currentDirectoryInfo = directoryUIManager.getDirectoryInfo(directoryName);
         if (currentDirectoryInfo != null) {
             return currentDirectoryInfo.getLayout();
@@ -86,7 +86,7 @@ public class Select2DirectoryActionsBean implements Serializable {
         return null;
     }
 
-    public void createDirectoryEntry() throws ClientException {
+    public void createDirectoryEntry() {
         DirectoryService dirService = DirectoryHelper.getDirectoryService();
         String dirName = getDirectoryName();
         try (Session dirSession = dirService.open(dirName)) {
@@ -108,7 +108,7 @@ public class Select2DirectoryActionsBean implements Serializable {
         }
     }
 
-    public void cancelCreateDirectoryEntry() throws ClientException {
+    public void cancelCreateDirectoryEntry() {
         reset();
     }
 

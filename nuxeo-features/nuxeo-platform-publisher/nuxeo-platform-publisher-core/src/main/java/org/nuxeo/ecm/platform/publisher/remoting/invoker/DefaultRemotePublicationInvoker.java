@@ -68,7 +68,7 @@ public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker
         }
     }
 
-    public Object invoke(String methodName, List<Object> params) throws ClientException {
+    public Object invoke(String methodName, List<Object> params) {
 
         String marshaledData = marshaler.marshallParameters(params);
 
@@ -79,7 +79,7 @@ public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker
         return marshaler.unMarshallResult(result);
     }
 
-    protected String doInvoke(String methodName, String marshaledData) throws ClientException {
+    protected String doInvoke(String methodName, String marshaledData) {
 
         if (useTestMode) {
             return testPublicationHandler.invoke(methodName, marshaledData);
@@ -95,7 +95,7 @@ public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker
         }
     }
 
-    protected String doHttpCall(String methodName, String marshaledData) throws ClientException, IOException {
+    protected String doHttpCall(String methodName, String marshaledData) throws IOException {
 
         HttpClient httpClient = new DefaultHttpClient();
 

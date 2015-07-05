@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 public class DummyInlineListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         event.getContext().setProperty("foo", "bar");
     }
 

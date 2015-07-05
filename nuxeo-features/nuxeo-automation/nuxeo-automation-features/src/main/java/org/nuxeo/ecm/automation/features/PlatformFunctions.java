@@ -70,7 +70,7 @@ public class PlatformFunctions extends CoreFunctions {
     }
 
     protected String getEmail(NuxeoPrincipal principal, String userSchemaName, String userEmailFieldName)
-            throws ClientException {
+            {
         if (principal == null) {
             return null;
         }
@@ -177,7 +177,7 @@ public class PlatformFunctions extends CoreFunctions {
      * @exception xxxxx if in values there is at least one object type not compatible with the collection list
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> concatenateIntoList(List<T> list, Object... values) throws ClientException {
+    public <T> List<T> concatenateIntoList(List<T> list, Object... values) {
 
         if (list == null) {
             throw new ClientException("First parameter must not be null");
@@ -215,7 +215,7 @@ public class PlatformFunctions extends CoreFunctions {
     /**
      * Idem than concatenateInto except that a new list is created.
      */
-    public <T> List<T> concatenateValuesAsNewList(Object... values) throws ClientException {
+    public <T> List<T> concatenateValuesAsNewList(Object... values) {
 
         List<T> result = new ArrayList<T>();
         return concatenateIntoList(result, values);

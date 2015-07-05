@@ -61,7 +61,7 @@ public class DocumentModelToJSON implements PropertyVisitor {
         return result;
     }
 
-    public JSONObject run(DocumentModel doc) throws ClientException {
+    public JSONObject run(DocumentModel doc) {
         result = new JSONObject();
         doc.accept(this, result);
         return result;
