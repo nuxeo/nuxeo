@@ -221,7 +221,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
     @Override
     public List<DiffDisplayBlock> getDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc,
-            DocumentModel rightDoc) throws ClientException {
+            DocumentModel rightDoc) {
 
         String leftDocType = leftDoc.getType();
         String rightDocType = rightDoc.getType();
@@ -260,12 +260,12 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     public List<DiffDisplayBlock> getDefaultDiffDisplayBlocks(DocumentDiff docDiff, DocumentModel leftDoc,
-            DocumentModel rightDoc) throws ClientException {
+            DocumentModel rightDoc) {
 
         return getDiffDisplayBlocks(getDefaultDiffBlockDefinitions(docDiff), docDiff, leftDoc, rightDoc);
     }
 
-    protected List<String> getNearestSuperTypeDiffDisplay(String docTypeName) throws ClientException {
+    protected List<String> getNearestSuperTypeDiffDisplay(String docTypeName) {
 
         List<String> diffDisplay = getDiffDisplay(docTypeName);
         Type docType = getSchemaManager().getDocumentType(docTypeName);
@@ -280,7 +280,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     protected List<String> getNearestSuperTypeDiffDisplay(String leftDocTypeName, String rightDocTypeName)
-            throws ClientException {
+            {
 
         List<String> diffDisplay = null;
 
@@ -456,7 +456,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     protected final List<DiffBlockDefinition> getDefaultDiffBlockDefinitions(DocumentDiff docDiff)
-            throws ClientException {
+            {
 
         List<DiffBlockDefinition> diffBlockDefs = new ArrayList<DiffBlockDefinition>();
 
@@ -537,7 +537,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     protected final List<DiffDisplayBlock> getDiffDisplayBlocks(List<DiffBlockDefinition> diffBlockDefinitions,
-            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException {
+            DocumentDiff docDiff, DocumentModel leftDoc, DocumentModel rightDoc) {
 
         List<DiffDisplayBlock> diffDisplayBlocks = new ArrayList<DiffDisplayBlock>();
 
@@ -554,7 +554,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     protected final DiffDisplayBlock getDiffDisplayBlock(DiffBlockDefinition diffBlockDefinition, DocumentDiff docDiff,
-            DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException {
+            DocumentModel leftDoc, DocumentModel rightDoc) {
 
         Map<String, Map<String, PropertyDiffDisplay>> leftValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
         Map<String, Map<String, PropertyDiffDisplay>> rightValue = new HashMap<String, Map<String, PropertyDiffDisplay>>();
@@ -723,11 +723,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @param fieldName the field name
      * @param doc the doc
      * @param styleClass the style class
-     * @throws ClientException the client exception
      */
     protected void setFieldDiffDisplay(Serializable property, PropertyDiff fieldDiff, boolean isDisplayAllItems,
             boolean isDisplayItemIndexes, Map<String, Map<String, PropertyDiffDisplay>> value, String schemaName,
-            String fieldName, DocumentModel doc, String styleClass) throws ClientException {
+            String fieldName, DocumentModel doc, String styleClass) {
 
         PropertyDiffDisplay fieldDiffDisplay = getFieldDiffDisplay(property, fieldDiff, isDisplayAllItems,
                 isDisplayItemIndexes, false, styleClass);
@@ -742,7 +741,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     protected final void putMimeTypeDiffDisplay(String schemaName, String fieldName,
-            Map<String, PropertyDiffDisplay> schemaMap, DocumentModel doc) throws ClientException {
+            Map<String, PropertyDiffDisplay> schemaMap, DocumentModel doc) {
 
         if ("note".equals(schemaName) && "note".equals(fieldName) && !schemaMap.containsKey("mime_type")) {
             schemaMap.put("mime_type", new PropertyDiffDisplayImpl((Serializable) doc.getProperty("note", "mime_type")));
@@ -751,7 +750,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
     protected final PropertyDiffDisplay getFieldDiffDisplay(Serializable property, PropertyDiff propertyDiff,
             boolean isDisplayAllItems, boolean isDisplayItemIndexes, boolean mustApplyStyleClass, String styleClass)
-            throws ClientException {
+            {
 
         if (property == null) {
             String fieldDiffDisplayStyleClass = PropertyDiffDisplay.DEFAULT_STYLE_CLASS;
@@ -775,7 +774,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     }
 
     protected final PropertyDiffDisplay getFinalFieldDiffDisplay(Serializable fieldDiffDisplay,
-            PropertyDiff propertyDiff, boolean mustApplyStyleClass, String styleClass) throws ClientException {
+            PropertyDiff propertyDiff, boolean mustApplyStyleClass, String styleClass) {
 
         String finalFieldDiffDisplayStyleClass = PropertyDiffDisplay.DEFAULT_STYLE_CLASS;
         if (mustApplyStyleClass && propertyDiff != null) {
@@ -824,11 +823,10 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @param isDisplayItemIndexes the is display item indexes
      * @param styleClass the style class
      * @return the list field diff display
-     * @throws ClientException the client exception
      */
     protected final PropertyDiffDisplay getListFieldDiffDisplay(List<Serializable> listProperty,
             ListPropertyDiff listPropertyDiff, boolean isDisplayAllItems, boolean isDisplayItemIndexes,
-            String styleClass) throws ClientException {
+            String styleClass) {
 
         // Get list property indexes
         // By default: only items that are different (ie. held by the
@@ -851,7 +849,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
     protected final PropertyDiffDisplay getComplexListFieldDiffDisplay(List<Serializable> listProperty,
             List<Integer> listPropertyIndexes, ListPropertyDiff listPropertyDiff, boolean isDisplayAllItems,
-            boolean isDisplayItemIndexes, String styleClass) throws ClientException {
+            boolean isDisplayItemIndexes, String styleClass) {
 
         if (listPropertyIndexes.isEmpty()) {
             // TODO: add differenceType?
@@ -945,7 +943,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
     protected final PropertyDiffDisplay getFieldXPaths(String propertyName, PropertyDiff propertyDiff,
             Serializable leftProperty, Serializable rightProperty, boolean isDisplayAllItems,
-            boolean isDisplayItemIndexes, List<DiffFieldItemDefinition> complexFieldItemDefs) throws ClientException {
+            boolean isDisplayItemIndexes, List<DiffFieldItemDefinition> complexFieldItemDefs) {
 
         PropertyDiffDisplay fieldXPaths = null;
         if (propertyDiff == null) {
@@ -1047,7 +1045,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     protected final PropertyDiffDisplay getComplexListXPaths(String propertyName, List<Integer> listPropertyIndexes,
             ListPropertyDiff listPropertyDiff, List<Serializable> leftListProperty,
             List<Serializable> rightListProperty, boolean isDisplayAllItems, boolean isDisplayItemIndexes)
-            throws ClientException {
+            {
 
         if (listPropertyIndexes.isEmpty()) {
             // TODO: add differenceType?
@@ -1165,12 +1163,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @param rightComplexProperty the right complex property
      * @param isDisplayAllItems the is display all items
      * @param isDisplayItemIndexes the is display item indexes
-     * @throws ClientException the client exception
      */
     protected void setComplexPropertyXPaths(Map<String, Serializable> complexPropertyXPaths,
             String complexFieldItemName, String subPropertyFullName, Map<String, PropertyDiff> complexPropertyDiffMap,
             Map<String, Serializable> leftComplexProperty, Map<String, Serializable> rightComplexProperty,
-            boolean isDisplayAllItems, boolean isDisplayItemIndexes) throws ClientException {
+            boolean isDisplayAllItems, boolean isDisplayItemIndexes) {
 
         Serializable leftComplexPropertyItemValue = null;
         Serializable rightComplexPropertyItemValue = null;
@@ -1222,7 +1219,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @return the list property if the {@code property} is not null, null otherwise
      * @throws ClientException if the {@code property} is not a list.
      */
-    protected List<Serializable> getListPropertyIfNotNull(Serializable property) throws ClientException {
+    protected List<Serializable> getListPropertyIfNotNull(Serializable property) {
 
         if (property != null) {
             if (!isListType(property)) {
@@ -1253,7 +1250,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @return the complex property if the {@code property} is not null, null otherwise
      * @throws ClientException if the {@code property} is not a list.
      */
-    protected Map<String, Serializable> getComplexPropertyIfNotNull(Serializable property) throws ClientException {
+    protected Map<String, Serializable> getComplexPropertyIfNotNull(Serializable property) {
 
         if (property != null) {
             if (!isComplexType(property)) {
@@ -1269,7 +1266,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
     // submethods)
     protected final WidgetDefinition getWidgetDefinition(String category, String propertyName, String propertyType,
             Field field, List<DiffFieldItemDefinition> complexFieldItemDefs, boolean isContentDiffLinksWidget)
-            throws ClientException {
+            {
 
         boolean isGeneric = false;
         boolean isCloned = false;
@@ -1428,7 +1425,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
     protected final WidgetDefinition[] getSubWidgetDefinitions(String category, String propertyName,
             String propertyType, Field field, List<DiffFieldItemDefinition> complexFieldItemDefs,
-            boolean isDisplayItemIndexes, boolean isContentDiffLinks) throws ClientException {
+            boolean isDisplayItemIndexes, boolean isContentDiffLinks) {
 
         WidgetDefinition[] subWidgetDefs = null;
         // Complex
@@ -1457,7 +1454,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
     protected final WidgetDefinition[] getComplexSubWidgetDefinitions(String category, String propertyName,
             Field field, List<DiffFieldItemDefinition> complexFieldItemDefs, boolean isDisplayItemIndexes,
-            boolean isContentDiffLinks) throws ClientException {
+            boolean isContentDiffLinks) {
 
         WidgetDefinition[] subWidgetDefs;
         int subWidgetIndex = isDisplayItemIndexes ? 1 : 0;
@@ -1583,7 +1580,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @return the schema manager
      * @throws ClientException if the schema manager cannot be found
      */
-    protected final SchemaManager getSchemaManager() throws ClientException {
+    protected final SchemaManager getSchemaManager() {
 
         SchemaManager schemaManager;
         try {
@@ -1603,7 +1600,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * @return the layout store service
      * @throws ClientException if the layout store service cannot be found
      */
-    protected final LayoutStore getLayoutStore() throws ClientException {
+    protected final LayoutStore getLayoutStore() {
 
         LayoutStore layoutStore;
         try {

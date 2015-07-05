@@ -64,7 +64,7 @@ public class TestContentDiffAdapter {
      * plain text files.
      */
     @Test
-    public void testPlainTextFilesContentDiff() throws ClientException {
+    public void testPlainTextFilesContentDiff() {
 
         // Get left and right plain text docs
         DocumentModel leftDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getLeftPlainTextDocPath()));
@@ -91,7 +91,7 @@ public class TestContentDiffAdapter {
      * HTML files.
      */
     @Test
-    public void testHTMLFilesContentDiff() throws ClientException {
+    public void testHTMLFilesContentDiff() {
 
         // Get left and right HTML docs
         DocumentModel leftDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getLeftHTMLDocPath()));
@@ -119,7 +119,7 @@ public class TestContentDiffAdapter {
      * Office files using a text conversion.
      */
     @Test
-    public void testOfficeFilesTextConversionContentDiff() throws ClientException {
+    public void testOfficeFilesTextConversionContentDiff() {
 
         // Get left and right Office docs
         DocumentModel leftDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getLeftOfficeDocPath()));
@@ -147,7 +147,7 @@ public class TestContentDiffAdapter {
      * files that don't have any "2text" or "2html" converter registered (images).
      */
     @Test
-    public void testImageFilesContentDiff() throws ClientException {
+    public void testImageFilesContentDiff() {
 
         // Get left and right image docs
         DocumentModel leftDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getLeftImageDocPath()));

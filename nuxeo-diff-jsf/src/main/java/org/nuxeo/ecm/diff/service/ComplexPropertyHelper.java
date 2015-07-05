@@ -38,7 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public final class ComplexPropertyHelper {
 
-    public static Field getField(String schemaName, String fieldName) throws ClientException {
+    public static Field getField(String schemaName, String fieldName) {
 
         Schema schema = getSchemaManager().getSchema(schemaName);
         if (schema == null) {
@@ -52,7 +52,7 @@ public final class ComplexPropertyHelper {
         return field;
     }
 
-    public static Field getComplexFieldItem(Field field, String complexItemName) throws ClientException {
+    public static Field getComplexFieldItem(Field field, String complexItemName) {
 
         Type fieldType = field.getType();
         if (!fieldType.isComplexType()) {
@@ -63,7 +63,7 @@ public final class ComplexPropertyHelper {
 
     }
 
-    public static List<Field> getComplexFieldItems(Field field) throws ClientException {
+    public static List<Field> getComplexFieldItems(Field field) {
 
         Type fieldType = field.getType();
         if (!fieldType.isComplexType()) {
@@ -74,7 +74,7 @@ public final class ComplexPropertyHelper {
         return new ArrayList<Field>(((ComplexType) fieldType).getFields());
     }
 
-    public static Field getListFieldItem(Field field) throws ClientException {
+    public static Field getListFieldItem(Field field) {
 
         Type fieldType = field.getType();
         if (!fieldType.isListType()) {
@@ -91,7 +91,7 @@ public final class ComplexPropertyHelper {
         return listFieldItem;
     }
 
-    public static String getFieldType(Field field) throws ClientException {
+    public static String getFieldType(Field field) {
 
         String fieldTypeName;
         Type fieldType = field.getType();
@@ -128,7 +128,7 @@ public final class ComplexPropertyHelper {
         return fieldTypeName;
     }
 
-    private static final SchemaManager getSchemaManager() throws ClientException {
+    private static final SchemaManager getSchemaManager() {
 
         SchemaManager schemaManager;
         try {

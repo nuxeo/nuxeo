@@ -49,7 +49,7 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
     }
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
 
         createLeftDoc(session);
         createRightDoc(session);
@@ -60,9 +60,8 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
      *
      * @param session the session
      * @return the document model
-     * @throws ClientException the client exception
      */
-    protected DocumentModel createLeftDoc(CoreSession session) throws ClientException {
+    protected DocumentModel createLeftDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "leftDoc", "SampleType");
 
@@ -184,9 +183,8 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
      *
      * @param session the session
      * @return the document model
-     * @throws ClientException the client exception
      */
-    protected DocumentModel createRightDoc(CoreSession session) throws ClientException {
+    protected DocumentModel createRightDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "rightDoc", "SampleType");
 

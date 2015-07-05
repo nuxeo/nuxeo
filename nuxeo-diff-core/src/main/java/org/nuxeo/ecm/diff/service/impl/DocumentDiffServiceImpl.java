@@ -53,7 +53,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
-    public DocumentDiff diff(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc) throws ClientException {
+    public DocumentDiff diff(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc) {
 
         // Input sources to hold XML exports
         InputSource leftDocXMLInputSource = new InputSource();
@@ -74,7 +74,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
     /**
      * {@inheritDoc}
      */
-    public DocumentDiff diff(String leftXML, String rightXML) throws ClientException {
+    public DocumentDiff diff(String leftXML, String rightXML) {
 
         // Process the XML diff
         DetailedDiff detailedDiff = diffXML(leftXML, rightXML);
@@ -112,10 +112,9 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * @param rightDoc the right doc
      * @param leftDocXMLInputSource the left doc XML input source
      * @param rightDocXMLInputSource the right doc XML input source
-     * @throws ClientException the client exception
      */
     protected final void exportXML(CoreSession session, DocumentModel leftDoc, DocumentModel rightDoc,
-            InputSource leftDocXMLInputSource, InputSource rightDocXMLInputSource) throws ClientException {
+            InputSource leftDocXMLInputSource, InputSource rightDocXMLInputSource) {
 
         DocumentXMLExporter docXMLExporter = getDocumentXMLExporter();
 
@@ -129,7 +128,7 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * @return the document XML exporter
      * @throws ClientException if the document XML exporter service cannot be found
      */
-    protected final DocumentXMLExporter getDocumentXMLExporter() throws ClientException {
+    protected final DocumentXMLExporter getDocumentXMLExporter() {
 
         DocumentXMLExporter docXMLExporter;
 
@@ -150,10 +149,9 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * @param leftDocXMLInputSource the left doc XML input source
      * @param rightDocXMLInputSource the right doc XML input source
      * @return the detailed diff
-     * @throws ClientException the client exception
      */
     protected final DetailedDiff diffXML(InputSource leftDocXMLInputSource, InputSource rightDocXMLInputSource)
-            throws ClientException {
+            {
 
         DetailedDiff detailedDiff;
         try {
@@ -177,9 +175,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * @param leftXML the left xml
      * @param rightXML the right xml
      * @return the detailed diff
-     * @throws ClientException the client exception
      */
-    protected final DetailedDiff diffXML(String leftXML, String rightXML) throws ClientException {
+    protected final DetailedDiff diffXML(String leftXML, String rightXML) {
 
         DetailedDiff detailedDiff;
         try {
@@ -202,10 +199,9 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      *
      * @param detailedDiff the detailed diff
      * @return the document diff
-     * @throws ClientException the client exception
      */
     @SuppressWarnings("unchecked")
-    protected final DocumentDiff computeDocDiff(DetailedDiff detailedDiff) throws ClientException {
+    protected final DocumentDiff computeDocDiff(DetailedDiff detailedDiff) {
 
         // Document diff object
         DocumentDiff docDiff = new DocumentDiffImpl();

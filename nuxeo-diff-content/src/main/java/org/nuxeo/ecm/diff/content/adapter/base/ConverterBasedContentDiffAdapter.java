@@ -166,7 +166,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         defaultFieldXPath = xPath;
     }
 
-    protected BlobHolder getBlobHolder(DocumentModel doc, String xPath) throws ClientException {
+    protected BlobHolder getBlobHolder(DocumentModel doc, String xPath) {
         // TODO: manage other property types than Blob / String?
         Serializable prop = doc.getPropertyValue(xPath);
         if (prop instanceof Blob) {
@@ -210,7 +210,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         return srcMT;
     }
 
-    protected void setMimeType(BlobHolder result) throws ClientException {
+    protected void setMimeType(BlobHolder result) {
         for (Blob blob : result.getBlobs()) {
             if (blob.getMimeType() == null && blob.getFilename().endsWith("html")) {
                 String mimeTpye = getMimeType(blob);
@@ -233,7 +233,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
      * @throws ConversionException if an error occurs while converting the blob holder
      */
     protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName)
-            throws ConversionException, ClientException {
+            throws ConversionException {
 
         if (converterName == null) {
             log.debug(String.format("No converter parameter, using generic one: '%s'.", DEFAULT_CONVERTER_NAME));
@@ -257,7 +257,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
     }
 
     protected void addSecondaryBlobs(List<Blob> blobResults, BlobHolder blobHolder, String mainBlobFilename)
-            throws ClientException {
+            {
 
         for (Blob blob : blobHolder.getBlobs()) {
             String blobFilename = blob.getFilename();
@@ -271,9 +271,8 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
      * Gets the conversion service.
      *
      * @return the conversion service
-     * @throws ClientException the client exception
      */
-    protected final ConversionService getConversionService() throws ClientException {
+    protected final ConversionService getConversionService() {
 
         ConversionService conversionService;
         try {

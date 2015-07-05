@@ -72,10 +72,9 @@ public class TestDocumentDiff extends DiffTestCase {
     /**
      * Tests doc diff.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testDocDiff() throws ClientException {
+    public void testDocDiff() {
 
         // Get left and right docs
         DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getLeftDocPath()));
@@ -283,10 +282,9 @@ public class TestDocumentDiff extends DiffTestCase {
     /**
      * Tests inverse doc diff.
      *
-     * @throws ClientException the client exception
      */
     @Test
-    public void testInverseDocDiff() throws ClientException {
+    public void testInverseDocDiff() {
 
         // Get left and right docs
         DocumentModel leftDoc = session.getDocument(new PathRef(DocumentDiffRepositoryInit.getRightDocPath()));
@@ -491,7 +489,7 @@ public class TestDocumentDiff extends DiffTestCase {
 
     }
 
-    protected final String getDigest(Blob blob) throws ClientException {
+    protected final String getDigest(Blob blob) {
         return blob.getDigest();
 
     }
