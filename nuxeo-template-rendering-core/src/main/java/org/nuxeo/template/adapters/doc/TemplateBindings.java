@@ -17,7 +17,7 @@ public class TemplateBindings extends ArrayList<TemplateBinding> {
 
     public static final String BINDING_PROP_NAME = "nxts:bindings";
 
-    public TemplateBindings(DocumentModel doc) throws ClientException {
+    public TemplateBindings(DocumentModel doc) {
         Serializable value = doc.getPropertyValue(BINDING_PROP_NAME);
         if (value != null) {
             @SuppressWarnings("unchecked")
@@ -97,7 +97,7 @@ public class TemplateBindings extends ArrayList<TemplateBinding> {
         return names;
     }
 
-    public void save(DocumentModel doc) throws ClientException {
+    public void save(DocumentModel doc) {
         List<Map<String, Serializable>> bindings = new ArrayList<Map<String, Serializable>>();
         for (TemplateBinding tb : this) {
             bindings.add(tb.getAsMap());

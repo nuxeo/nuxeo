@@ -27,7 +27,7 @@ public class TemplateMappingRemover extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         DocumentModel doc = session.getDocument(targetRef);
         TemplateSourceDocument source = doc.getAdapter(TemplateSourceDocument.class);
         source.removeForcedType(type2Remove, true);

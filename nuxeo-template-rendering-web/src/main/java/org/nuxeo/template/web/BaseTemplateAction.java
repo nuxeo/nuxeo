@@ -32,7 +32,7 @@ public class BaseTemplateAction implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    public boolean canAddTemplateInputs() throws ClientException {
+    public boolean canAddTemplateInputs() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
@@ -41,7 +41,7 @@ public class BaseTemplateAction implements Serializable {
         return template != null ? true : false;
     }
 
-    public boolean canUpdateTemplateInputs(String templateName) throws ClientException {
+    public boolean canUpdateTemplateInputs(String templateName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
@@ -57,7 +57,7 @@ public class BaseTemplateAction implements Serializable {
         return false;
     }
 
-    public boolean canResetParameters() throws ClientException {
+    public boolean canResetParameters() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
@@ -86,7 +86,7 @@ public class BaseTemplateAction implements Serializable {
         return rs.getDeclaredRenditionDefinitionsForProviderType(TemplateBasedRenditionProvider.class.getSimpleName());
     }
 
-    public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) throws ClientException {
+    public List<TemplateSourceDocument> getAvailableOfficeTemplates(String targetType) {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         return tps.getAvailableOfficeTemplates(documentManager, targetType);
     }

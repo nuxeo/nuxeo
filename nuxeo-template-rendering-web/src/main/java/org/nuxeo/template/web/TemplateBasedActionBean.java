@@ -201,7 +201,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(doc.getAdaptedDoc());
     }
 
-    public boolean canResetParameters() throws ClientException {
+    public boolean canResetParameters() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
@@ -222,7 +222,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         }
     }
 
-    public boolean canDetachTemplate(String templateName) throws ClientException {
+    public boolean canDetachTemplate(String templateName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
@@ -252,7 +252,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         this.templateIdToAssociate = templateIdToAssociate;
     }
 
-    public void associateDocumentToTemplate() throws ClientException {
+    public void associateDocumentToTemplate() {
         if (templateIdToAssociate == null) {
             // return null;
             return;
@@ -299,7 +299,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         }
     }
 
-    public List<TemplateSourceDocument> getBindableTemplatesForDocument() throws ClientException {
+    public List<TemplateSourceDocument> getBindableTemplatesForDocument() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String targetType = currentDocument.getType();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
@@ -321,7 +321,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     }
 
-    public List<SelectItem> getBindableTemplatesForDocumentAsSelectItems() throws ClientException {
+    public List<SelectItem> getBindableTemplatesForDocumentAsSelectItems() {
 
         List<SelectItem> items = new ArrayList<SelectItem>();
         List<TemplateSourceDocument> sources = getBindableTemplatesForDocument();

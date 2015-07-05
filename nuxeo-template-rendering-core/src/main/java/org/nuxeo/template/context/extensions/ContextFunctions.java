@@ -147,7 +147,7 @@ public class ContextFunctions {
         return dateFormat.format(calendar);
     }
 
-    public NuxeoPrincipal getNuxeoPrincipal(String username) throws ClientException {
+    public NuxeoPrincipal getNuxeoPrincipal(String username) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         if (userManager == null) {
             return null;

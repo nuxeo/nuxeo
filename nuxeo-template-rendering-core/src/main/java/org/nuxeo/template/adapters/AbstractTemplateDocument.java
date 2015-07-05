@@ -52,11 +52,11 @@ public abstract class AbstractTemplateDocument implements Serializable {
         return adaptedDoc;
     }
 
-    protected void doSave() throws ClientException {
+    protected void doSave() {
         adaptedDoc = getSession().saveDocument(adaptedDoc);
     }
 
-    public DocumentModel save() throws ClientException {
+    public DocumentModel save() {
         doSave();
         return adaptedDoc;
     }

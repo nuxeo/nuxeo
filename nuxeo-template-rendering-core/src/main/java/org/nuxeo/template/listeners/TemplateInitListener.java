@@ -58,7 +58,7 @@ public class TemplateInitListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(TemplateInitListener.class);
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         EventContext ctx = event.getContext();
 
@@ -136,7 +136,7 @@ public class TemplateInitListener implements EventListener {
         }
     }
 
-    protected boolean isBlobDirty(DocumentModel targetDoc) throws ClientException {
+    protected boolean isBlobDirty(DocumentModel targetDoc) {
         BlobHolder bh = targetDoc.getAdapter(BlobHolder.class);
         Blob mainBlob = bh.getBlob();
         if (mainBlob.getDigest() == null) {
