@@ -374,7 +374,7 @@ public class NuxeoObjectData implements ObjectData {
      */
     @Deprecated
     protected static List<RenditionData> getIconRendition(DocumentModel doc, CallContext callContext)
-            throws ClientException, IOException {
+            throws IOException {
         String iconPath;
         try {
             iconPath = (String) doc.getPropertyValue(NuxeoTypeHelper.NX_ICON);
@@ -403,7 +403,7 @@ public class NuxeoObjectData implements ObjectData {
      * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
      */
     @Deprecated
-    public static InputStream getIconStream(String iconPath, CallContext context) throws ClientException {
+    public static InputStream getIconStream(String iconPath, CallContext context) {
         if (iconPath == null || iconPath.length() == 0) {
             return null;
         }
@@ -418,7 +418,7 @@ public class NuxeoObjectData implements ObjectData {
     }
 
     protected static List<RenditionData> getRenditionServiceRenditions(DocumentModel doc, CallContext callContext)
-            throws ClientException, IOException {
+            throws IOException {
         RenditionService renditionService = Framework.getLocalService(RenditionService.class);
         List<RenditionDefinition> defs = renditionService.getAvailableRenditionDefinitions(doc);
         List<RenditionData> list = new ArrayList<>(defs.size());

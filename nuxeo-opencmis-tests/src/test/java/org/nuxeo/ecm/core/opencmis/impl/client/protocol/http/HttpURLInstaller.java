@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -19,8 +19,7 @@ import org.nuxeo.common.utils.URLStreamHandlerFactoryInstaller;
 
 public class HttpURLInstaller {
 
-    private HttpURLInstaller() {
-        ;
+    private HttpURLInstaller() {;
     }
 
     public static final HttpURLInstaller INSTANCE = new HttpURLInstaller();

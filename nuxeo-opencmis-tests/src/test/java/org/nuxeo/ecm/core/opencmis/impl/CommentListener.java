@@ -27,7 +27,7 @@ public class CommentListener implements EventListener {
     public static List<String> comments = new ArrayList<>();
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext ctx = (DocumentEventContext) event.getContext();
         String comment = (String) ctx.getProperty("comment");
         String checkInComment = (String) ctx.getProperty("checkInComment");

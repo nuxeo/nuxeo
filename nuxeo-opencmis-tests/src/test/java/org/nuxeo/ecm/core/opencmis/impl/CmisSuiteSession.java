@@ -913,7 +913,7 @@ public class CmisSuiteSession {
     }
 
     @Test
-    public void testUserWorkspace() throws ClientException {
+    public void testUserWorkspace() {
         String wsPath = Helper.createUserWorkspace(coreSession, (isAtomPub || isBrowser) ? USERNAME : "Administrator");
         Folder ws = (Folder) session.getObjectByPath(wsPath);
         assertNotNull(ws);
@@ -978,11 +978,11 @@ public class CmisSuiteSession {
         }
     }
 
-    private boolean isDocumentLocked(CmisObject ob) throws ClientException {
+    private boolean isDocumentLocked(CmisObject ob) {
         return coreSession.getDocument(new IdRef(ob.getId())).isLocked();
     }
 
-    private Lock lockDocument(CmisObject ob) throws ClientException {
+    private Lock lockDocument(CmisObject ob) {
         return coreSession.getDocument(new IdRef(ob.getId())).setLock();
     }
 

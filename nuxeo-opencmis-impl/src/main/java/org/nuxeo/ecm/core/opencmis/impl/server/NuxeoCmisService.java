@@ -334,7 +334,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         return new CompoundFilter(facetFilter, lcFilter);
     }
 
-    protected String getIdFromDocumentRef(DocumentRef ref) throws ClientException {
+    protected String getIdFromDocumentRef(DocumentRef ref) {
         if (ref instanceof IdRef) {
             return ((IdRef) ref).value;
         } else {
@@ -342,7 +342,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         }
     }
 
-    protected void save() throws ClientException {
+    protected void save() {
         coreSession.save();
         cachedChangeLogToken = null;
     }
@@ -873,7 +873,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
      * @deprecated since 7.3. The thumbnail is now a default rendition, see NXP-16662.
      */
     @Deprecated
-    protected ContentStream getIconRenditionStream(String objectId) throws ClientException {
+    protected ContentStream getIconRenditionStream(String objectId) {
         DocumentModel doc = getDocumentModel(objectId);
         String iconPath;
         try {
@@ -900,7 +900,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         return new ContentStreamImpl(filename, BigInteger.valueOf(info.getLength()), info.getMimeType(), is);
     }
 
-    protected ContentStream getRenditionServiceStream(String objectId, String renditionName) throws ClientException {
+    protected ContentStream getRenditionServiceStream(String objectId, String renditionName) {
         RenditionService renditionService = Framework.getLocalService(RenditionService.class);
         DocumentModel doc = getDocumentModel(objectId);
         Rendition rendition = renditionService.getRendition(doc, renditionName);
@@ -995,7 +995,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
      * <p>
      * Filtered out docs are ignored.
      */
-    protected DocumentModel getObjectByPathOfNames(String path) throws ClientException, CmisObjectNotFoundException {
+    protected DocumentModel getObjectByPathOfNames(String path) throws CmisObjectNotFoundException {
         DocumentModel doc = coreSession.getRootDocument();
         for (String name : new Path(path).segments()) {
             String query = String.format("SELECT * FROM Document WHERE " + NXQL.ECM_PARENTID + " = %s AND "
@@ -1169,7 +1169,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     /* does not save the session */
     protected void updateProperties(Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
-            Properties properties) throws ClientException {
+            Properties properties) {
         String objectId;
         if (objectIdHolder == null || (objectId = objectIdHolder.getValue()) == null) {
             throw new CmisInvalidArgumentException("Missing object ID");

@@ -849,7 +849,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
-    protected static boolean isLiveDocumentMajorVersion(DocumentModel doc) throws ClientException {
+    protected static boolean isLiveDocumentMajorVersion(DocumentModel doc) {
         return !doc.isCheckedOut() && doc.getVersionLabel().endsWith(".0");
     }
 

@@ -68,7 +68,7 @@ public class LastModifiedServiceWrapper extends AbstractCmisServiceWrapper {
         return children;
     }
 
-    private DocumentModel getDocumentModel(String id) throws ClientException {
+    private DocumentModel getDocumentModel(String id) {
         NuxeoCmisService nuxeoCmisService = NuxeoCmisService.extractFromCmisService(this);
         CoreSession coreSession = nuxeoCmisService.getCoreSession();
         DocumentRef docRef = new IdRef(id);
