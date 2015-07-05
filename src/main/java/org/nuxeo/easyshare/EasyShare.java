@@ -68,7 +68,7 @@ public class EasyShare extends ModuleRoot {
     public Object getFolderListing(@PathParam("folderId") String folderId) {
         return new EasyShareUnrestrictedRunner() {
             @Override
-            public Object run(CoreSession session, IdRef docRef) throws ClientException {
+            public Object run(CoreSession session, IdRef docRef) {
                 if (session.exists(docRef)) {
                     DocumentModel docFolder = session.getDocument(docRef);
 
@@ -110,18 +110,18 @@ public class EasyShare extends ModuleRoot {
 
     }
 
-    public String getFileName(DocumentModel doc) throws ClientException {
+    public String getFileName(DocumentModel doc) {
         Blob blob = doc.getAdapter(BlobHolder.class).getBlob();
         return blob.getFilename();
     }
 
     @GET
     @Path("{folderId}/{fileId}/{fileName}")
-    public Response getFileStream(@PathParam("fileId") String fileId) throws ClientException {
+    public Response getFileStream(@PathParam("fileId") String fileId) {
 
         return (Response) new EasyShareUnrestrictedRunner() {
             @Override
-            public Object run(CoreSession session, IdRef docRef) throws ClientException {
+            public Object run(CoreSession session, IdRef docRef) {
                 if (session.exists(docRef)) {
                     try {
                         DocumentModel doc = session.getDocument(docRef);
