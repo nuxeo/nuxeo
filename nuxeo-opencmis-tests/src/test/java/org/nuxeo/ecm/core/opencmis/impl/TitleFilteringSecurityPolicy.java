@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.opencmis.impl;
 
 import java.security.Principal;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -40,12 +39,7 @@ public class TitleFilteringSecurityPolicy extends AbstractSecurityPolicy {
         if (!isRestrictingPermission(permission)) {
             return Access.UNKNOWN;
         }
-        String title;
-        try {
-            title = (String) doc.getPropertyValue("dc:title");
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+        String title = (String) doc.getPropertyValue("dc:title");
         if (title != null && title.startsWith(PREFIX)) {
             return Access.DENY;
         }
