@@ -39,14 +39,14 @@ public class UserLocaleProvider implements LocaleProvider {
     public static final Log log = LogFactory.getLog(UserLocaleProvider.class);
 
     @Override
-    public Locale getLocale(CoreSession repo) throws ClientException {
+    public Locale getLocale(CoreSession repo) {
         UserProfileService userProfileService = Framework.getLocalService(UserProfileService.class);
         DocumentModel userProfileDoc = userProfileService.getUserProfileDocument(repo);
         return getLocale(userProfileDoc);
     }
 
     @Override
-    public Locale getLocale(DocumentModel userProfileDoc) throws ClientException {
+    public Locale getLocale(DocumentModel userProfileDoc) {
         String locale = (String) userProfileDoc.getPropertyValue(UserProfileConstants.USER_PROFILE_LOCALE);
         if (locale == null || locale.trim().length() == 0) {
             // undefined if not set
@@ -61,7 +61,7 @@ public class UserLocaleProvider implements LocaleProvider {
     }
 
     @Override
-    public TimeZone getTimeZone(CoreSession repo) throws ClientException {
+    public TimeZone getTimeZone(CoreSession repo) {
         // the timezone is not retrieved from the user profile (cookie and Seam
         // TimezoneSelector)
         return null;

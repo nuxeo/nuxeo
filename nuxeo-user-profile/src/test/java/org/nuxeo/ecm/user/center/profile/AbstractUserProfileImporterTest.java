@@ -60,7 +60,7 @@ public abstract class AbstractUserProfileImporterTest {
     protected File tmpDir;
 
     @Before
-    public void deleteAllUsers() throws ClientException {
+    public void deleteAllUsers() {
         List<String> userIds = userManager.getUserIds();
         for (String userId : userIds) {
             NuxeoPrincipal principal = userManager.getPrincipal(userId);
@@ -71,12 +71,12 @@ public abstract class AbstractUserProfileImporterTest {
     }
 
     protected CoreSession openSession(NuxeoPrincipal principal)
-            throws ClientException {
+            {
         return settings.openSessionAs(principal);
     }
 
     protected NuxeoPrincipal createUser(String username, String tenant)
-            throws ClientException {
+            {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);
@@ -90,7 +90,7 @@ public abstract class AbstractUserProfileImporterTest {
         return userManager.getPrincipal(username);
     }
 
-    protected NuxeoGroup createGroup(String groupName) throws ClientException {
+    protected NuxeoGroup createGroup(String groupName) {
         DocumentModel group = userManager.getBareGroupModel();
         group.setPropertyValue("group:groupname", groupName);
         String computedGroupName = groupName;

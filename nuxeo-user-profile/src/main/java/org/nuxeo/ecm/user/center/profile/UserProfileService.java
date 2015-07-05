@@ -34,9 +34,8 @@ public interface UserProfileService {
      *
      * @param the current CoreSession
      * @return the user profile DocumentModel
-     * @throws ClientException
      */
-    DocumentModel getUserProfileDocument(CoreSession session) throws ClientException;
+    DocumentModel getUserProfileDocument(CoreSession session);
 
     /**
      * Get the profile of a specific user. It's stored in its user workspace.
@@ -44,9 +43,8 @@ public interface UserProfileService {
      * @param the user name
      * @param the current CoreSession
      * @return the user profile DocumentModel
-     * @throws ClientException
      */
-    DocumentModel getUserProfileDocument(String userName, CoreSession session) throws ClientException;
+    DocumentModel getUserProfileDocument(String userName, CoreSession session);
 
     /**
      * Get a DocumentModel containing both user and user profile schemas
@@ -54,9 +52,8 @@ public interface UserProfileService {
      * @param the user DocumentModel
      * @param the current CoreSession
      * @return a SimpleDocumentModel with the two schemas
-     * @throws ClientException
      */
-    DocumentModel getUserProfile(DocumentModel userModel, CoreSession session) throws ClientException;
+    DocumentModel getUserProfile(DocumentModel userModel, CoreSession session);
 
     /**
      * Clears the user profile cache.

@@ -72,7 +72,7 @@ public class JSFDashboardActions implements Serializable {
 
     @Factory(value = "userDomains", scope = ScopeType.EVENT)
     @SuppressWarnings("unchecked")
-    public List<DocumentModel> getUserDomains() throws ClientException {
+    public List<DocumentModel> getUserDomains() {
         if (documentManager == null) {
             return new ArrayList<DocumentModel>();
         }
@@ -83,7 +83,7 @@ public class JSFDashboardActions implements Serializable {
         return availableDomains;
     }
 
-    public DocumentModel getSelectedDomain() throws ClientException {
+    public DocumentModel getSelectedDomain() {
         List<DocumentModel> domains = getUserDomains();
         if (selectedDomain == null) {
             // initialize to current domain, or take first domain found
@@ -102,7 +102,7 @@ public class JSFDashboardActions implements Serializable {
         return selectedDomain;
     }
 
-    public String getSelectedDomainId() throws ClientException {
+    public String getSelectedDomainId() {
         DocumentModel selectedDomain = getSelectedDomain();
         if (selectedDomain != null) {
             return selectedDomain.getId();
@@ -110,11 +110,11 @@ public class JSFDashboardActions implements Serializable {
         return null;
     }
 
-    public void setSelectedDomainId(String selectedDomainId) throws ClientException {
+    public void setSelectedDomainId(String selectedDomainId) {
         selectedDomain = documentManager.getDocument(new IdRef(selectedDomainId));
     }
 
-    public String getSelectedDomainPath() throws ClientException {
+    public String getSelectedDomainPath() {
         DocumentModel domain = getSelectedDomain();
         if (domain == null) {
             return "/";
@@ -122,7 +122,7 @@ public class JSFDashboardActions implements Serializable {
         return domain.getPathAsString() + "/";
     }
 
-    public String getSelectedDomainTemplatesPath() throws ClientException {
+    public String getSelectedDomainTemplatesPath() {
         return getSelectedDomainPath() + "templates";
     }
 

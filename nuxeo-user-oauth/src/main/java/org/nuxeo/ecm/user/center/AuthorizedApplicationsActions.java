@@ -48,7 +48,7 @@ public class AuthorizedApplicationsActions implements Serializable {
     @In
     protected NuxeoPrincipal currentUser;
 
-    public List<DocumentModel> getAuthorizedApplications() throws ClientException {
+    public List<DocumentModel> getAuthorizedApplications() {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
             Map<String, Serializable> queryFilter = getQueryFilter();
@@ -64,7 +64,7 @@ public class AuthorizedApplicationsActions implements Serializable {
         return filter;
     }
 
-    public void revokeAccess(String id) throws ClientException {
+    public void revokeAccess(String id) {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         try (Session session = directoryService.open(OAuthTokenStoreImpl.DIRECTORY_NAME)) {
             session.deleteEntry(id);

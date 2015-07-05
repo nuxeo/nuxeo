@@ -43,7 +43,7 @@ public class UserNotificationActions implements Serializable {
     private List<UserSubscription> subscriptions;
 
     @Factory(value = "userSubscriptions", scope = ScopeType.EVENT)
-    public List<UserSubscription> getUserSubscriptions() throws ClientException {
+    public List<UserSubscription> getUserSubscriptions() {
 
         List<UserSubscription> result = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class UserNotificationActions implements Serializable {
         return result;
     }
 
-    private void reorderSubscriptions(List<UserSubscription> allSubscriptions) throws ClientException {
+    private void reorderSubscriptions(List<UserSubscription> allSubscriptions) {
         Map<String, List<UserSubscription>> unsortedSubscriptions = new HashMap<String, List<UserSubscription>>();
         for (Object obj : allSubscriptions) {
             UserSubscription us = (UserSubscription) obj;
@@ -101,7 +101,7 @@ public class UserNotificationActions implements Serializable {
         }
     }
 
-    public DocumentModel getDocument(String docId) throws ClientException {
+    public DocumentModel getDocument(String docId) {
         // test if user has READ right
         DocumentRef ref = new IdRef(docId);
         if (documentManager.exists(ref)) {

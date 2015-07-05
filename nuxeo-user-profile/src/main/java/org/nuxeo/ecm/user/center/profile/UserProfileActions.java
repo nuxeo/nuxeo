@@ -88,7 +88,7 @@ public class UserProfileActions implements Serializable {
 
     protected DocumentModel currentUserProfile;
 
-    public void updateUser() throws ClientException {
+    public void updateUser() {
         if (userProfileDocument != null) {
             // Ensure to remove user schema from datamodel when saving changes
             // on user profile, otherwise an exception is thrown, see
@@ -106,11 +106,11 @@ public class UserProfileActions implements Serializable {
         mode = PROFILE_VIEW_MODE;
     }
 
-    public String getMode() throws ClientException {
+    public String getMode() {
         return mode;
     }
 
-    public boolean getCanEdit() throws ClientException {
+    public boolean getCanEdit() {
         return userManagementActions.getAllowEditUser() && userManagementActions.isNotReadOnly();
     }
 
@@ -127,7 +127,7 @@ public class UserProfileActions implements Serializable {
         return currentUserModel;
     }
 
-    public DocumentModel getUserProfileDocument() throws ClientException {
+    public DocumentModel getUserProfileDocument() {
         // Need to set selectedUser in UserManagementActions to avoid an NPE
         // when calling updateUser() if UserManagementActions#selectedUser has
         // been set to null meanwhile (by opening a new tab for instance).
@@ -145,12 +145,12 @@ public class UserProfileActions implements Serializable {
         return userProfileDocument;
     }
 
-    public DocumentModel getUserProfileDocument(String userName) throws ClientException {
+    public DocumentModel getUserProfileDocument(String userName) {
         UserProfileService userProfileService = Framework.getService(UserProfileService.class);
         return userProfileService.getUserProfileDocument(userName, documentManager);
     }
 
-    public DocumentModel getUserProfile() throws ClientException {
+    public DocumentModel getUserProfile() {
         if (currentUserProfile == null) {
             UserProfileService userProfileService = Framework.getService(UserProfileService.class);
             currentUserProfile = userProfileService.getUserProfile(getCurrentUserModel(), documentManager);
@@ -158,7 +158,7 @@ public class UserProfileActions implements Serializable {
         return currentUserProfile;
     }
 
-    public DocumentModel getSelectedUserProfile() throws ClientException {
+    public DocumentModel getSelectedUserProfile() {
         DocumentModel selectedUser = userManagementActions.getSelectedUser();
         if (selectedUser == null) {
             return null;

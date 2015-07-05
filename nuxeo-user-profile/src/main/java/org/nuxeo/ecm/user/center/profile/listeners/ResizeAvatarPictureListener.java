@@ -62,7 +62,7 @@ public class ResizeAvatarPictureListener implements EventListener {
     protected static final int RESIZED_IMAGE_HEIGHT = 200;
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         if (isBeforeUpdate(event)) {
 
@@ -82,7 +82,7 @@ public class ResizeAvatarPictureListener implements EventListener {
         return BEFORE_DOC_UPDATE.equals(event.getName()) && (event.getContext() instanceof DocumentEventContext);
     }
 
-    protected void resizeAvatar(DocumentModel doc, Blob avatarImage) throws ClientException, PropertyException {
+    protected void resizeAvatar(DocumentModel doc, Blob avatarImage) throws PropertyException {
         ImagingService service = Framework.getService(ImagingService.class);
         ImageInfo info = service.getImageInfo(avatarImage);
         int width = info.getWidth();
