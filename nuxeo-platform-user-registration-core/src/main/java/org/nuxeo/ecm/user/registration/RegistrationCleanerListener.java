@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 public class RegistrationCleanerListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!event.getName().equals(DOCUMENT_REMOVED) || !(event.getContext() instanceof DocumentEventContext)) {
             return;
         }
@@ -45,7 +45,7 @@ public class RegistrationCleanerListener implements EventListener {
 
         new UnrestrictedSessionRunner(context.getCoreSession()) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModelList docs = session.query(String.format(
                         "Select * from Document where ecm:mixinType = 'UserRegistration' and %s = '%s'",
                         DOCUMENT_ID_FIELD, sourceDocument.getId()));

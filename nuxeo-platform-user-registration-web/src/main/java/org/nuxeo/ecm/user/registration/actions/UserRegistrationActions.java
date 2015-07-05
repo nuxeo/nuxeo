@@ -134,19 +134,19 @@ public class UserRegistrationActions implements Serializable {
         return this;
     }
 
-    public String getDocType() throws ClientException {
+    public String getDocType() {
         return getDocType(CONFIGURATION_NAME);
     }
 
-    public String getDocType(String name) throws ClientException {
+    public String getDocType(String name) {
         return userRegistrationService.getConfiguration(name).getRequestDocType();
     }
 
-    public String getValidationBaseUrl(String name) throws ClientException {
+    public String getValidationBaseUrl(String name) {
         return BaseURL.getBaseURL() + userRegistrationService.getConfiguration(name).getValidationRelUrl();
     }
 
-    public String getEnterPasswordUrl(String name) throws ClientException {
+    public String getEnterPasswordUrl(String name) {
         return BaseURL.getBaseURL() + userRegistrationService.getConfiguration(name).getEnterPasswordUrl();
     }
 
@@ -166,11 +166,11 @@ public class UserRegistrationActions implements Serializable {
         this.multipleEmails = multipleEmails;
     }
 
-    public String getValidationBaseUrl() throws ClientException {
+    public String getValidationBaseUrl() {
         return getValidationBaseUrl(CONFIGURATION_NAME);
     }
 
-    public String getEnterPasswordUrl() throws ClientException {
+    public String getEnterPasswordUrl() {
         return getEnterPasswordUrl(CONFIGURATION_NAME);
     }
 

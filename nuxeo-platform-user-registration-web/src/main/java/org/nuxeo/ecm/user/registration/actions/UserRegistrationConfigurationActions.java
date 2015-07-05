@@ -64,11 +64,11 @@ public class UserRegistrationConfigurationActions implements Serializable {
         selectedConfigurationDocument = null;
     }
 
-    public RegistrationRules getRules(String configurationName) throws ClientException {
+    public RegistrationRules getRules(String configurationName) {
         return userRegistrationService.getRegistrationRules(configurationName);
     }
 
-    public DocumentModel getConfigurationDocument() throws ClientException {
+    public DocumentModel getConfigurationDocument() {
         if (selectedConfigurationDocument == null) {
             selectedConfigurationDocument = userRegistrationService.getRegistrationRulesDocument(documentManager,
                     selectedConfiguration);

@@ -41,12 +41,12 @@ import org.nuxeo.runtime.api.Framework;
 public class TestUserRegistration extends AbstractUserRegistration {
 
     @Before
-    public void init() throws ClientException {
+    public void init() {
         initializeRegistrations();
     }
 
     @Test
-    public void testTestContribution() throws ClientException {
+    public void testTestContribution() {
         DocumentModel doc = session.createDocumentModel("TestRegistration");
         assertTrue(doc.hasFacet("UserRegistration"));
 
@@ -56,7 +56,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testBasicUserRegistration() throws ClientException {
+    public void testBasicUserRegistration() {
         UserRegistrationInfo userInfo = new UserRegistrationInfo();
         userInfo.setLogin("jolivier");
         userInfo.setFirstName("John");
@@ -73,7 +73,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testBasicUserRegistrationWithLoginChanged() throws ClientException {
+    public void testBasicUserRegistrationWithLoginChanged() {
         UserRegistrationInfo userInfo = new UserRegistrationInfo();
         String templogin = "templogin";
         String newUser = "newUser";
@@ -97,7 +97,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testUserRegistrationWithDocument() throws ClientException {
+    public void testUserRegistrationWithDocument() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain", "testWorkspace", "Workspace");
         testWorkspace.setPropertyValue("dc:title", "Test Workspace");
         testWorkspace = session.createDocument(testWorkspace);

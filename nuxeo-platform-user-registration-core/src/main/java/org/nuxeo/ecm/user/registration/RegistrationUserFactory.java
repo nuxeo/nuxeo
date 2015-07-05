@@ -29,7 +29,7 @@ public interface RegistrationUserFactory extends InvitationUserFactory {
      * @see UserRegistrationComponent#addRightsOnDoc
      */
     DocumentModel doAddDocumentPermission(CoreSession session, DocumentModel registrationDoc,
-            UserRegistrationConfiguration configuration) throws ClientException;
+            UserRegistrationConfiguration configuration);
 
     /**
      * Called just after the right is setted
@@ -37,6 +37,6 @@ public interface RegistrationUserFactory extends InvitationUserFactory {
      * @since 5.6
      * @see UserRegistrationComponent#addRightsOnDoc
      */
-    void doPostAddDocumentPermission(CoreSession session, DocumentModel registrationDoc, DocumentModel document)
-            throws ClientException;
+    void doPostAddDocumentPermission(CoreSession session, DocumentModel registrationDoc, DocumentModel document);
+
 }

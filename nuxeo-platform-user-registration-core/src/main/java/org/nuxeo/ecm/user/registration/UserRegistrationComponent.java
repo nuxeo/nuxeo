@@ -90,7 +90,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
 
             String title = "registration request for " + userInfo.getLogin() + " (" + userInfo.getEmail() + " "
                     + userInfo.getCompany() + ") ";
@@ -147,7 +147,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     }
 
     public String submitRegistrationRequest(UserRegistrationInfo userInfo, Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws ClientException {
+            ValidationMethod validationMethod, boolean autoAccept, String principalName) {
         return submitRegistrationRequest(CONFIGURATION_NAME, userInfo, new DocumentRegistrationInfo(), additionnalInfo,
                 validationMethod, autoAccept, principalName);
     }
@@ -155,7 +155,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     @Override
     public String submitRegistrationRequest(String configurationName, UserRegistrationInfo userInfo,
             DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws ClientException,
+            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws
             UserRegistrationException {
         RegistrationCreator creator = new RegistrationCreator(configurationName, userInfo, docInfo, additionnalInfo,
                 validationMethod, principalName);
@@ -193,7 +193,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     }
 
     public Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException {
+            Map<String, Serializable> additionnalInfo) throws UserRegistrationException {
 
         Map<String, Serializable> registrationInfo = validateRegistration(requestId, additionnalInfo);
 
@@ -226,7 +226,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
     }
 
     @Override
-    public void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException {
+    public void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) {
         UserRegistrationConfiguration configuration = getConfiguration(registrationDoc);
         DocumentModel document = ((DefaultRegistrationUserFactory) getRegistrationUserFactory(configuration)).doAddDocumentPermission(
                 session, registrationDoc, configuration);
