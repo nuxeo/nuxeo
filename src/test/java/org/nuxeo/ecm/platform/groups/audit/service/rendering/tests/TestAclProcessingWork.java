@@ -91,7 +91,7 @@ public class TestAclProcessingWork extends AbstractAclLayoutTest {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void publish(Blob blob) throws ClientException {
+            public void publish(Blob blob) {
                 log.debug("audit done");
             }
         };

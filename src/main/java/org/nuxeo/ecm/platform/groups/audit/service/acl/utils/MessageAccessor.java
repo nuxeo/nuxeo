@@ -11,7 +11,7 @@ import org.nuxeo.runtime.api.Framework;
 public class MessageAccessor {
     protected static LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
 
-    public static String get(CoreSession session, String key) throws ClientException {
+    public static String get(CoreSession session, String key) {
         Locale locale = null;
         if (localeProvider != null)
             locale = localeProvider.getLocale(session);

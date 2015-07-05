@@ -54,11 +54,11 @@ public class PublishByMail implements IResultPublisher {
     }
 
     @Override
-    public void publish(final Blob file) throws ClientException {
+    public void publish(final Blob file) {
         file.setFilename(OUTPUT_FILE_NAME);
         new UnrestrictedSessionRunner(repositoryName) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel docToSend = createDocument(session, file, "", "");
                 doCallOperationSendMail(session, docToSend, to, defaultFrom);
                 log.debug("audit sent");
@@ -67,7 +67,7 @@ public class PublishByMail implements IResultPublisher {
     }
 
     protected void doCallOperationSendMail(CoreSession session, DocumentModel docToSend, String to, String defaultFrom)
-            throws ClientException {
+            {
         String title = MessageAccessor.get(session, PROPERTY_MAIL_SUBJECT);
         String body = MessageAccessor.get(session, PROPERTY_MAIL_BODY);
         String from = Framework.getProperty(PROPERTY_MAILFROM, defaultFrom);
@@ -115,7 +115,7 @@ public class PublishByMail implements IResultPublisher {
     }
 
     protected DocumentModel createDocument(CoreSession session, Blob blob, String title, String filename)
-            throws ClientException {
+            {
         DocumentModel document = session.createDocumentModel("File");
         document.setPropertyValue("file:content", (Serializable) blob);
         document.setPropertyValue("file:filename", filename);

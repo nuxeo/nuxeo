@@ -57,7 +57,7 @@ public class AcceptsGroupOnly extends AbstractContentFilter implements IContentF
         }
     }
 
-    public boolean isGroup(String user) throws ClientException {
+    public boolean isGroup(String user) {
         if (groups == null)
             groups = um.getGroupIds();
         return groups.contains(user);

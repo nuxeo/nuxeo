@@ -232,7 +232,7 @@ public class AclExcelLayoutBuilderMultiColumn extends AclExcelLayoutBuilder {
     /* FILE TREE AND MATRIX CONTENT RENDERING */
 
     @Override
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) {
         for (String user : userAcls.keySet()) {
             List<Pair<String, Boolean>> acls = new ArrayList<Pair<String, Boolean>>(userAcls.get(user));
             int last = acls.size() - 1;

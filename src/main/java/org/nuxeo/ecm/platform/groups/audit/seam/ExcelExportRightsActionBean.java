@@ -100,7 +100,7 @@ public class ExcelExportRightsActionBean implements Serializable {
 
     /* XLS REPORT */
 
-    public void buildAndSendByMail() throws ClientException, IOException {
+    public void buildAndSendByMail() throws IOException {
         File tmpFile = File.createTempFile("rights", ".xls");
         Framework.trackFile(tmpFile, tmpFile);
         buildAndSendByMail(tmpFile);
@@ -109,7 +109,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     /**
      * Execute ACL audit asynchronously and send the result to current user.
      */
-    protected void buildAndSendByMail(final File tmpFile) throws ClientException {
+    protected void buildAndSendByMail(final File tmpFile) {
         final DocumentModel auditRoot = navigationContext.getCurrentDocument();
         final String repositoryName = documentManager.getRepositoryName();
         final String to = currentNuxeoPrincipal.getEmail();

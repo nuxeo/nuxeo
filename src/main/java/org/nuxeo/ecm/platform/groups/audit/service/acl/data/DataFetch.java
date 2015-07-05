@@ -43,7 +43,7 @@ public class DataFetch {
 
     public static boolean ORDERBY_PATH = true;
 
-    public DocumentModelList getAllChildren(CoreSession session, DocumentModel doc) throws ClientException, IOException {
+    public DocumentModelList getAllChildren(CoreSession session, DocumentModel doc) throws IOException {
         String request = getChildrenDocQuery(doc, ORDERBY_PATH);
         log.debug("start query: " + request);
         DocumentModelList res = session.query(request);
@@ -53,12 +53,12 @@ public class DataFetch {
     }
 
     public PageProvider<DocumentModel> getAllChildrenPaginated(CoreSession session, DocumentModel doc)
-            throws ClientException {
+            {
         return getAllChildrenPaginated(session, doc, DEFAULT_PAGE_SIZE, ORDERBY_PATH);
     }
 
     public CoreQueryDocumentPageProvider getAllChildrenPaginated(CoreSession session, DocumentModel doc, long pageSize,
-            boolean orderByPath) throws ClientException {
+            boolean orderByPath) {
         String request = getChildrenDocQuery(doc, orderByPath);
         log.debug("will initialize a paginated query:" + request);
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);

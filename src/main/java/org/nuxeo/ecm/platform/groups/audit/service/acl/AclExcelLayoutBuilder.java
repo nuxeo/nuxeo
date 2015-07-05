@@ -180,29 +180,29 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     }
 
     @Override
-    public void renderAudit(CoreSession session) throws ClientException {
+    public void renderAudit(CoreSession session) {
         renderAudit(session, session.getRootDocument(), true);
     }
 
     @Override
-    public void renderAudit(CoreSession session, final DocumentModel doc) throws ClientException {
+    public void renderAudit(CoreSession session, final DocumentModel doc) {
         renderAudit(session, doc, true);
     }
 
     @Override
-    public void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted) throws ClientException {
+    public void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted) {
         renderAudit(session, doc, unrestricted, 0);
     }
 
     @Override
     public void renderAudit(CoreSession session, final DocumentModel doc, boolean unrestricted, final int timeout)
-            throws ClientException {
+            {
         if (!unrestricted) {
             analyzeAndRender(session, doc, timeout);
         } else {
             UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     analyzeAndRender(session, doc, timeout);
                 }
             };
@@ -210,7 +210,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         }
     }
 
-    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, int timeout) throws ClientException {
+    protected void analyzeAndRender(CoreSession session, final DocumentModel doc, int timeout) {
         log.debug("start processing data");
         data.analyze(session, doc, timeout);
 
@@ -220,14 +220,14 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
 
     /* EXCEL RENDERING */
 
-    protected void configure(CoreSession session) throws ClientException {
+    protected void configure(CoreSession session) {
         // mainSheetName = MessageAccessor.get(session, PROPERTY_MAIN_SHEET_NAME);
         legendSheetName = MessageAccessor.get(session, PROPERTY_LEGEND_SHEET_NAME);
         legendLockInheritance = MessageAccessor.get(session, PROPERTY_LEGEND_LOCK_INHERITANCE);
         legendPermissionDenied = MessageAccessor.get(session, PROPERTY_LEGEND_PERM_DENIED);
     }
 
-    protected void render(IDataProcessor data) throws ClientException {
+    protected void render(IDataProcessor data) {
         int minDepth = data.getDocumentTreeMinDepth();
         int maxDepth = data.getDocumentTreeMaxDepth();
         int colStart = maxDepth + (layoutSettings.showFullPath ? 1 : 0);
@@ -298,7 +298,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     /* FILE TREE AND MATRIX CONTENT RENDERING */
 
     protected void renderFileTreeAndAclMatrix(Collection<DocumentSummary> analyses, int minDepth, int maxDepth)
-            throws ClientException {
+            {
         treeLineCursor = layoutSettings.treeLineCursorRowStart;
 
         for (DocumentSummary summary : analyses) {
@@ -315,7 +315,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
         }
     }
 
-    protected void renderFilename(String title, int depth, boolean lockInheritance) throws ClientException {
+    protected void renderFilename(String title, int depth, boolean lockInheritance) {
         // draw title
         excel.setCell(treeLineCursor, depth, title);
 
@@ -326,11 +326,11 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
     }
 
     /** Render a row with all ACL of a given input file. */
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls) {
         renderAcl(userAcls, (CellStyle) null);
     }
 
-    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls, CellStyle style) throws ClientException {
+    protected void renderAcl(Multimap<String, Pair<String, Boolean>> userAcls, CellStyle style) {
         for (String user : userAcls.keySet()) {
             int column = layout.getUserColumn(user);
             String info = formatAcl(userAcls.get(user));
@@ -347,7 +347,7 @@ public class AclExcelLayoutBuilder implements IAclExcelLayoutBuilder {
      * </ul>
      */
     protected void renderAcl(Multimap<String, Pair<String, Boolean>> localAcls,
-            Multimap<String, Pair<String, Boolean>> inheritedAcls) throws ClientException {
+            Multimap<String, Pair<String, Boolean>> inheritedAcls) {
         Set<String> users = new HashSet<String>();
         users.addAll(localAcls.keySet());
         users.addAll(inheritedAcls.keySet());

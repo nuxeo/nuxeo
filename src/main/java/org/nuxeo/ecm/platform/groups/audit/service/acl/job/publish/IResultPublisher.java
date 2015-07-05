@@ -7,6 +7,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 public interface IResultPublisher extends Serializable {
 
-    public void publish(Blob fileBlob) throws ClientException;
+    public void publish(Blob fileBlob);
 
 }

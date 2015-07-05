@@ -26,9 +26,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.data.DataProcessor.ProcessorStatus;
 
 public interface IDataProcessor {
-    public void analyze(CoreSession session) throws ClientException;
+    public void analyze(CoreSession session);
 
-    public void analyze(CoreSession session, DocumentModel doc, int timeout) throws ClientException;
+    public void analyze(CoreSession session, DocumentModel doc, int timeout);
 
     public Set<String> getUserAndGroups();
 

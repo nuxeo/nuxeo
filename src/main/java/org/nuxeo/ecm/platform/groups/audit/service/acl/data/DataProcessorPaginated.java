@@ -49,7 +49,7 @@ public class DataProcessorPaginated extends DataProcessor {
     }
 
     @Override
-    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout) throws ClientException {
+    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout) {
         // get data
         DataFetch fetch = new DataFetch();
         CoreQueryDocumentPageProvider pages = fetch.getAllChildrenPaginated(session, root, pageSize, false);

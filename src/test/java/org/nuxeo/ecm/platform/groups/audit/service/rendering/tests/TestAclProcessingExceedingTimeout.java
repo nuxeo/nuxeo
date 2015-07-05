@@ -115,7 +115,7 @@ public class TestAclProcessingExceedingTimeout extends AbstractAclLayoutTest {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void publish(Blob blob) throws ClientException {
+            public void publish(Blob blob) {
                 // verify
                 try {
                     assertProcessInterruptStatusInOutputFile();
