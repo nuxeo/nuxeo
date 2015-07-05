@@ -68,7 +68,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
      * 
      * @throws org.nuxeo.ecm.core.api.ClientException thrown from getGroups() or getShibbGroups()
      */
-    protected void buildTree() throws ClientException {
+    protected void buildTree() {
         List<DocumentModel> groups = getGroups();
         List<DocumentModel> shibbGroups = getShibbGroups();
 
@@ -84,7 +84,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
      * @throws ClientException if error occurred while getting all groups.
      * @see UserManagerImpl
      */
-    protected List<DocumentModel> getGroups() throws ClientException {
+    protected List<DocumentModel> getGroups() {
         try {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             filter.put("__virtualGroup", false);
@@ -105,7 +105,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
      * @throws ClientException encapsulated another one
      * @see ShibbolethGroupHelper
      */
-    protected List<DocumentModel> getShibbGroups() throws ClientException {
+    protected List<DocumentModel> getShibbGroups() {
         try {
             return ShibbolethGroupHelper.getGroups();
         } catch (SizeLimitExceededException e) {
@@ -116,7 +116,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
     }
 
     @Override
-    public Map<String, Object> getUserInfo(String id) throws ClientException {
+    public Map<String, Object> getUserInfo(String id) {
         Map<String, Object> userInfo = super.getUserInfo(id);
         if (userInfo.get(ENTRY_KEY_NAME) == null) {
             DocumentModel doc = userManager.getBareUserModel();
@@ -141,7 +141,7 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
         treeRoot = null;
     }
 
-    public List<UserTreeNode> getTreeRoot() throws ClientException {
+    public List<UserTreeNode> getTreeRoot() {
         if (treeRoot == null) {
             buildTree();
         }
