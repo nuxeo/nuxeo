@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
  */
 public class MultiTenantPrincipal extends NuxeoPrincipalImpl {
 
-    public MultiTenantPrincipal(NuxeoPrincipalImpl principal) throws ClientException {
+    public MultiTenantPrincipal(NuxeoPrincipalImpl principal) {
         super(principal.getName(), principal.isAnonymous(), principal.isAdministrator());
         setConfig(principal.getConfig());
         setModel(principal.getModel());

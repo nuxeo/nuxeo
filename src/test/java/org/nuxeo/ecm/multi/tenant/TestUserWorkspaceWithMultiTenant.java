@@ -101,7 +101,7 @@ public class TestUserWorkspaceWithMultiTenant {
         System.out.println(acp);
     }
 
-    protected NuxeoPrincipal createUser(String username, String tenant) throws ClientException {
+    protected NuxeoPrincipal createUser(String username, String tenant) {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
         user.setPropertyValue("user:tenantId", tenant);

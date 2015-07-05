@@ -19,7 +19,7 @@ import org.nuxeo.runtime.services.event.EventService;
 public class TenantAdministratorsListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         String eventName = event.getName();
         if (!DocumentEventTypes.BEFORE_DOC_UPDATE.equals(eventName)
                 || !(event.getContext() instanceof DocumentEventContext)) {

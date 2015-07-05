@@ -41,7 +41,7 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
 
     private static final long serialVersionUID = 1L;
 
-    protected String getTenantId(CoreSession userCoreSession, String userName) throws ClientException {
+    protected String getTenantId(CoreSession userCoreSession, String userName) {
         String tenantId = null;
         if (userName == null) {
             userName = userCoreSession.getPrincipal().getName();
@@ -55,7 +55,7 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
 
     @Override
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String userName,
-            DocumentModel currentDocument) throws ClientException {
+            DocumentModel currentDocument) {
 
         String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
@@ -67,7 +67,7 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
         }
     }
 
-    protected String computePathUserWorkspaceRootForTenant(CoreSession session, String tenantId) throws ClientException {
+    protected String computePathUserWorkspaceRootForTenant(CoreSession session, String tenantId) {
         String tenantDocumentPath = MultiTenantHelper.getTenantDocumentPath(session, tenantId);
         Path path = new Path(tenantDocumentPath);
         path = path.append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
@@ -80,7 +80,7 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
      */
     @Override
     protected String computePathForUserWorkspace(CoreSession userCoreSession, String userName,
-            DocumentModel currentDocument) throws ClientException {
+            DocumentModel currentDocument) {
 
         String tenantId = getTenantId(userCoreSession, userName);
         if (StringUtils.isBlank(tenantId)) {
@@ -93,7 +93,7 @@ public class MultiTenantUserWorkspaceService extends DefaultUserWorkspaceService
     }
 
     protected String computePathForUserWorkspaceForTenant(CoreSession session, String tenantId, String userName)
-            throws ClientException {
+            {
         String rootPath = computePathUserWorkspaceRootForTenant(session, tenantId);
         Path path = new Path(rootPath);
         path = path.append(getUserWorkspaceNameForUser(userName));

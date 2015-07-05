@@ -56,7 +56,7 @@ public class MultiTenantGroupComputer extends AbstractGroupComputer {
             try {
                 new UnrestrictedSessionRunner(defaultRepositoryName) {
                     @Override
-                    public void run() throws ClientException {
+                    public void run() {
 
                         String query = String.format("SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'",
                                 tenantId);
