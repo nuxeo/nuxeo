@@ -75,7 +75,7 @@ public class TestTokenAuthenticationService {
     }
 
     @Test
-    public void testAcquireToken() throws ClientException {
+    public void testAcquireToken() {
 
         // Test omitting required parameters
         try {
@@ -159,7 +159,7 @@ public class TestTokenAuthenticationService {
     }
 
     @Test
-    public void testGetTokenBindings() throws ClientException {
+    public void testGetTokenBindings() {
 
         // Test empty token bindings
         assertEquals(0, tokenAuthenticationService.getTokenBindings("john").size());

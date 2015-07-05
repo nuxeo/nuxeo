@@ -61,11 +61,11 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
     @In(create = true)
     protected transient CoreSession documentManager;
 
-    public void createGroup() throws ClientException {
+    public void createGroup() {
         createGroup(false);
     }
 
-    public void createGroup(boolean createAnotherGroup) throws ClientException {
+    public void createGroup(boolean createAnotherGroup) {
         try {
             selectedGroup = ShibbolethGroupHelper.createGroup(newGroup);
             newGroup = null;
@@ -87,14 +87,14 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         }
     }
 
-    public void deleteGroup() throws ClientException {
+    public void deleteGroup() {
         ShibbolethGroupHelper.deleteGroup(selectedGroup);
         selectedGroup = null;
         showUserOrGroup = false;
         fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
     }
 
-    public String editGroup() throws ClientException {
+    public String editGroup() {
         selectedGroup = refreshGroup(selectedGroup.getId());
         return EDIT_SHIBB_GROUP;
     }
@@ -106,7 +106,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         return searchString.trim();
     }
 
-    public DocumentModel getNewGroup() throws ClientException {
+    public DocumentModel getNewGroup() {
         if (newGroup == null) {
             newGroup = ShibbolethGroupHelper.getBareGroupModel(documentManager);
         }
@@ -117,7 +117,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         return false;
     }
 
-    public void updateGroup() throws ClientException {
+    public void updateGroup() {
         try {
             ShibbolethGroupHelper.updateGroup(selectedGroup);
             detailsMode = DETAILS_VIEW_MODE;
@@ -128,7 +128,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         }
     }
 
-    public String viewGroup() throws ClientException {
+    public String viewGroup() {
         if (selectedGroup == null) {
             return null;
         } else {
@@ -136,18 +136,18 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         }
     }
 
-    public String viewGroup(String groupName) throws ClientException {
+    public String viewGroup(String groupName) {
         setSelectedGroup(groupName);
         showUserOrGroup = true;
         return viewGroup(ShibbolethGroupHelper.getGroup(groupName), false);
     }
 
     // refresh to get references
-    protected DocumentModel refreshGroup(String groupName) throws ClientException {
+    protected DocumentModel refreshGroup(String groupName) {
         return ShibbolethGroupHelper.getGroup(groupName);
     }
 
-    protected String viewGroup(DocumentModel group, boolean refresh) throws ClientException {
+    protected String viewGroup(DocumentModel group, boolean refresh) {
         if (group != null) {
             selectedGroup = group;
             if (refresh) {
@@ -165,7 +165,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
     }
 
-    protected boolean getCanEditGroups() throws ClientException {
+    protected boolean getCanEditGroups() {
         if (canEditGroups == null) {
             canEditGroups = false;
             if (!userManager.areGroupsReadOnly() && currentUser instanceof NuxeoPrincipal) {
@@ -178,20 +178,20 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         return canEditGroups;
     }
 
-    public boolean getAllowCreateGroup() throws ClientException {
+    public boolean getAllowCreateGroup() {
         return getCanEditGroups();
     }
 
-    public boolean getAllowDeleteGroup() throws ClientException {
+    public boolean getAllowDeleteGroup() {
         return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
-    public boolean getAllowEditGroup() throws ClientException {
+    public boolean getAllowEditGroup() {
         return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
     @Override
-    protected String computeListingMode() throws ClientException {
+    protected String computeListingMode() {
         return userManager.getGroupListingMode();
     }
 
@@ -199,7 +199,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         return selectedGroup;
     }
 
-    public void setSelectedGroup(String group) throws ClientException {
+    public void setSelectedGroup(String group) {
         selectedGroup = refreshGroup(group);
     }
 

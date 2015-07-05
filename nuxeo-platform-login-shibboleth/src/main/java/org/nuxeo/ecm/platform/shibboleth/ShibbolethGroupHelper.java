@@ -75,11 +75,11 @@ public class ShibbolethGroupHelper {
         return userManager;
     }
 
-    public static DocumentModel getBareGroupModel(CoreSession core) throws ClientException {
+    public static DocumentModel getBareGroupModel(CoreSession core) {
         return core.createDocumentModel(ShibbolethConstants.SHIBBOLETH_DOCTYPE);
     }
 
-    public static DocumentModel createGroup(DocumentModel group) throws ClientException {
+    public static DocumentModel createGroup(DocumentModel group) {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             if (session.hasEntry(group.getPropertyValue(
                     ShibbolethConstants.SHIBBOLETH_SCHEMA + ":" + ShibbolethConstants.GROUP_ID_PROPERTY).toString())) {
@@ -99,7 +99,7 @@ public class ShibbolethGroupHelper {
         }
     }
 
-    public static void updateGroup(DocumentModel group) throws ClientException {
+    public static void updateGroup(DocumentModel group) {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             checkExpressionLanguageValidity(group);
 
@@ -107,7 +107,7 @@ public class ShibbolethGroupHelper {
         }
     }
 
-    public static void deleteGroup(DocumentModel group) throws ClientException {
+    public static void deleteGroup(DocumentModel group) {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             session.deleteEntry(group);
         }
@@ -119,7 +119,7 @@ public class ShibbolethGroupHelper {
      * @param shibbGroupName name of the desired groupe
      * @return a DocumentList representing the groups matching the query
      */
-    public static List<String> getParentsGroups(String shibbGroupName) throws ClientException {
+    public static List<String> getParentsGroups(String shibbGroupName) {
         Directory dir = getDirectoryService().getDirectory(getUserManager().getGroupDirectoryName());
 
         Reference subGroups = dir.getReference(getUserManager().getGroupSubGroupsField());
@@ -127,13 +127,13 @@ public class ShibbolethGroupHelper {
         return ret;
     }
 
-    public static DocumentModelList getGroups() throws ClientException {
+    public static DocumentModelList getGroups() {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             return session.getEntries();
         }
     }
 
-    public static DocumentModelList searchGroup(String fullText) throws ClientException {
+    public static DocumentModelList searchGroup(String fullText) {
         try (Session session = getDirectoryService().open(ShibbolethConstants.SHIBBOLETH_DIRECTORY)) {
             Map<String, Serializable> filters = new HashMap<String, Serializable>();
             if (fullText != null && !"".equals(fullText)) {
@@ -146,7 +146,7 @@ public class ShibbolethGroupHelper {
         }
     }
 
-    protected static void checkExpressionLanguageValidity(DocumentModel group) throws ClientException {
+    protected static void checkExpressionLanguageValidity(DocumentModel group) {
         String expressionLanguage = (String) group.getPropertyValue(ShibbolethConstants.SHIBBOLETH_SCHEMA + ":"
                 + ShibbolethConstants.GROUP_EL_PROPERTY);
         if (!ELGroupComputerHelper.isValidEL(expressionLanguage)) {

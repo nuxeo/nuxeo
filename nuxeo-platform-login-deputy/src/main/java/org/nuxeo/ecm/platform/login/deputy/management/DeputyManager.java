@@ -27,19 +27,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface DeputyManager {
 
-    List<String> getPossiblesAlternateLogins(String userName) throws ClientException;
+    List<String> getPossiblesAlternateLogins(String userName);
 
-    List<String> getAvalaibleDeputyIds(String userName) throws ClientException;
+    List<String> getAvalaibleDeputyIds(String userName);
 
-    List<DocumentModel> getAvalaibleMandates(String userName) throws ClientException;
+    List<DocumentModel> getAvalaibleMandates(String userName);
 
-    DocumentModel newMandate(String username, String deputy) throws ClientException;
+    DocumentModel newMandate(String username, String deputy);
 
-    DocumentModel newMandate(String username, String deputy, Calendar start, Calendar end) throws ClientException;
+    DocumentModel newMandate(String username, String deputy, Calendar start, Calendar end);
 
-    void addMandate(DocumentModel entry) throws ClientException;
+    void addMandate(DocumentModel entry);
 
-    void removeMandate(String username, String deputy) throws ClientException;
+    void removeMandate(String username, String deputy);
 
     String getDeputySchemaName();
 }

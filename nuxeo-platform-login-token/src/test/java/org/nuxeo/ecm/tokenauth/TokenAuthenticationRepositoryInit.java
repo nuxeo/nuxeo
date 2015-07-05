@@ -34,14 +34,14 @@ public class TokenAuthenticationRepositoryInit extends DefaultRepositoryInit {
     }
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         createTestDoc(session);
     }
 
     /**
      * Creates the test doc.
      */
-    protected DocumentModel createTestDoc(CoreSession session) throws ClientException {
+    protected DocumentModel createTestDoc(CoreSession session) {
 
         DocumentModel doc = session.createDocumentModel("/", "testDoc", "File");
 
