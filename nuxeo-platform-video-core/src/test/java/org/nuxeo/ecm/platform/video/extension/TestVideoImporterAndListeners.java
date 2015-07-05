@@ -140,7 +140,7 @@ public class TestVideoImporterAndListeners {
     }
 
     @Test
-    public void testVideoType() throws ClientException {
+    public void testVideoType() {
         DocumentType videoType = session.getDocumentType(VIDEO_TYPE);
         assertNotNull("Does our type exist?", videoType);
 

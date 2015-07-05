@@ -92,7 +92,7 @@ public class TestVideoService {
     }
 
     @Test
-    public void testVideoConversion() throws IOException, ClientException {
+    public void testVideoConversion() throws IOException {
         Video video = getTestVideo();
         TranscodedVideo transcodedVideo = videoService.convert(video, "WebM 480p");
         assertNotNull(transcodedVideo);
@@ -127,7 +127,7 @@ public class TestVideoService {
     @Test
     // temporary ignore
     @Ignore
-    public void testAsynchronousVideoConversion() throws IOException, ClientException, InterruptedException {
+    public void testAsynchronousVideoConversion() throws IOException, InterruptedException {
         Video video = getTestVideo();
         DocumentModel doc = session.createDocumentModel("/", "video", VIDEO_TYPE);
         doc.setPropertyValue("file:content", (Serializable) video.getBlob());

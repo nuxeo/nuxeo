@@ -110,7 +110,7 @@ public class VideoConversionWork extends AbstractWork {
         setStatus("Done");
     }
 
-    protected Video getVideoToConvert() throws ClientException {
+    protected Video getVideoToConvert() {
         DocumentModel doc = session.getDocument(new IdRef(docId));
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
         Video video = videoDocument.getVideo();
@@ -120,7 +120,7 @@ public class VideoConversionWork extends AbstractWork {
         return video;
     }
 
-    protected void saveNewTranscodedVideo(DocumentModel doc, TranscodedVideo transcodedVideo) throws ClientException {
+    protected void saveNewTranscodedVideo(DocumentModel doc, TranscodedVideo transcodedVideo) {
         @SuppressWarnings("unchecked")
         List<Map<String, Serializable>> transcodedVideos = (List<Map<String, Serializable>>) doc.getPropertyValue("vid:transcodedVideos");
         if (transcodedVideos == null) {
@@ -140,7 +140,7 @@ public class VideoConversionWork extends AbstractWork {
      *
      * @since 5.8
      */
-    protected void fireVideoConversionsDoneEvent(DocumentModel doc) throws ClientException {
+    protected void fireVideoConversionsDoneEvent(DocumentModel doc) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         List<String> workIds = workManager.listWorkIds(CATEGORY_VIDEO_CONVERSION, null);
         String idPrefix = computeIdPrefix(repositoryName, docId);

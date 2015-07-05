@@ -53,7 +53,7 @@ public class VideoActions implements Serializable {
     @In(create = true)
     protected VideoService videoService;
 
-    public String getURLForPlayer(DocumentModel doc) throws ClientException {
+    public String getURLForPlayer(DocumentModel doc) {
         return DocumentModelFunctions.bigFileUrl(doc, "file:content", "");
     }
 
@@ -72,7 +72,7 @@ public class VideoActions implements Serializable {
         return videoDocument.getTranscodedVideo(name);
     }
 
-    public String getURLForStaticPreview(DocumentModel videoDoc) throws ClientException {
+    public String getURLForStaticPreview(DocumentModel videoDoc) {
         String lastModification = "" + (((Calendar) videoDoc.getPropertyValue("dc:modified")).getTimeInMillis());
         return DocumentModelFunctions.fileUrl("downloadPicture", videoDoc, "StaticPlayerView:content", lastModification);
     }
