@@ -89,7 +89,7 @@ public class QueryUsers {
         return buildResponse(users);
     }
 
-    protected Blob buildResponse(List<DocumentModel> users) throws UnsupportedEncodingException, ClientException {
+    protected Blob buildResponse(List<DocumentModel> users) throws UnsupportedEncodingException {
 
         JSONArray array = new JSONArray();
         for (DocumentModel user : users) {

@@ -77,7 +77,7 @@ public class MultiTenantHelper {
      * The {@code principal} is used if it is a {@link SystemPrincipal}, then the tenantId is retrieved from the
      * Principal matching the {@link SystemPrincipal#getOriginatingUser()}.
      */
-    public static String getCurrentTenantId(Principal principal) throws ClientException {
+    public static String getCurrentTenantId(Principal principal) {
         if (principal instanceof SystemPrincipal) {
             String originatingUser = ((SystemPrincipal) principal).getOriginatingUser();
             if (originatingUser != null) {
@@ -94,7 +94,7 @@ public class MultiTenantHelper {
     /**
      * Returns the tenantId for the given {@code username} if any, {@code null} otherwise.
      */
-    public static String getTenantId(String username) throws ClientException {
+    public static String getTenantId(String username) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         String tenantId = null;
         DocumentModel userModel = userManager.getUserModel(username);
@@ -108,13 +108,13 @@ public class MultiTenantHelper {
      * Returns the path of the tenant document matching the {@code tenantId}, or {@code null} if there is no document
      * matching.
      */
-    public static String getTenantDocumentPath(CoreSession session, final String tenantId) throws ClientException {
+    public static String getTenantDocumentPath(CoreSession session, final String tenantId) {
         final List<String> paths = new ArrayList<String>();
         String path = pathCache.getIfPresent(tenantId);
         if (path == null) {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     String query = String.format("SELECT * FROM Document WHERE tenantconfig:tenantId = '%s'", tenantId);
                     List<DocumentModel> docs = session.query(query);
                     if (!docs.isEmpty()) {
@@ -135,9 +135,8 @@ public class MultiTenantHelper {
      * 
      * @param doc
      * @return DocumentModel corresponding to the Tenant container, null otherwise
-     * @throws ClientException
      */
-    public static String getOwningTenantId(final DocumentModel doc) throws ClientException {
+    public static String getOwningTenantId(final DocumentModel doc) {
         String tenantId = tenantBinding.getIfPresent(doc.getId());
         if (NO_TENANT.equals(tenantId)) {
             return null;
@@ -169,7 +168,7 @@ public class MultiTenantHelper {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             List<DocumentModel> parents = session.getParentDocuments(target.getRef());
             for (int i = parents.size() - 1; i >= 0; i--) {
                 DocumentModel parent = parents.get(i);

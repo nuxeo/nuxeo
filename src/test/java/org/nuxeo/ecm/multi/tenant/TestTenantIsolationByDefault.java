@@ -67,7 +67,7 @@ public class TestTenantIsolationByDefault {
     protected DirectoryService directoryService;
 
     @Test
-    public void testTenantIsolationByDefault() throws ClientException {
+    public void testTenantIsolationByDefault() {
         assertTrue(multiTenantService.isTenantIsolationEnabled(session));
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
         assertNotNull(domain);

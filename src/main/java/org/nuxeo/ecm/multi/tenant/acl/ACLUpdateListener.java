@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ACLUpdateListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         if (DocumentEventTypes.BEFORE_DOC_SECU_UPDATE.equals(event.getName())) {
 

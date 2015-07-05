@@ -78,12 +78,12 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public boolean isTenantIsolationEnabled(CoreSession session) throws ClientException {
+    public boolean isTenantIsolationEnabled(CoreSession session) {
         if (isTenantIsolationEnabled == null) {
             final List<DocumentModel> tenants = new ArrayList<DocumentModel>();
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     String query = "SELECT * FROM Document WHERE ecm:mixinType = 'TenantConfig' AND ecm:currentLifeCycleState != 'deleted'";
                     tenants.addAll(session.query(query));
                 }
@@ -94,11 +94,11 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public void enableTenantIsolation(CoreSession session) throws ClientException {
+    public void enableTenantIsolation(CoreSession session) {
         if (!isTenantIsolationEnabled(session)) {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     String query = "SELECT * FROM Document WHERE ecm:primaryType = '%s' AND ecm:currentLifeCycleState != 'deleted'";
                     List<DocumentModel> docs = session.query(String.format(query, configuration.getTenantDocumentType()));
                     for (DocumentModel doc : docs) {
@@ -112,11 +112,11 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public void disableTenantIsolation(CoreSession session) throws ClientException {
+    public void disableTenantIsolation(CoreSession session) {
         if (isTenantIsolationEnabled(session)) {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     String query = "SELECT * FROM Document WHERE ecm:mixinType = 'TenantConfig' AND ecm:currentLifeCycleState != 'deleted'";
                     List<DocumentModel> docs = session.query(query);
                     for (DocumentModel doc : docs) {
@@ -130,7 +130,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public void enableTenantIsolationFor(CoreSession session, DocumentModel doc) throws ClientException {
+    public void enableTenantIsolationFor(CoreSession session, DocumentModel doc) {
         if (!doc.hasFacet(TENANT_CONFIG_FACET)) {
             doc.addFacet(TENANT_CONFIG_FACET);
         }
@@ -143,7 +143,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         session.saveDocument(doc);
     }
 
-    private DocumentModel registerTenant(DocumentModel doc) throws ClientException {
+    private DocumentModel registerTenant(DocumentModel doc) {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             Map<String, Object> m = new HashMap<String, Object>();
@@ -154,7 +154,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         }
     }
 
-    private void setTenantACL(String tenantId, DocumentModel doc) throws ClientException {
+    private void setTenantACL(String tenantId, DocumentModel doc) {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
 
@@ -170,7 +170,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public void disableTenantIsolationFor(CoreSession session, DocumentModel doc) throws ClientException {
+    public void disableTenantIsolationFor(CoreSession session, DocumentModel doc) {
         if (session.exists(doc.getRef())) {
             if (doc.hasFacet(TENANT_CONFIG_FACET)) {
                 doc.removeFacet(TENANT_CONFIG_FACET);
@@ -181,7 +181,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         unregisterTenant(doc);
     }
 
-    private void removeTenantACL(DocumentModel doc) throws ClientException {
+    private void removeTenantACL(DocumentModel doc) {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();
         String tenantId = getTenantIdForTenant(doc);
@@ -198,7 +198,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
         doc.setACP(acp, true);
     }
 
-    private void unregisterTenant(DocumentModel doc) throws ClientException {
+    private void unregisterTenant(DocumentModel doc) {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             session.deleteEntry(getTenantIdForTenant(doc));
@@ -223,7 +223,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
     }
 
     @Override
-    public List<DocumentModel> getTenants() throws ClientException {
+    public List<DocumentModel> getTenants() {
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         try (Session session = directoryService.open(TENANTS_DIRECTORY)) {
             return session.getEntries();
@@ -249,7 +249,7 @@ public class MultiTenantServiceImpl extends DefaultComponent implements MultiTen
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 new UnrestrictedSessionRunner(repositoryName) {
                     @Override
-                    public void run() throws ClientException {
+                    public void run() {
                         if (isTenantIsolationEnabledByDefault() && !isTenantIsolationEnabled(session)) {
                             enableTenantIsolation(session);
                         }

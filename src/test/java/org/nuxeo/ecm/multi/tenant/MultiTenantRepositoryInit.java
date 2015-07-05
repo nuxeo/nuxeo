@@ -31,7 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 public class MultiTenantRepositoryInit implements RepositoryInit {
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         MultiTenantService mts = Framework.getLocalService(MultiTenantService.class);
         mts.enableTenantIsolation(session);
 
@@ -55,7 +55,7 @@ public class MultiTenantRepositoryInit implements RepositoryInit {
      * @param string
      * @param name
      */
-    protected NuxeoPrincipal createUser(String username, String tenant, CoreSession session) throws ClientException {
+    protected NuxeoPrincipal createUser(String username, String tenant, CoreSession session) {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);

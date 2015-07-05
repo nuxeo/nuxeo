@@ -104,7 +104,7 @@ public class TestMultiTenantService {
     protected TrashService trashService;
 
     @After
-    public void deleteAllUsersAndGroups() throws ClientException {
+    public void deleteAllUsersAndGroups() {
         if (userManager.getPrincipal("bender") != null) {
             userManager.deleteUser("bender");
         }
@@ -133,7 +133,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldDisableTenantIsolation() throws ClientException {
+    public void shouldDisableTenantIsolation() {
         // make sure the tenant isolation is disabled
         multiTenantService.disableTenantIsolation(session);
         assertFalse(multiTenantService.isTenantIsolationEnabled(session));
@@ -161,7 +161,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldEnableTenantIsolationForNewDomain() throws ClientException {
+    public void shouldEnableTenantIsolationForNewDomain() {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
@@ -185,7 +185,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldEnableTenantIsolation() throws ClientException {
+    public void shouldEnableTenantIsolation() {
         multiTenantService.enableTenantIsolation(session);
 
         assertTrue(multiTenantService.isTenantIsolationEnabled(session));
@@ -208,7 +208,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldSkipTrashedTenantOnEnable() throws ClientException {
+    public void shouldSkipTrashedTenantOnEnable() {
         assertFalse(multiTenantService.isTenantIsolationEnabled(session));
 
         // create and delete a domain
@@ -231,7 +231,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldDisableTenantOnTrash() throws ClientException {
+    public void shouldDisableTenantOnTrash() {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
@@ -259,7 +259,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldGiveManageEverythingRightForTenantManager() throws ClientException, LoginException {
+    public void shouldGiveManageEverythingRightForTenantManager() throws LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
@@ -290,7 +290,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void tenantManagerShouldCreateGroupsForTenant() throws ClientException, LoginException {
+    public void tenantManagerShouldCreateGroupsForTenant() throws LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
@@ -320,7 +320,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldGiveWriteRightOnTenant() throws ClientException, LoginException {
+    public void shouldGiveWriteRightOnTenant() throws LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel domain = session.getDocument(new PathRef("/default-domain"));
@@ -368,7 +368,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void tenantManagerShouldModifyOnlyTenantGroups() throws ClientException, LoginException {
+    public void tenantManagerShouldModifyOnlyTenantGroups() throws LoginException {
         multiTenantService.enableTenantIsolation(session);
 
         NuxeoGroup noTenantGroup = createGroup("noTenantGroup");
@@ -419,7 +419,7 @@ public class TestMultiTenantService {
     }
 
     @Test
-    public void shouldRewriteACLs() throws ClientException {
+    public void shouldRewriteACLs() {
         multiTenantService.enableTenantIsolation(session);
 
         DocumentModel newDomain = session.createDocumentModel("/", "newDomain", "Domain");
@@ -458,7 +458,7 @@ public class TestMultiTenantService {
         Assert.assertFalse(principals.contains("Everyone"));
     }
 
-    protected CoreSession openSession() throws ClientException {
+    protected CoreSession openSession() {
         return settings.openSession();
     }
 
@@ -477,7 +477,7 @@ public class TestMultiTenantService {
         return powerUsers.getId();
     }
 
-    protected NuxeoPrincipal createUser(String username, boolean isPowerUser, String tenant) throws ClientException,
+    protected NuxeoPrincipal createUser(String username, boolean isPowerUser, String tenant) throws
             LoginException {
         DocumentModel user = userManager.getBareUserModel();
         user.setPropertyValue("user:username", username);
@@ -496,7 +496,7 @@ public class TestMultiTenantService {
         return userManager.getPrincipal(username);
     }
 
-    protected NuxeoGroup createGroup(String groupName) throws ClientException {
+    protected NuxeoGroup createGroup(String groupName) {
         DocumentModel group = userManager.getBareGroupModel();
         group.setPropertyValue("group:groupname", groupName);
         String computedGroupName = groupName;

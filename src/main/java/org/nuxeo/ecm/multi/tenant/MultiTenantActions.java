@@ -67,27 +67,27 @@ public class MultiTenantActions implements Serializable {
     @In(create = true)
     protected DirectoryUIActionsBean directoryUIActions;
 
-    public List<DocumentModel> getTenants() throws ClientException {
+    public List<DocumentModel> getTenants() {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         return multiTenantService.getTenants();
     }
 
-    public boolean isTenantIsolationEnabled() throws ClientException {
+    public boolean isTenantIsolationEnabled() {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         return multiTenantService.isTenantIsolationEnabled(documentManager);
     }
 
-    public void enableTenantIsolation() throws ClientException {
+    public void enableTenantIsolation() {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         multiTenantService.enableTenantIsolation(documentManager);
     }
 
-    public void disableTenantIsolation() throws ClientException {
+    public void disableTenantIsolation() {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         multiTenantService.disableTenantIsolation(documentManager);
     }
 
-    public boolean isReadOnlyDirectory(String directoryName) throws ClientException {
+    public boolean isReadOnlyDirectory(String directoryName) {
         MultiTenantService multiTenantService = Framework.getLocalService(MultiTenantService.class);
         if (multiTenantService.isTenantIsolationEnabled(documentManager)) {
             if (multiTenantService.isTenantAdministrator(documentManager.getPrincipal())) {
@@ -100,7 +100,7 @@ public class MultiTenantActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     public void validateTenantAdministrators(FacesContext context, UIComponent component, Object value)
-            throws ClientException {
+            {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String currentDocumentTenantId = (String) currentDocument.getPropertyValue(TENANT_ID_PROPERTY);
         NuxeoPrincipal currentUser = (NuxeoPrincipal) documentManager.getPrincipal();
