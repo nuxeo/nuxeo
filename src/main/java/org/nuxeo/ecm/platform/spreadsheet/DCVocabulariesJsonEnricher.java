@@ -149,10 +149,9 @@ public class DCVocabulariesJsonEnricher extends AbstractJsonEnricher<DocumentMod
      * @param session
      * @param labelFields
      * @return a map of field: label
-     * @throws ClientException
      */
     private static Map<String, String> getAbsoluteLabels(final String entryId, final Session session,
-            List<String> labelFields) throws ClientException {
+            List<String> labelFields) {
         String[] split = entryId.split(KEY_SEPARATOR);
         Map<String, String> labels = new HashMap<>();
         for (int i = 0; i < split.length; i++) {
