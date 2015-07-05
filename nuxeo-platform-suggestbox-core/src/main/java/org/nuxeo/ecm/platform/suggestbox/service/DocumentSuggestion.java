@@ -45,7 +45,7 @@ public class DocumentSuggestion extends Suggestion {
         this.documentLocation = documentLocation;
     }
 
-    public static Suggestion fromDocumentModel(DocumentModel doc) throws ClientException {
+    public static Suggestion fromDocumentModel(DocumentModel doc) {
         TypeInfo typeInfo = doc.getAdapter(TypeInfo.class);
         String description = doc.getProperty("dc:description").getValue(String.class);
         String icon = null;

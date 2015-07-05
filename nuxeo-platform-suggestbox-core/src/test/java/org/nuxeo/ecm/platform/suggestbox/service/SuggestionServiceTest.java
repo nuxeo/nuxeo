@@ -104,7 +104,7 @@ public class SuggestionServiceTest {
         assertNotNull(suggestionService);
     }
 
-    protected void makeSomeUsersAndGroups() throws ClientException {
+    protected void makeSomeUsersAndGroups() {
         try (Session userSession = userdir.getSession()) {
             Map<String, Object> john = new HashMap<String, Object>();
             john.put("username", "john");
@@ -132,7 +132,7 @@ public class SuggestionServiceTest {
         }
     }
 
-    protected void makeSomeDocuments() throws ClientException {
+    protected void makeSomeDocuments() {
         DocumentModel domain = session.createDocumentModel("/", "default-domain", "Folder");
         session.createDocument(domain);
 
