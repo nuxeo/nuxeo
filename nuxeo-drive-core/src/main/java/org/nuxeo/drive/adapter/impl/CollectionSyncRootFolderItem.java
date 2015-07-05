@@ -48,12 +48,12 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
     private static final long serialVersionUID = 1L;
 
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
-            throws ClientException {
+            {
         this(factoryName, parentItem, doc, false);
     }
 
     public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
     }
 
@@ -63,7 +63,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -84,17 +84,17 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
     }
 
     @Override
-    public FolderItem createFolder(String name) throws ClientException {
+    public FolderItem createFolder(String name) {
         throw new UnsupportedOperationException("Cannot create a folder in a collection synchronization root.");
     }
 
     @Override
-    public FileItem createFile(Blob blob) throws ClientException {
+    public FileItem createFile(Blob blob) {
         throw new UnsupportedOperationException("Cannot create a file in a collection synchronization root.");
     }
 
     @Override
-    protected final void initialize(DocumentModel doc) throws ClientException {
+    protected final void initialize(DocumentModel doc) {
         super.initialize(doc);
         // Cannot create a document in a collection sync root (could be
         // implemented as adding it to the collection if only we new the doc

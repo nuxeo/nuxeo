@@ -76,7 +76,7 @@ public class NuxeoDriveSetupIntegrationTests {
     protected boolean useMembersGroup = false;
 
     @OperationMethod
-    public Blob run() throws ClientException {
+    public Blob run() {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
 
@@ -91,7 +91,7 @@ public class NuxeoDriveSetupIntegrationTests {
         return new StringBlob(testUserCredentials, "text/plain");
     }
 
-    protected String createTestUsers(String[] testUserNames) throws ClientException {
+    protected String createTestUsers(String[] testUserNames) {
 
         StringBuilder testUserCredentials = new StringBuilder();
 
@@ -127,7 +127,7 @@ public class NuxeoDriveSetupIntegrationTests {
         return testUserCredentials.toString();
     }
 
-    protected void createTestWorkspace(String[] testUserNames) throws ClientException {
+    protected void createTestWorkspace(String[] testUserNames) {
 
         // Create test workspace
         String testWorkspaceParentPath = NuxeoDriveIntegrationTestsHelper.getDefaultDomainPath(session) + "/"

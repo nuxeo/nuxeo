@@ -34,9 +34,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface FileItem extends FileSystemItem {
 
     @JsonIgnore
-    Blob getBlob() throws ClientException;
+    Blob getBlob();
 
-    String getDownloadURL() throws ClientException;
+    String getDownloadURL();
 
     String getDigestAlgorithm();
 
@@ -44,6 +44,6 @@ public interface FileItem extends FileSystemItem {
 
     boolean getCanUpdate();
 
-    void setBlob(Blob blob) throws ClientException;
+    void setBlob(Blob blob);
 
 }

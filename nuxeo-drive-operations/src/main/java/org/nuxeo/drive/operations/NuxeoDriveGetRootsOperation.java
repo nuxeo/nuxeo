@@ -53,7 +53,7 @@ public class NuxeoDriveGetRootsOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public DocumentModelList run() throws ClientException {
+    public DocumentModelList run() {
 
         // By default get synchronization roots from all repositories, except if
         // a specific repository name is passed as a request header

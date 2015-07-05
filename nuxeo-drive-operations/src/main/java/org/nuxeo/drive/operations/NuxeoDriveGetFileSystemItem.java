@@ -53,7 +53,7 @@ public class NuxeoDriveGetFileSystemItem {
     protected String parentId;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem;

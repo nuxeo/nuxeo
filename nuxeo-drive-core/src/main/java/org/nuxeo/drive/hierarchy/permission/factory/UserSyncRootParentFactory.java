@@ -55,7 +55,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     /*------------------- AbstractFileSystemItemFactory ------------------- */
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (StringUtils.isEmpty(folderNameParam)) {
@@ -67,7 +67,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
@@ -91,7 +91,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return new UserSyncRootParentFolderItem(getName(), doc, parentItem, folderName, relaxSyncRootConstraint);
     }
 
@@ -100,21 +100,21 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
      * Force parent item using {@link #getTopLevelFolderItem(Principal)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
     }
 
     /*------------------- VirtualFolderItemFactory ------------------- */
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         // TODO: handle multiple repositories
         try (CoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {
@@ -139,7 +139,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     }
 
     /*------------------- Protected ------------------- */
-    protected FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
+    protected FolderItem getTopLevelFolderItem(Principal principal) {
         FolderItem topLevelFolder = Framework.getLocalService(FileSystemItemManager.class).getTopLevelFolder(principal);
         if (topLevelFolder == null) {
             throw new ClientException("Found no top level folder item. Please check your "

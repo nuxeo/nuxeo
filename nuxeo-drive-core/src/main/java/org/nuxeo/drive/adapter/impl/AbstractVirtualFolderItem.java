@@ -39,7 +39,7 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     protected boolean canCreateChild;
 
     public AbstractVirtualFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
-            String folderName) throws ClientException {
+            String folderName) {
         super(factoryName, principal, false);
         this.parentId = parentId;
         name = folderName;
@@ -65,26 +65,26 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
 
     /*----------------------- FolderItem -----------------------*/
     @Override
-    public abstract List<FileSystemItem> getChildren() throws ClientException;
+    public abstract List<FileSystemItem> getChildren();
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
-    public void rename(String name) throws ClientException {
+    public void rename(String name) {
         throw new UnsupportedOperationException("Cannot rename a virtual folder item.");
     }
 
     @Override
-    public void delete() throws ClientException {
+    public void delete() {
         throw new UnsupportedOperationException("Cannot delete a virtual folder item.");
     }
 
     @Override
-    public boolean canMove(FolderItem dest) throws ClientException {
+    public boolean canMove(FolderItem dest) {
         return false;
     }
 
     @Override
-    public FileSystemItem move(FolderItem dest) throws ClientException {
+    public FileSystemItem move(FolderItem dest) {
         throw new UnsupportedOperationException("Cannot move a virtual folder item.");
     }
 
@@ -95,12 +95,12 @@ public abstract class AbstractVirtualFolderItem extends AbstractFileSystemItem i
     }
 
     @Override
-    public FolderItem createFolder(String name) throws ClientException {
+    public FolderItem createFolder(String name) {
         throw new UnsupportedOperationException("Cannot create a folder in a virtual folder item.");
     }
 
     @Override
-    public FileItem createFile(Blob blob) throws ClientException {
+    public FileItem createFile(Blob blob) {
         throw new UnsupportedOperationException("Cannot create a file in a virtual folder item.");
     }
 

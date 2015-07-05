@@ -840,12 +840,12 @@ public class TestFileSystemItemOperations {
         deleteUser("joe");
     }
 
-    protected NuxeoPrincipal createUser(String userName, String password) throws ClientException {
+    protected NuxeoPrincipal createUser(String userName, String password) {
         return createUser(userName, password, null, null);
     }
 
     protected NuxeoPrincipal createUser(String userName, String password, String firstName, String lastName)
-            throws ClientException {
+            {
         try (org.nuxeo.ecm.directory.Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", userName);
@@ -858,14 +858,14 @@ public class TestFileSystemItemOperations {
         return userManager.getPrincipal(userName);
     }
 
-    protected void deleteUser(String userName) throws ClientException {
+    protected void deleteUser(String userName) {
         try (org.nuxeo.ecm.directory.Session userDir = directoryService.open("userDirectory")) {
             userDir.deleteEntry(userName);
         }
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
-            throws ClientException {
+            {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
@@ -874,7 +874,7 @@ public class TestFileSystemItemOperations {
         TransactionHelper.startTransaction();
     }
 
-    protected void resetPermissions(DocumentModel doc, String userName) throws ClientException {
+    protected void resetPermissions(DocumentModel doc, String userName) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();

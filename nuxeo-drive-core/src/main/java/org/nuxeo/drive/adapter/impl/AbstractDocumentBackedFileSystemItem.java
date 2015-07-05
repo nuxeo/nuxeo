@@ -64,12 +64,12 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
 
     protected String docTitle;
 
-    protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc) throws ClientException {
+    protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc) {
         this(factoryName, doc, false);
     }
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         this(factoryName, null, doc, relaxSyncRootConstraint);
         CoreSession docSession = doc.getCoreSession();
         DocumentModel parentDoc = null;
@@ -151,7 +151,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     }
 
     protected AbstractDocumentBackedFileSystemItem(String factoryName, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
 
         super(factoryName, doc.getCoreSession().getPrincipal(), relaxSyncRootConstraint);
 
@@ -190,7 +190,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
-    public void delete() throws ClientException {
+    public void delete() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
             FileSystemItemFactory parentFactory = getFileSystemItemAdapterService().getFileSystemItemFactoryForId(
@@ -217,7 +217,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     }
 
     @Override
-    public boolean canMove(FolderItem dest) throws ClientException {
+    public boolean canMove(FolderItem dest) {
         // Check source doc deletion
         if (!canDelete) {
             return false;
@@ -241,7 +241,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     }
 
     @Override
-    public FileSystemItem move(FolderItem dest) throws ClientException {
+    public FileSystemItem move(FolderItem dest) {
         DocumentRef sourceDocRef = new IdRef(docId);
         AbstractDocumentBackedFileSystemItem docBackedDest = (AbstractDocumentBackedFileSystemItem) dest;
         String destRepoName = docBackedDest.getRepositoryName();
@@ -282,15 +282,15 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         return docPath;
     }
 
-    protected DocumentModel getDocument(CoreSession session) throws ClientException {
+    protected DocumentModel getDocument(CoreSession session) {
         return session.getDocument(new IdRef(docId));
     }
 
-    protected DocumentModel getDocumentById(String docId, CoreSession session) throws ClientException {
+    protected DocumentModel getDocumentById(String docId, CoreSession session) {
         return session.getDocument(new IdRef(docId));
     }
 
-    protected void updateLastModificationDate(DocumentModel doc) throws ClientException {
+    protected void updateLastModificationDate(DocumentModel doc) {
         lastModificationDate = (Calendar) doc.getPropertyValue("dc:modified");
     }
 
@@ -314,7 +314,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
 
     }
 
-    protected String[] parseFileSystemId(String id) throws ClientException {
+    protected String[] parseFileSystemId(String id) {
 
         // Parse id, expecting pattern:
         // fileSystemItemFactoryName#repositoryName#docId

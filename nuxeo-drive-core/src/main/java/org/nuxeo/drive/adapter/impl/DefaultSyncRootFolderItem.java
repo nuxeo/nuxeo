@@ -35,12 +35,12 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implemen
     private static final long serialVersionUID = 1L;
 
     public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
-            throws ClientException {
+            {
         this(factoryName, parentItem, doc, false);
     }
 
     public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         // A sync root can always be deleted since deletion is implemented as
         // unregistration
@@ -52,7 +52,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implemen
     }
 
     @Override
-    public void delete() throws ClientException {
+    public void delete() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
             Framework.getLocalService(NuxeoDriveManager.class).unregisterSynchronizationRoot(principal, doc, session);
@@ -60,12 +60,12 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implemen
     }
 
     @Override
-    public boolean canMove(FolderItem dest) throws ClientException {
+    public boolean canMove(FolderItem dest) {
         return false;
     }
 
     @Override
-    public FileSystemItem move(FolderItem dest) throws ClientException {
+    public FileSystemItem move(FolderItem dest) {
         throw new UnsupportedOperationException("Cannot move a synchronization root folder item.");
     }
 

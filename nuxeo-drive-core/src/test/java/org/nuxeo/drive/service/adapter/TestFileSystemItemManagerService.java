@@ -538,7 +538,7 @@ public class TestFileSystemItemManagerService {
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
-            throws ClientException {
+            {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
@@ -546,7 +546,7 @@ public class TestFileSystemItemManagerService {
         session.save();
     }
 
-    protected void resetPermissions(DocumentModel doc, String userName) throws ClientException {
+    protected void resetPermissions(DocumentModel doc, String userName) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();

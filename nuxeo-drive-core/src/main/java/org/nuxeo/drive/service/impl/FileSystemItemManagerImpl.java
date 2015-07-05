@@ -64,7 +64,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     @Deprecated
     @Override
-    public CoreSession getSession(String repositoryName, Principal principal) throws ClientException {
+    public CoreSession getSession(String repositoryName, Principal principal) {
         final String sessionKey = repositoryName + "/" + principal.getName();
         CoreSession session = openedSessions.get().get(sessionKey);
         if (session == null) {
@@ -117,22 +117,22 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Read operations ----------------*/
     @Override
-    public List<FileSystemItem> getTopLevelChildren(Principal principal) throws ClientException {
+    public List<FileSystemItem> getTopLevelChildren(Principal principal) {
         return getTopLevelFolder(principal).getChildren();
     }
 
     @Override
-    public FolderItem getTopLevelFolder(Principal principal) throws ClientException {
+    public FolderItem getTopLevelFolder(Principal principal) {
         return getFileSystemItemAdapterService().getTopLevelFolderItemFactory().getTopLevelFolderItem(principal);
     }
 
     @Override
-    public boolean exists(String id, Principal principal) throws ClientException {
+    public boolean exists(String id, Principal principal) {
         return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).exists(id, principal);
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
         try {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
                     principal);
@@ -147,7 +147,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) {
         try {
             return getFileSystemItemAdapterService().getFileSystemItemFactoryForId(id).getFileSystemItemById(id,
                     parentId, principal);
@@ -162,7 +162,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public List<FileSystemItem> getChildren(String id, Principal principal) throws ClientException {
+    public List<FileSystemItem> getChildren(String id, Principal principal) {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
             throw new ClientException(String.format(
@@ -177,7 +177,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public boolean canMove(String srcId, String destId, Principal principal) throws ClientException {
+    public boolean canMove(String srcId, String destId, Principal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
             return false;
@@ -191,7 +191,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     /*------------- Write operations ---------------*/
     @Override
-    public FolderItem createFolder(String parentId, String name, Principal principal) throws ClientException {
+    public FolderItem createFolder(String parentId, String name, Principal principal) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
             throw new ClientException(String.format(
@@ -207,7 +207,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileItem createFile(String parentId, Blob blob, Principal principal) throws ClientException {
+    public FileItem createFile(String parentId, Blob blob, Principal principal) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
             throw new ClientException(String.format(
@@ -223,31 +223,31 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileItem updateFile(String id, Blob blob, Principal principal) throws ClientException {
+    public FileItem updateFile(String id, Blob blob, Principal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         return updateFile(fsItem, blob);
     }
 
     @Override
-    public FileItem updateFile(String id, String parentId, Blob blob, Principal principal) throws ClientException {
+    public FileItem updateFile(String id, String parentId, Blob blob, Principal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, parentId, principal);
         return updateFile(fsItem, blob);
     }
 
     @Override
-    public void delete(String id, Principal principal) throws ClientException {
+    public void delete(String id, Principal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         delete(fsItem);
     }
 
     @Override
-    public void delete(String id, String parentId, Principal principal) throws ClientException {
+    public void delete(String id, String parentId, Principal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, parentId, principal);
         delete(fsItem);
     }
 
     @Override
-    public FileSystemItem rename(String id, String name, Principal principal) throws ClientException {
+    public FileSystemItem rename(String id, String name, Principal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
             throw new ClientException(String.format(
@@ -258,7 +258,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     }
 
     @Override
-    public FileSystemItem move(String srcId, String destId, Principal principal) throws ClientException {
+    public FileSystemItem move(String srcId, String destId, Principal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
             throw new ClientException(String.format(
@@ -283,7 +283,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         return Framework.getLocalService(FileSystemItemAdapterService.class);
     }
 
-    protected FileItem updateFile(FileSystemItem fsItem, Blob blob) throws ClientException {
+    protected FileItem updateFile(FileSystemItem fsItem, Blob blob) {
         if (fsItem == null) {
             throw new ClientException("Cannot update the content of file system item because it doesn't exist.");
         }
@@ -297,7 +297,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
         return file;
     }
 
-    protected void delete(FileSystemItem fsItem) throws ClientException {
+    protected void delete(FileSystemItem fsItem) {
         if (fsItem == null) {
             throw new ClientException("Cannot delete file system item because it doesn't exist.");
         }

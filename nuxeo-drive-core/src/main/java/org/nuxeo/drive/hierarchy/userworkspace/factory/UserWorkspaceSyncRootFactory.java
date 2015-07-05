@@ -43,7 +43,7 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
 
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         String syncRootParentFactoryParam = parameters.get(SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (StringUtils.isEmpty(syncRootParentFactoryParam)) {
             throw new ClientException(
@@ -56,13 +56,13 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc) {
         Principal principal = doc.getCoreSession().getPrincipal();
         FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(syncRootParentFactoryName).getVirtualFolderItem(
                 principal);

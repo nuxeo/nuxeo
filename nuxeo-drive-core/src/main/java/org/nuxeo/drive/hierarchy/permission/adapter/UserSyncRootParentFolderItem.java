@@ -52,12 +52,12 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
     protected boolean isUserWorkspaceSyncRoot = false;
 
     public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName)
-            throws ClientException {
+            {
         this(factoryName, doc, parentItem, folderName, false);
     }
 
     public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem,
-            String folderName, boolean relaxSyncRootConstraint) throws ClientException {
+            String folderName, boolean relaxSyncRootConstraint) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         name = folderName;
         canRename = false;
@@ -71,22 +71,22 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
     }
 
     @Override
-    public void rename(String name) throws ClientException {
+    public void rename(String name) {
         throw new UnsupportedOperationException("Cannot rename a virtual folder item.");
     }
 
     @Override
-    public void delete() throws ClientException {
+    public void delete() {
         throw new UnsupportedOperationException("Cannot delete a virtual folder item.");
     }
 
     @Override
-    public FileSystemItem move(FolderItem dest) throws ClientException {
+    public FileSystemItem move(FolderItem dest) {
         throw new UnsupportedOperationException("Cannot move a virtual folder item.");
     }
 
     @Override
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
 
         if (isUserWorkspaceSyncRoot) {
             return super.getChildren();
@@ -139,7 +139,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
         }
     }
 
-    private boolean isUserWorkspaceSyncRoot(DocumentModel doc) throws ClientException {
+    private boolean isUserWorkspaceSyncRoot(DocumentModel doc) {
         NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
         return nuxeoDriveManager.isSynchronizationRoot(principal, doc);
     }

@@ -32,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
 public class NuxeoDriveCacheInvalidationListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext docCtx;
         if (event.getContext() instanceof DocumentEventContext) {
             docCtx = (DocumentEventContext) event.getContext();

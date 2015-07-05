@@ -44,8 +44,7 @@ public class ChangeFinderDescriptor implements Serializable {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
-    public FileSystemChangeFinder getChangeFinder() throws InstantiationException, IllegalAccessException,
-            ClientException {
+    public FileSystemChangeFinder getChangeFinder() throws InstantiationException, IllegalAccessException {
         FileSystemChangeFinder changeFinder = changeFinderClass.newInstance();
         changeFinder.handleParameters(parameters);
         return changeFinder;

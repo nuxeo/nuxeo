@@ -117,7 +117,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     protected transient DocumentActions documentActions;
 
     @Factory(value = CURRENT_SYNCHRONIZATION_ROOT, scope = ScopeType.EVENT)
-    public DocumentModel getCurrentSynchronizationRoot() throws ClientException {
+    public DocumentModel getCurrentSynchronizationRoot() {
         // Use the event context as request cache
         Context cache = Contexts.getEventContext();
         Boolean isUnderSync = (Boolean) cache.get(IS_UNDER_SYNCHRONIZATION_ROOT);
@@ -140,7 +140,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return (DocumentModel) cache.get(CURRENT_SYNCHRONIZATION_ROOT);
     }
 
-    public boolean canEditDocument(DocumentModel doc) throws ClientException {
+    public boolean canEditDocument(DocumentModel doc) {
         if (doc == null) {
             return false;
         }
@@ -171,9 +171,8 @@ public class NuxeoDriveActions extends InputController implements Serializable {
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
      *         /protocol/server[:port]/webappName/[user/userName/]repo/repoName/nxdocid/docId/filename/fileName[/
      *         downloadUrl/downloadUrl]"
-     * @throws ClientException
      */
-    public String getDriveEditURL() throws ClientException {
+    public String getDriveEditURL() {
         // TODO NXP-15397: handle Drive not started exception
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
@@ -218,7 +217,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     @Factory(value = "canSynchronizeCurrentDocument")
-    public boolean canSynchronizeCurrentDocument() throws ClientException {
+    public boolean canSynchronizeCurrentDocument() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -227,7 +226,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     @Factory(value = "canUnSynchronizeCurrentDocument")
-    public boolean canUnSynchronizeCurrentDocument() throws ClientException {
+    public boolean canUnSynchronizeCurrentDocument() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -244,7 +243,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     @Factory(value = "canNavigateToCurrentSynchronizationRoot")
-    public boolean canNavigateToCurrentSynchronizationRoot() throws ClientException {
+    public boolean canNavigateToCurrentSynchronizationRoot() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -261,7 +260,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     @Factory(value = "currentDocumentUserWorkspace", scope = ScopeType.PAGE)
-    public boolean isCurrentDocumentUserWorkspace() throws ClientException {
+    public boolean isCurrentDocumentUserWorkspace() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return false;
@@ -269,7 +268,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return UserWorkspaceHelper.isUserWorkspace(currentDocument);
     }
 
-    public String synchronizeCurrentDocument() throws ClientException {
+    public String synchronizeCurrentDocument() {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel newSyncRoot = navigationContext.getCurrentDocument();
@@ -283,14 +282,14 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         }
     }
 
-    public void unsynchronizeCurrentDocument() throws ClientException {
+    public void unsynchronizeCurrentDocument() {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         DocumentModel syncRoot = navigationContext.getCurrentDocument();
         driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
     }
 
-    public String navigateToCurrentSynchronizationRoot() throws ClientException {
+    public String navigateToCurrentSynchronizationRoot() {
         DocumentModel currentRoot = getCurrentSynchronizationRoot();
         if (currentRoot == null) {
             return "";
@@ -298,7 +297,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return navigationContext.navigateToDocument(currentRoot);
     }
 
-    public DocumentModelList getSynchronizationRoots() throws ClientException {
+    public DocumentModelList getSynchronizationRoots() {
         DocumentModelList syncRoots = new DocumentModelListImpl();
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Set<IdRef> syncRootRefs = driveManager.getSynchronizationRootReferences(documentManager);
@@ -308,7 +307,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return syncRoots;
     }
 
-    public void unsynchronizeRoot(DocumentModel syncRoot) throws ClientException {
+    public void unsynchronizeRoot(DocumentModel syncRoot) {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Principal principal = documentManager.getPrincipal();
         driveManager.unregisterSynchronizationRoot(principal, syncRoot, documentManager);
@@ -365,7 +364,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return sb.toString();
     }
 
-    protected boolean isSyncRootCandidate(DocumentModel doc) throws ClientException {
+    protected boolean isSyncRootCandidate(DocumentModel doc) {
         if (!doc.isFolder()) {
             return false;
         }
@@ -375,7 +374,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         return true;
     }
 
-    protected FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
+    protected FileSystemItem getFileSystemItem(DocumentModel doc) {
         // Force parentItem to null to avoid computing ancestors
         FileSystemItem fileSystemItem = Framework.getLocalService(FileSystemItemAdapterService.class).getFileSystemItem(
                 doc, null);
@@ -396,7 +395,7 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     /**
      * Update document model and redirect to drive view.
      */
-    public String updateCurrentDocument() throws ClientException {
+    public String updateCurrentDocument() {
         documentActions.updateCurrentDocument();
         return DRIVE_METADATA_VIEW;
     }

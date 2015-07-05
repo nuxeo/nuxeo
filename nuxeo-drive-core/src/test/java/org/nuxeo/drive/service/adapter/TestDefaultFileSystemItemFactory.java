@@ -796,7 +796,7 @@ public class TestDefaultFileSystemItemFactory {
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
-            throws ClientException {
+            {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
@@ -804,7 +804,7 @@ public class TestDefaultFileSystemItemFactory {
         session.save();
     }
 
-    protected void resetPermissions(DocumentModel doc, String userName) throws ClientException {
+    protected void resetPermissions(DocumentModel doc, String userName) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();
@@ -822,15 +822,15 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals(expected, getMajor(doc) + "." + getMinor(doc));
     }
 
-    protected long getMajor(DocumentModel doc) throws ClientException {
+    protected long getMajor(DocumentModel doc) {
         return getVersion(doc, VersioningService.MAJOR_VERSION_PROP);
     }
 
-    protected long getMinor(DocumentModel doc) throws ClientException {
+    protected long getMinor(DocumentModel doc) {
         return getVersion(doc, VersioningService.MINOR_VERSION_PROP);
     }
 
-    protected long getVersion(DocumentModel doc, String prop) throws ClientException {
+    protected long getVersion(DocumentModel doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return -1;

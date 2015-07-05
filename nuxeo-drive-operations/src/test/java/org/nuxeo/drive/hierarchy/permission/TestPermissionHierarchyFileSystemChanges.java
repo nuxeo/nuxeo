@@ -156,7 +156,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     @After
-    public void tearDown() throws ClientException {
+    public void tearDown() {
         // needed for session cleanup
         TransactionHelper.startTransaction();
 
@@ -184,7 +184,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * attribute, that is to be used by the client.
      */
     @Test
-    public void testAdaptableUnregisteredSyncRootChange() throws ClientException, InterruptedException {
+    public void testAdaptableUnregisteredSyncRootChange() throws InterruptedException {
 
         TransactionHelper.commitOrRollbackTransaction();
 
@@ -396,7 +396,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected DocumentModel createFile(CoreSession session, String path, String name, String type, String fileName,
-            String content) throws ClientException {
+            String content) {
 
         DocumentModel file = session.createDocumentModel(path, name, type);
         Blob blob = new StringBlob(content);
@@ -406,13 +406,13 @@ public class TestPermissionHierarchyFileSystemChanges {
     }
 
     protected DocumentModel createFolder(CoreSession session, String path, String name, String type)
-            throws ClientException {
+            {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         return session.createDocument(folder);
     }
 
-    protected void createUser(String userName, String password) throws ClientException {
+    protected void createUser(String userName, String password) {
         try (Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", userName);
@@ -421,14 +421,14 @@ public class TestPermissionHierarchyFileSystemChanges {
         }
     }
 
-    protected void deleteUser(String userName) throws ClientException {
+    protected void deleteUser(String userName) {
         try (Session userDir = directoryService.open("userDirectory")) {
             userDir.deleteEntry(userName);
         }
     }
 
     protected void setPermission(CoreSession session, DocumentModel doc, String userName, String permission,
-            boolean isGranted) throws ClientException {
+            boolean isGranted) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
@@ -436,7 +436,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         session.save();
     }
 
-    protected void resetPermissions(CoreSession session, DocumentRef docRef, String userName) throws ClientException {
+    protected void resetPermissions(CoreSession session, DocumentRef docRef, String userName) {
         ACP acp = session.getACP(docRef);
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         Iterator<ACE> localACLIt = localACL.iterator();
@@ -455,7 +455,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         eventService.waitForAsyncCompletion();
     }
 
-    protected List<FileSystemItemChange> getChanges(Principal principal) throws ClientException, InterruptedException {
+    protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
                 Collections.<String, Set<IdRef>> emptyMap(), lastEventLogId);
         assertNotNull(changeSummary);
@@ -468,7 +468,7 @@ public class TestPermissionHierarchyFileSystemChanges {
                 NXAuditEventsService.NAME);
         ((DefaultAuditBackend) auditService.getBackend()).getOrCreatePersistenceProvider().run(true, new RunVoid() {
             @Override
-            public void runWith(EntityManager em) throws ClientException {
+            public void runWith(EntityManager em) {
                 em.createNativeQuery("delete from nxp_logs_mapextinfos").executeUpdate();
                 em.createNativeQuery("delete from nxp_logs_extinfo").executeUpdate();
                 em.createNativeQuery("delete from nxp_logs").executeUpdate();

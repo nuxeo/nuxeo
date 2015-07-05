@@ -52,7 +52,7 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
     protected List<String> childrenFactoryNames;
 
     public PermissionTopLevelFolderItem(String factoryName, Principal principal, String folderName,
-            List<String> childrenFactoryNames) throws ClientException {
+            List<String> childrenFactoryNames) {
         super(factoryName, principal, null, null, folderName);
         this.childrenFactoryNames = childrenFactoryNames;
     }
@@ -62,7 +62,7 @@ public class PermissionTopLevelFolderItem extends AbstractVirtualFolderItem {
     }
 
     @Override
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
         for (String childFactoryName : childrenFactoryNames) {

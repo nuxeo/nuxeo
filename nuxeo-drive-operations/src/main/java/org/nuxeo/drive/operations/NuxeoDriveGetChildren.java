@@ -49,7 +49,7 @@ public class NuxeoDriveGetChildren {
     protected String id;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getChildren(id, ctx.getPrincipal());

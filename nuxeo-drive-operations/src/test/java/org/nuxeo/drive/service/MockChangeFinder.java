@@ -57,7 +57,7 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     protected Map<String, String> parameters = new HashMap<String, String>();
 
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         this.parameters.putAll(parameters);
     }
 
@@ -94,7 +94,7 @@ public class MockChangeFinder implements FileSystemChangeFinder {
     @Override
     public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(CoreSession session,
             Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds,
-            long lowerBound, long upperBound, int limit) throws ClientException, TooManyChangesException {
+            long lowerBound, long upperBound, int limit) throws TooManyChangesException {
         throw new UnsupportedOperationException(
                 "Using MockChangeFinder with integer bounds is not implemented, please call #getFileSystemChanges.");
     }

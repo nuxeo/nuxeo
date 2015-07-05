@@ -42,7 +42,7 @@ public interface FileSystemItemAdapterService {
      *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If {@code includeDeleted} is true no filter
@@ -53,7 +53,7 @@ public interface FileSystemItemAdapterService {
      *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
@@ -68,8 +68,7 @@ public interface FileSystemItemAdapterService {
      *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
@@ -80,7 +79,7 @@ public interface FileSystemItemAdapterService {
      *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
@@ -91,8 +90,7 @@ public interface FileSystemItemAdapterService {
      *         {@link FileSystemItem}
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id.
@@ -108,7 +106,7 @@ public interface FileSystemItemAdapterService {
      * @see FileSystemItemFactory#getFileSystemItem(DocumentModel, String)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException;
+            boolean relaxSyncRootConstraint);
 
     /**
      * Gets the {@link FileSystemItemFactory} that can handle the the given {@link FileSystemItem} id.
@@ -116,21 +114,21 @@ public interface FileSystemItemAdapterService {
      * @throws ClientException if no {@link FileSystemItemFactory} can handle the given {@link FileSystemItem} id
      * @see FileSystemItemFactory#canHandleFileSystemItemId(String)
      */
-    FileSystemItemFactory getFileSystemItemFactoryForId(String id) throws ClientException;
+    FileSystemItemFactory getFileSystemItemFactoryForId(String id);
 
     /**
      * Gets the {@link TopLevelFolderItemFactory}.
      */
-    TopLevelFolderItemFactory getTopLevelFolderItemFactory() throws ClientException;
+    TopLevelFolderItemFactory getTopLevelFolderItemFactory();
 
     /**
      * Gets the {@link VirtualFolderItemFactory} for the given factory name.
      */
-    VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName) throws ClientException;
+    VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName);
 
     /**
      * Gets the active {@link FileSystemItem} factory names.
      */
-    Set<String> getActiveFileSystemItemFactories() throws ClientException;
+    Set<String> getActiveFileSystemItemFactories();
 
 }

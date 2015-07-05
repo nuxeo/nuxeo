@@ -46,7 +46,7 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory 
 
     /*---------------------- FileSystemItemFactory ---------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         super.handleParameters(parameters);
         // Look for the "childrenFactories" parameter
         String childrenFactoriesParam = parameters.get(CHILDREN_FACTORIES_PARAM);
@@ -61,13 +61,13 @@ public class PermissionTopLevelFactory extends AbstractVirtualFolderItemFactory 
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) {
         return getTopLevelFolderItem(principal);
     }
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
+    public FolderItem getTopLevelFolderItem(Principal principal) {
         return new PermissionTopLevelFolderItem(getName(), principal, getFolderName(), childrenFactoryNames);
     }
 

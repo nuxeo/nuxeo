@@ -52,7 +52,7 @@ public class NuxeoDriveGenerateConflictedItemName {
     protected String name;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
 
         String extension = "";
         if (name.contains(".")) {

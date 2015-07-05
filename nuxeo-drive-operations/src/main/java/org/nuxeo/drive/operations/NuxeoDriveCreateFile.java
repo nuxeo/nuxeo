@@ -60,7 +60,7 @@ public class NuxeoDriveCreateFile {
     protected String name;
 
     @OperationMethod
-    public Blob run(Blob blob) throws ClientException, ParseException, IOException {
+    public Blob run(Blob blob) throws ParseException, IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         // The filename transfered by the multipart encoding is not preserved

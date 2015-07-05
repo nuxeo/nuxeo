@@ -59,7 +59,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
 
     /*------------------- AbstractFileSystemItemFactory ---------------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         String requiredPermissionParam = parameters.get(REQUIRED_PERMISSION_PARAM);
         if (!StringUtils.isEmpty(requiredPermissionParam)) {
             requiredPermission = requiredPermissionParam;
@@ -99,7 +99,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
      */
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         // Check required permission
         CoreSession session = doc.getCoreSession();
         boolean hasRequiredPermission = session.hasPermission(doc.getRef(), requiredPermission);
@@ -116,13 +116,13 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentId, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return new DefaultSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
     }
 
     /*------------------ AbstractSyncRootFolderItemFactory ------------------*/
     @Override
-    protected FolderItem getParentItem(DocumentModel doc) throws ClientException {
+    protected FolderItem getParentItem(DocumentModel doc) {
         Principal principal = doc.getCoreSession().getPrincipal();
         String docCreator = (String) doc.getPropertyValue("dc:creator");
         if (principal.getName().equals(docCreator)) {

@@ -50,23 +50,23 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     protected VersioningFileSystemItemFactory factory;
 
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) throws ClientException {
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) {
         this(factory, doc, false);
     }
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         super(factory.getName(), doc, relaxSyncRootConstraint);
         initialize(factory, doc);
     }
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc)
-            throws ClientException {
+            {
         this(factory, parentItem, doc, false);
     }
 
     public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         super(factory.getName(), parentItem, doc, relaxSyncRootConstraint);
         initialize(factory, doc);
     }
@@ -77,7 +77,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
-    public void rename(String name) throws ClientException {
+    public void rename(String name) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
@@ -99,7 +99,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
 
     /*--------------------- FileItem -----------------*/
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocument(session);
             return getBlob(doc);
@@ -107,7 +107,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     @Override
-    public String getDownloadURL() throws ClientException {
+    public String getDownloadURL() {
         return downloadURL;
     }
 
@@ -127,7 +127,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     @Override
-    public void setBlob(Blob blob) throws ClientException {
+    public void setBlob(Blob blob) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
@@ -153,7 +153,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     /*--------------------- Protected -----------------*/
-    protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) throws ClientException {
+    protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) {
         this.factory = factory;
         this.name = getFileName(doc);
         this.folder = false;
@@ -168,7 +168,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         this.canUpdate = this.canRename;
     }
 
-    protected BlobHolder getBlobHolder(DocumentModel doc) throws ClientException {
+    protected BlobHolder getBlobHolder(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             throw new ClientException(
@@ -179,7 +179,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         return bh;
     }
 
-    protected Blob getBlob(BlobHolder blobHolder) throws ClientException {
+    protected Blob getBlob(BlobHolder blobHolder) {
         Blob blob = blobHolder.getBlob();
         if (blob == null) {
             throw new ClientException(
@@ -188,17 +188,17 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         return blob;
     }
 
-    protected Blob getBlob(DocumentModel doc) throws ClientException {
+    protected Blob getBlob(DocumentModel doc) {
         BlobHolder bh = getBlobHolder(doc);
         return getBlob(bh);
     }
 
-    protected String getFileName(DocumentModel doc) throws ClientException {
+    protected String getFileName(DocumentModel doc) {
         String filename = getBlob(doc).getFilename();
         return filename != null ? filename : doc.getTitle();
     }
 
-    protected void updateDocTitleIfNeeded(DocumentModel doc, String name) throws ClientException {
+    protected void updateDocTitleIfNeeded(DocumentModel doc, String name) {
         // TODO: not sure about the behavior for the doc title
         if (this.name.equals(docTitle)) {
             doc.setPropertyValue("dc:title", name);
@@ -206,7 +206,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         }
     }
 
-    protected void updateDownloadURL() throws ClientException {
+    protected void updateDownloadURL() {
         StringBuilder downloadURLSb = new StringBuilder();
         downloadURLSb.append("nxbigfile/");
         downloadURLSb.append(repositoryName);
@@ -221,14 +221,14 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         downloadURL = downloadURLSb.toString();
     }
 
-    protected void updateDigest(DocumentModel doc) throws ClientException {
+    protected void updateDigest(DocumentModel doc) {
         Blob blob = getBlob(doc);
         // Force digest computation for a StringBlob,
         // typically the note:note property of a Note document
         digest = FileSystemItemHelper.getDigest(blob, digestAlgorithm);
     }
 
-    protected void versionIfNeeded(DocumentModel doc, CoreSession session) throws ClientException {
+    protected void versionIfNeeded(DocumentModel doc, CoreSession session) {
         if (factory.needsVersioning(doc)) {
             doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
             session.saveDocument(doc);

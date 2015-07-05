@@ -41,7 +41,7 @@ public class NuxeoDriveAddToLocallyEditedCollection {
     protected CoreSession session;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         NuxeoDriveManager nuxeoDriveManager = Framework.getService(NuxeoDriveManager.class);
         nuxeoDriveManager.addToLocallyEditedCollection(session, doc);
         return doc;

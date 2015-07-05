@@ -57,7 +57,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
         // Helper class
     }
 
-    public static void cleanUp(CoreSession session) throws ClientException {
+    public static void cleanUp(CoreSession session) {
 
         // Delete test users and their personal workspace if exist
         UserManager userManager = Framework.getLocalService(UserManager.class);
@@ -91,7 +91,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
         Framework.getLocalService(UserProfileService.class).clearCache();
     }
 
-    public static String getDefaultDomainPath(CoreSession session) throws ClientException {
+    public static String getDefaultDomainPath(CoreSession session) {
         String query = "SELECT * FROM Document where ecm:primaryType = 'Domain'";
         DocumentModelList results = session.query(query);
         if (results.isEmpty()) {

@@ -59,7 +59,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     protected Map<String, String> parameters = new HashMap<String, String>();
 
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         this.parameters.putAll(parameters);
     }
 
@@ -75,7 +75,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     @Override
     public List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws ClientException, TooManyChangesException {
+            throws TooManyChangesException {
         return getFileSystemChanges(session, lastActiveRootRefs, activeRoots, null, lastSuccessfulSyncDate, syncDate,
                 false, limit);
     }
@@ -83,14 +83,14 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     @Override
     public List<FileSystemItemChange> getFileSystemChangesIntegerBounds(CoreSession session,
             Set<IdRef> lastActiveRootRefs, SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds,
-            long lowerBound, long upperBound, int limit) throws ClientException, TooManyChangesException {
+            long lowerBound, long upperBound, int limit) throws TooManyChangesException {
         return getFileSystemChanges(session, lastActiveRootRefs, activeRoots, collectionSyncRootMemberIds, lowerBound,
                 upperBound, true, limit);
     }
 
     protected List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound,
-            long upperBound, boolean integerBounds, int limit) throws ClientException, TooManyChangesException {
+            long upperBound, boolean integerBounds, int limit) throws TooManyChangesException {
         String principalName = session.getPrincipal().getName();
         List<FileSystemItemChange> changes = new ArrayList<FileSystemItemChange>();
 
@@ -400,7 +400,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
     }
 
     protected FileSystemItemChange getFileSystemItemChange(CoreSession session, DocumentRef docRef, LogEntry entry,
-            String expectedFileSystemItemId) throws ClientException {
+            String expectedFileSystemItemId) {
         DocumentModel doc = session.getDocument(docRef);
         // TODO: check the facet, last root change and list of roots
         // to have a special handling for the roots.

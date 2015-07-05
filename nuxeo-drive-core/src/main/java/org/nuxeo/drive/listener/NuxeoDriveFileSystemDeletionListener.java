@@ -56,7 +56,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
     private static final Log log = LogFactory.getLog(NuxeoDriveFileSystemDeletionListener.class);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext ctx;
         if (event.getContext() instanceof DocumentEventContext) {
             ctx = (DocumentEventContext) event.getContext();
@@ -95,7 +95,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         logVirtualEvent(docForLogEntry, virtualEventName, ctx.getPrincipal(), impactedUserName);
     }
 
-    protected DocumentModel handleBeforeDocUpdate(DocumentEventContext ctx, DocumentModel doc) throws ClientException {
+    protected DocumentModel handleBeforeDocUpdate(DocumentEventContext ctx, DocumentModel doc) {
         // Interested in update of a BlobHolder whose blob has been removed
         boolean blobRemoved = false;
         DocumentModel previousDoc = (DocumentModel) ctx.getProperty(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL);
@@ -117,21 +117,21 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         }
     }
 
-    protected boolean handleLifeCycleTransition(DocumentEventContext ctx) throws ClientException {
+    protected boolean handleLifeCycleTransition(DocumentEventContext ctx) {
         String transition = (String) ctx.getProperty(LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION);
         // Interested in 'deleted' life cycle transition only
         return transition != null && LifeCycleConstants.DELETE_TRANSITION.equals(transition);
 
     }
 
-    protected boolean handleAboutToRemove(DocumentModel doc) throws ClientException {
+    protected boolean handleAboutToRemove(DocumentModel doc) {
         // Document deletion of document that are already in deleted
         // state should not be marked as FS deletion to avoid duplicates
         return !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
     protected void logVirtualEvent(DocumentModel doc, String eventName, Principal principal, String impactedUserName)
-            throws ClientException {
+            {
 
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger == null) {

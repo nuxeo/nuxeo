@@ -35,7 +35,7 @@ public interface FileSystemChangeFinder extends Serializable {
     /**
      * Handles the parameters contributed through the {@code changeFinder} contribution.
      */
-    void handleParameters(Map<String, String> parameters) throws ClientException;
+    void handleParameters(Map<String, String> parameters);
 
     /**
      * Gets the changes in the repository against which the given session is bound for the given synchronization root
@@ -59,7 +59,7 @@ public interface FileSystemChangeFinder extends Serializable {
      */
     List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, long lastSuccessfulSyncDate, long syncDate, int limit)
-            throws ClientException, TooManyChangesException;
+            throws TooManyChangesException;
 
     /**
      * Gets the changes in the repository against which the given session is bound for the given synchronization root
@@ -83,7 +83,7 @@ public interface FileSystemChangeFinder extends Serializable {
      */
     List<FileSystemItemChange> getFileSystemChangesIntegerBounds(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound,
-            long upperBound, int limit) throws ClientException, TooManyChangesException;
+            long upperBound, int limit) throws TooManyChangesException;
 
     /**
      * Read the current time code to query for changes. The time is truncated to 0 milliseconds to have a consistent

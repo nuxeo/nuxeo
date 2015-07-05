@@ -36,35 +36,35 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) {
         return new DummyFolderItem(name, doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return getFileSystemItem(doc);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         return getFileSystemItem(doc);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) {
         return new DummyFolderItem(name, parentItem, doc);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, parentItem);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, parentItem);
     }
 
@@ -74,7 +74,7 @@ public class DummyFolderItemFactory extends DefaultFileSystemItemFactory {
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];

@@ -218,7 +218,7 @@ public class TestUserWorkspaceHierarchy {
     }
 
     @After
-    public void tearDown() throws ClientException {
+    public void tearDown() {
         // Close test user core session
         session1.close();
 
@@ -429,7 +429,7 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected void checkFileItem(FileItem fileItem, String fileItemIdPrefix, DocumentModel doc, String parentId,
-            String parentPath, String name, String creator, String lastContributor) throws ClientException {
+            String parentPath, String name, String creator, String lastContributor) {
 
         String expectedFileItemId = fileItemIdPrefix + doc.getId();
         assertEquals(expectedFileItemId, fileItem.getId());
@@ -447,7 +447,7 @@ public class TestUserWorkspaceHierarchy {
 
     protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc,
             String parentId, String parentPath, String name, String creator, String lastContributor)
-            throws ClientException {
+            {
 
         String expectedFolderItemId = folderItemIdPrefix + doc.getId();
         assertEquals(expectedFolderItemId, folderItem.getId());
@@ -460,7 +460,7 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected DocumentModel createFile(CoreSession session, String path, String name, String type, String fileName,
-            String content) throws ClientException, InterruptedException {
+            String content) throws InterruptedException {
 
         DocumentModel file = session.createDocumentModel(path, name, type);
         org.nuxeo.ecm.core.api.Blob blob = new org.nuxeo.ecm.core.api.impl.blob.StringBlob(content);
@@ -477,7 +477,7 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected DocumentModel createFolder(CoreSession session, String path, String name, String type)
-            throws ClientException, InterruptedException {
+            throws InterruptedException {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
@@ -490,7 +490,7 @@ public class TestUserWorkspaceHierarchy {
         return folder;
     }
 
-    protected void createUser(String userName, String password) throws ClientException {
+    protected void createUser(String userName, String password) {
         try (org.nuxeo.ecm.directory.Session userDir = directoryService.open("userDirectory")) {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", userName);
@@ -499,14 +499,14 @@ public class TestUserWorkspaceHierarchy {
         }
     }
 
-    protected void deleteUser(String userName) throws ClientException {
+    protected void deleteUser(String userName) {
         try (org.nuxeo.ecm.directory.Session userDir = directoryService.open("userDirectory")) {
             userDir.deleteEntry(userName);
         }
     }
 
     protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
-            throws ClientException {
+            {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));

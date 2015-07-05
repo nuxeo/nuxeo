@@ -130,35 +130,35 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
 
     /*------------------------ FileSystemItemAdapterService -----------------------*/
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) {
         return getFileSystemItem(doc, false, null, false, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return getFileSystemItem(doc, false, null, includeDeleted, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) {
         return getFileSystemItem(doc, true, parentItem, false, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint);
     }
 
@@ -167,7 +167,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
      * {@link FileSystemItem} id.
      */
     @Override
-    public FileSystemItemFactory getFileSystemItemFactoryForId(String id) throws ClientException {
+    public FileSystemItemFactory getFileSystemItemFactoryForId(String id) {
         Iterator<FileSystemItemFactoryWrapper> factoriesIt = fileSystemItemFactories.iterator();
         while (factoriesIt.hasNext()) {
             FileSystemItemFactoryWrapper factoryWrapper = factoriesIt.next();
@@ -187,7 +187,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @Override
-    public TopLevelFolderItemFactory getTopLevelFolderItemFactory() throws ClientException {
+    public TopLevelFolderItemFactory getTopLevelFolderItemFactory() {
         if (topLevelFolderItemFactory == null) {
             throw new NuxeoDriveContribException(
                     "Found no active top level folder item factory. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\"> and to <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeTopLevelFolderItemFactory\">.");
@@ -196,7 +196,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @Override
-    public VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName) throws ClientException {
+    public VirtualFolderItemFactory getVirtualFolderItemFactory(String factoryName) {
         FileSystemItemFactory factory = getFileSystemItemFactory(factoryName);
         if (factory == null) {
             throw new NuxeoDriveContribException(
@@ -213,7 +213,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @Override
-    public Set<String> getActiveFileSystemItemFactories() throws ClientException {
+    public Set<String> getActiveFileSystemItemFactories() {
         if (activeFileSystemItemFactoryRegistry.activeFactories.isEmpty()) {
             throw new NuxeoDriveContribException(
                     "Found no active file system item factories. Please check there is a contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"activeFileSystemItemFactories\"> declaring at least one factory.");
@@ -261,7 +261,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
      * </ul>
      */
     protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint) throws ClientException {
+            boolean includeDeleted, boolean relaxSyncRootConstraint) {
 
         FileSystemItem fileSystemItem = null;
 
@@ -355,7 +355,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     protected boolean facetFactoryMatches(FileSystemItemFactoryWrapper factory, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         if (!StringUtils.isEmpty(factory.getFacet())) {
             for (String docFacet : doc.getFacets()) {
                 if (factory.getFacet().equals(docFacet)) {
@@ -381,7 +381,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean syncRootFactoryMatches(DocumentModel doc, boolean relaxSyncRootConstraint) throws ClientException {
+    protected boolean syncRootFactoryMatches(DocumentModel doc, boolean relaxSyncRootConstraint) {
         String userName = doc.getCoreSession().getPrincipal().getName();
         List<Map<String, Object>> subscriptions = (List<Map<String, Object>>) doc.getPropertyValue(NuxeoDriveManagerImpl.DRIVE_SUBSCRIPTIONS_PROPERTY);
         for (Map<String, Object> subscription : subscriptions) {

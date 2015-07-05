@@ -33,6 +33,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface TopLevelFolderItemFactory extends VirtualFolderItemFactory {
 
-    FolderItem getTopLevelFolderItem(Principal principal) throws ClientException;
+    FolderItem getTopLevelFolderItem(Principal principal);
 
 }

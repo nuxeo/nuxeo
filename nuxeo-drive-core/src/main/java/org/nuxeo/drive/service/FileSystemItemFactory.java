@@ -53,21 +53,21 @@ public interface FileSystemItemFactory {
     /**
      * Handles the factory parameters contributed through the {@code fileSystemItemFactory} contribution.
      */
-    void handleParameters(Map<String, String> parameters) throws ClientException;
+    void handleParameters(Map<String, String> parameters);
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a {@link FileSystemItem}.
      *
      * @see #isFileSystemItem(DocumentModel, boolean)
      */
-    boolean isFileSystemItem(DocumentModel doc) throws ClientException;
+    boolean isFileSystemItem(DocumentModel doc);
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a {@link FileSystemItem}. If
      * {@code includeDeleted} is true no filter is applied on the "deleted" life cycle state, else if the document is in
      * this state it is not considered as adaptable as a {@link FileSystemItem}, thus the method returns false.
      */
-    boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException;
+    boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted);
 
     /**
      * Returns true if the given {@link DocumentModel} is adaptable as a {@link FileSystemItem}.
@@ -78,8 +78,7 @@ public interface FileSystemItemFactory {
      * If {@code relaxSyncRootConstraint} is true no filter is applied on the synchronization root aspect for the
      * current user.
      */
-    boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException;
+    boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
@@ -89,7 +88,7 @@ public interface FileSystemItemFactory {
      * @see #isFileSystemItem(DocumentModel)
      * @see #getFileSystemItem(DocumentModel, boolean)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}. If {@code includeDeleted} is true no filter
@@ -100,7 +99,7 @@ public interface FileSystemItemFactory {
      *         {@link FileSystemItem}
      * @see #isFileSystemItem(DocumentModel, boolean))
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel}.
@@ -115,8 +114,7 @@ public interface FileSystemItemFactory {
      *         {@link FileSystemItem}
      * @see #isFileSystemItem(DocumentModel, boolean, boolean))
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id.
@@ -126,7 +124,7 @@ public interface FileSystemItemFactory {
      * @see #isFileSystemItem(DocumentModel)
      * @see #getFileSystemItem(DocumentModel, String, boolean)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id. If
@@ -137,8 +135,7 @@ public interface FileSystemItemFactory {
      *         {@link FileSystemItem}
      * @see #isFileSystemItem(DocumentModel, boolean)
      */
-    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException;
+    FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted);
 
     /**
      * Gets the {@link FileSystemItem} for the given {@link DocumentModel} forcing its parent id with the given id.
@@ -154,7 +151,7 @@ public interface FileSystemItemFactory {
      * @see #isFileSystemItem(DocumentModel, boolean, boolean)
      */
     FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException;
+            boolean relaxSyncRootConstraint);
 
     /**
      * Returns true if the given {@link FileSystemItem} id can be handled by this factory. It is typically the case when
@@ -165,14 +162,14 @@ public interface FileSystemItemFactory {
     /**
      * Returns true if a {@link FileSystemItem} with the given id exists for the given principal.
      */
-    boolean exists(String id, Principal principal) throws ClientException;
+    boolean exists(String id, Principal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id using a core session fetched with the given principal.
      *
      * @return the {@link FileSystemItem} or null if none matches the given id
      */
-    FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException;
+    FileSystemItem getFileSystemItemById(String id, Principal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id and parent id using a core session fetched with the given
@@ -181,7 +178,7 @@ public interface FileSystemItemFactory {
      * @return the {@link FileSystemItem} or null if none matches the given id and parent id
      * @since 6.0
      */
-    FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException;
+    FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal);
 
     /**
      * Gets the {@link DocumentModel} bound to the given {@link FileSystemItem} id using a core session fetched with the
@@ -192,6 +189,6 @@ public interface FileSystemItemFactory {
      * @since 6.0
      */
     @Deprecated
-    DocumentModel getDocumentByFileSystemId(String id, Principal principal) throws ClientException;
+    DocumentModel getDocumentByFileSystemId(String id, Principal principal);
 
 }

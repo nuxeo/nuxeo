@@ -57,7 +57,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     /*---------------------- AbstractFileSystemItemFactory ---------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (!StringUtils.isEmpty(folderNameParam)) {
@@ -80,7 +80,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
@@ -95,14 +95,14 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return new UserWorkspaceTopLevelFolderItem(getName(), doc, folderName, syncRootParentFactoryName,
                 relaxSyncRootConstraint);
     }
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) {
         return getTopLevelFolderItem(principal);
     }
 
@@ -118,7 +118,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
+    public FolderItem getTopLevelFolderItem(Principal principal) {
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         // TODO: handle multiple repositories
         try (CoreSession session = CoreInstance.openCoreSession(repositoryManager.getDefaultRepositoryName(), principal)) {

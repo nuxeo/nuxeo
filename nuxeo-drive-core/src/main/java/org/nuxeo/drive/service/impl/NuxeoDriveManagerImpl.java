@@ -146,7 +146,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @Override
     public void registerSynchronizationRoot(Principal principal, final DocumentModel newRootContainer,
-            CoreSession session) throws ClientException {
+            CoreSession session) {
         final String userName = principal.getName();
         // If new root is child of a sync root, ignore registration, except for
         // the 'Locally Edited' collection: it is under the personal workspace
@@ -205,7 +205,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 if (!newRootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
                     newRootContainer.addFacet(NUXEO_DRIVE_FACET);
                 }
@@ -248,12 +248,12 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     @Override
     public void unregisterSynchronizationRoot(Principal principal, final DocumentModel rootContainer,
-            CoreSession session) throws ClientException {
+            CoreSession session) {
         final String userName = principal.getName();
         checkCanUpdateSynchronizationRoot(rootContainer, session);
         UnrestrictedSessionRunner runner = new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 if (!rootContainer.hasFacet(NUXEO_DRIVE_FACET)) {
                     rootContainer.addFacet(NUXEO_DRIVE_FACET);
                 }
@@ -283,18 +283,18 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public Set<IdRef> getSynchronizationRootReferences(CoreSession session) throws ClientException {
+    public Set<IdRef> getSynchronizationRootReferences(CoreSession session) {
         Map<String, SynchronizationRoots> syncRoots = getSynchronizationRoots(session.getPrincipal());
         return syncRoots.get(session.getRepositoryName()).getRefs();
     }
 
     @Override
-    public void handleFolderDeletion(IdRef deleted) throws ClientException {
+    public void handleFolderDeletion(IdRef deleted) {
         clearCache();
     }
 
     protected void fireEvent(DocumentModel sourceDocument, CoreSession session, String eventName,
-            String impactedUserName) throws ClientException {
+            String impactedUserName) {
         EventService eventService = Framework.getLocalService(EventService.class);
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), sourceDocument);
         ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
@@ -316,7 +316,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     @Override
     public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
-            long lastSuccessfulSync) throws ClientException {
+            long lastSuccessfulSync) {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         return getChangeSummary(principal, lastSyncRootRefs, roots, new HashMap<String, Set<String>>(),
                 lastSuccessfulSync, false);
@@ -332,7 +332,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
      */
     @Override
     public FileSystemChangeSummary getChangeSummaryIntegerBounds(Principal principal,
-            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound) throws ClientException {
+            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound) {
         Map<String, SynchronizationRoots> roots = getSynchronizationRoots(principal);
         Map<String, Set<String>> collectionSyncRootMemberIds = getCollectionSyncRootMemberIds(principal);
         return getChangeSummary(principal, lastSyncRootRefs, roots, collectionSyncRootMemberIds, lowerBound, true);
@@ -340,7 +340,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
 
     protected FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastActiveRootRefs,
             Map<String, SynchronizationRoots> roots, Map<String, Set<String>> collectionSyncRootMemberIds,
-            long lowerBound, boolean integerBounds) throws ClientException {
+            long lowerBound, boolean integerBounds) {
         List<FileSystemItemChange> allChanges = new ArrayList<FileSystemItemChange>();
         long syncDate;
         long upperBound;
@@ -407,7 +407,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal) throws ClientException {
+    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal) {
         String userName = principal.getName();
         Map<String, SynchronizationRoots> syncRoots = syncRootCache.getIfPresent(userName);
         if (syncRoots == null) {
@@ -418,7 +418,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal) throws ClientException {
+    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal) {
         String userName = principal.getName();
         Map<String, Set<String>> collSyncRootMemberIds = collectionSyncRootMemberCache.getIfPresent(userName);
         if (collSyncRootMemberIds == null) {
@@ -429,14 +429,14 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc) throws ClientException {
+    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc) {
         String repoName = doc.getRepositoryName();
         SynchronizationRoots syncRoots = getSynchronizationRoots(principal).get(repoName);
         return syncRoots.getRefs().contains(doc.getRef());
     }
 
     protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, Principal principal)
-            throws ClientException {
+            {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
@@ -448,7 +448,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     protected Map<String, SynchronizationRoots> queryAndFecthSynchronizationRoots(CoreSession session, String query)
-            throws ClientException {
+            {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         Set<IdRef> references = new LinkedHashSet<IdRef>();
         Set<String> paths = new LinkedHashSet<String>();
@@ -468,7 +468,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @SuppressWarnings("unchecked")
-    protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(Principal principal) throws ClientException {
+    protected Map<String, Set<String>> computeCollectionSyncRootMemberIds(Principal principal) {
         Map<String, Set<String>> collectionSyncRootMemberIds = new HashMap<String, Set<String>>();
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
@@ -498,7 +498,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer, CoreSession session)
-            throws ClientException {
+            {
         // Cannot update a proxy or a version
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
             throw new ClientException(String.format("Document '%s' (%s) is not a suitable synchronization root"
@@ -529,7 +529,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
     }
 
     @Override
-    public void addToLocallyEditedCollection(CoreSession session, DocumentModel doc) throws ClientException {
+    public void addToLocallyEditedCollection(CoreSession session, DocumentModel doc) {
 
         // Add document to "Locally Edited" collection, creating if if not
         // exists
