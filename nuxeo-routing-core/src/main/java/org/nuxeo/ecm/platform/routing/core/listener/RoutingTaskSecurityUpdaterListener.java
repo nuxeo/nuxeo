@@ -48,7 +48,7 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
     private DocumentRoutingService routingService;
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext eventCtx = event.getContext();
         if (!(eventCtx instanceof DocumentEventContext)) {
             return;

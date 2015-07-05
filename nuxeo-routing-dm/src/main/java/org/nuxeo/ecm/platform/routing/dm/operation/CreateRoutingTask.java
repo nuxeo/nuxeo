@@ -169,7 +169,7 @@ public class CreateRoutingTask {
     }
 
     protected void mapPropertiesToTaskVariables(Map<String, String> taskVariables, DocumentModel stepDoc,
-            DocumentModel inputDoc, Properties mappingProperties) throws ClientException {
+            DocumentModel inputDoc, Properties mappingProperties) {
         for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
             String getter = prop.getKey();
             String setter = prop.getValue();
@@ -190,7 +190,7 @@ public class CreateRoutingTask {
     }
 
     DocumentModel mapPropertiesToTaskDocument(CoreSession session, DocumentModel stepDoc, DocumentModel taskDoc,
-            DocumentModel inputDoc, Properties mappingProperties) throws ClientException {
+            DocumentModel inputDoc, Properties mappingProperties) {
         for (Map.Entry<String, String> prop : mappingProperties.entrySet()) {
             String getter = prop.getKey();
             String setter = prop.getValue();
@@ -211,7 +211,7 @@ public class CreateRoutingTask {
         return session.saveDocument(taskDoc);
     }
 
-    protected List<String> getAllActors(List<String> actors) throws ClientException {
+    protected List<String> getAllActors(List<String> actors) {
         List<String> allActors = new ArrayList<String>();
         for (String actor : actors) {
             if (userManager.getGroup(actor) != null) {

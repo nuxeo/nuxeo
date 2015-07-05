@@ -48,7 +48,7 @@ public class TestOperationSetProperty {
     protected String value;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         doc.setPropertyValue(field, value);
         doc = session.saveDocument(doc);
         return doc;

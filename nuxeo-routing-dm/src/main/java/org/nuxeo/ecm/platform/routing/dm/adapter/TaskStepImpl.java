@@ -49,33 +49,33 @@ public class TaskStepImpl implements TaskStep {
     }
 
     @Override
-    public List<String> getActors() throws ClientException {
+    public List<String> getActors() {
         return getPropertyValue(RoutingTaskConstants.TASK_STEP_ACTORS_PROPERTY_NAME);
     }
 
     @Override
-    public String getName() throws ClientException {
+    public String getName() {
         return doc.getTitle();
     }
 
     @Override
-    public String getDirective() throws ClientException {
+    public String getDirective() {
         return getPropertyValue(RoutingTaskConstants.TASK_STEP_DIRECTIVE_PROPERTY_NAME);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<String> getComments() throws ClientException {
+    public List<String> getComments() {
         return (List<String>) getPropertyValue(RoutingTaskConstants.TASK_STEP_COMMENTS_PROPERTY_NAME);
     }
 
     @Override
-    public Date getDueDate() throws ClientException {
+    public Date getDueDate() {
         return getDatePropertyValue(RoutingTaskConstants.TASK_STEP_DUE_DATE_PROPERTY_NAME);
     }
 
     @Override
-    public Boolean hasAutomaticValidation() throws ClientException {
+    public Boolean hasAutomaticValidation() {
         return getPropertyValue(RoutingTaskConstants.TASK_STEP_AUTOMATIC_VALIDATION_PROPERTY_NAME);
     }
 

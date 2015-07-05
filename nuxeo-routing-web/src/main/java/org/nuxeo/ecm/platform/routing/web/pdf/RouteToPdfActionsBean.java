@@ -63,7 +63,7 @@ public class RouteToPdfActionsBean implements Serializable {
         FacesContext.getCurrentInstance().responseComplete();
     }
 
-    public int getLayoutColumnsCount(String layoutName) throws ClientException {
+    public int getLayoutColumnsCount(String layoutName) {
         WebLayoutManager wlm;
         try {
             wlm = Framework.getService(WebLayoutManager.class);

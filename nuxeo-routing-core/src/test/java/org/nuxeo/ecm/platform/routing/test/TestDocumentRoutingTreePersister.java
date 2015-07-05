@@ -86,7 +86,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreateDocumentRouteInstanceFromDocumentRouteModel() throws ClientException {
+    public void testCreateDocumentRouteInstanceFromDocumentRouteModel() {
         DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
         List<String> docsId = new ArrayList<String>();
         docsId.add("1");
@@ -104,7 +104,7 @@ public class TestDocumentRoutingTreePersister extends DocumentRoutingTestCase {
     }
 
     @Test
-    public void testSaveDocumentRouteInstanceAsNewModel() throws ClientException {
+    public void testSaveDocumentRouteInstanceAsNewModel() {
         DocumentModel model = createDocumentRouteModel(session, DocumentRoutingTestCase.ROUTE1, ROOT_PATH);
         DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
         DocumentModel newModel = persister.saveDocumentRouteInstanceAsNewModel(instance, session.getRootDocument(),

@@ -141,7 +141,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         return document.getCoreSession();
     }
 
-    protected void saveDocument() throws ClientException {
+    protected void saveDocument() {
         getSession().saveDocument(document);
     }
 
@@ -870,7 +870,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         }
     }
 
-    protected Map<String, Serializable> getSubRouteInitialVariables() throws ClientException {
+    protected Map<String, Serializable> getSubRouteInitialVariables() {
         ListProperty props = (ListProperty) document.getProperty(PROP_SUB_ROUTE_VARS);
         Map<String, Serializable> map = new HashMap<String, Serializable>();
         OperationContext context = null;
@@ -1009,13 +1009,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     @Override
-    public void addTaskInfo(String taskId) throws ClientException {
+    public void addTaskInfo(String taskId) {
         getTasksInfo().add(new TaskInfo(this, taskId));
         saveDocument();
     }
 
     @Override
-    public void removeTaskInfo(String taskId) throws ClientException {
+    public void removeTaskInfo(String taskId) {
         ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
         Property propertytoBeRemoved = null;
         for (Property p : props) {
@@ -1033,7 +1033,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
-            throws ClientException {
+            {
         boolean updated = false;
         List<TaskInfo> tasksInfo = getTasksInfo();
         for (TaskInfo taskInfo : tasksInfo) {

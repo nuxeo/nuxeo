@@ -47,7 +47,7 @@ public class ResumeNodeOperation {
     protected DocumentRoutingService documentRoutingService;
 
     @OperationMethod
-    public void resumeWorkflow() throws ClientException {
+    public void resumeWorkflow() {
         if (workflowInstanceId == null) {
             workflowInstanceId = (String) ctx.get("workflowInstanceId");
         }

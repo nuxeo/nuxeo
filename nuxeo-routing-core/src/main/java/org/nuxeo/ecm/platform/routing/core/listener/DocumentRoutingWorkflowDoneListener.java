@@ -40,7 +40,7 @@ public class DocumentRoutingWorkflowDoneListener implements EventListener {
     private DocumentRoutingService routingService;
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!DocumentRoutingConstants.Events.afterRouteFinish.name().equals(event.getName())) {
             return;
         }

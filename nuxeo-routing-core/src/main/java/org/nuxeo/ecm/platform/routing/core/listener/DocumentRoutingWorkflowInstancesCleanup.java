@@ -39,7 +39,7 @@ public class DocumentRoutingWorkflowInstancesCleanup implements EventListener {
     public final static String CLEANUP_WORKFLOW_EVENT_NAME = "workflowInstancesCleanup";
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!CLEANUP_WORKFLOW_EVENT_NAME.equals(event.getName())
                 || Framework.isBooleanPropertyTrue(CLEANUP_WORKFLOW_INSTANCES_PROPERTY)) {
             return;

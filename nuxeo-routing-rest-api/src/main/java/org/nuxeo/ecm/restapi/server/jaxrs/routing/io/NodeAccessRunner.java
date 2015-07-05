@@ -46,7 +46,7 @@ public class NodeAccessRunner extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         DocumentModel workflowInstanceDoc = session.getDocument(new IdRef(workflowInstanceId));
         workflowInstance = workflowInstanceDoc.getAdapter(GraphRoute.class);
         node = workflowInstance.getNode(nodeId);

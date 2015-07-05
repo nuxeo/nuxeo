@@ -59,7 +59,7 @@ public class EvaluateCondition extends AbstractTaskStepOperation {
     protected String value;
 
     @OperationMethod
-    public void evaluateCondition(DocumentModel doc) throws ClientException {
+    public void evaluateCondition(DocumentModel doc) {
         int result = 0;
         Long longValue;
         Object subjectValue = getPropertyValue(doc, subject);

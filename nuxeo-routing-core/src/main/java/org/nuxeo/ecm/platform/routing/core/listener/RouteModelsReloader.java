@@ -62,7 +62,7 @@ public class RouteModelsReloader implements EventListener {
             try {
                 new UnrestrictedSessionRunner(rm.getDefaultRepositoryName()) {
                     @Override
-                    public void run() throws ClientException {
+                    public void run() {
                         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
                         service.importAllRouteModels(session);
                     }

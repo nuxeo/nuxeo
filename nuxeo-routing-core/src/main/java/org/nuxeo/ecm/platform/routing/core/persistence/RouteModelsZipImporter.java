@@ -50,7 +50,7 @@ public class RouteModelsZipImporter extends ExportedZipImporter {
 
     @Override
     public DocumentModel create(CoreSession session, Blob content, String path, boolean overwrite, String filename,
-            TypeManager typeService) throws ClientException, IOException {
+            TypeManager typeService) throws IOException {
         try (CloseableFile source = content.getCloseableFile()) {
             ZipFile zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {

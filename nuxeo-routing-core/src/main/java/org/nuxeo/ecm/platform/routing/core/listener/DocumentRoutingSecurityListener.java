@@ -37,7 +37,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 public class DocumentRoutingSecurityListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
         DocumentRoute route = (DocumentRoute) docCtx.getProperty(DocumentRoutingConstants.DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY);
         String initiator = (String) docCtx.getProperty(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY);

@@ -178,7 +178,7 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
      * @param initialNode the initial node to run
      */
     protected void runGraph(CoreSession session, DocumentRouteElement element, GraphNode initialNode)
-            throws DocumentRouteException, ClientException {
+            throws DocumentRouteException {
         GraphRoute graph = (GraphRoute) element;
         List<GraphNode> pendingSubRoutes = new LinkedList<GraphNode>();
         LinkedList<GraphNode> pendingNodes = new LinkedList<GraphNode>();

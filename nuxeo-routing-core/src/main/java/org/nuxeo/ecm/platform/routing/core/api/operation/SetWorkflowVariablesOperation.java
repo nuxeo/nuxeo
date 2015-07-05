@@ -51,7 +51,7 @@ public class SetWorkflowVariablesOperation {
     protected Properties properties;
 
     @OperationMethod
-    public void run() throws ClientException {
+    public void run() {
         DocumentModel workflowInstance = session.getDocument(new IdRef(id));
         try {
             DocumentHelper.setProperties(session, workflowInstance, properties);

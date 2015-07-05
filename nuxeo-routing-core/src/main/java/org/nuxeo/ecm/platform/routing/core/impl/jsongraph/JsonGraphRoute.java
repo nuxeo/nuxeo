@@ -109,7 +109,7 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
         return graphElements;
     }
 
-    public String getJSON() throws ClientException {
+    public String getJSON() {
         if (json == null) {
             runUnrestricted();
         }
@@ -117,7 +117,7 @@ public class JsonGraphRoute extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         if (graphRoute == null) {
             DocumentModel doc = session.getDocument(new IdRef(docId));
             graphRoute = doc.getAdapter(GraphRoute.class);

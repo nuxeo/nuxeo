@@ -41,7 +41,7 @@ public class DocumentRoutingEscalationListener implements EventListener {
     public static final String EXECUTE_ESCALATION_RULE_EVENT = "executeEscalationRules";
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!EXECUTE_ESCALATION_RULE_EVENT.equals(event.getName())) {
             return;
         }
@@ -51,11 +51,11 @@ public class DocumentRoutingEscalationListener implements EventListener {
         }
     }
 
-    protected void triggerEsclationRulesExecution(String repositoryName) throws ClientException {
+    protected void triggerEsclationRulesExecution(String repositoryName) {
         new UnrestrictedSessionRunner(repositoryName) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentRoutingEscalationService escalationService = Framework.getLocalService(DocumentRoutingEscalationService.class);
                 List<String> nodeIds = escalationService.queryForSuspendedNodesWithEscalation(session);
                 for (String id : nodeIds) {

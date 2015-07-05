@@ -68,7 +68,7 @@ public class CompleteTaskOperation {
     protected DocumentRoutingService documentRoutingService;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel completeTask(DocumentModel task) throws ClientException {
+    public DocumentModel completeTask(DocumentModel task) {
         Map<String, Object> data = new HashMap<String, Object>();
         if (comment != null) {
             data.put("comment", comment);

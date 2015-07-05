@@ -224,13 +224,13 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     }
 
     @Override
-    public void validate(CoreSession session) throws ClientException {
+    public void validate(CoreSession session) {
         setValidated(session);
         setReadOnly(session);
     }
 
     @Override
-    public void setReadOnly(CoreSession session) throws ClientException {
+    public void setReadOnly(CoreSession session) {
         SetDocumentOnReadOnlyUnrestrictedSessionRunner readOnlySetter = new SetDocumentOnReadOnlyUnrestrictedSessionRunner(
                 session, document.getRef());
         readOnlySetter.runUnrestricted();
@@ -246,7 +246,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
         protected DocumentRef ref;
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel doc = session.getDocument(ref);
             ACP acp = new ACPImpl();
             // add new ACL to set READ permission to everyone
@@ -352,7 +352,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
         protected boolean isRunning;
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel parent = session.getDocument(document.getParentRef());
             DocumentRouteElement parentElement = parent.getAdapter(DocumentRouteElement.class);
             isRunning = parentElement.isRunning();

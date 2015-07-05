@@ -31,7 +31,7 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class RouteTemplateResourceRegistry extends SimpleContributionRegistry<RouteModelResourceType> {
 
-    public List<URL> getRouteModelTemplateResources() throws ClientException {
+    public List<URL> getRouteModelTemplateResources() {
         List<URL> urls = new ArrayList<URL>();
         for (RouteModelResourceType res : currentContribs.values()) {
             urls.add(res.getUrl());

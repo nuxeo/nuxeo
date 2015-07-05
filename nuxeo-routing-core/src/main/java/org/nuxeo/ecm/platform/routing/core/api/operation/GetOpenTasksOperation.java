@@ -68,7 +68,7 @@ public class GetOpenTasksOperation {
     protected UserManager userManager;
 
     @OperationMethod
-    public DocumentModelList getAllTasks(DocumentModel doc) throws ClientException {
+    public DocumentModelList getAllTasks(DocumentModel doc) {
         DocumentModelList taskDocs = new DocumentModelListImpl();
         List<Task> tasks = new ArrayList<Task>();
         if (nodeId == null && processId == null) {
@@ -98,7 +98,7 @@ public class GetOpenTasksOperation {
     }
 
     @OperationMethod
-    public DocumentModelList getAllTasks(DocumentModelList docs) throws ClientException {
+    public DocumentModelList getAllTasks(DocumentModelList docs) {
         DocumentModelList taskDocs = new DocumentModelListImpl();
         for (DocumentModel doc : docs) {
             taskDocs.addAll(getAllTasks(doc));

@@ -54,7 +54,7 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent implement
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
                     DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
                     if (routeInstance == null) {

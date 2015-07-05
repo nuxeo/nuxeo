@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.task.Task;
 public class RoutingTaskDeletedListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
             return;
         }

@@ -46,7 +46,7 @@ public class StepResumeRunner {
             step.setDone(session);
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentModel model = session.getDocument(new IdRef(stepDocId));
                     DocumentRouteStep step = model.getAdapter(DocumentRouteStep.class);
                     DocumentRoute route = step.getDocumentRoute(session);

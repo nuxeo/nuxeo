@@ -26,13 +26,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface LockableDocumentRoute extends Serializable {
 
-    void lockDocument(CoreSession session) throws ClientException;
+    void lockDocument(CoreSession session);
 
-    void unlockDocument(CoreSession session) throws ClientException;
+    void unlockDocument(CoreSession session);
 
-    boolean isLocked(CoreSession session) throws ClientException;
+    boolean isLocked(CoreSession session);
 
-    boolean isLockedByCurrentUser(CoreSession session) throws ClientException;
+    boolean isLockedByCurrentUser(CoreSession session);
 
     String getLockOwner(CoreSession session);
 }

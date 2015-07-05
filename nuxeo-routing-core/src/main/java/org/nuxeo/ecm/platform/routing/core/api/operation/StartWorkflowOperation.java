@@ -73,7 +73,7 @@ public class StartWorkflowOperation {
     protected DocumentRoutingService documentRoutingService;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws ClientException {
+    public DocumentModelList run(DocumentModelList docs) {
         List<String> ids = new ArrayList<String>();
         for (DocumentModel doc : docs) {
             ids.add(doc.getId());
@@ -83,14 +83,14 @@ public class StartWorkflowOperation {
     }
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         List<String> ids = new ArrayList<String>();
         ids.add(doc.getId());
         startNewInstance(ids);
         return doc;
     }
 
-    protected void startNewInstance(List<String> ids) throws ClientException {
+    protected void startNewInstance(List<String> ids) {
         Map<String, Serializable> vars = new HashMap<String, Serializable>();
         if (variables != null) {
             for (Entry<String, String> entry : variables.entrySet()) {

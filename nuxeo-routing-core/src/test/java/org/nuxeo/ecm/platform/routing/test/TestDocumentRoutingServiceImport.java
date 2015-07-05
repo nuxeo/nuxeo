@@ -75,7 +75,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
     public static class ImportRouteRepositoryInit implements RepositoryInit {
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
             // content-template already populates the default domain
             try {
                 populate0(session);
@@ -84,7 +84,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
             }
         }
 
-        public void populate0(CoreSession session) throws ClientException, IOException, URISyntaxException {
+        public void populate0(CoreSession session) throws IOException, URISyntaxException {
 
             // create an initial route to test that is override at import
             DocumentModel root = createDocumentModel(session, "document-route-models-root", "DocumentRouteModelsRoot",
@@ -129,7 +129,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
         }
 
         protected DocumentModel createDocumentModel(CoreSession session, String name, String type, String path)
-                throws ClientException {
+                {
             DocumentModel doc = session.createDocumentModel(path, name, type);
             doc.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME, name);
             return session.createDocument(doc);

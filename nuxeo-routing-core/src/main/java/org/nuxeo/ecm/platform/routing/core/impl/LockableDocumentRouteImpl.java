@@ -37,12 +37,12 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public boolean isLocked(CoreSession session) throws ClientException {
+    public boolean isLocked(CoreSession session) {
         return session.getLockInfo(doc.getRef()) != null;
     }
 
     @Override
-    public boolean isLockedByCurrentUser(CoreSession session) throws ClientException {
+    public boolean isLockedByCurrentUser(CoreSession session) {
         Lock lockInfo = session.getLockInfo(doc.getRef());
         if (lockInfo == null) {
             return false;
@@ -53,12 +53,12 @@ public class LockableDocumentRouteImpl implements LockableDocumentRoute {
     }
 
     @Override
-    public void lockDocument(CoreSession session) throws ClientException {
+    public void lockDocument(CoreSession session) {
         session.setLock(doc.getRef());
     }
 
     @Override
-    public void unlockDocument(CoreSession session) throws ClientException {
+    public void unlockDocument(CoreSession session) {
         DocumentRef ref = doc.getRef();
         session.removeLock(ref);
     }

@@ -32,16 +32,16 @@ public interface TaskStep {
 
     String getId();
 
-    List<String> getActors() throws ClientException;
+    List<String> getActors();
 
-    String getName() throws ClientException;
+    String getName();
 
-    String getDirective() throws ClientException;
+    String getDirective();
 
-    List<String> getComments() throws ClientException;
+    List<String> getComments();
 
-    Date getDueDate() throws ClientException;
+    Date getDueDate();
 
-    Boolean hasAutomaticValidation() throws ClientException;
+    Boolean hasAutomaticValidation();
 
 }

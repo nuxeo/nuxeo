@@ -202,7 +202,7 @@ public interface DocumentRoutingService {
      * @return The validated route.
      */
     DocumentRoute validateRouteModel(DocumentRoute routeModel, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException;
+            throws DocumentRouteNotLockedException;
 
     /**
      * Unlock the given {@link DocumentRoute} model under unrestricted session.
@@ -212,8 +212,7 @@ public interface DocumentRoutingService {
      * @return The unlocked route.
      * @since 1.9
      */
-    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession)
-            throws ClientException;
+    public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession);
 
     /**
      * Computes the list of elements {@link DocumentRouteTableElement} for this {@link DocumentRoute}.
@@ -255,9 +254,8 @@ public interface DocumentRoutingService {
      *
      * @param documentRoute
      * @param coreSession
-     * @throws ClientException
      */
-    boolean canValidateRoute(DocumentModel documentRoute, CoreSession coreSession) throws ClientException;
+    boolean canValidateRoute(DocumentModel documentRoute, CoreSession coreSession);
 
     /**
      * Add a route element in another route element.
@@ -267,11 +265,10 @@ public interface DocumentRoutingService {
      * @param idx The position of the document in its container.
      * @param routeElement The document to add.
      * @param session
-     * @throws ClientException
      */
     @Deprecated
     void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx, DocumentRouteElement routeElement,
-            CoreSession session) throws DocumentRouteNotLockedException, ClientException;
+            CoreSession session) throws DocumentRouteNotLockedException;
 
     /**
      * Add a route element in another route element.
@@ -284,11 +281,10 @@ public interface DocumentRoutingService {
      * @param sourceName the name of the previous document in the container.
      * @param routeElement the document to add.
      * @param session
-     * @throws ClientException
      */
     @Deprecated
     void addRouteElementToRoute(DocumentRef parentDocumentRef, String sourceName, DocumentRouteElement routeElement,
-            CoreSession session) throws DocumentRouteNotLockedException, ClientException;
+            CoreSession session) throws DocumentRouteNotLockedException;
 
     /**
      * Remove the given route element
@@ -296,11 +292,10 @@ public interface DocumentRoutingService {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      * @param The route element document.
      * @param session
-     * @throws ClientException
      */
     @Deprecated
     void removeRouteElement(DocumentRouteElement routeElement, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException;
+            throws DocumentRouteNotLockedException;
 
     /**
      * Get the children of the given stepFolder ordered by the ecm:pos metadata.
@@ -309,10 +304,9 @@ public interface DocumentRoutingService {
      * @param stepFolderId
      * @param session
      * @return
-     * @throws ClientException
      */
     @Deprecated
-    DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session) throws ClientException;
+    DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session);
 
     /**
      * Locks this {@link DocumentRoute} if not already locked by the current user. If the document is already locked by
@@ -320,40 +314,34 @@ public interface DocumentRoutingService {
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to lock the {@link DocumentRoute}.
-     * @throws ClientException
      * @throws {@link DocumentRouteAlredayLockedException}
      */
-    void lockDocumentRoute(DocumentRoute routeModel, CoreSession session) throws DocumentRouteAlredayLockedException,
-            ClientException;
+    void lockDocumentRoute(DocumentRoute routeModel, CoreSession session) throws DocumentRouteAlredayLockedException;
 
     /**
      * Unlocks this {@link DocumentRoute}.If the document is not locked throws a {@link DocumentRouteNotLockedException}
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session The session used to lock the {@link DocumentRoute}.
-     * @throws {@link ClientException}
      */
-    void unlockDocumentRoute(DocumentRoute routeModel, CoreSession session) throws DocumentRouteNotLockedException,
-            ClientException;
+    void unlockDocumentRoute(DocumentRoute routeModel, CoreSession session) throws DocumentRouteNotLockedException;
 
     /**
      * Update the given route element
      *
      * @param The route element document.
      * @param session
-     * @throws ClientException
      */
     void updateRouteElement(DocumentRouteElement routeModel, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException;
+            throws DocumentRouteNotLockedException;
 
     /**
      * Verify is this {@link DocumentRoute} is already locked by the current user.
      *
      * @param routeDocument {@link DocumentRoute}.
      * @param session
-     * @throws ClientException
      */
-    boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session) throws ClientException;
+    boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session);
 
     /**
      * Checks if the given document can be associated to a DocumentRoute.
@@ -379,10 +367,9 @@ public interface DocumentRoutingService {
      * @param templateResource
      * @param overwrite
      * @param session
-     * @throws ClientException
      * @since 5.6
      */
-    DocumentRoute importRouteModel(URL templateResource, boolean overwrite, CoreSession session) throws ClientException;
+    DocumentRoute importRouteModel(URL templateResource, boolean overwrite, CoreSession session);
 
     /**
      * Registers a new route model template to be imported at application startup.
@@ -398,21 +385,21 @@ public interface DocumentRoutingService {
      *
      * @since 5.6
      */
-    List<URL> getRouteModelTemplateResources() throws ClientException;
+    List<URL> getRouteModelTemplateResources();
 
     /**
      * Returns the route models matching the {@code searchString}.
      *
      * @since 5.6
      */
-    List<DocumentModel> searchRouteModels(CoreSession session, String searchString) throws ClientException;
+    List<DocumentModel> searchRouteModels(CoreSession session, String searchString);
 
     /**
      * Returns the route model with the given id
      *
      * @since 5.6
      */
-    DocumentRoute getRouteModelWithId(CoreSession session, String id) throws ClientException;
+    DocumentRoute getRouteModelWithId(CoreSession session, String id);
 
     // copied from the deprecated RoutingTaskService
 
@@ -421,7 +408,7 @@ public interface DocumentRoutingService {
      *
      * @since 5.7
      */
-    String getRouteModelDocIdWithId(CoreSession session, String id) throws ClientException;
+    String getRouteModelDocIdWithId(CoreSession session, String id);
 
     /**
      * Marks the tasks as Routing tasks.
@@ -436,7 +423,7 @@ public interface DocumentRoutingService {
      *             RoutingTask Document type since 7.1
      */
     @Deprecated
-    void makeRoutingTasks(CoreSession session, List<Task> tasks) throws ClientException;
+    void makeRoutingTasks(CoreSession session, List<Task> tasks);
 
     /**
      * Ends a task. If this is the last task the workflow will continue.
@@ -447,7 +434,7 @@ public interface DocumentRoutingService {
      * @param status name of the button clicked to submit the task form
      * @since 5.6, was on RoutingTaskService before
      */
-    void endTask(CoreSession session, Task task, Map<String, Object> data, String status) throws ClientException;
+    void endTask(CoreSession session, Task task, Map<String, Object> data, String status);
 
     /**
      * Grants on these documents the specified assignees permissions for this task.
@@ -458,8 +445,7 @@ public interface DocumentRoutingService {
      * @param task the task
      * @since 5.6
      */
-    void grantPermissionToTaskAssignees(CoreSession session, String permission, List<DocumentModel> docs, Task task)
-            throws ClientException;
+    void grantPermissionToTaskAssignees(CoreSession session, String permission, List<DocumentModel> docs, Task task);
 
     /**
      * Removes on these documents the specified assignees permissions for this task.
@@ -469,8 +455,7 @@ public interface DocumentRoutingService {
      * @param task the task
      * @since 5.6
      */
-    void removePermissionFromTaskAssignees(CoreSession session, List<DocumentModel> docs, Task task)
-            throws ClientException;
+    void removePermissionFromTaskAssignees(CoreSession session, List<DocumentModel> docs, Task task);
 
     /**
      * Gets the documents following the workflow to which the given task belongs
@@ -480,7 +465,7 @@ public interface DocumentRoutingService {
      * @return
      * @since 5.6, was on RoutingTaskService before
      */
-    List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) throws ClientException;
+    List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task);
 
     /**
      * Finishes an open task. All permissions granted to the tasks assignees on the document following the worklflow are
@@ -546,7 +531,7 @@ public interface DocumentRoutingService {
      * @since 5.8
      */
     void grantPermissionToTaskDelegatedActors(CoreSession session, String permission, List<DocumentModel> docs,
-            Task task) throws ClientException;
+            Task task);
 
     /**
      * Removes on these documents the specified assignees permissions for the task actors and also tasks delegated
@@ -557,8 +542,7 @@ public interface DocumentRoutingService {
      * @param task the task
      * @since 5.8
      */
-    void removePermissionsForTaskActors(CoreSession session, List<DocumentModel> docs, Task task)
-            throws ClientException;
+    void removePermissionsForTaskActors(CoreSession session, List<DocumentModel> docs, Task task);
 
     /**
      * Removes on these documents the specified assignees permissions for the task actors and also tasks delegated
@@ -569,18 +553,16 @@ public interface DocumentRoutingService {
      * @param taskId the taskId
      * @since 7.4
      */
-    void removePermissionsForTaskActors(CoreSession session, List<DocumentModel> docs, String taskId)
-            throws ClientException;
+    void removePermissionsForTaskActors(CoreSession session, List<DocumentModel> docs, String taskId);
 
     /**
      * Query for the routes 'done' or 'canceled' and delete them. The max no of the routes that will be deleted is
      * specified by the 'limit' parameter. When the limit is '0' all the completed routes are deleted. The routes to be
      * deleted are ordered ascending by their creation date.
      *
-     * @throws ClientException
      * @since 5.8
      */
-    void cleanupDoneAndCanceledRouteInstances(String repositoryName, int limit) throws ClientException;
+    void cleanupDoneAndCanceledRouteInstances(String repositoryName, int limit);
 
     /**
      * @since 5.9.3
@@ -593,10 +575,9 @@ public interface DocumentRoutingService {
      * deleted are ordered ascending by their creation date.
      *
      * @return the number of cleaned up workflow instance
-     * @throws ClientException
      * @since 7.1
      */
-    int doCleanupDoneAndCanceledRouteInstances(String reprositoryName, int limit) throws ClientException;
+    int doCleanupDoneAndCanceledRouteInstances(String reprositoryName, int limit);
 
     /**
      * @param userId

@@ -264,7 +264,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
-    public void testGetAvailableDocumentRouteModel() throws ClientException {
+    public void testGetAvailableDocumentRouteModel() {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         session.save();
@@ -273,7 +273,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
-    public void testRouteModel() throws ClientException {
+    public void testRouteModel() {
         DocumentModel folder = createDocumentModel(session, "TestFolder", "Folder", "/");
         session.save();
         assertNotNull(folder);
@@ -297,7 +297,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     @Test
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public void testConditionalFolderContainerModel() throws ClientException {
+    public void testConditionalFolderContainerModel() {
         DocumentRoute route = createDocumentRouteWithConditionalFolder(session, ROUTE1);
         DocumentModel conditionalStepFolder = session.getChild(route.getDocument().getRef(), "conditionalStep2");
         DocumentModelList children = service.getOrderedRouteElement(conditionalStepFolder.getId(), session);
@@ -311,7 +311,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     }
 
     @Test
-    public void testGetRouteElements() throws ClientException {
+    public void testGetRouteElements() {
         DocumentRoute route = createDocumentRoute(session, ROUTE1);
         assertNotNull(route);
         List<DocumentRouteTableElement> elements = service.getRouteElements(route, session);
@@ -329,7 +329,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
     @Test
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public void testExecuteSimpleRouteWithConditionalStep() throws ClientException {
+    public void testExecuteSimpleRouteWithConditionalStep() {
         DocumentRoute route = createDocumentRouteWithConditionalFolder(session, ROUTE1);
         DocumentModel conditionalStepFolder = session.getChild(route.getDocument().getRef(), "conditionalStep2");
         DocumentModelList children = service.getOrderedRouteElement(conditionalStepFolder.getId(), session);
@@ -371,7 +371,7 @@ public class TestDocumentRoutingService extends DocumentRoutingTestCase {
         }
     }
 
-    protected void setPermissionToUser(DocumentModel doc, String username, String... perms) throws ClientException {
+    protected void setPermissionToUser(DocumentModel doc, String username, String... perms) {
         ACP acp = doc.getACP();
         if (acp == null) {
             acp = new ACPImpl();
