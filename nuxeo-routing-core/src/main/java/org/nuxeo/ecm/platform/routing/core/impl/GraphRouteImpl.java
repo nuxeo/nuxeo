@@ -83,7 +83,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         }
     }
 
-    protected String computeNodes() throws ClientException {
+    protected String computeNodes() {
         CoreSession session = document.getCoreSession();
         DocumentModelList children = session.getChildren(document.getRef());
         nodes = new ArrayList<GraphNode>(children.size());

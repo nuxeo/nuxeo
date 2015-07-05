@@ -170,11 +170,11 @@ public class RoutingTaskActionsBean implements Serializable {
         }
     }
 
-    public String getTaskLayout(Task task) throws ClientException {
+    public String getTaskLayout(Task task) {
         return getTaskInfo(task, true).layout;
     }
 
-    public List<Action> getTaskButtons(Task task) throws ClientException {
+    public List<Action> getTaskButtons(Task task) {
         List<Button> buttons = getTaskInfo(task, true).buttons;
         List<Action> actions = new ArrayList<Action>();
 
@@ -206,7 +206,7 @@ public class RoutingTaskActionsBean implements Serializable {
         return actions;
     }
 
-    public String endTask(Task task) throws ClientException {
+    public String endTask(Task task) {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
         Map<String, Serializable> formVariables = getFormVariables(task);
@@ -250,7 +250,7 @@ public class RoutingTaskActionsBean implements Serializable {
         }
     }
 
-    public Map<String, Serializable> getFormVariables(Task task) throws ClientException {
+    public Map<String, Serializable> getFormVariables(Task task) {
         return getTaskInfo(task, true).formVariables;
     }
 
@@ -313,7 +313,7 @@ public class RoutingTaskActionsBean implements Serializable {
     // we have to be unrestricted to get this info
     // because the current user may not be the one that started the
     // workflow
-    public TaskInfo getTaskInfo(final Task task, final boolean getFormVariables) throws ClientException {
+    public TaskInfo getTaskInfo(final Task task, final boolean getFormVariables) {
         if (tasksInfoCache.containsKey(task.getId())) {
             return tasksInfoCache.get(task.getId());
         }
@@ -328,7 +328,7 @@ public class RoutingTaskActionsBean implements Serializable {
         final TaskInfo[] res = new TaskInfo[1];
         new UnrestrictedSessionRunner(documentManager) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel doc = session.getDocument(new IdRef(routeDocId));
                 GraphRoute route = doc.getAdapter(GraphRoute.class);
                 GraphNode node = route.getNode(nodeId);
@@ -360,7 +360,7 @@ public class RoutingTaskActionsBean implements Serializable {
     /**
      * @since 5.6
      */
-    public List<Action> getTaskActions(Task task) throws ClientException {
+    public List<Action> getTaskActions(Task task) {
         return new ArrayList<Action>(getTaskActionsMap(task).values());
     }
 
@@ -390,14 +390,14 @@ public class RoutingTaskActionsBean implements Serializable {
      *
      * @since 5.7
      */
-    protected String getTaskActionId(Task task, String buttonId) throws ClientException {
+    protected String getTaskActionId(Task task, String buttonId) {
         return String.format("%s_%s", task.getType(), buttonId);
     }
 
     /**
      * @since 5.6
      */
-    public Map<String, Action> getTaskActionsMap(Task task) throws ClientException {
+    public Map<String, Action> getTaskActionsMap(Task task) {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
         // bulk processing, don't fetch formVariables to avoid overriding them
         TaskInfo taskInfo = getTaskInfo(task, false);
@@ -461,7 +461,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     @SuppressWarnings("boxing")
-    public List<Action> getTaskActions(String selectionListName) throws ClientException {
+    public List<Action> getTaskActions(String selectionListName) {
         Map<String, Action> actions = new LinkedHashMap<String, Action>();
         Map<String, Map<String, Action>> actionsPerTaskType = new LinkedHashMap<String, Map<String, Action>>();
         Map<String, Integer> actionsCounter = new HashMap<String, Integer>();
@@ -520,7 +520,7 @@ public class RoutingTaskActionsBean implements Serializable {
      * @since 5.6
      */
     @SuppressWarnings("unchecked")
-    public String endTasks(String selectionListName, Action taskAction) throws ClientException {
+    public String endTasks(String selectionListName, Action taskAction) {
         // collect form data
         Map<String, Object> data = new HashMap<String, Object>();
         String buttonId = (String) taskAction.getProperties().get("buttonId");
@@ -669,10 +669,9 @@ public class RoutingTaskActionsBean implements Serializable {
      *
      * @since 5.9.3, 5.8.0-HF10
      * @return
-     * @throws ClientException
      */
     @SuppressWarnings("deprecation")
-    public List<String> getCurrentTaskTargetDocumentsIds() throws ClientException {
+    public List<String> getCurrentTaskTargetDocumentsIds() {
         Set<String> uniqueTargetDocIds = new HashSet<String>();
         List<String> docIds = new ArrayList<String>();
         if (currentTask == null) {
@@ -690,7 +689,7 @@ public class RoutingTaskActionsBean implements Serializable {
     /**
      * @since 5.8 - Define if action reassign task can be displayed.
      */
-    public boolean canBeReassign() throws ClientException {
+    public boolean canBeReassign() {
         if (currentTask == null) {
             return false;
         }

@@ -47,7 +47,7 @@ public class RelatedRouteActionBean {
     protected CoreSession documentManager;
 
     @Factory(value = "relatedRoutes")
-    public List<DocumentModel> findRelatedRoute() throws ClientException {
+    public List<DocumentModel> findRelatedRoute() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc != null) {
             return findRelatedRoute(currentDoc.getId());
@@ -55,7 +55,7 @@ public class RelatedRouteActionBean {
         return new ArrayList<DocumentModel>();
     }
 
-    public List<DocumentModel> findRelatedRoute(String documentId) throws ClientException {
+    public List<DocumentModel> findRelatedRoute(String documentId) {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         if (documentId == null || "".equals(documentId)) {
             return docs;
@@ -68,11 +68,11 @@ public class RelatedRouteActionBean {
         return docs;
     }
 
-    public boolean hasRelatedRoute(String documentId) throws ClientException {
+    public boolean hasRelatedRoute(String documentId) {
         return !findRelatedRoute(documentId).isEmpty();
     }
 
-    public boolean hasRelatedRoute() throws ClientException {
+    public boolean hasRelatedRoute() {
         return !findRelatedRoute().isEmpty();
     }
 

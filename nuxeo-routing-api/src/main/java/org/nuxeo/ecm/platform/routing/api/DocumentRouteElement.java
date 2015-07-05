@@ -144,9 +144,8 @@ public interface DocumentRouteElement extends Serializable {
      * Set this element to the validate state and put it in read only mode.
      *
      * @param session
-     * @throws ClientException
      */
-    void validate(CoreSession session) throws ClientException;
+    void validate(CoreSession session);
 
     /**
      * Get the underlying document representing this element.
@@ -185,7 +184,7 @@ public interface DocumentRouteElement extends Serializable {
     /**
      * remove write rights to everyone but the administrators.
      */
-    void setReadOnly(CoreSession session) throws ClientException;
+    void setReadOnly(CoreSession session);
 
     /**
      * make this element follow a transition.

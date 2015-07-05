@@ -70,7 +70,7 @@ public class DocumentRouteListWriter extends EntityListWriter<DocumentRoute> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, DocumentRoute item) throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, DocumentRoute item) throws IOException {
         // do nothing, everything is done in #writeTo
     }
 

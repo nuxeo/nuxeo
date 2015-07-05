@@ -58,7 +58,7 @@ public class MapPropertiesOnTaskOperation {
     protected PropertiesMappingService mappingService;
 
     @OperationMethod
-    public DocumentModel run(DocumentModel taskDoc) throws ClientException {
+    public DocumentModel run(DocumentModel taskDoc) {
         Task task = taskDoc.getAdapter(Task.class);
         if (task == null) {
             throw new ClientException("Input document is not a Task");

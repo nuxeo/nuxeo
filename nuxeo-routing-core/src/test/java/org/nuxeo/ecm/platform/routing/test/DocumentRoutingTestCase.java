@@ -117,7 +117,7 @@ public class DocumentRoutingTestCase {
         session.save();
     }
 
-    public DocumentModel createDocumentRouteModel(CoreSession session, String name, String path) throws ClientException {
+    public DocumentModel createDocumentRouteModel(CoreSession session, String name, String path) {
         DocumentModel route = createDocumentModel(session, name, DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE,
                 path);
         createDocumentModel(session, "step1", DocumentRoutingConstants.STEP_DOCUMENT_TYPE, route.getPathAsString());
@@ -136,7 +136,7 @@ public class DocumentRoutingTestCase {
     }
 
     public DocumentModel createDocumentRouteModelWithConditionalFolder(CoreSession session, String name, String path)
-            throws ClientException {
+            {
         DocumentModel route = createDocumentModel(session, name, DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE,
                 path);
         createDocumentModel(session, "step1", DocumentRoutingConstants.STEP_DOCUMENT_TYPE, route.getPathAsString());
@@ -153,24 +153,24 @@ public class DocumentRoutingTestCase {
     }
 
     public DocumentModel createDocumentModel(CoreSession session, String name, String type, String path)
-            throws ClientException {
+            {
         DocumentModel route1 = session.createDocumentModel(path, name, type);
         route1.setPropertyValue(DocumentRoutingConstants.TITLE_PROPERTY_NAME, name);
         return session.createDocument(route1);
     }
 
-    public DocumentRoute createDocumentRoute(CoreSession session, String name) throws ClientException {
+    public DocumentRoute createDocumentRoute(CoreSession session, String name) {
         DocumentModel model = createDocumentRouteModel(session, name, WORKSPACES_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 
     public DocumentRoute createDocumentRouteWithConditionalFolder(CoreSession session, String name)
-            throws ClientException {
+            {
         DocumentModel model = createDocumentRouteModelWithConditionalFolder(session, name, WORKSPACES_PATH);
         return model.getAdapter(DocumentRoute.class);
     }
 
-    protected DocumentModel createTestDocument(String name, CoreSession session) throws ClientException {
+    protected DocumentModel createTestDocument(String name, CoreSession session) {
         return createDocumentModel(session, name, "Note", WORKSPACES_PATH);
     }
 

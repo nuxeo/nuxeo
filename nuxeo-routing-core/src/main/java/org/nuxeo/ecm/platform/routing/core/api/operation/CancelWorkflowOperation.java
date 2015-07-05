@@ -53,7 +53,7 @@ public class CancelWorkflowOperation {
     protected DocumentRoutingEngineService documentRoutingEngineService;
 
     @OperationMethod
-    public void cancelWorkflow() throws ClientException {
+    public void cancelWorkflow() {
         DocumentModel workflowInstance;
         try {
             workflowInstance = session.getDocument(new IdRef(id));

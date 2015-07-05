@@ -303,12 +303,12 @@ public class WorkflowEscalationTest extends AbstractGraphRouteTest {
 
     }
 
-    protected void setEscalationRules(DocumentModel node, Map<String, Serializable>... rules) throws ClientException {
+    protected void setEscalationRules(DocumentModel node, Map<String, Serializable>... rules) {
         node.setPropertyValue(GraphNode.PROP_ESCALATION_RULES, (Serializable) Arrays.asList(rules));
     }
 
     protected Map<String, Serializable> escalationRule(String id, String condition, String chain,
-            boolean multipleExecution) throws ClientException {
+            boolean multipleExecution) {
         Map<String, Serializable> m = new HashMap<String, Serializable>();
         m.put(GraphNode.PROP_ESCALATION_RULE_ID, id);
         m.put(GraphNode.PROP_ESCALATION_RULE_CONDITION, condition);

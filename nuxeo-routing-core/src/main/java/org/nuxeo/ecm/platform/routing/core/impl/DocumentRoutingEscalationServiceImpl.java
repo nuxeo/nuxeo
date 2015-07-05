@@ -47,11 +47,11 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
             + "AND ( rnode:escalationRules/*1/executed = 0 OR rnode:escalationRules/*1/multipleExecution = 1 )";
 
     @Override
-    public List<String> queryForSuspendedNodesWithEscalation(CoreSession session) throws ClientException {
+    public List<String> queryForSuspendedNodesWithEscalation(CoreSession session) {
         final List<String> nodesDocIds = new ArrayList<String>();
         new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 IterableQueryResult results = session.queryAndFetch(queryForSuspendedNodesWithEscalation, "NXQL");
                 for (Map<String, Serializable> result : results) {
                     nodesDocIds.add(result.get("ecm:uuid").toString());
@@ -64,7 +64,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
     }
 
     @Override
-    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node) throws ClientException {
+    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node) {
         return node.evaluateEscalationRules();
     }
 
@@ -148,9 +148,8 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
          * Used to check the executed status when the escalationRule is run by a worker in a work queue
          *
          * @param session
-         * @throws ClientException
          */
-        public boolean getExecutionStatus(EscalationRule rule, CoreSession session) throws ClientException {
+        public boolean getExecutionStatus(EscalationRule rule, CoreSession session) {
             DocumentModel nodeDoc = session.getDocument(new IdRef(rule.getNode().getDocument().getId()));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
             List<EscalationRule> rules = node.getEscalationRules();
@@ -165,7 +164,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
     }
 
     private static void markRuleAsExecuted(String nodeDocId, String escalationRuleId, CoreSession session)
-            throws ClientException {
+            {
         DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
         GraphNode node = nodeDoc.getAdapter(GraphNode.class);
         List<EscalationRule> rules = node.getEscalationRules();

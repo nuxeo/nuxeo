@@ -36,7 +36,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class RoutingTaskServiceImpl extends DefaultComponent implements RoutingTaskService {
 
     @Override
-    public void makeRoutingTasks(CoreSession session, List<Task> tasks) throws ClientException {
+    public void makeRoutingTasks(CoreSession session, List<Task> tasks) {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         routing.makeRoutingTasks(session, tasks);
     }

@@ -70,7 +70,7 @@ public class TaskWriter extends EntityWriter<Task> {
     UriInfo uriInfo;
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, Task item) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, Task item) throws IOException {
         writeTask(jg, item, request, uriInfo);
     }
 

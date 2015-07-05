@@ -90,7 +90,7 @@ public class TaskCompletionRequestReader implements MessageBodyReader<TaskComple
     }
 
     private TaskCompletionRequest readRequest(String content, MultivaluedMap<String, String> httpHeaders)
-            throws IOException, ClientException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException {
         JsonParser jp = factory.createJsonParser(content);
         return readJson(jp, httpHeaders);
     }

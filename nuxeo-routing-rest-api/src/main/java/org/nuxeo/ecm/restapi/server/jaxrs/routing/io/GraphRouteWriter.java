@@ -53,7 +53,7 @@ public class GraphRouteWriter extends EntityWriter<JsonGraphRoute>  {
     }
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, JsonGraphRoute item) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, JsonGraphRoute item) throws IOException {
         for (Entry<String, Object> e : item.getGraphElements().entrySet()) {
             jg.writeObjectField(e.getKey(), e.getValue());
         }

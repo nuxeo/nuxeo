@@ -60,11 +60,11 @@ public class DocumentRoutingSuggestionActionsBean extends DocumentContextBoundAc
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    public DocumentModel getDocumentModel(String id) throws ClientException {
+    public DocumentModel getDocumentModel(String id) {
         return documentManager.getDocument(new IdRef(id));
     }
 
-    public List<DocumentModel> getDocumentSuggestions(Object input) throws ClientException {
+    public List<DocumentModel> getDocumentSuggestions(Object input) {
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
@@ -75,7 +75,7 @@ public class DocumentRoutingSuggestionActionsBean extends DocumentContextBoundAc
         return pageProvider.getCurrentPage();
     }
 
-    public List<DocumentModel> getRouteModelSuggestions(Object input) throws ClientException {
+    public List<DocumentModel> getRouteModelSuggestions(Object input) {
         DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
         return documentRoutingService.searchRouteModels(documentManager, (String) input);
     }

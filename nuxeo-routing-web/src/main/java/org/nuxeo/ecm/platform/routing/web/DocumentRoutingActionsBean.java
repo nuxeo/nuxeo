@@ -170,7 +170,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return getDocumentRoutingService().isRoutable(navigationContext.getCurrentDocument());
     }
 
-    public String startRoute() throws ClientException {
+    public String startRoute() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         if (currentRoute == null) {
@@ -250,7 +250,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * Cancels the first workflow found on the current document
      */
-    public String cancelRoute() throws ClientException {
+    public String cancelRoute() {
         List<DocumentRoute> routes = getRelatedRoutes();
         if (routes.size() == 0) {
             log.error("No workflow to cancel");
@@ -302,7 +302,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return true;
     }
 
-    public String validateRouteModel() throws ClientException {
+    public String validateRouteModel() {
         DocumentRoute currentRouteModel = getRelatedRoute();
         try {
             getDocumentRoutingService().validateRouteModel(currentRouteModel, documentManager);
@@ -320,7 +320,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    protected List<DocumentRouteTableElement> computeRouteElements() throws ClientException {
+    protected List<DocumentRouteTableElement> computeRouteElements() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRoute currentRoute = currentDocument.getAdapter(DocumentRoute.class);
         return getElements(currentRoute);
@@ -330,7 +330,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    protected List<DocumentRouteTableElement> computeRelatedRouteElements() throws ClientException {
+    protected List<DocumentRouteTableElement> computeRelatedRouteElements() {
         if (relatedRoutes.isEmpty()) {
             return new ArrayList<DocumentRouteTableElement>();
         }
@@ -355,7 +355,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return !relatedRoutes.isEmpty();
     }
 
-    public String startRouteRelatedToCurrentDocument() throws ClientException {
+    public String startRouteRelatedToCurrentDocument() {
         DocumentRoute route = getRelatedRoute();
         // check relatedRoutedoc id
         if (!StringUtils.isEmpty(relatedRouteModelDocumentId)) {
@@ -380,7 +380,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * returns true if the routeStarted on the current Document is editable (is Ready )
      */
-    public boolean routeRelatedToCurrentDocumentIsRunning() throws ClientException {
+    public boolean routeRelatedToCurrentDocumentIsRunning() {
         DocumentRoute route = getRelatedRoute();
         if (route == null) {
             return false;
@@ -420,7 +420,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public String removeStep() throws ClientException {
+    public String removeStep() {
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
         if (getDocumentRoutingService().isLockedByCurrentUser(routeModel, documentManager)) {
@@ -459,7 +459,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    public boolean isEditableStep(DocumentModel stepDoc) throws ClientException {
+    public boolean isEditableStep(DocumentModel stepDoc) {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         // if fork, is not simple editable step
         if (stepDoc.hasFacet("Folderish")) {
@@ -474,39 +474,39 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    public boolean isEditableRouteElement(DocumentModel stepDoc) throws ClientException {
+    public boolean isEditableRouteElement(DocumentModel stepDoc) {
         DocumentRouteElement stepElement = stepDoc.getAdapter(DocumentRouteElement.class);
         return stepElement.isModifiable();
     }
 
     @Factory(value = "currentRouteLockedByCurrentUser", scope = ScopeType.EVENT)
-    public boolean isCurrentRouteLockedByCurrentUser() throws ClientException {
+    public boolean isCurrentRouteLockedByCurrentUser() {
         return getDocumentRoutingService().isLockedByCurrentUser(getRelatedRoute(), documentManager);
     }
 
-    public boolean isCurrentRouteLocked() throws ClientException {
+    public boolean isCurrentRouteLocked() {
         LockableDocumentRoute lockableRoute = getRelatedRoute().getDocument().getAdapter(LockableDocumentRoute.class);
         return lockableRoute.isLocked(documentManager);
     }
 
-    public boolean canUnlockRoute() throws ClientException {
+    public boolean canUnlockRoute() {
         return Boolean.TRUE.equals(lockActions.getCanUnlockDoc(getRelatedRoute().getDocument()));
     }
 
-    public boolean canLockRoute() throws ClientException {
+    public boolean canLockRoute() {
         return Boolean.TRUE.equals(lockActions.getCanLockDoc(getRelatedRoute().getDocument()));
     }
 
-    public Map<String, Serializable> getCurrentRouteLockDetails() throws ClientException {
+    public Map<String, Serializable> getCurrentRouteLockDetails() {
         return lockActions.getLockDetails(getRelatedRoute().getDocument());
     }
 
-    public String lockCurrentRoute() throws ClientException {
+    public String lockCurrentRoute() {
         DocumentRoute docRouteElement = getRelatedRoute();
         return lockRoute(docRouteElement);
     }
 
-    protected String lockRoute(DocumentRoute docRouteElement) throws ClientException {
+    protected String lockRoute(DocumentRoute docRouteElement) {
         try {
             getDocumentRoutingService().lockDocumentRoute(docRouteElement.getDocumentRoute(documentManager),
                     documentManager);
@@ -518,17 +518,17 @@ public class DocumentRoutingActionsBean implements Serializable {
         return null;
     }
 
-    public String unlockCurrentRoute() throws ClientException {
+    public String unlockCurrentRoute() {
         DocumentRoute route = getRelatedRoute();
         getDocumentRoutingService().unlockDocumentRoute(route, documentManager);
         return null;
     }
 
-    public boolean isEmptyFork(DocumentModel forkDoc) throws ClientException {
+    public boolean isEmptyFork(DocumentModel forkDoc) {
         return forkDoc.hasFacet("Folderish") && !documentManager.hasChildren(forkDoc.getRef());
     }
 
-    public String editStep() throws ClientException {
+    public String editStep() {
         if (StringUtils.isEmpty(stepId)) {
             return null;
         }
@@ -540,7 +540,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         return navigationContext.navigateToDocument(documentManager.getDocument(stepRef), "edit");
     }
 
-    public String updateRouteElement() throws ClientException {
+    public String updateRouteElement() {
         boolean alreadyLockedByCurrentUser = false;
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRouteElement docRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
@@ -578,7 +578,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 "TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE");
     }
 
-    public String goBackToRoute() throws ClientException {
+    public String goBackToRoute() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRouteElement docRouteElement = currentDocument.getAdapter(DocumentRouteElement.class);
         return webActions.setCurrentTabAndNavigate(docRouteElement.getDocumentRoute(documentManager).getDocument(),
@@ -589,7 +589,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    public String createRouteElement(String typeName) throws ClientException {
+    public String createRouteElement(String typeName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         DocumentRef routeRef = currentDocument.getRef();
         DocumentRef sourceDocRef = new IdRef(hiddenSourceDocId);
@@ -640,7 +640,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      * @deprecated since 5.9.2 - Use only routes of type 'graph'
      */
     @Deprecated
-    public String moveRouteElement(String direction) throws ClientException {
+    public String moveRouteElement(String direction) {
         if (StringUtils.isEmpty(stepId)) {
             return null;
         }
@@ -714,7 +714,7 @@ public class DocumentRoutingActionsBean implements Serializable {
                 "TAB_CASE_MANAGEMENT_VIEW_RELATED_ROUTE");
     }
 
-    public String saveRouteElement() throws ClientException {
+    public String saveRouteElement() {
         boolean alreadyLockedByCurrentUser = false;
         DocumentRoute routeModel = getRelatedRoute();
         if (getDocumentRoutingService().isLockedByCurrentUser(routeModel, documentManager)) {
@@ -761,7 +761,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public List<DocumentModel> getOrderedChildren(String docRouteElementId, String type) throws ClientException {
+    public List<DocumentModel> getOrderedChildren(String docRouteElementId, String type) {
         // xxx move me in serice with query
         DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElementId,
                 documentManager);
@@ -776,7 +776,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public DocumentModel getChildWithPosition(DocumentModel docRouteElement, String pos) throws ClientException {
+    public DocumentModel getChildWithPosition(DocumentModel docRouteElement, String pos) {
         DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElement.getId(),
                 documentManager);
         return orderedChildren.get(Integer.parseInt(pos));
@@ -784,7 +784,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     @Deprecated
     // @deprecated since 5.9.2 - Use only routes of type 'graph'
-    public String getPositionForChild(DocumentModel docRouteElement, DocumentModel docChild) throws ClientException {
+    public String getPositionForChild(DocumentModel docRouteElement, DocumentModel docChild) {
         DocumentModelList orderedChildren = getDocumentRoutingService().getOrderedRouteElement(docRouteElement.getId(),
                 documentManager);
         return String.valueOf(orderedChildren.indexOf(docChild));
@@ -822,7 +822,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         this.docWithAttachedRouteId = docWithAttachedRouteId;
     }
 
-    private void setRelatedRouteWhenNavigateBackToCase() throws ClientException {
+    private void setRelatedRouteWhenNavigateBackToCase() {
         // recompute factory
         webActions.resetTabList();
         navigationContext.setCurrentDocument(documentManager.getDocument(new IdRef(docWithAttachedRouteId)));
@@ -837,14 +837,14 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * @since 5.6
      */
-    public DocumentModel getRouteModel(String routeId) throws ClientException {
+    public DocumentModel getRouteModel(String routeId) {
         return documentManager.getDocument(new IdRef(routeId));
     }
 
     /**
      * @since 5.6
      */
-    public DocumentModel getRouteInstanceFor(Task task) throws ClientException {
+    public DocumentModel getRouteInstanceFor(Task task) {
         final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         if (routeDocId == null) {
             return null;
@@ -852,7 +852,7 @@ public class DocumentRoutingActionsBean implements Serializable {
         final DocumentModel[] res = new DocumentModel[1];
         new UnrestrictedSessionRunner(documentManager) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel doc = session.getDocument(new IdRef(routeDocId));
                 doc.detach(true);
                 res[0] = doc;
@@ -864,7 +864,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * @since 5.6
      */
-    public List<DocumentModel> getFilteredRouteModels() throws ClientException {
+    public List<DocumentModel> getFilteredRouteModels() {
         DocumentRoutingService documentRoutingService = Framework.getLocalService(DocumentRoutingService.class);
         List<DocumentModel> routeModels = documentRoutingService.searchRouteModels(documentManager, "");
         for (Iterator<DocumentModel> it = routeModels.iterator(); it.hasNext();) {
@@ -888,7 +888,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * @since 5.6
      */
-    public List<Task> getCurrentRouteAllTasks() throws ClientException {
+    public List<Task> getCurrentRouteAllTasks() {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
@@ -900,7 +900,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * @since 5.6
      */
-    public List<Task> getCurrentRouteCurrentUserTasks() throws ClientException {
+    public List<Task> getCurrentRouteCurrentUserTasks() {
         TaskService taskService = Framework.getLocalService(TaskService.class);
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
@@ -913,7 +913,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * @since 5.6
      */
-    public String getCurrentWorkflowInitiator() throws ClientException {
+    public String getCurrentWorkflowInitiator() {
         DocumentRoute currentRoute = getRelatedRoute();
         if (currentRoute != null) {
             return (String) currentRoute.getDocument().getPropertyValue(DocumentRoutingConstants.INITIATOR);
@@ -924,7 +924,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     /**
      * since 5.7
      */
-    public boolean isCurrentRouteGraph() throws ClientException {
+    public boolean isCurrentRouteGraph() {
         return isRouteGraph(getRelatedRoute());
     }
 
@@ -933,7 +933,7 @@ public class DocumentRoutingActionsBean implements Serializable {
      *
      * @since 5.7.2
      */
-    public boolean isRouteGraph(DocumentRoute route) throws ClientException {
+    public boolean isRouteGraph(DocumentRoute route) {
         return route != null
                 && ExecutionTypeValues.graph.toString().equals(
                         route.getDocument().getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));

@@ -107,7 +107,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         // breakpoint here to examine database after test
     }
 
-    protected CoreSession openSession(NuxeoPrincipal principal) throws ClientException {
+    protected CoreSession openSession(NuxeoPrincipal principal) {
         return settings.openSessionAs(principal);
     }
 
@@ -119,7 +119,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     protected void setSubRouteVariables(DocumentModel node,
-            @SuppressWarnings("unchecked") Map<String, Serializable>... keyvalues) throws ClientException {
+            @SuppressWarnings("unchecked") Map<String, Serializable>... keyvalues) {
         node.setPropertyValue(GraphNode.PROP_SUB_ROUTE_VARS, (Serializable) Arrays.asList(keyvalues));
     }
 
@@ -1095,7 +1095,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testDynamicallyComputeDueDate() throws PropertyException, ClientException {
+    public void testDynamicallyComputeDueDate() throws PropertyException {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_VARIABLES_FACET, "FacetNode1");
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
@@ -1400,7 +1400,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     @SuppressWarnings("unchecked")
-    protected void createWorkflowWithSubRoute(String subRouteModelId) throws ClientException, PropertyException {
+    protected void createWorkflowWithSubRoute(String subRouteModelId) throws PropertyException {
         DocumentModel node1 = createNode(routeDoc, "node1", session);
         node1.setPropertyValue(GraphNode.PROP_START, Boolean.TRUE);
         setTransitions(node1, transition("trans12", "node2"));

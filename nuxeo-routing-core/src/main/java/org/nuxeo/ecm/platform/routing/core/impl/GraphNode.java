@@ -305,7 +305,7 @@ public interface GraphNode {
         /** Computed by graph. */
         public boolean loop;
 
-        protected Transition(GraphNode source, Property p) throws ClientException {
+        protected Transition(GraphNode source, Property p) {
             this.source = source;
             prop = (MapProperty) p;
             id = (String) prop.get(PROP_TRANS_NAME).getValue();
@@ -319,7 +319,7 @@ public interface GraphNode {
             }
         }
 
-        protected void setResult(boolean bool) throws ClientException {
+        protected void setResult(boolean bool) {
             result = bool;
             prop.get(PROP_TRANS_RESULT).setValue(Boolean.valueOf(bool));
         }
@@ -380,7 +380,7 @@ public interface GraphNode {
 
         public MapProperty prop;
 
-        public Button(GraphNode source, Property p) throws ClientException {
+        public Button(GraphNode source, Property p) {
             this.source = source;
             this.prop = (MapProperty) p;
             name = (String) prop.get(PROP_BTN_NAME).getValue();
@@ -432,7 +432,7 @@ public interface GraphNode {
          */
         protected Calendar lastExcutionTime;
 
-        public EscalationRule(GraphNode node, Property p) throws ClientException {
+        public EscalationRule(GraphNode node, Property p) {
             this.prop = (MapProperty) p;
             this.node = node;
             this.id = (String) p.get(PROP_ESCALATION_RULE_ID).getValue();
@@ -467,7 +467,7 @@ public interface GraphNode {
             return node;
         }
 
-        public void setExecuted(boolean executed) throws ClientException {
+        public void setExecuted(boolean executed) {
             this.executed = executed;
             prop.get(PROP_ESCALATION_RULE_EXECUTED).setValue(Boolean.valueOf(executed));
             if (executed) {
@@ -475,7 +475,7 @@ public interface GraphNode {
             }
         }
 
-        protected void setExecutionTime(Calendar time) throws ClientException {
+        protected void setExecutionTime(Calendar time) {
             prop.get(PROP_LAST_EXECUTION_TIME).setValue(time);
             this.lastExcutionTime = time;
         }
@@ -524,7 +524,7 @@ public interface GraphNode {
 
         protected GraphNode node;
 
-        public TaskInfo(GraphNode node, Property p) throws ClientException {
+        public TaskInfo(GraphNode node, Property p) {
             this.prop = (MapProperty) p;
             this.node = node;
             this.taskDocId = (String) p.get(PROP_TASK_INFO_TASK_DOC_ID).getValue();
@@ -537,7 +537,7 @@ public interface GraphNode {
             }
         }
 
-        public TaskInfo(GraphNode node, String taskDocId) throws ClientException {
+        public TaskInfo(GraphNode node, String taskDocId) {
             this.node = node;
             this.prop = (MapProperty) ((ListProperty) node.getDocument().getProperty(PROP_TASKS_INFO)).addEmpty();
             this.prop.get(PROP_TASK_INFO_TASK_DOC_ID).setValue(taskDocId);
@@ -573,23 +573,23 @@ public interface GraphNode {
             return ended;
         }
 
-        public void setComment(String comment) throws ClientException {
+        public void setComment(String comment) {
             this.comment = comment;
             prop.get(PROP_TASK_INFO_COMMENT).setValue(comment);
         }
 
-        public void setStatus(String status) throws ClientException {
+        public void setStatus(String status) {
             this.status = status;
             prop.get(PROP_TASK_INFO_STATUS).setValue(status);
 
         }
 
-        public void setActor(String actor) throws ClientException {
+        public void setActor(String actor) {
             this.actor = actor;
             prop.get(PROP_TASK_INFO_ACTOR).setValue(actor);
         }
 
-        public void setEnded(boolean ended) throws ClientException {
+        public void setEnded(boolean ended) {
             this.ended = ended;
             prop.get(PROP_TASK_INFO_ENDED).setValue(Boolean.valueOf(ended));
         }
@@ -929,7 +929,7 @@ public interface GraphNode {
      *
      * @since 5.7.3
      */
-    void addTaskInfo(String taskId) throws ClientException;
+    void addTaskInfo(String taskId);
 
     /**
      * Persist these info from the task on the node. Status is the id of the button clicked to end the task by the
@@ -937,8 +937,7 @@ public interface GraphNode {
      *
      * @since 5.7.3
      */
-    void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment)
-            throws ClientException;
+    void updateTaskInfo(String taskId, boolean ended, String status, String actor, String comment);
 
     /**
      * Gets all the ended tasks originating from this node. This also counts the canceled tasks.
@@ -997,5 +996,6 @@ public interface GraphNode {
     /**
      * @since 7.4
      */
-    void removeTaskInfo(String taskId) throws ClientException;
+    void removeTaskInfo(String taskId);
+
 }

@@ -48,7 +48,7 @@ public class TestOperationSetVariable {
     protected String value;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         context.put(variable, value);
         return doc;
     }

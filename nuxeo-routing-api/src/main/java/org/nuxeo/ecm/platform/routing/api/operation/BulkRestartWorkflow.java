@@ -76,7 +76,7 @@ public class BulkRestartWorkflow {
     public static final int DEFAULT_BATCH_SIZE = 1000;
 
     @OperationMethod
-    public void run() throws ClientException {
+    public void run() {
         CoreSession session = null;
         boolean transactionStarted = false;
         Split split = SimonManager.getStopwatch(ID).start();
@@ -182,7 +182,7 @@ public class BulkRestartWorkflow {
         }
     }
 
-    protected void reinitLifecycle(List<String> docIds, CoreSession session) throws ClientException {
+    protected void reinitLifecycle(List<String> docIds, CoreSession session) {
         for (String docId : docIds) {
             session.reinitLifeCycleState(new IdRef(docId));
         }

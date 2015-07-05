@@ -54,7 +54,7 @@ public class DocumentRouteWriter extends EntityWriter<DocumentRoute> {
     UriInfo uriInfo;
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, DocumentRoute item) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, DocumentRoute item) throws IOException {
         writeDocumentRoute(jg, item, request, uriInfo);
     }
 

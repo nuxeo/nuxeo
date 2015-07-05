@@ -128,7 +128,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
      * instances.
      */
     protected DocumentModel createDocumentRoutesStructure(String routeStructureDocType, String id, CoreSession session)
-            throws ClientException {
+            {
         DocumentModel root = session.createDocumentModel(session.getRootDocument().getPathAsString(), id,
                 routeStructureDocType);
         root.setPropertyValue(DC_TITLE, routeStructureDocType);
@@ -148,10 +148,9 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
      * @param id
      * @param session
      * @return
-     * @throws ClientException
      */
     protected DocumentModel createModelsRoutesStructure(String routeStructureDocType, String id, CoreSession session)
-            throws ClientException {
+            {
         DocumentModel rootModels = session.createDocumentModel("/", id, routeStructureDocType);
         rootModels.setPropertyValue(DC_TITLE, routeStructureDocType);
         rootModels = session.createDocument(rootModels);
@@ -183,7 +182,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
     }
 
-    protected DocumentModel getDocumentRoutesStructure(String type, CoreSession session) throws ClientException {
+    protected DocumentModel getDocumentRoutesStructure(String type, CoreSession session) {
         DocumentModelList res = session.query(String.format("SELECT * from %s", type));
         if (res == null || res.isEmpty()) {
             return null;
@@ -219,7 +218,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance, CoreSession session)
-            throws ClientException {
+            {
         UndoReadOnlySecurityPolicy runner = new UndoReadOnlySecurityPolicy(session, instance.getRef());
         runner.runUnrestricted();
         return session.getDocument(runner.getInstanceRef());
@@ -235,7 +234,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel instance = session.getDocument(documentRef);
             if (instance == null) {
                 return;

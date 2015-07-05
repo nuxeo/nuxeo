@@ -54,7 +54,7 @@ public class AbstractTaskStepOperation {
         return null;
     }
 
-    public String getRoutingStepDocumentId(OperationContext context) throws ClientException {
+    public String getRoutingStepDocumentId(OperationContext context) {
         if (getRoutingTask(context) != null) {
             String stepDocumentId = routingTask.getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
             return stepDocumentId;

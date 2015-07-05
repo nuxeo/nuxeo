@@ -198,7 +198,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 protected DocumentRoute route;
 
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     String routeDocId = getRouteModelDocIdWithId(session, routeModelId);
                     DocumentModel model = session.getDocument(new IdRef(routeDocId));
                     DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
@@ -273,7 +273,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentModel instance = session.getDocument(new IdRef(routeInstanceId));
                     DocumentRoute route = instance.getAdapter(DocumentRoute.class);
                     if (docIds != null) {
@@ -307,7 +307,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
                     DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
                     DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
@@ -367,10 +367,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public DocumentRoute unlockDocumentRouteUnrestrictedSession(final DocumentRoute routeModel, CoreSession userSession)
-            throws ClientException {
+            {
         new UnrestrictedSessionRunner(userSession) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentRoute route = session.getDocument(routeModel.getDocument().getRef()).getAdapter(
                         DocumentRoute.class);
                 LockableDocumentRoute lockableRoute = route.getDocument().getAdapter(LockableDocumentRoute.class);
@@ -382,13 +382,13 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public DocumentRoute validateRouteModel(final DocumentRoute routeModel, CoreSession userSession)
-            throws DocumentRouteNotLockedException, ClientException {
+            throws DocumentRouteNotLockedException {
         if (!routeModel.getDocument().isLocked()) {
             throw new DocumentRouteNotLockedException();
         }
         new UnrestrictedSessionRunner(userSession) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentRoute route = session.getDocument(routeModel.getDocument().getRef()).getAdapter(
                         DocumentRoute.class);
                 route.validate(session);
@@ -499,7 +499,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public boolean canValidateRoute(DocumentModel documentRoute, CoreSession coreSession) throws ClientException {
+    public boolean canValidateRoute(DocumentModel documentRoute, CoreSession coreSession) {
         if (!coreSession.hasChildren(documentRoute.getRef())) {
             // Cannot validate an empty route
             return false;
@@ -511,7 +511,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     @Deprecated
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, int idx, DocumentRouteElement routeElement,
-            CoreSession session) throws DocumentRouteNotLockedException, ClientException {
+            CoreSession session) throws DocumentRouteNotLockedException {
         DocumentRoute route = getParentRouteModel(parentDocumentRef, session);
         if (!isLockedByCurrentUser(route, session)) {
             throw new DocumentRouteNotLockedException();
@@ -531,8 +531,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     @Deprecated
     public void addRouteElementToRoute(DocumentRef parentDocumentRef, String sourceName,
-            DocumentRouteElement routeElement, CoreSession session) throws DocumentRouteNotLockedException,
-            ClientException {
+            DocumentRouteElement routeElement, CoreSession session) throws DocumentRouteNotLockedException {
         DocumentRoute parentRoute = getParentRouteModel(parentDocumentRef, session);
         if (!isLockedByCurrentUser(parentRoute, session)) {
             throw new DocumentRouteNotLockedException();
@@ -557,7 +556,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void removeRouteElement(DocumentRouteElement routeElement, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException {
+            throws DocumentRouteNotLockedException {
         DocumentRoute parentRoute = routeElement.getDocumentRoute(session);
         if (!isLockedByCurrentUser(parentRoute, session)) {
             throw new DocumentRouteNotLockedException();
@@ -567,7 +566,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session) throws ClientException {
+    public DocumentModelList getOrderedRouteElement(String routeElementId, CoreSession session) {
         String query = String.format(ORDERED_CHILDREN_QUERY, routeElementId);
         DocumentModelList orderedChildren = session.query(query);
         return orderedChildren;
@@ -575,7 +574,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void lockDocumentRoute(DocumentRoute routeModel, CoreSession session)
-            throws DocumentRouteAlredayLockedException, ClientException {
+            throws DocumentRouteAlredayLockedException {
         LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(LockableDocumentRoute.class);
         boolean lockedByCurrent = isLockedByCurrentUser(routeModel, session);
         if (lockableRoute.isLocked(session) && !lockedByCurrent) {
@@ -588,7 +587,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void unlockDocumentRoute(DocumentRoute routeModel, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException {
+            throws DocumentRouteNotLockedException {
         LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(LockableDocumentRoute.class);
         if (!lockableRoute.isLockedByCurrentUser(session)) {
             throw new DocumentRouteNotLockedException();
@@ -597,21 +596,21 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session) throws ClientException {
+    public boolean isLockedByCurrentUser(DocumentRoute routeModel, CoreSession session) {
         LockableDocumentRoute lockableRoute = routeModel.getDocument().getAdapter(LockableDocumentRoute.class);
         return lockableRoute.isLockedByCurrentUser(session);
     }
 
     @Override
     public void updateRouteElement(DocumentRouteElement routeElement, CoreSession session)
-            throws DocumentRouteNotLockedException, ClientException {
+            throws DocumentRouteNotLockedException {
         if (!isLockedByCurrentUser(routeElement.getDocumentRoute(session), session)) {
             throw new DocumentRouteNotLockedException();
         }
         routeElement.save(session);
     }
 
-    private DocumentRoute getParentRouteModel(DocumentRef documentRef, CoreSession session) throws ClientException {
+    private DocumentRoute getParentRouteModel(DocumentRef documentRef, CoreSession session) {
         DocumentModel parentDoc = session.getDocument(documentRef);
         if (parentDoc.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
             return parentDoc.getAdapter(DocumentRoute.class);
@@ -661,7 +660,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite, CoreSession session)
-            throws ClientException {
+            {
         if (modelToImport == null) {
             throw new ClientException(("No resource containing route templates found"));
         }
@@ -709,7 +708,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public List<URL> getRouteModelTemplateResources() throws ClientException {
+    public List<URL> getRouteModelTemplateResources() {
         List<URL> urls = new ArrayList<URL>();
         for (URL url : routeResourcesRegistry.getRouteModelTemplateResources()) {
             urls.add(url); // test contrib parsing and deployment
@@ -718,7 +717,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public List<DocumentModel> searchRouteModels(CoreSession session, String searchString) throws ClientException {
+    public List<DocumentModel> searchRouteModels(CoreSession session, String searchString) {
         List<DocumentModel> allRouteModels = new ArrayList<DocumentModel>();
         PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -770,14 +769,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public DocumentRoute getRouteModelWithId(CoreSession session, String id) throws ClientException {
+    public DocumentRoute getRouteModelWithId(CoreSession session, String id) {
         String routeDocModelId = getRouteModelDocIdWithId(session, id);
         DocumentModel routeDoc = session.getDocument(new IdRef(routeDocModelId));
         return routeDoc.getAdapter(DocumentRoute.class);
     }
 
     @Override
-    public String getRouteModelDocIdWithId(CoreSession session, String id) throws ClientException {
+    public String getRouteModelDocIdWithId(CoreSession session, String id) {
         if (modelsChache != null) {
             String routeDocId = modelsChache.getIfPresent(id);
             if (routeDocId != null) {
@@ -810,10 +809,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     @Deprecated
-    public void makeRoutingTasks(CoreSession coreSession, final List<Task> tasks) throws ClientException {
+    public void makeRoutingTasks(CoreSession coreSession, final List<Task> tasks) {
         new UnrestrictedSessionRunner(coreSession) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 for (Task task : tasks) {
                     DocumentModel taskDoc = task.getDocument();
                     taskDoc.addFacet(DocumentRoutingConstants.ROUTING_TASK_FACET_NAME);
@@ -824,7 +823,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public void endTask(CoreSession session, Task task, Map<String, Object> data, String status) throws ClientException {
+    public void endTask(CoreSession session, Task task, Map<String, Object> data, String status) {
         String comment = (String) data.get(GraphNode.NODE_VARIABLE_COMMENT);
         TaskService taskService = Framework.getLocalService(TaskService.class);
         taskService.endTask(session, (NuxeoPrincipal) session.getPrincipal(), task, comment, null, false);
@@ -842,7 +841,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     @Override
-    public List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) throws ClientException {
+    public List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) {
         String routeInstanceId;
         try {
             routeInstanceId = task.getProcessId();
@@ -864,23 +863,23 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void grantPermissionToTaskAssignees(CoreSession session, String permission, List<DocumentModel> docs,
-            Task task) throws ClientException {
+            Task task) {
         setAclForActors(session, getRoutingACLName(task), permission, docs, task.getActors());
     }
 
     @Override
     public void grantPermissionToTaskDelegatedActors(CoreSession session, String permission, List<DocumentModel> docs,
-            Task task) throws ClientException {
+            Task task) {
         setAclForActors(session, getDelegationACLName(task), permission, docs, task.getDelegatedActors());
     }
 
     @Override
     public void removePermissionFromTaskAssignees(CoreSession session, final List<DocumentModel> docs, Task task)
-            throws ClientException {
+            {
         final String aclName = getRoutingACLName(task);
         new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 for (DocumentModel doc : docs) {
                     ACP acp = doc.getACP();
                     acp.removeACL(aclName);
@@ -896,12 +895,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
      */
     @Override
     public void removePermissionsForTaskActors(CoreSession session, final List<DocumentModel> docs, String taskId)
-            throws ClientException {
+            {
         final String aclRoutingName = getRoutingACLName(taskId);
         final String aclDelegationName = getDelegationACLName(taskId);
         new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 for (DocumentModel doc : docs) {
                     ACP acp = doc.getACP();
                     acp.removeACL(aclRoutingName);
@@ -957,7 +956,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             List<String> routeIds = new ArrayList<String>();
             String query = "SELECT ecm:uuid FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'done' "
                     + "OR ecm:currentLifeCycleState = 'canceled') ORDER BY dc:created";
@@ -1009,14 +1008,14 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             docs = session.query(query);
             for (DocumentModel documentModel : docs) {
                 documentModel.detach(true);
             }
         }
 
-        public DocumentModelList runQuery() throws ClientException {
+        public DocumentModelList runQuery() {
             runUnrestricted();
             return docs;
         }
@@ -1042,7 +1041,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         try {
             new UnrestrictedSessionRunner(session) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                     Task task = taskDoc.getAdapter(Task.class);
                     if (task == null) {
@@ -1082,7 +1081,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     protected void updateTaskInfo(CoreSession session, GraphRoute graph, Task task, String status)
-            throws ClientException {
+            {
         String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (StringUtils.isEmpty(nodeId)) {
             throw new DocumentRouteException("No nodeId found on task: " + task.getId());
@@ -1101,7 +1100,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             new UnrestrictedSessionRunner(session) {
 
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                     Task task = taskDoc.getAdapter(Task.class);
                     if (task == null) {
@@ -1151,7 +1150,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             new UnrestrictedSessionRunner(session) {
 
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                     Task task = taskDoc.getAdapter(Task.class);
                     if (task == null) {
@@ -1186,7 +1185,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     protected void setAclForActors(CoreSession session, final String aclName, final String permission,
-            final List<DocumentModel> docs, List<String> actors) throws ClientException {
+            final List<DocumentModel> docs, List<String> actors) {
         final List<String> actorIds = new ArrayList<String>();
         for (String actor : actors) {
             if (actor.contains(":")) {
@@ -1197,7 +1196,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         }
         new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 for (DocumentModel doc : docs) {
                     ACP acp = doc.getACP();
                     acp.removeACL(aclName);
@@ -1221,7 +1220,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public int doCleanupDoneAndCanceledRouteInstances(final String reprositoryName, final int limit)
-            throws ClientException {
+            {
         WfCleaner unrestrictedSessionRunner = new WfCleaner(reprositoryName, limit);
         unrestrictedSessionRunner.runUnrestricted();
         return unrestrictedSessionRunner.getNumberOfCleanedUpWf();
@@ -1257,7 +1256,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         new UnrestrictedSessionRunner(session) {
 
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 for (DocumentModel documentModel : documentModelList) {
                     final Task task = documentModel.getAdapter(Task.class);
                     if (StringUtils.isNotBlank(worflowModelName)) {

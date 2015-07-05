@@ -63,7 +63,7 @@ public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
     protected Boolean mappingComments = false;
 
     @OperationMethod
-    public void setStepDocument() throws ClientException {
+    public void setStepDocument() {
         String stepDocumentId = getRoutingStepDocumentId(context);
         DocumentModel docStep = session.getDocument(new IdRef(stepDocumentId));
         if (mappingComments) {
@@ -72,7 +72,7 @@ public class SetCurrentRunningStepFromTask extends AbstractTaskStepOperation {
         context.put(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY, docStep.getAdapter(DocumentRouteStep.class));
     }
 
-    protected void mappCommentsFromTaskToStep(CoreSession session, DocumentModel docStep) throws ClientException {
+    protected void mappCommentsFromTaskToStep(CoreSession session, DocumentModel docStep) {
         List<String> comments = new ArrayList<String>();
 
         RoutingTask task = getRoutingTask(context);

@@ -61,7 +61,7 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl im
     }
 
     @Override
-    public void validate(CoreSession session) throws ClientException {
+    public void validate(CoreSession session) {
         // validate this routeModel
         EventFirer.fireEvent(session, this, null, DocumentRoutingConstants.Events.beforeRouteValidated.name());
         setValidated(session);

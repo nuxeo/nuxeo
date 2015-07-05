@@ -43,7 +43,7 @@ public class ConditionalFolderUpdateRunner {
             new UnrestrictedSessionRunner(session) {
 
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     // get the parent container and set on it the id of the doc
                     // to be run next
                     DocumentModel condFolder = session.getDocument(session.getParentDocumentRef(new IdRef(stepDocId)));

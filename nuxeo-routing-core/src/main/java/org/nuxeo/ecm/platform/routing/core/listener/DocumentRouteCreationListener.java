@@ -31,7 +31,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 public class DocumentRouteCreationListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
         DocumentModel createdDocument = docCtx.getSourceDocument();
         if (!createdDocument.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {

@@ -48,13 +48,13 @@ public class TreeHelper {
      * @return the last child created (day)
      */
     public static DocumentModel getOrCreateDateTreeFolder(CoreSession session, DocumentModel root, Date date,
-            String folderType) throws ClientException {
+            String folderType) {
         String subPath = new SimpleDateFormat("yyyy/MM/dd").format(date);
         return getOrCreatePath(session, root, subPath, folderType);
     }
 
     public static DocumentModel getOrCreatePath(CoreSession session, DocumentModel root, String subPath,
-            String folderType) throws ClientException {
+            String folderType) {
         String[] pathSplit = subPath.split("/");
         String parentPath = root.getPathAsString();
         DocumentModel child = root;
@@ -66,7 +66,7 @@ public class TreeHelper {
     }
 
     public static synchronized DocumentModel getOrCreate(CoreSession session, String rootPath, String id,
-            String folderType) throws ClientException {
+            String folderType) {
         String path = String.format("%s/%s", rootPath, id);
         DocumentRef pathRef = new PathRef(path);
         boolean exists = session.exists(pathRef);

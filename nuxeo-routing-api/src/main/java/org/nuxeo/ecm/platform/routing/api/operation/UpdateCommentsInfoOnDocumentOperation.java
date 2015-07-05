@@ -43,7 +43,7 @@ public class UpdateCommentsInfoOnDocumentOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public void updateCommentsInfo() throws ClientException {
+    public void updateCommentsInfo() {
         DocumentModelList allDocsToUpdate = session.query(String.format(
                 "SELECT * FROM Document WHERE ecm:mixinType = '%s'",
                 DocumentRoutingConstants.COMMENTS_INFO_HOLDER_FACET));

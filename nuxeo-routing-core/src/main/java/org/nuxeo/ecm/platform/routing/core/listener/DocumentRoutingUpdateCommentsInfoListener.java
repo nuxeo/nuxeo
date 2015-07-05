@@ -34,7 +34,7 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 public class DocumentRoutingUpdateCommentsInfoListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         String eventId = event.getName();
 
         if (!eventId.equals(CommentEvents.COMMENT_ADDED) && !eventId.equals(CommentEvents.COMMENT_REMOVED)) {

@@ -69,7 +69,7 @@ public class RemoveRoutingTask {
         }
     }
 
-    protected List<Task> fetchTasks() throws ClientException {
+    protected List<Task> fetchTasks() {
         List<Task> tasks = new ArrayList<Task>();
         DocumentModelList docList = (DocumentModelList) ctx.get(OperationTaskVariableName.taskDocuments.name());
         if (docList != null) {
@@ -83,7 +83,7 @@ public class RemoveRoutingTask {
         return tasks;
     }
 
-    protected List<Task> fetchTasksFromStep() throws ClientException {
+    protected List<Task> fetchTasksFromStep() {
         List<Task> tasks = new ArrayList<Task>();
         DocumentRouteStep step = (DocumentRouteStep) ctx.get(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
         DocumentModelList list = coreSession.query(String.format(

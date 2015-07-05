@@ -48,7 +48,7 @@ public class NodeView {
 
     public boolean hasSubWorkflow;
 
-    public NodeView(GraphNode node, Locale locale) throws ClientException {
+    public NodeView(GraphNode node, Locale locale) {
         this.x = Integer.parseInt((String) node.getDocument().getPropertyValue(GraphNode.PROP_NODE_X_COORDINATE));
         this.y = Integer.parseInt((String) node.getDocument().getPropertyValue(GraphNode.PROP_NODE_Y_COORDINATE));
         this.isStartNode = node.isStart();

@@ -139,8 +139,7 @@ public class GetTaskNamesOperation {
         return I18NUtils.getMessageString("messages", label, null, locale);
     }
 
-    protected String getWorkflowTranslatedTitle(DocumentModel taskDoc, Locale locale) throws PropertyException,
-            ClientException {
+    protected String getWorkflowTranslatedTitle(DocumentModel taskDoc, Locale locale) throws PropertyException {
         String workflowId = (String) taskDoc.getPropertyValue("nt:processId");
         DocumentModel workflowDoc = session.getDocument(new IdRef(workflowId));
         return getI18nLabel(workflowDoc.getTitle(), locale);

@@ -51,7 +51,7 @@ public class WaitingStepRuntimePersister {
         return runningSteps;
     }
 
-    static public DocumentRouteStep getStep(String id, CoreSession session) throws ClientException {
+    static public DocumentRouteStep getStep(String id, CoreSession session) {
         return session.getDocument(new IdRef(id)).getAdapter(DocumentRouteStep.class);
     }
 

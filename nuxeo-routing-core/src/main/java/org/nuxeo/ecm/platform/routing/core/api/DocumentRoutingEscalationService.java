@@ -33,19 +33,17 @@ public interface DocumentRoutingEscalationService {
      * inspected. Uses an unrestricted session.
      *
      * @return
-     * @throws ClientException
      * @since 5.7.2
      */
-    List<String> queryForSuspendedNodesWithEscalation(CoreSession session) throws ClientException;
+    List<String> queryForSuspendedNodesWithEscalation(CoreSession session);
 
     /**
      * Computes the list of escalation rules to be executed after their conditions are evaluated for the given node.
      *
      * @return
-     * @throws ClientException
      * @since 5.7.2
      */
-    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node) throws ClientException;
+    public List<EscalationRule> computeEscalationRulesToExecute(GraphNode node);
 
     /**
      * Schedules for execution an escalation rule. Uses an unrestricted session.

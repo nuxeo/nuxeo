@@ -44,7 +44,7 @@ public interface RoutingTaskService {
      * @deprecated since 5.6, use DocumentRoutingService instead
      */
     @Deprecated
-    void makeRoutingTasks(CoreSession session, List<Task> tasks) throws ClientException;
+    void makeRoutingTasks(CoreSession session, List<Task> tasks);
 
     /**
      * Ends a task

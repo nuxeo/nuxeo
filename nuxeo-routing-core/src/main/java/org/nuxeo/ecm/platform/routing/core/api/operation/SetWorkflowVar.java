@@ -56,7 +56,7 @@ public class SetWorkflowVar {
 
     @SuppressWarnings("unchecked")
     @OperationMethod
-    public void run() throws ClientException {
+    public void run() {
         if (workflowInstanceId == null) {
             if (ctx.get(Constants.VAR_WORKFLOW) != null) {
                 ((Map<String, Serializable>) ctx.get(Constants.VAR_WORKFLOW)).put(name, (Serializable) value);
