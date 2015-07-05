@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -199,7 +200,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
         DocumentModel node;
         try {
             node = session.getDocument(new PathRef("/document-route-models-root/myRoute/myNode"));
-        } catch (ClientException e) {
+        } catch (NoSuchDocumentException e) {
             node = null;
         }
         assertNull(node);
