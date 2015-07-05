@@ -78,7 +78,7 @@ public class TestAudioImporter {
     }
 
     @Test
-    public void testAudioType() throws ClientException {
+    public void testAudioType() {
 
         DocumentType audioType = session.getDocumentType(AUDIO_TYPE);
         assertNotNull("Does our type exist?", audioType);
