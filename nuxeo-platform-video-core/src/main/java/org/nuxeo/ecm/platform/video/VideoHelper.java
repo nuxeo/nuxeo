@@ -87,7 +87,7 @@ public class VideoHelper {
      * Update the JPEG story board and duration in seconds of a Video document from the video blob content.
      */
     @SuppressWarnings("unchecked")
-    public static void updateStoryboard(DocumentModel docModel, Blob video) throws PropertyException, ClientException {
+    public static void updateStoryboard(DocumentModel docModel, Blob video) throws PropertyException {
         if (video == null) {
             docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, null);
             docModel.setPropertyValue(VideoConstants.DURATION_PROPERTY, null);
@@ -131,7 +131,7 @@ public class VideoHelper {
      * timecode offset given in seconds.
      */
     public static void updatePreviews(DocumentModel docModel, Blob video, Double position,
-            List<Map<String, Object>> templates) throws ClientException, IOException {
+            List<Map<String, Object>> templates) throws IOException {
 
         if (video == null) {
             docModel.setPropertyValue("picture:views", null);
@@ -182,7 +182,7 @@ public class VideoHelper {
      * Update the JPEG previews of a Video document from the video blob content by taking a screen-shot of the movie at
      * 10% of the duration to avoid black screen fade in video.
      */
-    public static void updatePreviews(DocumentModel docModel, Blob video) throws ClientException, IOException {
+    public static void updatePreviews(DocumentModel docModel, Blob video) throws IOException {
 
         Double duration = (Double) docModel.getPropertyValue(VideoConstants.DURATION_PROPERTY);
         Double position = 0.0;
@@ -192,7 +192,7 @@ public class VideoHelper {
         updatePreviews(docModel, video, position, THUMBNAILS_VIEWS);
     }
 
-    public static void updateVideoInfo(DocumentModel docModel, Blob video) throws ClientException {
+    public static void updateVideoInfo(DocumentModel docModel, Blob video) {
         VideoInfo videoInfo = getVideoInfo(video);
         if (videoInfo == null) {
             docModel.setPropertyValue("vid:info", (Serializable) VideoInfo.EMPTY_INFO.toMap());
@@ -201,7 +201,7 @@ public class VideoHelper {
         docModel.setPropertyValue("vid:info", (Serializable) videoInfo.toMap());
     }
 
-    public static VideoInfo getVideoInfo(Blob video) throws ClientException {
+    public static VideoInfo getVideoInfo(Blob video) {
         if (video == null) {
             return null;
         }

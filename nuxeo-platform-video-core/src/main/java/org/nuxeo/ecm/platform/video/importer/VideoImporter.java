@@ -49,7 +49,7 @@ public class VideoImporter extends AbstractFileImporter {
     }
 
     @Override
-    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) {
         super.updateDocument(doc, content);
         // update the icon
         Type type = Framework.getLocalService(TypeManager.class).getType(doc.getType());

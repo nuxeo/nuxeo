@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 public class VideoAutomaticConversionListener implements PostCommitFilteringEventListener {
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         for (Event event : events) {
             if (VIDEO_CHANGED_EVENT.equals(event.getName())) {
                 handleEvent(event);
@@ -47,7 +47,7 @@ public class VideoAutomaticConversionListener implements PostCommitFilteringEven
         }
     }
 
-    private void handleEvent(Event event) throws ClientException {
+    private void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;

@@ -50,7 +50,7 @@ public class VideoServiceBusinessDelegate implements Serializable {
      * AppServer.
      */
     @Unwrap
-    public VideoService getService() throws ClientException {
+    public VideoService getService() {
         if (videoService == null) {
             try {
                 videoService = Framework.getService(VideoService.class);

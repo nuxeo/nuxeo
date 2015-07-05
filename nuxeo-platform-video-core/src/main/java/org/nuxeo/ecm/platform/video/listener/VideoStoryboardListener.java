@@ -46,7 +46,7 @@ public class VideoStoryboardListener implements PostCommitFilteringEventListener
     public static final Log log = LogFactory.getLog(VideoStoryboardListener.class);
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         for (Event event : events) {
             if (VIDEO_CHANGED_EVENT.equals(event.getName())) {
                 handleEvent(event);
@@ -54,7 +54,7 @@ public class VideoStoryboardListener implements PostCommitFilteringEventListener
         }
     }
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;

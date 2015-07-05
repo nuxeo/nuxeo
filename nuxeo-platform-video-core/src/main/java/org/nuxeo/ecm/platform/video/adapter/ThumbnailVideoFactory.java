@@ -35,7 +35,7 @@ import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 public class ThumbnailVideoFactory implements ThumbnailFactory {
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.hasFacet(VIDEO_FACET)) {
             throw new ClientException("Document is not a video");
         }
