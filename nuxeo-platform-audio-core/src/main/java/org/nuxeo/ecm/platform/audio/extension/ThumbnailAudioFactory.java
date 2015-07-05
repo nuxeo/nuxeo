@@ -45,7 +45,7 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     private static final Log log = LogFactory.getLog(ThumbnailAudioFactory.class);
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.hasFacet("Audio")) {
             throw new ClientException("Document is not audio type");
         }

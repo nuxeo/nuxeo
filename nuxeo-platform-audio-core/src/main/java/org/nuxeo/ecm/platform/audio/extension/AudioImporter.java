@@ -51,7 +51,7 @@ public class AudioImporter extends AbstractFileImporter {
     public static final String AUDIO_TYPE = "Audio";
 
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String fullname, TypeManager typeService) throws ClientException, IOException {
+            String fullname, TypeManager typeService) throws IOException {
 
         String filename = FileManagerUtils.fetchFileName(fullname);
 
