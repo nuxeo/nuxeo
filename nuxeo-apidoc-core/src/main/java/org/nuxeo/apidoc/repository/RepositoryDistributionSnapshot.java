@@ -50,7 +50,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     protected JavaDocHelper jdocHelper = null;
 
     public static RepositoryDistributionSnapshot create(DistributionSnapshot distrib, CoreSession session,
-            String containerPath, String label) throws ClientException {
+            String containerPath, String label) {
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
         String name = computeDocumentName(distrib.getKey());
         if (label != null) {

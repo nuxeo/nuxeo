@@ -92,7 +92,7 @@ public class SeamComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter imp
     }
 
     public static SeamComponentInfo create(SeamComponentInfo sci, CoreSession session, String containerPath)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

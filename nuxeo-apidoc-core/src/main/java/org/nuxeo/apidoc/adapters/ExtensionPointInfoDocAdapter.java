@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
 
     public static ExtensionPointInfoDocAdapter create(ExtensionPointInfo xpi, CoreSession session, String containerPath)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

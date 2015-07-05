@@ -149,7 +149,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     /**
      * Creates an actual document from the {@link OperationInfo}.
      */
-    public static OperationInfo create(OperationInfo oi, CoreSession session, String containerPath) throws ClientException {
+    public static OperationInfo create(OperationInfo oi, CoreSession session, String containerPath) {
         String name = computeDocumentName(oi.getId());
         String targetPath = new Path(containerPath).append(name).toString();
         boolean exists = session.exists(new PathRef(targetPath));

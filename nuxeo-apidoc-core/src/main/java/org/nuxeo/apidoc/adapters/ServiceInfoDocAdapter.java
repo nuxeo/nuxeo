@@ -32,7 +32,7 @@ public class ServiceInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     }
 
     public static ServiceInfoDocAdapter create(ServiceInfo si, CoreSession session, String containerPath)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

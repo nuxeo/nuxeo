@@ -41,7 +41,7 @@ import org.nuxeo.runtime.model.ComponentName;
 public class ExtensionInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionInfo {
 
     public static ExtensionInfoDocAdapter create(ExtensionInfo xi, CoreSession session, String containerPath)
-            throws ClientException {
+            {
 
         DocumentModel doc = session.createDocumentModel(TYPE_NAME);
 

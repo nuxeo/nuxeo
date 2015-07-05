@@ -29,17 +29,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface DocumentationService {
 
     DocumentationItem createDocumentationItem(CoreSession session, NuxeoArtifact item, String title, String content,
-            String type, List<String> applicableVersions, boolean approved, String renderingType)
-            throws ClientException;
+            String type, List<String> applicableVersions, boolean approved, String renderingType);
 
-    DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem) throws ClientException;
+    DocumentationItem updateDocumentationItem(CoreSession session, DocumentationItem docItem);
 
-    void deleteDocumentationItem(CoreSession session, String uuid) throws ClientException;
+    void deleteDocumentationItem(CoreSession session, String uuid);
 
-    List<DocumentationItem> findDocumentItems(CoreSession session, NuxeoArtifact nxItem) throws ClientException;
+    List<DocumentationItem> findDocumentItems(CoreSession session, NuxeoArtifact nxItem);
 
-    List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item)
-            throws ClientException;
+    List<DocumentationItem> findDocumentationItemVariants(CoreSession session, DocumentationItem item);
 
     Map<String, String> getCategories();
 
