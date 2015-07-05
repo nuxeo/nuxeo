@@ -59,7 +59,7 @@ public class MetadataFile {
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromDocument(DocumentModel doc) throws ClientException {
+    public static MetadataFile createFromDocument(DocumentModel doc) {
         MetadataFile mdFile = new MetadataFile(doc);
         mdFile.load();
         return mdFile;
@@ -72,7 +72,7 @@ public class MetadataFile {
      * @return a new MetadataFile object
      */
     public static MetadataFile createFromSchemasAndProperties(DocumentModel doc, List<String> allPropertiesSchemas,
-            List<String> properties) throws ClientException {
+            List<String> properties) {
         MetadataFile mdFile = new MetadataFile(doc);
         mdFile.load(allPropertiesSchemas, properties);
         return mdFile;
@@ -84,7 +84,7 @@ public class MetadataFile {
      * @return a new MetadataFile object
      */
     public static MetadataFile createFromSchemas(DocumentModel doc, List<String> allPropertiesSchemas)
-            throws ClientException {
+            {
         return createFromSchemasAndProperties(doc, allPropertiesSchemas, Collections.<String> emptyList());
     }
 
@@ -93,7 +93,7 @@ public class MetadataFile {
      *
      * @return a new MetadataFile object
      */
-    public static MetadataFile createFromProperties(DocumentModel doc, List<String> properties) throws ClientException {
+    public static MetadataFile createFromProperties(DocumentModel doc, List<String> properties) {
         return createFromSchemasAndProperties(doc, Collections.<String> emptyList(), properties);
     }
 
@@ -101,7 +101,7 @@ public class MetadataFile {
         this.doc = doc;
     }
 
-    protected void load(List<String> allPropertiesSchemas, List<String> properties) throws ClientException {
+    protected void load(List<String> allPropertiesSchemas, List<String> properties) {
         if (!metadataProperties.isEmpty()) {
             return;
         }
@@ -121,7 +121,7 @@ public class MetadataFile {
         }
     }
 
-    protected void addAllProperties(String schema) throws ClientException {
+    protected void addAllProperties(String schema) {
         DataModel dm = doc.getDataModel(schema);
         if (dm != null) {
             for (Map.Entry<String, Object> entry : dm.getMap().entrySet()) {
@@ -171,7 +171,7 @@ public class MetadataFile {
         return propertyKey;
     }
 
-    protected void load() throws ClientException {
+    protected void load() {
         for (String schema : doc.getDeclaredSchemas()) {
             addAllProperties(schema);
         }
@@ -180,7 +180,7 @@ public class MetadataFile {
     /**
      * Write the properties file to the given {@code file}
      */
-    public void writeTo(File file) throws ClientException {
+    public void writeTo(File file) {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(file);

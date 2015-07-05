@@ -40,7 +40,7 @@ public class IngestionTrigger implements EventListener {
 
     // fired via the Scheduler
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         if (!START_EVENT.equals(event.getName())) {
             return;

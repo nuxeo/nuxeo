@@ -88,7 +88,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
             : new DefaultFilenameNormalizer();
 
     protected interface FilenameNormalizer {
-        String normalize(String name) throws ClientException;
+        String normalize(String name);
     }
 
     protected static class CompatFilenameNormalizer implements FilenameNormalizer {
@@ -108,7 +108,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
     protected static class DefaultFilenameNormalizer implements FilenameNormalizer {
 
         @Override
-        public String normalize(String name) throws ClientException {
+        public String normalize(String name) {
             DocumentModel fake = new DocumentModelImpl("/", name, "File");
             return Framework.getLocalService(PathSegmentService.class).generatePathSegment(fake);
         }
@@ -117,10 +117,9 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
     /**
      * Returns a valid Nuxeo name from the given {@code fileName}.
      *
-     * @throws ClientException
      * @throws PropertyException
      */
-    protected String getValidNameFromFileName(String fileName) throws ClientException {
+    protected String getValidNameFromFileName(String fileName) {
         return filenameNormalizer.normalize(fileName);
     }
 
@@ -129,7 +128,7 @@ public abstract class AbstractDocumentModelFactory implements ImporterDocumentMo
      * document.
      */
     protected DocumentModel setDocumentProperties(CoreSession session, Map<String, Serializable> properties,
-            DocumentModel doc) throws ClientException {
+            DocumentModel doc) {
         if (properties != null) {
 
             for (Map.Entry<String, Serializable> entry : properties.entrySet()) {

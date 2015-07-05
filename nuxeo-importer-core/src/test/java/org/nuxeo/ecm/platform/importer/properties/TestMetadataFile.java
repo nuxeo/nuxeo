@@ -151,7 +151,7 @@ public class TestMetadataFile {
         assertEquals("2", properties.get("common:size"));
     }
 
-    protected DocumentModel createTestFile() throws ClientException {
+    protected DocumentModel createTestFile() {
         DocumentModel file = session.createDocumentModel("/", "testfile", "File");
         file.setPropertyValue("dc:title", "testTitle");
         file.setPropertyValue("dc:description", "testDescription");

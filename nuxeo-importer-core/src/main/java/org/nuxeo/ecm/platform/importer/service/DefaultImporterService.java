@@ -45,10 +45,9 @@ public interface DefaultImporterService {
      * @param skipRootContainerCreation
      * @param batchSize
      * @param noImportingThreads
-     * @throws ClientException
      */
     void importDocuments(String destionationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
-            int noImportingThreads) throws ClientException;
+            int noImportingThreads);
 
     /***
      * Imports documents using a the given executor and the contributed documentModelFactory and SourceNode
@@ -63,11 +62,9 @@ public interface DefaultImporterService {
      * @param batchSize
      * @param noImportingThreads
      * @param interactive
-     * @throws ClientException
      */
     String importDocuments(AbstractImporterExecutor executor, String destinationPath, String sourcePath,
-            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive)
-            throws ClientException;
+            boolean skipRootContainerCreation, int batchSize, int noImportingThreads, boolean interactive);
 
     /***
      * Imports documents using a the given executor and the contributed documentModelFactory and SourceNode
@@ -83,11 +80,10 @@ public interface DefaultImporterService {
      * @param batchSize
      * @param noImportingThreads
      * @param interactive
-     * @throws ClientException
      */
     String importDocuments(AbstractImporterExecutor executor, String leafType, String folderishType,
             String destinationPath, String sourcePath, boolean skipRootContainerCreation, int batchSize,
-            int noImportingThreads, boolean interactive) throws ClientException;
+            int noImportingThreads, boolean interactive);
 
     void setSourceNodeClass(Class<? extends SourceNode> sourceNodeClass);
 
@@ -105,14 +101,14 @@ public interface DefaultImporterService {
     void setTransactionTimeout(int transactionTimeout);
 
     /**
-     * @since 7.1 
+     * @since 7.1
      * @param repositoryName
      */
-    void setRepository(String repositoryName);    
-        
+    void setRepository(String repositoryName);
+
     /**
      * Added waiting the importer refactoring. Only used by Scan Importer.
-     * 
+     *
      * @since 5.7.3
      */
     @Deprecated
@@ -120,7 +116,7 @@ public interface DefaultImporterService {
 
     /**
      * Added waiting the importer refactoring. Only used by Scan Importer.
-     * 
+     *
      * @since 5.7.3
      */
     @Deprecated
