@@ -75,5 +75,5 @@ public abstract class EasyShareUnrestrictedRunner {
 
     }
 
-    public abstract Object run(CoreSession coreSession, IdRef docId) throws ClientException;
+    public abstract Object run(CoreSession coreSession, IdRef docId);
 }
