@@ -35,12 +35,12 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
  */
 public class BinaryMetadataServerInit implements RepositoryInit {
 
-    public static DocumentModel getFile(int index, CoreSession session) throws ClientException {
+    public static DocumentModel getFile(int index, CoreSession session) {
         return session.getDocument(new PathRef("/folder/file_" + index));
     }
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         // Create folder
         DocumentModel doc = session.createDocumentModel("/", "folder", "Folder");
         doc.setPropertyValue("dc:title", "Folder");
