@@ -52,7 +52,7 @@ public abstract class AbstractUserRegistration {
     @Inject
     protected UserRegistrationService userRegistrationService;
 
-    public void initializeRegistrations() throws ClientException {
+    public void initializeRegistrations() {
 
         DocumentModel container = session.createDocumentModel("Workspace");
         container.setPathInfo("/", "requests");

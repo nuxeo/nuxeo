@@ -33,7 +33,7 @@ public class UserRegistrationListener implements EventListener {
 
     protected static Log log = LogFactory.getLog(UserRegistrationListener.class);
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         try {
 

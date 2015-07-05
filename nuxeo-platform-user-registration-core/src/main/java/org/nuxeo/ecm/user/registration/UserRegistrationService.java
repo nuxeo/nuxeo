@@ -37,7 +37,7 @@ public interface UserRegistrationService extends UserInvitationService {
      * @return
      */
     String submitRegistrationRequest(UserRegistrationInfo userInfo, Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws ClientException,
+            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws
             UserRegistrationException;
 
     /**
@@ -46,7 +46,7 @@ public interface UserRegistrationService extends UserInvitationService {
      * @param requestId
      */
     Map<String, Serializable> validateRegistrationAndSendEmail(String requestId,
-            Map<String, Serializable> additionnalInfo) throws ClientException, UserRegistrationException;
+            Map<String, Serializable> additionnalInfo) throws UserRegistrationException;
 
     /**
      * Add an ACL with the right specified in the registration Doc or nothing, if no rights needed.
@@ -54,7 +54,7 @@ public interface UserRegistrationService extends UserInvitationService {
      * @param registrationDoc containing all registration info
      * @since 5.6
      */
-    void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc) throws ClientException;
+    void addRightsOnDoc(CoreSession session, DocumentModel registrationDoc);
 
     /**
      * Stores a registration request like submitRegistrationRequest with Document information
@@ -64,6 +64,6 @@ public interface UserRegistrationService extends UserInvitationService {
      */
     String submitRegistrationRequest(String configurationName, UserRegistrationInfo userInfo,
             DocumentRegistrationInfo docInfo, Map<String, Serializable> additionnalInfo,
-            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws ClientException,
+            ValidationMethod validationMethod, boolean autoAccept, String principalName) throws
             UserRegistrationException;
 }

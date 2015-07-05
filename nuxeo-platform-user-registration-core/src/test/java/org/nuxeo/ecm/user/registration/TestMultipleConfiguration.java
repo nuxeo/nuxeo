@@ -35,7 +35,7 @@ import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 public class TestMultipleConfiguration extends AbstractUserRegistration {
 
     @Test
-    public void testMultipleUserRegistration() throws ClientException {
+    public void testMultipleUserRegistration() {
         initializeRegistrations();
 
         // Create workspaces where users will be invited

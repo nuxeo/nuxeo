@@ -36,7 +36,7 @@ public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory
 
     @Override
     public DocumentModel doAddDocumentPermission(CoreSession session, DocumentModel registrationDoc,
-            UserRegistrationConfiguration configuration) throws ClientException {
+            UserRegistrationConfiguration configuration) {
         String docId = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD);
 
         if (StringUtils.isEmpty(docId)) {
@@ -66,7 +66,7 @@ public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory
 
     @Override
     public void doPostAddDocumentPermission(CoreSession session, DocumentModel registrationDoc, DocumentModel document)
-            throws ClientException {
+            {
         // Nothing to do in the default implementation
     }
 }

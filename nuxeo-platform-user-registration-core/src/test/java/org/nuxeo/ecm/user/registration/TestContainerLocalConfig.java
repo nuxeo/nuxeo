@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 public class TestContainerLocalConfig extends AbstractUserRegistration {
 
     @Test
-    public void testGetRegistrationRules() throws ClientException {
+    public void testGetRegistrationRules() {
         initializeRegistrations();
 
         RegistrationRules rules = userRegistrationService.getRegistrationRules(DEFAULT_CONFIGURATION_NAME);
