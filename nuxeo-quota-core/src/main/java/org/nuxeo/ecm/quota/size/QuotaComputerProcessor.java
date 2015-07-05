@@ -56,7 +56,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
     protected static final Log log = LogFactory.getLog(QuotaComputerProcessor.class);
 
     @Override
-    public void handleEvent(EventBundle eventBundle) throws ClientException {
+    public void handleEvent(EventBundle eventBundle) {
 
         if (eventBundle.containsEventName(SizeUpdateEventContext.QUOTA_UPDATE_NEEDED)) {
 
@@ -77,7 +77,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
     }
 
-    protected void debugCheck(SizeUpdateEventContext quotaCtx) throws ClientException {
+    protected void debugCheck(SizeUpdateEventContext quotaCtx) {
         String sourceEvent = quotaCtx.getSourceEvent();
         CoreSession session = quotaCtx.getCoreSession();
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
@@ -97,7 +97,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
 
     }
 
-    public void processQuotaComputation(SizeUpdateEventContext quotaCtx) throws ClientException {
+    public void processQuotaComputation(SizeUpdateEventContext quotaCtx) {
         String sourceEvent = quotaCtx.getSourceEvent();
         CoreSession session = quotaCtx.getCoreSession();
         DocumentModel sourceDocument = quotaCtx.getSourceDocument();
@@ -256,17 +256,17 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta)
-            throws ClientException {
+            {
         processOnParents(parents, delta, 0L, 0L, true, false, false);
     }
 
     protected void processOnParents(List<DocumentModel> parents, long delta, long trash, boolean total, boolean trashOp)
-            throws ClientException {
+            {
         processOnParents(parents, delta, trash, 0L, total, trashOp, false);
     }
 
     protected void processOnParents(List<DocumentModel> parents, long deltaTotal, long trashSize, long deltaVersions,
-            boolean total, boolean trashOp, boolean versionsOp) throws ClientException {
+            boolean total, boolean trashOp, boolean versionsOp) {
         for (DocumentModel parent : parents) {
             // process Quota on target Document
             QuotaAware quotaDoc = parent.getAdapter(QuotaAware.class);
@@ -301,7 +301,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
         }
     }
 
-    protected List<DocumentModel> getParents(DocumentModel sourceDocument, CoreSession session) throws ClientException {
+    protected List<DocumentModel> getParents(DocumentModel sourceDocument, CoreSession session) {
         List<DocumentModel> parents = new ArrayList<DocumentModel>();
         // use getParentDocumentRefs instead of getParentDocuments , beacuse
         // getParentDocuments doesn't fetch the root document

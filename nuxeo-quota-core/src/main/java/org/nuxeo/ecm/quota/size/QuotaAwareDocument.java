@@ -106,7 +106,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void setInnerSize(long size, boolean save) throws ClientException {
+    public void setInnerSize(long size, boolean save) {
         doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, size);
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, size);
         if (log.isDebugEnabled()) {
@@ -125,7 +125,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addInnerSize(long additionalSize, boolean save) throws ClientException {
+    public void addInnerSize(long additionalSize, boolean save) {
         Number inner = addDelta(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, additionalSize);
         Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
@@ -138,7 +138,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addTotalSize(long additionalSize, boolean save) throws ClientException {
+    public void addTotalSize(long additionalSize, boolean save) {
         Number total = addDelta(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
             log.debug("Setting quota (total size) : " + total + " on document " + doc.getId());
@@ -149,7 +149,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addTrashSize(long additionalSize, boolean save) throws ClientException {
+    public void addTrashSize(long additionalSize, boolean save) {
         Number trash = addDelta(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
             log.debug("Setting quota (trash size):" + trash + " on document " + doc.getId());
@@ -160,7 +160,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void addVersionsSize(long additionalSize, boolean save) throws ClientException {
+    public void addVersionsSize(long additionalSize, boolean save) {
         Number versions = addDelta(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, additionalSize);
         if (log.isDebugEnabled()) {
             log.debug("Setting quota (versions size): " + versions + " on document " + doc.getId());
@@ -171,7 +171,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void save() throws ClientException {
+    public void save() {
         doc.getContextData().putScopedValue(ScopeType.REQUEST, QuotaSyncListenerChecker.DISABLE_QUOTA_CHECK_LISTENER,
                 true);
         doc.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, Boolean.TRUE);
@@ -182,7 +182,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void save(boolean disableNotifications) throws ClientException {
+    public void save(boolean disableNotifications) {
         if (disableNotifications) {
             doc.putContextData(DISABLE_NOTIFICATION_SERVICE, true);
             doc.putContextData(DISABLE_DUBLINCORE_LISTENER, true);
@@ -201,7 +201,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void setMaxQuota(long maxSize, boolean save, boolean skipValidation) throws ClientException {
+    public void setMaxQuota(long maxSize, boolean save, boolean skipValidation) {
         if (!skipValidation) {
             if (!(Framework.getLocalService(QuotaStatsService.class).canSetMaxQuota(maxSize, doc, doc.getCoreSession()))) {
                 throw new QuotaExceededException(doc, "Can not set " + maxSize
@@ -215,7 +215,7 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     @Override
-    public void setMaxQuota(long maxSize, boolean save) throws ClientException {
+    public void setMaxQuota(long maxSize, boolean save) {
         setMaxQuota(maxSize, save, false);
     }
 
@@ -225,11 +225,10 @@ public class QuotaAwareDocument implements QuotaAware {
     }
 
     /**
-     * @throws ClientException
      * @since 5.7
      */
     @Override
-    public void resetInfos(boolean save) throws ClientException {
+    public void resetInfos(boolean save) {
         doc.setPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, 0L);

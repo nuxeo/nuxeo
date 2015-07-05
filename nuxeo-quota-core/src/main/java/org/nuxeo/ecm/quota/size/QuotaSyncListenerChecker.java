@@ -132,7 +132,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     }
 
-    private void removeFacet(CoreSession unrestrictedSession, String uuid) throws ClientException {
+    private void removeFacet(CoreSession unrestrictedSession, String uuid) {
         DocumentModel target = unrestrictedSession.getDocument(new IdRef(uuid));
         if (target.hasFacet(QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET)) {
             if (log.isTraceEnabled()) {
@@ -155,7 +155,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     protected void computeSizeOnDocument(CoreSession unrestrictedSession, String uuid, QuotaComputerProcessor processor)
-            throws ClientException {
+            {
         IdRef ref = new IdRef(uuid);
         DocumentModel target = unrestrictedSession.getDocument(ref);
         if (log.isTraceEnabled()) {
@@ -191,7 +191,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentCreated(CoreSession session, DocumentModel targetDoc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
 
         if (targetDoc.isVersion()) {
             // version taken into account by checkout
@@ -216,7 +216,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
         // on checkin the versions size is incremented (and also the total)
 
         BlobSizeInfo bsi = computeSizeImpact(doc, false);
@@ -230,7 +230,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentCheckedOut(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
         // on checkout we account in the total for the last version size
         BlobSizeInfo bsi = computeSizeImpact(doc, false);
         // only process if blobs are present
@@ -243,13 +243,13 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
         // Nothing to do !
     }
 
     @Override
     protected void processDocumentBeforeUpdate(CoreSession session, DocumentModel targetDoc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
 
         BlobSizeInfo bsi = computeSizeImpact(targetDoc, true);
         log.debug("calling processDocumentBeforeUpdate, bsi=" + bsi.toString());
@@ -263,7 +263,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentCopied(CoreSession session, DocumentModel targetDoc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
             long total = quotaDoc.getTotalSize() - quotaDoc.getVersionsSize() - quotaDoc.getTrashSize();
@@ -282,7 +282,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentMoved(CoreSession session, DocumentModel targetDoc, DocumentModel sourceParent,
-            DocumentEventContext docCtx) throws ClientException {
+            DocumentEventContext docCtx) {
 
         if (docCtx.getProperties().get(CoreEventConstants.DESTINATION_REF)
                 .equals(sourceParent.getRef())) {
@@ -324,7 +324,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel targetDoc,
-            DocumentEventContext docCtx) throws ClientException {
+            DocumentEventContext docCtx) {
 
         if (targetDoc.isVersion()) {
             // for versions we need to decrement the live doc + it's parents
@@ -398,7 +398,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         return true;
     }
 
-    protected void sendUpdateEvents(SizeUpdateEventContext eventCtx) throws ClientException {
+    protected void sendUpdateEvents(SizeUpdateEventContext eventCtx) {
 
         Event quotaUpdateEvent = eventCtx.newQuotaUpdateEvent();
         log.debug("prepared event on target tree with context " + eventCtx.toString());
@@ -407,7 +407,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     protected List<String> getParentUUIDS(CoreSession unrestrictedSession, final DocumentRef docRef)
-            throws ClientException {
+            {
 
         final List<String> result = new ArrayList<String>();
         if (docRef == null || docRef.toString() == null) {
@@ -421,18 +421,18 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     protected List<String> getParentUUIDS(CoreSession unrestrictedSession, final DocumentModel doc)
-            throws ClientException {
+            {
         return getParentUUIDS(unrestrictedSession, doc.getRef());
     }
 
     protected void checkConstraints(CoreSession unrestrictedSession, final DocumentModel doc,
-            final DocumentRef parentRef, final BlobSizeInfo bsi) throws ClientException {
+            final DocumentRef parentRef, final BlobSizeInfo bsi) {
         checkConstraints(unrestrictedSession, doc, parentRef, bsi, false);
     }
 
     protected void checkConstraints(CoreSession unrestrictedSession, final DocumentModel doc,
             final DocumentRef parentRef, final BlobSizeInfo bsi, final boolean checkWithTotalSize)
-            throws ClientException {
+            {
         if (parentRef == null) {
             return;
         }
@@ -497,7 +497,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
          return StringUtils.join(params, '-');
     }
 
-    protected BlobSizeInfo computeSizeImpact(DocumentModel doc, boolean onlyIfBlobHasChanged) throws ClientException {
+    protected BlobSizeInfo computeSizeImpact(DocumentModel doc, boolean onlyIfBlobHasChanged) {
 
         BlobSizeInfo result = new BlobSizeInfo();
 
@@ -541,9 +541,8 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
      * @param doc
      * @param onlyIfBlobHasChanged
      * @return
-     * @throws ClientException
      */
-    protected List<Blob> getBlobs(DocumentModel doc, boolean onlyIfBlobHasChanged) throws ClientException {
+    protected List<Blob> getBlobs(DocumentModel doc, boolean onlyIfBlobHasChanged) {
 
         try {
             QuotaSizeService sizeService = Framework.getLocalService(QuotaSizeService.class);
@@ -585,7 +584,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
         String transition = (String) docCtx.getProperties().get(TRANSTION_EVENT_OPTION_TRANSITION);
         if (transition != null && (!(DELETE_TRANSITION.equals(transition) || UNDELETE_TRANSITION.equals(transition)))) {
             return;
@@ -616,7 +615,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentBeforeRestore(CoreSession session, DocumentModel targetDoc,
-            DocumentEventContext docCtx) throws ClientException {
+            DocumentEventContext docCtx) {
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
         if (quotaDoc != null) {
             long total = quotaDoc.getTotalSize();
@@ -636,7 +635,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     protected void processDocumentRestored(CoreSession session, DocumentModel targetDoc, DocumentEventContext docCtx)
-            throws ClientException {
+            {
         QuotaAware quotaDoc = targetDoc.getAdapter(QuotaAware.class);
         if (quotaDoc == null) {
             log.debug("  add Quota Facet on " + targetDoc.getPathAsString());
@@ -647,7 +646,7 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     private SizeUpdateEventContext updateEventToProcessNewDocument(CoreSession unrestrictedSession, DocumentModel target)
-            throws ClientException {
+            {
         BlobSizeInfo bsi = computeSizeImpact(target, false);
         SizeUpdateEventContext quotaCtx = null;
 

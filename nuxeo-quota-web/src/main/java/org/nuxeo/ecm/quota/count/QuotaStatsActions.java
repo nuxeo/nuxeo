@@ -175,10 +175,9 @@ public class QuotaStatsActions implements Serializable {
     }
 
     /**
-     * @throws ClientException
      * @since 5.7
      */
-    public void saveQuotaActivatedOnUsersWorkspaces() throws ClientException {
+    public void saveQuotaActivatedOnUsersWorkspaces() {
         long maxSize = -1;
         if (isActivateQuotaOnUsersWorkspaces()) {
             maxSize = getMaxQuotaOnUsersWorkspaces();
@@ -189,10 +188,9 @@ public class QuotaStatsActions implements Serializable {
     }
 
     /**
-     * @throws ClientException
      * @since 5.7
      */
-    public void initQuotaActivatedOnUserWorkspaces() throws ClientException {
+    public void initQuotaActivatedOnUserWorkspaces() {
         long quota = getQuotaStatsService().getQuotaSetOnUserWorkspaces(documentManager);
         setActivateQuotaOnUsersWorkspaces(quota == -1 ? false : true);
         setMaxQuotaOnUsersWorkspaces(quota);

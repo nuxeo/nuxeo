@@ -99,7 +99,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
     }
 
     @Override
-    public void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event) throws ClientException {
+    public void updateStatistics(CoreSession session, DocumentEventContext docCtx, Event event) {
         DocumentModel doc = docCtx.getSourceDocument();
 
         if (!needToProcessEventOnDocument(event, doc)) {
@@ -143,7 +143,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         }
     }
 
-    protected List<DocumentModel> getAncestors(CoreSession session, DocumentModel doc) throws ClientException {
+    protected List<DocumentModel> getAncestors(CoreSession session, DocumentModel doc) {
         List<DocumentModel> ancestors = new ArrayList<DocumentModel>();
         if (doc != null && doc.getParentRef() != null) {
             doc = session.getDocument(doc.getParentRef());
@@ -159,38 +159,32 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
 
     protected abstract boolean needToProcessEventOnDocument(Event event, DocumentModel targetDoc);
 
-    protected abstract void processDocumentCreated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentCreated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
 
-    protected abstract void processDocumentCopied(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentCopied(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
 
-    protected abstract void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentCheckedIn(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
 
     protected abstract void processDocumentCheckedOut(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx) throws ClientException;
+            DocumentEventContext docCtx);
 
-    protected abstract void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentUpdated(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
 
     protected abstract void processDocumentMoved(CoreSession session, DocumentModel doc, DocumentModel sourceParent,
-            DocumentEventContext docCtx) throws ClientException;
+            DocumentEventContext docCtx);
 
     protected abstract void processDocumentAboutToBeRemoved(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx) throws ClientException;
+            DocumentEventContext docCtx);
 
     protected abstract void processDocumentBeforeUpdate(CoreSession session, DocumentModel targetDoc,
-            DocumentEventContext docCtx) throws ClientException;
+            DocumentEventContext docCtx);
 
-    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentTrashOp(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
 
-    protected abstract void processDocumentRestored(CoreSession session, DocumentModel doc, DocumentEventContext docCtx)
-            throws ClientException;
+    protected abstract void processDocumentRestored(CoreSession session, DocumentModel doc, DocumentEventContext docCtx);
 
     protected abstract void processDocumentBeforeRestore(CoreSession session, DocumentModel doc,
-            DocumentEventContext docCtx) throws ClientException;
+            DocumentEventContext docCtx);
 
     protected void setSystemContextData(DocumentModel doc) {
         // do not send notifications
@@ -203,4 +197,5 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         // force no versioning after quota modifications
         doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.NONE);
     }
+
 }

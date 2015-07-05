@@ -59,7 +59,7 @@ public class QuotaStatsListener implements EventListener {
             BEFORE_DOC_RESTORE, DOCUMENT_RESTORED)));
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;

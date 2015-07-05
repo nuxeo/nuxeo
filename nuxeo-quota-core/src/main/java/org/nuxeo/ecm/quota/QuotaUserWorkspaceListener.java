@@ -34,7 +34,7 @@ import org.nuxeo.ecm.quota.size.QuotaAwareDocumentFactory;
 public class QuotaUserWorkspaceListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
