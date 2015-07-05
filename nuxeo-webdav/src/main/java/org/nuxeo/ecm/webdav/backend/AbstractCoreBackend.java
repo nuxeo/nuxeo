@@ -33,12 +33,12 @@ public abstract class AbstractCoreBackend implements Backend {
     }
 
     @Override
-    public CoreSession getSession() throws ClientException {
+    public CoreSession getSession() {
         return getSession(false);
     }
 
     @Override
-    public CoreSession getSession(boolean synchronize) throws ClientException {
+    public CoreSession getSession(boolean synchronize) {
         if (synchronize) {
             session.save();
         }
@@ -46,7 +46,7 @@ public abstract class AbstractCoreBackend implements Backend {
     }
 
     @Override
-    public void saveChanges() throws ClientException {
+    public void saveChanges() {
         session.save();
     }
 

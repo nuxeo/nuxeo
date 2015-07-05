@@ -135,7 +135,7 @@ public class RootResource {
         }
     }
 
-    private String getDocumentPath(DocumentModel source) throws ClientException {
+    private String getDocumentPath(DocumentModel source) {
         if (source.isFolder()) {
             return source.getPathAsString();
         } else {

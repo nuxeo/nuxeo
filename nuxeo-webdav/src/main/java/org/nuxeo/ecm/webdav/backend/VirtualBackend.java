@@ -22,6 +22,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 public interface VirtualBackend extends Backend {
 
-    LinkedList<String> getOrderedBackendNames() throws ClientException;
+    LinkedList<String> getOrderedBackendNames();
 
 }

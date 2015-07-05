@@ -32,7 +32,7 @@ public class SearchVirtualBackend extends AbstractVirtualBackend {
     }
 
     @Override
-    protected void init() throws ClientException {
+    protected void init() {
         DocumentModelList docs = getSession().query(query);
         registerSimpleBackends(docs);
     }

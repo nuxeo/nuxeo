@@ -71,7 +71,7 @@ public class FolderResource extends ExistingResource {
 
     @GET
     @Produces("text/html")
-    public String get() throws ClientException {
+    public String get() {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body><p>");
         sb.append("Folder listing for ");
@@ -144,12 +144,12 @@ public class FolderResource extends ExistingResource {
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
-            Prop prop) throws ClientException, URIException {
+            Prop prop) throws URIException {
         return createResponse(doc, uriInfo, prop, true);
     }
 
     protected net.java.dev.webdav.jaxrs.xml.elements.Response createResponse(DocumentModel doc, UriInfo uriInfo,
-            Prop prop, boolean append) throws ClientException, URIException {
+            Prop prop, boolean append) throws URIException {
         PropStatBuilderExt props = getPropStatBuilderExt(doc, uriInfo);
         PropStat propStatFound = props.build();
         PropStat propStatNotFound = null;

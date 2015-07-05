@@ -80,7 +80,7 @@ public class VirtualFolderResource extends AbstractResource {
 
     @GET
     @Produces("text/html")
-    public String get() throws ClientException {
+    public String get() {
         StringBuilder sb = new StringBuilder();
         sb.append("<html><body><p>");
         sb.append("Folder listing for ");

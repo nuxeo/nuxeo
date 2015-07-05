@@ -126,7 +126,7 @@ public class ExistingResource extends AbstractResource {
         return copyOrMove("MOVE", dest, overwrite);
     }
 
-    private static String encode(byte[] bytes, String encoding) throws ClientException {
+    private static String encode(byte[] bytes, String encoding) {
         try {
             return new String(bytes, encoding);
         } catch (UnsupportedEncodingException e) {
@@ -288,7 +288,7 @@ public class ExistingResource extends AbstractResource {
         }
     }
 
-    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo) throws ClientException {
+    protected LockDiscovery getLockDiscovery(DocumentModel doc, UriInfo uriInfo) {
         LockDiscovery lockDiscovery = null;
         if (doc.isLocked()) {
             String token = backend.getCheckoutUser(doc.getRef());
@@ -299,7 +299,7 @@ public class ExistingResource extends AbstractResource {
         return lockDiscovery;
     }
 
-    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo) throws ClientException,
+    protected PropStatBuilderExt getPropStatBuilderExt(DocumentModel doc, UriInfo uriInfo) throws
             URIException {
         Date lastModified = getTimePropertyWrapper(doc, "dc:modified");
         Date creationDate = getTimePropertyWrapper(doc, "dc:created");
