@@ -79,12 +79,12 @@ public class DataProcessor implements IDataProcessor {
     }
 
     @Override
-    public void analyze(CoreSession session) throws ClientException {
+    public void analyze(CoreSession session) {
         analyze(session, session.getRootDocument(), 0);
     }
 
     @Override
-    public void analyze(CoreSession session, DocumentModel doc, int timeout) throws ClientException {
+    public void analyze(CoreSession session, DocumentModel doc, int timeout) {
         init();
         doAnalyze(session, doc, timeout);
         log();
@@ -98,7 +98,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     // timeout ignored
-    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout) throws ClientException {
+    protected void doAnalyze(CoreSession session, DocumentModel root, int timeout) {
         // get data
         final DataFetch fetch = new DataFetch();
         DocumentModelList list;
@@ -127,7 +127,7 @@ public class DataProcessor implements IDataProcessor {
      * Extract relevant information from document model, to only keep a {@link DocumentSummary} and a few general
      * informations about the document repository.
      */
-    protected void processDocument(DocumentModel doc) throws ClientException {
+    protected void processDocument(DocumentModel doc) {
         final DocumentSummary da = computeSummary(doc);
         updateTreeSize(da);
         computeGlobalAclSummary(doc);
@@ -137,7 +137,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     /** Extract usefull document information for report rendering */
-    protected DocumentSummary computeSummary(DocumentModel doc) throws ClientException {
+    protected DocumentSummary computeSummary(DocumentModel doc) {
         String title = doc.getTitle();
         String path = doc.getPathAsString();
         if (path == null)
@@ -168,7 +168,7 @@ public class DataProcessor implements IDataProcessor {
     }
 
     /** store set of users and set of permission types */
-    protected void computeGlobalAclSummary(DocumentModel doc) throws ClientException {
+    protected void computeGlobalAclSummary(DocumentModel doc) {
         Pair<HashSet<String>, HashSet<String>> s = acl.getAclSummary(doc);
         userAndGroups.addAll(s.a);
         permissions.addAll(s.b);

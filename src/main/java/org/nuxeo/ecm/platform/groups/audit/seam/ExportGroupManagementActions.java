@@ -67,7 +67,7 @@ public class ExportGroupManagementActions implements Serializable {
     @In(create = true)
     protected transient ContentViewActions contentViewActions;
 
-    public String downloadExcelAllGroupsExport() throws ClientException {
+    public String downloadExcelAllGroupsExport() {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext econtext = context.getExternalContext();
         HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
@@ -90,7 +90,7 @@ public class ExportGroupManagementActions implements Serializable {
         return null;
     }
 
-    public String downloadExcelListedGroupsExport() throws ClientException {
+    public String downloadExcelListedGroupsExport() {
         FacesContext context = FacesContext.getCurrentInstance();
         ExternalContext econtext = context.getExternalContext();
         HttpServletResponse response = (HttpServletResponse) econtext.getResponse();
@@ -113,17 +113,17 @@ public class ExportGroupManagementActions implements Serializable {
         return null;
     }
 
-    protected File excelExportAllGroupsDefinition() throws ClientException {
+    protected File excelExportAllGroupsDefinition() {
         ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
         return exportService.getExcelReport("exportAllGroupsAudit");
     }
 
-    protected File excelExportListedGroupsDefinition() throws ClientException {
+    protected File excelExportListedGroupsDefinition() {
         ExcelExportService exportService = Framework.getLocalService(ExcelExportService.class);
         return exportService.getExcelReport("exportListedGroupsAudit", getDataInject());
     }
 
-    private Map<String, Object> getDataInject() throws ClientException {
+    private Map<String, Object> getDataInject() {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
         PageProvider currentPP = contentViewActions.getCurrentContentView().getCurrentPageProvider();

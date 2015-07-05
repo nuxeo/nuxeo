@@ -35,7 +35,7 @@ public class DataProcessorRecursive extends DataProcessor implements IDataProces
 
     /** {@inheritDoc}. timeout ignored */
     @Override
-    public void analyze(CoreSession session, DocumentModel doc, int timeout) throws ClientException {
+    public void analyze(CoreSession session, DocumentModel doc, int timeout) {
         init();
         doAnalyze(session, doc, 0);
         log();
@@ -58,9 +58,8 @@ public class DataProcessorRecursive extends DataProcessor implements IDataProces
      *
      * @param session
      * @param doc
-     * @throws ClientException
      */
-    protected void doAnalyze(CoreSession session, DocumentModel doc, int depth) throws ClientException {
+    protected void doAnalyze(CoreSession session, DocumentModel doc, int depth) {
         initSummarySet();
         processDocument(doc);
 

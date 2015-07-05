@@ -26,22 +26,22 @@ public class AbstractAclLayoutTest {
     protected static String folder = "target/";
 
     protected DocumentModel makeFolder(CoreSession session, String path, String name, boolean save)
-            throws ClientException, PropertyException {
+            throws PropertyException {
         return makeItem(session, path, name, "Folder", save);
     }
 
-    protected DocumentModel makeFolder(CoreSession session, String path, String name) throws ClientException,
+    protected DocumentModel makeFolder(CoreSession session, String path, String name) throws
             PropertyException {
         return makeItem(session, path, name, "Folder", true);
     }
 
-    protected DocumentModel makeDoc(CoreSession session, String path, String name) throws ClientException,
+    protected DocumentModel makeDoc(CoreSession session, String path, String name) throws
             PropertyException {
         return makeItem(session, path, name, "Document", true);
     }
 
     protected DocumentModel makeItem(CoreSession session, String path, String name, String type, boolean save)
-            throws ClientException, PropertyException {
+            throws PropertyException {
         DocumentModel folder = session.createDocumentModel(path, name, type);
         folder = session.createDocument(folder);
         if (save)
@@ -62,12 +62,12 @@ public class AbstractAclLayoutTest {
     }
 
     protected void addAcl(CoreSession session, DocumentModel doc, String userOrGroup, String right, boolean allow)
-            throws ClientException {
+            {
         addAcl(session, doc, userOrGroup, right, allow, false);
     }
 
     protected void addAcl(CoreSession session, DocumentModel doc, String userOrGroup, String right, boolean allow,
-            boolean blockInheritance) throws ClientException {
+            boolean blockInheritance) {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();// local
         acl.add(new ACE(userOrGroup, right, allow));
@@ -76,7 +76,7 @@ public class AbstractAclLayoutTest {
     }
 
     protected void addAclLockInheritance(CoreSession session, DocumentModel doc, String userOrGroup, boolean save)
-            throws ClientException {
+            {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL();// local
         acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
@@ -106,7 +106,7 @@ public class AbstractAclLayoutTest {
     protected int MOD = 3;
 
     protected DocumentModel makeDocumentTree(CoreSession session, int maxDepth, int width, int nGroups,
-            int currentDepth, DocumentModel folder, List<String> groups) throws PropertyException, ClientException {
+            int currentDepth, DocumentModel folder, List<String> groups) throws PropertyException {
 
         // populate current folder with ACL
         boolean save = false;

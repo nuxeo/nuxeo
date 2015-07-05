@@ -55,27 +55,26 @@ public class AclSummaryExtractor {
      *
      * @param doc
      * @return
-     * @throws ClientException
      */
-    public Multimap<String, Pair<String, Boolean>> getAllAclByUser(DocumentModel doc) throws ClientException {
+    public Multimap<String, Pair<String, Boolean>> getAllAclByUser(DocumentModel doc) {
         ACP acp = doc.getACP();
         ACL[] acls = acp.getACLs();
         return getAclByUser(acls);
     }
 
-    public Multimap<String, Pair<String, Boolean>> getAclLocalByUser(DocumentModel doc) throws ClientException {
+    public Multimap<String, Pair<String, Boolean>> getAclLocalByUser(DocumentModel doc) {
         ACP acp = doc.getACP();
         ACL acl = acp.getACL(LOCAL_ACL);
         return getAclByUser(acl);
     }
 
-    public Multimap<String, Pair<String, Boolean>> getAclInheritedByUser(DocumentModel doc) throws ClientException {
+    public Multimap<String, Pair<String, Boolean>> getAclInheritedByUser(DocumentModel doc) {
         ACP acp = doc.getACP();
         ACL acl = acp.getACL(ACL.INHERITED_ACL);
         return getAclByUser(acl);
     }
 
-    public Multimap<String, Pair<String, Boolean>> getAclByUser(ACL[] acls) throws ClientException {
+    public Multimap<String, Pair<String, Boolean>> getAclByUser(ACL[] acls) {
         Multimap<String, Pair<String, Boolean>> aclByUser = HashMultimap.create();
 
         for (ACL acl : acls) {
@@ -84,7 +83,7 @@ public class AclSummaryExtractor {
         return aclByUser;
     }
 
-    public Multimap<String, Pair<String, Boolean>> getAclByUser(ACL acl) throws ClientException {
+    public Multimap<String, Pair<String, Boolean>> getAclByUser(ACL acl) {
         Multimap<String, Pair<String, Boolean>> aclByUser = HashMultimap.create();
         fillAceByUser(aclByUser, acl);
         return aclByUser;
@@ -114,9 +113,8 @@ public class AclSummaryExtractor {
      * @see isLockInheritance(ACE)
      * @param doc
      * @return
-     * @throws ClientException
      */
-    public boolean hasLockInheritanceACE(DocumentModel doc) throws ClientException {
+    public boolean hasLockInheritanceACE(DocumentModel doc) {
         // Fetch only local ACL to prevent from having blocking inheritance on
         // all child.
         ACL acl = doc.getACP().getOrCreateACL(LOCAL_ACL);
@@ -130,7 +128,7 @@ public class AclSummaryExtractor {
         return false;
     }
 
-    public boolean hasLockInheritanceACE(Multimap<String, Pair<String, Boolean>> acls) throws ClientException {
+    public boolean hasLockInheritanceACE(Multimap<String, Pair<String, Boolean>> acls) {
         for (String user : acls.keySet()) {
             for (Pair<String, Boolean> ace : acls.get(user)) {
                 if (SecurityConstants.EVERYONE.equals(user)) {
@@ -167,9 +165,8 @@ public class AclSummaryExtractor {
      *
      * @param doc
      * @return
-     * @throws ClientException
      */
-    public Pair<HashSet<String>, HashSet<String>> getAclSummary(DocumentModel doc) throws ClientException {
+    public Pair<HashSet<String>, HashSet<String>> getAclSummary(DocumentModel doc) {
         Pair<HashSet<String>, HashSet<String>> summary = newSummary();
         ACP acp = doc.getACP();
         ACL[] acls = acp.getACLs();
@@ -191,7 +188,7 @@ public class AclSummaryExtractor {
         return Pair.of(new HashSet<String>(), new HashSet<String>());
     }
 
-    public void printAce(DocumentModel doc) throws ClientException {
+    public void printAce(DocumentModel doc) {
         ACP acp = doc.getACP();
         ACL[] acls = acp.getACLs();
 
