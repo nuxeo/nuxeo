@@ -39,7 +39,7 @@ public class LayoutDemoManagerBusinessDelegate implements Serializable {
     protected LayoutDemoManager layoutDemoManager;
 
     @Unwrap
-    public LayoutDemoManager getLayoutDemoManager() throws ClientException {
+    public LayoutDemoManager getLayoutDemoManager() {
         if (layoutDemoManager == null) {
             try {
                 layoutDemoManager = Framework.getService(LayoutDemoManager.class);
