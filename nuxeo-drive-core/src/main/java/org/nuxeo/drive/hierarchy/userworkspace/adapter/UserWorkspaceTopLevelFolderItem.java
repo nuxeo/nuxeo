@@ -61,12 +61,12 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
     protected String syncRootParentFactoryName;
 
     public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
-            String syncRootParentFactoryName) throws ClientException {
+            String syncRootParentFactoryName) {
         this(factoryName, userWorkspace, folderName, syncRootParentFactoryName, false);
     }
 
     public UserWorkspaceTopLevelFolderItem(String factoryName, DocumentModel userWorkspace, String folderName,
-            String syncRootParentFactoryName, boolean relaxSyncRootConstraint) throws ClientException {
+            String syncRootParentFactoryName, boolean relaxSyncRootConstraint) {
         super(factoryName, null, userWorkspace, relaxSyncRootConstraint);
         name = folderName;
         canRename = false;
@@ -81,23 +81,23 @@ public class UserWorkspaceTopLevelFolderItem extends DocumentBackedFolderItem {
 
     /*--------------------- AbstractFileSystemItem ---------------------*/
     @Override
-    public void rename(String name) throws ClientException {
+    public void rename(String name) {
         throw new UnsupportedOperationException("Cannot rename the top level folder item.");
     }
 
     @Override
-    public void delete() throws ClientException {
+    public void delete() {
         throw new UnsupportedOperationException("Cannot delete the top level folder item.");
     }
 
     @Override
-    public FileSystemItem move(FolderItem dest) throws ClientException {
+    public FileSystemItem move(FolderItem dest) {
         throw new UnsupportedOperationException("Cannot move the top level folder item.");
     }
 
     /*--------------------- FolderItem -----------------*/
     @Override
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
 
         // Register user workspace as a synchronization root if it is not
         // already the case

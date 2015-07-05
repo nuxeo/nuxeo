@@ -35,7 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 public class SharedSyncRootParentFactory extends AbstractVirtualFolderItemFactory {
 
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(principal);
         if (topLevelFolder == null) {

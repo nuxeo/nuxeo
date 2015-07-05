@@ -44,8 +44,7 @@ public class TopLevelFolderItemFactoryDescriptor implements Serializable {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> parameters = new HashMap<String, String>();
 
-    public TopLevelFolderItemFactory getFactory() throws InstantiationException, IllegalAccessException,
-            ClientException {
+    public TopLevelFolderItemFactory getFactory() throws InstantiationException, IllegalAccessException {
         TopLevelFolderItemFactory factory = factoryClass.newInstance();
         factory.setName(factory.getClass().getName());
         factory.handleParameters(parameters);

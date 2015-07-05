@@ -96,16 +96,16 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
-    public abstract void rename(String name) throws ClientException;
+    public abstract void rename(String name);
 
     @Override
-    public abstract void delete() throws ClientException;
+    public abstract void delete();
 
     @Override
-    public abstract boolean canMove(FolderItem dest) throws ClientException;
+    public abstract boolean canMove(FolderItem dest);
 
     @Override
-    public abstract FileSystemItem move(FolderItem dest) throws ClientException;
+    public abstract FileSystemItem move(FolderItem dest);
 
     @Override
     public String getId() {
@@ -254,7 +254,7 @@ public abstract class AbstractFileSystemItem implements FileSystemItem {
         this.canDelete = canDelete;
     }
 
-    protected void setUserName(String userName) throws ClientException {
+    protected void setUserName(String userName) {
         this.userName = userName;
         this.principal = Framework.getLocalService(UserManager.class).getPrincipal(userName);
     }

@@ -32,12 +32,12 @@ public class DummyFileItem extends DocumentBackedFileItem {
 
     private static final long serialVersionUID = 1L;
 
-    public DummyFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) throws ClientException {
+    public DummyFileItem(VersioningFileSystemItemFactory factory, DocumentModel doc) {
         super(factory, doc);
     }
 
     public DummyFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc)
-            throws ClientException {
+            {
         super(factory, parentItem, doc);
     }
 

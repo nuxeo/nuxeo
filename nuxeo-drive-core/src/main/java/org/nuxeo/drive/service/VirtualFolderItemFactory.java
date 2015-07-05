@@ -35,9 +35,9 @@ public interface VirtualFolderItemFactory extends FileSystemItemFactory {
     /**
      * Returns the (unique) virtual {@link FolderItem}.
      */
-    FolderItem getVirtualFolderItem(Principal principal) throws ClientException;
+    FolderItem getVirtualFolderItem(Principal principal);
 
-    String getFolderName() throws ClientException;
+    String getFolderName();
 
     void setFolderName(String folderName);
 

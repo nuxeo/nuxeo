@@ -37,7 +37,7 @@ public interface VersioningFileSystemItemFactory extends FileSystemItemFactory {
      *
      * @see DocumentBackedFileItem#versionIfNeeded(DocumentModel doc, CoreSession session)
      */
-    boolean needsVersioning(DocumentModel doc) throws ClientException;
+    boolean needsVersioning(DocumentModel doc);
 
     /**
      * Gets the delay passed which a document needs to be versioned since its last modification.

@@ -42,13 +42,13 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
     /**
      * Returns the parent {@link FileSystemItem}.
      */
-    protected abstract FolderItem getParentItem(DocumentModel doc) throws ClientException;
+    protected abstract FolderItem getParentItem(DocumentModel doc);
 
     /**
      * No parameters by default.
      */
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         // Nothing to do as no parameters are contributed to the factory
         if (!parameters.isEmpty()) {
             throw new IllegalArgumentException(
@@ -72,7 +72,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
      */
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
 
         // Check Folderish
         if (!doc.isFolder()) {
@@ -136,7 +136,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
      * Force parent id using {@link #getParentId(String)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted);
     }
 
@@ -145,7 +145,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
      */
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted, relaxSyncRootConstraint);
     }
 

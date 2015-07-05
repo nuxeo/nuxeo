@@ -49,11 +49,10 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     /*--------------------------- FileSystemItemFactory ---------------------*/
     @Override
-    public abstract void handleParameters(Map<String, String> parameters) throws ClientException;
+    public abstract void handleParameters(Map<String, String> parameters);
 
     @Override
-    public abstract boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException;
+    public abstract boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint);
 
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.
@@ -61,7 +60,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
      * @see #getFileSystemItem(DocumentModel, boolean, String, boolean)
      */
     protected abstract FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException;
+            boolean relaxSyncRootConstraint);
 
     @Override
     public String getName() {
@@ -74,45 +73,45 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc) {
         return isFileSystemItem(doc, false);
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return isFileSystemItem(doc, includeDeleted, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) {
         return getFileSystemItem(doc, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return getFileSystemItem(doc, false, null, includeDeleted, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) {
         return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, relaxSyncRootConstraint);
     }
 
@@ -134,7 +133,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
      * @see #isFileSystemItem(DocumentModel)
      */
     @Override
-    public boolean exists(String id, Principal principal) throws ClientException {
+    public boolean exists(String id, Principal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
@@ -150,7 +149,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
@@ -166,7 +165,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) {
         String[] idFragments = parseFileSystemId(id);
         String repositoryName = idFragments[1];
         String docId = idFragments[2];
@@ -188,7 +187,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     @Deprecated
     @Override
-    public DocumentModel getDocumentByFileSystemId(String id, Principal principal) throws ClientException {
+    public DocumentModel getDocumentByFileSystemId(String id, Principal principal) {
         // Parse id, expecting
         // pattern:fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = parseFileSystemId(id);
@@ -201,12 +200,12 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     /*--------------------------- Protected ---------------------------------*/
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem)
-            throws ClientException {
+            {
         return adaptDocument(doc, forceParentItem, parentItem, false);
     }
 
     protected FileSystemItem getFileSystemItem(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean includeDeleted, boolean relaxSyncRootConstraint) throws ClientException {
+            boolean includeDeleted, boolean relaxSyncRootConstraint) {
 
         // If the doc is not adaptable as a FileSystemItem return null
         if (!isFileSystemItem(doc, includeDeleted, relaxSyncRootConstraint)) {
@@ -219,7 +218,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         return adaptDocument(doc, forceParentItem, parentItem, relaxSyncRootConstraint);
     }
 
-    protected String[] parseFileSystemId(String id) throws ClientException {
+    protected String[] parseFileSystemId(String id) {
 
         // Parse id, expecting pattern:
         // fileSystemItemFactoryName#repositoryName#docId
@@ -241,7 +240,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         return idFragments;
     }
 
-    protected DocumentModel getDocumentById(String docId, CoreSession session) throws ClientException {
+    protected DocumentModel getDocumentById(String docId, CoreSession session) {
         return session.getDocument(new IdRef(docId));
     }
 

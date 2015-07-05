@@ -176,7 +176,7 @@ public class TestDefaultTopLevelFolderItemFactory {
      * Tests the default top level folder item children, ie. the synchronization root folders.
      */
     @Test
-    public void testTopLevelFolderItemChildren() throws ClientException {
+    public void testTopLevelFolderItemChildren() {
 
         FolderItem topLevelFolderItem = defaultTopLevelFolderItemFactory.getTopLevelFolderItem(session.getPrincipal());
         List<FileSystemItem> children = topLevelFolderItem.getChildren();
@@ -222,7 +222,7 @@ public class TestDefaultTopLevelFolderItemFactory {
     }
 
     @Test
-    public void testFileSystemItemFactory() throws ClientException {
+    public void testFileSystemItemFactory() {
 
         // #getName()
         assertEquals("org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory",

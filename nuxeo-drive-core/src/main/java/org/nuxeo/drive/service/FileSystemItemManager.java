@@ -52,7 +52,7 @@ public interface FileSystemItemManager {
      * @deprecated since 7.2, use {@link CoreInstance#openCoreSession(String, Principal)} instead.
      */
     @Deprecated
-    CoreSession getSession(String repositoryName, Principal principal) throws ClientException;
+    CoreSession getSession(String repositoryName, Principal principal);
 
     /*------------- Read operations ----------------*/
     /**
@@ -62,14 +62,14 @@ public interface FileSystemItemManager {
      * @throws ClientException if the top level {@link FolderItem} or its children cannot be retrieved
      */
     @Deprecated
-    List<FileSystemItem> getTopLevelChildren(Principal principal) throws ClientException;
+    List<FileSystemItem> getTopLevelChildren(Principal principal);
 
     /**
      * Gets the top level {@link FolderItem} for the given principal.
      *
      * @throws ClientException if the top level {@link FolderItem} cannot be retrieved
      */
-    FolderItem getTopLevelFolder(Principal principal) throws ClientException;
+    FolderItem getTopLevelFolder(Principal principal);
 
     /**
      * Returns true if a {@link FileSystemItem} with the given id exists for the given principal.
@@ -78,7 +78,7 @@ public interface FileSystemItemManager {
      *             an error occurs while checking the existence
      * @see FileSystemItemFactory#exists(String, Principal)
      */
-    boolean exists(String id, Principal principal) throws ClientException;
+    boolean exists(String id, Principal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id for the given principal.
@@ -88,7 +88,7 @@ public interface FileSystemItemManager {
      *             an error occurs while retrieving the item
      * @see FileSystemItemFactory#getFileSystemItemById(String, Principal)
      */
-    FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException;
+    FileSystemItem getFileSystemItemById(String id, Principal principal);
 
     /**
      * Gets the {@link FileSystemItem} with the given id and parent id for the given principal.
@@ -99,7 +99,7 @@ public interface FileSystemItemManager {
      * @see #getFileSystemItemById(String, Principal)
      * @since 6.0
      */
-    FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException;
+    FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal);
 
     /**
      * Gets the children of the {@link FileSystemItem} with the given id for the given principal.
@@ -108,7 +108,7 @@ public interface FileSystemItemManager {
      *             {@link FolderItem} or if an error occurs while retrieving the children
      * @see FolderItem#getChildren()
      */
-    List<FileSystemItem> getChildren(String id, Principal principal) throws ClientException;
+    List<FileSystemItem> getChildren(String id, Principal principal);
 
     /**
      * Return true if the {@link FileSystemItem} with the given source id can be moved to the {@link FileSystemItem}
@@ -117,7 +117,7 @@ public interface FileSystemItemManager {
      * @throws ClientException if the {@link FileSystemItem} with the given source or destination id cannot be retrieved
      * @see FileSystemItem#getCanMove(String)
      */
-    boolean canMove(String srcId, String destId, Principal principal) throws ClientException;
+    boolean canMove(String srcId, String destId, Principal principal);
 
     /*------------- Write operations ----------------*/
     /**
@@ -127,7 +127,7 @@ public interface FileSystemItemManager {
      *             {@link FolderItem} or if an error occurs while creating the folder
      * @see FolderItem#createFolder(String)
      */
-    FolderItem createFolder(String parentId, String name, Principal principal) throws ClientException;
+    FolderItem createFolder(String parentId, String name, Principal principal);
 
     /**
      * Creates a file with the given blob in the {@link FileSystemItem} with the given id for the given principal.
@@ -136,7 +136,7 @@ public interface FileSystemItemManager {
      *             {@link FolderItem} or if an error occurs while creating the file
      * @see FolderItem#createFile(Blob)
      */
-    FileItem createFile(String parentId, Blob blob, Principal principal) throws ClientException;
+    FileItem createFile(String parentId, Blob blob, Principal principal);
 
     /**
      * Updates the {@link FileSystemItem} with the given id with the given blob for the given principal.
@@ -145,7 +145,7 @@ public interface FileSystemItemManager {
      *             {@link FileItem} or if an error occurs while updating the file
      * @see FileItem#setBlob(Blob)
      */
-    FileItem updateFile(String id, Blob blob, Principal principal) throws ClientException;
+    FileItem updateFile(String id, Blob blob, Principal principal);
 
     /**
      * Updates the {@link FileSystemItem} with the given id and parent id with the given blob for the given principal.
@@ -155,7 +155,7 @@ public interface FileSystemItemManager {
      * @see #updateFile(String, Blob, Principal)
      * @since 6.0
      */
-    FileItem updateFile(String id, String parentId, Blob blob, Principal principal) throws ClientException;
+    FileItem updateFile(String id, String parentId, Blob blob, Principal principal);
 
     /**
      * Deletes the {@link FileSystemItem} with the given id for the given principal.
@@ -164,7 +164,7 @@ public interface FileSystemItemManager {
      *             while deleting the item
      * @see FileSystemItem#delete()
      */
-    void delete(String id, Principal principal) throws ClientException;
+    void delete(String id, Principal principal);
 
     /**
      * Deletes the {@link FileSystemItem} with the given id and parent id for the given principal.
@@ -174,7 +174,7 @@ public interface FileSystemItemManager {
      * @see #delete(String, Principal)
      * @since 6.0
      */
-    void delete(String id, String parentId, Principal principal) throws ClientException;
+    void delete(String id, String parentId, Principal principal);
 
     /**
      * Renames the {@link FileSystemItem} with the given id with the given name for the given principal.
@@ -183,7 +183,7 @@ public interface FileSystemItemManager {
      *             while renaming the item
      * @see FileSystemItem#rename(String)
      */
-    FileSystemItem rename(String id, String name, Principal principal) throws ClientException;
+    FileSystemItem rename(String id, String name, Principal principal);
 
     /**
      * Moves the {@link FileSystemItem} with the given source id to the {@link FileSystemItem} with the given
@@ -194,6 +194,6 @@ public interface FileSystemItemManager {
      *             occurs while moving the item
      * @see FileSystemItem#move(String)
      */
-    FileSystemItem move(String srcId, String destId, Principal principal) throws ClientException;
+    FileSystemItem move(String srcId, String destId, Principal principal);
 
 }

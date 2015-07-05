@@ -33,13 +33,13 @@ public class DefaultTopLevelFolderItemFactory extends AbstractVirtualFolderItemF
 
     /*---------------------- VirtualFolderItemFactory ---------------*/
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) {
         return getTopLevelFolderItem(principal);
     }
 
     /*----------------------- TopLevelFolderItemFactory ---------------------*/
     @Override
-    public FolderItem getTopLevelFolderItem(Principal principal) throws ClientException {
+    public FolderItem getTopLevelFolderItem(Principal principal) {
         return new DefaultTopLevelFolderItem(getName(), principal, getFolderName());
     }
 

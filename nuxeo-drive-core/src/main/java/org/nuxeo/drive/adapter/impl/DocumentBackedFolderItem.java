@@ -52,23 +52,23 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     protected boolean canCreateChild;
 
-    public DocumentBackedFolderItem(String factoryName, DocumentModel doc) throws ClientException {
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc) {
         this(factoryName, doc, false);
     }
 
     public DocumentBackedFolderItem(String factoryName, DocumentModel doc, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         super(factoryName, doc, relaxSyncRootConstraint);
         initialize(doc);
     }
 
     public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
-            throws ClientException {
+            {
         this(factoryName, parentItem, doc, false);
     }
 
     public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         super(factoryName, parentItem, doc, relaxSyncRootConstraint);
         initialize(doc);
     }
@@ -79,7 +79,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
 
     /*--------------------- FileSystemItem ---------------------*/
     @Override
-    public void rename(String name) throws ClientException {
+    public void rename(String name) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             // Update doc properties
             DocumentModel doc = getDocument(session);
@@ -96,7 +96,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     /*--------------------- FolderItem -----------------*/
     @Override
     @SuppressWarnings("unchecked")
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             PageProviderService pageProviderService = Framework.getLocalService(PageProviderService.class);
             Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -143,7 +143,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    public FolderItem createFolder(String name) throws ClientException {
+    public FolderItem createFolder(String name) {
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel folder = getFileManager().createFolder(session, name, docPath);
             if (folder == null) {
@@ -160,7 +160,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     @Override
-    public FileItem createFile(Blob blob) throws ClientException {
+    public FileItem createFile(Blob blob) {
         String fileName = blob.getFilename();
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             // TODO: manage conflict (overwrite should not necessarily be true)
@@ -179,7 +179,7 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
     }
 
     /*--------------------- Protected -----------------*/
-    protected void initialize(DocumentModel doc) throws ClientException {
+    protected void initialize(DocumentModel doc) {
         this.name = docTitle;
         this.folder = true;
         this.canCreateChild = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.ADD_CHILDREN);

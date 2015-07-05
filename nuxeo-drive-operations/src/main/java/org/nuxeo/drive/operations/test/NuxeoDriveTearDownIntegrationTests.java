@@ -41,7 +41,7 @@ public class NuxeoDriveTearDownIntegrationTests {
     protected CoreSession session;
 
     @OperationMethod
-    public void run() throws ClientException {
+    public void run() {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         NuxeoDriveIntegrationTestsHelper.cleanUp(session);
     }

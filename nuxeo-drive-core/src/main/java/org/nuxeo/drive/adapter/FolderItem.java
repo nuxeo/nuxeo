@@ -36,12 +36,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface FolderItem extends FileSystemItem {
 
     @JsonIgnore
-    List<FileSystemItem> getChildren() throws ClientException;
+    List<FileSystemItem> getChildren();
 
     boolean getCanCreateChild();
 
-    FileItem createFile(Blob blob) throws ClientException;
+    FileItem createFile(Blob blob);
 
-    FolderItem createFolder(String name) throws ClientException;
+    FolderItem createFolder(String name);
 
 }

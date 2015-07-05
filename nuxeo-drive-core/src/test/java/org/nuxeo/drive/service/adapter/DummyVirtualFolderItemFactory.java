@@ -31,7 +31,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class DummyVirtualFolderItemFactory extends AbstractVirtualFolderItemFactory {
 
     @Override
-    public FolderItem getVirtualFolderItem(Principal principal) throws ClientException {
+    public FolderItem getVirtualFolderItem(Principal principal) {
         return null;
     }
 

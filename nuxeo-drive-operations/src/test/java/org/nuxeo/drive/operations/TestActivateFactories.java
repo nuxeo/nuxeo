@@ -90,7 +90,7 @@ public class TestActivateFactories {
 
     }
 
-    protected void checkDefaultProfile() throws ClientException {
+    protected void checkDefaultProfile() {
         assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
                 "DefaultTopLevelFolderItemFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
@@ -100,7 +100,7 @@ public class TestActivateFactories {
         assertTrue(activeFSItemFactories.contains("defaultFileSystemItemFactory"));
     }
 
-    protected void checkUserworkspaceProfile() throws ClientException {
+    protected void checkUserworkspaceProfile() {
         assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
                 "UserWorkspaceTopLevelFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();
@@ -111,7 +111,7 @@ public class TestActivateFactories {
         assertTrue(activeFSItemFactories.contains("defaultFileSystemItemFactory"));
     }
 
-    protected void checkPermissionProfile() throws ClientException {
+    protected void checkPermissionProfile() {
         assertTrue(fileSystemItemAdapterService.getTopLevelFolderItemFactory().getName().endsWith(
                 "PermissionTopLevelFactory"));
         Set<String> activeFSItemFactories = fileSystemItemAdapterService.getActiveFileSystemItemFactories();

@@ -51,7 +51,7 @@ public class UserWorkspaceSyncRootParentFolderItem extends AbstractVirtualFolder
     private static final Log log = LogFactory.getLog(UserWorkspaceSyncRootParentFolderItem.class);
 
     public UserWorkspaceSyncRootParentFolderItem(String factoryName, Principal principal, String parentId,
-            String parentPath, String folderName) throws ClientException {
+            String parentPath, String folderName) {
         super(factoryName, principal, parentId, parentPath, folderName);
     }
 
@@ -60,7 +60,7 @@ public class UserWorkspaceSyncRootParentFolderItem extends AbstractVirtualFolder
     }
 
     @Override
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
         Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(

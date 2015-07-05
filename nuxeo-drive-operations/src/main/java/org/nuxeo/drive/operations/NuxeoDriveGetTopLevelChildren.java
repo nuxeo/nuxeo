@@ -47,7 +47,7 @@ public class NuxeoDriveGetTopLevelChildren {
     protected OperationContext ctx;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         List<FileSystemItem> children = fileSystemItemManager.getTopLevelChildren(ctx.getPrincipal());

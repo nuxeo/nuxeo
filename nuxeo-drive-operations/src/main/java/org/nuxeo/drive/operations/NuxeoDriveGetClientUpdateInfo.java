@@ -40,7 +40,7 @@ public class NuxeoDriveGetClientUpdateInfo {
     public static final String ID = "NuxeoDrive.GetClientUpdateInfo";
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
 
         String serverVersion = Framework.getProperty("org.nuxeo.ecm.product.version");
         String updateSiteURL = Framework.getProperty("org.nuxeo.drive.update.site.url");

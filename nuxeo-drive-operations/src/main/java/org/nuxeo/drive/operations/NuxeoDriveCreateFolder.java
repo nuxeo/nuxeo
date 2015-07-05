@@ -52,7 +52,7 @@ public class NuxeoDriveCreateFolder {
     protected String name;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
 
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem folderItem = fileSystemItemManager.createFolder(parentId, name, ctx.getPrincipal());

@@ -66,14 +66,14 @@ public interface FileSystemItem extends Comparable<FileSystemItem>, Serializable
 
     boolean getCanRename();
 
-    void rename(String name) throws ClientException;
+    void rename(String name);
 
     boolean getCanDelete();
 
-    void delete() throws ClientException;
+    void delete();
 
-    boolean canMove(FolderItem dest) throws ClientException;
+    boolean canMove(FolderItem dest);
 
-    FileSystemItem move(FolderItem dest) throws ClientException;
+    FileSystemItem move(FolderItem dest);
 
 }

@@ -59,7 +59,7 @@ public class NuxeoDriveGetChangeSummary {
     protected String lastSyncActiveRootDefinitions;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
         NuxeoDriveManager driveManager = Framework.getLocalService(NuxeoDriveManager.class);
         Map<String, Set<IdRef>> lastActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary docChangeSummary;

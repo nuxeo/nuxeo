@@ -28,7 +28,7 @@ public class GetRepositoriesOperation {
     protected RepositoryManager repositoryManager;
 
     @OperationMethod
-    public List<String> run() throws ClientException {
+    public List<String> run() {
         List<String> repositoryNames = new ArrayList<String>(repositoryManager.getRepositoryNames());
         // Make order deterministic to make it simpler to write tests.
         Collections.sort(repositoryNames);

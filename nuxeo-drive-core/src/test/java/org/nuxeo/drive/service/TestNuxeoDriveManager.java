@@ -321,7 +321,7 @@ public class TestNuxeoDriveManager {
     }
 
     @Test
-    public void testSyncRootChild() throws ClientException {
+    public void testSyncRootChild() {
 
         // Make user1 register child of workspace-2: folder-2-1
         assertFalse(isUserSubscribed("user1", folder_2_1));
@@ -341,7 +341,7 @@ public class TestNuxeoDriveManager {
     }
 
     @Test
-    public void testSyncRootChildWhenBlockingInheritance() throws ClientException {
+    public void testSyncRootChildWhenBlockingInheritance() {
 
         // Create a folder_2_1_1, as a child of folder_2_1
         DocumentModel folder_2_1_1 = session.createDocument(session.createDocumentModel(
@@ -390,7 +390,7 @@ public class TestNuxeoDriveManager {
     }
 
     @Test
-    public void testSyncRootCacheInvalidation() throws ClientException {
+    public void testSyncRootCacheInvalidation() {
         Principal user1Principal = user1Session.getPrincipal();
         // No roots => no sync roots
         Set<String> expectedSyncRootPaths = new HashSet<String>();
@@ -442,7 +442,7 @@ public class TestNuxeoDriveManager {
     }
 
     @Test
-    public void testSyncRootsWithPathInclusion() throws ClientException {
+    public void testSyncRootsWithPathInclusion() {
         Principal user1Principal = user1Session.getPrincipal();
 
         // Create 2 folders with path inclusion:
@@ -568,21 +568,21 @@ public class TestNuxeoDriveManager {
         assertEquals(fsItemIdUser1, fsItemIdUser2);
     }
 
-    protected DocumentModel doc(String path) throws ClientException {
+    protected DocumentModel doc(String path) {
         return doc(session, path);
     }
 
-    protected DocumentModel doc(CoreSession session, String path) throws ClientException {
+    protected DocumentModel doc(CoreSession session, String path) {
         return session.getDocument(new PathRef(path));
     }
 
-    protected void checkRootsCount(Principal principal, int expectedCount) throws ClientException {
+    protected void checkRootsCount(Principal principal, int expectedCount) {
         assertEquals(expectedCount,
                 nuxeoDriveManager.getSynchronizationRoots(principal).get(repository.getName()).refs.size());
     }
 
     protected void checkRoots(Principal principal, int expectedCount, Set<String> expectedRootPaths)
-            throws ClientException {
+            {
         Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
         Set<String> syncRootPaths = syncRoots.get(repository.getName()).paths;
         assertEquals(expectedCount, syncRootPaths.size());
@@ -592,7 +592,7 @@ public class TestNuxeoDriveManager {
     }
 
     @SuppressWarnings("unchecked")
-    protected boolean isUserSubscribed(String userName, DocumentModel container) throws ClientException {
+    protected boolean isUserSubscribed(String userName, DocumentModel container) {
         if (!container.hasFacet(NuxeoDriveManagerImpl.NUXEO_DRIVE_FACET)) {
             return false;
         }
@@ -608,7 +608,7 @@ public class TestNuxeoDriveManager {
         return false;
     }
 
-    protected void setPermissions(DocumentModel doc, ACE... aces) throws ClientException {
+    protected void setPermissions(DocumentModel doc, ACE... aces) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         for (int i = 0; i < aces.length; i++) {
@@ -618,7 +618,7 @@ public class TestNuxeoDriveManager {
         session.save();
     }
 
-    protected void resetPermissions(DocumentModel doc) throws ClientException {
+    protected void resetPermissions(DocumentModel doc) {
         ACP acp = session.getACP(doc.getRef());
         acp.getOrCreateACL(ACL.LOCAL_ACL).clear();
         session.setACP(doc.getRef(), acp, true);

@@ -51,7 +51,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
     private static final Log log = LogFactory.getLog(SharedSyncRootParentFolderItem.class);
 
     public SharedSyncRootParentFolderItem(String factoryName, Principal principal, String parentId, String parentPath,
-            String folderName) throws ClientException {
+            String folderName) {
         super(factoryName, principal, parentId, parentPath, folderName);
     }
 
@@ -60,7 +60,7 @@ public class SharedSyncRootParentFolderItem extends AbstractVirtualFolderItem {
     }
 
     @Override
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
         Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(

@@ -49,7 +49,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     private static final Log log = LogFactory.getLog(DefaultTopLevelFolderItem.class);
 
-    public DefaultTopLevelFolderItem(String factoryName, Principal principal, String folderName) throws ClientException {
+    public DefaultTopLevelFolderItem(String factoryName, Principal principal, String folderName) {
         super(factoryName, principal, null, null, folderName);
     }
 
@@ -59,7 +59,7 @@ public class DefaultTopLevelFolderItem extends AbstractVirtualFolderItem {
 
     /*--------------------- FolderItem -----------------*/
     @Override
-    public List<FileSystemItem> getChildren() throws ClientException {
+    public List<FileSystemItem> getChildren() {
 
         List<FileSystemItem> children = new ArrayList<FileSystemItem>();
         Map<String, SynchronizationRoots> syncRootsByRepo = Framework.getLocalService(NuxeoDriveManager.class).getSynchronizationRoots(

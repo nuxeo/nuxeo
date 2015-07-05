@@ -56,7 +56,7 @@ public class NuxeoDriveCanMove {
     protected String destId;
 
     @OperationMethod
-    public Blob run() throws ClientException, IOException {
+    public Blob run() throws IOException {
         boolean canMove = false;
         try {
             FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);

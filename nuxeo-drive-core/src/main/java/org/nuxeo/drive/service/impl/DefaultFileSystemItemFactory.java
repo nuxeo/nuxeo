@@ -64,7 +64,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
 
     /*--------------------------- AbstractFileSystemItemFactory -------------------------*/
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         String versioningDelayParam = parameters.get(VERSIONING_DELAY_PARAM);
         if (!StringUtils.isEmpty(versioningDelayParam)) {
             versioningDelay = Double.parseDouble(versioningDelayParam);
@@ -88,7 +88,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
      */
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         // Check version
         if (doc.isVersion()) {
             if (log.isDebugEnabled()) {
@@ -167,7 +167,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         // Doc is either Folderish
         if (doc.isFolder()) {
             if (forceParentItem) {
@@ -192,7 +192,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
      * modification was done more than {@link #versioningDelay} seconds ago.
      */
     @Override
-    public boolean needsVersioning(DocumentModel doc) throws ClientException {
+    public boolean needsVersioning(DocumentModel doc) {
 
         String lastContributor = (String) doc.getPropertyValue("dc:lastContributor");
         Principal principal = doc.getCoreSession().getPrincipal();
@@ -249,7 +249,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
     }
 
     /*--------------------------- Protected ---------------------------------*/
-    protected boolean hasBlob(DocumentModel doc) throws ClientException {
+    protected boolean hasBlob(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             if (log.isDebugEnabled()) {

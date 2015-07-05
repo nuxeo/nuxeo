@@ -37,18 +37,15 @@ public interface NuxeoDriveManager {
      * @param principal the Nuxeo Drive user
      * @param newRootContainer the folderish document to be used as synchronization root: must be bound to an active
      *            session
-     * @throws ClientException
      * @throws SecurityException if the user does not have write permissions to the container.
      */
-    public void registerSynchronizationRoot(Principal principal, DocumentModel newRootContainer, CoreSession session)
-            throws ClientException;
+    public void registerSynchronizationRoot(Principal principal, DocumentModel newRootContainer, CoreSession session);
 
     /**
      * @param principal the Nuxeo Drive user
      * @param rootContainer the folderish document that should no longer be used as a synchronization root
      */
-    public void unregisterSynchronizationRoot(Principal principal, DocumentModel rootContainer, CoreSession session)
-            throws ClientException;
+    public void unregisterSynchronizationRoot(Principal principal, DocumentModel rootContainer, CoreSession session);
 
     /**
      * Fetch the list of synchronization root refs for a given user and a given session repository. This list is assumed
@@ -59,7 +56,7 @@ public interface NuxeoDriveManager {
      * @return the ordered set of non deleted synchronization root references for that user
      * @see #getSynchronizationRootPaths(String, CoreSession)
      */
-    public Set<IdRef> getSynchronizationRootReferences(CoreSession session) throws ClientException;
+    public Set<IdRef> getSynchronizationRootReferences(CoreSession session);
 
     /**
      * Fetch all the synchronization root references and paths for a given user. This list is assumed to be short enough
@@ -68,7 +65,7 @@ public interface NuxeoDriveManager {
      * @param principal the user to fetch the roots for
      * @return the map keyed by repository names all active roots definitions for the current user.
      */
-    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal) throws ClientException;
+    public Map<String, SynchronizationRoots> getSynchronizationRoots(Principal principal);
 
     /**
      * Fetch all the collection sync root member ids for a given user.
@@ -76,18 +73,18 @@ public interface NuxeoDriveManager {
      * @param principal the user to fetch the ids for
      * @return the map keyed by repository names all collection sync root member ids for the current user.
      */
-    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal) throws ClientException;
+    public Map<String, Set<String>> getCollectionSyncRootMemberIds(Principal principal);
 
     /**
      * Checks if the given {@link DocumentModel} is a synchronization root for the given user.
      */
-    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc) throws ClientException;
+    public boolean isSynchronizationRoot(Principal principal, DocumentModel doc);
 
     /**
      * Method to be called by a CoreEvent listener monitoring documents deletions to cleanup references to recently
      * deleted documents and invalidate the caches.
      */
-    public void handleFolderDeletion(IdRef ref) throws ClientException;
+    public void handleFolderDeletion(IdRef ref);
 
     /**
      * Gets a summary of document changes in all repositories for the given user's synchronization roots, since the
@@ -112,7 +109,7 @@ public interface NuxeoDriveManager {
      * @return the summary of document changes
      */
     public FileSystemChangeSummary getChangeSummary(Principal principal, Map<String, Set<IdRef>> lastSyncRootRefs,
-            long lastSuccessfulSync) throws ClientException;
+            long lastSuccessfulSync);
 
     /**
      * Gets a summary of document changes in all repositories for the given user's synchronization roots, from the lower
@@ -136,7 +133,7 @@ public interface NuxeoDriveManager {
      * @return the summary of document changes
      */
     public FileSystemChangeSummary getChangeSummaryIntegerBounds(Principal principal,
-            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound) throws ClientException;
+            Map<String, Set<IdRef>> lastSyncRootRefs, long lowerBound);
 
     /**
      * Gets the {@link FileSystemChangeFinder} member.
@@ -176,9 +173,8 @@ public interface NuxeoDriveManager {
     /**
      * Adds the given {@link DocumentModel} to the {@link #LOCALLY_EDITED_COLLECTION_NAME} collection.
      *
-     * @throws ClientException
      * @since 6.0
      */
-    void addToLocallyEditedCollection(CoreSession session, DocumentModel doc) throws ClientException;
+    void addToLocallyEditedCollection(CoreSession session, DocumentModel doc);
 
 }

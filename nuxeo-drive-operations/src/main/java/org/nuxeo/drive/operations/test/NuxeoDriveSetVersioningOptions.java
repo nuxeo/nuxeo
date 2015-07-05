@@ -49,7 +49,7 @@ public class NuxeoDriveSetVersioningOptions {
     protected String option;
 
     @OperationMethod
-    public void run() throws ClientException {
+    public void run() {
         NuxeoDriveIntegrationTestsHelper.checkOperationAllowed();
         FileSystemItemAdapterService fileSystemItemAdapterService = Framework.getLocalService(FileSystemItemAdapterService.class);
         VersioningFileSystemItemFactory defaultFileSystemItemFactory = (VersioningFileSystemItemFactory) ((FileSystemItemAdapterServiceImpl) fileSystemItemAdapterService).getFileSystemItemFactory("defaultFileSystemItemFactory");

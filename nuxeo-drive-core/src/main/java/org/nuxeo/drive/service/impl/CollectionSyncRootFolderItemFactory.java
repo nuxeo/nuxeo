@@ -55,7 +55,7 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
      */
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
 
         // Check Collection
         if (!Framework.getService(CollectionManager.class).isCollection(doc)) {
@@ -101,7 +101,7 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
 
     @Override
     protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return new CollectionSyncRootFolderItem(name, parentItem, doc, relaxSyncRootConstraint);
     }
 

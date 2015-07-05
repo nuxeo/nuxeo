@@ -52,7 +52,7 @@ public class NuxeoDriveMove {
     protected String destId;
 
     @OperationMethod
-    public Blob run() throws ClientException, InvalidOperationException, IOException {
+    public Blob run() throws InvalidOperationException, IOException {
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FileSystemItem fsItem;
         try {

@@ -44,7 +44,7 @@ public final class FileSystemItemHelper {
      * @throws UnsupportedOperationException if the digest algorithm is not supported
      * @throws ClientException if the digest computation fails with an {@link IOException}
      */
-    public static String getDigest(Blob blob, String digestAlgorithm) throws ClientException {
+    public static String getDigest(Blob blob, String digestAlgorithm) {
         String digest = blob.getDigest();
         if (StringUtils.isEmpty(digest)) {
             if (MD5_DIGEST_ALGORITHM.equals(digestAlgorithm)) {

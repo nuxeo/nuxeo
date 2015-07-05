@@ -48,7 +48,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     protected String folderName = DEFAULT_FOLDER_NAME;
 
     @Override
-    public abstract FolderItem getVirtualFolderItem(Principal principal) throws ClientException;
+    public abstract FolderItem getVirtualFolderItem(Principal principal);
 
     @Override
     public String getName() {
@@ -61,7 +61,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public void handleParameters(Map<String, String> parameters) throws ClientException {
+    public void handleParameters(Map<String, String> parameters) {
         // Look for the "folderName" parameter
         String folderNameParam = parameters.get(FOLDER_NAME_PARAM);
         if (!StringUtils.isEmpty(folderNameParam)) {
@@ -74,51 +74,51 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc) {
         return isFileSystemItem(doc, false);
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return isFileSystemItem(doc, false, false);
     }
 
     @Override
     public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         return false;
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc) {
         return getFileSystemItem(doc, false);
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted) {
         return getFileSystemItem(doc, false, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            throws ClientException {
+            {
         return null;
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) throws ClientException {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem) {
         return getFileSystemItem(doc, parentItem, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            throws ClientException {
+            {
         return getFileSystemItem(doc, parentItem, false, false);
     }
 
     @Override
     public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted,
-            boolean relaxSyncRootConstraint) throws ClientException {
+            boolean relaxSyncRootConstraint) {
         return null;
     }
 
@@ -128,7 +128,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public boolean exists(String id, Principal principal) throws ClientException {
+    public boolean exists(String id, Principal principal) {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(String.format(
                     "Cannot check if a file system item exists for an id that cannot be handled from factory %s.",
@@ -138,7 +138,7 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, Principal principal) {
         if (!canHandleFileSystemItemId(id)) {
             throw new UnsupportedOperationException(String.format(
                     "Cannot get the file system item for an id that cannot be handled from factory %s.", getName()));
@@ -147,13 +147,13 @@ public abstract class AbstractVirtualFolderItemFactory implements VirtualFolderI
     }
 
     @Override
-    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) throws ClientException {
+    public FileSystemItem getFileSystemItemById(String id, String parentId, Principal principal) {
         return getFileSystemItemById(id, principal);
     }
 
     @Deprecated
     @Override
-    public DocumentModel getDocumentByFileSystemId(String id, Principal principal) throws ClientException {
+    public DocumentModel getDocumentByFileSystemId(String id, Principal principal) {
         throw new UnsupportedOperationException(String.format(
                 "Cannot get document by file system item id from VirtualFolderItemFactory %s.", getName()));
     }
