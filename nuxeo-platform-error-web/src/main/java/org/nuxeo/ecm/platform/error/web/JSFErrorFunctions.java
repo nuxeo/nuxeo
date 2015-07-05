@@ -25,7 +25,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public class JSFErrorFunctions {
 
-    public static String triggerCheckedError() throws ClientException {
+    public static String triggerCheckedError() {
         throw new ClientException("JSF function triggering a checked error");
     }
 

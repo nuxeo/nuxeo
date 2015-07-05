@@ -67,7 +67,7 @@ public class SeamErrorComponent implements Serializable {
     @In(create = true, required = false)
     protected transient CoreSession documentManager;
 
-    protected void createNewDocument() throws ClientException {
+    protected void createNewDocument() {
         if (documentManager == null) {
             log.error("********** Unexpected exception while testing "
                     + "error handling: documentManager is null ***********");
@@ -83,7 +83,7 @@ public class SeamErrorComponent implements Serializable {
         documentManager.save();
     }
 
-    public void checkedErrorAfterCreation() throws ClientException {
+    public void checkedErrorAfterCreation() {
         createNewDocument();
         throw new ClientException("Checked exception after document creation");
     }
@@ -97,7 +97,7 @@ public class SeamErrorComponent implements Serializable {
         throw new NullPointerException("Unchecked exception after document creation");
     }
 
-    public String getCheckedError() throws ClientException {
+    public String getCheckedError() {
         throw new ClientException("Checked error on getter");
     }
 
@@ -110,7 +110,7 @@ public class SeamErrorComponent implements Serializable {
     }
 
     @Factory(value = "checkedErrorFactoryEvent", scope = EVENT)
-    public String getCheckedErrorFactoryEvent() throws ClientException {
+    public String getCheckedErrorFactoryEvent() {
         throw new ClientException("Checked error on factory, scope event");
     }
 
@@ -124,7 +124,7 @@ public class SeamErrorComponent implements Serializable {
         throw new DocumentSecurityException("Security error on factory, scope event");
     }
 
-    public String performCheckedError() throws ClientException {
+    public String performCheckedError() {
         throw new ClientException("Checked error on action");
     }
 
@@ -155,7 +155,7 @@ public class SeamErrorComponent implements Serializable {
     /**
      * @since 5.9.5
      */
-    public void performDistributedRollback() throws ClientException {
+    public void performDistributedRollback() {
         createDummyUser();
         createDummyLogEntry();
         createDummyDoc();
@@ -165,13 +165,13 @@ public class SeamErrorComponent implements Serializable {
     /**
      * @since 5.9.5
      */
-    public void clearDistributedRollbackEnv() throws ClientException {
+    public void clearDistributedRollbackEnv() {
         clearDummyUser();
         clearDummyDoc();
         clearDummyLogEntries();
     }
 
-    protected DocumentModel createDummyUser() throws ClientException {
+    protected DocumentModel createDummyUser() {
         DirectoryService directories = Framework.getLocalService(DirectoryService.class);
         try (Session userDir = directories.getDirectory("userDirectory").getSession()) {
             Map<String, Object> user = new HashMap<>();
@@ -235,7 +235,7 @@ public class SeamErrorComponent implements Serializable {
         return !entries.isEmpty();
     }
 
-    protected DocumentModel createDummyDoc() throws ClientException {
+    protected DocumentModel createDummyDoc() {
         DocumentModel doc = documentManager.createDocumentModel("/", "dummy", "Document");
         doc = documentManager.createDocument(doc);
         documentManager.save();
@@ -245,7 +245,7 @@ public class SeamErrorComponent implements Serializable {
     /**
      * @since 5.9.5
      */
-    public void clearDummyDoc() throws ClientException {
+    public void clearDummyDoc() {
         PathRef ref = new PathRef("/dummy");
         if (documentManager.exists(ref)) {
             documentManager.removeDocument(ref);
@@ -256,7 +256,7 @@ public class SeamErrorComponent implements Serializable {
      * @since 5.9.5
      */
     @Factory(scope = ScopeType.EVENT)
-    public boolean isDummyDocExists() throws ClientException {
+    public boolean isDummyDocExists() {
         return documentManager.exists(new PathRef("/dummy"));
     }
 

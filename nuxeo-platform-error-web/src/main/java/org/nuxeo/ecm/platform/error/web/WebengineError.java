@@ -52,7 +52,7 @@ public class WebengineError extends ModuleRoot {
     }
 
     @Path("checkedError")
-    public Object getCheckedError() throws ClientException {
+    public Object getCheckedError() {
         throw new ClientException("CheckedError in webengine");
     }
 
