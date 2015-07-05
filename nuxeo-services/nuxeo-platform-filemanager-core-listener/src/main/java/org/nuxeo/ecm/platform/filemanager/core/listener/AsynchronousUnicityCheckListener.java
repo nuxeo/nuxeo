@@ -47,7 +47,7 @@ public class AsynchronousUnicityCheckListener extends AbstractUnicityChecker imp
     }
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         if (!isUnicityCheckEnabled()) {
             return;
         }

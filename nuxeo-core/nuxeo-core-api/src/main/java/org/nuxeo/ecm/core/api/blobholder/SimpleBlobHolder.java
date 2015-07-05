@@ -53,7 +53,7 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         if (blobs == null || blobs.size() == 0) {
             return null;
         } else {
@@ -62,7 +62,7 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public List<Blob> getBlobs() throws ClientException {
+    public List<Blob> getBlobs() {
         return blobs;
     }
 
@@ -72,12 +72,12 @@ public class SimpleBlobHolder extends AbstractBlobHolder {
     }
 
     @Override
-    public Calendar getModificationDate() throws ClientException {
+    public Calendar getModificationDate() {
         return creationDate;
     }
 
     @Override
-    public Serializable getProperty(String name) throws ClientException {
+    public Serializable getProperty(String name) {
         return null;
     }
 

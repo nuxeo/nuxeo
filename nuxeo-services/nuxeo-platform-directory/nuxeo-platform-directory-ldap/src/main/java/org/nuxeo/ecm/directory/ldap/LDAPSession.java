@@ -146,7 +146,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     @SuppressWarnings("unchecked")
-    public DocumentModel createEntry(Map<String, Object> fieldMap) throws ClientException {
+    public DocumentModel createEntry(Map<String, Object> fieldMap) {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return null;
         }
@@ -361,7 +361,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void updateEntry(DocumentModel docModel) throws ClientException {
+    public void updateEntry(DocumentModel docModel) {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return;
         }
@@ -456,7 +456,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
         directory.invalidateCaches();
     }
 
-    protected void handleException(Exception e, String message) throws ClientException {
+    protected void handleException(Exception e, String message) {
         LdapExceptionProcessor processor = directory.getConfig().getExceptionProcessor();
 
         RecoverableClientException userException = processor.extractRecoverableException(e);
@@ -468,12 +468,12 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public void deleteEntry(DocumentModel dm) throws ClientException {
+    public void deleteEntry(DocumentModel dm) {
         deleteEntry(dm.getId());
     }
 
     @Override
-    public void deleteEntry(String id) throws ClientException {
+    public void deleteEntry(String id) {
         if (!isCurrentUserAllowed(SecurityConstants.WRITE)) {
             return;
         }
@@ -506,7 +506,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public void deleteEntry(String id, Map<String, String> map) throws ClientException {
+    public void deleteEntry(String id, Map<String, String> map) {
         log.warn("Calling deleteEntry extended on LDAP directory");
         deleteEntry(id);
     }
@@ -1091,7 +1091,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModel createEntry(DocumentModel entry) throws ClientException {
+    public DocumentModel createEntry(DocumentModel entry) {
         Map<String, Object> fieldMap = entry.getProperties(directory.getSchema());
         Map<String, Object> simpleNameFieldMap = new HashMap<String, Object>();
         for (Map.Entry<String, Object> fieldEntry : fieldMap.entrySet()) {

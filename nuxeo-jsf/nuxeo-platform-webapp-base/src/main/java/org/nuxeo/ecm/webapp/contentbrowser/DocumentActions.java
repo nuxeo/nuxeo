@@ -40,7 +40,7 @@ public interface DocumentActions extends Serializable {
      * @deprecated since 5.3: edit views are managed through tabs, the edit view is not used.
      */
     @Deprecated
-    String editDocument() throws ClientException;
+    String editDocument();
 
     /**
      * Saves changes held by the changeableDocument document model.
@@ -49,7 +49,7 @@ public interface DocumentActions extends Serializable {
      *             {@link #updateCurrentDocument()} should be used instead
      */
     @Deprecated
-    String updateDocument() throws ClientException;
+    String updateDocument();
 
     /**
      * Saves changes held by the given document, and updates the current document context with the new version.
@@ -60,17 +60,17 @@ public interface DocumentActions extends Serializable {
      * @param restoreCurrentTabs
      * @return the JSF outcome for navigation after document edition.
      */
-    String updateDocument(DocumentModel document, Boolean restoreCurrentTabs) throws ClientException;
+    String updateDocument(DocumentModel document, Boolean restoreCurrentTabs);
 
     /**
      * Saves changes held by the changeableDocument document model in current version and then create a new current one.
      */
-    String updateDocumentAsNewVersion() throws ClientException;
+    String updateDocumentAsNewVersion();
 
     /**
      * Updates document considering that current document model holds edited values.
      */
-    String updateCurrentDocument() throws ClientException;
+    String updateCurrentDocument();
 
     /**
      * Creates a document with type given by {@link TypesTool} and stores it in the context as the current changeable
@@ -78,24 +78,24 @@ public interface DocumentActions extends Serializable {
      * <p>
      * Returns the create view of given document type.
      */
-    String createDocument() throws ClientException;
+    String createDocument();
 
     /**
      * Creates a document with given type and stores it in the context as the current changeable document.
      * <p>
      * Returns the create view of given document type.
      */
-    String createDocument(String typeName) throws ClientException;
+    String createDocument(String typeName);
 
     /**
      * Creates the document from the changeableDocument put in request.
      */
-    String saveDocument() throws ClientException;
+    String saveDocument();
 
     /**
      * Creates the given document.
      */
-    String saveDocument(DocumentModel newDocument) throws ClientException;
+    String saveDocument(DocumentModel newDocument);
 
     /**
      * Downloads file as described by given document view.
@@ -105,10 +105,10 @@ public interface DocumentActions extends Serializable {
      * @param docView the document view as generated through the url service
      * @throws ClientException when document is not found or file is not retrieved correctly.
      */
-    void download(DocumentView docView) throws ClientException;
+    void download(DocumentView docView);
 
     @Deprecated
-    String downloadFromList() throws ClientException;
+    String downloadFromList();
 
     /**
      * @return ecm type for current document, <code>null</code> if current doc is null.
@@ -121,9 +121,8 @@ public interface DocumentActions extends Serializable {
      * Checks the current document write permission.
      *
      * @return <code>true</code> if the user has WRITE permission on current document
-     * @throws ClientException
      */
-    boolean getWriteRight() throws ClientException;
+    boolean getWriteRight();
 
     /**
      * Returns the comment to attach to the document
@@ -145,7 +144,6 @@ public interface DocumentActions extends Serializable {
      * This method is used to test whether the logged user has enough rights for the unpublish support.
      *
      * @return true if the user can unpublish, false otherwise
-     * @throws ClientException
      */
     boolean getCanUnpublish();
 
@@ -155,6 +153,6 @@ public interface DocumentActions extends Serializable {
     @Deprecated
     String getCurrentDocumentSummaryLayout();
 
-    void followTransition(DocumentModel changedDocument) throws ClientException;
+    void followTransition(DocumentModel changedDocument);
 
 }

@@ -51,7 +51,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
     private static final Log log = LogFactory.getLog(BulkLifeCycleChangeListener.class);
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         if (!events.containsEventName(LifeCycleConstants.TRANSITION_EVENT)
                 && !events.containsEventName(LifeCycleConstants.DOCUMENT_UNDELETED)
                 && !events.containsEventName(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY)) {
@@ -127,7 +127,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
         }
     }
 
-    protected void reinitDocumentsLifeCyle(CoreSession documentManager, DocumentModelList docs) throws ClientException {
+    protected void reinitDocumentsLifeCyle(CoreSession documentManager, DocumentModelList docs) {
         for (DocumentModel docMod : docs) {
             documentManager.reinitLifeCycleState(docMod.getRef());
             if (docMod.isFolder()) {
@@ -146,7 +146,7 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
 
     // change doc state and recurse in children
     protected void changeDocumentsState(CoreSession documentManager, DocumentModelList docModelList, String transition,
-            String targetState) throws ClientException {
+            String targetState) {
         for (DocumentModel docMod : docModelList) {
             boolean removed = false;
             if (docMod.getCurrentLifeCycleState() == null) {

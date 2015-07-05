@@ -77,7 +77,7 @@ public class DirectoryObject extends DefaultObject {
         return withDirectorySession(directory, new DirectorySessionRunner<List<DirectoryEntry>>() {
 
             @Override
-            List<DirectoryEntry> run(Session session) throws ClientException {
+            List<DirectoryEntry> run(Session session) {
                 DocumentModelList entries = session.getEntries();
                 List<DirectoryEntry> dirEntries = new ArrayList<>();
                 for (DocumentModel doc : entries) {
@@ -95,7 +95,7 @@ public class DirectoryObject extends DefaultObject {
         DirectoryEntry result = withDirectorySession(directory, new DirectorySessionRunner<DirectoryEntry>() {
 
             @Override
-            DirectoryEntry run(Session session) throws ClientException {
+            DirectoryEntry run(Session session) {
                 DocumentModel docEntry = session.createEntry(entry.getDocumentModel());
                 return new DirectoryEntry(directory.getName(), docEntry);
             }
@@ -128,7 +128,7 @@ public class DirectoryObject extends DefaultObject {
         return withDirectorySession(directory, new DirectorySessionRunner<Object>() {
 
             @Override
-            Object run(Session session) throws ClientException {
+            Object run(Session session) {
                 DocumentModel entry = session.getEntry(entryId);
                 if (entry == null) {
                     throw new WebResourceNotFoundException("Entry not found");

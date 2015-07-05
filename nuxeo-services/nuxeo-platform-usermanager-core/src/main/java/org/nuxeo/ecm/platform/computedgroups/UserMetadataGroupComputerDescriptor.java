@@ -58,7 +58,7 @@ public class UserMetadataGroupComputerDescriptor extends GroupComputerDescriptor
     }
 
     @Override
-    public GroupComputer getComputer() throws ClientException {
+    public GroupComputer getComputer() {
         return new UserMetadataGroupComputer(xpath, groupPattern);
     }
 

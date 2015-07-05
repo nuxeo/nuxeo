@@ -62,10 +62,9 @@ public class JSONContentViewState {
      *
      * @param state the state to serialize
      * @param encode if true, the resulting String will be zipped and encoded in Base-64 format.
-     * @throws ClientException
      * @throws UnsupportedEncodingException
      */
-    public static String toJSON(ContentViewState state, boolean encode) throws ClientException,
+    public static String toJSON(ContentViewState state, boolean encode) throws
             UnsupportedEncodingException {
         if (state == null) {
             return null;
@@ -134,12 +133,10 @@ public class JSONContentViewState {
      *
      * @param json the state to de-serialize
      * @param decode if true, the input String is decoded from Base-64 format and unzipped.
-     * @throws ClientException
      * @throws UnsupportedEncodingException
      */
     @SuppressWarnings("unchecked")
-    public static ContentViewState fromJSON(String json, boolean decode) throws UnsupportedEncodingException,
-            ClientException {
+    public static ContentViewState fromJSON(String json, boolean decode) throws UnsupportedEncodingException {
         if (json == null || json.trim().length() == 0) {
             return null;
         }
@@ -214,7 +211,7 @@ public class JSONContentViewState {
         return new SortInfo(sortColumn, sortAscending);
     }
 
-    protected static JSONObject getDocumentModelToJSON(DocumentModel doc) throws ClientException {
+    protected static JSONObject getDocumentModelToJSON(DocumentModel doc) {
         if (doc == null) {
             return null;
         }
@@ -226,7 +223,7 @@ public class JSONContentViewState {
     }
 
     @SuppressWarnings("unchecked")
-    protected static DocumentModel getDocumentModelFromJSON(JSONObject jsonDoc) throws ClientException {
+    protected static DocumentModel getDocumentModelFromJSON(JSONObject jsonDoc) {
         if (jsonDoc == null || jsonDoc.isNullObject()) {
             return null;
         }

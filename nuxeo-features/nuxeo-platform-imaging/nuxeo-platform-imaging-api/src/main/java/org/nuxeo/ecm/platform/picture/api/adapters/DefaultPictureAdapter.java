@@ -60,13 +60,13 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public boolean createPicture(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException {
         return fillPictureViews(blob, filename, title, pictureConversions);
     }
 
     @Override
     public boolean fillPictureViews(Blob blob, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException {
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException {
         if (blob == null) {
             clearViews();
             return true;
@@ -125,7 +125,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
-            throws IOException, ClientException {
+            throws IOException {
         ImagingService imagingService = getImagingService();
         List<PictureView> pictureViews;
 
@@ -145,7 +145,7 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public void doRotate(int angle) throws ClientException {
+    public void doRotate(int angle) {
         int size = doc.getProperty(VIEWS_PROPERTY).size();
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
@@ -169,12 +169,12 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
     }
 
     @Override
-    public void doCrop(String coords) throws ClientException {
+    public void doCrop(String coords) {
         doc.setPropertyValue("picture:cropCoords", coords);
     }
 
     @Override
-    public Blob getPictureFromTitle(String title) throws PropertyException, ClientException {
+    public Blob getPictureFromTitle(String title) throws PropertyException {
         if (title == null) {
             return null;
         }

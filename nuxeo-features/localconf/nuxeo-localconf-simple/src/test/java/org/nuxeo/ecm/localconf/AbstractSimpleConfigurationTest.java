@@ -59,7 +59,7 @@ public abstract class AbstractSimpleConfigurationTest {
     public static final DocumentRef FOLDER_REF = new PathRef("/default-domain/workspaces/workspace/a-folder");
 
     protected DocumentModel initializeSimpleConfiguration(DocumentModel doc, Map<String, String> parameters)
-            throws ClientException {
+            {
         doc.addFacet(SIMPLE_CONFIGURATION_FACET);
         doc = session.saveDocument(doc);
 
@@ -72,11 +72,11 @@ public abstract class AbstractSimpleConfigurationTest {
         return session.getDocument(doc.getRef());
     }
 
-    protected DocumentModel initializeSimpleConfiguration(DocumentModel doc) throws ClientException {
+    protected DocumentModel initializeSimpleConfiguration(DocumentModel doc) {
         return initializeSimpleConfiguration(doc, Collections.<String, String> emptyMap());
     }
 
-    protected void addReadForEveryone(DocumentRef ref) throws ClientException {
+    protected void addReadForEveryone(DocumentRef ref) {
         DocumentModel childWorkspace = session.getDocument(ref);
         ACP acp = childWorkspace.getACP();
         ACL acl = acp.getOrCreateACL();
@@ -87,7 +87,7 @@ public abstract class AbstractSimpleConfigurationTest {
         session.save();
     }
 
-    protected CoreSession openSessionAs(String username) throws ClientException {
+    protected CoreSession openSessionAs(String username) {
         return settings.openSessionAs(username);
     }
 

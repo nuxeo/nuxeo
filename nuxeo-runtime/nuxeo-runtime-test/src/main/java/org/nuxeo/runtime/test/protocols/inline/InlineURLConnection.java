@@ -24,8 +24,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class InlineURLConnection extends URLConnection {
-    ;
+public class InlineURLConnection extends URLConnection {;
     protected final Object content;
 
     protected InlineURLConnection(URL url) {
@@ -38,8 +37,7 @@ public class InlineURLConnection extends URLConnection {
     }
 
     @Override
-    public void connect() throws IOException {
-        ;
+    public void connect() throws IOException {;
     }
 
     @Override

@@ -146,7 +146,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
     protected Boolean popupDisplayed = false;
 
     @Override
-    public DocumentModel getDocumentModel(Node node) throws ClientException {
+    public DocumentModel getDocumentModel(Node node) {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) node;
             Map<String, Object> context = Collections.<String, Object> singletonMap(
@@ -170,7 +170,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
     }
 
     @Override
-    public QNameResource getDocumentResource(DocumentModel document) throws ClientException {
+    public QNameResource getDocumentResource(DocumentModel document) {
         QNameResource documentResource = null;
         if (document != null) {
             documentResource = (QNameResource) relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE,
@@ -179,7 +179,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
         return documentResource;
     }
 
-    protected List<StatementInfo> getStatementsInfo(List<Statement> statements) throws ClientException {
+    protected List<StatementInfo> getStatementsInfo(List<Statement> statements) {
         if (statements == null) {
             return null;
         }
@@ -207,7 +207,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
 
     @Override
     @Factory(value = "currentDocumentIncomingRelations", scope = ScopeType.EVENT)
-    public List<StatementInfo> getIncomingStatementsInfo() throws ClientException {
+    public List<StatementInfo> getIncomingStatementsInfo() {
         if (incomingStatementsInfo != null) {
             return incomingStatementsInfo;
         }
@@ -234,7 +234,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
 
     @Override
     @Factory(value = "currentDocumentOutgoingRelations", scope = ScopeType.EVENT)
-    public List<StatementInfo> getOutgoingStatementsInfo() throws ClientException {
+    public List<StatementInfo> getOutgoingStatementsInfo() {
         if (outgoingStatementsInfo != null) {
             return outgoingStatementsInfo;
         }
@@ -340,7 +340,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
     }
 
     @Override
-    public String addStatement() throws ClientException {
+    public String addStatement() {
         resetEventContext();
 
         Node object = null;
@@ -388,7 +388,7 @@ public class RelationActionsBean extends DocumentContextBoundActionBean implemen
     }
 
     @Override
-    public String deleteStatement(StatementInfo stmtInfo) throws ClientException {
+    public String deleteStatement(StatementInfo stmtInfo) {
         resetEventContext();
         documentRelationManager.deleteRelation(documentManager, stmtInfo.getStatement());
         facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("label.relation.deleted"));

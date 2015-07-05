@@ -37,7 +37,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
 
     @Test
-    public void testUpdateCollectionMemberOnCollectionRemoved() throws ClientException, InterruptedException {
+    public void testUpdateCollectionMemberOnCollectionRemoved() throws InterruptedException {
 
         List<DocumentModel> files = createTestFiles(session, MAX_CARDINALITY);
 
@@ -81,7 +81,7 @@ public class CollectionAsynchronousUpdateTest extends CollectionTestCase {
     }
 
     @Test
-    public void testUpdateCollectionOnCollectionMemberRemoved() throws ClientException, InterruptedException {
+    public void testUpdateCollectionOnCollectionMemberRemoved() throws InterruptedException {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);

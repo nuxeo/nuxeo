@@ -36,7 +36,7 @@ public class TypedSingleDocumentReader extends SingleDocumentReader {
         super(session, root);
     }
 
-    public TypedSingleDocumentReader(CoreSession session, DocumentRef root) throws ClientException {
+    public TypedSingleDocumentReader(CoreSession session, DocumentRef root) {
         this(session, session.getDocument(root));
     }
 

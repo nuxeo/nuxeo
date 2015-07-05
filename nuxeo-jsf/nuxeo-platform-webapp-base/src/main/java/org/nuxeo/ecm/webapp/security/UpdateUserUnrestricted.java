@@ -44,7 +44,7 @@ public class UpdateUserUnrestricted extends UnrestrictedSessionRunner {
 
 
 	@Override
-	public void run() throws ClientException {
+	public void run() {
 
 		UserManager userManager = null;
 		try {

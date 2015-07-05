@@ -104,11 +104,10 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
      * @return
      * @throws IOException
      * @throws JsonParseException
-     * @throws ClientException
      * @since 5.7.3
      */
     static NuxeoPrincipal readJson(JsonParser jp, MultivaluedMap<String, String> httpHeaders)
-            throws JsonParseException, IOException, ClientException {
+            throws JsonParseException, IOException {
         JsonToken tok = jp.nextToken();
 
         // skip {
@@ -154,7 +153,7 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
     }
 
     protected static void readProperties(JsonParser jp, DocumentModel doc, String schemaName) throws PropertyException,
-            ClientException, JsonParseException, IOException {
+            JsonParseException, IOException {
         JsonToken tok = jp.nextToken();
         while (tok != JsonToken.END_OBJECT) {
 

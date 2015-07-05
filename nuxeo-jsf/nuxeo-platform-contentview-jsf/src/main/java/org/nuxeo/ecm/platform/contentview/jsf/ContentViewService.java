@@ -38,9 +38,8 @@ public interface ContentViewService extends Serializable {
     /**
      * Returns the content view with given name, or null if not found.
      *
-     * @throws ClientException
      */
-    ContentView getContentView(String name) throws ClientException;
+    ContentView getContentView(String name);
 
     /**
      * Returns the content view header, or null if not found.
@@ -76,11 +75,10 @@ public interface ContentViewService extends Serializable {
      * If not null, parameters sortInfos and pageSize will override information computed in the XML file. If not null,
      * currentPage will override default current page (0).
      *
-     * @throws ClientException
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String contentViewName, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            DocumentModel searchDocument, Object... parameters) throws ClientException;
+            DocumentModel searchDocument, Object... parameters);
 
     /**
      * Returns the state of this content view.
@@ -98,9 +96,8 @@ public interface ContentViewService extends Serializable {
      *
      * @see #saveContentView(ContentView)
      * @since 5.4.2
-     * @throws ClientException
      */
-    ContentView restoreContentView(ContentViewState contentViewState) throws ClientException;
+    ContentView restoreContentView(ContentViewState contentViewState);
 
     /**
      * Restores a content view to a given state.

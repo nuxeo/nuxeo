@@ -128,8 +128,7 @@ public abstract class LDAPDirectoryTestCase {
             server = new MockLdapServer(new File(Framework.getRuntime().getHome(), "ldap"));
             getLDAPDirectory("userDirectory").setTestServer(server);
             getLDAPDirectory("groupDirectory").setTestServer(server);
-        }
-        ;
+        };
         try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
             DirContext ctx = session.getContext();
             for (String ldifFile : getLdifFiles()) {
@@ -245,4 +244,5 @@ public abstract class LDAPDirectoryTestCase {
 
         return cert;
     }
+
 }

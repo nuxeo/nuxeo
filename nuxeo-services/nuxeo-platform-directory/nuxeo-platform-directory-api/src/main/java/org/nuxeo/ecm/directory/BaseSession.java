@@ -253,7 +253,7 @@ public abstract class BaseSession implements Session {
 
     @Override
     public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException {
+            boolean fetchReferences, int limit, int offset) throws DirectoryException {
         log.info("Call an unoverrided query with offset and limit.");
         DocumentModelList entries = query(filter, fulltext, orderBy, fetchReferences);
         int toIndex = offset + limit;

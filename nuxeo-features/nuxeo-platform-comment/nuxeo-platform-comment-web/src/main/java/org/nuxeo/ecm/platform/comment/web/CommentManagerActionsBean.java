@@ -62,7 +62,7 @@ public class CommentManagerActionsBean extends AbstractCommentManagerActionsBean
      * with their depth (to easily display them with indentation).
      */
     @Factory(value = "documentThreadedComments", scope = EVENT)
-    public List<ThreadEntry> getCommentsAsThread() throws ClientException {
+    public List<ThreadEntry> getCommentsAsThread() {
         return getCommentsAsThread(null);
     }
 

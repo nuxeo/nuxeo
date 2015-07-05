@@ -56,7 +56,7 @@ public interface WSRemotingSessionManager {
      *
      * @param sid the Nuxeo Core session id.
      */
-    void delSession(String sid) throws ClientException;
+    void delSession(String sid);
 
     /**
      * Return a session given its Nuxeo Core session id if exists.
@@ -65,6 +65,6 @@ public interface WSRemotingSessionManager {
      * @return a <code>WSRemotingSession</code> instance.
      * @throws ClientException if the session does not exist anymore.
      */
-    WSRemotingSession getSession(String sid) throws ClientException;
+    WSRemotingSession getSession(String sid);
 
 }

@@ -126,7 +126,7 @@ public class PostActionBean implements PostAction {
         return false;
     }
 
-    protected void fetchInvalidationsIfNeeded() throws ClientException {
+    protected void fetchInvalidationsIfNeeded() {
         // fetch invalidations from unrestricted session if needed
         if (!documentManager.isStateSharedByAllThreadSessions()) {
             documentManager.save();
@@ -137,7 +137,7 @@ public class PostActionBean implements PostAction {
      * Adds the post to the thread and starts the moderation WF on the post created.
      */
     @Override
-    public String addPost() throws ClientException {
+    public String addPost() {
         DocumentModel dm = documentManager.createDocumentModel("Post");
 
         dm.setProperty("post", "author", commentManagerActions.getPrincipalName());
@@ -188,7 +188,7 @@ public class PostActionBean implements PostAction {
     }
 
     @Override
-    public String cancelPost() throws ClientException {
+    public String cancelPost() {
         cleanContextVariables();
         commentManagerActions.cancelComment();
         fetchInvalidationsIfNeeded();
@@ -196,7 +196,7 @@ public class PostActionBean implements PostAction {
     }
 
     @Override
-    public String deletePost() throws ClientException {
+    public String deletePost() {
         if (deletePostId == null) {
             throw new ClientException("No id for post to delete");
         }
@@ -220,7 +220,7 @@ public class PostActionBean implements PostAction {
     }
 
     @Override
-    public String rejectPost(DocumentModel post) throws ClientException {
+    public String rejectPost(DocumentModel post) {
         DocumentModel thread = getParentThread();
 
         Task moderationTask = getModerationTask(thread, post.getId());
@@ -244,7 +244,7 @@ public class PostActionBean implements PostAction {
      * Ends the task on a post.
      */
     @Override
-    public String approvePost(DocumentModel post) throws ClientException {
+    public String approvePost(DocumentModel post) {
         DocumentModel thread = getParentThread();
 
         Task moderationTask = getModerationTask(thread, post.getId());
@@ -269,7 +269,7 @@ public class PostActionBean implements PostAction {
     }
 
     @Override
-    public boolean isPostPublished(DocumentModel post) throws ClientException {
+    public boolean isPostPublished(DocumentModel post) {
         boolean published = false;
         if (post != null && ForumConstants.PUBLISHED_STATE.equals(post.getCurrentLifeCycleState())) {
             published = true;
@@ -281,7 +281,7 @@ public class PostActionBean implements PostAction {
      * Starts the moderation on given Post.
      */
     @SuppressWarnings("unchecked")
-    protected void startModeration(DocumentModel post) throws ClientException {
+    protected void startModeration(DocumentModel post) {
 
         DocumentModel thread = getParentThread();
         List<String> moderators = (ArrayList<String>) thread.getProperty("thread", "moderators");
@@ -306,7 +306,7 @@ public class PostActionBean implements PostAction {
 
     }
 
-    protected Task getModerationTask(DocumentModel thread, String postId) throws ClientException {
+    protected Task getModerationTask(DocumentModel thread, String postId) {
         List<Task> tasks = DocumentTaskProvider.getTasks("GET_FORUM_MODERATION_TASKS", documentManager, false, null,
                 thread.getId(), postId);
         if (tasks != null && !tasks.isEmpty()) {
@@ -363,7 +363,7 @@ public class PostActionBean implements PostAction {
      * the new post comes with the previous title, and a prefix (i.e : Re : Previous Title).
      */
     @Override
-    public String getTitle() throws ClientException {
+    public String getTitle() {
 
         String previousId = commentManagerActions.getSavedReplyCommentId();
         if (previousId != null && !"".equals(previousId)) {

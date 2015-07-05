@@ -145,7 +145,7 @@ public class PrincipalListManager implements Serializable {
         return selectedPrincipal;
     }
 
-    public String getPrincipalType(String name) throws ClientException {
+    public String getPrincipalType(String name) {
         // happens when used in NXMethodResults in A4JCalls !!!
         if (name == null) {
             return null;

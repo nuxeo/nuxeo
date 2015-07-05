@@ -40,10 +40,9 @@ public interface PictureTilingService {
      * @param tileHeight
      * @param maxTiles
      * @return
-     * @throws ClientException
      */
     @Deprecated
-    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) throws ClientException;
+    PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles);
 
     /**
      * Gets the picture tiles from a blob Tiles are lazily generated.
@@ -54,18 +53,17 @@ public interface PictureTilingService {
      * @param maxTiles
      * @param progressive
      * @return
-     * @throws ClientException
      */
     @Deprecated
     PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter, int yCenter,
-            boolean fullGeneration) throws ClientException;
+            boolean fullGeneration);
 
-    PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter) throws ClientException;
+    PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter);
 
-    PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles) throws ClientException;
+    PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles);
 
     PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles, int xCenter,
-            int yCenter, boolean fullGeneration) throws ClientException;
+            int yCenter, boolean fullGeneration);
 
     void setWorkingDirPath(String path);
 
@@ -75,6 +73,6 @@ public interface PictureTilingService {
 
     String getBlobProperty(String docType, String defaultValue);
 
-    void removeCacheEntry(ImageResource resource) throws ClientException;
+    void removeCacheEntry(ImageResource resource);
 
 }

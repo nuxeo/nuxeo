@@ -61,14 +61,14 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
         return nodes;
     }
 
-    protected RemotePublicationTreeManager getTreeService() throws ClientException {
+    protected RemotePublicationTreeManager getTreeService() {
         if (treeService == null) {
             treeService = Framework.getService(RemotePublicationTreeManager.class);
         }
         return treeService;
     }
 
-    public ProxyTree(PublicationTree tree, String sid) throws ClientException {
+    public ProxyTree(PublicationTree tree, String sid) {
         this.sessionId = sid;
         this.name = tree.getName();
         this.title = tree.getTitle();
@@ -98,16 +98,16 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
     }
 
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName) throws ClientException {
+            PublishedDocumentFactory factory, String configName) {
         // NOP
     }
 
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) {
         // NOP
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         return rootNode.getChildrenDocuments();
     }
 
@@ -137,12 +137,12 @@ public class ProxyTree extends AbstractRemotableTree implements PublicationTree 
      * @Override protected void finalize() throws Throwable { try { release(); } finally { super.finalize(); } }
      */
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         return rootNode.getChildrenNodes();
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
+    protected PublicationNode switchToClientNode(PublicationNode node) {
         // no wrap
         return node;
     }

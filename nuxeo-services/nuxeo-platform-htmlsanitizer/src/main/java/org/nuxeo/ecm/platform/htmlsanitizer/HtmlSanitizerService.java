@@ -27,7 +27,7 @@ public interface HtmlSanitizerService {
     /**
      * Sanitizes a document's fields, depending on the service configuration.
      */
-    void sanitizeDocument(DocumentModel doc) throws ClientException;
+    void sanitizeDocument(DocumentModel doc);
 
     /**
      * Sanitizes a string.

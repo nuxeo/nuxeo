@@ -53,7 +53,7 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
     }
 
     @Override
-    protected NuxeoGroup updateArtifact(NuxeoGroup updateGroup) throws ClientException {
+    protected NuxeoGroup updateArtifact(NuxeoGroup updateGroup) {
         DocumentModel groupModel = um.getGroupModel(currentArtifact.getName());
         groupModel.setPropertyValue(um.getGroupLabelField(), updateGroup.getLabel());
         groupModel.setPropertyValue(um.getGroupMembersField(), (Serializable) updateGroup.getMemberUsers());
@@ -64,7 +64,7 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
     }
 
     @Override
-    protected void deleteArtifact() throws ClientException {
+    protected void deleteArtifact() {
         um.deleteGroup(um.getGroupModel(currentArtifact.getName()));
     }
 

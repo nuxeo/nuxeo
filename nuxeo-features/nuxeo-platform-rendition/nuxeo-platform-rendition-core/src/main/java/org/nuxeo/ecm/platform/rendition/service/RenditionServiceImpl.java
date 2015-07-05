@@ -166,7 +166,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
         }
     }
 
-    protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) throws ClientException {
+    protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) {
         DocumentRef versionRef;
         if (source.isVersion()) {
             versionRef = source.getRef();

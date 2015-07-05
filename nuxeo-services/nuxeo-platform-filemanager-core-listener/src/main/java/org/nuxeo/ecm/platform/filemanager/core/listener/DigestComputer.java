@@ -110,7 +110,7 @@ public class DigestComputer implements EventListener {
         return Base64.encodeBytes(b);
     }
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         if (!initIfNeeded()) {
             return;
         }

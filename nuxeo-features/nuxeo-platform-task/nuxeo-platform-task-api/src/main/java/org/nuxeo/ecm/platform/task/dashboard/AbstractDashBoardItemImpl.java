@@ -91,7 +91,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         return directiveLabel;
     }
 
-    protected boolean isCreatedFromCreateTaskOperation() throws ClientException {
+    protected boolean isCreatedFromCreateTaskOperation() {
         return Boolean.parseBoolean(getTask().getVariable("createdFromCreateTaskOperation"));
     }
 
@@ -107,7 +107,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
         }
     }
 
-    public JSONObject asJSON() throws ClientException {
+    public JSONObject asJSON() {
 
         boolean createdFromCreateTaskOperation = isCreatedFromCreateTaskOperation();
 
@@ -134,7 +134,7 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
 
     }
 
-    public String getDocumentLink(boolean includeWorkflowTab) throws ClientException {
+    public String getDocumentLink(boolean includeWorkflowTab) {
         DocumentModel doc = getDocument();
         DocumentViewCodecManager documentViewCodecManager = Framework.getLocalService(DocumentViewCodecManager.class);
         if (documentViewCodecManager != null) {

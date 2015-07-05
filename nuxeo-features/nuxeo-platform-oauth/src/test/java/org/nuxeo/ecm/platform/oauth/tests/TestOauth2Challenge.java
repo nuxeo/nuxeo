@@ -52,7 +52,7 @@ public class TestOauth2Challenge {
     protected Client client;
 
     @Before
-    public void initOAuthClient() throws ClientException {
+    public void initOAuthClient() {
 
         if (!clientRegistry.hasClient(CLIENT_ID)) {
             OAuth2Client oauthClient = new OAuth2Client("Dummy", CLIENT_ID, CLIENT_SECRET);

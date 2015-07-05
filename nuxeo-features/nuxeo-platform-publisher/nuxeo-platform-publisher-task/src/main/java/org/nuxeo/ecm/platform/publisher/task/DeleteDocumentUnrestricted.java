@@ -33,7 +33,7 @@ public class DeleteDocumentUnrestricted extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         session.removeDocument(document.getRef());
         session.save();
     }

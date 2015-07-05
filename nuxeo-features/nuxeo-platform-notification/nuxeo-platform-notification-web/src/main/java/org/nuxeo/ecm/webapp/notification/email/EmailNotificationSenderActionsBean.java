@@ -133,7 +133,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
      * @param theMailContent
      */
     private void sendNotificationEvent(String recipient, String theMailSubject, String theMailContent)
-            throws ClientException {
+            {
 
         Map<String, Serializable> options = new HashMap<String, Serializable>();
 

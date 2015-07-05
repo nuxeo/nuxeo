@@ -33,10 +33,9 @@ public interface CollectionManager {
      * @param collection the collection
      * @param documentToBeAdded the document to be added
      * @param session the core session
-     * @throws ClientException
      */
     void addToCollection(final DocumentModel collection, final DocumentModel documentToBeAdded,
-            final CoreSession session) throws ClientException;
+            final CoreSession session);
 
     /**
      * Add a list of document to a collection.
@@ -44,10 +43,9 @@ public interface CollectionManager {
      * @param collection the collection
      * @param documentListToBeAdded the list of document to be added
      * @param session the core session
-     * @throws ClientException
      */
     void addToCollection(final DocumentModel collection, final List<DocumentModel> documentListToBeAdded,
-            final CoreSession session) throws ClientException;
+            final CoreSession session);
 
     /**
      * Add a document to a new collection.
@@ -56,10 +54,8 @@ public interface CollectionManager {
      * @param newDescription the description of the new collection
      * @param documentToBeAdded the document to be added
      * @param session the core session
-     * @throws ClientException
      */
-    void addToNewCollection(String newTitle, String newDescription, DocumentModel documentToBeAdded, CoreSession session)
-            throws ClientException;
+    void addToNewCollection(String newTitle, String newDescription, DocumentModel documentToBeAdded, CoreSession session);
 
     /**
      * Add a list of document to a new collection.
@@ -68,10 +64,9 @@ public interface CollectionManager {
      * @param newDescription the description of the new collection
      * @param documentListToBeAdded the list of document to be added
      * @param session the core session
-     * @throws ClientException
      */
     void addToNewCollection(String newTitle, String newDescription, List<DocumentModel> documentListToBeAdded,
-            CoreSession documentManager) throws ClientException;
+            CoreSession documentManager);
 
     /**
      * Check that a document is a collection and that the given core session has permission to add document inside.
@@ -80,9 +75,8 @@ public interface CollectionManager {
      * @param session the core session
      * @return true if the given document is a Collection and the core session has permission to add document inside,
      *         false otherwise
-     * @throws ClientException
      */
-    boolean canAddToCollection(final DocumentModel collection, final CoreSession session) throws ClientException;
+    boolean canAddToCollection(final DocumentModel collection, final CoreSession session);
 
     /**
      * Check that the given core session has permission to manage the collection.
@@ -90,9 +84,8 @@ public interface CollectionManager {
      * @param collection the collection
      * @param session the core session
      * @return true if the core session has permission to manage the collection
-     * @throws ClientException
      */
-    boolean canManage(final DocumentModel collection, final CoreSession session) throws ClientException;
+    boolean canManage(final DocumentModel collection, final CoreSession session);
 
     /**
      * Get the list of collection of a document. The resulting list will only contain the collections visible by the
@@ -101,10 +94,8 @@ public interface CollectionManager {
      * @param collectionMember the document
      * @param session the core session
      * @return the list of visible collections the collectionMember belong to
-     * @throws ClientException
      */
-    List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final CoreSession session)
-            throws ClientException;
+    List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final CoreSession session);
 
     /**
      * Get the list of collection of a document. The resulting list will only contain the collections visible by the
@@ -115,10 +106,9 @@ public interface CollectionManager {
      * @param maxResult the limit
      * @param session the core session
      * @return the list of maxResult first visible collections the collectionMember belong to
-     * @throws ClientException
      */
     List<DocumentModel> getVisibleCollection(final DocumentModel collectionMember, final int maxResult,
-            final CoreSession session) throws ClientException;
+            final CoreSession session);
 
     /**
      * Check that the given core session has READ permission on at least one collection of the given document.
@@ -126,10 +116,8 @@ public interface CollectionManager {
      * @param collectionMember the document
      * @param session the core session
      * @return true if collectionMember has at least one collection on which the session has READ permission
-     * @throws ClientException
      */
-    boolean hasVisibleCollection(final DocumentModel collectionMember, final CoreSession session)
-            throws ClientException;
+    boolean hasVisibleCollection(final DocumentModel collectionMember, final CoreSession session);
 
     /**
      * Check that a document can be added to a collection.
@@ -161,11 +149,9 @@ public interface CollectionManager {
      * @param collection the collection
      * @param document the document to check
      * @param session the session
-     * @throws ClientException
      * @since 5.9.4
      */
-    boolean isInCollection(final DocumentModel collection, final DocumentModel document, final CoreSession session)
-            throws ClientException;
+    boolean isInCollection(final DocumentModel collection, final DocumentModel document, final CoreSession session);
 
     /**
      * Update all documents referenced by a collection to add a reference back the collection. This is used when a
@@ -173,9 +159,8 @@ public interface CollectionManager {
      * newly created collection.
      *
      * @param collection the collection
-     * @throws ClientException
      */
-    void processCopiedCollection(final DocumentModel collection) throws ClientException;
+    void processCopiedCollection(final DocumentModel collection);
 
     /**
      * Update all documents referenced by a collection to remove the reference to the collection. This is used after the
@@ -198,11 +183,10 @@ public interface CollectionManager {
      *
      * @param collection the collection
      * @param collection the version
-     * @throws ClientException
      *
      * @since 7.3
      */
-    void processRestoredCollection(final DocumentModel collection, final DocumentModel version) throws ClientException;
+    void processRestoredCollection(final DocumentModel collection, final DocumentModel version);
 
     /**
      * Remove a list of document from a given collection.
@@ -210,10 +194,9 @@ public interface CollectionManager {
      * @param collection the collection
      * @param documentListToBeRemoved the document to be removed
      * @param session the core session
-     * @throws ClientException
      */
     void removeAllFromCollection(final DocumentModel collection, final List<DocumentModel> documentListToBeRemoved,
-            final CoreSession session) throws ClientException;
+            final CoreSession session);
 
     /**
      * Remove a document from a collection.
@@ -221,10 +204,9 @@ public interface CollectionManager {
      * @param collection the collection
      * @param documentToBeRemoved the document to be removed
      * @param session the core session
-     * @throws ClientException
      */
     void removeFromCollection(final DocumentModel collection, final DocumentModel documentToBeRemoved,
-            final CoreSession session) throws ClientException;
+            final CoreSession session);
 
     /**
      * Create a collection with a given name, description and path.
@@ -234,11 +216,9 @@ public interface CollectionManager {
      * @param description
      * @param path
      * @return
-     * @throws ClientException
      * @since 5.9.4
      */
-    DocumentModel createCollection(final CoreSession session, String title, String description, String path)
-            throws ClientException;
+    DocumentModel createCollection(final CoreSession session, String title, String description, String path);
 
     /**
      * Get user collections root document.
@@ -246,11 +226,9 @@ public interface CollectionManager {
      * @param context contextual document
      * @param session the core session
      * @return the user collections root document
-     * @throws ClientException
      * @since 6.0
      */
-    DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session)
-            throws ClientException;
+    DocumentModel getUserDefaultCollections(final DocumentModel context, final CoreSession session);
 
     /**
      * @param documentToBeRemoved
@@ -259,4 +237,5 @@ public interface CollectionManager {
      * @since 6.0
      */
     void doRemoveFromCollection(DocumentModel documentToBeRemoved, String collectionId, CoreSession session);
+
 }

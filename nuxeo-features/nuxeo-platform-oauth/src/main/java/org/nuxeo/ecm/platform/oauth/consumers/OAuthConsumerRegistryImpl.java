@@ -62,7 +62,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
         return getConsumer(consumerKey, null);
     }
 
-    protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType) throws ClientException {
+    protected NuxeoOAuthConsumer getEntry(String consumerKey, String keyType) {
         DirectoryService ds = Framework.getService(DirectoryService.class);
         try (Session session = ds.open(DIRECTORY_NAME)) {
             DocumentModel entry = session.getEntry(consumerKey);

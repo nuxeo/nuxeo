@@ -48,7 +48,7 @@ public class AddToCollectionOperation {
     protected DocumentModel collection;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws ClientException {
+    public DocumentModelList run(DocumentModelList docs) {
         for (DocumentModel doc : docs) {
             collectionManager.addToCollection(collection, doc, session);
         }
@@ -57,7 +57,7 @@ public class AddToCollectionOperation {
     }
 
     @OperationMethod()
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         collectionManager.addToCollection(collection, doc, session);
 
         return doc;

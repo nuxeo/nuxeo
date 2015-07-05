@@ -79,15 +79,15 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return label;
     }
 
-    protected long getMajor(DocumentModel docModel) throws ClientException {
+    protected long getMajor(DocumentModel docModel) {
         return getVersion(docModel, VersioningService.MAJOR_VERSION_PROP);
     }
 
-    protected long getMinor(DocumentModel docModel) throws ClientException {
+    protected long getMinor(DocumentModel docModel) {
         return getVersion(docModel, VersioningService.MINOR_VERSION_PROP);
     }
 
-    protected long getVersion(DocumentModel docModel, String prop) throws ClientException {
+    protected long getVersion(DocumentModel docModel, String prop) {
         Object propVal = docModel.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return 0;
@@ -171,7 +171,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public List<VersioningOption> getSaveOptions(DocumentModel docModel) throws ClientException {
+    public List<VersioningOption> getSaveOptions(DocumentModel docModel) {
         boolean versionable = docModel.isVersionable();
         String lifecycleState;
         try {

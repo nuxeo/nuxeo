@@ -66,7 +66,7 @@ public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
     }
 
     @Override
-    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath) throws ClientException {
+    protected DocumentModel createDocument(ExportedDocument xdoc, Path toPath) {
         String docType = xdoc.getType();
         dm = session.createDocumentModel(docType);
         // then load schemas data

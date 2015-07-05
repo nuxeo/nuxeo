@@ -58,7 +58,7 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testLifeCycleAPI() throws ClientException {
+    public void testLifeCycleAPI() {
 
         DocumentModel folderDoc = session.createDocumentModel("/", "testFolder", "Folder");
         folderDoc = session.createDocument(folderDoc);
@@ -86,7 +86,7 @@ public class BulkLifeCycleChangeListenerTest extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testCopyLifeCycleHandler() throws ClientException {
+    public void testCopyLifeCycleHandler() {
         DocumentModel folderDoc = session.createDocumentModel("/", "testFolder", "Folder");
         folderDoc = session.createDocument(folderDoc);
         DocumentModel testFile1 = session.createDocumentModel(folderDoc.getPathAsString(), "testFile1", "File");

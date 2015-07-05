@@ -40,7 +40,7 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         String string = (String) doc.getProperty(xPath).getValue();
         if (string == null) {
             return null;
@@ -63,7 +63,7 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public void setBlob(Blob blob) throws ClientException {
+    public void setBlob(Blob blob) {
         if (blob == null) {
             doc.getProperty(xPath).setValue(null);
             mt = null;

@@ -41,8 +41,7 @@ public interface DirectoryUIDeleteConstraint extends Serializable {
      * @param dirService the directory service
      * @param entryId the entry to delete id
      * @throws DirectoryException
-     * @throws ClientException
      */
-    boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException, ClientException;
+    boolean canDelete(DirectoryService dirService, String entryId) throws DirectoryException;
 
 }

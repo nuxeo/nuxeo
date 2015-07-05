@@ -41,7 +41,7 @@ public class ProxyNode extends AbstractRemotableNode implements PublicationNode 
 
     protected String nodeName;
 
-    public ProxyNode(PublicationNode node, String sid) throws ClientException {
+    public ProxyNode(PublicationNode node, String sid) {
         nodeType = node.getNodeType();
         nodeLabel = node.getTitle();
         nodePath = node.getPath();
@@ -51,7 +51,7 @@ public class ProxyNode extends AbstractRemotableNode implements PublicationNode 
     }
 
     @Override
-    protected RemotePublicationTreeManager getPublisher() throws ClientException {
+    protected RemotePublicationTreeManager getPublisher() {
         if (service == null) {
             service = Framework.getService(RemotePublicationTreeManager.class);
         }
@@ -97,13 +97,13 @@ public class ProxyNode extends AbstractRemotableNode implements PublicationNode 
     }
 
     @Override
-    protected PublicationNode switchToServerNode(PublicationNode node) throws ClientException {
+    protected PublicationNode switchToServerNode(PublicationNode node) {
         // no wrap
         return node;
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
+    protected PublicationNode switchToClientNode(PublicationNode node) {
         // no wrap
         return node;
     }

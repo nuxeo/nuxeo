@@ -40,13 +40,13 @@ public class DocumentRemovedCommentEventListener extends AbstractCommentListener
 
     @Override
     protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docMessage) throws ClientException {
+            DocumentModel docMessage) {
         log.debug("Processing relations cleanup on Document removal");
         onDocumentRemoved(coreSession, relationManager, config, docMessage);
     }
 
     private static void onDocumentRemoved(CoreSession coreSession, RelationManager relationManager,
-            CommentServiceConfig config, DocumentModel docMessage) throws ClientException {
+            CommentServiceConfig config, DocumentModel docMessage) {
 
         Resource documentRes = relationManager.getResource(config.documentNamespace, docMessage, null);
         if (documentRes == null) {

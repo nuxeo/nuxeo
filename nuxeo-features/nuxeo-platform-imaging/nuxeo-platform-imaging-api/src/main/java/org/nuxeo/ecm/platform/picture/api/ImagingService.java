@@ -132,8 +132,7 @@ public interface ImagingService {
      * @return the computed picture view
      * @since 5.7
      */
-    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, boolean convert) throws IOException,
-            ClientException;
+    PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, boolean convert) throws IOException;
 
     /**
      * Computes a {@link PictureView} for the given {@code blob} and {@code pictureConversion}.
@@ -145,7 +144,7 @@ public interface ImagingService {
      * @since 5.7
      */
     PictureView computeViewFor(Blob blob, PictureConversion pictureConversion, ImageInfo imageInfo, boolean convert)
-            throws IOException, ClientException;
+            throws IOException;
 
     /**
      * Computes a List of {@link PictureView}s for the given {@code blob} and {@code pictureConversions}.
@@ -156,7 +155,7 @@ public interface ImagingService {
      * @since 5.7
      */
     List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, boolean convert)
-            throws IOException, ClientException;
+            throws IOException;
 
     /**
      * Computes a List of {@link PictureView}s for the given {@code blob} and {@code pictureConversions}.
@@ -168,7 +167,7 @@ public interface ImagingService {
      * @since 5.7
      */
     List<PictureView> computeViewsFor(Blob blob, List<PictureConversion> pictureConversions, ImageInfo imageInfo,
-            boolean convert) throws IOException, ClientException;
+            boolean convert) throws IOException;
 
     /**
      * Computes a List of all {@link PictureView}s for each {@link Blob} of {@code blobs}.
@@ -178,7 +177,7 @@ public interface ImagingService {
      * @since 5.7
      */
     List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
-            boolean convert) throws IOException, ClientException;
+            boolean convert) throws IOException;
 
     /**
      * Computes a List of all {@link PictureView}s for each {@link Blob} of {@code blobs}.
@@ -189,7 +188,7 @@ public interface ImagingService {
      * @since 5.7
      */
     List<List<PictureView>> computeViewsFor(List<Blob> blobs, List<PictureConversion> pictureConversions,
-            ImageInfo imageInfo, boolean convert) throws IOException, ClientException;
+            ImageInfo imageInfo, boolean convert) throws IOException;
 
     /**
      * Compute all the registered {@link PictureConversion} For each picture template the
@@ -197,6 +196,6 @@ public interface ImagingService {
      *
      * @since 7.1
      */
-    List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert) throws ClientException, IOException;
+    List<PictureView> computeViewsFor(DocumentModel doc, Blob blob, ImageInfo imageInfo, boolean convert) throws IOException;
 
 }

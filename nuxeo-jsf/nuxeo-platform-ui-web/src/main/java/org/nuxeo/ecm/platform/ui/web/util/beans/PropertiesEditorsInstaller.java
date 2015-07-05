@@ -35,8 +35,7 @@ public class PropertiesEditorsInstaller {
     }
 
     protected void installEditor(Class<?> targetType, Class<?> editorClass) {
-        if (PropertyEditorManager.findEditor(targetType) != null) {
-            ;
+        if (PropertyEditorManager.findEditor(targetType) != null) {;
             return;
         }
         PropertyEditorManager.registerEditor(targetType, editorClass);
@@ -49,4 +48,5 @@ public class PropertiesEditorsInstaller {
         }
         PropertyEditorManager.registerEditor(targetType, null);
     }
+
 }

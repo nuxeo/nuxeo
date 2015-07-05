@@ -67,7 +67,7 @@ public class EditorLinkActionsBean extends InputController implements EditorLink
     }
 
     @Override
-    public String searchDocuments() throws ClientException {
+    public String searchDocuments() {
         log.debug("Entering searchDocuments with keywords: " + searchKeywords);
 
         resultDocuments = null;

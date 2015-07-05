@@ -58,11 +58,11 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
     /**
      * Creates the iterator given the tree root.
      */
-    public DocumentTreeIterator(CoreSession session, DocumentModel root) throws ClientException {
+    public DocumentTreeIterator(CoreSession session, DocumentModel root) {
         this(session, root, false);
     }
 
-    public DocumentTreeIterator(CoreSession session, DocumentModel root, boolean excludeRoot) throws ClientException {
+    public DocumentTreeIterator(CoreSession session, DocumentModel root, boolean excludeRoot) {
         this.root = root;
         this.session = session;
         if (excludeRoot) {

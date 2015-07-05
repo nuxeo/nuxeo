@@ -71,7 +71,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            Object... parameters) throws ClientException {
+            Object... parameters) {
         if (desc == null) {
             return null;
         }
@@ -116,7 +116,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         return pageProvider;
     }
 
-    protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc) throws ClientException {
+    protected PageProvider<?> newPageProviderInstance(String name, PageProviderDefinition desc) {
         PageProvider<?> ret;
         if (desc instanceof CoreQueryPageProviderDescriptor) {
             ret = newCoreQueryPageProviderInstance(name);
@@ -131,7 +131,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
         return ret;
     }
 
-    protected PageProvider<?> newCoreQueryPageProviderInstance(String name) throws ClientException {
+    protected PageProvider<?> newCoreQueryPageProviderInstance(String name) {
         PageProvider<?> ret;
         Class<? extends PageProvider<?>> klass = replacersReg.getClassForPageProvider(name);
         if (klass == null) {
@@ -143,7 +143,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     }
 
     protected PageProvider<?> newPageProviderInstance(String name, Class<? extends PageProvider<?>> klass)
-            throws ClientException {
+            {
         PageProvider<?> ret;
         if (klass == null) {
             throw new ClientException(String.format(
@@ -164,14 +164,14 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
     @Override
     public PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
+            {
         return getPageProvider(name, desc, null, sortInfos, pageSize, currentPage, properties, parameters);
     }
 
     @Override
     public PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos,
             Long pageSize, Long currentPage, Map<String, Serializable> properties, Object... parameters)
-            throws ClientException {
+            {
         PageProviderDefinition desc = providerReg.getPageProvider(name);
         if (desc == null) {
             throw new ClientException(String.format("Could not resolve page provider with name '%s'", name));
@@ -181,7 +181,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
 
     @Override
     public PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters) throws ClientException {
+            Map<String, Serializable> properties, Object... parameters) {
         return getPageProvider(name, (DocumentModel) null, sortInfos, pageSize, currentPage, properties, parameters);
     }
 

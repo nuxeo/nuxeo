@@ -48,7 +48,7 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     protected String treeName;
 
     public ClientRemotePublicationNode(String treeConfigName, String sid, PublicationNode node, String serverSessionId,
-            RemotePublicationTreeManager service, String targetTreeName) throws ClientException {
+            RemotePublicationTreeManager service, String targetTreeName) {
         this.serverSessionId = serverSessionId;
         this.sessionId = sid;
         this.service = service;
@@ -61,7 +61,7 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     }
 
     @Override
-    protected PublicationNode switchToServerNode(PublicationNode node) throws ClientException {
+    protected PublicationNode switchToServerNode(PublicationNode node) {
 
         if (node instanceof ClientRemotePublicationNode) {
             ClientRemotePublicationNode cNode = (ClientRemotePublicationNode) node;
@@ -82,7 +82,7 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     }
 
     @Override
-    protected PublicationNode switchToClientNode(PublicationNode node) throws ClientException {
+    protected PublicationNode switchToClientNode(PublicationNode node) {
         return new ClientRemotePublicationNode(treeName, sessionId, node, serverSessionId, service, getTargetTreeName());
     }
 
@@ -92,7 +92,7 @@ public class ClientRemotePublicationNode extends AbstractRemotableNode {
     }
 
     @Override
-    protected RemotePublicationTreeManager getPublisher() throws ClientException {
+    protected RemotePublicationTreeManager getPublisher() {
         return service;
     }
 

@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 public class CheckBlobUpdateListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ec = event.getContext();
         if (!(ec instanceof DocumentEventContext)) {
             return;

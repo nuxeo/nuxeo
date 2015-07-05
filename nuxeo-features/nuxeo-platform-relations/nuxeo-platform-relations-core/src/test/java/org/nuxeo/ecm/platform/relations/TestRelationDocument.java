@@ -63,13 +63,13 @@ public class TestRelationDocument {
     protected DocumentModel file1;
 
     @Before
-    public void init() throws ClientException {
+    public void init() {
 
         file1 = session.createDocument(session.createDocumentModel("/", "file1", "File"));
     }
 
     @Test
-    public void testRelationDocument() throws ClientException {
+    public void testRelationDocument() {
 
         // Add a text relation to file1
         QNameResource docResource = (QNameResource) relationManager.getResource(RelationConstants.DOCUMENT_NAMESPACE,

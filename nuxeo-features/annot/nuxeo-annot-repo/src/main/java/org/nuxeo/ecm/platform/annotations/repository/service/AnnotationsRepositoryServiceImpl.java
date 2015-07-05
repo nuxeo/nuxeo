@@ -47,7 +47,7 @@ public class AnnotationsRepositoryServiceImpl implements AnnotationsRepositorySe
         this.annotability = annotability;
     }
 
-    public boolean isAnnotable(DocumentModel document) throws ClientException {
+    public boolean isAnnotable(DocumentModel document) {
         return annotability.isAnnotable(document);
     }
 

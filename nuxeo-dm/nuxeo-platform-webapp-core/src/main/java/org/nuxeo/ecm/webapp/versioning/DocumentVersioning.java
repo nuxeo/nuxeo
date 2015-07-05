@@ -63,7 +63,7 @@ public interface DocumentVersioning {
     @Deprecated
     Map<String, String> getAvailableVersioningOptionsMap();
 
-    String getVersionLabel(DocumentModel document) throws ClientException;
+    String getVersionLabel(DocumentModel document);
 
     /**
      * @deprecated since 5.7.3: selected option is not kept on this bean anymore, it's kept by the JSF component behind
@@ -84,19 +84,19 @@ public interface DocumentVersioning {
      * @deprecated since 5.7.3: document context map is now filled directly by the widget
      */
     @Deprecated
-    void setVersioningOptionInstanceId(String optionId) throws ClientException;
+    void setVersioningOptionInstanceId(String optionId);
 
     /**
      * @deprecated since 5.7.3: document context map is now filled directly by the widget
      */
     @Deprecated
-    void setVersioningOptionInstanceId(DocumentModel document, String optionId) throws ClientException;
+    void setVersioningOptionInstanceId(DocumentModel document, String optionId);
 
     /**
      * @deprecated since 5.7.3: document context map is now filled directly by the widget
      */
     @Deprecated
-    void setVersioningOptionInstanceId(DocumentModel document, VersioningActions option) throws ClientException;
+    void setVersioningOptionInstanceId(DocumentModel document, VersioningActions option);
 
     /**
      * Versioning increment options - select radio component validator method. Check if an option has been selected.

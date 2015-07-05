@@ -93,7 +93,7 @@ public class ConversionActionBean implements ConversionAction {
         return "view_file";
     }
 
-    private DocumentModel getDocument() throws ClientException {
+    private DocumentModel getDocument() {
         if (docRef == null) {
             return navigationContext.getCurrentDocument();
         } else {
@@ -101,7 +101,7 @@ public class ConversionActionBean implements ConversionAction {
         }
     }
 
-    private String getMimetypeFromDocument(String propertyName) throws ClientException {
+    private String getMimetypeFromDocument(String propertyName) {
         Blob blob = (Blob) getDocument().getPropertyValue(propertyName);
         return blob.getMimeType();
     }
@@ -111,7 +111,7 @@ public class ConversionActionBean implements ConversionAction {
         pdfConverterForTypes.clear();
     }
 
-    public boolean isExportableToPDF(BlobHolder bh) throws ClientException {
+    public boolean isExportableToPDF(BlobHolder bh) {
         if (bh == null) {
             return false;
         }

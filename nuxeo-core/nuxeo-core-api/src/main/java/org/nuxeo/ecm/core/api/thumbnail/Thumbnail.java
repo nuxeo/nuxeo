@@ -27,8 +27,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public interface Thumbnail {
 
-    Blob getThumbnail(CoreSession session) throws ClientException;
+    Blob getThumbnail(CoreSession session);
 
-    Blob computeThumbnail(CoreSession session) throws ClientException;
+    Blob computeThumbnail(CoreSession session);
 
 }

@@ -57,7 +57,7 @@ public interface ThreadAction extends Serializable {
      *
      * @throws ClientException if the Thread can't be created
      */
-    String addThread() throws ClientException;
+    String addThread();
 
     /**
      * Returns true if the thread is moderated, false otherwise. Just used at creation time.
@@ -69,7 +69,7 @@ public interface ThreadAction extends Serializable {
      *
      * @param thread is the thread we want
      */
-    String getModerationAsString(DocumentModel thread) throws ClientException;
+    String getModerationAsString(DocumentModel thread);
 
     /**
      * Sets the moderation on a thread.
@@ -94,19 +94,19 @@ public interface ThreadAction extends Serializable {
     /**
      * Returns true if the thread is moderated, false otherwise. Intends to be used by a Post.
      */
-    boolean isCurrentThreadModerated() throws ClientException;
+    boolean isCurrentThreadModerated();
 
     /**
      * Returns true if the given thread is moderated, false otherwise.
      *
      * @param thread is the thread to test
      */
-    boolean isThreadModerated(DocumentModel thread) throws ClientException;
+    boolean isThreadModerated(DocumentModel thread);
 
     /**
      * Gets the latest post published in given thread.
      */
-    DocumentModel getLastPostPublished(DocumentModel thread) throws ClientException;
+    DocumentModel getLastPostPublished(DocumentModel thread);
 
     /**
      * Gets all available posts in the thread according the Post state and principal rights. I.e., Post that are not
@@ -114,32 +114,32 @@ public interface ThreadAction extends Serializable {
      *
      * @return a list of ThreadEntry, directly usable for display with indentation
      */
-    List<ThreadEntry> getPostsAsThread() throws ClientException;
+    List<ThreadEntry> getPostsAsThread();
 
     /**
      * Gets all Posts in the Thread with the specified state. Return all posts if state is null.
      */
-    List<DocumentModel> getAllPosts(DocumentModel thread, String state) throws ClientException;
+    List<DocumentModel> getAllPosts(DocumentModel thread, String state);
 
     /**
      * Gets published posts in a thread.
      */
-    List<DocumentModel> getPostsPublished(DocumentModel thread) throws ClientException;
+    List<DocumentModel> getPostsPublished(DocumentModel thread);
 
     /**
      * Gets pending posts in a thread.
      */
-    List<DocumentModel> getPostsPending(DocumentModel thread) throws ClientException;
+    List<DocumentModel> getPostsPending(DocumentModel thread);
 
     /**
      * Return the parent post of the specified index of the post in the getPostsAsThread() list.
      */
-    DocumentModel getParentPost(int post) throws ClientException;
+    DocumentModel getParentPost(int post);
 
     /**
      * Return true if the parent post identified by it's number in the getPostsAsThread list is published.
      */
-    boolean isParentPostPublished(int post) throws ClientException;
+    boolean isParentPostPublished(int post);
 
     ThreadAdapter getAdapter(DocumentModel thread);
 

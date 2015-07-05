@@ -127,14 +127,13 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     }
 
-    protected void installPoolMonitors() throws ClientException, LoginException {
+    protected void installPoolMonitors() throws LoginException {
         NuxeoContainer.addListener(cmUpdater);
         ClientException errors = new ClientException("Cannot install pool monitors");
         LoginContext loginContext = Framework.login();
         try {
             for (String name : Framework.getLocalService(RepositoryService.class).getRepositoryNames()) {
-                try (CoreSession session = CoreInstance.openCoreSession(name)) {
-                    ;
+                try (CoreSession session = CoreInstance.openCoreSession(name)) {;
                 } catch (ClientException cause) {
                     errors.addSuppressed(cause);
                 }
@@ -150,7 +149,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
     /**
      * Make sure we open the repository, to initialize its connection manager.
      */
-    protected void activateRepository(String repositoryName) throws ClientException {
+    protected void activateRepository(String repositoryName) {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(repositoryName)) {
             // do nothing, just open and close
         }
@@ -203,4 +202,5 @@ public class DefaultMonitorComponent extends DefaultComponent {
             throw new UnsupportedOperationException("Cannot unbind " + instance, e);
         }
     }
+
 }

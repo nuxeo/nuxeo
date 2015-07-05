@@ -36,7 +36,7 @@ public class DirectoryEntriesWriter extends EntityListWriter<DirectoryEntry> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, DirectoryEntry item) throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, DirectoryEntry item) throws IOException {
         DirectoryEntryWriter dew = new DirectoryEntryWriter();
         dew.writeEntity(jg, item);
 

@@ -76,7 +76,7 @@ public class TestDocumentAuditPageProvider {
         }
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
 
             DocumentModel section = session.createDocumentModel("/", "section", "Folder");
             section = session.createDocument(section);

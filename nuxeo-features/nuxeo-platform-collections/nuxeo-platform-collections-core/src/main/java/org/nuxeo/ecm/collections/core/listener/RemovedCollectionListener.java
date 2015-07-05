@@ -39,7 +39,7 @@ public class RemovedCollectionListener implements PostCommitEventListener {
     private static final Log log = LogFactory.getLog(RemovedCollectionListener.class);
 
     @Override
-    public void handleEvent(EventBundle bundle) throws ClientException {
+    public void handleEvent(EventBundle bundle) {
         for (Event each : bundle) {
             final EventContext ctx = each.getContext();
             if (!(ctx instanceof DocumentEventContext)) {
@@ -55,7 +55,7 @@ public class RemovedCollectionListener implements PostCommitEventListener {
         }
     }
 
-    protected void onEvent(final Event event) throws ClientException {
+    protected void onEvent(final Event event) {
 
         final DocumentEventContext docCxt = (DocumentEventContext) event.getContext();
 

@@ -139,15 +139,15 @@ public interface PictureBookManager {
      */
     String createPictureBook();
 
-    void reset() throws ClientException;
+    void reset();
 
     void initialize();
 
-    String downloadSelectedBook() throws ClientException, IOException;
+    String downloadSelectedBook() throws IOException;
 
-    String downloadAll() throws ClientException, IOException;
+    String downloadAll() throws IOException;
 
-    List<SelectItem> getSelectItems() throws ClientException;
+    List<SelectItem> getSelectItems();
 
     void setSelectItems(List<SelectItem> selectItems);
 

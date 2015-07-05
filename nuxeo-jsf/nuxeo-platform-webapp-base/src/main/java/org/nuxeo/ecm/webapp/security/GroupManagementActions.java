@@ -72,7 +72,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     protected boolean createAnotherGroup = false;
 
     @Override
-    protected String computeListingMode() throws ClientException {
+    protected String computeListingMode() {
         return userManager.getGroupListingMode();
     }
 
@@ -91,7 +91,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
     /**
      * @since 6.0
      */
-    public void setSelectedGroupName(String groupName) throws ClientException {
+    public void setSelectedGroupName(String groupName) {
         setSelectedGroup(groupName);
     }
 
@@ -102,16 +102,16 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         showUserOrGroup = Boolean.valueOf(showGroup);
     }
 
-    public void setSelectedGroup(String groupName) throws ClientException {
+    public void setSelectedGroup(String groupName) {
         selectedGroup = refreshGroup(groupName);
     }
 
     // refresh to get references
-    protected DocumentModel refreshGroup(String groupName) throws ClientException {
+    protected DocumentModel refreshGroup(String groupName) {
         return userManager.getGroupModel(groupName);
     }
 
-    public DocumentModel getNewGroup() throws ClientException {
+    public DocumentModel getNewGroup() {
         if (newGroup == null) {
             newGroup = userManager.getBareGroupModel();
         }
@@ -123,7 +123,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         fireSeamEvent(GROUPS_LISTING_CHANGED);
     }
 
-    public void createGroup() throws ClientException {
+    public void createGroup() {
         try {
             selectedGroup = userManager.createGroup(newGroup);
             newGroup = null;
@@ -143,24 +143,24 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         }
     }
 
-    public void updateGroup() throws ClientException {
+    public void updateGroup() {
         userManager.updateGroup(selectedGroup);
         detailsMode = DETAILS_VIEW_MODE;
         fireSeamEvent(GROUPS_LISTING_CHANGED);
     }
 
-    public void deleteGroup() throws ClientException {
+    public void deleteGroup() {
         userManager.deleteGroup(selectedGroup);
         selectedGroup = null;
         showUserOrGroup = false;
         fireSeamEvent(GROUPS_LISTING_CHANGED);
     }
 
-    public boolean getAllowCreateGroup() throws ClientException {
+    public boolean getAllowCreateGroup() {
         return getCanEditGroups();
     }
 
-    protected boolean getCanEditGroups() throws ClientException {
+    protected boolean getCanEditGroups() {
         if (canEditGroups == null) {
             canEditGroups = false;
             if (!userManager.areGroupsReadOnly() && currentUser instanceof NuxeoPrincipal) {
@@ -172,7 +172,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         return canEditGroups;
     }
 
-    public boolean getAllowDeleteGroup() throws ClientException {
+    public boolean getAllowDeleteGroup() {
         if (getAllAdminGroups().contains(selectedGroup.getId())) {
             return ((NuxeoPrincipal) currentUser).isAdministrator();
         }
@@ -180,7 +180,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         return getCanEditGroups() && !BaseSession.isReadOnlyEntry(selectedGroup);
     }
 
-    public boolean getAllowEditGroup() throws ClientException {
+    public boolean getAllowEditGroup() {
         // Changing administrator group is only given to administrators (not
         // powerusers)
         // NXP-10584
@@ -202,7 +202,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         }
     }
 
-    public String viewGroup() throws ClientException {
+    public String viewGroup() {
         if (selectedGroup != null) {
             return viewGroup(selectedGroup.getId());
         } else {
@@ -210,7 +210,7 @@ public class GroupManagementActions extends AbstractUserGroupManagement implemen
         }
     }
 
-    public String viewGroup(String groupName) throws ClientException {
+    public String viewGroup(String groupName) {
         webActions.setCurrentTabIds(MAIN_TAB_HOME + "," + GROUPS_TAB);
         setSelectedGroup(groupName);
         showUserOrGroup = true;

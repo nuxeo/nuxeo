@@ -127,11 +127,11 @@ public class MultiBlobAccessTest extends BaseTest {
         assertNull(blob);
     }
 
-    private DocumentModel getTestBlob() throws ClientException {
+    private DocumentModel getTestBlob() {
         return session.getDocument(new PathRef("/testBlob"));
     }
 
-    private void addBlob(DocumentModel doc, Blob blob) throws ClientException {
+    private void addBlob(DocumentModel doc, Blob blob) {
         Map<String, Serializable> blobProp = new HashMap<>();
         blobProp.put("content", (Serializable) blob);
         List<Map<String, Serializable>> blobs = (List<Map<String, Serializable>>) doc.getPropertyValue("mb:blobs");

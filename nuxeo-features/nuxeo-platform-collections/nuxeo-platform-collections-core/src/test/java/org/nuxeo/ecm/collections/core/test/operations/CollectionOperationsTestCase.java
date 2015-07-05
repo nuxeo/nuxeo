@@ -64,7 +64,7 @@ public class CollectionOperationsTestCase {
 
     OperationChain chain;
 
-    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) throws ClientException {
+    public static List<DocumentModel> createTestFiles(CoreSession session, final int nbFile) {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);

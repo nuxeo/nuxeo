@@ -61,7 +61,7 @@ public interface EventService extends EventProducer {
      * @param name the event name
      * @param context the event context
      */
-    void fireEvent(String name, EventContext context) throws ClientException;
+    void fireEvent(String name, EventContext context);
 
     /**
      * Fires an event.
@@ -71,7 +71,7 @@ public interface EventService extends EventProducer {
      * @param event the event to fire
      */
     @Override
-    void fireEvent(Event event) throws ClientException;
+    void fireEvent(Event event);
 
     /**
      * Fires all recorded events in a transaction. Used by the framework.
@@ -82,14 +82,14 @@ public interface EventService extends EventProducer {
      * @param event the event bundle
      */
     @Override
-    void fireEventBundle(EventBundle event) throws ClientException;
+    void fireEventBundle(EventBundle event);
 
     /**
      * Fires an event bundle in synchronous mode. Used by the framework.
      * <p>
      * This means that asynchronous listeners will be run synchronously.
      */
-    void fireEventBundleSync(EventBundle event) throws ClientException;
+    void fireEventBundleSync(EventBundle event);
 
     /**
      * Gets the list of the registered event listeners.

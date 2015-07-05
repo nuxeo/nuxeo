@@ -78,7 +78,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     //
 
     // assumes that the global "session" belongs to an Administrator
-    protected void setPermissionToAnonymous(String perm) throws ClientException {
+    protected void setPermissionToAnonymous(String perm) {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {
@@ -91,7 +91,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
         session.save();
     }
 
-    protected void setPermissionToEveryone(String... perms) throws ClientException {
+    protected void setPermissionToEveryone(String... perms) {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         if (acp == null) {
@@ -106,7 +106,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
         session.save();
     }
 
-    protected void removePermissionToAnonymous() throws ClientException {
+    protected void removePermissionToAnonymous() {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         acp.removeACL("test");
@@ -114,7 +114,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
         session.save();
     }
 
-    protected void removePermissionToEveryone() throws ClientException {
+    protected void removePermissionToEveryone() {
         DocumentModel doc = session.getRootDocument();
         ACP acp = doc.getACP();
         acp.removeACL("test");
@@ -123,7 +123,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testSecurity() throws ClientException {
+    public void testSecurity() {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
@@ -245,7 +245,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testACLEscaping() throws ClientException {
+    public void testACLEscaping() {
         // temporary set an Everything privileges on the root for anonymous
         // so that we can create a folder
         setPermissionToAnonymous(EVERYTHING);
@@ -277,7 +277,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testGetParentDocuments() throws ClientException {
+    public void testGetParentDocuments() {
 
         setPermissionToAnonymous(EVERYTHING);
 
@@ -473,7 +473,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
         }
     }
 
-    protected DocumentRef createDocumentModelWithSamplePermissions(String name) throws ClientException {
+    protected DocumentRef createDocumentModelWithSamplePermissions(String name) {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), name, "Folder");
         doc = session.createDocument(doc);
@@ -508,7 +508,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
 
     @Test
     @Ignore
-    public void testGetAvailableSecurityPermissions() throws ClientException {
+    public void testGetAvailableSecurityPermissions() {
         List<String> permissions = session.getAvailableSecurityPermissions();
 
         // TODO
@@ -516,7 +516,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testReadAclSecurity() throws ClientException {
+    public void testReadAclSecurity() {
         // Check that all permissions that contain Browse enable to list a
         // document using aclOptimization
         SecurityService securityService = NXCore.getSecurityService();
@@ -580,7 +580,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testReadAclSecurityUpdate() throws ClientException {
+    public void testReadAclSecurityUpdate() {
         // check that aclOptimization update the user aclr cache
         // NXP-13109
         DocumentModel root = session.getRootDocument();
@@ -630,7 +630,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testReadAclAfterSetACP() throws ClientException {
+    public void testReadAclAfterSetACP() {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = new DocumentModelImpl("/folder", "doc", "File");
@@ -665,7 +665,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testReadAclAfterCreate() throws ClientException {
+    public void testReadAclAfterCreate() {
         DocumentModel folder = new DocumentModelImpl("/", "folder", "Folder");
         folder = session.createDocument(folder);
         session.save();
@@ -713,7 +713,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testReadAclAfterMove() throws ClientException {
+    public void testReadAclAfterMove() {
         DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
         DocumentModel folder2 = new DocumentModelImpl("/", "folder2", "Folder");
@@ -747,7 +747,7 @@ public class TestMongoDBRepositorySecurity extends MongoDBRepositoryTestCase {
     }
 
     @Test
-    public void testReadAclAfterCopy() throws ClientException {
+    public void testReadAclAfterCopy() {
         DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
         folder1 = session.createDocument(folder1);
         DocumentModel folder2 = new DocumentModelImpl("/", "folder2", "Folder");

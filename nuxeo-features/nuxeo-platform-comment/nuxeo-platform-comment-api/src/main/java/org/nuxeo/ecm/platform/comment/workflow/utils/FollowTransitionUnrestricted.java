@@ -34,7 +34,7 @@ public final class FollowTransitionUnrestricted extends UnrestrictedSessionRunne
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         session.followTransition(docRef, transition);
         session.save();
     }

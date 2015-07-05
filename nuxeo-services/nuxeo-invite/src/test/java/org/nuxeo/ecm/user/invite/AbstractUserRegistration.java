@@ -56,7 +56,7 @@ public abstract class AbstractUserRegistration {
     @Inject
     protected UserInvitationService userRegistrationService;
 
-    public void initializeRegistrations() throws ClientException {
+    public void initializeRegistrations() {
         DocumentModel container = session.createDocumentModel("Workspace");
         container.setPathInfo("/", "requests");
         session.createDocument(container);

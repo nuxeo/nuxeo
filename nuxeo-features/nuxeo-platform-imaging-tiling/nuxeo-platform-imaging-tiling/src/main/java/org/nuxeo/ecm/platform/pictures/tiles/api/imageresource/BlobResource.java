@@ -57,15 +57,15 @@ public class BlobResource implements ImageResource {
         modified = Calendar.getInstance();
     }
 
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         return blob;
     }
 
-    public String getHash() throws ClientException {
+    public String getHash() {
         return hash;
     }
 
-    public Calendar getModificationDate() throws ClientException {
+    public Calendar getModificationDate() {
         return modified;
     }
 

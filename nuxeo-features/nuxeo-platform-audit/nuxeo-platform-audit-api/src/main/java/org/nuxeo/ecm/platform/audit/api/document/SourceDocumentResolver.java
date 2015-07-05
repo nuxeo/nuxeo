@@ -35,7 +35,7 @@ public class SourceDocumentResolver extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         DocumentModel version = null;
         if (document.isProxy()) {
             version = session.getSourceDocument(document.getRef());

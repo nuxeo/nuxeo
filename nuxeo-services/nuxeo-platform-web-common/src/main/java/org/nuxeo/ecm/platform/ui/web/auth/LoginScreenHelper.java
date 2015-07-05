@@ -38,7 +38,7 @@ public class LoginScreenHelper {
     }
 
     public static void registerLoginProvider(String name, String iconUrl, String link, String label,
-            String description, LoginProviderLinkComputer computer) throws ClientException {
+            String description, LoginProviderLinkComputer computer) {
 
         LoginScreenConfig config = getConfig();
         if (config != null) {

@@ -34,7 +34,7 @@ public interface WorkspaceActions {
 
     boolean getAdministrator();
 
-    DocumentModelList getTemplates() throws ClientException;
+    DocumentModelList getTemplates();
 
     DocumentModel getTmpWorkspace();
 
@@ -54,9 +54,9 @@ public interface WorkspaceActions {
 
     DocumentModel getSelectedTemplate();
 
-    String createWorkspace() throws ClientException;
+    String createWorkspace();
 
-    String exitWizard() throws ClientException;
+    String exitWizard();
 
     String getA4JHackingURL();
 

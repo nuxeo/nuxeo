@@ -33,18 +33,18 @@ public interface LocaleProvider {
     /**
      * @return the Locale to be used or null to let the caller decides.
      */
-    public Locale getLocale(CoreSession session) throws ClientException;
+    public Locale getLocale(CoreSession session);
 
     /**
      * Gets the locale stored in the given user profile.
      *
      * @return the Locale to be used or null to let the caller decide
      */
-    Locale getLocale(DocumentModel userProfileDoc) throws ClientException;
+    Locale getLocale(DocumentModel userProfileDoc);
 
     /**
      * @return the Timezone to be used or null to let the caller decides.
      */
-    public TimeZone getTimeZone(CoreSession session) throws ClientException;
+    public TimeZone getTimeZone(CoreSession session);
 
 }

@@ -46,42 +46,42 @@ public abstract class AbstractRemotableTree implements PublicationTree {
 
     protected String configName;
 
-    protected abstract RemotePublicationTreeManager getTreeService() throws ClientException;
+    protected abstract RemotePublicationTreeManager getTreeService();
 
     protected abstract String getTargetTreeName();
 
     protected abstract String getServerTreeSessionId();
 
-    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) throws ClientException {
+    public List<PublishedDocument> getExistingPublishedDocument(DocumentLocation docLoc) {
         return getTreeService().getExistingPublishedDocument(getServerTreeSessionId(), docLoc);
     }
 
-    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) {
         return getTreeService().getPublishedDocumentInNode(switchToServerNode(node));
     }
 
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         return publish(doc, targetNode, null);
     }
 
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         return getTreeService().publish(doc, switchToServerNode(targetNode), params);
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) {
         getTreeService().unpublish(doc, switchToServerNode(targetNode));
     }
 
-    public void unpublish(PublishedDocument publishedDocument) throws ClientException {
+    public void unpublish(PublishedDocument publishedDocument) {
         getTreeService().unpublish(getServerTreeSessionId(), publishedDocument);
     }
 
-    protected abstract PublicationNode switchToClientNode(PublicationNode node) throws ClientException;
+    protected abstract PublicationNode switchToClientNode(PublicationNode node);
 
     protected abstract PublicationNode switchToServerNode(PublicationNode node);
 
-    protected List<PublicationNode> switchToClientNodes(List<PublicationNode> nodes) throws ClientException {
+    protected List<PublicationNode> switchToClientNodes(List<PublicationNode> nodes) {
         List<PublicationNode> wrappedNodes = new ArrayList<PublicationNode>();
 
         for (PublicationNode node : nodes) {
@@ -90,7 +90,7 @@ public abstract class AbstractRemotableTree implements PublicationTree {
         return wrappedNodes;
     }
 
-    public PublicationNode getNodeByPath(String path) throws ClientException {
+    public PublicationNode getNodeByPath(String path) {
         return switchToClientNode(getTreeService().getNodeByPath(getServerTreeSessionId(), path));
     }
 
@@ -102,7 +102,7 @@ public abstract class AbstractRemotableTree implements PublicationTree {
         return null;
     }
 
-    public void setCurrentDocument(DocumentModel currentDocument) throws ClientException {
+    public void setCurrentDocument(DocumentModel currentDocument) {
         getTreeService().setCurrentDocument(getServerTreeSessionId(), currentDocument);
     }
 
@@ -119,39 +119,39 @@ public abstract class AbstractRemotableTree implements PublicationTree {
         }
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
         getTreeService().validatorPublishDocument(getServerTreeSessionId(), publishedDocument, comment);
     }
 
-    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
         getTreeService().validatorRejectPublication(getServerTreeSessionId(), publishedDocument, comment);
     }
 
-    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+    public boolean canPublishTo(PublicationNode publicationNode) {
         return getTreeService().canPublishTo(getServerTreeSessionId(), publicationNode);
     }
 
-    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canUnpublish(PublishedDocument publishedDocument) {
         return getTreeService().canUnpublish(getServerTreeSessionId(), publishedDocument);
     }
 
-    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+    public boolean hasValidationTask(PublishedDocument publishedDocument) {
         return getTreeService().hasValidationTask(getServerTreeSessionId(), publishedDocument);
     }
 
-    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(PublishedDocument publishedDocument) {
         return getTreeService().canManagePublishing(getServerTreeSessionId(), publishedDocument);
     }
 
-    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) {
         return getTreeService().wrapToPublishedDocument(getServerTreeSessionId(), documentModel);
     }
 
-    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+    public boolean isPublicationNode(DocumentModel documentModel) {
         return getTreeService().isPublicationNode(getServerTreeSessionId(), documentModel);
     }
 
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         return getTreeService().wrapToPublicationNode(getServerTreeSessionId(), documentModel);
     }
 

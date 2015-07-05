@@ -26,5 +26,5 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
 public interface DocumentAnnotability {
-    boolean isAnnotable(DocumentModel docuement) throws ClientException;
+    boolean isAnnotable(DocumentModel docuement);
 }

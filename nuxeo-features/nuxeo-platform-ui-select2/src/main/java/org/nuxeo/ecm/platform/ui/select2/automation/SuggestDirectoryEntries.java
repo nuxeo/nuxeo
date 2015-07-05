@@ -95,8 +95,7 @@ public class SuggestDirectoryEntries {
             this.isRoot = true;
         }
 
-        public JSONAdapter(Session session, Schema schema, DocumentModel entry) throws PropertyException,
-                ClientException {
+        public JSONAdapter(Session session, Schema schema, DocumentModel entry) throws PropertyException {
             this(session, schema);
             // Carry entry, not root
             isRoot = false;
@@ -276,7 +275,7 @@ public class SuggestDirectoryEntries {
             }
         }
 
-        public JSONAdapter push(final JSONAdapter newEntry) throws PropertyException, ClientException {
+        public JSONAdapter push(final JSONAdapter newEntry) throws PropertyException {
             String parentIdOfNewEntry = newEntry.getParentId();
             if (parentIdOfNewEntry != null && !parentIdOfNewEntry.isEmpty()) {
                 // The given adapter has a parent which could already be in my

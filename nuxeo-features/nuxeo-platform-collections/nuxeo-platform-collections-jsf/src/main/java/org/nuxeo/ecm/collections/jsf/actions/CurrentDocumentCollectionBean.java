@@ -46,7 +46,7 @@ public class CurrentDocumentCollectionBean implements Serializable {
 
     private boolean isDisplayAll;
 
-    public List<DocumentModel> getCurrentDocumentCollections() throws ClientException {
+    public List<DocumentModel> getCurrentDocumentCollections() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);

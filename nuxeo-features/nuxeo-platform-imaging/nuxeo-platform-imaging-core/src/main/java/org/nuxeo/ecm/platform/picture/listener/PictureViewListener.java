@@ -39,7 +39,7 @@ import org.nuxeo.runtime.api.Framework;
 @Deprecated
 public class PictureViewListener implements PostCommitFilteringEventListener {
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         for (Event event : events) {
             if (UPDATE_PICTURE_VIEW_EVENT.equals(event.getName())) {
                 handleEvent(event);
@@ -47,7 +47,7 @@ public class PictureViewListener implements PostCommitFilteringEventListener {
         }
     }
 
-    private void handleEvent(Event event) throws ClientException {
+    private void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;

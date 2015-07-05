@@ -104,7 +104,7 @@ public class TestContentViewCache {
         }
     }
 
-    protected void createTestDocuments(DocumentModel container) throws ClientException {
+    protected void createTestDocuments(DocumentModel container) {
         // create docs in descending order so that docs are not ordered by
         // title by default
         for (int i = 4; i >= 0; i--) {

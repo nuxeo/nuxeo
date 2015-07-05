@@ -46,7 +46,7 @@ public class TaskEndedEventListener implements EventListener {
     private static final Log log = LogFactory.getLog(TaskEndedEventListener.class);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext eventContext = event.getContext();
         Serializable property = eventContext.getProperty(TaskService.TASK_INSTANCE_EVENT_PROPERTIES_KEY);
         if (property == null || !(property instanceof Task)) {

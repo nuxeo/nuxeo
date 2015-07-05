@@ -54,7 +54,7 @@ public final class TaskEventNotificationHelper {
 
     public static void notifyEvent(CoreSession coreSession, DocumentModel document, NuxeoPrincipal principal,
             Task task, String eventId, Map<String, Serializable> properties, String comment, String category)
-            throws ClientException {
+            {
         // Default category
         if (category == null) {
             category = DocumentEventCategories.EVENT_DOCUMENT_CATEGORY;

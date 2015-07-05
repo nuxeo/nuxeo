@@ -28,17 +28,17 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface UserAdapter {
 
-    String getName() throws ClientException;
+    String getName();
 
-    String getFirstName() throws ClientException;
+    String getFirstName();
 
-    String getLastName() throws ClientException;
+    String getLastName();
 
-    String getEmail() throws ClientException;
+    String getEmail();
 
-    String getCompany() throws ClientException;
+    String getCompany();
 
-    List<String> getGroups() throws ClientException;
+    List<String> getGroups();
 
-    String getSchemaName() throws ClientException;
+    String getSchemaName();
 }

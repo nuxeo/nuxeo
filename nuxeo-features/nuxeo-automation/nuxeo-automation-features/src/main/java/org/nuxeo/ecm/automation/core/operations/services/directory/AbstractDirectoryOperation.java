@@ -38,7 +38,7 @@ public class AbstractDirectoryOperation {
     /**
      * Throws a {@link ClientException} if the current user on the {@code ctx} cannot manage directories.
      */
-    protected void validateCanManageDirectories(OperationContext ctx) throws ClientException {
+    protected void validateCanManageDirectories(OperationContext ctx) {
         if (!canManageDirectories(ctx)) {
             throw new ClientException("Unauthorized user");
         }

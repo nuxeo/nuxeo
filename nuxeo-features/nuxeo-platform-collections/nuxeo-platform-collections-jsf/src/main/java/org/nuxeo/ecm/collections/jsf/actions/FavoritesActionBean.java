@@ -43,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 @BypassInterceptors
 public class FavoritesActionBean {
 
-    public void addCurrentDocumentToFavorites() throws ClientException {
+    public void addCurrentDocumentToFavorites() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -63,7 +63,7 @@ public class FavoritesActionBean {
         }
     }
 
-    public boolean canCurrentDocumentBeAddedToFavorites() throws ClientException {
+    public boolean canCurrentDocumentBeAddedToFavorites() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -76,7 +76,7 @@ public class FavoritesActionBean {
         return false;
     }
 
-    public boolean canCurrentDocumentBeRemovedFromFavorites() throws ClientException {
+    public boolean canCurrentDocumentBeRemovedFromFavorites() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {
@@ -88,14 +88,14 @@ public class FavoritesActionBean {
     }
 
     @Factory(value = "currentUserFavorites", scope = ScopeType.SESSION)
-    public DocumentModel getCurrentFavorites() throws ClientException {
+    public DocumentModel getCurrentFavorites() {
         FavoritesManager favoritesManager = Framework.getLocalService(FavoritesManager.class);
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
         return favoritesManager.getFavorites(navigationContext.getCurrentDomain(), session);
     }
 
-    public void removeCurrentDocumentFromFavorites() throws ClientException {
+    public void removeCurrentDocumentFromFavorites() {
         final NavigationContext navigationContext = (NavigationContext) Component.getInstance("navigationContext", true);
         final DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument != null) {

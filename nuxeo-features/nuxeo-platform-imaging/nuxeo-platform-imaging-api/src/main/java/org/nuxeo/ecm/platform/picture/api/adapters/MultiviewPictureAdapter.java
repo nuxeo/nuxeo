@@ -106,7 +106,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     @SuppressWarnings("unchecked")
-    public MultiviewPictureAdapter(DocumentModel docModel) throws ClientException {
+    public MultiviewPictureAdapter(DocumentModel docModel) {
         this.docModel = docModel;
 
         List<Map<String, Object>> list = (List<Map<String, Object>>) docModel.getPropertyValue(PICTURE_VIEWS_PROPERTY);
@@ -130,7 +130,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     @Override
-    public void removeView(String name) throws ClientException {
+    public void removeView(String name) {
         views.remove(name);
         List<Map<String, Object>> v = new ArrayList<Map<String, Object>>();
         for (PictureView view : views.values()) {
@@ -140,7 +140,7 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     @Override
-    public void addView(PictureView view) throws ClientException {
+    public void addView(PictureView view) {
         views.put(view.getTitle(), view);
         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
         for (PictureView pv : views.values()) {
@@ -150,128 +150,128 @@ public class MultiviewPictureAdapter implements MultiviewPicture {
     }
 
     @Override
-    public void removeAllView() throws ClientException {
+    public void removeAllView() {
         docModel.setPropertyValue(PICTURE_VIEWS_PROPERTY, null);
         views.clear();
     }
 
     @Override
-    public String getHeadline() throws ClientException {
+    public String getHeadline() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_HEADLINE);
     }
 
     @Override
-    public void setHeadline(String headline) throws ClientException {
+    public void setHeadline(String headline) {
         docModel.setProperty(SCHEMA_NAME, FIELD_HEADLINE, headline);
     }
 
     @Override
-    public String getSubheadline() throws ClientException {
+    public String getSubheadline() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_SUBHEADLINE);
     }
 
     @Override
-    public void setSubheadline(String subheadline) throws ClientException {
+    public void setSubheadline(String subheadline) {
         docModel.setProperty(SCHEMA_NAME, FIELD_SUBHEADLINE, subheadline);
     }
 
     @Override
-    public String getByline() throws ClientException {
+    public String getByline() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_BYLINE);
     }
 
     @Override
-    public void setByline(String byline) throws ClientException {
+    public void setByline(String byline) {
         docModel.setProperty(SCHEMA_NAME, FIELD_BYLINE, byline);
     }
 
     @Override
-    public String getDateline() throws ClientException {
+    public String getDateline() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_DATELINE);
     }
 
     @Override
-    public void setDateline(String dateline) throws ClientException {
+    public void setDateline(String dateline) {
         docModel.setProperty(SCHEMA_NAME, FIELD_DATELINE, dateline);
     }
 
     @Override
-    public String getSlugline() throws ClientException {
+    public String getSlugline() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_SLUGLINE);
     }
 
     @Override
-    public void setSlugline(String slugline) throws ClientException {
+    public void setSlugline(String slugline) {
         docModel.setProperty(SCHEMA_NAME, FIELD_SLUGLINE, slugline);
     }
 
     @Override
-    public String getCredit() throws ClientException {
+    public String getCredit() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_CREDIT);
     }
 
     @Override
-    public void setCredit(String credit) throws ClientException {
+    public void setCredit(String credit) {
         docModel.setProperty(SCHEMA_NAME, FIELD_CREDIT, credit);
     }
 
     @Override
-    public String getLanguage() throws ClientException {
+    public String getLanguage() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_LANGUAGE);
     }
 
     @Override
-    public void setLanguage(String language) throws ClientException {
+    public void setLanguage(String language) {
         docModel.setProperty(SCHEMA_NAME, FIELD_LANGUAGE, language);
     }
 
     @Override
-    public String getSource() throws ClientException {
+    public String getSource() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_SOURCE);
     }
 
     @Override
-    public void setSource(String source) throws ClientException {
+    public void setSource(String source) {
         docModel.setProperty(SCHEMA_NAME, FIELD_SOURCE, source);
     }
 
     @Override
-    public String getOrigin() throws ClientException {
+    public String getOrigin() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_ORIGIN);
     }
 
     @Override
-    public void setOrigin(String origin) throws ClientException {
+    public void setOrigin(String origin) {
         docModel.setProperty(SCHEMA_NAME, FIELD_ORIGIN, origin);
     }
 
     @Override
-    public String getGenre() throws ClientException {
+    public String getGenre() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_GENRE);
     }
 
     @Override
-    public void setGenre(String genre) throws ClientException {
+    public void setGenre(String genre) {
         docModel.setProperty(SCHEMA_NAME, FIELD_GENRE, genre);
     }
 
     @Override
-    public String getCaption() throws ClientException {
+    public String getCaption() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_CAPTION);
     }
 
     @Override
-    public void setCaption(String caption) throws ClientException {
+    public void setCaption(String caption) {
         docModel.setProperty(SCHEMA_NAME, FIELD_CAPTION, caption);
     }
 
     @Override
-    public String getTypage() throws ClientException {
+    public String getTypage() {
         return (String) docModel.getProperty(SCHEMA_NAME, FIELD_TYPAGE);
     }
 
     @Override
-    public void setTypage(String typage) throws ClientException {
+    public void setTypage(String typage) {
         docModel.setProperty(SCHEMA_NAME, FIELD_TYPAGE, typage);
     }
 

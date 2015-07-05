@@ -27,7 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DefaultDocumentAnnotability implements DocumentAnnotability {
 
-    public boolean isAnnotable(DocumentModel document) throws ClientException {
+    public boolean isAnnotable(DocumentModel document) {
         return true;
     }
 

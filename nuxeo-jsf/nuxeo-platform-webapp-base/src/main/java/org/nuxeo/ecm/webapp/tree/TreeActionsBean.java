@@ -98,24 +98,24 @@ public class TreeActionsBean implements TreeActions, Serializable {
     @In(create = true)
     protected TreeInvalidatorBean treeInvalidator;
 
-    public List<DocumentTreeNode> getTreeRoots() throws ClientException {
+    public List<DocumentTreeNode> getTreeRoots() {
         return getTreeRoots(false);
     }
 
-    public List<DocumentTreeNode> getTreeRoots(String treeName) throws ClientException {
+    public List<DocumentTreeNode> getTreeRoots(String treeName) {
         return getTreeRoots(false, treeName);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, String treeName) throws ClientException {
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, String treeName) {
         return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), treeName);
     }
 
-    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) throws ClientException {
+    protected List<DocumentTreeNode> getTreeRoots(boolean showRoot) {
         return getTreeRoots(showRoot, navigationContext.getCurrentDocument(), DEFAULT_TREE_PLUGIN_NAME);
     }
 
     protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, DocumentModel currentDocument)
-            throws ClientException {
+            {
         return getTreeRoots(showRoot, currentDocument, DEFAULT_TREE_PLUGIN_NAME);
     }
 
@@ -123,7 +123,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
      * @since 5.4
      */
     protected List<DocumentTreeNode> getTreeRoots(boolean showRoot, DocumentModel currentDocument, String treeName)
-            throws ClientException {
+            {
 
         if (treeInvalidator.needsInvalidation()) {
             reset();
@@ -228,7 +228,7 @@ public class TreeActionsBean implements TreeActions, Serializable {
         return userWorkspacePath;
     }
 
-    protected String findFarthestContainerPath(String documentPath) throws ClientException {
+    protected String findFarthestContainerPath(String documentPath) {
         Path containerPath = new Path(documentPath);
         String result;
         do {

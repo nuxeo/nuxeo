@@ -115,7 +115,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
     /**
      * Instantiates the provider merging the contribution and the directory entry
      */
-    protected OAuth2ServiceProvider buildProvider(DocumentModel entry) throws ClientException {
+    protected OAuth2ServiceProvider buildProvider(DocumentModel entry) {
         String serviceName = (String) entry.getProperty(SCHEMA, "serviceName");
         OAuth2ServiceProvider provider = registry.getProvider(serviceName);
         if (provider == null) {

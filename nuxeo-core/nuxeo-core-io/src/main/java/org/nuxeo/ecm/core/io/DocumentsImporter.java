@@ -28,6 +28,6 @@ import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
  */
 public interface DocumentsImporter {
 
-    DocumentTranslationMap importDocs(InputStream sourceInputStream) throws ImportDocumentException, ClientException,
+    DocumentTranslationMap importDocs(InputStream sourceInputStream) throws ImportDocumentException,
             IOException;
 }

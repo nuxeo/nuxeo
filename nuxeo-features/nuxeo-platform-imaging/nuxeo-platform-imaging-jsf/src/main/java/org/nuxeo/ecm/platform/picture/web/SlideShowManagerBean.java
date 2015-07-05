@@ -132,7 +132,7 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
     @Override
     @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED, EventNames.DOCUMENT_CHILDREN_CHANGED })
     @BypassInterceptors
-    public void resetIndex() throws ClientException {
+    public void resetIndex() {
         index = 1;
         child = null;
         children = null;

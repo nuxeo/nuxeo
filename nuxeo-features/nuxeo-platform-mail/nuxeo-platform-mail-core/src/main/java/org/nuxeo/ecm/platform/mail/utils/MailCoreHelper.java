@@ -116,8 +116,7 @@ public final class MailCoreHelper {
      * Creates MailMessage documents for every unread mail found in the INBOX. The parameters needed to connect to the
      * email INBOX are retrieved from the MailFolder document passed as a parameter.
      */
-    public static void checkMail(DocumentModel currentMailFolder, CoreSession coreSession) throws MessagingException,
-            ClientException {
+    public static void checkMail(DocumentModel currentMailFolder, CoreSession coreSession) throws MessagingException {
 
         if (processingMailBoxes.addIfAbsent(currentMailFolder.getId())) {
             try {
@@ -131,7 +130,7 @@ public final class MailCoreHelper {
     }
 
     protected static void doCheckMail(DocumentModel currentMailFolder, CoreSession coreSession)
-            throws MessagingException, ClientException {
+            throws MessagingException {
         String email = (String) currentMailFolder.getPropertyValue(EMAIL_PROPERTY_NAME);
         String password = (String) currentMailFolder.getPropertyValue(PASSWORD_PROPERTY_NAME);
         if (!StringUtils.isEmpty(email) && !StringUtils.isEmpty(password)) {

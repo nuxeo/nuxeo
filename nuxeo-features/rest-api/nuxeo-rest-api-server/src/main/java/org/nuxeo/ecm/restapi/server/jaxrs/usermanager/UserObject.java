@@ -50,13 +50,13 @@ public class UserObject extends AbstractUMObject<NuxeoPrincipal> {
     }
 
     @Override
-    protected NuxeoPrincipal updateArtifact(NuxeoPrincipal principal) throws ClientException {
+    protected NuxeoPrincipal updateArtifact(NuxeoPrincipal principal) {
         um.updateUser(principal.getModel());
         return um.getPrincipal(principal.getName());
     }
 
     @Override
-    protected void deleteArtifact() throws ClientException {
+    protected void deleteArtifact() {
         um.deleteUser(currentArtifact.getModel());
     }
 

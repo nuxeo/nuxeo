@@ -107,7 +107,7 @@ public class RestfulPhaseListener implements PhaseListener {
         // transaction, so it has to be started using Seam methods.
     }
 
-    protected void handleException(FacesContext context, Exception e) throws ClientRuntimeException {
+    protected void handleException(FacesContext context, Exception e) {
         try {
             ExternalContext externalContext = context.getExternalContext();
             ExceptionHandlingService exceptionHandlingService = Framework.getService(ExceptionHandlingService.class);

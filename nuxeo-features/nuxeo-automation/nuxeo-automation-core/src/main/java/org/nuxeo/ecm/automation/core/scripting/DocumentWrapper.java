@@ -51,12 +51,12 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return session;
     }
 
-    public DocumentWrapper getParent() throws ClientException {
+    public DocumentWrapper getParent() {
         DocumentModel parent = session.getParentDocument(doc.getRef());
         return parent != null ? new DocumentWrapper(session, parent) : null;
     }
 
-    public DocumentWrapper getParent(String type) throws ClientException {
+    public DocumentWrapper getParent(String type) {
         DocumentModel parent = session.getParentDocument(doc.getRef());
         while (parent != null && !type.equals(parent.getType())) {
             parent = session.getParentDocument(parent.getRef());
@@ -67,15 +67,15 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return new DocumentWrapper(session, parent);
     }
 
-    public DocumentWrapper getWorkspace() throws ClientException {
+    public DocumentWrapper getWorkspace() {
         return getParent("Workspace");
     }
 
-    public DocumentWrapper getDomain() throws ClientException {
+    public DocumentWrapper getDomain() {
         return getParent("Domain");
     }
 
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         return doc.getTitle();
     }
 
@@ -99,7 +99,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return new PathRef(doc.getPath().append(relative).toString());
     }
 
-    public String getDescription() throws ClientException {
+    public String getDescription() {
         return (String) doc.getPropertyValue("dc:description");
     }
 
@@ -127,7 +127,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.getDocumentType();
     }
 
-    public String getLifeCycle() throws ClientException {
+    public String getLifeCycle() {
         return doc.getCurrentLifeCycleState();
     }
 
@@ -151,7 +151,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.isVersion();
     }
 
-    public boolean isDownloadable() throws ClientException {
+    public boolean isDownloadable() {
         return doc.isDownloadable();
     }
 
@@ -175,25 +175,25 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         return doc.getFacets();
     }
 
-    public Serializable getProperty(String key) throws ClientException {
+    public Serializable getProperty(String key) {
         return doc.getPropertyValue(key);
     }
 
     /**
      * @since 5.7.3 Alias for #getProperty.
      */
-    public Serializable getPropertyValue(String key) throws ClientException {
+    public Serializable getPropertyValue(String key) {
         return doc.getPropertyValue(key);
     }
 
-    public void setProperty(String key, Serializable value) throws ClientException {
+    public void setProperty(String key, Serializable value) {
         doc.setPropertyValue(key, value);
     }
 
     /**
      * @since 5.7.3 Alias for #setProperty.
      */
-    public void setPropertyValue(String key, Serializable value) throws ClientException {
+    public void setPropertyValue(String key, Serializable value) {
         doc.setPropertyValue(key, value);
     }
 

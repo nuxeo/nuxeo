@@ -50,11 +50,11 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
 
     protected static final Log log = LogFactory.getLog(AbstractRootSectionsFinder.class);
 
-    protected abstract void computeUserSectionRoots(DocumentModel currentDoc) throws ClientException;
+    protected abstract void computeUserSectionRoots(DocumentModel currentDoc);
 
     protected abstract String buildQuery(String path);
 
-    protected abstract void computeUnrestrictedRoots(CoreSession session) throws ClientException;
+    protected abstract void computeUnrestrictedRoots(CoreSession session);
 
     public AbstractRootSectionsFinder(CoreSession userSession) {
         super(userSession);
@@ -67,7 +67,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     @Override
-    public DocumentModelList getAccessibleSectionRoots(DocumentModel currentDoc) throws ClientException {
+    public DocumentModelList getAccessibleSectionRoots(DocumentModel currentDoc) {
         if ((currentDocument == null) || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
             computeUserSectionRoots(currentDoc);
         }
@@ -76,7 +76,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
 
     @Override
     public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc, boolean addDefaultSectionRoots)
-            throws ClientException {
+            {
         if ((currentDocument == null) || (!currentDocument.getRef().equals(currentDoc.getRef()))) {
             computeUserSectionRoots(currentDoc);
         }
@@ -95,13 +95,13 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     @Override
-    public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc) throws ClientException {
+    public DocumentModelList getSectionRootsForWorkspace(DocumentModel currentDoc) {
         return getSectionRootsForWorkspace(currentDoc, false);
     }
 
     @Override
     public DocumentModelList getDefaultSectionRoots(boolean onlyHeads, boolean addDefaultSectionRoots)
-            throws ClientException {
+            {
         if (unrestrictedDefaultSectionRoot == null) {
             computeUserSectionRoots(null);
         }
@@ -120,12 +120,12 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     @Override
-    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads) throws ClientException {
+    public DocumentModelList getDefaultSectionRoots(boolean onlyHeads) {
         return getDefaultSectionRoots(onlyHeads, false);
     }
 
     protected DocumentModelList getFiltredSectionRoots(List<String> rootPaths, boolean onlyHeads)
-            throws ClientException {
+            {
         List<DocumentRef> filtredDocRef = new ArrayList<DocumentRef>();
         List<DocumentRef> trashedDocRef = new ArrayList<DocumentRef>();
 
@@ -163,7 +163,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
         return filteredDocuments;
     }
 
-    protected DocumentModelList getDefaultSectionRoots(CoreSession session) throws ClientException {
+    protected DocumentModelList getDefaultSectionRoots(CoreSession session) {
         // XXX replace by a query !!!
         DocumentModelList sectionRoots = new DocumentModelListImpl();
         DocumentModelList domains = session.getChildren(session.getRootDocument().getRef(), "Domain");
@@ -177,7 +177,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     protected DocumentModelList getSectionRootsFromWorkspaceConfig(DocumentModel workspace, CoreSession session)
-            throws ClientException {
+            {
 
         DocumentModelList selectedSections = new DocumentModelListImpl();
 
@@ -206,7 +206,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         computeUnrestrictedRoots(session);
     }
 

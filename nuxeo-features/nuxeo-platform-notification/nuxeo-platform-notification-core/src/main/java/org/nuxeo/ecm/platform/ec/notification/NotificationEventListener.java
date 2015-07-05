@@ -86,7 +86,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
     }
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
 
         if (notificationService == null) {
             log.error("Unable to get NotificationService, exiting");
@@ -206,12 +206,12 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         return userManager;
     }
 
-    protected List<String> getGroupMembers(String groupId) throws ClientException {
+    protected List<String> getGroupMembers(String groupId) {
         return getUserManager().getUsersInGroupAndSubGroups(groupId);
     }
 
     protected void sendNotificationSignalForUser(Notification notification, String subscriptor, Event event,
-            DocumentEventContext ctx) throws ClientException {
+            DocumentEventContext ctx) {
 
         Principal principal;
         if (LoginComponent.SYSTEM_USERNAME.equals(subscriptor)) {
@@ -286,7 +286,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         }
     }
 
-    public void sendNotification(Event event, DocumentEventContext ctx) throws ClientException {
+    public void sendNotification(Event event, DocumentEventContext ctx) {
 
         String eventId = event.getName();
         log.debug("Received a message for notification sender with eventId : " + eventId);
@@ -384,7 +384,7 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         }
     }
 
-    private DocumentModel getDocumentParent(CoreSession coreSession, DocumentModel doc) throws ClientException {
+    private DocumentModel getDocumentParent(CoreSession coreSession, DocumentModel doc) {
         if (doc == null) {
             return null;
         }

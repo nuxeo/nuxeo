@@ -40,33 +40,33 @@ public class CommentableDocumentAdapter implements CommentableDocument {
         this.docModel = docModel;
     }
 
-    public DocumentModel addComment(DocumentModel comment) throws ClientException {
+    public DocumentModel addComment(DocumentModel comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, comment);
     }
 
     @Deprecated
-    public DocumentModel addComment(String comment) throws ClientException {
+    public DocumentModel addComment(String comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, comment);
     }
 
-    public DocumentModel addComment(DocumentModel parent, DocumentModel comment) throws ClientException {
+    public DocumentModel addComment(DocumentModel parent, DocumentModel comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.createComment(docModel, parent, comment);
     }
 
-    public void removeComment(DocumentModel comment) throws ClientException {
+    public void removeComment(DocumentModel comment) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         commentManager.deleteComment(docModel, comment);
     }
 
-    public List<DocumentModel> getComments() throws ClientException {
+    public List<DocumentModel> getComments() {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.getComments(docModel);
     }
 
-    public List<DocumentModel> getComments(DocumentModel parent) throws ClientException {
+    public List<DocumentModel> getComments(DocumentModel parent) {
         CommentManager commentManager = Framework.getService(CommentManager.class);
         return commentManager.getComments(docModel, parent);
     }

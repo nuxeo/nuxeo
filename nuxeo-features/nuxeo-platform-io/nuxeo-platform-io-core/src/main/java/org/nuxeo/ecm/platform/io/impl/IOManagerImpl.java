@@ -80,12 +80,12 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public IOResourceAdapter getAdapter(String name) throws ClientException {
+    public IOResourceAdapter getAdapter(String name) {
         return adaptersRegistry.get(name);
     }
 
     @Override
-    public void addAdapter(String name, IOResourceAdapter adapter) throws ClientException {
+    public void addAdapter(String name, IOResourceAdapter adapter) {
         if (DOCUMENTS_ADAPTER_NAME.equals(name)) {
             log.error("Cannot register adapter with name " + DOCUMENTS_ADAPTER_NAME);
             return;
@@ -94,17 +94,17 @@ public class IOManagerImpl implements IOManager {
     }
 
     @Override
-    public void removeAdapter(String name) throws ClientException {
+    public void removeAdapter(String name) {
         adaptersRegistry.remove(name);
     }
 
     public void exportDocumentsAndResources(OutputStream out, String repo, final String format,
             Collection<String> ioAdapters, final DocumentReader customDocReader) throws ExportDocumentException,
-            IOException, ClientException {
+            IOException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
-            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, ClientException,
+            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException,
                     IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 DocumentTranslationMap map = docManager.exportDocuments(out, customDocReader, format);
@@ -118,11 +118,11 @@ public class IOManagerImpl implements IOManager {
     @Override
     public void exportDocumentsAndResources(OutputStream out, final String repo, final Collection<DocumentRef> sources,
             final boolean recurse, final String format, final Collection<String> ioAdapters) throws IOException,
-            ClientException, ExportDocumentException {
+            ExportDocumentException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
-            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, ClientException,
+            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException,
                     IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 DocumentTranslationMap map = docManager.exportDocuments(out, repo, sources, recurse, format);
@@ -134,7 +134,7 @@ public class IOManagerImpl implements IOManager {
     }
 
     void exportDocumentsAndResources(OutputStream out, String repo, DocumentsExporter docsExporter,
-            Collection<String> ioAdapters) throws IOException, ClientException, ExportDocumentException {
+            Collection<String> ioAdapters) throws IOException, ExportDocumentException {
 
         List<String> doneAdapters = new ArrayList<String>();
 
@@ -187,13 +187,13 @@ public class IOManagerImpl implements IOManager {
 
     @Override
     public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root)
-            throws IOException, ClientException, ImportDocumentException {
+            throws IOException, ImportDocumentException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
             public DocumentTranslationMap importDocs(InputStream sourceStream) throws ImportDocumentException,
-                    ClientException, IOException {
+                    IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 return docManager.importDocuments(sourceStream, repo, root);
             }
@@ -204,13 +204,13 @@ public class IOManagerImpl implements IOManager {
     }
 
     public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root,
-            final DocumentWriter customDocWriter) throws IOException, ClientException, ImportDocumentException {
+            final DocumentWriter customDocWriter) throws IOException, ImportDocumentException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
             public DocumentTranslationMap importDocs(InputStream sourceStream) throws ImportDocumentException,
-                    ClientException, IOException {
+                    IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 return docManager.importDocuments(sourceStream, customDocWriter);
             }
@@ -221,7 +221,7 @@ public class IOManagerImpl implements IOManager {
     }
 
     void importDocumentsAndResources(DocumentsImporter docsImporter, InputStream in, String repo) throws IOException,
-            ClientException, ImportDocumentException {
+            ImportDocumentException {
 
         ZipInputStream zip = new ZipInputStream(in);
 
@@ -276,7 +276,7 @@ public class IOManagerImpl implements IOManager {
 
     @Override
     public Collection<DocumentRef> copyDocumentsAndResources(String repo, Collection<DocumentRef> sources,
-            DocumentLocation targetLocation, Collection<String> ioAdapters) throws ClientException {
+            DocumentLocation targetLocation, Collection<String> ioAdapters) {
         if (sources == null || sources.isEmpty()) {
             return null;
         }
@@ -328,7 +328,7 @@ public class IOManagerImpl implements IOManager {
     }
 
     private static DocumentWriter createDocWriter(String docWriterFactoryName, Map<String, Object> factoryParams)
-            throws ClientException {
+            {
         // create a custom writer using factory instance
 
         Object factoryObj;
@@ -354,7 +354,7 @@ public class IOManagerImpl implements IOManager {
     }
 
     private static DocumentReader createDocReader(String docReaderFactoryName, Map<String, Object> factoryParams)
-            throws ClientException {
+            {
         // create a custom reader using factory instance
 
         Object factoryObj;
@@ -382,7 +382,7 @@ public class IOManagerImpl implements IOManager {
     @Override
     public void importFromStream(InputStream in, DocumentLocation targetLocation, String docReaderFactoryClassName,
             Map<String, Object> rFactoryParams, String docWriterFactoryClassName, Map<String, Object> wFactoryParams)
-            throws ClientException {
+            {
 
         DocumentWriter customDocWriter = createDocWriter(docWriterFactoryClassName, wFactoryParams);
         DocumentReader customDocReader = null;

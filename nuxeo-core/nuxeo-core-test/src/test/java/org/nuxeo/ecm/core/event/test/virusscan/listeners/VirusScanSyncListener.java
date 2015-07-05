@@ -51,7 +51,7 @@ public class VirusScanSyncListener implements EventListener {
     protected static final Log log = LogFactory.getLog(VirusScanSyncListener.class);
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         if (event.getContext() instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) event.getContext();
@@ -86,14 +86,14 @@ public class VirusScanSyncListener implements EventListener {
         }
     }
 
-    protected void markDocumentForScaning(DocumentModel doc) throws ClientException {
+    protected void markDocumentForScaning(DocumentModel doc) {
         if (!doc.hasFacet(VirusScanConsts.VIRUSSCAN_FACET)) {
             doc.addFacet(VirusScanConsts.VIRUSSCAN_FACET);
         }
         doc.setPropertyValue(VirusScanConsts.VIRUSSCAN_STATUS_PROP, VirusScanConsts.VIRUSSCAN_STATUS_PENDING);
     }
 
-    protected List<String> getBlobsXPath(DocumentModel doc, boolean onlyChangedBlob) throws ClientException {
+    protected List<String> getBlobsXPath(DocumentModel doc, boolean onlyChangedBlob) {
 
         List<String> propertiesPath = new ArrayList<String>();
         BlobsExtractor extractor = new BlobsExtractor();

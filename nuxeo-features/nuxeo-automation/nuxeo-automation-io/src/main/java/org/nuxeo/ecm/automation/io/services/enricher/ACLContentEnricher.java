@@ -38,7 +38,7 @@ public class ACLContentEnricher extends AbstractContentEnricher {
     public static final String ACLS_CONTENT_ID = "acls";
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
         DocumentModel doc = ec.getDocumentModel();
         ACP item = doc.getACP();
         jg.writeStartArray();

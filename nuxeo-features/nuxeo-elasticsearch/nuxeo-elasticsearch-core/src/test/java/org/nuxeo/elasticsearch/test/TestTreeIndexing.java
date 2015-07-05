@@ -118,7 +118,7 @@ public class TestTreeIndexing {
         syncMode = false;
     }
 
-    protected void buildTree() throws ClientException {
+    protected void buildTree() {
         String root = "/";
         for (int i = 0; i < 10; i++) {
             String name = "folder" + i;

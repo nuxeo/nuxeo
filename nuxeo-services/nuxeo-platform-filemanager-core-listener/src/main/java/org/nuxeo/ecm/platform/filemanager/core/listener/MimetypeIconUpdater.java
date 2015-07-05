@@ -81,7 +81,7 @@ public class MimetypeIconUpdater implements EventListener {
         return mimetypeService;
     }
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
@@ -160,7 +160,7 @@ public class MimetypeIconUpdater implements EventListener {
     }
 
     private void updateIconAndSizeFields(DocumentModel doc, MimetypeRegistry mimetypeService, Blob blob)
-            throws PropertyException, ClientException {
+            throws PropertyException {
         // update the icon field of the document
         if (blob != null && !doc.isFolder()) {
             MimetypeEntry mimetypeEntry = mimetypeService.getMimetypeEntryByMimeType(blob.getMimeType());

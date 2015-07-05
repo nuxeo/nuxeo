@@ -45,7 +45,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testMultipleRegistrationRules() throws ClientException {
+    public void testMultipleRegistrationRules() {
         initializeRegistrations();
 
         DocumentModel root = ((UserInvitationComponent) userRegistrationService).getOrCreateRootDocument(session,
@@ -62,7 +62,7 @@ public class TestMultipleConfiguration extends AbstractUserRegistration {
     }
 
     @Test
-    public void testMultipleUserRegistration() throws ClientException {
+    public void testMultipleUserRegistration() {
         initializeRegistrations();
 
         // Create workspaces where users will be invited

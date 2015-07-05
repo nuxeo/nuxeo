@@ -38,19 +38,19 @@ public interface RelationActions {
 
     String SEARCH_DOCUMENT_LIST = "RELATION_SEARCH_DOCUMENT_LIST";
 
-    List<StatementInfo> getIncomingStatementsInfo() throws ClientException;
+    List<StatementInfo> getIncomingStatementsInfo();
 
-    List<StatementInfo> getOutgoingStatementsInfo() throws ClientException;
+    List<StatementInfo> getOutgoingStatementsInfo();
 
     void resetStatements();
 
-    String addStatement() throws ClientException;
+    String addStatement();
 
-    String deleteStatement(StatementInfo statementInfo) throws ClientException;
+    String deleteStatement(StatementInfo statementInfo);
 
-    QNameResource getDocumentResource(DocumentModel document) throws ClientException;
+    QNameResource getDocumentResource(DocumentModel document);
 
-    DocumentModel getDocumentModel(Node node) throws ClientException;
+    DocumentModel getDocumentModel(Node node);
 
     Boolean getShowCreateForm();
 

@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.management.api.ProbeStatus;
 public class ActiveSessionsProbe implements Probe {
 
     @Override
-    public ProbeStatus run() throws ClientException {
+    public ProbeStatus run() {
         SQLRepositoryStatus status = new SQLRepositoryStatus();
         return ProbeStatus.newSuccess(status.listActiveSessions());
     }

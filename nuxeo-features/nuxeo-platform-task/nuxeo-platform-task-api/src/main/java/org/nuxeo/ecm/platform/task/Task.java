@@ -47,85 +47,85 @@ public interface Task extends Serializable {
      */
     String getTargetDocumentId();
 
-    List<String> getActors() throws ClientException;
+    List<String> getActors();
 
-    String getInitiator() throws ClientException;
+    String getInitiator();
 
-    String getName() throws ClientException;
-
-    /**
-     * @since 5.6
-     */
-    String getType() throws ClientException;
+    String getName();
 
     /**
      * @since 5.6
      */
-    String getProcessId() throws ClientException;
+    String getType();
 
-    String getDescription() throws ClientException;
+    /**
+     * @since 5.6
+     */
+    String getProcessId();
 
-    String getDirective() throws ClientException;
+    String getDescription();
 
-    List<TaskComment> getComments() throws ClientException;
+    String getDirective();
 
-    String getVariable(String key) throws ClientException;
+    List<TaskComment> getComments();
 
-    Date getDueDate() throws ClientException;
+    String getVariable(String key);
 
-    Date getCreated() throws ClientException;
+    Date getDueDate();
 
-    Boolean isCancelled() throws ClientException;
+    Date getCreated();
 
-    Boolean isOpened() throws ClientException;
+    Boolean isCancelled();
 
-    Boolean hasEnded() throws ClientException;
+    Boolean isOpened();
 
-    Boolean isAccepted() throws ClientException;
+    Boolean hasEnded();
 
-    Map<String, String> getVariables() throws ClientException;
+    Boolean isAccepted();
 
-    void setActors(List<String> actors) throws ClientException;
+    Map<String, String> getVariables();
 
-    void setInitiator(String initiator) throws ClientException;
+    void setActors(List<String> actors);
+
+    void setInitiator(String initiator);
 
     /**
      * @deprecated
      * @since 5.8, setTargetDocumentsIds(List<String> ids) should be used instead
      */
-    void setTargetDocumentId(String targetDocumentId) throws ClientException;
+    void setTargetDocumentId(String targetDocumentId);
 
-    void setName(String name) throws ClientException;
-
-    /**
-     * @since 5.6
-     */
-    void setType(String type) throws ClientException;
+    void setName(String name);
 
     /**
      * @since 5.6
      */
-    void setProcessId(String processId) throws ClientException;
+    void setType(String type);
 
-    void setDescription(String description) throws ClientException;
+    /**
+     * @since 5.6
+     */
+    void setProcessId(String processId);
 
-    void setDirective(String directive) throws ClientException;
+    void setDescription(String description);
 
-    void setVariable(String key, String value) throws ClientException;
+    void setDirective(String directive);
 
-    void setDueDate(Date dueDate) throws ClientException;
+    void setVariable(String key, String value);
 
-    void setCreated(Date created) throws ClientException;
+    void setDueDate(Date dueDate);
 
-    void setAccepted(Boolean accepted) throws ClientException;
+    void setCreated(Date created);
 
-    void setVariables(Map<String, String> variables) throws ClientException;
+    void setAccepted(Boolean accepted);
 
-    void addComment(String author, String text) throws ClientException;
+    void setVariables(Map<String, String> variables);
 
-    void cancel(CoreSession coreSession) throws ClientException;
+    void addComment(String author, String text);
 
-    void end(CoreSession coreSession) throws ClientException;
+    void cancel(CoreSession coreSession);
+
+    void end(CoreSession coreSession);
 
     enum TaskVariableName {
         needi18n, taskType
@@ -134,7 +134,7 @@ public interface Task extends Serializable {
     /**
      * @since 5.8
      */
-    List<String> getDelegatedActors() throws ClientException;
+    List<String> getDelegatedActors();
 
     /**
      * @since 5.8
@@ -144,12 +144,12 @@ public interface Task extends Serializable {
     /**
      * @since 5.8
      */
-    List<String> getTargetDocumentsIds() throws ClientException;
+    List<String> getTargetDocumentsIds();
 
     /**
      * The first id on the list is also set as 'targetDocumentId'
      *
      * @since 5.8
      */
-    void setTargetDocumentsIds(List<String> ids) throws ClientException;
+    void setTargetDocumentsIds(List<String> ids);
 }

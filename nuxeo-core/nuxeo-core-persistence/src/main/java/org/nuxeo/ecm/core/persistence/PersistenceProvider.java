@@ -150,10 +150,10 @@ public class PersistenceProvider {
     }
 
     public interface RunCallback<T> {
-        T runWith(EntityManager em) throws ClientException;
+        T runWith(EntityManager em);
     }
 
-    public <T> T run(Boolean needActiveSession, RunCallback<T> callback) throws ClientException {
+    public <T> T run(Boolean needActiveSession, RunCallback<T> callback) {
         // needActiveSession now unused
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();
@@ -172,10 +172,10 @@ public class PersistenceProvider {
     }
 
     public interface RunVoid {
-        void runWith(EntityManager em) throws ClientException;
+        void runWith(EntityManager em);
     }
 
-    public void run(Boolean needActiveSession, RunVoid callback) throws ClientException {
+    public void run(Boolean needActiveSession, RunVoid callback) {
         // needActiveSession now unused
         Thread myThread = Thread.currentThread();
         ClassLoader lastLoader = myThread.getContextClassLoader();

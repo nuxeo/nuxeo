@@ -56,7 +56,7 @@ public class CanMonitorCoreSessionTest {
     }
 
     @Test
-    public void isSessionOpened() throws ClientException {
+    public void isSessionOpened() {
         int count = monitor.getCount();
         assertThat(count, is(1));
         String firstInfo = monitor.getInfos()[0];

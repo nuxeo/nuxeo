@@ -102,7 +102,7 @@ public class UITypesConfigurationActions implements Serializable {
 
     protected transient SchemaManager schemaManager;
 
-    public List<Type> getNotSelectedTypes() throws ClientException {
+    public List<Type> getNotSelectedTypes() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return getNotSelectedTypes(currentDoc);
     }
@@ -112,10 +112,9 @@ public class UITypesConfigurationActions implements Serializable {
      *
      * @param document the domain to configure
      * @return a List of type of document, not currently selected for the domain
-     * @throws ClientException
      * @since 5.5
      */
-    public List<Type> getNotSelectedTypes(DocumentModel document) throws ClientException {
+    public List<Type> getNotSelectedTypes(DocumentModel document) {
         if (!document.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
@@ -136,7 +135,7 @@ public class UITypesConfigurationActions implements Serializable {
         return notSelectedTypes;
     }
 
-    protected List<String> getAllowedTypes(DocumentModel doc) throws ClientException {
+    protected List<String> getAllowedTypes(DocumentModel doc) {
         UITypesConfiguration uiTypesConfiguration = doc.getAdapter(UITypesConfiguration.class);
         if (uiTypesConfiguration == null) {
             return Collections.emptyList();
@@ -148,7 +147,7 @@ public class UITypesConfigurationActions implements Serializable {
         return allowedTypes;
     }
 
-    public List<Type> getSelectedTypes() throws ClientException {
+    public List<Type> getSelectedTypes() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return getSelectedTypes(currentDoc);
     }
@@ -158,10 +157,9 @@ public class UITypesConfigurationActions implements Serializable {
      *
      * @param document the domain to configure
      * @return List of documen type selected for the domain
-     * @throws ClientException
      * @since 5.5
      */
-    public List<Type> getSelectedTypes(DocumentModel document) throws ClientException {
+    public List<Type> getSelectedTypes(DocumentModel document) {
         if (!document.hasFacet(UI_TYPES_CONFIGURATION_FACET)) {
             return Collections.emptyList();
         }
@@ -180,7 +178,7 @@ public class UITypesConfigurationActions implements Serializable {
         return selectedTypes;
     }
 
-    protected List<String> computeAllowedTypes(DocumentModel currentDoc) throws ClientException {
+    protected List<String> computeAllowedTypes(DocumentModel currentDoc) {
         List<String> types = new ArrayList<String>();
 
         DocumentModel parent = documentManager.getRootDocument();
@@ -197,7 +195,7 @@ public class UITypesConfigurationActions implements Serializable {
         return types;
     }
 
-    public List<Type> getTypesWithSchemaFile() throws ClientException {
+    public List<Type> getTypesWithSchemaFile() {
         DocumentModel document = navigationContext.getCurrentDocument();
         return getTypesWithSchemaFile(document);
     }
@@ -208,10 +206,9 @@ public class UITypesConfigurationActions implements Serializable {
      *
      * @param document the domain
      * @return List of Document types which have assoctiated Schema files.
-     * @throws ClientException
      * @Since 5.5
      */
-    public List<Type> getTypesWithSchemaFile(DocumentModel document) throws ClientException {
+    public List<Type> getTypesWithSchemaFile(DocumentModel document) {
         List<Type> types = new ArrayList<Type>();
         for (String type : getAllowedTypes(document)) {
             DocumentType documentType = getSchemaManager().getDocumentType(type);

@@ -18,6 +18,6 @@ import org.nuxeo.ecm.core.api.ClientException;
  */
 public interface Probe {
 
-    ProbeStatus run() throws ClientException;
+    ProbeStatus run();
 
 }

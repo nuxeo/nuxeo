@@ -75,7 +75,7 @@ public class OAuth2Callback extends ModuleRoot {
 
         new UnrestrictedSessionRunner(ctx.getCoreSession()) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 try {
                     credential = provider.handleAuthorizationCallback(request);
                 } catch (ClientException e) {

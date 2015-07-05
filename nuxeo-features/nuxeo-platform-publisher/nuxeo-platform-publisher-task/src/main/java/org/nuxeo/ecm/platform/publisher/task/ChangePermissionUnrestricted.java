@@ -54,7 +54,7 @@ public class ChangePermissionUnrestricted extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         ACP acp = session.getACP(ref);
         ACL acl = acp.getOrCreateACL(aclName);
         acl.clear();

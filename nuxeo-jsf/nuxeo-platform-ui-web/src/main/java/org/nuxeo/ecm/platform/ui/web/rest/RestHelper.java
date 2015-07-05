@@ -90,7 +90,7 @@ public class RestHelper implements Serializable {
      * Only sets current server location if the document reference is null.
      */
     @Begin(id = "#{conversationIdGenerator.currentOrNewMainConversationId}", join = true)
-    public String initContextFromRestRequest(DocumentView docView) throws ClientException {
+    public String initContextFromRestRequest(DocumentView docView) {
         String outcome = null;
 
         if (docView != null) {

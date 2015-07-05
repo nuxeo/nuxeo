@@ -43,7 +43,7 @@ public class MailMessageBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         String htmlTextProperty = (String) doc.getPropertyValue(xPath);
         Blob blob = null;
         if (htmlTextProperty != null && xPathFilename != null && htmlTextProperty.length() != 0) {

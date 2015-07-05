@@ -139,7 +139,7 @@ public class TestDefaultPageProviders {
         }
     }
 
-    protected void createTestDocuments() throws ClientException {
+    protected void createTestDocuments() {
         final DocumentModel root = session.getRootDocument();
         // create docs in descending order so that docs are not ordered by
         // title by default
@@ -154,7 +154,7 @@ public class TestDefaultPageProviders {
         // does not have access to it by default
         new UnrestrictedSessionRunner(session) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 DocumentModel doc = session.createDocumentModel("Folder");
                 doc.setPropertyValue("dc:title", "Document restricted");
                 doc.setPathInfo(root.getPathAsString(), "doc_restricted");

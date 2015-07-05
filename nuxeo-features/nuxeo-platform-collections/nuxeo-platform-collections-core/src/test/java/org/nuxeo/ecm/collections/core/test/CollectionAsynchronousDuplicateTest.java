@@ -34,17 +34,17 @@ import org.nuxeo.ecm.core.api.PathRef;
 public class CollectionAsynchronousDuplicateTest extends CollectionTestCase {
 
     @Test
-    public void testCopyCollectionWithManyItems() throws ClientException, InterruptedException {
+    public void testCopyCollectionWithManyItems() throws InterruptedException {
         updateCollectionMemberOnCollectionDuplicated(createTestFiles(session, MAX_CARDINALITY));
     }
 
     @Test
-    public void testCopyCollectionWithOneItem() throws ClientException, InterruptedException {
+    public void testCopyCollectionWithOneItem() throws InterruptedException {
         updateCollectionMemberOnCollectionDuplicated(createTestFiles(session, 1));
     }
 
     protected void updateCollectionMemberOnCollectionDuplicated(final List<DocumentModel> docs)
-            throws ClientException, InterruptedException {
+            throws InterruptedException {
         List<DocumentModel> files = docs;
 
         collectionManager.addToNewCollection(COLLECTION_NAME, COLLECTION_DESCRIPTION, files, session);

@@ -51,7 +51,7 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
     }
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, LogEntry logEntry) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, LogEntry logEntry) throws IOException {
         jg.writeStringField("entity-type", "logEntry");
         jg.writeStringField("category", logEntry.getCategory());
         jg.writeStringField("principalName", logEntry.getPrincipalName());
@@ -68,7 +68,7 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         writeExtendedInfos(jg, logEntry);
     }
 
-    protected void writeExtendedInfos(JsonGenerator jg, LogEntry logEntry) throws IOException, ClientException {
+    protected void writeExtendedInfos(JsonGenerator jg, LogEntry logEntry) throws IOException {
         Map<String, ExtendedInfo> extended = logEntry.getExtendedInfos();
         jg.writeObjectFieldStart("extended");
         for (String key : extended.keySet()) {
@@ -82,8 +82,7 @@ public class LogEntryWriter extends EntityWriter<LogEntry> {
         jg.writeEndObject();
     }
 
-    protected void writeExtendedInfo(JsonGenerator jg, String key, Serializable value) throws IOException,
-            ClientException {
+    protected void writeExtendedInfo(JsonGenerator jg, String key, Serializable value) throws IOException {
         Class<?> clazz = value.getClass();
         if (Long.class.isAssignableFrom(clazz)) {
             jg.writeNumberField(key, (Long) value);

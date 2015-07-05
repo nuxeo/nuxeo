@@ -75,7 +75,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
         }
     }
 
-    public void writeEntity(JsonGenerator jg, T item) throws IOException, ClientException {
+    public void writeEntity(JsonGenerator jg, T item) throws IOException {
         jg.writeStartObject();
         jg.writeStringField("entity-type", getEntityType());
 
@@ -88,7 +88,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
     /**
      * Write the body of the entity. The object has already been opened and it entity-type rendered.
      */
-    abstract protected void writeEntityBody(JsonGenerator jg, T item) throws IOException, ClientException;
+    abstract protected void writeEntityBody(JsonGenerator jg, T item) throws IOException;
 
     /**
      * get the Entity type of the current entity type. It MUST follow camelCase notation

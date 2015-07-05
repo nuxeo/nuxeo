@@ -76,21 +76,21 @@ public class PublishRelationsListener implements EventListener {
         return rmanager;
     }
 
-    public List<String> getGraphNamesForCopyFromWork() throws ClientException {
+    public List<String> getGraphNamesForCopyFromWork() {
         if (graphNamesForCopyFromWork == null) {
             return getRelationManager().getGraphNames();
         }
         return graphNamesForCopyFromWork;
     }
 
-    public List<String> getGraphNamesForCopyFromReplacedProxy() throws ClientException {
+    public List<String> getGraphNamesForCopyFromReplacedProxy() {
         if (graphNamesForCopyFromReplacedProxy == null) {
             return getRelationManager().getGraphNames();
         }
         return graphNamesForCopyFromReplacedProxy;
     }
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
 
         if (ctx instanceof DocumentEventContext) {
@@ -142,7 +142,7 @@ public class PublishRelationsListener implements EventListener {
     }
 
     protected void copyRelationsFromReplacedProxy(RelationManager rmanager, Resource replacedResource,
-            Resource publishedResource, Resource sourceResource) throws ClientException {
+            Resource publishedResource, Resource sourceResource) {
         for (String graphName : getGraphNamesForCopyFromReplacedProxy()) {
             Graph graph = rmanager.getGraphByName(graphName);
 
@@ -183,7 +183,7 @@ public class PublishRelationsListener implements EventListener {
     }
 
     protected void copyRelationsFromWorkingCopy(RelationManager rmanager, Resource sourceResource,
-            Resource publishedResource) throws ClientException {
+            Resource publishedResource) {
         for (String graphName : getGraphNamesForCopyFromWork()) {
             Graph graph = rmanager.getGraphByName(graphName);
 

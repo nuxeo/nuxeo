@@ -51,7 +51,7 @@ public class DefaultUserMultiTenantManagement implements UserMultiTenantManageme
 
     @Override
     public void queryTransformer(UserManager um, Map<String, Serializable> filter, Set<String> fulltext,
-            DocumentModel context) throws ClientException {
+            DocumentModel context) {
         String groupId = um.getGroupIdField();
         if (filter == null || fulltext == null) {
             throw new ClientException("Filter and Fulltext must be not null, please check");
@@ -83,7 +83,7 @@ public class DefaultUserMultiTenantManagement implements UserMultiTenantManageme
 
     @Override
     public DocumentModel groupTransformer(UserManager um, DocumentModel group, DocumentModel context)
-            throws ClientException {
+            {
         if (context == null) {
             return group;
         }

@@ -34,7 +34,7 @@ public class TestContextReaderOperation {
     OperationContext ctx;
 
     @OperationMethod
-    public DocumentModel run() throws ClientException {
+    public DocumentModel run() {
         return (DocumentModel) ctx.get("document");
     }
 

@@ -81,8 +81,7 @@ public class JDBCBackend implements RepositoryBackend {
                 isPooledDataSource = true;
                 return;
             }
-        } catch (NamingException cause) {
-            ;
+        } catch (NamingException cause) {;
         }
 
         // try single-datasource non-XA mode

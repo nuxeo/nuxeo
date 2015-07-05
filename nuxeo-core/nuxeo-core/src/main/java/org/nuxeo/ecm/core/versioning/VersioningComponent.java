@@ -208,7 +208,7 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     }
 
     @Override
-    public List<VersioningOption> getSaveOptions(DocumentModel docModel) throws ClientException {
+    public List<VersioningOption> getSaveOptions(DocumentModel docModel) {
         return service.getSaveOptions(docModel);
     }
 

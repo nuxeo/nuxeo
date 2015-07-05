@@ -146,7 +146,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         if (StringUtils.isEmpty(taskDocumentType)) {
             taskDocumentType = TaskConstants.TASK_TYPE_NAME;
         }
@@ -155,13 +155,12 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
     }
 
     /**
-     * @throws ClientException
      * @since 5.6
      */
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath) throws ClientException {
+            Map<String, String> taskVariables, String parentPath) {
         List<DocumentModel> docs = new ArrayList<DocumentModel>();
         docs.add(document);
         createTask(coreSession, principal, docs, taskDocumentType, taskName, taskType, processId, prefixedActorIds,
@@ -175,7 +174,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal, List<DocumentModel> documents,
             String taskDocumentType, String taskName, String taskType, String processId, List<String> prefixedActorIds,
             boolean createOneTaskPerActor, String directive, String comment, Date dueDate,
-            Map<String, String> taskVariables, String parentPath) throws ClientException {
+            Map<String, String> taskVariables, String parentPath) {
         if (createOneTaskPerActor) {
             for (String prefixedActorId : prefixedActorIds) {
                 createTask(coreSession, principal, documents, taskDocumentType, taskName, taskType, processId,
@@ -268,7 +267,7 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
 
     public void createTask(CoreSession coreSession, NuxeoPrincipal principal, DocumentModel document, String taskName,
             List<String> prefixedActorIds, boolean createOneTaskPerActor, String directive, String comment,
-            Date dueDate, Map<String, String> taskVariables, String parentPath) throws ClientException {
+            Date dueDate, Map<String, String> taskVariables, String parentPath) {
         createTask(coreSession, principal, document, TaskConstants.TASK_TYPE_NAME, taskName, null, null,
                 prefixedActorIds, createOneTaskPerActor, directive, comment, dueDate, taskVariables, parentPath);
     }

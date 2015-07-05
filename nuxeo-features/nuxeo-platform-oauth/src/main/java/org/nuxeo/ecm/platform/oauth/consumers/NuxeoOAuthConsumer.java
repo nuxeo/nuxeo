@@ -68,7 +68,7 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
     protected boolean allowBypassVerifier = false;
 
     public static NuxeoOAuthConsumer createFromDirectoryEntry(DocumentModel entry, String keyType)
-            throws ClientException {
+            {
         String callbackURL = (String) entry.getProperty(SCHEMA, "callbackURL");
         String consumerKey = (String) entry.getProperty(SCHEMA, "consumerKey");
         String consumerSecret = (String) entry.getProperty(SCHEMA, "consumerSecret");
@@ -108,7 +108,7 @@ public class NuxeoOAuthConsumer extends OAuthConsumer {
         super(callbackURL, consumerKey, consumerSecret, serviceProvider);
     }
 
-    protected DocumentModel asDocumentModel(DocumentModel entry) throws ClientException {
+    protected DocumentModel asDocumentModel(DocumentModel entry) {
         entry.setProperty(SCHEMA, "callbackURL", callbackURL);
         entry.setProperty(SCHEMA, "consumerKey", consumerKey);
         entry.setProperty(SCHEMA, "consumerSecret", consumerSecret);

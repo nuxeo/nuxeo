@@ -89,7 +89,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQuery(DocumentModel model, WhereClauseDefinition whereClause, Object[] params,
-            SortInfo... sortInfos) throws ClientException {
+            SortInfo... sortInfos) {
         StringBuilder queryBuilder = new StringBuilder();
         String selectStatement = whereClause.getSelectStatement();
         if (StringUtils.isBlank(selectStatement)) {
@@ -108,7 +108,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQueryElement(DocumentModel model, WhereClauseDefinition whereClause, Object[] params)
-            throws ClientException {
+            {
         List<String> elements = new ArrayList<String>();
         PredicateDefinition[] predicates = whereClause.getPredicates();
         if (predicates != null) {
@@ -165,7 +165,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQuery(String pattern, Object[] params, boolean quoteParameters, boolean escape,
-            DocumentModel searchDocumentModel, SortInfo... sortInfos) throws ClientException {
+            DocumentModel searchDocumentModel, SortInfo... sortInfos) {
         String sortedColumn;
         if (sortInfos == null || sortInfos.length == 0) {
             // If there is no ORDER BY use the id
@@ -307,7 +307,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor, Escaper escaper)
-            throws ClientException {
+            {
         String type = predicateDescriptor.getType();
         if (PredicateDefinition.ATOMIC_PREDICATE.equals(type)) {
             return atomicQueryElement(model, predicateDescriptor, escaper);
@@ -319,7 +319,7 @@ public class NXQLQueryBuilder {
     }
 
     protected static String subClauseQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor)
-            throws ClientException {
+            {
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (values == null || values.length != 1) {
             throw new ClientException("subClause predicate needs exactly one field");
@@ -342,7 +342,7 @@ public class NXQLQueryBuilder {
     }
 
     protected static String atomicQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor,
-            Escaper escaper) throws ClientException {
+            Escaper escaper) {
         String operator = null;
         String operatorField = predicateDescriptor.getOperatorField();
         String operatorSchema = predicateDescriptor.getOperatorSchema();
@@ -561,7 +561,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getFieldType(DocumentModel model, PredicateFieldDefinition fieldDescriptor)
-            throws ClientException {
+            {
         String xpath = fieldDescriptor.getXpath();
         String schema = fieldDescriptor.getSchema();
         String name = fieldDescriptor.getName();
@@ -625,7 +625,7 @@ public class NXQLQueryBuilder {
     }
 
     public static String getStringValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor)
-            throws ClientException {
+            {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null) {
             return null;

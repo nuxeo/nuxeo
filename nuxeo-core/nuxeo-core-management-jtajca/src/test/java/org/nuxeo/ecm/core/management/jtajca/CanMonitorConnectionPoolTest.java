@@ -55,7 +55,7 @@ public class CanMonitorConnectionPoolTest {
     }
 
     @Test
-    public void areConnectionsOpened() throws ClientException {
+    public void areConnectionsOpened() {
         isConnectionOpened(repo);
         isConnectionOpened(db);
     }
@@ -65,7 +65,7 @@ public class CanMonitorConnectionPoolTest {
         monitor.getConnectionCount(); // throw exception is monitor not present
     }
 
-    protected void isConnectionOpened(ConnectionPoolMonitor monitor) throws ClientException {
+    protected void isConnectionOpened(ConnectionPoolMonitor monitor) {
         int count = monitor.getConnectionCount();
         assertThat(count, greaterThan(0));
     }

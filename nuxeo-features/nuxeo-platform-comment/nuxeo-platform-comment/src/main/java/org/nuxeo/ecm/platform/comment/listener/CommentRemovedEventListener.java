@@ -40,7 +40,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
 
     @Override
     protected void doProcess(CoreSession coreSession, RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docMessage) throws ClientException {
+            DocumentModel docMessage) {
         log.debug("Processing relations cleanup on Comment removal");
         String typeName = docMessage.getType();
         if (CommentsConstants.COMMENT_DOC_TYPE.equals(typeName) || "Post".equals(typeName)) {
@@ -49,7 +49,7 @@ public class CommentRemovedEventListener extends AbstractCommentListener impleme
     }
 
     private static void onCommentRemoved(RelationManager relationManager, CommentServiceConfig config,
-            DocumentModel docModel) throws ClientException {
+            DocumentModel docModel) {
         Resource commentRes = relationManager.getResource(config.commentNamespace, docModel, null);
         if (commentRes == null) {
             log.warn("Could not adapt document model to relation resource; "

@@ -57,7 +57,7 @@ public class PageProviderAdapter extends DocumentModelListPaginableAdapter {
     @GET
     @Path("{pageProviderName}")
     public Paginable<DocumentModel> getProviderDocs(@PathParam("pageProviderName") String providerName)
-            throws ClientException {
+            {
         pageProviderName = providerName;
         return super.getPaginableEntries();
     }

@@ -47,7 +47,7 @@ public class TestInvokationHandler implements PublicationInvokationHandler {
         this.marshaler = marshaler;
     }
 
-    public String invoke(String methodName, String data) throws ClientException {
+    public String invoke(String methodName, String data) {
 
         // XXX Err management !
 

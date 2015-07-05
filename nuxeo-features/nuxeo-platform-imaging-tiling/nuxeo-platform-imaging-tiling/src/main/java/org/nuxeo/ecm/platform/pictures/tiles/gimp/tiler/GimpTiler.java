@@ -49,7 +49,7 @@ public class GimpTiler extends BasePictureTiler {
 
     public PictureTiles getTilesFromFile(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
             int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
-            throws ClientException {
+            {
 
         String inputFilePath = input.getFilePath();
 

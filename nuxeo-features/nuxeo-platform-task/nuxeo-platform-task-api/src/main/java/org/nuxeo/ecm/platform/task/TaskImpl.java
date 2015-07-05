@@ -65,28 +65,28 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public List<String> getActors() throws ClientException {
+    public List<String> getActors() {
         return getPropertyValue(TaskConstants.TASK_USERS_PROPERTY_NAME);
     }
 
     @Override
-    public String getInitiator() throws ClientException {
+    public String getInitiator() {
         return getPropertyValue(TaskConstants.TASK_INITIATOR_PROPERTY_NAME);
     }
 
     @Override
-    public String getDescription() throws ClientException {
+    public String getDescription() {
         return getPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME);
     }
 
     @Override
-    public String getDirective() throws ClientException {
+    public String getDirective() {
         return getPropertyValue(TaskConstants.TASK_DIRECTIVE_PROPERTY_NAME);
 
     }
 
     @Override
-    public List<TaskComment> getComments() throws ClientException {
+    public List<TaskComment> getComments() {
         List<Map<String, Serializable>> taskCommentsProperty = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
         List<TaskComment> taskComments = new ArrayList<TaskComment>(taskCommentsProperty.size());
         for (Map<String, Serializable> taskCommentMap : taskCommentsProperty) {
@@ -96,60 +96,60 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public String getName() throws ClientException {
+    public String getName() {
         return getPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME);
     }
 
     @Override
-    public String getType() throws ClientException {
+    public String getType() {
         return getPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME);
     }
 
     @Override
-    public String getProcessId() throws ClientException {
+    public String getProcessId() {
         return getPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME);
     }
 
     @Override
-    public Date getCreated() throws ClientException {
+    public Date getCreated() {
         return getDatePropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME);
     }
 
     @Override
-    public Boolean isCancelled() throws ClientException {
+    public Boolean isCancelled() {
         return TaskConstants.TASK_CANCELLED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
     @Override
-    public Boolean hasEnded() throws ClientException {
+    public Boolean hasEnded() {
         return TaskConstants.TASK_ENDED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
     @Override
-    public Boolean isOpened() throws ClientException {
+    public Boolean isOpened() {
         return TaskConstants.TASK_OPENED_LIFE_CYCLE_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
     @Override
-    public Boolean isAccepted() throws ClientException {
+    public Boolean isAccepted() {
         Boolean isAccepted = getPropertyValue(TaskConstants.TASK_ACCEPTED_PROPERTY_NAME);
         return isAccepted == null ? false : isAccepted;
     }
 
     @Override
-    public String getVariable(String key) throws ClientException {
+    public String getVariable(String key) {
         Map<String, String> variables = getVariables();
         return variables.get(key);
     }
 
     @Override
-    public Date getDueDate() throws ClientException {
+    public Date getDueDate() {
         return getDatePropertyValue(TaskConstants.TASK_DUE_DATE_PROPERTY_NAME);
 
     }
 
     @Override
-    public Map<String, String> getVariables() throws ClientException {
+    public Map<String, String> getVariables() {
         List<Map<String, String>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         Map<String, String> variableMap = new HashMap<String, String>(variables.size());
         for (Map<String, String> map : variables) {
@@ -159,12 +159,12 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void setActors(List<String> users) throws ClientException {
+    public void setActors(List<String> users) {
         setPropertyValue(TaskConstants.TASK_USERS_PROPERTY_NAME, users);
     }
 
     @Override
-    public void setTargetDocumentId(String targetDocId) throws ClientException {
+    public void setTargetDocumentId(String targetDocId) {
         List<String> ids = new ArrayList<String>();
         ids.add(targetDocId);
         // handle compatibility before @5.8
@@ -173,57 +173,57 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void setDescription(String description) throws ClientException {
+    public void setDescription(String description) {
         setPropertyValue(TaskConstants.TASK_DESCRIPTION_PROPERTY_NAME, description);
     }
 
     @Override
-    public void setDirective(String directive) throws ClientException {
+    public void setDirective(String directive) {
         setPropertyValue(TaskConstants.TASK_DIRECTIVE_PROPERTY_NAME, directive);
     }
 
     @Override
-    public void setName(String name) throws ClientException {
+    public void setName(String name) {
         setPropertyValue(TaskConstants.TASK_NAME_PROPERTY_NAME, name);
     }
 
     @Override
-    public void setProcessId(String processId) throws ClientException {
+    public void setProcessId(String processId) {
         setPropertyValue(TaskConstants.TASK_PROCESS_ID_PROPERTY_NAME, processId);
     }
 
     @Override
-    public void setType(String type) throws ClientException {
+    public void setType(String type) {
         setPropertyValue(TaskConstants.TASK_TYPE_PROPERTY_NAME, type);
     }
 
     @Override
-    public void setInitiator(String initiator) throws ClientException {
+    public void setInitiator(String initiator) {
         setPropertyValue(TaskConstants.TASK_INITIATOR_PROPERTY_NAME, initiator);
     }
 
     @Override
-    public void setDueDate(Date dueDate) throws ClientException {
+    public void setDueDate(Date dueDate) {
         setPropertyValue(TaskConstants.TASK_DUE_DATE_PROPERTY_NAME, dueDate);
 
     }
 
     @Override
-    public void setCreated(Date created) throws ClientException {
+    public void setCreated(Date created) {
         setPropertyValue(TaskConstants.TASK_CREATED_PROPERTY_NAME, created);
     }
 
     @Override
-    public void cancel(CoreSession coreSession) throws ClientException {
+    public void cancel(CoreSession coreSession) {
         followTransition(coreSession, TaskConstants.TASK_CANCEL_LIFE_CYCLE_TRANSITION);
     }
 
     @Override
-    public void end(CoreSession coreSession) throws ClientException {
+    public void end(CoreSession coreSession) {
         followTransition(coreSession, TaskConstants.TASK_END_LIFE_CYCLE_TRANSITION);
     }
 
-    protected void followTransition(CoreSession coreSession, String transition) throws ClientException {
+    protected void followTransition(CoreSession coreSession, String transition) {
         if (doc.getAllowedStateTransitions().contains(transition)) {
             coreSession.followTransition(doc.getRef(), transition);
         } else {
@@ -234,12 +234,12 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void setAccepted(Boolean accepted) throws ClientException {
+    public void setAccepted(Boolean accepted) {
         setPropertyValue(TaskConstants.TASK_ACCEPTED_PROPERTY_NAME, accepted);
     }
 
     @Override
-    public void setVariables(Map<String, String> variables) throws ClientException {
+    public void setVariables(Map<String, String> variables) {
         List<Map<String, Serializable>> variablesProperty = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variablesProperty == null) {
             variablesProperty = new ArrayList<Map<String, Serializable>>();
@@ -258,7 +258,7 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void setVariable(String key, String value) throws ClientException {
+    public void setVariable(String key, String value) {
         List<Map<String, Serializable>> variables = getPropertyValue(TaskConstants.TASK_VARIABLES_PROPERTY_NAME);
         if (variables == null) {
             variables = new ArrayList<Map<String, Serializable>>();
@@ -271,7 +271,7 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public void addComment(String author, String text) throws ClientException {
+    public void addComment(String author, String text) {
         List<Map<String, Serializable>> existingTasks = getPropertyValue(TaskConstants.TASK_COMMENTS_PROPERTY_NAME);
         if (existingTasks == null) {
             existingTasks = new ArrayList<Map<String, Serializable>>();
@@ -328,7 +328,7 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public List<String> getDelegatedActors() throws ClientException {
+    public List<String> getDelegatedActors() {
         return getPropertyValue(TaskConstants.TASK_DELEGATED_ACTORS_PROPERTY_NAME);
     }
 
@@ -338,12 +338,12 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public List<String> getTargetDocumentsIds() throws ClientException {
+    public List<String> getTargetDocumentsIds() {
         return getPropertyValue(TaskConstants.TASK_TARGET_DOCUMENTS_IDS_PROPERTY_NAME);
     }
 
     @Override
-    public void setTargetDocumentsIds(List<String> ids) throws ClientException {
+    public void setTargetDocumentsIds(List<String> ids) {
         // handle compatibility before @5.8
         if (ids != null && ids.size() > 0) {
             setPropertyValue(TaskConstants.TASK_TARGET_DOCUMENT_ID_PROPERTY_NAME, ids.get(0));

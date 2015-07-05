@@ -47,7 +47,6 @@ public interface PropertiesMappingService {
      * @param mappingName
      * @throws ClientException if trying to map incompatible types
      */
-    void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mappingName)
-            throws ClientException;
+    void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mappingName);
 
 }

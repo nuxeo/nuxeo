@@ -55,9 +55,8 @@ public class BaseUserGroupMock {
      * @param isAdmin
      * @param userManager
      * @return
-     * @throws ClientException
      */
-    protected Principal getMockedUser(String username, boolean isAdmin, UserManager userManager) throws ClientException {
+    protected Principal getMockedUser(String username, boolean isAdmin, UserManager userManager) {
         Principal user = getMockedUser(username, isAdmin);
         when(userManager.getPrincipal(username)).thenReturn((NuxeoPrincipal) user);
         return user;
@@ -84,9 +83,8 @@ public class BaseUserGroupMock {
     /**
      * @param string
      * @return
-     * @throws ClientException
      */
-    protected DocumentModel mockUserDM(String username) throws ClientException {
+    protected DocumentModel mockUserDM(String username) {
         DocumentModel user = mock(DocumentModel.class);
         when(user.getId()).thenReturn(username);
 
@@ -96,7 +94,7 @@ public class BaseUserGroupMock {
         return user;
     }
 
-    protected UserManager mockUserManager() throws ClientException {
+    protected UserManager mockUserManager() {
         UserManager um = mock(UserManager.class);
 
         when(um.areUsersReadOnly()).thenReturn(false);

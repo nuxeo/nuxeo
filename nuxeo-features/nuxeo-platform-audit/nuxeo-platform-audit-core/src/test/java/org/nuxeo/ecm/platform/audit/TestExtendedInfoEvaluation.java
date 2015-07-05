@@ -56,7 +56,7 @@ public class TestExtendedInfoEvaluation extends SQLRepositoryTestCase {
         super.tearDown();
     }
 
-    protected DocumentModel doCreateDocument() throws ClientException {
+    protected DocumentModel doCreateDocument() {
         DocumentModel rootDocument = session.getRootDocument();
         DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
         model.setProperty("dublincore", "title", "huum");
@@ -65,7 +65,7 @@ public class TestExtendedInfoEvaluation extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testBean() throws ClientException {
+    public void testBean() {
         ExpressionContext context = new ExpressionContext();
         DocumentModel source = doCreateDocument();
         EventContext eventContext = new DocumentEventContext(session, session.getPrincipal(), source);

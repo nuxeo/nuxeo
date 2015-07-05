@@ -68,7 +68,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
     @Override
     protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
-            throws ClientException {
+            {
 
         NuxeoPrincipal principal = super.makePrincipal(userEntry, anonymous, groups);
         if (activateComputedGroup() && principal instanceof NuxeoPrincipalImpl) {
@@ -107,7 +107,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    public NuxeoGroup getGroup(String groupName) throws ClientException {
+    public NuxeoGroup getGroup(String groupName) {
         NuxeoGroup grp = super.getGroup(groupName);
         if (activateComputedGroup() && (grp == null || getService().allowGroupOverride())) {
             NuxeoGroup computed = getService().getComputedGroup(groupName);
@@ -119,7 +119,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    public List<String> getGroupIds() throws ClientException {
+    public List<String> getGroupIds() {
         List<String> ids = super.getGroupIds();
         if (activateComputedGroup()) {
             List<String> vGroups = getService().computeGroupIds();
@@ -133,7 +133,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
     }
 
     @Override
-    public DocumentModel getGroupModel(String groupName) throws ClientException {
+    public DocumentModel getGroupModel(String groupName) {
         DocumentModel grpDoc = super.getGroupModel(groupName);
         if (activateComputedGroup() && grpDoc == null) {
             return getComputedGroupAsDocumentModel(groupName);
@@ -143,13 +143,13 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
 
     @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
-            throws ClientException {
+            {
         return searchGroups(filter, fulltext, null);
     }
 
     @Override
     public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
-            throws ClientException {
+            {
 
         boolean searchInVirtualGroups = activateComputedGroup();
         if (Boolean.FALSE.equals(filter.get(VIRTUAL_GROUP_MARKER))) {
@@ -172,7 +172,7 @@ public class UserManagerWithComputedGroups extends UserManagerImpl {
         return groups;
     }
 
-    protected DocumentModel getComputedGroupAsDocumentModel(String grpName) throws ClientException {
+    protected DocumentModel getComputedGroupAsDocumentModel(String grpName) {
         NuxeoGroup grp = getService().getComputedGroup(grpName);
         if (grp == null) {
             return null;

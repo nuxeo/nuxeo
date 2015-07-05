@@ -157,7 +157,7 @@ public class DocumentModelResolver extends BeanELResolver {
     }
 
     private static Property getDocumentProperty(DocumentPropertyContext ctx, Object propertyValue)
-            throws ClientException {
+            {
         return ctx.doc.getProperty(getDocumentPropertyName(ctx, propertyValue));
     }
 

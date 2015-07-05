@@ -157,7 +157,7 @@ public class NuxeoPrincipalJsonWriter extends ExtensibleEntityJsonWriter<NuxeoPr
         jg.writeEndArray();
     }
 
-    private String getPasswordField() throws ClientException {
+    private String getPasswordField() {
         String userDirectoryName = userManager.getUserDirectoryName();
         return directoryService.getDirectory(userDirectoryName).getPasswordField();
     }

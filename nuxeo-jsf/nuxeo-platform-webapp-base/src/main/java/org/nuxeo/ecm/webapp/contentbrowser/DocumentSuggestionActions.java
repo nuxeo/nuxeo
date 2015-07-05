@@ -75,7 +75,7 @@ public class DocumentSuggestionActions implements Serializable {
 
     protected List<DocumentModel> cachedSuggestions;
 
-    public List<DocumentModel> getDocSuggestions(Object input) throws ClientException {
+    public List<DocumentModel> getDocSuggestions(Object input) {
         if (equals(cachedPageProviderName, pageProviderName) && equals(cachedInput, input)) {
             return cachedSuggestions;
         }
@@ -100,7 +100,7 @@ public class DocumentSuggestionActions implements Serializable {
      * @param pattern: the input as typed by user in suggestion box
      */
     @SuppressWarnings("unchecked")
-    protected PageProvider<DocumentModel> getPageProvider(String pattern) throws ClientException {
+    protected PageProvider<DocumentModel> getPageProvider(String pattern) {
         String ppName = DEFAULT_PAGE_PROVIDER_NAME;
         if (pageProviderName != null && !StringUtils.isEmpty(pageProviderName)) {
             ppName = pageProviderName;
@@ -133,7 +133,7 @@ public class DocumentSuggestionActions implements Serializable {
         return pp;
     }
 
-    public boolean getDocumentExistsAndIsVisibleWithId(String id) throws ClientException {
+    public boolean getDocumentExistsAndIsVisibleWithId(String id) {
         if (StringUtils.isEmpty(id)) {
             return false;
         }
@@ -141,7 +141,7 @@ public class DocumentSuggestionActions implements Serializable {
         return documentManager.exists(ref) && documentManager.hasPermission(ref, SecurityConstants.READ);
     }
 
-    public boolean getDocumentExistsAndIsVisibleWithPath(String path) throws ClientException {
+    public boolean getDocumentExistsAndIsVisibleWithPath(String path) {
         if (StringUtils.isEmpty(path)) {
             return false;
         }
@@ -149,14 +149,14 @@ public class DocumentSuggestionActions implements Serializable {
         return documentManager.exists(ref) && documentManager.hasPermission(ref, SecurityConstants.READ);
     }
 
-    public DocumentModel getDocumentWithId(String id) throws ClientException {
+    public DocumentModel getDocumentWithId(String id) {
         if (StringUtils.isEmpty(id)) {
             return null;
         }
         return documentManager.getDocument(new IdRef(id));
     }
 
-    public DocumentModel getDocumentWithPath(String path) throws ClientException {
+    public DocumentModel getDocumentWithPath(String path) {
         if (StringUtils.isEmpty(path)) {
             return null;
         }

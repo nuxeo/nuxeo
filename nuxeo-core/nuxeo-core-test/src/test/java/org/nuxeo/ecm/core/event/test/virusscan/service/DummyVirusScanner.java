@@ -34,7 +34,7 @@ public class DummyVirusScanner implements ScanService {
     protected static List<String> doneFiles = new ArrayList<String>();
 
     @Override
-    public ScanResult scanBlob(Blob blob) throws ClientException {
+    public ScanResult scanBlob(Blob blob) {
         if (blob != null) {
             doneFiles.add(blob.getFilename());
             if (blob.getFilename().contains("doFail")) {

@@ -31,6 +31,6 @@ public interface VersionRemovalPolicy {
      * @param session the current session
      * @param doc the document that is about to be removed
      */
-    void removeVersions(Session session, Document doc, CoreSession coreSession) throws ClientException;
+    void removeVersions(Session session, Document doc, CoreSession coreSession);
 
 }

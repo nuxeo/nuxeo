@@ -28,7 +28,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class AbstractPreviewer {
 
-    protected String getPreviewTitle(DocumentModel dm) throws ClientException {
+    protected String getPreviewTitle(DocumentModel dm) {
         StringBuffer sb = new StringBuffer();
 
         sb.append(dm.getTitle());

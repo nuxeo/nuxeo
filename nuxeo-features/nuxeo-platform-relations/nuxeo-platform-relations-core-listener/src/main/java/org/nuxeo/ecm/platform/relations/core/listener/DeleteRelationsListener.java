@@ -43,7 +43,7 @@ public class DeleteRelationsListener implements EventListener {
 
     private RelationManager relationManager;
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docEventContext = (DocumentEventContext) ctx;

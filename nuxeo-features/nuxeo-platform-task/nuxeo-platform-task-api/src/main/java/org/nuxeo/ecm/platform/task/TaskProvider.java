@@ -37,14 +37,14 @@ public interface TaskProvider extends Serializable {
      *         delegated to this user.
      * @throws IllegalStateException If the currentUser is null.
      */
-    List<Task> getCurrentTaskInstances(CoreSession coreSession) throws ClientException;
+    List<Task> getCurrentTaskInstances(CoreSession coreSession);
 
     /**
      * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
-    List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException;
+    List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos);
 
     /**
      * Returns a list of task instances assigned to one of the actors in the list or to its pool. Doesn't take into
@@ -55,17 +55,15 @@ public interface TaskProvider extends Serializable {
      * @param actors a list used as actorId to retrieve the tasks.
      * @param coreSession
      * @return
-     * @throws ClientException
      */
-    List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) throws ClientException;
+    List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession);
 
     /**
      * Provide @param sortInfo to handle sort page-provider contributions (see {@link #getCurrentTaskInstances})
      *
      * @since 5.9.3
      */
-    List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
-            throws ClientException;
+    List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos);
 
     /**
      * Returns the list of task instances associated with this document for which the user is the actor or belongs to
@@ -78,9 +76,8 @@ public interface TaskProvider extends Serializable {
      * @param user
      * @param coreSession
      * @return
-     * @throws ClientException
      */
-    List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSssion) throws ClientException;
+    List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSssion);
 
     /**
      * Returns the list of task instances associated with this document assigned to one of the actor in the list or its
@@ -91,9 +88,8 @@ public interface TaskProvider extends Serializable {
      * @param actors
      * @param coreSession
      * @return
-     * @throws ClientException
      */
-    List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession) throws ClientException;
+    List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession);
 
     /**
      * Returns the list of task instances associated with this document assigned to one of the actor in the list or its
@@ -103,7 +99,7 @@ public interface TaskProvider extends Serializable {
      * @since 5.8
      */
     List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
-            CoreSession session) throws ClientException;
+            CoreSession session);
 
     /**
      * Returns all the tasks instances for the given {@code processId}.
@@ -112,7 +108,7 @@ public interface TaskProvider extends Serializable {
      *
      * @since 5.6
      */
-    List<Task> getAllTaskInstances(String processId, CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, CoreSession session);
 
     /**
      * Returns all the tasks instances for the given {@code processId} and where the user is the actor or belongs to the
@@ -122,7 +118,7 @@ public interface TaskProvider extends Serializable {
      *
      * @since 5.6
      */
-    List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session);
 
     /**
      * Returns all the tasks instances for the given {@code processId} which assigned to one of the actor in the list or
@@ -132,7 +128,7 @@ public interface TaskProvider extends Serializable {
      *
      * @since 5.6
      */
-    List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session);
 
     /**
      * Ends the task
@@ -149,7 +145,7 @@ public interface TaskProvider extends Serializable {
      * @return the name of the Seam event to raise
      */
     String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment, String eventName,
-            boolean isValidated) throws ClientException;
+            boolean isValidated);
 
     /**
      * Returns all the tasks instances for the given {@code processId} originating from the given {@code nodeId}.
@@ -158,5 +154,6 @@ public interface TaskProvider extends Serializable {
      *
      * @since 5.7
      */
-    List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) throws ClientException;
+    List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session);
+
 }

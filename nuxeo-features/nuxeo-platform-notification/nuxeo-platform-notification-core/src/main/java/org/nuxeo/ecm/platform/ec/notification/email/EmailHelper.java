@@ -233,7 +233,7 @@ public class EmailHelper {
      * @return
      * @since 5.6
      */
-    public String evaluateMvelExpresssion(String expr, Map<String, Serializable> ctx) throws ClientException {
+    public String evaluateMvelExpresssion(String expr, Map<String, Serializable> ctx) {
         // check to see if there is a dynamic MVEL expr
         Serializable compiledExpr = MVEL.compileExpression(expr);
         Object result = MVEL.executeExpression(compiledExpr, initMvelBindings(ctx));

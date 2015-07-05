@@ -91,7 +91,7 @@ public class CSVZipImporter extends AbstractFileImporter {
 
     @Override
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String filename, TypeManager typeService) throws ClientException, IOException {
+            String filename, TypeManager typeService) throws IOException {
         ZipFile zip = null;
         try (CloseableFile source = content.getCloseableFile()) {
             zip = getArchiveFileIfValid(source.getFile());

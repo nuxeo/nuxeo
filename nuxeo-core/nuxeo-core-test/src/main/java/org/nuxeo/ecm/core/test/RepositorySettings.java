@@ -268,7 +268,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
      * @return the session
      * @since 5.9.3
      */
-    public CoreSession openSession() throws ClientException {
+    public CoreSession openSession() {
         return CoreInstance.openCoreSession(repositoryName);
     }
 
@@ -280,7 +280,7 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
      * @param username the user name
      * @return the session
      */
-    public CoreSession openSessionAs(String username) throws ClientException {
+    public CoreSession openSessionAs(String username) {
         return CoreInstance.openCoreSession(repositoryName, username);
     }
 
@@ -293,23 +293,23 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
      * @return the session
      * @since 5.9.3
      */
-    public CoreSession openSessionAs(Principal principal) throws ClientException {
+    public CoreSession openSessionAs(Principal principal) {
         return CoreInstance.openCoreSession(repositoryName, principal);
     }
 
-    public CoreSession openSessionAsAdminUser(String username) throws ClientException {
+    public CoreSession openSessionAsAdminUser(String username) {
         return openSessionAs(username, true, false);
     }
 
-    public CoreSession openSessionAsAnonymousUser(String username) throws ClientException {
+    public CoreSession openSessionAsAnonymousUser(String username) {
         return openSessionAs(username, false, true);
     }
 
-    public CoreSession openSessionAsSystemUser() throws ClientException {
+    public CoreSession openSessionAsSystemUser() {
         return openSessionAs(SecurityConstants.SYSTEM_USERNAME, true, false);
     }
 
-    public CoreSession openSessionAs(String username, boolean isAdmin, boolean isAnonymous) throws ClientException {
+    public CoreSession openSessionAs(String username, boolean isAdmin, boolean isAnonymous) {
         UserPrincipal principal = new UserPrincipal(username, new ArrayList<String>(), isAnonymous, isAdmin);
         return CoreInstance.openCoreSession(repositoryName, principal);
     }

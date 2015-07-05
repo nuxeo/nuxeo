@@ -51,9 +51,7 @@ public interface ContentEnricherService {
      * @param ec
      * @throws IOException
      * @throws JsonGenerationException
-     * @throws ClientException
      */
-    void writeContext(JsonGenerator jg, RestEvaluationContext ec) throws JsonGenerationException, IOException,
-            ClientException;
+    void writeContext(JsonGenerator jg, RestEvaluationContext ec) throws JsonGenerationException, IOException;
 
 }

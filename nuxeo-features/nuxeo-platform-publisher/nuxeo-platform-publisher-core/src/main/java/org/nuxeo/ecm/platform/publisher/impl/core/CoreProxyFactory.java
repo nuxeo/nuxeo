@@ -36,7 +36,7 @@ import java.util.Map;
 public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory implements PublishedDocumentFactory {
 
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
 
         DocumentModel targetDocModel;
         if (targetNode instanceof CoreFolderPublicationNode) {
@@ -67,7 +67,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory imple
         return doc;
     }
 
-    public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) throws ClientException {
+    public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) {
         if (pubDoc instanceof SimpleCorePublishedDocument) {
             SimpleCorePublishedDocument pubProxy = (SimpleCorePublishedDocument) pubDoc;
             return pubProxy.getProxy();
@@ -75,7 +75,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory imple
         throw new ClientException("factory can not unwrap this PublishedDocument");
     }
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         return new SimpleCorePublishedDocument(doc);
     }
 

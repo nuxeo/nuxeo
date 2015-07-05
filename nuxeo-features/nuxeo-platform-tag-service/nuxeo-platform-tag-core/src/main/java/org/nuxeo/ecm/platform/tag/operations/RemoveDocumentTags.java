@@ -42,7 +42,7 @@ public class RemoveDocumentTags {
     protected CoreSession session;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel run(DocumentModel document) throws ClientException {
+    public DocumentModel run(DocumentModel document) {
         tagService.removeTags(session, document.getId());
         return document;
     }

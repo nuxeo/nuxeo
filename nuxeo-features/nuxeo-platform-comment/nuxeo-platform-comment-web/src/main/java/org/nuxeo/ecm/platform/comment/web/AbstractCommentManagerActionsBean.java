@@ -152,7 +152,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
         return comment;
     }
 
-    public DocumentModel addComment(DocumentModel comment, DocumentModel docToComment) throws ClientException {
+    public DocumentModel addComment(DocumentModel comment, DocumentModel docToComment) {
         comment = initializeComment(comment);
         UIComment parentComment = null;
         if (savedReplyCommentId != null) {
@@ -189,12 +189,12 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     @Override
-    public DocumentModel addComment(DocumentModel comment) throws ClientException {
+    public DocumentModel addComment(DocumentModel comment) {
         return addComment(comment, null);
     }
 
     @Override
-    public String addComment() throws ClientException {
+    public String addComment() {
         DocumentModel myComment = documentManager.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
 
         myComment.setPropertyValue(CommentsConstants.COMMENT_AUTHOR, principal.getName());
@@ -207,7 +207,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     @Override
-    public String createComment(DocumentModel docToComment) throws ClientException {
+    public String createComment(DocumentModel docToComment) {
         DocumentModel myComment = documentManager.createDocumentModel(CommentsConstants.COMMENT_DOC_TYPE);
 
         myComment.setProperty("comment", "author", principal.getName());
@@ -247,7 +247,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
      * Initializes uiComments with Comments of current document.
      */
     @Override
-    public void initComments() throws ClientException {
+    public void initComments() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
             throw new ClientException("Unable to find current Document");
@@ -259,7 +259,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
      * Initializes uiComments with Comments of current document.
      */
     @Override
-    public void initComments(DocumentModel commentedDoc) throws ClientException {
+    public void initComments(DocumentModel commentedDoc) {
         commentableDoc = getCommentableDoc(commentedDoc);
         if (uiComments == null) {
             uiComments = new ArrayList<UIComment>();
@@ -273,7 +273,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
         }
     }
 
-    public List<UIComment> getComments(DocumentModel doc) throws ClientException {
+    public List<UIComment> getComments(DocumentModel doc) {
         List<UIComment> allComments = new ArrayList<UIComment>();
         commentableDoc = doc.getAdapter(CommentableDocument.class);
         if (commentableDoc != null) {
@@ -290,7 +290,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
      * Recursively retrieves all comments of a doc.
      */
     @Override
-    public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) throws ClientException {
+    public List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) {
         List<ThreadEntry> allComments = new ArrayList<ThreadEntry>();
         List<UIComment> allUIComments = getComments(doc);
 
@@ -304,7 +304,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     @Override
-    public List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc) throws ClientException {
+    public List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc) {
         if (commentThread != null) {
             return commentThread;
         }
@@ -340,7 +340,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     /**
      * Creates a UIComment wrapping "comment", having "parent" as parent.
      */
-    protected UIComment createUIComment(UIComment parent, DocumentModel comment) throws ClientException {
+    protected UIComment createUIComment(UIComment parent, DocumentModel comment) {
         UIComment wrapper = new UIComment(parent, comment);
         commentMap.put(wrapper.getId(), wrapper);
         List<DocumentModel> children = commentableDoc.getComments(comment);
@@ -352,7 +352,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     @Override
-    public String deleteComment(String commentId) throws ClientException {
+    public String deleteComment(String commentId) {
         if ("".equals(commentId)) {
             log.error("No comment id to delete");
             return null;
@@ -370,7 +370,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     @Override
-    public String deleteComment() throws ClientException {
+    public String deleteComment() {
         return deleteComment(deleteCommentId);
     }
 
@@ -422,7 +422,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     @Override
     @SuppressWarnings("unchecked")
     public List<UIComment> getLastCommentsByDate(String commentNumber, DocumentModel commentedDoc)
-            throws ClientException {
+            {
         int number = Integer.parseInt(commentNumber);
         List<UIComment> comments = new ArrayList<UIComment>();
         flatComments = new ArrayList<UIComment>();
@@ -449,7 +449,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     }
 
     @Override
-    public List<UIComment> getLastCommentsByDate(String commentNumber) throws ClientException {
+    public List<UIComment> getLastCommentsByDate(String commentNumber) {
         return getLastCommentsByDate(commentNumber, null);
     }
 

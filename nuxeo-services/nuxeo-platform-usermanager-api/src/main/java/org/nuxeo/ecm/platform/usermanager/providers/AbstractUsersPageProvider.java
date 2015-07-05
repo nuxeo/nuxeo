@@ -130,11 +130,11 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
         return "";
     }
 
-    protected List<DocumentModel> searchAllUsers(UserManager userManager) throws ClientException {
+    protected List<DocumentModel> searchAllUsers(UserManager userManager) {
         return userManager.searchUsers(null);
     }
 
-    protected List<DocumentModel> searchUsers(UserManager userManager) throws ClientException {
+    protected List<DocumentModel> searchUsers(UserManager userManager) {
         List<DocumentModel> users = new ArrayList<DocumentModel>();
         String searchString = getFirstParameter();
         if ("*".equals(searchString)) {
@@ -145,7 +145,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
         return users;
     }
 
-    protected List<DocumentModel> searchUsersFromCatalog(UserManager userManager) throws ClientException {
+    protected List<DocumentModel> searchUsersFromCatalog(UserManager userManager) {
         if (userCatalog == null) {
             updateUserCatalog(userManager);
         }
@@ -159,7 +159,7 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
         return userCatalog.get(selectedLetter);
     }
 
-    protected void updateUserCatalog(UserManager userManager) throws ClientException {
+    protected void updateUserCatalog(UserManager userManager) {
         DocumentModelList allUsers = userManager.searchUsers(null);
         userCatalog = new HashMap<String, DocumentModelList>();
         String userSortField = userManager.getUserSortField();

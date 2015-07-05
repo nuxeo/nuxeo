@@ -33,8 +33,7 @@ public interface ScanService {
      *
      * @param blob the blob to be scaned
      * @return the status
-     * @throws ClientException
      */
-    ScanResult scanBlob(Blob blob) throws ClientException;
+    ScanResult scanBlob(Blob blob);
 
 }

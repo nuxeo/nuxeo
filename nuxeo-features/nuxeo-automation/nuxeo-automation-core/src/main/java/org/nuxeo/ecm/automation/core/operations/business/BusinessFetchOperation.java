@@ -36,7 +36,7 @@ public class BusinessFetchOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException, ClassNotFoundException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClassNotFoundException {
         DocumentModel document = session.getDocument(new IdRef(input.getId()));
         return document.getAdapter(input.getClass());
     }

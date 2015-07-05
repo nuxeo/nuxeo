@@ -36,7 +36,7 @@ public class SimpleBlobHolderWithProperties extends SimpleBlobHolder {
     }
 
     @Override
-    public Serializable getProperty(String name) throws ClientException {
+    public Serializable getProperty(String name) {
         if (properties == null) {
             return null;
         }

@@ -39,7 +39,7 @@ public class SingleDocumentReader extends DocumentModelReader {
         doc = root;
     }
 
-    public SingleDocumentReader(CoreSession session, DocumentRef root) throws ClientException {
+    public SingleDocumentReader(CoreSession session, DocumentRef root) {
         this(session, session.getDocument(root));
     }
 

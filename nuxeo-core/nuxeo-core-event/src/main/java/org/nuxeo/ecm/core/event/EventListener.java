@@ -29,6 +29,6 @@ public interface EventListener {
      *
      * @param event the event
      */
-    void handleEvent(Event event) throws ClientException;
+    void handleEvent(Event event);
 
 }

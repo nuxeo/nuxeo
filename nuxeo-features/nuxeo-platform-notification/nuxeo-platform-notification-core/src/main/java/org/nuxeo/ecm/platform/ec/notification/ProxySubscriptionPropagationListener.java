@@ -44,7 +44,7 @@ public class ProxySubscriptionPropagationListener implements EventListener {
     private static final Log log = LogFactory.getLog(ProxySubscriptionPropagationListener.class);
 
     @SuppressWarnings("unchecked")
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
 
         EventContext ctx = event.getContext();
 

@@ -41,7 +41,7 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
     public static final String PAGE_PROVIDER_NAME = "nuxeo_principals_listing";
 
     @Override
-    protected NuxeoPrincipal getArtifact(String id) throws ClientException {
+    protected NuxeoPrincipal getArtifact(String id) {
         return um.getPrincipal(id);
     }
 
@@ -51,19 +51,19 @@ public class UserRootObject extends AbstractUMRootObject<NuxeoPrincipal> {
     }
 
     @Override
-    protected void checkPrecondition(NuxeoPrincipal principal) throws ClientException {
+    protected void checkPrecondition(NuxeoPrincipal principal) {
         checkCurrentUserCanCreateArtifact(principal);
         checkPrincipalDoesNotAlreadyExists(principal, um);
         checkPrincipalHasAName(principal);
     }
 
     @Override
-    protected NuxeoPrincipal createArtifact(NuxeoPrincipal principal) throws ClientException {
+    protected NuxeoPrincipal createArtifact(NuxeoPrincipal principal) {
         um.createUser(principal.getModel());
         return um.getPrincipal(principal.getName());
     }
 
-    private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal, UserManager um) throws ClientException {
+    private void checkPrincipalDoesNotAlreadyExists(NuxeoPrincipal principal, UserManager um) {
         NuxeoPrincipal user = um.getPrincipal(principal.getName());
         if (user != null) {
             throw new WebException("User already exists", Response.Status.PRECONDITION_FAILED.getStatusCode());

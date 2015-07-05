@@ -97,7 +97,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return true;
     }
 
-    protected static String cleanLabel(String label, boolean allowEmpty, boolean allowPercent) throws ClientException {
+    protected static String cleanLabel(String label, boolean allowEmpty, boolean allowPercent) {
         if (label == null) {
             if (allowEmpty) {
                 return null;
@@ -121,7 +121,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         return username == null ? null : username.replace("'", "");
     }
 
-    public void tag(CoreSession session, String docId, String label, String username) throws ClientException {
+    public void tag(CoreSession session, String docId, String label, String username) {
         UnrestrictedAddTagging r = new UnrestrictedAddTagging(session, docId, label, username);
         r.runUnrestricted();
         fireUpdateEvent(session, docId);
@@ -145,7 +145,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         private final String username;
 
         protected UnrestrictedAddTagging(CoreSession session, String docId, String label, String username)
-                throws ClientException {
+                {
             super(session);
             this.docId = docId;
             this.label = cleanLabel(label, false, false);
@@ -153,7 +153,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             // Find tag
             List<Map<String, Serializable>> res = getItems(PAGE_PROVIDERS.GET_DOCUMENT_IDS_FOR_TAG.name(), session,
                     label);
@@ -191,7 +191,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
     }
 
-    public void untag(CoreSession session, String docId, String label, String username) throws ClientException {
+    public void untag(CoreSession session, String docId, String label, String username) {
         UnrestrictedRemoveTagging r = new UnrestrictedRemoveTagging(session, docId, label, username);
         r.runUnrestricted();
         if (label != null) {
@@ -208,7 +208,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         private final String username;
 
         protected UnrestrictedRemoveTagging(CoreSession session, String docId, String label, String username)
-                throws ClientException {
+                {
             super(session);
             this.docId = docId;
             this.label = cleanLabel(label, true, false);
@@ -216,7 +216,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             String tagId = null;
             if (label != null) {
                 // Find tag
@@ -255,12 +255,12 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
     }
 
-    public List<Tag> getDocumentTags(CoreSession session, String docId, String username) throws ClientException {
+    public List<Tag> getDocumentTags(CoreSession session, String docId, String username) {
         return getDocumentTags(session, docId, username, true);
     }
 
     public List<Tag> getDocumentTags(CoreSession session, String docId, String username, boolean useCore)
-            throws ClientException {
+            {
         UnrestrictedGetDocumentTags r = new UnrestrictedGetDocumentTags(session, docId, username, useCore);
         r.runUnrestricted();
         return r.tags;
@@ -277,7 +277,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         protected final boolean useCore;
 
         protected UnrestrictedGetDocumentTags(CoreSession session, String docId, String username, boolean useCore)
-                throws ClientException {
+                {
             super(session);
             this.docId = docId;
             this.username = cleanUsername(username);
@@ -286,7 +286,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             List<Map<String, Serializable>> res;
             if (username == null) {
                 String ppName = PAGE_PROVIDERS.GET_TAGS_FOR_DOCUMENT.name();
@@ -311,17 +311,17 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     }
 
     @Override
-    public void removeTags(CoreSession session, String docId) throws ClientException {
+    public void removeTags(CoreSession session, String docId) {
         untag(session, docId, null, null);
     }
 
     @Override
-    public void copyTags(CoreSession session, String srcDocId, String dstDocId) throws ClientException {
+    public void copyTags(CoreSession session, String srcDocId, String dstDocId) {
         copyTags(session, srcDocId, dstDocId, false);
     }
 
     protected void copyTags(CoreSession session, String srcDocId, String dstDocId, boolean removeExistingTags)
-            throws ClientException {
+            {
         if (removeExistingTags) {
             removeTags(session, dstDocId);
         }
@@ -336,14 +336,14 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
 
         protected final String dstDocId;
 
-        protected UnrestrictedCopyTags(CoreSession session, String srcDocId, String dstDocId) throws ClientException {
+        protected UnrestrictedCopyTags(CoreSession session, String srcDocId, String dstDocId) {
             super(session);
             this.srcDocId = srcDocId;
             this.dstDocId = dstDocId;
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             Set<String> existingTags = new HashSet<>();
             List<Map<String, Serializable>> dstTagsRes = getItems(PAGE_PROVIDERS.GET_TAGS_TO_COPY_FOR_DOCUMENT.name(),
                     session, dstDocId);
@@ -378,11 +378,11 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     }
 
     @Override
-    public void replaceTags(CoreSession session, String srcDocId, String dstDocId) throws ClientException {
+    public void replaceTags(CoreSession session, String srcDocId, String dstDocId) {
         copyTags(session, srcDocId, dstDocId, true);
     }
 
-    public List<String> getTagDocumentIds(CoreSession session, String label, String username) throws ClientException {
+    public List<String> getTagDocumentIds(CoreSession session, String label, String username) {
         UnrestrictedGetTagDocumentIds r = new UnrestrictedGetTagDocumentIds(session, label, username);
         r.runUnrestricted();
         return r.docIds;
@@ -397,7 +397,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         protected final List<String> docIds;
 
         protected UnrestrictedGetTagDocumentIds(CoreSession session, String label, String username)
-                throws ClientException {
+                {
             super(session);
             this.label = cleanLabel(label, false, false);
             this.username = cleanUsername(username);
@@ -405,7 +405,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             List<Map<String, Serializable>> res;
             if (username == null) {
                 res = getItems(PAGE_PROVIDERS.GET_DOCUMENTS_FOR_TAG.name(), session, label);
@@ -421,7 +421,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
     }
 
     public List<Tag> getTagCloud(CoreSession session, String docId, String username, Boolean normalize)
-            throws ClientException {
+            {
         UnrestrictedGetDocumentCloud r = new UnrestrictedGetDocumentCloud(session, docId, username, normalize);
         r.runUnrestricted();
         return r.cloud;
@@ -438,7 +438,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         protected final Boolean normalize;
 
         protected UnrestrictedGetDocumentCloud(CoreSession session, String docId, String username, Boolean normalize)
-                throws ClientException {
+                {
             super(session);
             this.docId = docId;
             this.username = cleanUsername(username);
@@ -447,7 +447,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             List<Map<String, Serializable>> res;
             if (docId == null) {
                 if (username == null) {
@@ -529,7 +529,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
     }
 
-    public List<Tag> getSuggestions(CoreSession session, String label, String username) throws ClientException {
+    public List<Tag> getSuggestions(CoreSession session, String label, String username) {
         UnrestrictedGetTagSuggestions r = new UnrestrictedGetTagSuggestions(session, label, username);
         r.runUnrestricted();
         return r.tags;
@@ -544,7 +544,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         protected final List<Tag> tags;
 
         protected UnrestrictedGetTagSuggestions(CoreSession session, String label, String username)
-                throws ClientException {
+                {
             super(session);
             label = cleanLabel(label, false, true);
             if (!label.contains("%")) {
@@ -556,7 +556,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             List<Map<String, Serializable>> res;
             if (username == null) {
                 res = getItems(PAGE_PROVIDERS.GET_TAG_SUGGESTIONS.name(), session, label);

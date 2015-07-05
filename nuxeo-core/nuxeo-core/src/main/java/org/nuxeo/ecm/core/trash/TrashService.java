@@ -33,7 +33,7 @@ public interface TrashService {
      * @param folder the folder
      * @return {@code true} if the folder allows its children to be deleted
      */
-    boolean folderAllowsDelete(DocumentModel folder) throws ClientException;
+    boolean folderAllowsDelete(DocumentModel folder);
 
     /**
      * Is at least one doc deletable according to its container?
@@ -41,7 +41,7 @@ public interface TrashService {
      * @param docs the documents
      * @return {@code true} if one doc is in a folder that allows its children to be deleted
      */
-    boolean checkDeletePermOnParents(List<DocumentModel> docs) throws ClientException;
+    boolean checkDeletePermOnParents(List<DocumentModel> docs);
 
     /**
      * Is at least one doc deletable?
@@ -51,7 +51,7 @@ public interface TrashService {
      * @param checkProxies {@code true} to count proxies as non-deletable
      * @return {@code true} if at least one doc is deletable
      */
-    boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies) throws ClientException;
+    boolean canDelete(List<DocumentModel> docs, Principal principal, boolean checkProxies);
 
     /**
      * Are all documents purgeable/undeletable?
@@ -63,7 +63,7 @@ public interface TrashService {
      * @param principal the current user (to check locks)
      * @return {@code true} if the documents are purgeable/undeletable
      */
-    boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal) throws ClientException;
+    boolean canPurgeOrUndelete(List<DocumentModel> docs, Principal principal);
 
     /**
      * Gets the trash info for a list of documents.
@@ -75,8 +75,7 @@ public interface TrashService {
      *            forbidden)
      * @return the trash info
      */
-    TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies, boolean checkDeleted)
-            throws ClientException;
+    TrashInfo getTrashInfo(List<DocumentModel> docs, Principal principal, boolean checkProxies, boolean checkDeleted);
 
     /**
      * Gets the closest document's ancestor above all the paths.
@@ -87,7 +86,7 @@ public interface TrashService {
      * @param paths the paths
      * @return the closer document above doc and above all the paths
      */
-    DocumentModel getAboveDocument(DocumentModel doc, Set<Path> paths) throws ClientException;
+    DocumentModel getAboveDocument(DocumentModel doc, Set<Path> paths);
 
     /**
      * Moves documents to the trash, or directly deletes them if their lifecycle does not allow trash use.
@@ -96,7 +95,7 @@ public interface TrashService {
      *
      * @param docs the documents to trash
      */
-    void trashDocuments(List<DocumentModel> docs) throws ClientException;
+    void trashDocuments(List<DocumentModel> docs);
 
     /**
      * Purges (completely deletes) documents .
@@ -104,7 +103,7 @@ public interface TrashService {
      * @param session the session
      * @param docRefs the documents to purge
      */
-    void purgeDocuments(CoreSession session, List<DocumentRef> docRefs) throws ClientException;
+    void purgeDocuments(CoreSession session, List<DocumentRef> docRefs);
 
     /**
      * Undeletes documents (and ancestors if needed to make them visible).
@@ -114,7 +113,7 @@ public interface TrashService {
      * @param docs the documents to undelete
      * @return the set of ancestors whose children have been undeleted (for UI notification)
      */
-    Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs) throws ClientException;
+    Set<DocumentRef> undeleteDocuments(List<DocumentModel> docs);
 
     /**
      * Get all documents from the trash of the current document.

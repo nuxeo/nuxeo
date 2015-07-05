@@ -69,7 +69,7 @@ public class TaskDashBoardActions implements Serializable {
 
     private static final Log log = LogFactory.getLog(TaskDashBoardActions.class);
 
-    public Collection<DashBoardItem> computeDashboardItems() throws ClientException {
+    public Collection<DashBoardItem> computeDashboardItems() {
         if (currentUserTasks == null) {
             currentUserTasks = new ArrayList<DashBoardItem>();
             List<Task> tasks = taskService.getCurrentTaskInstances(documentManager);

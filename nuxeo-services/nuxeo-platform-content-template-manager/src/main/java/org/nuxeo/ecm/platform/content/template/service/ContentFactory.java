@@ -29,6 +29,6 @@ public interface ContentFactory {
 
     boolean initFactory(Map<String, String> options, List<ACEDescriptor> rootAcl, List<TemplateItemDescriptor> template);
 
-    void createContentStructure(DocumentModel eventDoc) throws ClientException;
+    void createContentStructure(DocumentModel eventDoc);
 
 }

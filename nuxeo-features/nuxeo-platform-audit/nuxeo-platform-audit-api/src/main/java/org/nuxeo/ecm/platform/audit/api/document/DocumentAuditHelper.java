@@ -40,7 +40,7 @@ public class DocumentAuditHelper {
 
     @SuppressWarnings({ "unchecked", "boxing" })
     public static AdditionalDocumentAuditParams getAuditParamsForUUID(String uuid, CoreSession session)
-            throws ClientException {
+            {
 
         AdditionalDocumentAuditParams result = null;
         IdRef ref = new IdRef(uuid);

@@ -41,7 +41,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
  */
 public class CollectionAsynchronousCheckinRestoreTest extends CollectionTestCase {
 
-    protected void testCheckingAndResotreCollection(final List<DocumentModel> docs) throws ClientException, InterruptedException {
+    protected void testCheckingAndResotreCollection(final List<DocumentModel> docs) throws InterruptedException {
         List<DocumentModel> firstMembers = docs.subList(0, docs.size() / 2);
         List<DocumentModel> secondMembers = docs.subList(docs.size() / 2, docs.size());
 
@@ -124,7 +124,7 @@ public class CollectionAsynchronousCheckinRestoreTest extends CollectionTestCase
     }
 
     @Test
-    public void testCheckinAndRestoreCollectionWithManyItems() throws ClientException, InterruptedException {
+    public void testCheckinAndRestoreCollectionWithManyItems() throws InterruptedException {
         testCheckingAndResotreCollection(createTestFiles(session, MAX_CARDINALITY * 2));
     }
 

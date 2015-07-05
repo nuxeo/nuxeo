@@ -76,7 +76,7 @@ public class TagSelect2Support {
     protected String label;
 
     @Factory(value = "resolveDocumentTags", scope = EVENT)
-    public String resolveDocumentTags() throws ClientException {
+    public String resolveDocumentTags() {
         if (currentDocumentTags == null || currentDocumentTags.isEmpty()) {
             return "[]";
         } else {
@@ -103,7 +103,7 @@ public class TagSelect2Support {
     }
 
     @Factory(value = "documentTagIds", scope = EVENT)
-    public List<String> getDocumentTagStrings() throws ClientException {
+    public List<String> getDocumentTagStrings() {
         if (currentDocumentTags == null || currentDocumentTags.isEmpty()) {
             return null;
         } else {
@@ -118,7 +118,7 @@ public class TagSelect2Support {
     /**
      * Performs the tagging on the current document.
      */
-    public String addTagging() throws ClientException {
+    public String addTagging() {
         String messageKey;
         if (StringUtils.isBlank(label)) {
             messageKey = "message.add.new.tagging.not.empty";
@@ -148,7 +148,7 @@ public class TagSelect2Support {
         return null;
     }
 
-    public String removeTagging() throws ClientException {
+    public String removeTagging() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String docId = currentDocument.getId();
 
@@ -236,7 +236,7 @@ public class TagSelect2Support {
     /**
      * @since 7.1
      */
-    public void listDocumentsForTag() throws ClientException {
+    public void listDocumentsForTag() {
         final TagActionsBean tagActionsBean = (TagActionsBean) Component.getInstance(TagActionsBean.class);
         tagActionsBean.setListLabel(label);
     }

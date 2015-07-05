@@ -73,15 +73,15 @@ public class TestVersioningService {
         }
     }
 
-    protected long getMajor(DocumentModel doc) throws ClientException {
+    protected long getMajor(DocumentModel doc) {
         return getVersion(doc, VersioningService.MAJOR_VERSION_PROP);
     }
 
-    protected long getMinor(DocumentModel doc) throws ClientException {
+    protected long getMinor(DocumentModel doc) {
         return getVersion(doc, VersioningService.MINOR_VERSION_PROP);
     }
 
-    protected long getVersion(DocumentModel doc, String prop) throws ClientException {
+    protected long getVersion(DocumentModel doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return -1;

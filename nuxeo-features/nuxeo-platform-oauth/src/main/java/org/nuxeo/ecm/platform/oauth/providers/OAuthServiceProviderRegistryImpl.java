@@ -78,7 +78,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     }
 
     protected DocumentModel getBestEntry(DocumentModelList entries, String gadgetUri, String serviceName)
-            throws PropertyException, ClientException {
+            throws PropertyException {
         if (entries.size() > 1) {
             log.warn("Found several entries for gadgetUri=" + gadgetUri + " and serviceName=" + serviceName);
         }
@@ -105,7 +105,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
     }
 
     protected NuxeoOAuthServiceProvider getEntry(String gadgetUri, String serviceName, Set<String> ftFilter)
-            throws ClientException {
+            {
 
         String id = mkStringIdx(gadgetUri, serviceName);
         if (inMemoryProviders.containsKey(id)) {

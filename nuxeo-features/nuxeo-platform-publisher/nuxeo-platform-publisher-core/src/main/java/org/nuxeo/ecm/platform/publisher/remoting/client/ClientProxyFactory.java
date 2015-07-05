@@ -35,16 +35,16 @@ import java.util.Map;
  */
 public class ClientProxyFactory extends AbstractBasePublishedDocumentFactory implements PublishedDocumentFactory {
 
-    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode) {
         throw new IllegalStateException("ClientProxyFactory can not be called to publish locally");
     }
 
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         throw new IllegalStateException("ClientProxyFactory can not be called to publish locally");
     }
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         throw new ClientException("this factory can not wrap a PublishedDocument");
     }
 

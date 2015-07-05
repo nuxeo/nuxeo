@@ -34,7 +34,7 @@ public class BusinessUpdateOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException, ClassNotFoundException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClassNotFoundException {
         DocumentModel document = input.getDocument();
         session.saveDocument(document);
         return input;

@@ -62,7 +62,7 @@ public class RestServerInit implements RepositoryInit {
     public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen", "Greyjoy" };
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
         // try to prevent NXP-15404
         // clearRepositoryCaches(session.getRepositoryName());
         // Create some docs
@@ -129,7 +129,7 @@ public class RestServerInit implements RepositoryInit {
         repo.clearCaches();
     }
 
-    private void createUsersAndGroups(UserManager um) throws ClientException, UserAlreadyExistsException,
+    private void createUsersAndGroups(UserManager um) throws UserAlreadyExistsException,
             GroupAlreadyExistsException {
         for (int idx = 0; idx < 4; idx++) {
             String userId = "user" + idx;
@@ -167,7 +167,7 @@ public class RestServerInit implements RepositoryInit {
         um.updateUser(principal.getModel());
     }
 
-    private void createGroup(UserManager um, String groupId, String groupLabel) throws ClientException,
+    private void createGroup(UserManager um, String groupId, String groupLabel) throws
             GroupAlreadyExistsException {
         NuxeoGroup group = um.getGroup(groupId);
         if (group != null) {
@@ -181,19 +181,19 @@ public class RestServerInit implements RepositoryInit {
         groupModel = um.createGroup(groupModel);
     }
 
-    public static DocumentModel getFolder(int index, CoreSession session) throws ClientException {
+    public static DocumentModel getFolder(int index, CoreSession session) {
         return session.getDocument(new PathRef("/folder_" + index));
     }
 
-    public static DocumentModel getNote(int index, CoreSession session) throws ClientException {
+    public static DocumentModel getNote(int index, CoreSession session) {
         return session.getDocument(new PathRef("/folder_1/note_" + index));
     }
 
-    public static DocumentModel getFile(int index, CoreSession session) throws ClientException {
+    public static DocumentModel getFile(int index, CoreSession session) {
         return session.getDocument(new PathRef("/folder_2/file"));
     }
 
-    public static NuxeoPrincipal getPowerUser() throws ClientException {
+    public static NuxeoPrincipal getPowerUser() {
         UserManager um = Framework.getLocalService(UserManager.class);
         return um.getPrincipal(POWER_USER_LOGIN);
     }

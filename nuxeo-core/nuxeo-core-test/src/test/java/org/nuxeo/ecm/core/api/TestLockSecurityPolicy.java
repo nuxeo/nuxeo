@@ -56,7 +56,7 @@ public class TestLockSecurityPolicy {
     @Inject
     protected RuntimeHarness harness;
 
-    private void setTestPermissions(String user, String... perms) throws ClientException {
+    private void setTestPermissions(String user, String... perms) {
         try (CoreSession session = repo.openSessionAs(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
@@ -75,7 +75,7 @@ public class TestLockSecurityPolicy {
 
     @SuppressWarnings("boxing")
     public static void checkLockPermissions(CoreSession session, DocumentRef docRef, boolean canWrite)
-            throws ClientException {
+            {
         assertEquals(canWrite, session.hasPermission(docRef, WRITE));
         // test WRITE_PROPERTIES as it used to be granted when locked
         assertEquals(canWrite, session.hasPermission(docRef, WRITE_PROPERTIES));

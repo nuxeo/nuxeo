@@ -73,7 +73,7 @@ public class CollectionRightsTest {
     }
 
     @Test
-    public void testDocumentNotAlteredAfterAddedToCollection() throws ClientException {
+    public void testDocumentNotAlteredAfterAddedToCollection() {
         DocumentModel testWorkspace = session.createDocumentModel("/default-domain/workspaces", "testWorkspace",
                 "Workspace");
         testWorkspace = session.createDocument(testWorkspace);

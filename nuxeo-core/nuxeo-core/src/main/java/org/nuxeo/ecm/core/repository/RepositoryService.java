@@ -128,12 +128,11 @@ public class RepositoryService extends DefaultComponent {
         return null;
     }
 
-    protected void openRepository(String name) throws ClientException {
+    protected void openRepository(String name) {
         new UnrestrictedSessionRunner(name) {
 
             @Override
-            public void run() throws ClientException {
-                ;
+            public void run() {;
             }
 
         }.runUnrestricted();
@@ -143,7 +142,7 @@ public class RepositoryService extends DefaultComponent {
         try {
             new UnrestrictedSessionRunner(name) {
                 @Override
-                public void run() throws ClientException {
+                public void run() {
                     handler.initializeRepository(session);
                 }
             }.runUnrestricted();

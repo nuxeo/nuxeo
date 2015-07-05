@@ -67,7 +67,7 @@ public class SuggestTagEntry {
     protected String xpath;
 
     @OperationMethod
-    public Blob run() throws ClientException {
+    public Blob run() {
         JSONArray result = new JSONArray();
         if (tagService != null && tagService.isEnabled()) {
             if (!StringUtils.isEmpty(value)) {

@@ -48,7 +48,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
 
     @Override
     public void startModeration(CoreSession session, DocumentModel doc, String commentID, ArrayList<String> moderators)
-            throws ClientException {
+            {
         TaskService taskService = Framework.getService(TaskService.class);
         if (moderators == null || moderators.isEmpty()) {
             throw new ClientException("No moderators defined");
@@ -67,7 +67,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     }
 
     public Task getModerationTask(TaskService taskService, CoreSession session, DocumentModel doc, String commentId)
-            throws ClientException {
+            {
         List<Task> tasks = DocumentTaskProvider.getTasks("GET_COMMENT_MODERATION_TASKS", session, false, null,
                 doc.getId(), session.getPrincipal().getName(), commentId);
         if (tasks != null && !tasks.isEmpty()) {
@@ -81,7 +81,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     }
 
     @Override
-    public void approveComent(CoreSession session, DocumentModel doc, String commentId) throws ClientException {
+    public void approveComent(CoreSession session, DocumentModel doc, String commentId) {
         TaskService taskService = Framework.getService(TaskService.class);
         Task moderationTask = getModerationTask(taskService, session, doc, commentId);
         if (moderationTask == null) {
@@ -97,7 +97,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     }
 
     @Override
-    public void rejectComment(CoreSession session, DocumentModel doc, String commentId) throws ClientException {
+    public void rejectComment(CoreSession session, DocumentModel doc, String commentId) {
         TaskService taskService = Framework.getService(TaskService.class);
         Task moderationTask = getModerationTask(taskService, session, doc, commentId);
         if (moderationTask == null) {
@@ -109,14 +109,14 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
     }
 
     @Override
-    public void publishComment(CoreSession session, DocumentModel comment) throws ClientException {
+    public void publishComment(CoreSession session, DocumentModel comment) {
         session.followTransition(comment.getRef(), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
 
         notifyEvent(session, CommentsConstants.COMMENT_PUBLISHED, null, null, null, comment);
     }
 
     protected void notifyEvent(CoreSession session, String eventId, Map<String, Serializable> properties,
-            String comment, String category, DocumentModel dm) throws ClientException {
+            String comment, String category, DocumentModel dm) {
 
         // Default category
         if (category == null) {

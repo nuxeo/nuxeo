@@ -81,18 +81,18 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
     }
 
     @Override
-    public Blob getThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+    public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         ThumbnailFactory factory = getThumbnailFactory(doc, session);
         return factory.getThumbnail(doc, session);
     }
 
     @Override
-    public Blob computeThumbnail(DocumentModel doc, CoreSession session) throws ClientException {
+    public Blob computeThumbnail(DocumentModel doc, CoreSession session) {
         ThumbnailFactory factory = getThumbnailFactory(doc, session);
         return factory.computeThumbnail(doc, session);
     }
 
-    public ThumbnailFactory getThumbnailFactory(DocumentModel doc, CoreSession session) throws ClientException {
+    public ThumbnailFactory getThumbnailFactory(DocumentModel doc, CoreSession session) {
         if (factoriesByDocType.containsKey(doc.getType())) {
             ThumbnailFactory factory = factoriesByDocType.get(doc.getType());
             return factory;

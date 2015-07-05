@@ -252,7 +252,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         checkComplexDocs(0, 10);
     }
 
-    protected void createComplexDocs(int iMin, int iMax) throws ClientException {
+    protected void createComplexDocs(int iMin, int iMax) {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "ComplexDoc");
 
@@ -277,7 +277,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         }
     }
 
-    protected void checkComplexDocs(int iMin, int iMax) throws ClientException, IOException {
+    protected void checkComplexDocs(int iMin, int iMax) throws IOException {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.getDocument(new PathRef("/doc" + i));
 
@@ -363,7 +363,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         return String.valueOf(random.nextLong());
     }
 
-    protected DocumentModel createChildDocument(DocumentModel childFolder) throws ClientException {
+    protected DocumentModel createChildDocument(DocumentModel childFolder) {
         DocumentModel ret = session.createDocument(childFolder);
         assertNotNull(ret);
         assertNotNull(ret.getName());
@@ -373,7 +373,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         return ret;
     }
 
-    protected List<DocumentModel> createChildDocuments(List<DocumentModel> childFolders) throws ClientException {
+    protected List<DocumentModel> createChildDocuments(List<DocumentModel> childFolders) {
         List<DocumentModel> rets = new ArrayList<DocumentModel>();
         Collections.addAll(rets, session.createDocument(childFolders.toArray(new DocumentModel[0])));
 
@@ -392,7 +392,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetRootDocument() throws ClientException {
+    public void testGetRootDocument() {
         DocumentModel root = session.getRootDocument();
         assertNotNull(root);
         assertNotNull(root.getId());
@@ -402,14 +402,14 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     @SuppressWarnings({ "SimplifiableJUnitAssertion" })
     @Test
-    public void testDocumentReferenceEqualitySameInstance() throws ClientException {
+    public void testDocumentReferenceEqualitySameInstance() {
         DocumentModel root = session.getRootDocument();
 
         assertTrue(root.getRef().equals(root.getRef()));
     }
 
     @Test
-    public void testCancel() throws ClientException {
+    public void testCancel() {
         DocumentModel root = session.getRootDocument();
 
         DocumentModel childFolder = new DocumentModelImpl(root.getPathAsString(), "folder#" + generateUnique(),
@@ -422,7 +422,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateDomainDocumentRefDocumentModel() throws ClientException {
+    public void testCreateDomainDocumentRefDocumentModel() {
         DocumentModel root = session.getRootDocument();
 
         String name = "domain#" + generateUnique();
@@ -434,7 +434,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFolderDocumentRefDocumentModel() throws ClientException {
+    public void testCreateFolderDocumentRefDocumentModel() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -446,7 +446,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFileDocumentRefDocumentModel() throws ClientException {
+    public void testCreateFileDocumentRefDocumentModel() {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
@@ -459,7 +459,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFolderDocumentRefDocumentModelArray() throws ClientException {
+    public void testCreateFolderDocumentRefDocumentModelArray() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -478,7 +478,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateFileDocumentRefDocumentModelArray() throws ClientException {
+    public void testCreateFileDocumentRefDocumentModelArray() {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
@@ -497,14 +497,14 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testExists() throws ClientException {
+    public void testExists() {
         DocumentModel root = session.getRootDocument();
 
         assertTrue(session.exists(root.getRef()));
     }
 
     @Test
-    public void testGetChild() throws ClientException {
+    public void testGetChild() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -543,7 +543,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenDocumentRef() throws ClientException {
+    public void testGetChildrenDocumentRef() {
         DocumentModel root = session.getRootDocument();
 
         List<DocumentModel> docs = session.getChildren(root.getRef());
@@ -552,7 +552,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenIteratorRoot() throws ClientException {
+    public void testGetChildrenIteratorRoot() {
         DocumentModel root = session.getRootDocument();
 
         DocumentModelIterator docs = session.getChildrenIterator(root.getRef());
@@ -561,7 +561,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetFileChildrenDocumentRefString() throws ClientException {
+    public void testGetFileChildrenDocumentRefString() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -595,7 +595,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenIteratorFile() throws ClientException {
+    public void testGetChildrenIteratorFile() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -632,7 +632,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenIterator() throws ClientException {
+    public void testGetChildrenIterator() {
         int n = 200;
         Set<String> names = new HashSet<String>();
         for (int i = 0; i < n; i++) {
@@ -656,7 +656,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenIteratorFilter() throws ClientException {
+    public void testGetChildrenIteratorFilter() {
         int n = 200;
         Set<String> names = new HashSet<String>();
         for (int i = 0; i < n; i++) {
@@ -693,7 +693,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetFolderChildrenDocumentRefString() throws ClientException {
+    public void testGetFolderChildrenDocumentRefString() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -727,7 +727,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenIteratorFolder() throws ClientException {
+    public void testGetChildrenIteratorFolder() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -764,7 +764,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetChildrenDocumentRefStringFilter() throws ClientException {
+    public void testGetChildrenDocumentRefStringFilter() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -794,10 +794,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
     /**
      * Test for NXP-741: Search based getChildren.
      *
-     * @throws ClientException
      */
     @Test
-    public void testGetChildrenInFolderWithSearch() throws ClientException {
+    public void testGetChildrenInFolderWithSearch() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -824,7 +823,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetDocumentDocumentRef() throws ClientException {
+    public void testGetDocumentDocumentRef() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -856,7 +855,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     // TODO: fix this test.
     @Test
     @Ignore
-    public void testGetDocumentDocumentRefStringArray() throws ClientException {
+    public void testGetDocumentDocumentRefStringArray() {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -915,7 +914,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetFilesDocumentRef() throws ClientException {
+    public void testGetFilesDocumentRef() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -955,7 +954,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetFoldersDocumentRef() throws ClientException {
+    public void testGetFoldersDocumentRef() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -989,7 +988,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetFoldersDocumentRefFilterSorter() throws ClientException {
+    public void testGetFoldersDocumentRefFilterSorter() {
         DocumentModel root = session.getRootDocument();
         // init children
         DocumentModel childFolder1 = new DocumentModelImpl(root.getPathAsString(), "folder1#" + generateUnique(),
@@ -1020,7 +1019,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetParentDocument() throws ClientException {
+    public void testGetParentDocument() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1043,7 +1042,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetParentDocuments() throws ClientException {
+    public void testGetParentDocuments() {
         List<DocumentModel> docs;
 
         DocumentModel folder1 = new DocumentModelImpl("/", "folder1", "Folder");
@@ -1077,7 +1076,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testHasChildren() throws ClientException {
+    public void testHasChildren() {
         DocumentModel root = session.getRootDocument();
 
         // the root document at the moment has no children
@@ -1085,7 +1084,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testRemoveChildren() throws ClientException {
+    public void testRemoveChildren() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1109,7 +1108,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testRemoveDocument() throws ClientException {
+    public void testRemoveDocument() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1131,7 +1130,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
     }
 
-    public void TODOtestQuery() throws ClientException {
+    public void TODOtestQuery() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1219,7 +1218,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.removeDocument(returnedChildDocs.get(1).getRef());
     }
 
-    public void TODOtestQueryAfterEdit() throws ClientException, IOException {
+    public void TODOtestQueryAfterEdit() throws IOException {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1#" + generateUnique();
@@ -1265,7 +1264,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testRemoveDocuments() throws ClientException {
+    public void testRemoveDocuments() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1294,7 +1293,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
      * case where some documents are actually children of other ones from the list
      */
     @Test
-    public void testRemoveDocumentsWithDeps() throws ClientException {
+    public void testRemoveDocumentsWithDeps() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1347,7 +1346,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
      * Same as testRemoveDocumentWithDeps with a different given ordering of documents to delete
      */
     @Test
-    public void testRemoveDocumentsWithDeps2() throws ClientException {
+    public void testRemoveDocumentsWithDeps2() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1449,7 +1448,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testSave() throws ClientException {
+    public void testSave() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1468,7 +1467,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testSaveFolder() throws ClientException {
+    public void testSaveFolder() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1489,7 +1488,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testSaveFile() throws ClientException {
+    public void testSaveFile() {
         DocumentModel root = session.getRootDocument();
 
         String name = "file#" + generateUnique();
@@ -1515,7 +1514,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testSaveDocuments() throws ClientException {
+    public void testSaveDocuments() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1536,7 +1535,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetDataModel() throws ClientException {
+    public void testGetDataModel() {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -1572,7 +1571,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testDocumentReferenceEqualityDifferentInstances() throws ClientException {
+    public void testDocumentReferenceEqualityDifferentInstances() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1613,7 +1612,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testDocumentReferenceNonEqualityDifferentInstances() throws ClientException {
+    public void testDocumentReferenceNonEqualityDifferentInstances() {
         DocumentModel root = session.getRootDocument();
 
         String name = "folder#" + generateUnique();
@@ -1957,7 +1956,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testLifeCycleAPI() throws ClientException {
+    public void testLifeCycleAPI() {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
@@ -2006,7 +2005,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testDataModelLifeCycleAPI() throws ClientException {
+    public void testDataModelLifeCycleAPI() {
         DocumentModel root = session.getRootDocument();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), "file#" + generateUnique(), "File");
         childFile = createChildDocument(childFile);
@@ -2326,7 +2325,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testRetrieveSamePropertyInAncestors() throws ClientException {
+    public void testRetrieveSamePropertyInAncestors() {
         DocumentModel root = session.getRootDocument();
         DocumentModel folder1 = new DocumentModelImpl(root.getPathAsString(), "folder1", "Folder");
         folder1 = createChildDocument(folder1);
@@ -2393,7 +2392,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetSourceId() throws ClientException {
+    public void testGetSourceId() {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -2416,7 +2415,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testGetRepositoryName() throws ClientException {
+    public void testGetRepositoryName() {
         DocumentModel root = session.getRootDocument();
 
         String name2 = "file#" + generateUnique();
@@ -2429,7 +2428,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     // TODO: fix and reenable, is this a bug?
     @Test
     @Ignore
-    public void testRetrieveProxies() throws ClientException {
+    public void testRetrieveProxies() {
         DocumentModel root = session.getRootDocument();
 
         // Section A
@@ -2472,7 +2471,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     @Test
-    public void testCreateDocumentModel() throws ClientException {
+    public void testCreateDocumentModel() {
         // first method: only the typename
         DocumentModel docModel = session.createDocumentModel("File");
         assertEquals("File", docModel.getType());
@@ -2499,7 +2498,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     @SuppressWarnings({ "unchecked" })
     @Test
-    public void testCopyContent() throws ClientException {
+    public void testCopyContent() {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "original", "File");
         doc.setProperty("dublincore", "title", "t");

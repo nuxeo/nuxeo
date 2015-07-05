@@ -188,7 +188,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     @Override
     @Observer({ EventNames.DOCUMENT_SELECTION_CHANGED })
     @BypassInterceptors
-    public void reset() throws ClientException {
+    public void reset() {
         title = null;
         maxsize = null;
         viewtitle = null;
@@ -200,13 +200,13 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     }
 
     @Override
-    public String downloadSelectedBook() throws ClientException, IOException {
+    public String downloadSelectedBook() throws IOException {
         List<DocumentModel> list = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_DOCUMENT_SELECTION);
         return createZip(list);
     }
 
     @Override
-    public String downloadAll() throws ClientException, IOException {
+    public String downloadAll() throws IOException {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc != null) {
             List<DocumentModel> list = documentManager.getChildren(currentDoc.getRef());
@@ -215,7 +215,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
         return null;
     }
 
-    protected boolean isEmptyFolder(DocumentModel doc) throws ClientException {
+    protected boolean isEmptyFolder(DocumentModel doc) {
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
         for (DocumentModel docChild : docList) {
             BlobHolder bh = docChild.getAdapter(BlobHolder.class);
@@ -237,7 +237,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     }
 
     protected void addBlobHolderToZip(String path, ZipOutputStream out, byte[] data, PictureBlobHolder bh)
-            throws IOException, ClientException {
+            throws IOException {
         List<Blob> blobs;
         if (selectedViews != null) {
             blobs = bh.getBlobs(selectedViews);
@@ -267,7 +267,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     }
 
     protected void addFolderToZip(String path, ZipOutputStream out, DocumentModel doc, byte[] data)
-            throws ClientException, IOException {
+            throws IOException {
 
         String title = (String) doc.getProperty("dublincore", "title");
         List<DocumentModel> docList = documentManager.getChildren(doc.getRef());
@@ -287,7 +287,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
         }
     }
 
-    protected String createZip(List<DocumentModel> documents) throws IOException, ClientException {
+    protected String createZip(List<DocumentModel> documents) throws IOException {
 
         FacesContext context = FacesContext.getCurrentInstance();
         HttpServletResponse response = (HttpServletResponse) context.getExternalContext().getResponse();
@@ -331,7 +331,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
         return null;
     }
 
-    protected void initSelectItems() throws ClientException {
+    protected void initSelectItems() {
         DocumentModel doc = getCurrentDocument();
         List<Map<String, Object>> views = (List) doc.getProperty("picturebook", "picturetemplates");
         selectItems = new ArrayList<SelectItem>(views.size());
@@ -345,7 +345,7 @@ public class PictureBookManagerBean extends InputController implements PictureBo
     }
 
     @Override
-    public List<SelectItem> getSelectItems() throws ClientException {
+    public List<SelectItem> getSelectItems() {
         if (selectItems == null) {
             initSelectItems();
             return selectItems;

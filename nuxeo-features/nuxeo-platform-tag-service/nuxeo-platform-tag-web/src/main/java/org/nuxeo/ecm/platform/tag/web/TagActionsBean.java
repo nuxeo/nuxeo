@@ -106,7 +106,7 @@ public class TagActionsBean implements Serializable {
     protected Boolean canSelectNewTag;
 
     @Factory(value = "tagServiceEnabled", scope = APPLICATION)
-    public boolean isTagServiceEnabled() throws ClientException {
+    public boolean isTagServiceEnabled() {
         return getTagService() != null;
     }
 
@@ -119,7 +119,7 @@ public class TagActionsBean implements Serializable {
      * Returns the list with distinct public tags (or owned by user) that are applied on the current document.
      */
     @Factory(value = "currentDocumentTags", scope = EVENT)
-    public List<Tag> getDocumentTags() throws ClientException {
+    public List<Tag> getDocumentTags() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return new ArrayList<Tag>(0);
@@ -146,7 +146,7 @@ public class TagActionsBean implements Serializable {
     /**
      * Performs the tagging on the current document.
      */
-    public String addTagging() throws ClientException {
+    public String addTagging() {
         tagLabel = cleanLabel(tagLabel);
         String messageKey;
         if (StringUtils.isBlank(tagLabel)) {
@@ -180,7 +180,7 @@ public class TagActionsBean implements Serializable {
     /**
      * Removes a tagging from the current document.
      */
-    public String removeTagging(String label) throws ClientException {
+    public String removeTagging(String label) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         String docId = currentDocument.getId();
 
@@ -212,7 +212,7 @@ public class TagActionsBean implements Serializable {
      * not tested.
      */
     @Factory(value = "tagCloudOnAllDocuments", scope = EVENT)
-    public List<Tag> getPopularCloudOnAllDocuments() throws ClientException {
+    public List<Tag> getPopularCloudOnAllDocuments() {
         List<Tag> cloud = getTagService().getTagCloud(documentManager, null, null, Boolean.TRUE); // logarithmic 0-100
                                                                                                   // normalization
         // change weight to a font size
@@ -226,13 +226,13 @@ public class TagActionsBean implements Serializable {
         return cloud;
     }
 
-    public String listDocumentsForTag(String listLabel) throws ClientException {
+    public String listDocumentsForTag(String listLabel) {
         this.listLabel = listLabel;
         return TAG_SEARCH_RESULT_PAGE;
     }
 
     @Factory(value = "taggedDocuments", scope = EVENT)
-    public DocumentModelList getChildrenSelectModel() throws ClientException {
+    public DocumentModelList getChildrenSelectModel() {
         if (StringUtils.isBlank(listLabel)) {
             return new DocumentModelListImpl(0);
         } else {
@@ -303,7 +303,7 @@ public class TagActionsBean implements Serializable {
         this.addTag = addTag;
     }
 
-    public List<Tag> getSuggestions(Object input) throws ClientException {
+    public List<Tag> getSuggestions(Object input) {
         String label = (String) input;
         List<Tag> tags = getTagService().getSuggestions(documentManager, label, null);
         Collections.sort(tags, Tag.LABEL_COMPARATOR);
@@ -331,7 +331,7 @@ public class TagActionsBean implements Serializable {
 
     @SuppressWarnings("unchecked")
     @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
-    public void addTagsOnEvent(List<DocumentModel> documents, DocumentModel docModel) throws ClientException {
+    public void addTagsOnEvent(List<DocumentModel> documents, DocumentModel docModel) {
         List<String> tags = (List<String>) docModel.getContextData(ScopeType.REQUEST, "bulk_tags");
         if (tags != null && !tags.isEmpty()) {
             TagService tagService = Framework.getLocalService(TagService.class);

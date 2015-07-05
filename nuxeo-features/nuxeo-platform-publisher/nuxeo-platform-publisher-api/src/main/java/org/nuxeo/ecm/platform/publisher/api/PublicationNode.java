@@ -30,15 +30,15 @@ import java.util.List;
  */
 public interface PublicationNode extends Serializable {
 
-    String getTitle() throws ClientException;
+    String getTitle();
 
-    String getName() throws ClientException;
+    String getName();
 
     PublicationNode getParent();
 
-    List<PublicationNode> getChildrenNodes() throws ClientException;
+    List<PublicationNode> getChildrenNodes();
 
-    List<PublishedDocument> getChildrenDocuments() throws ClientException;
+    List<PublishedDocument> getChildrenDocuments();
 
     String getNodeType();
 

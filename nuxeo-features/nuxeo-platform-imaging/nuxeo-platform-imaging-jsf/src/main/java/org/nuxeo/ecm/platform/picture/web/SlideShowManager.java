@@ -52,9 +52,8 @@ public interface SlideShowManager {
     /**
      * Reinitializes the values at every changes.
      *
-     * @throws ClientException
      */
-    void resetIndex() throws ClientException;
+    void resetIndex();
 
     /**
      * Increments the index.

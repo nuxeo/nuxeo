@@ -79,7 +79,7 @@ public class TestRenditionPublication {
     protected PublisherService publisherService;
 
     @Test
-    public void shouldPublishASimpleProxyIfNoRenditionNameIsDefined() throws ClientException {
+    public void shouldPublishASimpleProxyIfNoRenditionNameIsDefined() {
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
         PublicationTree tree = publisherService.getPublicationTree(defaultTreeName, session, null);
 
@@ -102,7 +102,7 @@ public class TestRenditionPublication {
     }
 
     @Test
-    public void shouldPublishAPDFRendition() throws ClientException {
+    public void shouldPublishAPDFRendition() {
         String defaultTreeName = publisherService.getAvailablePublicationTree().get(0);
         PublicationTree tree = publisherService.getPublicationTree(defaultTreeName, session, null);
 

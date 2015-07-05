@@ -49,9 +49,8 @@ public class BaseUserTest extends BaseTest {
      * @param group
      * @return
      * @throws IOException
-     * @throws ClientException
      */
-    protected String getGroupAsJson(NuxeoGroup group) throws IOException, ClientException {
+    protected String getGroupAsJson(NuxeoGroup group) throws IOException {
         OutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
         NuxeoGroupWriter ngw = new NuxeoGroupWriter();
@@ -78,9 +77,8 @@ public class BaseUserTest extends BaseTest {
      * @param user
      * @return
      * @throws IOException
-     * @throws ClientException
      */
-    protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException, ClientException {
+    protected String getPrincipalAsJson(NuxeoPrincipal user) throws IOException {
         OutputStream out = new ByteArrayOutputStream();
         JsonGenerator jg = JsonHelper.createJsonGenerator(factory, out);
         NuxeoPrincipalWriter npw = new NuxeoPrincipalWriter();

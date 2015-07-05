@@ -40,7 +40,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     @Override
-    public boolean hasClient(String clientId) throws ClientException {
+    public boolean hasClient(String clientId) {
         DirectoryService service = getService();
         try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();
@@ -56,7 +56,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     @Override
-    public boolean isValidClient(String clientId, String clientSecret) throws ClientException {
+    public boolean isValidClient(String clientId, String clientSecret) {
         DocumentModel docClient = getClientModel(clientId);
         if (docClient != null) {
             OAuth2Client client = OAuth2Client.fromDocumentModel(docClient);
@@ -66,7 +66,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     @Override
-    public boolean registerClient(OAuth2Client client) throws ClientException {
+    public boolean registerClient(OAuth2Client client) {
         DocumentModel doc = getClientModel(client.getId());
         if (doc != null) {
             log.info("Trying to register an exisiting client");
@@ -85,7 +85,7 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     @Override
-    public boolean deleteClient(String clientId) throws ClientException {
+    public boolean deleteClient(String clientId) {
         DirectoryService service = getService();
         try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             session.deleteEntry(clientId);
@@ -96,19 +96,19 @@ public class ClientRegistryImpl extends DefaultComponent implements ClientRegist
     }
 
     @Override
-    public List<DocumentModel> listClients() throws ClientException {
+    public List<DocumentModel> listClients() {
         DirectoryService service = getService();
         try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             return session.getEntries();
         }
     }
 
-    public OAuth2Client getClient(String clientId) throws ClientException {
+    public OAuth2Client getClient(String clientId) {
         DocumentModel doc = getClientModel(clientId);
         return doc != null ? OAuth2Client.fromDocumentModel(doc) : null;
     }
 
-    protected DocumentModel getClientModel(String clientId) throws ClientException {
+    protected DocumentModel getClientModel(String clientId) {
         DirectoryService service = getService();
         try (Session session = service.open(OAUTH2CLIENT_DIRECTORY_NAME)) {
             Map<String, Serializable> filter = new HashMap<>();

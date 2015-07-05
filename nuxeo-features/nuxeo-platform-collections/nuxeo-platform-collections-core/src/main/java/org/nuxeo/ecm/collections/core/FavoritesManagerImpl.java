@@ -46,18 +46,18 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 public class FavoritesManagerImpl extends DefaultComponent implements FavoritesManager {
 
     @Override
-    public void addToFavorites(DocumentModel document, CoreSession session) throws ClientException {
+    public void addToFavorites(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         collectionManager.addToCollection(getFavorites(document, session), document, session);
     }
 
     @Override
-    public boolean canAddToFavorites(DocumentModel document) throws ClientException {
+    public boolean canAddToFavorites(DocumentModel document) {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         return collectionManager.isCollectable(document);
     }
 
-    protected DocumentModel createFavorites(CoreSession session, DocumentModel userWorkspace) throws ClientException {
+    protected DocumentModel createFavorites(CoreSession session, DocumentModel userWorkspace) {
         DocumentModel doc = session.createDocumentModel(userWorkspace.getPath().toString(),
                 FavoritesConstants.DEFAULT_FAVORITES_NAME, FavoritesConstants.FAVORITES_TYPE);
         String title = null;
@@ -83,7 +83,7 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
     }
 
     @Override
-    public DocumentModel getFavorites(final DocumentModel context, final CoreSession session) throws ClientException {
+    public DocumentModel getFavorites(final DocumentModel context, final CoreSession session) {
         final UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
         final DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, context);
         final DocumentRef lookupRef = new PathRef(userWorkspace.getPath().toString(),
@@ -112,7 +112,7 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
         }
     }
 
-    protected Locale getLocale(final CoreSession session) throws ClientException {
+    protected Locale getLocale(final CoreSession session) {
         Locale locale = null;
         locale = Framework.getLocalService(LocaleProvider.class).getLocale(session);
         if (locale == null) {
@@ -122,13 +122,13 @@ public class FavoritesManagerImpl extends DefaultComponent implements FavoritesM
     }
 
     @Override
-    public boolean isFavorite(DocumentModel document, CoreSession session) throws ClientException {
+    public boolean isFavorite(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         return collectionManager.isInCollection(getFavorites(document, session), document, session);
     }
 
     @Override
-    public void removeFromFavorites(DocumentModel document, CoreSession session) throws ClientException {
+    public void removeFromFavorites(DocumentModel document, CoreSession session) {
         final CollectionManager collectionManager = Framework.getLocalService(CollectionManager.class);
         collectionManager.removeFromCollection(getFavorites(document, session), document, session);
     }

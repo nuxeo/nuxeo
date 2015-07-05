@@ -30,15 +30,15 @@ import org.nuxeo.ecm.core.api.ClientException;
 public abstract class AbstractBlobHolder implements BlobHolder {
 
     @Override
-    public abstract Blob getBlob() throws ClientException;
+    public abstract Blob getBlob();
 
     @Override
-    public void setBlob(Blob blob) throws ClientException {
+    public void setBlob(Blob blob) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public List<Blob> getBlobs() throws ClientException {
+    public List<Blob> getBlobs() {
         List<Blob> blobs = null;
 
         Blob blob = getBlob();
@@ -53,7 +53,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
     protected abstract String getBasePath();
 
     @Override
-    public String getFilePath() throws ClientException {
+    public String getFilePath() {
         String path = getBasePath();
 
         Blob blob = getBlob();
@@ -65,7 +65,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
     }
 
     @Override
-    public String getHash() throws ClientException {
+    public String getHash() {
 
         Blob blob = getBlob();
         if (blob != null) {
@@ -79,7 +79,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         return "NullBlob";
     }
 
-    protected String getMD5Digest() throws ClientException {
+    protected String getMD5Digest() {
         try (InputStream in = getBlob().getStream()) {
             return DigestUtils.md5Hex(in);
         } catch (IOException e) {
@@ -88,6 +88,6 @@ public abstract class AbstractBlobHolder implements BlobHolder {
     }
 
     @Override
-    public abstract Calendar getModificationDate() throws ClientException;
+    public abstract Calendar getModificationDate();
 
 }

@@ -92,7 +92,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     protected String comment;
 
     @Factory(value = "currentSingleTasks", scope = ScopeType.EVENT)
-    public List<Task> getCurrentDocumentTasks() throws ClientException {
+    public List<Task> getCurrentDocumentTasks() {
         if (tasks == null) {
             tasks = new ArrayList<Task>();
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
@@ -107,7 +107,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     @Factory(value = "currentDashBoardItems", scope = ScopeType.EVENT)
-    public List<DashBoardItem> getCurrentDashBoardItems() throws ClientException {
+    public List<DashBoardItem> getCurrentDashBoardItems() {
         if (items == null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
@@ -120,7 +120,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
     }
 
     @Factory(value = "currentDashBoardItemsExceptPublishingTasks", scope = ScopeType.EVENT)
-    public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks() throws ClientException {
+    public List<DashBoardItem> getCurrentDashBoardItemsExceptPublishingTasks() {
         if (items == null) {
             items = new ArrayList<DashBoardItem>();
             for (Task task : getCurrentDocumentTasks()) {
@@ -143,12 +143,12 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         this.comment = comment;
     }
 
-    public void acceptTask(Task task) throws ClientException {
+    public void acceptTask(Task task) {
         acceptTask(task, getComment());
         setComment(null);
     }
 
-    public void acceptTask(Task task, String comment) throws ClientException {
+    public void acceptTask(Task task, String comment) {
         String seamEventName = taskService.acceptTask(documentManager, (NuxeoPrincipal) documentManager.getPrincipal(),
                 task, comment);
         if (seamEventName != null) {
@@ -156,7 +156,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
         }
     }
 
-    public void rejectTask(Task task) throws ClientException {
+    public void rejectTask(Task task) {
         String userComment = getComment();
         if (userComment != null && !"".equals(userComment)) {
             rejectTask(task, userComment);
@@ -168,7 +168,7 @@ public class TaskActionsBean extends DocumentContextBoundActionBean {
 
     }
 
-    public void rejectTask(Task task, String comment) throws ClientException {
+    public void rejectTask(Task task, String comment) {
         String seamEventName = taskService.rejectTask(documentManager, (NuxeoPrincipal) documentManager.getPrincipal(),
                 task, comment);
         if (seamEventName != null) {

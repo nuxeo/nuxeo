@@ -211,13 +211,12 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
      * @param jg
      * @param doc
      * @param headers
-     * @throws ClientException
      * @throws IOException
      * @throws JsonGenerationException
      * @since 5.7.3
      */
     protected static void writeRestContributions(JsonGenerator jg, DocumentModel doc, HttpHeaders headers,
-            ServletRequest request) throws JsonGenerationException, IOException, ClientException {
+            ServletRequest request) throws JsonGenerationException, IOException {
         ContentEnricherService rcs = Framework.getLocalService(ContentEnricherService.class);
         RestEvaluationContext ec = new HeaderDocEvaluationContext(doc, headers, request);
         rcs.writeContext(jg, ec);

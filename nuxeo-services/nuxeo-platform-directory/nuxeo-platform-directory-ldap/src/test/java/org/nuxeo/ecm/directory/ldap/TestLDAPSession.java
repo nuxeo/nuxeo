@@ -145,7 +145,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetEntry2() throws ClientException {
+    public void testGetEntry2() {
         try (Session session = getLDAPDirectory("groupDirectory").getSession()) {
             DocumentModel entry = session.getEntry("administrators");
             assertNotNull(entry);
@@ -210,7 +210,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetEntry3() throws ClientException {
+    public void testGetEntry3() {
         if (!HAS_DYNGROUP_SCHEMA) {
             return;
         }
@@ -270,7 +270,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     // when using other cases (lower or upper)
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Test
-    public void testGetEntryWithIdInDifferentCase() throws ClientException {
+    public void testGetEntryWithIdInDifferentCase() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             DocumentModel entry = session.getEntry("Administrator");
             assertNotNull(entry);
@@ -294,7 +294,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetEntryWithLdapTreeRef() throws ClientException {
+    public void testGetEntryWithLdapTreeRef() {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             return;
         }
@@ -373,7 +373,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testGetEntries() throws ClientException {
+    public void testGetEntries() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             DocumentModelList entries = session.getEntries();
             assertNotNull(entries);
@@ -742,7 +742,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testDeleteEntry() throws ClientException {
+    public void testDeleteEntry() {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // this does not work with the internal server which has
             // a suffixed context that prevent it from looking up
@@ -781,7 +781,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testDeleteEntry2() throws ClientException {
+    public void testDeleteEntry2() {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // this does not work with the internal server which has
             // a suffixed context that prevent it from looking up
@@ -804,7 +804,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testRollback() throws ClientException {
+    public void testRollback() {
         // As a LDAP is not transactional, rollbacking is useless
         // this is just a smoke test
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
@@ -813,7 +813,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testQuery1() throws ClientException {
+    public void testQuery1() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             DocumentModelList entries;
@@ -864,7 +864,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testQuery2() throws ClientException {
+    public void testQuery2() {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // query does not work at all with internal apache
             return;
@@ -922,7 +922,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testQueryWithNullFilter() throws ClientException {
+    public void testQueryWithNullFilter() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             DocumentModelList entries;
@@ -943,7 +943,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testQueryOrderBy() throws ClientException {
+    public void testQueryOrderBy() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
             Map<String, String> orderBy = new HashMap<String, String>();
@@ -964,7 +964,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testAuthenticate() throws ClientException {
+    public void testAuthenticate() {
         if (!USE_EXTERNAL_TEST_LDAP_SERVER) {
             // authenticate does not work at all with internal apache
             return;
@@ -987,7 +987,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testGetMandatoryAttributes() throws ClientException {
+    public void testGetMandatoryAttributes() {
         if (USE_EXTERNAL_TEST_LDAP_SERVER) {
             try (LDAPSession session = (LDAPSession) getLDAPDirectory("userDirectory").getSession()) {
                 List<String> mandatoryAttributes = session.getMandatoryAttributes();
@@ -1007,7 +1007,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
         }
     }
 
-    public void disable_testDateField() throws ClientException {
+    public void disable_testDateField() {
         /*
          * To make this test working, you must : - rename this method to testDateField() - in the file slapd.conf,
          * uncomment the line include /etc/ldap/schema/testdateperson.schema - copy the file

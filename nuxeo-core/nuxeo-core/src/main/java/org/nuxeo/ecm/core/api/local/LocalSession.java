@@ -69,7 +69,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
     }
 
     @Override
-    public void connect(String repositoryName, NuxeoPrincipal principal) throws ClientException {
+    public void connect(String repositoryName, NuxeoPrincipal principal) {
         if (sessionId != null) {
             throw new LocalException("CoreSession already connected");
         }

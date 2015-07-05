@@ -130,7 +130,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public Object execute(String batchId, String chainOrOperationId, CoreSession session,
-            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
+            Map<String, Object> contextParams, Map<String, Object> operationParams) {
         List<Blob> blobs = getBlobs(batchId, getUploadWaitTimeout());
         if (blobs == null) {
             String message = String.format("Unable to find batch associated with id '%s'", batchId);
@@ -142,7 +142,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public Object execute(String batchId, String fileIdx, String chainOrOperationId, CoreSession session,
-            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
+            Map<String, Object> contextParams, Map<String, Object> operationParams) {
         Blob blob = getBlob(batchId, fileIdx, getUploadWaitTimeout());
         if (blob == null) {
             String message = String.format(
@@ -154,7 +154,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
     }
 
     protected Object execute(Object blobInput, String chainOrOperationId, CoreSession session,
-            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
+            Map<String, Object> contextParams, Map<String, Object> operationParams) {
         if (contextParams == null) {
             contextParams = new HashMap<>();
         }
@@ -190,7 +190,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
 
     @Override
     public Object executeAndClean(String batchId, String chainOrOperationId, CoreSession session,
-            Map<String, Object> contextParams, Map<String, Object> operationParams) throws ClientException {
+            Map<String, Object> contextParams, Map<String, Object> operationParams) {
         try {
             return execute(batchId, chainOrOperationId, session, contextParams, operationParams);
         } finally {

@@ -32,7 +32,7 @@ public class FSPublishedDocumentFactory extends AbstractBasePublishedDocumentFac
         PublishedDocumentFactory {
 
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
 
         try {
             FSPublishedDocument pubDoc = new FSPublishedDocument("local", doc);
@@ -43,7 +43,7 @@ public class FSPublishedDocumentFactory extends AbstractBasePublishedDocumentFac
         }
     }
 
-    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         try {
 
             doc = snapshotDocumentBeforePublish(doc);

@@ -122,7 +122,7 @@ public class UserSuggestionActionsBean implements Serializable {
         }
     }
 
-    public List<DocumentModel> getGroupsSuggestions(Object input) throws ClientException {
+    public List<DocumentModel> getGroupsSuggestions(Object input) {
         try {
             Map<String, DocumentModel> uniqueGroups = new HashMap<String, DocumentModel>();
 
@@ -153,13 +153,13 @@ public class UserSuggestionActionsBean implements Serializable {
         }
     }
 
-    protected Map<String, String> getGroupsOrderBy() throws ClientException {
+    protected Map<String, String> getGroupsOrderBy() {
         Map<String, String> order = new HashMap<String, String>();
         order.put(userManager.getGroupLabelField(), DocumentModelComparator.ORDER_ASC);
         return order;
     }
 
-    public List<DocumentModel> getUserSuggestions(Object input) throws ClientException {
+    public List<DocumentModel> getUserSuggestions(Object input) {
         try {
             String searchPattern = (String) input;
             return userManager.searchUsers(searchPattern);
@@ -179,7 +179,7 @@ public class UserSuggestionActionsBean implements Serializable {
         }
     }
 
-    public Object getSuggestions(Object input) throws ClientException {
+    public Object getSuggestions(Object input) {
         if (equals(cachedUserSuggestionSearchType, userSuggestionSearchType)
                 && equals(cachedUserSuggestionMaxSearchResults, userSuggestionMaxSearchResults)
                 && equals(cachedInput, input)) {
@@ -239,7 +239,7 @@ public class UserSuggestionActionsBean implements Serializable {
     }
 
     // XXX: needs optimisation
-    public Map<String, Object> getPrefixedUserInfo(String id) throws ClientException {
+    public Map<String, Object> getPrefixedUserInfo(String id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put(PREFIXED_ID_KEY_NAME, id);
         if (!StringUtils.isBlank(id)) {
@@ -261,7 +261,7 @@ public class UserSuggestionActionsBean implements Serializable {
     }
 
     // XXX: needs optimisation
-    public Map<String, Object> getUserInfo(String id) throws ClientException {
+    public Map<String, Object> getUserInfo(String id) {
         Map<String, Object> res = new HashMap<String, Object>();
         res.put(ID_KEY_NAME, id);
         if (userManager.getGroup(id) != null) {

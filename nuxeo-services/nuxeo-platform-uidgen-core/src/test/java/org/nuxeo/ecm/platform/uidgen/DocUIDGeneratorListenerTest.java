@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public class DocUIDGeneratorListenerTest extends UIDGeneratorTestCase {
 
-    protected DocumentModel createFileDocument() throws ClientException {
+    protected DocumentModel createFileDocument() {
 
         DocumentModel fileDoc = session.createDocumentModel("/", "testFile", "Note");
 
@@ -49,7 +49,7 @@ public class DocUIDGeneratorListenerTest extends UIDGeneratorTestCase {
     }
 
     @Test
-    public void testListener() throws ClientException {
+    public void testListener() {
         DocumentModel doc = createFileDocument();
         String uid = (String)doc.getProperty("uid", "uid");
         assertNotNull(uid);

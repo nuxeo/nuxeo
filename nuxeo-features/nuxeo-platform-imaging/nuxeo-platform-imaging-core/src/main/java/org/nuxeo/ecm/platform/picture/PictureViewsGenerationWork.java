@@ -105,7 +105,7 @@ public class PictureViewsGenerationWork extends AbstractWork {
      *
      * @since 5.8
      */
-    protected void firePictureViewsGenerationDoneEvent(DocumentModel doc) throws ClientException {
+    protected void firePictureViewsGenerationDoneEvent(DocumentModel doc) {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         List<String> workIds = workManager.listWorkIds(CATEGORY_PICTURE_GENERATION, null);
         int worksCount = 0;

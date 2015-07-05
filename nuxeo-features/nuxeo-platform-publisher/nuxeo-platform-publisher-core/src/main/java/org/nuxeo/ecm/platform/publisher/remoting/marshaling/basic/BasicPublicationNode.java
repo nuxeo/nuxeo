@@ -55,11 +55,11 @@ public class BasicPublicationNode implements PublicationNode {
         this.sid = sid;
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         throw new ClientException("Can not be called on a remote node");
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         throw new ClientException("Can not be called on a remote node");
     }
 

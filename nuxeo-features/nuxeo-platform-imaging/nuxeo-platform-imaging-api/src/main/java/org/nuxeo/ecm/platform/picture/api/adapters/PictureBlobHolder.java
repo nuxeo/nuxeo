@@ -36,7 +36,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public List<Blob> getBlobs() throws ClientException {
+    public List<Blob> getBlobs() {
         List<Blob> blobList = new ArrayList<>();
 
         Blob mainBlob = getBlob();
@@ -51,7 +51,7 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         return blobList;
     }
 
-    public List<Blob> getBlobs(String... viewNames) throws ClientException {
+    public List<Blob> getBlobs(String... viewNames) {
         List<Blob> blobList = new ArrayList<>();
         for (String viewName : viewNames) {
             blobList.add(getBlob(viewName));
@@ -59,13 +59,13 @@ public class PictureBlobHolder extends DocumentBlobHolder {
         return blobList;
     }
 
-    public Blob getBlob(String title) throws ClientException {
+    public Blob getBlob(String title) {
         PictureResourceAdapter picture = doc.getAdapter(PictureResourceAdapter.class);
         return picture.getPictureFromTitle(title);
     }
 
     @Override
-    public String getHash() throws ClientException {
+    public String getHash() {
 
         Blob blob = getBlob();
         if (blob != null) {

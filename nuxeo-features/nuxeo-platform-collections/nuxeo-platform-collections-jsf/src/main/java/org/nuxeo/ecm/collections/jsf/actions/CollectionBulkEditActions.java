@@ -52,7 +52,7 @@ public class CollectionBulkEditActions implements Serializable {
 
     @SuppressWarnings("unchecked")
     @Observer({ SELECTION_EDITED, DOCUMENTS_IMPORTED })
-    public void addCollectionsOnEvent(List<DocumentModel> documents, DocumentModel doc) throws ClientException {
+    public void addCollectionsOnEvent(List<DocumentModel> documents, DocumentModel doc) {
         List<String> collectionIds = (List<String>) doc.getContextData(org.nuxeo.common.collections.ScopeType.REQUEST,
                 "bulk_collections");
         if (collectionIds != null && !collectionIds.isEmpty()) {

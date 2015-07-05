@@ -84,7 +84,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     /**
      * Gets all the notifications registered in the system.
      */
-    public List<SelectItem> getNotificationList() throws ClientException {
+    public List<SelectItem> getNotificationList() {
         String parentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
         List<Notification> notifs = notificationManager.getNotificationsForSubscriptions(parentType);
         List<SelectItem> notifsResult = new ArrayList<SelectItem>();
@@ -99,7 +99,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     /**
      * Registers the user's choices.
      */
-    public void updateSubscriptions() throws ClientException {
+    public void updateSubscriptions() {
         List<String> selectedNotifications = getSelectedNotifications();
         List<String> subscriptions = getSubscriptionsForCurrentUser();
 
@@ -142,7 +142,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     /**
      * @return the previously selected notifications.
      */
-    public List<String> getSelectedNotifications() throws ClientException {
+    public List<String> getSelectedNotifications() {
         if (selectedNotifications == null) {
             selectedNotifications = getSubscriptionsForCurrentUser();
         }
@@ -152,7 +152,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     /**
      * Returns the notifications that the user already subscribed for.
      */
-    private List<String> getSubscriptionsForCurrentUser() throws ClientException {
+    private List<String> getSubscriptionsForCurrentUser() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         NuxeoPrincipal principal = (NuxeoPrincipal) currentUser;
         List<String> subscriptions = notificationManager.getSubscriptionsForUserOnDocument(
@@ -163,7 +163,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     /**
      * Returns the users that subscribed to a notification.
      */
-    public List<String> getSubscribedUsersForNotification(String notification) throws ClientException {
+    public List<String> getSubscribedUsersForNotification(String notification) {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         return notificationManager.getUsersSubscribedToNotificationOnDocument(notification, currentDoc);
     }
@@ -171,7 +171,7 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
     /**
      * Returns a map that contains all users and groups subscribed to notifications(keys).
      */
-    public Map<String, List<String>> getUsersByNotificationsForCurrentDocument() throws ClientException {
+    public Map<String, List<String>> getUsersByNotificationsForCurrentDocument() {
         Map<String, List<String>> result = new HashMap<String, List<String>>();
 
         String superParentType = documentManager.getSuperParentType(navigationContext.getCurrentDocument());
@@ -223,11 +223,11 @@ public class GroupsSubscriptionsAction extends InputController implements Serial
         this.selectedNotification = selectedNotification;
     }
 
-    public boolean getCanAddSubscriptions() throws ClientException {
+    public boolean getCanAddSubscriptions() {
         return documentManager.hasPermission(currentDocument.getRef(), "WriteSecurity");
     }
 
-    public String addSubscriptionsAndUpdate() throws ClientException {
+    public String addSubscriptionsAndUpdate() {
         if (selectedEntries == null || selectedEntries.isEmpty()) {
             String message = ComponentUtils.translate(FacesContext.getCurrentInstance(),
                     "error.notifManager.noUserSelected");

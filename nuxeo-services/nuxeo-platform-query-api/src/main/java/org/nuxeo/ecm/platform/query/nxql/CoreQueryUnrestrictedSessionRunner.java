@@ -59,7 +59,7 @@ public class CoreQueryUnrestrictedSessionRunner extends UnrestrictedSessionRunne
     }
 
     @Override
-    public void run() throws ClientException {
+    public void run() {
         if (countTotal) {
             docs = session.query(query, filter, limit, offset, countTotal);
         } else {

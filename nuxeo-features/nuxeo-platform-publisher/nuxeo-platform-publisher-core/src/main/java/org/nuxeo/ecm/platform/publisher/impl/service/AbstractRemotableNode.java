@@ -32,7 +32,7 @@ import java.util.List;
  */
 public abstract class AbstractRemotableNode implements PublicationNode {
 
-    protected abstract RemotePublicationTreeManager getPublisher() throws ClientException;
+    protected abstract RemotePublicationTreeManager getPublisher();
 
     protected abstract String getServerTreeSessionId();
 
@@ -47,14 +47,14 @@ public abstract class AbstractRemotableNode implements PublicationNode {
     /**
      * switch node definition from client to server (for remote publishing)
      */
-    protected abstract PublicationNode switchToServerNode(PublicationNode node) throws ClientException;
+    protected abstract PublicationNode switchToServerNode(PublicationNode node);
 
     /**
      * switch node definition from server to client (for remote publishing)
      */
-    protected abstract PublicationNode switchToClientNode(PublicationNode node) throws ClientException;
+    protected abstract PublicationNode switchToClientNode(PublicationNode node);
 
-    protected List<PublicationNode> switchToServerNodes(List<PublicationNode> nodes) throws ClientException {
+    protected List<PublicationNode> switchToServerNodes(List<PublicationNode> nodes) {
         List<PublicationNode> wrappedNodes = new ArrayList<PublicationNode>();
 
         for (PublicationNode node : nodes) {
@@ -63,7 +63,7 @@ public abstract class AbstractRemotableNode implements PublicationNode {
         return wrappedNodes;
     }
 
-    protected List<PublicationNode> switchToClientNodes(List<PublicationNode> nodes) throws ClientException {
+    protected List<PublicationNode> switchToClientNodes(List<PublicationNode> nodes) {
         List<PublicationNode> wrappedNodes = new ArrayList<PublicationNode>();
 
         for (PublicationNode node : nodes) {
@@ -72,13 +72,13 @@ public abstract class AbstractRemotableNode implements PublicationNode {
         return wrappedNodes;
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         // return getService().getChildrenDocuments(getServerTreeSessionId(),
         // this);
         return getPublisher().getChildrenDocuments(switchToServerNode(this));
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         return switchToClientNodes((getPublisher().getChildrenNodes(switchToServerNode(this))));
     }
 

@@ -40,7 +40,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
     protected static final Log log = LogFactory.getLog(OrphanVersionRemoverListener.class);
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         if (events.containsEventName(DefaultVersionRemovalPolicy.ORPHAN_VERSION_REMOVE)) {
             for (Event event : events) {
                 if (!event.getName().equals(DefaultVersionRemovalPolicy.ORPHAN_VERSION_REMOVE)) {
@@ -71,7 +71,7 @@ public class OrphanVersionRemoverListener implements PostCommitEventListener {
     }
 
     protected void removeIfPossible(CoreSession session, ShallowDocumentModel deletedLiveDoc, List<String> versionUUIDs)
-            throws ClientException {
+            {
         session.save(); // receive invalidations if no tx
 
         for (OrphanVersionRemovalFilter filter : getFilters()) {

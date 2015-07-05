@@ -31,7 +31,7 @@ public class RepositoryInitializationListener extends RepositoryInitializationHa
     private ContentTemplateService service;
 
     @Override
-    public void doInitializeRepository(CoreSession session) throws ClientException {
+    public void doInitializeRepository(CoreSession session) {
         // This method gets called as a system user
         // so we have all needed rights to do the check and the creation
         DocumentModel root = session.getRootDocument();

@@ -133,14 +133,14 @@ public class TestLocalConfigurationForSQLDirectory {
 
     }
 
-    protected void initRepository() throws ClientException {
+    protected void initRepository() {
         workspace = session.createDocumentModel("Workspace");
         workspace.setPathInfo("/", "default-domain");
         session.createDocument(workspace);
         session.save();
     }
 
-    protected void setDirectorySuffix(DocumentModel doc, String directorySuffix) throws ClientException {
+    protected void setDirectorySuffix(DocumentModel doc, String directorySuffix) {
         doc.setPropertyValue(DIRECTORY_CONFIGURATION_FIELD, directorySuffix);
         session.saveDocument(doc);
         session.save();

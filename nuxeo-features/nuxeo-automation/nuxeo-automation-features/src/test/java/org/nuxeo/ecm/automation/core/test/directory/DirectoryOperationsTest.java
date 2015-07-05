@@ -77,7 +77,7 @@ public class DirectoryOperationsTest {
     @Inject
     protected DirectoryService directoryService;
 
-    protected void createEntry(String id, String label, int obsolete) throws ClientException {
+    protected void createEntry(String id, String label, int obsolete) {
         Map<String, Object> m = new HashMap<String, Object>();
         m.put("id", id);
         m.put("label", label);

@@ -244,7 +244,7 @@ public class EventHandler {
      * @param quick If {@code true}, then this method may not check all filter parameters like {@code filter/expression}
      *            and just return {@code true} to avoid costly evaluations on {@link ShallowDocumentModel} instances
      */
-    public boolean isEnabled(OperationContext ctx, EventContext eventCtx, boolean quick) throws ClientException {
+    public boolean isEnabled(OperationContext ctx, EventContext eventCtx, boolean quick) {
         Object obj = ctx.getInput();
         DocumentModel doc = null;
         if (obj instanceof DocumentModel) {

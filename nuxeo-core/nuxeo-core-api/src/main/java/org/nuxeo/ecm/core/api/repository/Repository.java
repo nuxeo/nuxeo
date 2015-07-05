@@ -89,7 +89,7 @@ public class Repository {
      * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open() throws ClientException {
+    public CoreSession open() {
         return CoreInstance.openCoreSession(name);
     }
 
@@ -97,7 +97,7 @@ public class Repository {
      * @deprecated since 5.9.3, use {@link CoreInstance#openCoreSession} instead.
      */
     @Deprecated
-    public CoreSession open(Map<String, Serializable> context) throws ClientException {
+    public CoreSession open(Map<String, Serializable> context) {
         return CoreInstance.openCoreSession(name, context);
     }
 

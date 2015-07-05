@@ -118,7 +118,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
         return userWorkspaceService;
     }
 
-    public DocumentModel getCurrentUserPersonalWorkspace() throws ClientException {
+    public DocumentModel getCurrentUserPersonalWorkspace() {
         if (!initialized) {
             initialize();
         }
@@ -133,7 +133,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
                 navigationContext.getCurrentDocument());
     }
 
-    public String navigateToCurrentUserPersonalWorkspace() throws ClientException {
+    public String navigateToCurrentUserPersonalWorkspace() {
         if (!initialized) {
             initialize();
         }
@@ -158,7 +158,7 @@ public class UserWorkspaceManagerActionsBean implements UserWorkspaceManagerActi
     }
 
     // Rux INA-221: create a new method for the 2 separated links
-    public String navigateToOverallWorkspace() throws ClientException {
+    public String navigateToOverallWorkspace() {
         if (!initialized) {
             initialize();
         }

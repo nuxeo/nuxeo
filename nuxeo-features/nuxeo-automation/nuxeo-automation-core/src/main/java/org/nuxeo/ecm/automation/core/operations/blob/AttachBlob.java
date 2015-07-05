@@ -46,7 +46,7 @@ public class AttachBlob {
     protected boolean save = true;
 
     @OperationMethod(collector = BlobCollector.class)
-    public Blob run(Blob blob) throws ClientException {
+    public Blob run(Blob blob) {
         DocumentHelper.addBlob(doc.getProperty(xpath), blob);
         if (save) {
             doc = session.saveDocument(doc);

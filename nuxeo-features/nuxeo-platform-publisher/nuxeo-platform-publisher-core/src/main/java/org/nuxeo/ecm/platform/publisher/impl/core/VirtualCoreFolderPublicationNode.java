@@ -62,11 +62,11 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         this.sid = sid;
     }
 
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         return "Sections";
     }
 
-    public String getName() throws ClientException {
+    public String getName() {
         return "sections";
     }
 
@@ -74,7 +74,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         return null;
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         List<PublicationNode> childrenNodes = new ArrayList<PublicationNode>();
         CoreSession session = getCoreSession();
         if (session != null) {
@@ -100,7 +100,7 @@ public class VirtualCoreFolderPublicationNode extends AbstractPublicationNode {
         return CoreInstance.getInstance().getSession(coreSessionId);
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         return Collections.emptyList();
     }
 

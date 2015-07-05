@@ -46,6 +46,6 @@ public interface LocalConfiguration<T> extends DetachedAdapter {
      *
      * @since 5.5
      */
-    void save(CoreSession session) throws ClientException;
+    void save(CoreSession session);
 
 }

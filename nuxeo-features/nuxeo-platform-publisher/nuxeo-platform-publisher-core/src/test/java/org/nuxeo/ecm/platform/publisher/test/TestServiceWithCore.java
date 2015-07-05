@@ -67,7 +67,7 @@ public class TestServiceWithCore extends PublisherTestCase {
         protected DocumentModel doc2Publish;
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
             self = this;
             DocumentModel wsRoot = session.getDocument(new PathRef("default-domain/workspaces"));
 

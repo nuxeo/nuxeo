@@ -66,7 +66,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements WS
         return new WSRemotingSessionImpl(session, um, repository, username, password);
     }
 
-    public WSRemotingSession getSession(String sid) throws ClientException {
+    public WSRemotingSession getSession(String sid) {
         if (sid == null) {
             throw new ClientException("Invalid value for sid... null value");
         }
@@ -79,7 +79,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements WS
         return session;
     }
 
-    public void delSession(String sid) throws ClientException {
+    public void delSession(String sid) {
         // Throw a ClientException if session not found.
         WSRemotingSession session = getSession(sid);
         sessions.remove(sid);
@@ -99,7 +99,7 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements WS
 
     @Override
     public void fillProperties(DocumentModel doc, List<DocumentProperty> props, WSRemotingSession rs)
-            throws ClientException {
+            {
         for (DocumentLoader loader : loaders.values()) {
             loader.fillProperties(doc, props, rs);
         }

@@ -10,7 +10,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 public class EmptyNameFixer implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext context = (DocumentEventContext) event.getContext();
         String name = (String) context.getProperty(CoreEventConstants.DESTINATION_NAME);
         if (name != null && name.length() > 0) {

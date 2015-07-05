@@ -81,7 +81,7 @@ public class TestNXAuditEventsService {
         protected DocumentModel source;
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
             super.populate(session);
             DocumentModel rootDocument = session.getRootDocument();
             DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
@@ -118,7 +118,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogDocumentMessageWithoutCategory() throws ClientException {
+    public void testLogDocumentMessageWithoutCategory() {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
         event.setInline(false);
@@ -147,7 +147,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogDocumentMessageWithCategory() throws ClientException {
+    public void testLogDocumentMessageWithCategory() {
         EventContext ctx = new DocumentEventContext(session, session.getPrincipal(), repo.source);
         ctx.setProperty("category", "myCategory");
         Event event = ctx.newEvent("documentSecurityUpdated"); // auditable
@@ -177,7 +177,7 @@ public class TestNXAuditEventsService {
     }
 
     @Test
-    public void testLogMiscMessage() throws ClientException {
+    public void testLogMiscMessage() {
 
         DefaultAuditBackend backend = (DefaultAuditBackend) serviceUnderTest;
 

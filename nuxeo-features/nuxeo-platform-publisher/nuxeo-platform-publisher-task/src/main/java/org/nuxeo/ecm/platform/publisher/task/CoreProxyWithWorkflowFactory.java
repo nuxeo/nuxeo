@@ -82,7 +82,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
 
     @Override
     public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
-            throws ClientException {
+            {
         super.init(coreSession, validatorsRule, parameters);
         // setup lookup state strategy if requested
         String lookupState = parameters.get(LOOKUP_STATE_PARAM_KEY);
@@ -105,7 +105,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
 
     @Override
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         DocumentModel targetDocModel;
         if (targetNode instanceof CoreFolderPublicationNode) {
             CoreFolderPublicationNode coreNode = (CoreFolderPublicationNode) targetNode;
@@ -121,7 +121,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     protected boolean isPublishedDocWaitingForPublication(DocumentModel doc, CoreSession session)
-            throws ClientException {
+            {
         return !lookupState.isPublished(doc, session);
     }
 
@@ -151,7 +151,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     protected void createTask(DocumentModel document, CoreSession session, NuxeoPrincipal principal)
-            throws PublishingValidatorException, ClientException, PublishingException {
+            throws PublishingValidatorException, PublishingException {
         String[] actorIds = getValidatorsFor(document);
         Map<String, String> variables = new HashMap<String, String>();
         variables.put(Task.TaskVariableName.needi18n.name(), "true");
@@ -258,7 +258,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         }
     }
 
-    protected DocumentModel getLiveDocument(CoreSession session, DocumentModel proxy) throws ClientException {
+    protected DocumentModel getLiveDocument(CoreSession session, DocumentModel proxy) {
         GetsProxySourceDocumentsUnrestricted runner = new GetsProxySourceDocumentsUnrestricted(session, proxy);
         runner.runUnrestricted();
         return runner.liveDocument;
@@ -288,12 +288,12 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     @Override
-    public PublishedDocument wrapDocumentModel(DocumentModel doc) throws ClientException {
+    public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         final SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.wrapDocumentModel(doc);
 
         new UnrestrictedSessionRunner(coreSession) {
             @Override
-            public void run() throws ClientException {
+            public void run() {
                 if (!isPublished(publishedDocument, session)) {
                     publishedDocument.setPending(true);
                 }
@@ -315,13 +315,13 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     @Override
-    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(PublishedDocument publishedDocument) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
         return proxy.isProxy() && hasValidationTask(proxy, currentUser);
     }
 
-    protected boolean hasValidationTask(DocumentModel proxy, NuxeoPrincipal currentUser) throws ClientException {
+    protected boolean hasValidationTask(DocumentModel proxy, NuxeoPrincipal currentUser) {
         assert currentUser != null;
         try {
             List<Task> tasks = getTaskService().getTaskInstances(proxy, currentUser, coreSession);
@@ -337,7 +337,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     @Override
-    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+    public boolean hasValidationTask(PublishedDocument publishedDocument) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal currentUser = (NuxeoPrincipal) coreSession.getPrincipal();
         return hasValidationTask(proxy, currentUser);
@@ -357,7 +357,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             sourceDocument = session.getDocument(new IdRef(document.getSourceId()));
             liveDocument = session.getDocument(new IdRef(sourceDocument.getSourceId()));
         }
@@ -392,7 +392,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModelList list = session.getProxies(docRef, targetRef);
             DocumentModel proxy = null;
             if (list.isEmpty()) {// first publication

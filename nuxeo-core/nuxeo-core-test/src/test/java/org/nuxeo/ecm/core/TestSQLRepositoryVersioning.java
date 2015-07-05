@@ -226,7 +226,7 @@ public class TestSQLRepositoryVersioning {
         checkVersions(file, "0.1", "0.2", "0.3");
     }
 
-    private void checkVersions(DocumentModel doc, String... labels) throws ClientException {
+    private void checkVersions(DocumentModel doc, String... labels) {
         List<String> actual = new LinkedList<String>();
         for (DocumentModel ver : session.getVersions(doc.getRef())) {
             assertTrue(ver.isVersion());
@@ -599,7 +599,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testCopy() throws ClientException {
+    public void testCopy() {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         session.save();
@@ -625,7 +625,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testCopyCheckedIn() throws ClientException {
+    public void testCopyCheckedIn() {
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
         doc = session.createDocument(doc);
         doc.checkIn(VersioningOption.MAJOR, "comment");
@@ -641,7 +641,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testPublishing() throws ClientException {
+    public void testPublishing() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
@@ -674,7 +674,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testPublishingAfterVersionDelete() throws ClientException {
+    public void testPublishingAfterVersionDelete() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
@@ -722,7 +722,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testPublishingAfterCopy() throws ClientException {
+    public void testPublishingAfterCopy() {
         DocumentModel folder = session.createDocumentModel("/", "folder", "Folder");
         folder = session.createDocument(folder);
         DocumentModel doc = session.createDocumentModel("/", "file", "File");
@@ -920,7 +920,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testSaveRestoredVersionWithVersionAutoIncrement() throws ClientException {
+    public void testSaveRestoredVersionWithVersionAutoIncrement() {
         // check-in version 1.0, 2.0 and restore version 1.0
         DocumentModel doc = new DocumentModelImpl("/", "myfile", "File");
         doc = session.createDocument(doc);
@@ -946,7 +946,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testAllowVersionWrite() throws ClientException {
+    public void testAllowVersionWrite() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("icon", "icon1");
         doc = session.createDocument(doc);
@@ -972,7 +972,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testAllowVersionWriteACL() throws ClientException {
+    public void testAllowVersionWriteACL() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
@@ -987,7 +987,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testGetLastVersion() throws ClientException {
+    public void testGetLastVersion() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();
@@ -1009,7 +1009,7 @@ public class TestSQLRepositoryVersioning {
     }
 
     @Test
-    public void testGetVersions() throws ClientException {
+    public void testGetVersions() {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.save();

@@ -96,7 +96,7 @@ public class TestWSRemotingSessionManager {
     }
 
     @Test
-    public void testAddDelSession() throws ClientException {
+    public void testAddDelSession() {
         WSRemotingSession session = service.createSession("username", "password", "repository", null, null);
         service.addSession("sid0", session);
         assertNotNull(service.getSession("sid0"));
@@ -113,7 +113,7 @@ public class TestWSRemotingSessionManager {
 
     @Test
     @LocalDeploy("org.nuxeo.ecm.platform.tests:login-config.xml")
-    public void testSnapshotProperties() throws ClientException {
+    public void testSnapshotProperties() {
         DocumentModel doc = session.createDocumentModel("/", "youps", "File");
         doc.setProperty("dublincore", "title", "huum");
         doc = session.createDocument(doc);

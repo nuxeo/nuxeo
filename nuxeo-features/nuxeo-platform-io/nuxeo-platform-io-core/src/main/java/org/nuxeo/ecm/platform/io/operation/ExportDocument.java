@@ -104,7 +104,7 @@ public class ExportDocument {
     }
 
     protected DocumentReader makeDocumentReader(CoreSession session, DocumentModel doc, boolean exportAsTree,
-            boolean exportAsZip) throws ClientException {
+            boolean exportAsZip) {
         DocumentReader documentReader;
         if (exportAsTree) {
             documentReader = new DocumentTreeReader(session, doc, false);

@@ -61,7 +61,7 @@ public class GetLiveDocumentTest {
     }
 
     @Test
-    public void shouldCreateProxyLiveFromVersion() throws ClientException {
+    public void shouldCreateProxyLiveFromVersion() {
         DocumentRef docRef = session.checkIn(doc.getRef(), VersioningOption.MINOR, "Test");
         assertTrue(session.exists(docRef));
         DocumentModel version = session.getDocument(docRef);
@@ -73,7 +73,7 @@ public class GetLiveDocumentTest {
     }
 
     @Test
-    public void shouldCreateProxyLiveFromProxy() throws ClientException {
+    public void shouldCreateProxyLiveFromProxy() {
         DocumentModel proxy = session.publishDocument(doc, folder, true);
 
         DocumentModel result = operation.run(proxy);
@@ -84,7 +84,7 @@ public class GetLiveDocumentTest {
     }
 
     @Test
-    public void shouldCreateProxyLiveFromProxyAfterModification() throws ClientException {
+    public void shouldCreateProxyLiveFromProxyAfterModification() {
 
         doc.setPropertyValue("dc:title", "Test2");
         doc = session.saveDocument(doc);

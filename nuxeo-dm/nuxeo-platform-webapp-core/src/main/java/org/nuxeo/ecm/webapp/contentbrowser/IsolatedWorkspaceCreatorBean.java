@@ -50,7 +50,7 @@ public class IsolatedWorkspaceCreatorBean {
     @In(create = true)
     protected transient SecurityActions securityActions;
 
-    public String createIsolatedWorkspace() throws ClientException {
+    public String createIsolatedWorkspace() {
 
         String result = documentTemplatesActions.createDocumentFromTemplate();
         // String result = documentActions.saveDocument();

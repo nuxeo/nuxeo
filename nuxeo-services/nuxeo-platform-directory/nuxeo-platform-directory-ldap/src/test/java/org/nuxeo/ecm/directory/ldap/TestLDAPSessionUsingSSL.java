@@ -43,7 +43,7 @@ public class TestLDAPSessionUsingSSL extends LDAPDirectoryTestCase {
     }
 
     @Test
-    public void testGetEntries() throws ClientException {
+    public void testGetEntries() {
         try (Session session = getLDAPDirectory("userDirectory").getSession()) {
             DocumentModelList entries = session.getEntries();
             assertNotNull(entries);

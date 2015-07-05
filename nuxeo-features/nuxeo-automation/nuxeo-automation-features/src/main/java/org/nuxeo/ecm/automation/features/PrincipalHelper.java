@@ -45,7 +45,7 @@ public class PrincipalHelper {
 
     @SuppressWarnings("unchecked")
     public Set<String> getEmailsForPermission(DocumentModel input, String permission, boolean ignoreGroups)
-            throws ClientException {
+            {
         return (Set<String>) collectObjectsMatchingPermission(input, permission, ignoreGroups, true,
                 new EmailCollector(userManager.getUserSchemaName(), userManager.getUserEmailField()));
     }
@@ -59,43 +59,42 @@ public class PrincipalHelper {
      * @param resolveGroups if true, will resolve user members, iterating in the hierarchy of groups
      * @param prefixIds if true, will prefix identifiers with {@link NuxeoPrincipal#PREFIX} and
      *            {@link NuxeoGroup#PREFIX}
-     * @throws ClientException
      */
     @SuppressWarnings("unchecked")
     public Set<String> getUserAndGroupIdsForPermission(DocumentModel input, String permission, boolean ignoreGroups,
-            boolean resolveGroups, boolean prefixIds) throws ClientException {
+            boolean resolveGroups, boolean prefixIds) {
         return (Set<String>) collectObjectsMatchingPermission(input, permission, ignoreGroups, resolveGroups,
                 new IdCollector(prefixIds));
     }
 
     @SuppressWarnings("unchecked")
     public Set<NuxeoPrincipal> getPrincipalsForPermission(DocumentModel input, String permission, boolean ignoreGroups,
-            boolean resolveGroups) throws ClientException {
+            boolean resolveGroups) {
         return (Set<NuxeoPrincipal>) collectObjectsMatchingPermission(input, permission, ignoreGroups, resolveGroups,
                 new PrincipalCollector());
     }
 
-    public Set<String> getEmailsFromGroup(String groupId, boolean resolveGroups) throws ClientException {
+    public Set<String> getEmailsFromGroup(String groupId, boolean resolveGroups) {
         EmailCollector collector = new EmailCollector(userManager.getUserSchemaName(), userManager.getUserEmailField());
         collectObjectsFromGroup(groupId, resolveGroups, collector);
         return collector.getResult();
     }
 
-    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String groupId, boolean resolveGroups) throws ClientException {
+    public Set<NuxeoPrincipal> getPrincipalsFromGroup(String groupId, boolean resolveGroups) {
         PrincipalCollector collector = new PrincipalCollector();
         collectObjectsFromGroup(groupId, resolveGroups, collector);
         return collector.getResult();
     }
 
     public Set<String> getUserNamesFromGroup(String groupId, boolean resolveGroups, boolean prefixIds)
-            throws ClientException {
+            {
         IdCollector collector = new IdCollector(prefixIds);
         collectObjectsFromGroup(groupId, resolveGroups, collector);
         return collector.getResult();
     }
 
     public void collectObjectsFromGroup(String groupId, boolean resolveGroups, Collector<?> collector)
-            throws ClientException {
+            {
         NuxeoGroup group = userManager.getGroup(groupId);
         if (group == null) {
             userManager.getPrincipal(groupId);
@@ -115,7 +114,7 @@ public class PrincipalHelper {
     }
 
     public HashSet<?> collectObjectsMatchingPermission(DocumentModel input, String permission, boolean ignoreGroups,
-            boolean resolveGroups, Collector<?> collector) throws ClientException {
+            boolean resolveGroups, Collector<?> collector) {
         String[] perms = getPermissionsToCheck(permission);
         ACP acp = input.getACP();
         for (ACL acl : acp.getACLs()) {
@@ -138,7 +137,7 @@ public class PrincipalHelper {
         return collector.getResult();
     }
 
-    public void resolveGroups(NuxeoGroup group, Collector<?> collector) throws ClientException {
+    public void resolveGroups(NuxeoGroup group, Collector<?> collector) {
         if (group != null) {
             for (String memberUser : group.getMemberUsers()) {
                 collector.collect(userManager.getPrincipal(memberUser));
@@ -173,9 +172,9 @@ public class PrincipalHelper {
 
     interface Collector<T> {
 
-        void collect(NuxeoPrincipal principal) throws ClientException;
+        void collect(NuxeoPrincipal principal);
 
-        void collect(NuxeoGroup group) throws ClientException;
+        void collect(NuxeoGroup group);
 
         HashSet<T> getResult();
     }
@@ -194,7 +193,7 @@ public class PrincipalHelper {
         }
 
         @Override
-        public void collect(NuxeoPrincipal principal) throws ClientException {
+        public void collect(NuxeoPrincipal principal) {
             if (principal == null) {
                 return;
             }
@@ -206,7 +205,7 @@ public class PrincipalHelper {
         }
 
         @Override
-        public void collect(NuxeoGroup group) throws ClientException {
+        public void collect(NuxeoGroup group) {
             // do nothing
         }
 
@@ -221,7 +220,7 @@ public class PrincipalHelper {
         protected HashSet<NuxeoPrincipal> result = new HashSet<NuxeoPrincipal>();
 
         @Override
-        public void collect(NuxeoPrincipal principal) throws ClientException {
+        public void collect(NuxeoPrincipal principal) {
             if (principal == null) {
                 return;
             }
@@ -229,7 +228,7 @@ public class PrincipalHelper {
         }
 
         @Override
-        public void collect(NuxeoGroup group) throws ClientException {
+        public void collect(NuxeoGroup group) {
             // do nothing
         }
 
@@ -250,7 +249,7 @@ public class PrincipalHelper {
         }
 
         @Override
-        public void collect(NuxeoPrincipal principal) throws ClientException {
+        public void collect(NuxeoPrincipal principal) {
             if (principal != null) {
                 String name = principal.getName();
                 if (name != null) {
@@ -264,7 +263,7 @@ public class PrincipalHelper {
         }
 
         @Override
-        public void collect(NuxeoGroup group) throws ClientException {
+        public void collect(NuxeoGroup group) {
             if (group != null) {
                 String name = group.getName();
                 if (name != null) {

@@ -40,7 +40,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         CoreSession session = getSession();
         boolean sessionOpened = false;
         if (session == null) {
@@ -67,11 +67,11 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public List<Blob> getBlobs() throws ClientException {
+    public List<Blob> getBlobs() {
         return getBlobs("Original");
     }
 
-    public List<Blob> getBlobs(String title) throws ClientException {
+    public List<Blob> getBlobs(String title) {
         CoreSession session = getSession();
         boolean sessionOpened = false;
         if (session == null) {
@@ -99,7 +99,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
     }
 
     @Override
-    public String getHash() throws ClientException {
+    public String getHash() {
         Blob blob = getBlob();
         if (blob != null) {
             String h = blob.getDigest();
@@ -110,7 +110,7 @@ public class PictureBookBlobHolder extends DocumentBlobHolder {
         return doc.getId() + xPath + getModificationDate().toString();
     }
 
-    protected CoreSession getSession() throws ClientException {
+    protected CoreSession getSession() {
         if (session == null && doc != null) {
             session = doc.getCoreSession();
         }

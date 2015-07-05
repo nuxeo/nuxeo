@@ -59,31 +59,31 @@ public interface CommentManagerActions {
     /**
      * Initializes uiComments with currentDocument.
      */
-    void initComments() throws ClientException;
+    void initComments();
 
     /**
      * Initializes uiComments with given Document.
      */
-    void initComments(DocumentModel commentedDoc) throws ClientException;
+    void initComments(DocumentModel commentedDoc);
 
     /**
      * Initializes uiComments with currentDocument if uiComments is null.
      *
      * @return list of ThreadEntry for currentDocument
      */
-    List<ThreadEntry> getCommentsAsThread() throws ClientException;
+    List<ThreadEntry> getCommentsAsThread();
 
     /**
      * Initialize uiComments with given Document if uiComments is null.
      *
      * @return list of ThreadEntry for given Document.
      */
-    List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc) throws ClientException;
+    List<ThreadEntry> getCommentsAsThread(DocumentModel commentedDoc);
 
     /**
      * @return list of ThreadEntry for given Document.
      */
-    List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc) throws ClientException;
+    List<ThreadEntry> getCommentsAsThreadOnDoc(DocumentModel doc);
 
     String beginComment();
 
@@ -94,23 +94,23 @@ public interface CommentManagerActions {
      *
      * @return null to avoid navigation
      */
-    String addComment() throws ClientException;
+    String addComment();
 
     /**
      * Same as addComment() method but using the given document instead of currentDocument.
      *
      * @return null to avoid navigation
      */
-    String createComment(DocumentModel docToComment) throws ClientException;
+    String createComment(DocumentModel docToComment);
 
     /**
      * Add the given comment DocumentModel to commentableDoc.
      */
-    DocumentModel addComment(DocumentModel comment) throws ClientException;
+    DocumentModel addComment(DocumentModel comment);
 
-    String deleteComment() throws ClientException;
+    String deleteComment();
 
-    String deleteComment(String commentId) throws ClientException;
+    String deleteComment(String commentId);
 
     void destroy();
 
@@ -134,14 +134,14 @@ public interface CommentManagerActions {
 
     void toggleCreateForm(ActionEvent event);
 
-    // List<UIComment> getUiComments() throws ClientException;
+    // List<UIComment> getUiComments();
 
     /***
      * Retrieves a given number of comments from currentDocument.
      *
      * @param commentNumber the number of comment to fetch
      */
-    List<UIComment> getLastCommentsByDate(String commentNumber) throws ClientException;
+    List<UIComment> getLastCommentsByDate(String commentNumber);
 
     /***
      * Retrieves a given number of comments from the given Document.
@@ -149,5 +149,5 @@ public interface CommentManagerActions {
      * @param commentNumber the number of comment to fetch
      * @param commentedDoc
      */
-    List<UIComment> getLastCommentsByDate(String commentNumber, DocumentModel commentedDoc) throws ClientException;
+    List<UIComment> getLastCommentsByDate(String commentNumber, DocumentModel commentedDoc);
 }

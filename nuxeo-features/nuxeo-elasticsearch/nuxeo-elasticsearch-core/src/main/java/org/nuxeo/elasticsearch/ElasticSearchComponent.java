@@ -234,7 +234,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             try {
                 new UnrestrictedSessionRunner(stackedCommands.get(0).getRepositoryName()) {
                     @Override
-                    public void run() throws ClientException {
+                    public void run() {
                         esi.indexNonRecursive(stackedCommands);
                     }
                 }.runUnrestricted();
@@ -383,14 +383,14 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public void indexNonRecursive(IndexingCommand cmd) throws ClientException {
+    public void indexNonRecursive(IndexingCommand cmd) {
         List<IndexingCommand> cmds = new ArrayList<>(1);
         cmds.add(cmd);
         indexNonRecursive(cmds);
     }
 
     @Override
-    public void indexNonRecursive(List<IndexingCommand> cmds) throws ClientException {
+    public void indexNonRecursive(List<IndexingCommand> cmds) {
         if (!isReady()) {
             if (log.isDebugEnabled()) {
                 log.debug("Delaying indexing commands: Waiting for Index to be initialized."
@@ -489,19 +489,19 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     // ES Search ===============================================================
     @Override
-    public DocumentModelList query(NxQueryBuilder queryBuilder) throws ClientException {
+    public DocumentModelList query(NxQueryBuilder queryBuilder) {
         return ess.query(queryBuilder);
     }
 
     @Override
-    public EsResult queryAndAggregate(NxQueryBuilder queryBuilder) throws ClientException {
+    public EsResult queryAndAggregate(NxQueryBuilder queryBuilder) {
         return ess.queryAndAggregate(queryBuilder);
     }
 
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, String nxql, int limit, int offset, SortInfo... sortInfos)
-            throws ClientException {
+            {
         NxQueryBuilder query = new NxQueryBuilder(session).nxql(nxql).limit(limit).offset(offset).addSort(sortInfos);
         return query(query);
     }
@@ -509,7 +509,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Deprecated
     @Override
     public DocumentModelList query(CoreSession session, QueryBuilder queryBuilder, int limit, int offset,
-            SortInfo... sortInfos) throws ClientException {
+            SortInfo... sortInfos) {
         NxQueryBuilder query = new NxQueryBuilder(session).esQuery(queryBuilder).limit(limit).offset(offset).addSort(
                 sortInfos);
         return query(query);

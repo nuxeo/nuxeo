@@ -37,12 +37,12 @@ public interface NotificationManager {
      * @deprecated since 7.3 use {@link #getSubscribers(String, DocumentModel)}
      */
     @Deprecated
-    List<String> getSubscribers(String notification, String docId) throws ClientException;
+    List<String> getSubscribers(String notification, String docId);
 
     /**
      * Gets the users that subscribed to a notification on a certain document.
      */
-    List<String> getSubscribers(String notification, DocumentModel doc) throws ClientException;
+    List<String> getSubscribers(String notification, DocumentModel doc);
 
     /**
      * Gets the notifications for which a user subscribed for a certain document.
@@ -61,49 +61,47 @@ public interface NotificationManager {
      * @deprecated since 7.3 use {@link #getUsersSubscribedToNotificationOnDocument(String, DocumentModel)}
      */
     @Deprecated
-    List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId) throws ClientException;
+    List<String> getUsersSubscribedToNotificationOnDocument(String notification, String docId);
 
     /**
      * Gets all users and groups that subscribed to a notification on a document This is used in management of
      * subscritptions.
      */
-    List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc)
-            throws ClientException;
+    List<String> getUsersSubscribedToNotificationOnDocument(String notification, DocumentModel doc);
 
     /**
      * Called when a user subscribes to a notification.
      */
     void addSubscription(String username, String notification, DocumentModel doc, Boolean sendConfirmationEmail,
-            NuxeoPrincipal principal, String notificationName) throws ClientException;
+            NuxeoPrincipal principal, String notificationName);
 
     /**
      * @since 5.6 Called when a user subscribes to all notifications.
      */
-    void addSubscriptions(String username, DocumentModel doc, Boolean sendConfirmationEmail, NuxeoPrincipal principal)
-            throws ClientException;
+    void addSubscriptions(String username, DocumentModel doc, Boolean sendConfirmationEmail, NuxeoPrincipal principal);
 
     /**
      * @since 5.6 Called when a user unsubscribes to all notifications.
      * @deprecated since 7.3 use {@link #removeSubscriptions(String, List, DocumentModel)}
      */
-    void removeSubscriptions(String username, List<String> notifications, String docId) throws ClientException;
+    void removeSubscriptions(String username, List<String> notifications, String docId);
 
     /**
      * @since 5.6 Called when a user unsubscribes to all notifications.
      */
-    void removeSubscriptions(String username, List<String> notifications, DocumentModel doc) throws ClientException;
+    void removeSubscriptions(String username, List<String> notifications, DocumentModel doc);
 
     /**
      * Called when a user cancels his notification.
      *
      * @deprecated since 7.3 use {@link #removeSubscription(String, String, DocumentModel)}
      */
-    void removeSubscription(String username, String notification, String docId) throws ClientException;
+    void removeSubscription(String username, String notification, String docId);
 
     /**
      * Called when a user cancels his notification.
      */
-    void removeSubscription(String username, String notification, DocumentModel doc) throws ClientException;
+    void removeSubscription(String username, String notification, DocumentModel doc);
 
     /**
      * Returns the notification manager.
@@ -130,8 +128,7 @@ public interface NotificationManager {
      * @param infoMap data used to compose the notification body
      * @param userPrincipal recipient used to get the adress(es) to send emails
      */
-    void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal)
-            throws ClientException;
+    void sendNotification(String notificationName, Map<String, Object> infoMap, String userPrincipal);
 
     /**
      * Sends an e-mail directly.

@@ -136,7 +136,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void doPDFRendition() throws ClientException {
+    public void doPDFRendition() {
         DocumentModel file = createBlobFile();
 
         DocumentRef renditionDocumentRef = renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
@@ -173,7 +173,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void doRenditionVersioning() throws ClientException {
+    public void doRenditionVersioning() {
         DocumentModel file = createBlobFile();
 
         assertEquals("project", file.getCurrentLifeCycleState());
@@ -243,14 +243,14 @@ public class TestRenditionService {
 
     }
 
-    protected DocumentModel createBlobFile() throws ClientException {
+    protected DocumentModel createBlobFile() {
         Blob blob = createTextBlob("Dummy text", "dummy.txt");
         DocumentModel file = createFileWithBlob(blob, "dummy-file");
         assertNotNull(file);
         return file;
     }
 
-    protected DocumentModel createFileWithBlob(Blob blob, String name) throws ClientException {
+    protected DocumentModel createFileWithBlob(Blob blob, String name) {
         DocumentModel file = session.createDocumentModel("/", name, "File");
         BlobHolder bh = file.getAdapter(BlobHolder.class);
         bh.setBlob(blob);
@@ -265,7 +265,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void testRenderAProxyDocument() throws ClientException {
+    public void testRenderAProxyDocument() {
         DocumentModel file = createBlobFile();
 
         DocumentModel proxy = session.createProxy(file.getRef(), new PathRef("/"));
@@ -276,7 +276,7 @@ public class TestRenditionService {
     }
 
     @Test
-    public void shouldNotCreateANewVersionForACheckedInDocument() throws ClientException {
+    public void shouldNotCreateANewVersionForACheckedInDocument() {
         DocumentModel file = createBlobFile();
 
         DocumentRef versionRef = file.checkIn(VersioningOption.MINOR, null);
@@ -297,21 +297,21 @@ public class TestRenditionService {
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderAnEmptyDocument() throws ClientException {
+    public void shouldNotRenderAnEmptyDocument() {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderWithAnUndefinedRenditionDefinition() throws ClientException {
+    public void shouldNotRenderWithAnUndefinedRenditionDefinition() {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.storeRendition(file, "undefinedRenditionDefinition");
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderWithAnUndefinedOperationChain() throws ClientException {
+    public void shouldNotRenderWithAnUndefinedOperationChain() {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
         renditionService.storeRendition(file, "renditionDefinitionWithUnknownOperationChain");
@@ -329,7 +329,7 @@ public class TestRenditionService {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldRemoveFilesBlobsOnARendition() throws ClientException {
+    public void shouldRemoveFilesBlobsOnARendition() {
         DocumentModel fileDocument = createBlobFile();
 
         Blob firstAttachedBlob = createTextBlob("first attached blob", "first");
@@ -359,7 +359,7 @@ public class TestRenditionService {
     }
 
     @Test(expected = RenditionException.class)
-    public void shouldNotRenderADocumentWithoutBlobHolder() throws ClientException {
+    public void shouldNotRenderADocumentWithoutBlobHolder() {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
         folder = session.createDocument(folder);
         renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);

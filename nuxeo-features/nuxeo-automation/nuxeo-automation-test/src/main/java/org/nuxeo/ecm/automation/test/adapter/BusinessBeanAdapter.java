@@ -35,27 +35,27 @@ public class BusinessBeanAdapter extends BusinessAdapter {
         super(documentModel);
     }
 
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         return (String) getDocument().getPropertyValue("dc:title");
     }
 
-    public void setTitle(String value) throws ClientException {
+    public void setTitle(String value) {
         getDocument().setPropertyValue("dc:title", value);
     }
 
-    public String getDescription() throws ClientException {
+    public String getDescription() {
         return (String) getDocument().getPropertyValue("dc:description");
     }
 
-    public void setDescription(String value) throws ClientException {
+    public void setDescription(String value) {
         getDocument().setPropertyValue("dc:description", value);
     }
 
-    public String getNote() throws ClientException {
+    public String getNote() {
         return (String) getDocument().getPropertyValue("note:note");
     }
 
-    public void setNote(String value) throws ClientException {
+    public void setNote(String value) {
         getDocument().setPropertyValue("note:note", value);
     }
 

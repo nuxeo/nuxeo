@@ -26,8 +26,7 @@ import org.javasimon.SimonManager;
 import org.javasimon.jmx.JmxRegisterCallback;
 import org.javasimon.utils.LoggingCallback;
 
-public class MetricEnabler implements MetricEnablerMXBean {
-    ;
+public class MetricEnabler implements MetricEnablerMXBean {;
 
     protected MetricSerializer serializer;
 

@@ -97,7 +97,7 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
     }
 
     @Override
-    public Credential handleAuthorizationCallback(HttpServletRequest request) throws ClientException {
+    public Credential handleAuthorizationCallback(HttpServletRequest request) {
 
         // Checking if there was an error such as the user denied access
         String error = getError(request);

@@ -38,10 +38,9 @@ public interface ContentEnricher {
     /**
      * @param jg
      * @param ec
-     * @throws ClientException
      * @throws IOException
      */
-    void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException;
+    void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException;
 
     void setParameters(Map<String, String> parameters);
 }

@@ -186,7 +186,7 @@ public class PreviewActionBean implements Serializable {
         fieldXPathValue = null;
     }
 
-    public String doSetFieldXPath() throws ClientException {
+    public String doSetFieldXPath() {
         if (fieldXPath != null) {
             fieldXPathValue = protectField(fieldXPath);
         }

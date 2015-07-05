@@ -47,18 +47,18 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         this.threadDoc = threadDoc;
     }
 
-    private void fetchAllPosts() throws ClientException {
+    private void fetchAllPosts() {
         posts = getSubComments(threadDoc);
     }
 
-    public List<DocumentModel> getAllPosts() throws ClientException {
+    public List<DocumentModel> getAllPosts() {
         if (posts == null) {
             fetchAllPosts();
         }
         return posts;
     }
 
-    public List<DocumentModel> getPublishedPosts() throws ClientException {
+    public List<DocumentModel> getPublishedPosts() {
         if (publishedPosts == null) {
             publishedPosts = new ArrayList<DocumentModel>();
             for (DocumentModel doc : getAllPosts()) {
@@ -70,7 +70,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         return publishedPosts;
     }
 
-    public List<DocumentModel> getPendingPosts() throws ClientException {
+    public List<DocumentModel> getPendingPosts() {
         if (pendingPosts == null) {
             pendingPosts = new ArrayList<DocumentModel>();
             for (DocumentModel doc : getAllPosts()) {
@@ -82,7 +82,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         return pendingPosts;
     }
 
-    public DocumentModel getLastPublishedPost() throws ClientException {
+    public DocumentModel getLastPublishedPost() {
         if (lastPublishedPost == null) {
             GregorianCalendar lastPostDate = null;
             for (DocumentModel post : getPublishedPosts()) {
@@ -97,7 +97,7 @@ public class ThreadAdapterImpl implements ThreadAdapter, Serializable {
         return lastPublishedPost;
     }
 
-    protected List<DocumentModel> getSubComments(DocumentModel doc) throws ClientException {
+    protected List<DocumentModel> getSubComments(DocumentModel doc) {
         List<DocumentModel> allSubPosts = new ArrayList<DocumentModel>();
         CommentableDocument commentDoc = doc.getAdapter(CommentableDocument.class);
 

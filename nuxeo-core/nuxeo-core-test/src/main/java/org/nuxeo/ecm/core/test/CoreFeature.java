@@ -171,7 +171,7 @@ public class CoreFeature extends SimpleFeature {
         }
     }
 
-    protected void cleanupSession(FeaturesRunner runner) throws ClientException {
+    protected void cleanupSession(FeaturesRunner runner) {
         waitForAsyncCompletion();
         if (TransactionHelper.isTransactionMarkedRollback()) { // ensure tx is
                                                                // active

@@ -100,7 +100,7 @@ public class DeleteDirectoryEntries extends AbstractDirectoryOperation {
         return Blobs.createBlob(writer.toString(), "application/json");
     }
 
-    protected void markObsoleteOrDelete(Session session, String id) throws ClientException {
+    protected void markObsoleteOrDelete(Session session, String id) {
         Directory directory = directoryService.getDirectory(directoryName);
         String schemaName = directory.getSchema();
         Schema schema = schemaManager.getSchema(schemaName);

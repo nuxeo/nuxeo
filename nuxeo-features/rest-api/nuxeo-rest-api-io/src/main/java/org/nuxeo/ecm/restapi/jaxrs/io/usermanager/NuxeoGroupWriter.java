@@ -47,7 +47,7 @@ public class NuxeoGroupWriter extends EntityWriter<NuxeoGroup> {
      * @throws JsonGenerationException
      */
     @Override
-    public void writeEntityBody(JsonGenerator jg, NuxeoGroup group) throws ClientException, JsonGenerationException,
+    public void writeEntityBody(JsonGenerator jg, NuxeoGroup group) throws JsonGenerationException,
             IOException {
         jg.writeStringField("groupname", group.getName());
 

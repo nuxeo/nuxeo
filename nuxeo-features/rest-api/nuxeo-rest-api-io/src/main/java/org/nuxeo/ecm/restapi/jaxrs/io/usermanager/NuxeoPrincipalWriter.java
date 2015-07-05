@@ -59,12 +59,11 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      * @param createGenerator
      * @throws IOException
      * @throws JsonGenerationException
-     * @throws ClientException
      * @since 5.7.3
      */
     @Override
     public void writeEntityBody(JsonGenerator jg, NuxeoPrincipal principal) throws JsonGenerationException,
-            IOException, ClientException {
+            IOException {
 
         jg.writeStringField("id", principal.getName());
 
@@ -81,11 +80,10 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      * @param model
      * @throws IOException
      * @throws JsonGenerationException
-     * @throws ClientException
      * @since 5.7.3
      */
     static private void writeProperties(JsonGenerator jg, DocumentModel doc) throws JsonGenerationException,
-            IOException, ClientException {
+            IOException {
         UserManager um = Framework.getLocalService(UserManager.class);
 
         jg.writeFieldName("properties");
@@ -113,10 +111,9 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
     /**
      * @param um
      * @return
-     * @throws ClientException
      * @since 5.8
      */
-    private static String getPasswordField(UserManager um) throws ClientException {
+    private static String getPasswordField(UserManager um) {
         String userDirectoryName = um.getUserDirectoryName();
         DirectoryService dirService = Framework.getLocalService(DirectoryService.class);
         return dirService.getDirectory(userDirectoryName).getPasswordField();
@@ -129,11 +126,10 @@ public class NuxeoPrincipalWriter extends EntityWriter<NuxeoPrincipal> {
      * @param allGroups
      * @throws IOException
      * @throws JsonGenerationException
-     * @throws ClientException
      * @since 5.7.3
      */
     static private void writeExtendedGroups(JsonGenerator jg, List<String> allGroups) throws JsonGenerationException,
-            IOException, ClientException {
+            IOException {
         UserManager um = Framework.getLocalService(UserManager.class);
 
         jg.writeArrayFieldStart("extendedGroups");

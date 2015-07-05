@@ -192,7 +192,7 @@ public class SendMail {
     /**
      * @since 5.9.1
      */
-    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException, ClientException {
+    private void addMailBoxInfo(Mailer.Message msg) throws MessagingException {
         List<MailBox> persons = MailBox.fetchPersonsFromString(from, isStrict);
         addMailBoxInfoInMessageHeader(msg, AS.FROM, persons);
 

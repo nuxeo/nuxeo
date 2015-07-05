@@ -29,8 +29,8 @@ import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
  */
 public interface BreadcrumbActions {
 
-    String navigateToParent() throws ClientException;
+    String navigateToParent();
 
-    List<PathElement> getBackendPath() throws ClientException;
+    List<PathElement> getBackendPath();
 
 }

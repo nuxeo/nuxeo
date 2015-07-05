@@ -62,7 +62,7 @@ public class GetUserTasks {
     protected TaskService taskService;
 
     @OperationMethod
-    public Blob run() throws ClientException {
+    public Blob run() {
         List<Task> tasks = taskService.getCurrentTaskInstances(repo);
         if (tasks == null) {
             return null;

@@ -40,7 +40,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.ChildrenJsonEnricher;
 public class ChildrenEnricher extends AbstractContentEnricher {
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
         DocumentModel doc = ec.getDocumentModel();
         CoreSession session = doc.getCoreSession();
         DocumentModelList children = session.getChildren(doc.getRef());

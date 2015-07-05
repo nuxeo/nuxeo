@@ -74,7 +74,7 @@ public class ExportedZipImporter extends AbstractFileImporter {
     }
 
     public DocumentModel create(CoreSession documentManager, Blob content, String path, boolean overwrite,
-            String filename, TypeManager typeService) throws ClientException, IOException {
+            String filename, TypeManager typeService) throws IOException {
         try (CloseableFile source = content.getCloseableFile()) {
             ZipFile zip = getArchiveFileIfValid(source.getFile());
             if (zip == null) {

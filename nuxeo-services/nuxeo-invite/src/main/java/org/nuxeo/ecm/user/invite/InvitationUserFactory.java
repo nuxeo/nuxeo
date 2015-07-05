@@ -29,11 +29,11 @@ public interface InvitationUserFactory {
      * @since 5.6
      */
     NuxeoPrincipal doCreateUser(CoreSession session, DocumentModel registrationDoc,
-            UserRegistrationConfiguration configuration) throws ClientException, UserRegistrationException;
+            UserRegistrationConfiguration configuration) throws UserRegistrationException;
 
     /**
      * Called just after the user is created
      */
     void doPostUserCreation(CoreSession session, DocumentModel registrationDoc, NuxeoPrincipal user)
-            throws ClientException, UserRegistrationException;
+            throws UserRegistrationException;
 }

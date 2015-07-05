@@ -42,7 +42,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implem
         super(userSession);
     }
 
-    protected void computeUserSectionRoots(DocumentModel currentDoc) throws ClientException {
+    protected void computeUserSectionRoots(DocumentModel currentDoc) {
         this.currentDocument = currentDoc;
         this.runUnrestricted();
 
@@ -75,7 +75,7 @@ public class DefaultRootSectionsFinder extends AbstractRootSectionsFinder implem
         return query;
     }
 
-    protected void computeUnrestrictedRoots(CoreSession session) throws ClientException {
+    protected void computeUnrestrictedRoots(CoreSession session) {
 
         if (currentDocument != null) {
             /*

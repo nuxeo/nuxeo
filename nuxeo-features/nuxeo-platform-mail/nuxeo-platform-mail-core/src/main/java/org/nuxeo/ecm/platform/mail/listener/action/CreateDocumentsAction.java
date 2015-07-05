@@ -151,7 +151,7 @@ public class CreateDocumentsAction extends AbstractMailAction {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             document = session.createDocument(document);
             document = session.saveDocument(document);
             session.save();

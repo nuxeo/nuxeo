@@ -120,8 +120,7 @@ public class WorkErrorsAreTracableTest {
     }
 
     protected void assertIsRootWork(Work work, WorkSchedulePath.Trace error) {
-        for (Throwable cause = error.getCause(); cause != null && cause != error; error = (WorkSchedulePath.Trace) cause) {
-            ;
+        for (Throwable cause = error.getCause(); cause != null && cause != error; error = (WorkSchedulePath.Trace) cause) {;
         }
         assertEquals(work.getSchedulePath(), error.path());
     }

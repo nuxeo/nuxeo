@@ -58,7 +58,7 @@ public class LocalConfigurationActions implements Serializable {
     @In(create = true)
     protected ResourcesAccessor resourcesAccessor;
 
-    public void toggleConfigurationForCurrentDocument(String configurationFacet) throws ClientException {
+    public void toggleConfigurationForCurrentDocument(String configurationFacet) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument.hasFacet(configurationFacet)) {
             currentDocument.removeFacet(configurationFacet);
@@ -72,7 +72,7 @@ public class LocalConfigurationActions implements Serializable {
         Events.instance().raiseEvent(EventNames.LOCAL_CONFIGURATION_CHANGED, navigationContext.getCurrentDocument());
     }
 
-    public void saveLocalConfiguration() throws ClientException {
+    public void saveLocalConfiguration() {
         documentManager.saveDocument(navigationContext.getCurrentDocument());
         navigationContext.invalidateCurrentDocument();
 

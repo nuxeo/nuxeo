@@ -45,7 +45,7 @@ public class ThumbnailContentEnricher extends AbstractContentEnricher {
     public static final String DOWNLOAD_THUMBNAIL = "downloadThumbnail";
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
         DocumentModel doc = ec.getDocumentModel();
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         jg.writeStartObject();

@@ -86,7 +86,7 @@ public class TestFileManagerService {
         createWorkspaces();
     }
 
-    private void createWorkspaces() throws ClientException {
+    private void createWorkspaces() {
         DocumentModel workspace = coreSession.createDocumentModel(root.getPathAsString(), "workspace", "Workspace");
         coreSession.createDocument(workspace);
         this.workspace = workspace;

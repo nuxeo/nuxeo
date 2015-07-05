@@ -54,14 +54,13 @@ public interface PageProviderService extends Serializable {
      * Returns an instance of a page provider with given name and definition.
      *
      * @since 5.4
-     * @throws ClientException
      * @deprecated since 5.7: use
      *             {@link #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)}
      *             with search document model as additional parameter
      */
     @Deprecated
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, Object... parameters) throws ClientException;
+            Long currentPage, Map<String, Serializable> properties, Object... parameters);
 
     /**
      * Returns an instance of page provider with given name and definition.
@@ -86,7 +85,7 @@ public interface PageProviderService extends Serializable {
      */
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
             List<SortInfo> sortInfos, Long pageSize, Long currentPage, Map<String, Serializable> properties,
-            Object... parameters) throws ClientException;
+            Object... parameters);
 
     /**
      * Returns an instance of page provider with given name.
@@ -102,7 +101,7 @@ public interface PageProviderService extends Serializable {
      * @since 5.4
      */
     PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
-            Map<String, Serializable> properties, Object... parameters) throws ClientException;
+            Map<String, Serializable> properties, Object... parameters);
 
     /**
      * Returns an instance of page provider with given name.
@@ -112,7 +111,7 @@ public interface PageProviderService extends Serializable {
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Map<String, Serializable> properties, Object... parameters) throws ClientException;
+            Long currentPage, Map<String, Serializable> properties, Object... parameters);
 
     /**
      * @since 6.0

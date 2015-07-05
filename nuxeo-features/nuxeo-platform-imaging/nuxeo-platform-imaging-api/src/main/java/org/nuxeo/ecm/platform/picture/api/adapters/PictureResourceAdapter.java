@@ -40,7 +40,7 @@ public interface PictureResourceAdapter {
      */
     @Deprecated
     boolean createPicture(Blob fileContent, String filename, String title,
-            ArrayList<Map<String, Object>> pictureConversions) throws IOException, ClientException;
+            ArrayList<Map<String, Object>> pictureConversions) throws IOException;
 
     /**
      * Fill this Picture views using the given {@code pictureConversions} and {@code blob} to compute the picture views.
@@ -50,7 +50,7 @@ public interface PictureResourceAdapter {
      * @since 5.7
      */
     boolean fillPictureViews(Blob blob, String filename, String title, ArrayList<Map<String, Object>> pictureConversions)
-            throws IOException, ClientException;
+            throws IOException;
 
     /**
      * This method just delegate the job to
@@ -62,7 +62,7 @@ public interface PictureResourceAdapter {
      * @see {@link PictureResourceAdapter#fillPictureViews(Blob, String, String, ArrayList)}
      * @since 6.9.6
      */
-    boolean fillPictureViews(Blob blob, String filename, String title) throws IOException, ClientException;
+    boolean fillPictureViews(Blob blob, String filename, String title) throws IOException;
 
     /**
      * Pre-fill this Picture views using the given {@code pictureConversions} and {@code blob}.
@@ -72,13 +72,13 @@ public interface PictureResourceAdapter {
      * @since 5.7
      */
     void preFillPictureViews(Blob blob, List<Map<String, Object>> pictureConversions, ImageInfo imageInfo)
-            throws IOException, ClientException;
+            throws IOException;
 
-    void doRotate(int angle) throws ClientException;
+    void doRotate(int angle);
 
-    void doCrop(String coords) throws ClientException;
+    void doCrop(String coords);
 
-    Blob getPictureFromTitle(String title) throws PropertyException, ClientException;
+    Blob getPictureFromTitle(String title) throws PropertyException;
 
     /**
      * Returns the XPath of the given view name, or {@code null} if the view is not found on the Picture.

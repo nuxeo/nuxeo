@@ -125,7 +125,7 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         repoName = database.getRepositoryName();
     }
 
-    private void createDocuments() throws ClientException {
+    private void createDocuments() {
         String type = "File";
         String id1 = doc1Ref;
         String id2 = doc1RefCopy;
@@ -191,7 +191,7 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testIOResourceAdapterEP() throws ClientException {
+    public void testIOResourceAdapterEP() {
         IOResourceAdapter adapter = ioService.getAdapter("all");
         assertNotNull(adapter);
         adapter = ioService.getAdapter("ignore-external");

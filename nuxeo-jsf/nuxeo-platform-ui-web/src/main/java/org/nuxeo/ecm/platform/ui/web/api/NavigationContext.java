@@ -77,9 +77,9 @@ public interface NavigationContext {
      * If current document is null, the same logic is applied to the first document found amongst all documents user has
      * access to.
      */
-    String getCurrentDomainPath() throws ClientException;
+    String getCurrentDomainPath();
 
-    void setCurrentDomain(DocumentModel currentDomain) throws ClientException;
+    void setCurrentDomain(DocumentModel currentDomain);
 
     /**
      * Current Document other than Domain or Workspace.
@@ -89,9 +89,9 @@ public interface NavigationContext {
     /**
      * Returns the currentSuperSpace (Section, Workspace...). Uses SuperSpace facet for that.
      */
-    DocumentModel getCurrentSuperSpace() throws ClientException;
+    DocumentModel getCurrentSuperSpace();
 
-    void setCurrentDocument(DocumentModel documentModel) throws ClientException;
+    void setCurrentDocument(DocumentModel documentModel);
 
     /**
      * This is used for documents about to be created, which are not yet persisted thus not all their fields might be
@@ -104,14 +104,14 @@ public interface NavigationContext {
     /**
      * Saves the current copy of the document to server.
      */
-    void saveCurrentDocument() throws ClientException;
+    void saveCurrentDocument();
 
-    List<PathElement> getCurrentPathList() throws ClientException;
+    List<PathElement> getCurrentPathList();
 
     /**
      * Returns a list of the DocumentsModels (to build the BreadCrumb for example).
      */
-    DocumentModelList getCurrentPath() throws ClientException;
+    DocumentModelList getCurrentPath();
 
     /**
      * @return the URL that can be used to refer the current document from outside current context
@@ -128,7 +128,7 @@ public interface NavigationContext {
      *
      * @param doc DocumentModel that will be set as current document
      */
-    void updateDocumentContext(DocumentModel doc) throws ClientException;
+    void updateDocumentContext(DocumentModel doc);
 
     /**
      * Resets all context variables.
@@ -140,31 +140,31 @@ public interface NavigationContext {
      *
      * @return document view associated with the result
      */
-    String getActionResult(DocumentModel doc, UserAction action) throws ClientException;
+    String getActionResult(DocumentModel doc, UserAction action);
 
     /**
      * go to the root server, the root document or to the dashboard if the latest document are not accessible.
      */
     String goHome();
 
-    String goBack() throws ClientException;
+    String goBack();
 
     /**
      * Updates the context and returns the view for the given document id.
      */
-    String navigateToId(String documentId) throws ClientException;
+    String navigateToId(String documentId);
 
     /**
      * Updates the context and returns the view for the given document ref.
      */
-    String navigateToRef(DocumentRef docRef) throws ClientException;
+    String navigateToRef(DocumentRef docRef);
 
     /**
      * Updates the context with given document and returns its default view.
      * <p>
      * The default view is configured on the UI document type definition.
      */
-    String navigateToDocument(DocumentModel doc) throws ClientException;
+    String navigateToDocument(DocumentModel doc);
 
     /**
      * Initializes the context for the given doc and returns its given view.
@@ -174,9 +174,8 @@ public interface NavigationContext {
      * @param doc
      * @param viewId for the document as defined in its type
      * @return navigation view for the document
-     * @throws ClientException
      */
-    String navigateToDocument(DocumentModel doc, String viewId) throws ClientException;
+    String navigateToDocument(DocumentModel doc, String viewId);
 
     /**
      * Initializes the context for the given doc and returns its given view.
@@ -188,26 +187,25 @@ public interface NavigationContext {
      * @param doc
      * @param viewId for the document as defined in its type
      * @return navigation view for the document
-     * @throws ClientException
      */
-    String navigateToDocumentWithView(DocumentModel doc, String viewId) throws ClientException;
+    String navigateToDocumentWithView(DocumentModel doc, String viewId);
 
     /**
      * Initializes the context for the given refs and returns the default view for the doc.
      */
-    String navigateTo(RepositoryLocation serverLocation, DocumentRef docRef) throws ClientException;
+    String navigateTo(RepositoryLocation serverLocation, DocumentRef docRef);
 
     /**
      * Initializes the context for the given refs and returns the default view for the doc.
      */
-    String navigateToURL(String documentUrl) throws ClientException;
+    String navigateToURL(String documentUrl);
 
     /**
      * Initializes the context for the given refs and returns the default view for the doc.
      * <p>
      * Takes parameter String docRef from the Request.
      */
-    String navigateToURL() throws ClientException;
+    String navigateToURL();
 
     // --- do not call these methods directly
     // --- they are listeners - called by Seam
@@ -219,14 +217,14 @@ public interface NavigationContext {
      *
      * @param serverLocation new server location to connect to
      */
-    void setCurrentServerLocation(RepositoryLocation serverLocation) throws ClientException;
+    void setCurrentServerLocation(RepositoryLocation serverLocation);
 
     /**
      * Returns the current documentManager if any or create a new session to the currently selected repository location.
      */
-    CoreSession getOrCreateDocumentManager() throws ClientException;
+    CoreSession getOrCreateDocumentManager();
 
-    String navigateToDocument(DocumentModel docModel, VersionModel versionModel) throws ClientException;
+    String navigateToDocument(DocumentModel docModel, VersionModel versionModel);
 
     /**
      * Gets the currentDocument and puts it in Page context.
@@ -246,7 +244,7 @@ public interface NavigationContext {
     /**
      * Gets the currentSuperSpace and puts it in Page context.
      */
-    DocumentModel factoryCurrentSuperSpace() throws ClientException;
+    DocumentModel factoryCurrentSuperSpace();
 
     /**
      * Gets the currentContentRootWorkspace and puts it in Page context.
@@ -281,6 +279,6 @@ public interface NavigationContext {
     /**
      * Will trigger reloading of current document data from the server.
      */
-    void invalidateCurrentDocument() throws ClientException;
+    void invalidateCurrentDocument();
 
 }

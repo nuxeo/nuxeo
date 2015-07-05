@@ -35,12 +35,12 @@ public class BlobHolderDummyImpl extends AbstractBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         return Blobs.createBlob("Test");
     }
 
     @Override
-    public Calendar getModificationDate() throws ClientException {
+    public Calendar getModificationDate() {
         return null;
     }
 

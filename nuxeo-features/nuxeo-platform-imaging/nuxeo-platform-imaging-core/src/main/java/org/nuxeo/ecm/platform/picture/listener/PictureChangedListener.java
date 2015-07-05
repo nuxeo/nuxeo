@@ -64,7 +64,7 @@ public class PictureChangedListener implements EventListener {
     private static ImageInfo emptyPictureImageInfo;
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
@@ -122,7 +122,7 @@ public class PictureChangedListener implements EventListener {
         return EMPTY_PICTURE_PATH;
     }
 
-    protected DocumentModel getParentDocument(CoreSession session, DocumentModel doc) throws ClientException {
+    protected DocumentModel getParentDocument(CoreSession session, DocumentModel doc) {
         DocumentModel parent;
         if (session.exists(doc.getRef())) {
             parent = session.getParentDocument(doc.getRef());

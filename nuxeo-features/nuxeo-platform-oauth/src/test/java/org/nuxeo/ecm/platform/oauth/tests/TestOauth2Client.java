@@ -34,7 +34,7 @@ public class TestOauth2Client {
     ClientRegistry registry;
 
     @Test
-    public void clientsManagement() throws ClientException {
+    public void clientsManagement() {
         assertNotNull(registry);
         assertEquals(0, registry.listClients().size());
 

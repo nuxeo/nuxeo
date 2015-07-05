@@ -151,11 +151,11 @@ public class MainTabsActions implements Serializable {
         documentsByMainTabs.put(mainTabId, doc);
     }
 
-    public DocumentModel getDocumentFor(String mainTabId) throws ClientException {
+    public DocumentModel getDocumentFor(String mainTabId) {
         return getDocumentFor(mainTabId, navigationContext.getCurrentDocument());
     }
 
-    public DocumentModel getDocumentFor(String mainTabId, DocumentModel defaultDocument) throws ClientException {
+    public DocumentModel getDocumentFor(String mainTabId, DocumentModel defaultDocument) {
         DocumentModel doc = documentsByMainTabs.get(mainTabId);
         if (doc == null || !documentManager.exists(doc.getRef())
                 || !documentManager.hasPermission(doc.getRef(), SecurityConstants.READ)) {
@@ -172,7 +172,7 @@ public class MainTabsActions implements Serializable {
         return doc != null ? doc : defaultDocument;
     }
 
-    public String getViewFor(Action mainTabAction) throws ClientException {
+    public String getViewFor(Action mainTabAction) {
         if (!mainTabAction.getId().equals(WebActions.DOCUMENTS_MAIN_TAB_ID)) {
             return mainTabAction.getLink();
         }
@@ -185,12 +185,12 @@ public class MainTabsActions implements Serializable {
         return DEFAULT_VIEW;
     }
 
-    public String getViewFor(String mainTabId) throws ClientException {
+    public String getViewFor(String mainTabId) {
         Action mainTabAction = actionManager.getAction(mainTabId);
         return mainTabAction != null ? getViewFor(mainTabAction) : null;
     }
 
-    public String getPatternFor(String mainTabId) throws ClientException {
+    public String getPatternFor(String mainTabId) {
         URLPolicyService service = Framework.getService(URLPolicyService.class);
         // FIXME: find some way to reference the pattern in the action,
         // assume the pattern will be the same than the default one for

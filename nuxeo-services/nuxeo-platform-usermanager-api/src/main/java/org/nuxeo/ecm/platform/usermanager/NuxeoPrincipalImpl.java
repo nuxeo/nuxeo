@@ -82,26 +82,26 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     /**
      * Constructor that sets principal to not anonymous, not administrator, and updates all the principal groups.
      */
-    public NuxeoPrincipalImpl(String name) throws ClientException {
+    public NuxeoPrincipalImpl(String name) {
         this(name, false, false);
     }
 
     /**
      * Constructor that sets principal to not administrator, and updates all the principal groups.
      */
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous) throws ClientException {
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous) {
         this(name, isAnonymous, false);
     }
 
     /**
      * Constructor that updates all the principal groups.
      */
-    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator) throws ClientException {
+    public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator) {
         this(name, isAnonymous, isAdministrator, true);
     }
 
     public NuxeoPrincipalImpl(String name, boolean isAnonymous, boolean isAdministrator, boolean updateAllGroups)
-            throws ClientException {
+            {
         DocumentModelImpl documentModelImpl = new DocumentModelImpl(config.schemaName);
         // schema name hardcoded default when setModel is never called
         // which happens when a principal is created just to encapsulate
@@ -308,7 +308,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     /**
      * Sets model and recomputes all groups.
      */
-    public void setModel(DocumentModel model, boolean updateAllGroups) throws ClientException {
+    public void setModel(DocumentModel model, boolean updateAllGroups) {
         this.model = model;
         dataModel = model.getDataModels().values().iterator().next();
         if (updateAllGroups) {
@@ -317,7 +317,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     }
 
     @Override
-    public void setModel(DocumentModel model) throws ClientException {
+    public void setModel(DocumentModel model) {
         setModel(model, true);
     }
 
@@ -331,7 +331,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return new ArrayList<String>(allGroups);
     }
 
-    public void updateAllGroups() throws ClientException {
+    public void updateAllGroups() {
         UserManager userManager = Framework.getService(UserManager.class);
         Set<String> checkedGroups = new HashSet<String>();
         List<String> groupsToProcess = new ArrayList<String>();
@@ -398,7 +398,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
         return new ArrayList<String>(virtualGroups);
     }
 
-    public void setVirtualGroups(List<String> virtualGroups, boolean updateAllGroups) throws ClientException {
+    public void setVirtualGroups(List<String> virtualGroups, boolean updateAllGroups) {
         this.virtualGroups = new ArrayList<String>(virtualGroups);
         if (updateAllGroups) {
             updateAllGroups();
@@ -408,7 +408,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
     /**
      * Sets virtual groups and recomputes all groups.
      */
-    public void setVirtualGroups(List<String> virtualGroups) throws ClientException {
+    public void setVirtualGroups(List<String> virtualGroups) {
         setVirtualGroups(virtualGroups, true);
     }
 

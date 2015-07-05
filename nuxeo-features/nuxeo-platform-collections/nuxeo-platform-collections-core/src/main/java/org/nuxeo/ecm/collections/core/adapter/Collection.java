@@ -38,13 +38,13 @@ public class Collection {
         document = doc;
     }
 
-    public List<String> getCollectedDocumentIds() throws ClientException {
+    public List<String> getCollectedDocumentIds() {
         @SuppressWarnings("unchecked")
         List<String> collected = (List<String>) document.getPropertyValue(CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME);
         return collected;
     }
 
-    public void addDocument(final String documentId) throws ClientException {
+    public void addDocument(final String documentId) {
         List<String> documentIds = getCollectedDocumentIds();
         if (!documentIds.contains(documentId)) {
             documentIds.add(documentId);
@@ -52,7 +52,7 @@ public class Collection {
         setDocumentIds(documentIds);
     }
 
-    public void removeDocument(final String documentId) throws ClientException {
+    public void removeDocument(final String documentId) {
         List<String> documentIds = getCollectedDocumentIds();
         if (!documentIds.remove(documentId)) {
             log.warn(String.format("Element '%s' is not present in the specified collection.", documentId));
@@ -60,7 +60,7 @@ public class Collection {
         setDocumentIds(documentIds);
     }
 
-    public void setDocumentIds(final List<String> documentIds) throws ClientException {
+    public void setDocumentIds(final List<String> documentIds) {
         document.setPropertyValue(CollectionConstants.COLLECTION_DOCUMENT_IDS_PROPERTY_NAME, (Serializable) documentIds);
     }
 

@@ -127,7 +127,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
      * Save the file into the document.
      */
     protected void saveFileToDocument(String filename, DocumentModel dm, String blobPropertyName,
-            String filenamePropertyName, InputStream is) throws IOException, PropertyException, ClientException {
+            String filenamePropertyName, InputStream is) throws IOException, PropertyException {
         // persisting the blob makes it possible to read the binary content
         // of the request stream several times (mimetype sniffing, digest
         // computation, core binary storage)

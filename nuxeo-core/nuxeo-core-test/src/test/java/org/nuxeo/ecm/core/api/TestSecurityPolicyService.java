@@ -63,7 +63,7 @@ public class TestSecurityPolicyService {
     @Inject
     protected RuntimeHarness harness;
 
-    private void setTestPermissions(String user, String... perms) throws ClientException {
+    private void setTestPermissions(String user, String... perms) {
         try (CoreSession session = repo.openSessionAs(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();

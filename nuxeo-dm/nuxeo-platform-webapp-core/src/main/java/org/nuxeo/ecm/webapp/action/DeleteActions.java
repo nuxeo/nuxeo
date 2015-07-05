@@ -32,44 +32,44 @@ public interface DeleteActions {
     /**
      * Definitively deletes selected documents.
      */
-    String purgeSelection() throws ClientException;
+    String purgeSelection();
 
     /**
      * Definitively deletes selected documents of the given {@code listName}.
      */
-    String purgeSelection(String listName) throws ClientException;
+    String purgeSelection(String listName);
 
     /**
      * Definitively deletes param documents.
      */
-    String purgeSelection(List<DocumentModel> docsToPurge) throws ClientException;
+    String purgeSelection(List<DocumentModel> docsToPurge);
 
     /**
      * Moves to trash (delete state) the selected documents.
      */
-    String deleteSelection() throws ClientException;
+    String deleteSelection();
 
     /**
      * Moves to trash (delete state) the selected sections.
      */
-    String deleteSelectionSections() throws ClientException;
+    String deleteSelectionSections();
 
     /**
      * Moves to trash (delete state) the documents.
      */
-    String deleteSelection(List<DocumentModel> docsToDelete) throws ClientException;
+    String deleteSelection(List<DocumentModel> docsToDelete);
 
     /**
      * Undeletes the selected documents from trash (recycle bin).
      */
-    String undeleteSelection() throws ClientException;
+    String undeleteSelection();
 
     /**
      * Undeletes the args docs from trash (recycle bin).
      */
-    String undeleteSelection(List<DocumentModel> docsToUndelete) throws ClientException;
+    String undeleteSelection(List<DocumentModel> docsToUndelete);
 
-    boolean getCanDeleteItem(DocumentModel container) throws ClientException;
+    boolean getCanDeleteItem(DocumentModel container);
 
     boolean getCanDelete();
 
@@ -77,7 +77,7 @@ public interface DeleteActions {
 
     boolean getCanDeleteSections();
 
-    boolean getCanPurge() throws ClientException;
+    boolean getCanPurge();
 
     boolean isTrashManagementEnabled();
 
@@ -92,11 +92,11 @@ public interface DeleteActions {
     /**
      * Undeletes the current document and its children and his deleted parents.
      */
-    void restoreCurrentDocument() throws ClientException;
+    void restoreCurrentDocument();
 
     /**
      * Checks if the document is "deleted".
      */
-    boolean getCanRestoreCurrentDoc() throws ClientException;
+    boolean getCanRestoreCurrentDoc();
 
 }

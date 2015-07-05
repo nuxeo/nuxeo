@@ -43,7 +43,7 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
     public static final String ORPHAN_VERSION_REMOVE = "orphan_versions_to_remove";
 
     @Override
-    public void removeVersions(Session session, Document doc, CoreSession coreSession) throws ClientException {
+    public void removeVersions(Session session, Document doc, CoreSession coreSession) {
         Collection<Document> proxies = session.getProxies(doc, null);
         if (doc.isProxy()) {
             // if doc is itself a proxy it should not be considered

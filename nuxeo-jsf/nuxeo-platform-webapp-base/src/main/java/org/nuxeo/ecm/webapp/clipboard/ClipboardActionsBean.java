@@ -170,7 +170,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     @WebRemote
-    public void putInClipboard(String docId) throws ClientException {
+    public void putInClipboard(String docId) {
         DocumentModel doc = documentManager.getDocument(new IdRef(docId));
         documentsListsManager.addToWorkingList(DocumentsListsManager.CLIPBOARD, doc);
         Object[] params = { 1 };
@@ -245,7 +245,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return ref != null && documentManager.exists(ref);
     }
 
-    public String removeWorkListItem(DocumentRef ref) throws ClientException {
+    public String removeWorkListItem(DocumentRef ref) {
         DocumentModel doc = null;
         if (exists(ref)) {
             doc = documentManager.getDocument(ref);
@@ -266,15 +266,15 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
-    public String pasteDocumentList(String listName) throws ClientException {
+    public String pasteDocumentList(String listName) {
         return pasteDocumentList(documentsListsManager.getWorkingList(listName));
     }
 
-    public String pasteDocumentListInside(String listName, String docId) throws ClientException {
+    public String pasteDocumentListInside(String listName, String docId) {
         return pasteDocumentListInside(documentsListsManager.getWorkingList(listName), docId);
     }
 
-    public String pasteDocumentList(List<DocumentModel> docPaste) throws ClientException {
+    public String pasteDocumentList(List<DocumentModel> docPaste) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (null != docPaste) {
             List<DocumentModel> newDocs = recreateDocumentsWithNewParent(getParent(currentDocument), docPaste);
@@ -293,7 +293,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
-    public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) throws ClientException {
+    public String pasteDocumentListInside(List<DocumentModel> docPaste, String docId) {
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         if (null != docPaste) {
             List<DocumentModel> newDocs = recreateDocumentsWithNewParent(targetDoc, docPaste);
@@ -313,7 +313,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     public List<DocumentModel> moveDocumentsToNewParent(DocumentModel destFolder, List<DocumentModel> docs)
-            throws ClientException {
+            {
         DocumentRef destFolderRef = destFolder.getRef();
         boolean destinationIsDeleted = LifeCycleConstants.DELETED_STATE.equals(destFolder.getCurrentLifeCycleState());
         List<DocumentModel> newDocs = new ArrayList<DocumentModel>();
@@ -349,7 +349,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return newDocs;
     }
 
-    public String moveDocumentList(String listName, String docId) throws ClientException {
+    public String moveDocumentList(String listName, String docId) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
         DocumentModel targetDoc = documentManager.getDocument(new IdRef(docId));
         // Get all parent folders
@@ -378,7 +378,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return null;
     }
 
-    public String moveDocumentList(String listName) throws ClientException {
+    public String moveDocumentList(String listName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return moveDocumentList(listName, currentDocument.getId());
     }
@@ -416,13 +416,13 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     @WebRemote
-    public String pasteClipboardInside(String docId) throws ClientException {
+    public String pasteClipboardInside(String docId) {
         pasteDocumentListInside(DocumentsListsManager.CLIPBOARD, docId);
         return null;
     }
 
     @WebRemote
-    public String moveClipboardInside(String docId) throws ClientException {
+    public String moveClipboardInside(String docId) {
         moveDocumentList(DocumentsListsManager.CLIPBOARD, docId);
         return null;
     }
@@ -431,7 +431,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * Creates the documents in the backend under the target parent.
      */
     protected List<DocumentModel> recreateDocumentsWithNewParent(DocumentModel parent, List<DocumentModel> documents)
-            throws ClientException {
+            {
 
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
@@ -485,7 +485,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return newDocuments;
     }
 
-    protected boolean checkDeletedState(DocumentModel doc) throws ClientException {
+    protected boolean checkDeletedState(DocumentModel doc) {
         if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
             return true;
         }
@@ -495,13 +495,13 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return false;
     }
 
-    protected void setDeleteState(DocumentModel doc) throws ClientException {
+    protected void setDeleteState(DocumentModel doc) {
         if (doc.getAllowedStateTransitions().contains(LifeCycleConstants.DELETE_TRANSITION)) {
             doc.followTransition(LifeCycleConstants.DELETE_TRANSITION);
         }
     }
 
-    protected void addWarnMessage(StringBuilder sb, DocumentModel doc) throws ClientException {
+    protected void addWarnMessage(StringBuilder sb, DocumentModel doc) {
         if (sb.length() == 0) {
             sb.append(messages.get("document_no_deleted_state"));
             sb.append("'").append(doc.getTitle()).append("'");
@@ -514,7 +514,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * Check if the container is a publish space. If this is not the case, a proxy copied to it will be recreated as a
      * new document.
      */
-    protected boolean isPublishSpace(DocumentModel container) throws ClientException {
+    protected boolean isPublishSpace(DocumentModel container) {
         SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         Set<String> publishSpaces = schemaManager.getDocumentTypeNamesForFacet(FacetNames.PUBLISH_SPACE);
         if (publishSpaces == null || publishSpaces.isEmpty()) {
@@ -531,7 +531,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * In general the currentDocument is the parent. Exceptions to this rule: when the currentDocument is a domain or
      * null. If Domain then content root is the parent. If null is passed, then the JCR root is taken as parent.
      */
-    protected DocumentModel getParent(DocumentModel currentDocument) throws ClientException {
+    protected DocumentModel getParent(DocumentModel currentDocument) {
 
         if (currentDocument.isFolder()) {
             return currentDocument;
@@ -557,23 +557,23 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return documentsListsManager.isWorkingListEmpty(getCurrentSelectedListName());
     }
 
-    public String exportWorklistAsZip() throws ClientException {
+    public String exportWorklistAsZip() {
         return exportWorklistAsZip(documentsListsManager.getWorkingList(getCurrentSelectedListName()));
     }
 
-    public String exportAllBlobsFromWorkingListAsZip() throws ClientException {
+    public String exportAllBlobsFromWorkingListAsZip() {
         return exportWorklistAsZip();
     }
 
-    public String exportMainBlobFromWorkingListAsZip() throws ClientException {
+    public String exportMainBlobFromWorkingListAsZip() {
         return exportWorklistAsZip();
     }
 
-    public String exportWorklistAsZip(List<DocumentModel> documents) throws ClientException {
+    public String exportWorklistAsZip(List<DocumentModel> documents) {
         return exportWorklistAsZip(documents, true);
     }
 
-    public String exportWorklistAsZip(DocumentModel document) throws ClientException {
+    public String exportWorklistAsZip(DocumentModel document) {
         return exportWorklistAsZip(Arrays.asList(new DocumentModel[] { document }), true);
     }
 
@@ -598,7 +598,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>the content of the list can be added as children of the current document
      * </ul>
      */
-    public boolean getCanPaste(String listName) throws ClientException {
+    public boolean getCanPaste(String listName) {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
@@ -628,7 +628,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         }
     }
 
-    public boolean getCanPasteInside(String listName, DocumentModel document) throws ClientException {
+    public boolean getCanPasteInside(String listName, DocumentModel document) {
         if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
         }
@@ -659,7 +659,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>an element in the list can be removed from its folder and added as child of the current document
      * </ul>
      */
-    public boolean getCanMoveInside(String listName, DocumentModel document) throws ClientException {
+    public boolean getCanMoveInside(String listName, DocumentModel document) {
         if (documentsListsManager.isWorkingListEmpty(listName) || document == null) {
             return false;
         }
@@ -699,28 +699,28 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
      * <li>an element in the list can be removed from its folder and added as child of the current document
      * </ul>
      */
-    public boolean getCanMove(String listName) throws ClientException {
+    public boolean getCanMove(String listName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         return getCanMoveInside(listName, currentDocument);
     }
 
-    public boolean getCanPasteWorkList() throws ClientException {
+    public boolean getCanPasteWorkList() {
         return getCanPaste(getCurrentSelectedListName());
     }
 
-    public boolean getCanMoveWorkingList() throws ClientException {
+    public boolean getCanMoveWorkingList() {
         return getCanMove(getCurrentSelectedListName());
     }
 
-    public boolean getCanPasteFromClipboard() throws ClientException {
+    public boolean getCanPasteFromClipboard() {
         return getCanPaste(DocumentsListsManager.CLIPBOARD);
     }
 
-    public boolean getCanPasteFromClipboardInside(DocumentModel document) throws ClientException {
+    public boolean getCanPasteFromClipboardInside(DocumentModel document) {
         return getCanPasteInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
-    public boolean getCanMoveFromClipboardInside(DocumentModel document) throws ClientException {
+    public boolean getCanMoveFromClipboardInside(DocumentModel document) {
         return getCanMoveInside(DocumentsListsManager.CLIPBOARD, document);
     }
 
@@ -812,7 +812,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         setCurrentSelectedList(previouslySelectedList);
     }
 
-    public boolean getCanEditSelectedDocs() throws ClientException {
+    public boolean getCanEditSelectedDocs() {
         if (canEditSelectedDocs == null) {
             if (getCurrentSelectedList().isEmpty()) {
                 canEditSelectedDocs = false;
@@ -828,7 +828,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
 
     @Deprecated
     // no longer used by the user_clipboard.xhtml template
-    public boolean getCanEditListDocs(String listName) throws ClientException {
+    public boolean getCanEditListDocs(String listName) {
         final List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
 
         final boolean canEdit;
@@ -841,7 +841,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         return canEdit;
     }
 
-    private boolean checkWritePerm(List<DocumentModel> selectedDocs) throws ClientException {
+    private boolean checkWritePerm(List<DocumentModel> selectedDocs) {
         for (DocumentModel documentModel : selectedDocs) {
             boolean canWrite = documentManager.hasPermission(documentModel.getRef(),
                     SecurityConstants.WRITE_PROPERTIES);
@@ -871,7 +871,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     }
 
     @Override
-    public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) throws ClientException {
+    public String exportWorklistAsZip(List<DocumentModel> documents, boolean exportAllBlobs) {
         try {
             FacesContext context = FacesContext.getCurrentInstance();
             DocumentListZipExporter zipExporter = new DocumentListZipExporter();

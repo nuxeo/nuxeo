@@ -52,7 +52,7 @@ public class TestDigestComputerListener {
     @Inject
     protected CoreSession coreSession;
 
-    protected DocumentModel createFileDocument() throws ClientException {
+    protected DocumentModel createFileDocument() {
         DocumentModel fileDoc = coreSession.createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA");

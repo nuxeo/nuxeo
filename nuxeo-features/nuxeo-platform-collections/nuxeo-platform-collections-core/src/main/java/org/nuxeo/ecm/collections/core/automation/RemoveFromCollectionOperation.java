@@ -47,7 +47,7 @@ public class RemoveFromCollectionOperation {
     protected DocumentModel collection;
 
     @OperationMethod
-    public DocumentModelList run(DocumentModelList docs) throws ClientException {
+    public DocumentModelList run(DocumentModelList docs) {
         for (DocumentModel doc : docs) {
             collectionManager.removeFromCollection(collection, doc, session);
         }
@@ -56,7 +56,7 @@ public class RemoveFromCollectionOperation {
     }
 
     @OperationMethod
-    public DocumentModel run(DocumentModel doc) throws ClientException {
+    public DocumentModel run(DocumentModel doc) {
         collectionManager.removeFromCollection(collection, doc, session);
 
         return doc;

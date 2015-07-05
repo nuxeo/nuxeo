@@ -74,7 +74,7 @@ public class JSONDocumentObject extends DocumentObject {
      */
     @PUT
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public DocumentModel doPut(DocumentModel inputDoc, @Context HttpHeaders headers) throws ClientException {
+    public DocumentModel doPut(DocumentModel inputDoc, @Context HttpHeaders headers) {
         JSONDocumentModelReader.applyPropertyValues(inputDoc, doc);
         CoreSession session = ctx.getCoreSession();
         versioningDocFromHeaderIfExists(headers);
@@ -85,7 +85,7 @@ public class JSONDocumentObject extends DocumentObject {
 
     @POST
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doPost(DocumentModel inputDoc) throws ClientException {
+    public Response doPost(DocumentModel inputDoc) {
         CoreSession session = ctx.getCoreSession();
 
         if (StringUtils.isBlank(inputDoc.getType()) || StringUtils.isBlank(inputDoc.getName())) {
@@ -102,7 +102,7 @@ public class JSONDocumentObject extends DocumentObject {
 
     @DELETE
     @Consumes({ APPLICATION_JSON_NXENTITY, "application/json" })
-    public Response doDeleteJson() throws ClientException {
+    public Response doDeleteJson() {
         super.doDelete();
         return Response.noContent().build();
     }
@@ -144,7 +144,7 @@ public class JSONDocumentObject extends DocumentObject {
      *
      * @param headers X-Versioning-Option Header
      */
-    private void versioningDocFromHeaderIfExists(HttpHeaders headers) throws ClientException {
+    private void versioningDocFromHeaderIfExists(HttpHeaders headers) {
         isVersioning = false;
         List<String> versionHeader = headers.getRequestHeader(RestConstants.X_VERSIONING_OPTION);
         if (versionHeader != null && versionHeader.size() != 0) {

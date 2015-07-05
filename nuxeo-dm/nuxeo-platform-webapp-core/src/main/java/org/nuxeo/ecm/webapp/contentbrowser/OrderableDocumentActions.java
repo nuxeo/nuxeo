@@ -80,7 +80,7 @@ public class OrderableDocumentActions implements Serializable {
      * -------- Web Actions --------
      */
 
-    public boolean getCanMoveDown() throws ClientException {
+    public boolean getCanMoveDown() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!isOrderable(currentDocument)) {
             return false;
@@ -92,7 +92,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected boolean getCanMoveDown(DocumentModel container, String documentsListName) throws ClientException {
+    protected boolean getCanMoveDown(DocumentModel container, String documentsListName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
@@ -109,7 +109,7 @@ public class OrderableDocumentActions implements Serializable {
         return true;
     }
 
-    public String moveDown() throws ClientException {
+    public String moveDown() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return null;
@@ -121,7 +121,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected String moveDown(DocumentModel container, String documentsListName) throws ClientException {
+    protected String moveDown(DocumentModel container, String documentsListName) {
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
 
         List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
@@ -138,13 +138,13 @@ public class OrderableDocumentActions implements Serializable {
         return null;
     }
 
-    protected void notifyChildrenChanged(DocumentModel containerDocument) throws ClientException {
+    protected void notifyChildrenChanged(DocumentModel containerDocument) {
         if (containerDocument != null) {
             Events.instance().raiseEvent(DOCUMENT_CHILDREN_CHANGED, containerDocument);
         }
     }
 
-    public boolean getCanMoveUp() throws ClientException {
+    public boolean getCanMoveUp() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!isOrderable(currentDocument)) {
             return false;
@@ -156,7 +156,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected boolean getCanMoveUp(DocumentModel container, String documentsListName) throws ClientException {
+    protected boolean getCanMoveUp(DocumentModel container, String documentsListName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
@@ -173,7 +173,7 @@ public class OrderableDocumentActions implements Serializable {
         return true;
     }
 
-    public String moveUp() throws ClientException {
+    public String moveUp() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return null;
@@ -185,7 +185,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected String moveUp(DocumentModel container, String documentsListName) throws ClientException {
+    protected String moveUp(DocumentModel container, String documentsListName) {
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
 
         List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
@@ -202,7 +202,7 @@ public class OrderableDocumentActions implements Serializable {
         return null;
     }
 
-    public boolean getCanMoveToTop() throws ClientException {
+    public boolean getCanMoveToTop() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!isOrderable(currentDocument)) {
             return false;
@@ -214,7 +214,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected boolean getCanMoveToTop(DocumentModel container, String documentsListName) throws ClientException {
+    protected boolean getCanMoveToTop(DocumentModel container, String documentsListName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
@@ -230,7 +230,7 @@ public class OrderableDocumentActions implements Serializable {
         return true;
     }
 
-    public String moveToTop() throws ClientException {
+    public String moveToTop() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return null;
@@ -242,7 +242,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected String moveToTop(DocumentModel container, String documentsListName) throws ClientException {
+    protected String moveToTop(DocumentModel container, String documentsListName) {
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
         List<DocumentRef> children = documentManager.getChildrenRefs(container.getRef(), null);
         DocumentRef firstDocumentRef = children.get(0);
@@ -256,7 +256,7 @@ public class OrderableDocumentActions implements Serializable {
         return null;
     }
 
-    public boolean getCanMoveToBottom() throws ClientException {
+    public boolean getCanMoveToBottom() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!isOrderable(currentDocument)) {
             return false;
@@ -268,7 +268,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected boolean getCanMoveToBottom(DocumentModel container, String documentsListName) throws ClientException {
+    protected boolean getCanMoveToBottom(DocumentModel container, String documentsListName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(documentsListName);
         if (docs.isEmpty() || docs.size() > 1) {
             return false;
@@ -284,7 +284,7 @@ public class OrderableDocumentActions implements Serializable {
         return true;
     }
 
-    public String moveToBottom() throws ClientException {
+    public String moveToBottom() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
             return null;
@@ -296,7 +296,7 @@ public class OrderableDocumentActions implements Serializable {
         }
     }
 
-    protected String moveToBottom(DocumentModel container, String documentsListName) throws ClientException {
+    protected String moveToBottom(DocumentModel container, String documentsListName) {
         DocumentRef containerRef = container.getRef();
         DocumentModel selectedDocument = documentsListsManager.getWorkingList(documentsListName).get(0);
         documentManager.orderBefore(containerRef, selectedDocument.getName(), null);

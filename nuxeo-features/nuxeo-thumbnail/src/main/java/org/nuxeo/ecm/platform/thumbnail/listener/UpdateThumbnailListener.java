@@ -50,7 +50,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
 
     public static final String THUMBNAIL_UPDATED = "thumbnailUpdated";
 
-    protected void processDoc(CoreSession session, DocumentModel doc) throws ClientException {
+    protected void processDoc(CoreSession session, DocumentModel doc) {
         Blob thumbnailBlob = getManagedThumbnail(doc);
         if (thumbnailBlob == null) {
             ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
@@ -84,7 +84,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
         }
     }
 
-    private Blob getManagedThumbnail(DocumentModel doc) throws ClientException {
+    private Blob getManagedThumbnail(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
             return null;
@@ -106,7 +106,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
     }
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         if (!events.containsEventName(ThumbnailConstants.EventNames.scheduleThumbnailUpdate.name())) {
             return;
         }

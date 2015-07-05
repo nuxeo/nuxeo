@@ -100,7 +100,7 @@ public class TestUnrestrictedSessionRunner {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentRef rootRef = session.getRootDocument().getRef();
             ACP acp = session.getACP(rootRef);
             ACL acl = acp.getOrCreateACL("LOCAL");
@@ -124,7 +124,7 @@ public class TestUnrestrictedSessionRunner {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             DocumentModel doc = session.getDocument(ref);
             name = doc.getName();
         }

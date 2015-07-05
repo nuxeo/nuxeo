@@ -65,7 +65,7 @@ public class VocabularyEnricher extends AbstractContentEnricher {
     private DirectoryService directoryService;
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
 
         final DocumentModel doc = ec.getDocumentModel();
 
@@ -197,10 +197,9 @@ public class VocabularyEnricher extends AbstractContentEnricher {
      * @param session
      * @param labelFields
      * @return a map of field: label
-     * @throws ClientException
      */
     private static Map<String, String> getAbsoluteLabels(final String entryId, final Session session,
-            List<String> labelFields) throws ClientException {
+            List<String> labelFields) {
 
         String[] split = entryId.split(KEY_SEPARATOR);
         Map<String, String> labels = new HashMap<>();

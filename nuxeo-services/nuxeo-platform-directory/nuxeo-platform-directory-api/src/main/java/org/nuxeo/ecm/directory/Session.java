@@ -73,7 +73,7 @@ public interface Session extends AutoCloseable {
      *             and the server does not send partial results.
      */
     @Deprecated
-    DocumentModelList getEntries() throws ClientException, DirectoryException;
+    DocumentModelList getEntries() throws DirectoryException;
 
     /**
      * Creates an entry in a directory.
@@ -85,7 +85,7 @@ public interface Session extends AutoCloseable {
      * @throws UnsupportedOperationException if the directory does not allow the creation of new entries
      * @throws DirectoryException if a communication exception occurs or if an entry with the same id already exists.
      */
-    DocumentModel createEntry(Map<String, Object> fieldMap) throws ClientException, DirectoryException;
+    DocumentModel createEntry(Map<String, Object> fieldMap) throws DirectoryException;
 
     /**
      * Updates a directory entry.
@@ -94,7 +94,7 @@ public interface Session extends AutoCloseable {
      * @throws UnsupportedOperationException if the directory does not support entry updating
      * @throws DirectoryException if a communication error occurs
      */
-    void updateEntry(DocumentModel docModel) throws ClientException, DirectoryException;
+    void updateEntry(DocumentModel docModel) throws DirectoryException;
 
     /**
      * Deletes a directory entry.
@@ -103,7 +103,7 @@ public interface Session extends AutoCloseable {
      * @throws UnsupportedOperationException if the directory does not support entry deleting
      * @throws DirectoryException if a communication error occurs
      */
-    void deleteEntry(DocumentModel docModel) throws ClientException, DirectoryException;
+    void deleteEntry(DocumentModel docModel) throws DirectoryException;
 
     /**
      * Deletes a directory entry by id.
@@ -112,7 +112,7 @@ public interface Session extends AutoCloseable {
      * @throws UnsupportedOperationException if the directory does not support entry deleting
      * @throws DirectoryException if a communication error occurs
      */
-    void deleteEntry(String id) throws ClientException, DirectoryException;
+    void deleteEntry(String id) throws DirectoryException;
 
     /**
      * Deletes a directory entry by id and secondary ids.
@@ -123,7 +123,7 @@ public interface Session extends AutoCloseable {
      * @param map a map of seconday key values.
      * @throws DirectoryException if a communication error occurs.
      */
-    void deleteEntry(String id, Map<String, String> map) throws ClientException, DirectoryException;
+    void deleteEntry(String id, Map<String, String> map) throws DirectoryException;
 
     /*
      * FIXME: Parses a query string and create a query object for this directory.
@@ -146,7 +146,7 @@ public interface Session extends AutoCloseable {
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      *             and the server does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter) throws ClientException, DirectoryException;
+    DocumentModelList query(Map<String, Serializable> filter) throws DirectoryException;
 
     /**
      * Executes a simple query. The conditions will be 'AND'-ed.
@@ -164,7 +164,7 @@ public interface Session extends AutoCloseable {
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      *             and the server does not send partial results.
      */
-    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws ClientException,
+    DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext) throws
             DirectoryException;
 
     /**
@@ -187,7 +187,7 @@ public interface Session extends AutoCloseable {
      *             and the server does not send partial results.
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            throws ClientException, DirectoryException;
+            throws DirectoryException;
 
     /**
      * Executes a query with the possibility to fetch references
@@ -195,7 +195,7 @@ public interface Session extends AutoCloseable {
      * @see #query(Map, Set, Map)
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences) throws ClientException, DirectoryException;
+            boolean fetchReferences) throws DirectoryException;
 
     /**
      * Executes a query with the possibility to fetch a subset of the results. org.nuxeo.ecm.directory.BaseSession
@@ -207,7 +207,7 @@ public interface Session extends AutoCloseable {
      * @since 5.7
      */
     DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy,
-            boolean fetchReferences, int limit, int offset) throws ClientException, DirectoryException;
+            boolean fetchReferences, int limit, int offset) throws DirectoryException;
 
     // TODO: create an API to allow sql AND/OR/NOT/LIKE conditions
     // public DocumentModelList query(Criteria criteria ) throws
@@ -234,11 +234,11 @@ public interface Session extends AutoCloseable {
      * @throws DirectoryException
      * @throws SizeLimitExceededException if the number of results is larger than the limit configured for the directory
      */
-    List<String> getProjection(Map<String, Serializable> filter, String columnName) throws ClientException,
+    List<String> getProjection(Map<String, Serializable> filter, String columnName) throws
             DirectoryException;
 
     List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            throws ClientException, DirectoryException;
+            throws DirectoryException;
 
     /**
      * Tells whether the directory implementation can be used as an authenticating backend for the UserManager (based on
@@ -247,7 +247,7 @@ public interface Session extends AutoCloseable {
      * @return true is the directory is authentication aware
      * @throws DirectoryException
      */
-    boolean isAuthenticating() throws ClientException, DirectoryException;
+    boolean isAuthenticating() throws DirectoryException;
 
     /**
      * Checks that the credentials provided by the UserManager match those registered in the directory. If username is
@@ -257,7 +257,7 @@ public interface Session extends AutoCloseable {
      * @param password
      * @return true is the credentials match those stored in the directory
      */
-    boolean authenticate(String username, String password) throws ClientException, DirectoryException;
+    boolean authenticate(String username, String password) throws DirectoryException;
 
     /**
      * The Id field is the name of the field that is used a primary key: unique and not null value in the whole
@@ -265,22 +265,21 @@ public interface Session extends AutoCloseable {
      *
      * @return the name of the id field
      */
-    String getIdField() throws ClientException;
+    String getIdField();
 
     /**
      * @return the name of the field to store the password if the directory is authenticating (can be null)
      */
-    String getPasswordField() throws ClientException;
+    String getPasswordField();
 
-    boolean isReadOnly() throws ClientException;
+    boolean isReadOnly();
 
     /**
      * Returns true if session has an entry with given id.
      *
      * @since 5.2M4
-     * @throws ClientException
      */
-    boolean hasEntry(String id) throws ClientException;
+    boolean hasEntry(String id);
 
     /**
      * Creates an entry in a directory.
@@ -291,6 +290,6 @@ public interface Session extends AutoCloseable {
      * @throws UnsupportedOperationException if the directory does not allow the creation of new entries
      * @throws ClientException if a communication exception occurs or if an entry with the same id already exists.
      */
-    DocumentModel createEntry(DocumentModel entry) throws ClientException;
+    DocumentModel createEntry(DocumentModel entry);
 
 }

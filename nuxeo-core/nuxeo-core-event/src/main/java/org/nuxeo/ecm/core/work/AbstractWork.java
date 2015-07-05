@@ -228,7 +228,7 @@ public abstract class AbstractWork implements Work {
      *
      * @return the session (also available in {@code session} field)
      */
-    public CoreSession initSession() throws ClientException {
+    public CoreSession initSession() {
         return initSession(repositoryName);
     }
 
@@ -238,7 +238,7 @@ public abstract class AbstractWork implements Work {
      * @param repositoryName the repository name
      * @return the session (also available in {@code session} field)
      */
-    public CoreSession initSession(String repositoryName) throws ClientException {
+    public CoreSession initSession(String repositoryName) {
         session = CoreInstance.openCoreSessionSystem(repositoryName);
         return session;
     }

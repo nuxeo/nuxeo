@@ -34,11 +34,11 @@ public interface DirectoryUIManager extends Serializable {
     /**
      * Returns the ui info to use for given directory.
      */
-    DirectoryUI getDirectoryInfo(String directoryName) throws ClientException;
+    DirectoryUI getDirectoryInfo(String directoryName);
 
     /**
      * Returns the list of directories that should be presented in UI.
      */
-    List<String> getDirectoryNames() throws ClientException;
+    List<String> getDirectoryNames();
 
 }

@@ -62,7 +62,7 @@ public class ExtendedDocumentLocation extends DocumentLocationImpl {
         return new ExtendedDocumentLocation(sourceServer, repositoryName, ref);
     }
 
-    public static ExtendedDocumentLocation extractFromDoc(DocumentModel doc) throws ClientException {
+    public static ExtendedDocumentLocation extractFromDoc(DocumentModel doc) {
         if (doc.hasSchema("dublincore")) {
             String source = (String) doc.getProperty("dublincore", "source");
 

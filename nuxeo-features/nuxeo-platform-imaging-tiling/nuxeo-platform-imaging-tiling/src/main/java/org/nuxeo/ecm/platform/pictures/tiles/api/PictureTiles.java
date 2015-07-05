@@ -37,7 +37,7 @@ public interface PictureTiles {
 
     String getTilesPath();
 
-    Blob getTile(int x, int y) throws ClientException, IOException;
+    Blob getTile(int x, int y) throws IOException;
 
     float getZoomfactor();
 

@@ -200,7 +200,7 @@ public class CoreGraph implements Graph {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             // TODO could use a COUNT(*) query
             IterableQueryResult it = session.queryAndFetch("SELECT " + NXQL.ECM_UUID + " FROM " + docType, NXQL.NXQL);
             try {
@@ -249,20 +249,20 @@ public class CoreGraph implements Graph {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             now = new Date();
             for (Statement statement : statements) {
                 add(statement);
             }
         }
 
-        protected void add(Statement statement) throws ClientException {
+        protected void add(Statement statement) {
             DocumentModel rel = session.createDocumentModel(null, "relation", docType);
             rel = setRelationProperties(rel, statement);
             session.createDocument(rel);
         }
 
-        protected DocumentModel setRelationProperties(DocumentModel rel, Statement statement) throws ClientException {
+        protected DocumentModel setRelationProperties(DocumentModel rel, Statement statement) {
             Resource pred = statement.getPredicate();
             NodeAsString predicate = getNodeAsString(pred);
             if (predicate.uri == null) {
@@ -372,14 +372,14 @@ public class CoreGraph implements Graph {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             now = new Date();
             for (Statement statement : statements) {
                 remove(statement);
             }
         }
 
-        protected void remove(Statement statement) throws ClientException {
+        protected void remove(Statement statement) {
             String query = "SELECT " + NXQL.ECM_UUID + " FROM " + docType;
             query = whereBuilder(query, statement);
             if (query == null) {
@@ -414,7 +414,7 @@ public class CoreGraph implements Graph {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             String query = "SELECT " + REL_PREDICATE + ", " + REL_SOURCE_ID + ", " + REL_SOURCE_URI + ", "
                     + REL_TARGET_ID + ", " + REL_TARGET_URI + ", " + REL_TARGET_STRING + ", " + DC_CREATED + ", "
                     + DC_CREATOR + ", " + DC_MODIFIED + ", " + DC_DESCRIPTION + " FROM " + docType;
@@ -581,7 +581,7 @@ public class CoreGraph implements Graph {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             String query = "SELECT " + NXQL.ECM_UUID + " FROM " + docType;
             query = whereAnyBuilder(query, resource);
             IterableQueryResult it = session.queryAndFetch(query, NXQL.NXQL);
@@ -592,7 +592,7 @@ public class CoreGraph implements Graph {
             }
         }
 
-        protected String whereAnyBuilder(String query, Resource resource) throws ClientException {
+        protected String whereAnyBuilder(String query, Resource resource) {
             List<Object> params = new ArrayList<Object>(3);
             List<String> clauses = new ArrayList<String>(3);
 
@@ -682,7 +682,7 @@ public class CoreGraph implements Graph {
         return Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
     }
 
-    protected String whereBuilder(String query, Statement statement) throws ClientException {
+    protected String whereBuilder(String query, Statement statement) {
         List<Object> params = new ArrayList<Object>(3);
         List<String> clauses = new ArrayList<String>(3);
 

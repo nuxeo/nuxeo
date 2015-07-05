@@ -38,25 +38,22 @@ public interface PostAction extends Serializable {
      * Creates the Post and add it inside the Thread.
      *
      * @return the view id
-     * @throws ClientException
      */
-    String addPost() throws ClientException;
+    String addPost();
 
     /**
      * Deletes the Post and in a the Thread.
      *
      * @return the view id after delete operation
-     * @throws ClientException
      */
-    String deletePost() throws ClientException;
+    String deletePost();
 
     /**
      * Cancels the action of adding a Post.
      *
      * @return the view id to stay on thread view
-     * @throws ClientException
      */
-    String cancelPost() throws ClientException;
+    String cancelPost();
 
     /**
      * Gets the Thread in which the Post is.
@@ -66,11 +63,11 @@ public interface PostAction extends Serializable {
     /**
      * Returns true if the post is published, false otherwise.
      */
-    boolean isPostPublished(DocumentModel post) throws ClientException;
+    boolean isPostPublished(DocumentModel post);
 
-    String approvePost(DocumentModel post) throws ClientException;
+    String approvePost(DocumentModel post);
 
-    String rejectPost(DocumentModel post) throws ClientException;
+    String rejectPost(DocumentModel post);
 
     // FIXME : all getters/setters on document metadata should be replaced by a
     // single getter/setter tupole using a document model
@@ -78,7 +75,7 @@ public interface PostAction extends Serializable {
     /**
      * Gets the title of the post at creation time.
      */
-    String getTitle() throws ClientException;
+    String getTitle();
 
     /**
      * Sets the title of the post at creation time.

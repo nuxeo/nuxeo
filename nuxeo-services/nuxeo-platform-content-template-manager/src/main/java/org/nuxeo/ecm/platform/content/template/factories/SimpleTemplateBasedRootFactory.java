@@ -33,7 +33,7 @@ import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
 public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
 
     @Override
-    public void createContentStructure(DocumentModel eventDoc) throws ClientException {
+    public void createContentStructure(DocumentModel eventDoc) {
         initSession(eventDoc);
 
         if (!shouldCreateContent(eventDoc)) {
@@ -60,7 +60,7 @@ public class SimpleTemplateBasedRootFactory extends SimpleTemplateBasedFactory {
      * Returns {@code false} if the type of one of the children documents matches a template item type, {@code true}
      * otherwise.
      */
-    protected boolean shouldCreateContent(DocumentModel eventDoc) throws ClientException {
+    protected boolean shouldCreateContent(DocumentModel eventDoc) {
         for (TemplateItemDescriptor item : template) {
             // don't use getChildren, which can be costly
             // if the folder has a huge number of children

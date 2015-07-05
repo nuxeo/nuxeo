@@ -35,17 +35,17 @@ public interface UserWorkspaceManagerActions extends Serializable {
      *
      * @return the personal workspace
      */
-    DocumentModel getCurrentUserPersonalWorkspace() throws ClientException;
+    DocumentModel getCurrentUserPersonalWorkspace();
 
     /**
      * Navigates to the current user personal workspace.
      */
-    String navigateToCurrentUserPersonalWorkspace() throws ClientException;
+    String navigateToCurrentUserPersonalWorkspace();
 
     /**
      * Navigates to the overall workspace. Introduced for INA-221 (Rux).
      */
-    String navigateToOverallWorkspace() throws ClientException;
+    String navigateToOverallWorkspace();
 
     /**
      * Checks wether a personal document is selected.

@@ -71,7 +71,7 @@ public class MassSecurityModifierActions implements Serializable {
     }
 
     // Really used?
-    public String applySecurity(String listName) throws ClientException {
+    public String applySecurity(String listName) {
         // get the list
         List<DocumentModel> docs2Modify = documentsListsManager.getWorkingList(listName);
         int nbModifiedDocs = 0;

@@ -54,7 +54,7 @@ public class DocumentTaskProvider implements TaskProvider {
     private final static Log log = LogFactory.getLog(DocumentTaskProvider.class);
 
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession) throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession) {
 
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
@@ -71,7 +71,7 @@ public class DocumentTaskProvider implements TaskProvider {
      * @since 5.9.3
      */
     @Override
-    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) throws ClientException {
+    public List<Task> getCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) {
 
         // Get tasks for current user
         // We need to build the task actors list: prefixed and unprefixed names
@@ -88,10 +88,9 @@ public class DocumentTaskProvider implements TaskProvider {
      * @param actors a list used as actorId to retrieve the tasks.
      * @param filter
      * @return
-     * @throws ClientException
      */
     @Override
-    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) throws ClientException {
+    public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession) {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
@@ -105,7 +104,7 @@ public class DocumentTaskProvider implements TaskProvider {
      */
     @Override
     public List<Task> getCurrentTaskInstances(List<String> actors, CoreSession coreSession, List<SortInfo> sortInfos)
-            throws ClientException {
+            {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
@@ -114,7 +113,7 @@ public class DocumentTaskProvider implements TaskProvider {
 
     @Override
     public List<Task> getTaskInstances(DocumentModel dm, NuxeoPrincipal user, CoreSession coreSession)
-            throws ClientException {
+            {
         if (user == null) {
             return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_PP, coreSession, true, null, dm.getId(),
                     dm.getId());
@@ -127,7 +126,7 @@ public class DocumentTaskProvider implements TaskProvider {
 
     @Override
     public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, CoreSession coreSession)
-            throws ClientException {
+            {
         if (actors == null || actors.isEmpty()) {
             return new ArrayList<Task>();
         }
@@ -136,20 +135,20 @@ public class DocumentTaskProvider implements TaskProvider {
     }
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, CoreSession session) throws ClientException {
+    public List<Task> getAllTaskInstances(String processId, CoreSession session) {
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_PP, session, true, null, processId);
     }
 
     @Override
     public List<Task> getAllTaskInstances(String processId, NuxeoPrincipal user, CoreSession session)
-            throws ClientException {
+            {
         List<String> actors = TaskActorsHelper.getTaskActors(user);
         return getAllTaskInstances(processId, actors, session);
     }
 
     @Override
     public List<Task> getAllTaskInstances(String processId, List<String> actors, CoreSession session)
-            throws ClientException {
+            {
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_ACTORS_PP, session, true, null, processId, actors);
     }
 
@@ -171,7 +170,7 @@ public class DocumentTaskProvider implements TaskProvider {
      * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
      */
     @Deprecated
-    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) throws ClientException {
+    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments) {
         return wrapDocModelInTask(taskDocuments, false);
     }
 
@@ -182,7 +181,7 @@ public class DocumentTaskProvider implements TaskProvider {
      * @deprecated since 6.0, use {@link #wrapDocModelInTask(List)} instead.
      */
     @Deprecated
-    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments, boolean detach) throws ClientException {
+    public static List<Task> wrapDocModelInTask(DocumentModelList taskDocuments, boolean detach) {
         List<Task> tasks = new ArrayList<Task>();
         for (DocumentModel doc : taskDocuments) {
             if (detach) {
@@ -195,7 +194,7 @@ public class DocumentTaskProvider implements TaskProvider {
 
     @Override
     public String endTask(CoreSession coreSession, NuxeoPrincipal principal, Task task, String comment,
-            String eventName, boolean isValidated) throws ClientException {
+            String eventName, boolean isValidated) {
 
         // put user comment on the task
         if (!StringUtils.isEmpty(comment)) {
@@ -223,13 +222,13 @@ public class DocumentTaskProvider implements TaskProvider {
 
 
     @Override
-    public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) throws ClientException {
+    public List<Task> getAllTaskInstances(String processId, String nodeId, CoreSession session) {
         return getTasks(TaskQueryConstant.GET_TASKS_FOR_PROCESS_AND_NODE_PP, session, true, null, processId, nodeId);
     }
 
     @Override
     public List<Task> getTaskInstances(DocumentModel dm, List<String> actors, boolean includeDelegatedTasks,
-            CoreSession session) throws ClientException {
+            CoreSession session) {
         if (includeDelegatedTasks) {
             return getTasks(TaskQueryConstant.GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP,
                     session, true, null, dm.getId(), dm.getId(), actors, actors);

@@ -54,7 +54,7 @@ public class OAuth2ServiceProvidersActionBean extends DirectoryBasedEditor {
         return SCHEMA;
     }
 
-    public String getAuthorizationURL(String provider) throws ClientException {
+    public String getAuthorizationURL(String provider) {
         OAuth2ServiceProviderRegistry oauth2ProviderRegistry = Framework.getLocalService(OAuth2ServiceProviderRegistry.class);
         OAuth2ServiceProvider serviceProvider = oauth2ProviderRegistry.getProvider(provider);
 

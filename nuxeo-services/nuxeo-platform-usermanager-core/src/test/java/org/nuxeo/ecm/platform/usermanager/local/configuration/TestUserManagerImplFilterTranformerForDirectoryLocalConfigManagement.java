@@ -71,7 +71,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     }
 
     @Test
-    public void testShouldThrowExceptionIfFilterOrFulltextNull() throws ClientException {
+    public void testShouldThrowExceptionIfFilterOrFulltextNull() {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();
 
@@ -98,7 +98,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     }
 
     @Test
-    public void testShouldReturnAFilterNotChangedIfNoDirectoryLocalConfig() throws ClientException {
+    public void testShouldReturnAFilterNotChangedIfNoDirectoryLocalConfig() {
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();
 
@@ -130,7 +130,7 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
     }
 
     @Test
-    public void testShouldReturnAFilterWithSuffixAdded() throws ClientException {
+    public void testShouldReturnAFilterWithSuffixAdded() {
         DocumentModel fakeDoc = new SimpleDocumentModel();
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();

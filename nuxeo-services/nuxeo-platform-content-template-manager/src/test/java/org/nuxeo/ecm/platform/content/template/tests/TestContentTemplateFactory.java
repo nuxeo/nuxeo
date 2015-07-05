@@ -170,7 +170,7 @@ public class TestContentTemplateFactory {
     }
 
     @Test
-    public void testRootFactory() throws ClientException {
+    public void testRootFactory() {
         // Fake repo init for now
         DocumentModel root = session.getRootDocument();
         service.executeFactoryForType(root);
@@ -206,7 +206,7 @@ public class TestContentTemplateFactory {
     }
 
     @Test
-    public void testDomainFactory() throws ClientException {
+    public void testDomainFactory() {
         DocumentModel testDom = session.createDocumentModel("/", "TestDomain", "Domain");
         testDom.setProperty("dublincore", "title", "MyTestDomain");
         testDom = session.createDocument(testDom);
@@ -222,7 +222,7 @@ public class TestContentTemplateFactory {
     }
 
     @Test
-    public void testWSFactory() throws ClientException {
+    public void testWSFactory() {
         // reach first available WSRoot
         DocumentModel root = session.getRootDocument();
         service.executeFactoryForType(root);
@@ -269,7 +269,7 @@ public class TestContentTemplateFactory {
     }
 
     @Test
-    public void testFacetFactories() throws ClientException {
+    public void testFacetFactories() {
         // reach first available WSRoot
         DocumentModel root = session.getRootDocument();
         service.executeFactoryForType(root);

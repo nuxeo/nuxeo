@@ -36,7 +36,7 @@ public abstract class AbstractLocalConfiguration<T> implements LocalConfiguratio
     }
 
     @Override
-    public void save(CoreSession session) throws ClientException {
+    public void save(CoreSession session) {
         // do nothing
     }
 

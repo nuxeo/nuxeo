@@ -72,12 +72,12 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
     }
 
     @Override
-    public Blob getBlob() throws ClientException {
+    public Blob getBlob() {
         return zipBlob;
     }
 
     @Override
-    public List<Blob> getBlobs() throws ClientException {
+    public List<Blob> getBlobs() {
         if (blobs == null) {
             try {
                 load(key);

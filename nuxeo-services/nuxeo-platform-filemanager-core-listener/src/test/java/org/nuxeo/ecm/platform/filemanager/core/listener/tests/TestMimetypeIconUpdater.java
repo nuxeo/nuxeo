@@ -135,7 +135,7 @@ public class TestMimetypeIconUpdater {
         assertNull(icon); // default icon, not overridden by mime type
     }
 
-    protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) throws ClientException {
+    protected DocumentModel createWithoutPrefixBlobDocument(boolean setMimeType) {
         DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "WithoutPrefixDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
@@ -153,7 +153,7 @@ public class TestMimetypeIconUpdater {
         return withoutPrefixBlobDoc;
     }
 
-    protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType) throws ClientException {
+    protected DocumentModel createWithPrefixBlobDocument(boolean setMimeType) {
         DocumentModel withoutPrefixBlobDoc = coreSession.createDocumentModel("/", "testFile", "SimpleBlobDocument");
         withoutPrefixBlobDoc.setProperty("dublincore", "title", "TestFile");
 
@@ -171,7 +171,7 @@ public class TestMimetypeIconUpdater {
         return withoutPrefixBlobDoc;
     }
 
-    protected DocumentModel createFileDocument(boolean setMimeType) throws ClientException {
+    protected DocumentModel createFileDocument(boolean setMimeType) {
         DocumentModel fileDoc = coreSession.createDocumentModel("/", "testFile", "File");
         fileDoc.setProperty("dublincore", "title", "TestFile");
 
@@ -189,14 +189,14 @@ public class TestMimetypeIconUpdater {
         return fileDoc;
     }
 
-    protected DocumentModel removeMainBlob(DocumentModel doc) throws ClientException {
+    protected DocumentModel removeMainBlob(DocumentModel doc) {
         doc.setPropertyValue("file:content", null);
         doc = coreSession.saveDocument(doc);
         coreSession.save();
         return doc;
     }
 
-    protected DocumentModel createWorkspace() throws ClientException {
+    protected DocumentModel createWorkspace() {
         DocumentModel doc = coreSession.createDocumentModel("/", "testWorkspace", "Workspace");
         doc.setProperty("dublincore", "title", "TestWorkspace");
         Blob blob = Blobs.createBlob("SOMEDUMMYDATA", null, null, "test.pdf");

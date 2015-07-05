@@ -13,7 +13,7 @@ import org.nuxeo.runtime.api.Framework;
 class LookupStateByTask implements LookupState {
 
     @Override
-    public boolean isPublished(DocumentModel doc, CoreSession session) throws ClientException {
+    public boolean isPublished(DocumentModel doc, CoreSession session) {
         List<Task> tasks = Framework.getLocalService(TaskService.class).getTaskInstances(doc, (NuxeoPrincipal) null,
                 session);
         for (Task task : tasks) {

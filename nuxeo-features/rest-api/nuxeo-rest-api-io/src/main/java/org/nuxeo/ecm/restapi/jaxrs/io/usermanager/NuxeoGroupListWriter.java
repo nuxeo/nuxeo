@@ -44,7 +44,7 @@ public class NuxeoGroupListWriter extends EntityListWriter<NuxeoGroup> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, NuxeoGroup item) throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, NuxeoGroup item) throws IOException {
         NuxeoGroupWriter ngw = new NuxeoGroupWriter();
         ngw.writeEntity(jg, item);
     }

@@ -38,7 +38,7 @@ import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsReposito
 public class AnnotationFulltextEventListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         AnnotationsFulltextInjector injector = AnnotationsRepositoryComponent.instance.getFulltextInjector();
         if (!(event.getContext() instanceof DocumentEventContext)) {
             return;

@@ -34,7 +34,7 @@ import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 public interface IODocumentManager extends Serializable {
 
     DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root)
-            throws ImportDocumentException, ClientException, IOException;
+            throws ImportDocumentException, IOException;
 
     DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter)
             throws ImportDocumentException;
@@ -47,7 +47,7 @@ public interface IODocumentManager extends Serializable {
             throws ImportDocumentException;
 
     DocumentTranslationMap exportDocuments(OutputStream out, String repo, Collection<DocumentRef> sources,
-            boolean recurse, String format) throws ExportDocumentException, ClientException;
+            boolean recurse, String format) throws ExportDocumentException;
 
     /**
      * Used in pair with importDocuments(... customDocWriter)

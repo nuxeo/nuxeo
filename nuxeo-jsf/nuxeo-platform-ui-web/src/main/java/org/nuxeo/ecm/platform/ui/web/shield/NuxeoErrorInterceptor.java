@@ -69,7 +69,7 @@ public class NuxeoErrorInterceptor implements Serializable {
 
     @AroundInvoke
     public Object invokeAndWrapExceptions(InvocationContext invocation) throws SystemException,
-            DocumentSecurityException, ClientException {
+            DocumentSecurityException {
         try {
             // log.debug("Before invocation...");
             return invocation.proceed();

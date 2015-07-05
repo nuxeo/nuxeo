@@ -57,7 +57,7 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
     protected abstract PublishedDocumentFactory getDefaultFactory();
 
     public void initTree(String sid, CoreSession coreSession, Map<String, String> parameters,
-            PublishedDocumentFactory factory, String configName, String title) throws ClientException {
+            PublishedDocumentFactory factory, String configName, String title) {
         this.sid = sid;
         this.coreSession = coreSession;
         if (factory != null) {
@@ -108,24 +108,24 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return treeTitle;
     }
 
-    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) {
         return node.getChildrenDocuments();
     }
 
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
         return factory.publishDocument(doc, targetNode);
     }
 
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
         return factory.publishDocument(doc, targetNode, params);
     }
 
-    public String getTitle() throws ClientException {
+    public String getTitle() {
         return rootNode.getTitle();
     }
 
-    public String getName() throws ClientException {
+    public String getName() {
         return rootNode.getName();
     }
 
@@ -137,11 +137,11 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return null;
     }
 
-    public List<PublicationNode> getChildrenNodes() throws ClientException {
+    public List<PublicationNode> getChildrenNodes() {
         return rootNode.getChildrenNodes();
     }
 
-    public List<PublishedDocument> getChildrenDocuments() throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments() {
         return rootNode.getChildrenDocuments();
     }
 
@@ -161,21 +161,21 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return iconCollapsed;
     }
 
-    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) throws ClientException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
         if (!accept(publishedDocument)) {
             return;
         }
         factory.validatorPublishDocument(publishedDocument, comment);
     }
 
-    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) throws ClientException {
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
         if (!accept(publishedDocument)) {
             return;
         }
         factory.validatorRejectPublication(publishedDocument, comment);
     }
 
-    public boolean canPublishTo(PublicationNode publicationNode) throws ClientException {
+    public boolean canPublishTo(PublicationNode publicationNode) {
         if (publicationNode == null || publicationNode.getParent() == null) {
             // we can't publish in the root node
             return false;
@@ -183,36 +183,36 @@ public abstract class AbstractBasePublicationTree implements PublicationTree {
         return true;
     }
 
-    public boolean canUnpublish(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canUnpublish(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
         }
         return true;
     }
 
-    public boolean hasValidationTask(PublishedDocument publishedDocument) throws ClientException {
+    public boolean hasValidationTask(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
         }
         return factory.hasValidationTask(publishedDocument);
     }
 
-    public boolean canManagePublishing(PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(PublishedDocument publishedDocument) {
         if (!accept(publishedDocument)) {
             return false;
         }
         return factory.canManagePublishing(publishedDocument);
     }
 
-    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(DocumentModel documentModel) {
         return factory.wrapDocumentModel(documentModel);
     }
 
-    public boolean isPublicationNode(DocumentModel documentModel) throws ClientException {
+    public boolean isPublicationNode(DocumentModel documentModel) {
         return false;
     }
 
-    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) throws ClientException {
+    public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         throw new UnsupportedOperationException("");
     }
 

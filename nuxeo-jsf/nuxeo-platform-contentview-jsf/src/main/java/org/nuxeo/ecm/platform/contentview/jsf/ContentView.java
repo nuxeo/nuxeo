@@ -223,23 +223,21 @@ public interface ContentView extends Serializable {
      *            content view from the XML configuration, see {@link #getQueryParameters()}
      */
     PageProvider<?> getPageProvider(DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Object... params) throws ClientException;
+            Long currentPage, Object... params);
 
     /**
      * Gets page provider according to given parameters
      *
      * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) using null as every argument except params
-     * @throws ClientException
      */
-    PageProvider<?> getPageProviderWithParams(Object... params) throws ClientException;
+    PageProvider<?> getPageProviderWithParams(Object... params);
 
     /**
      * Gets page provider according to given parameters
      *
      * @see #getPageProvider(DocumentModel, List, Long, Long, Object...) , using null as every argument
-     * @throws ClientException
      */
-    PageProvider<?> getPageProvider() throws ClientException;
+    PageProvider<?> getPageProvider();
 
     /**
      * Returns the current page provider, or null if methods {@link #getPageProvider()},

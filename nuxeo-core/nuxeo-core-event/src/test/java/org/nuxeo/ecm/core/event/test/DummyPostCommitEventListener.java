@@ -34,7 +34,7 @@ public class DummyPostCommitEventListener implements PostCommitEventListener {
     public static volatile Map<String, Serializable> properties;
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         handledCount.incrementAndGet();
         eventCount.addAndGet(events.size());
         // get properties from first event context

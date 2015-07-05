@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.io.marshallers.json.enrichers.BreadcrumbJsonEnricher;
 public class BreadcrumbEnricher extends AbstractContentEnricher {
 
     @Override
-    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws ClientException, IOException {
+    public void enrich(JsonGenerator jg, RestEvaluationContext ec) throws IOException {
         DocumentModel doc = ec.getDocumentModel();
         CoreSession session = doc.getCoreSession();
         List<DocumentModel> parentDocuments = session.getParentDocuments(doc.getRef());

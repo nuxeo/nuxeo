@@ -125,7 +125,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     private Dialect dialect;
 
-    public SQLDirectory(SQLDirectoryDescriptor config) throws ClientException {
+    public SQLDirectory(SQLDirectoryDescriptor config) {
         super(config.name);
         this.config = config;
         nativeCase = Boolean.TRUE.equals(config.nativeCase);

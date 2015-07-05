@@ -75,7 +75,7 @@ public class TestBlobHolder extends NXRuntimeTestCase {
     public static class DocumentTypeBlobHolder extends AbstractBlobHolder {
 
         @Override
-        public Blob getBlob() throws ClientException {
+        public Blob getBlob() {
             return null;
         }
 
@@ -85,12 +85,12 @@ public class TestBlobHolder extends NXRuntimeTestCase {
         }
 
         @Override
-        public Calendar getModificationDate() throws ClientException {
+        public Calendar getModificationDate() {
             return null;
         }
 
         @Override
-        public Serializable getProperty(String name) throws ClientException {
+        public Serializable getProperty(String name) {
             return null;
         }
 
@@ -112,7 +112,7 @@ public class TestBlobHolder extends NXRuntimeTestCase {
     public static class FacetBlobHolder extends AbstractBlobHolder {
 
         @Override
-        public Blob getBlob() throws ClientException {
+        public Blob getBlob() {
             return null;
         }
 
@@ -122,12 +122,12 @@ public class TestBlobHolder extends NXRuntimeTestCase {
         }
 
         @Override
-        public Calendar getModificationDate() throws ClientException {
+        public Calendar getModificationDate() {
             return null;
         }
 
         @Override
-        public Serializable getProperty(String name) throws ClientException {
+        public Serializable getProperty(String name) {
             return null;
         }
 

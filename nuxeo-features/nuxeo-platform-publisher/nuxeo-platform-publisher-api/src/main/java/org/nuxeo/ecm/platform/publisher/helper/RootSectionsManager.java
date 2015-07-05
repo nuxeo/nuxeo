@@ -42,7 +42,7 @@ public class RootSectionsManager {
         this.coreSession = coreSession;
     }
 
-    public boolean canAddSection(DocumentModel section, DocumentModel currentDocument) throws ClientException {
+    public boolean canAddSection(DocumentModel section, DocumentModel currentDocument) {
         if (SECTION_ROOT_DOCUMENT_TYPE.equals(section.getType())) {
             return false;
         }
@@ -64,7 +64,7 @@ public class RootSectionsManager {
         return true;
     }
 
-    public String addSection(String sectionId, DocumentModel currentDocument) throws ClientException {
+    public String addSection(String sectionId, DocumentModel currentDocument) {
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);
@@ -88,7 +88,7 @@ public class RootSectionsManager {
         return null;
     }
 
-    public String removeSection(String sectionId, DocumentModel currentDocument) throws ClientException {
+    public String removeSection(String sectionId, DocumentModel currentDocument) {
 
         if (sectionId != null && currentDocument.hasSchema(SCHEMA_PUBLISHING)) {
             String[] sectionIdsArray = (String[]) currentDocument.getPropertyValue(SECTIONS_PROPERTY_NAME);

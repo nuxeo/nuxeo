@@ -49,7 +49,7 @@ public class AuditEventLogger implements PostCommitFilteringEventListener {
     }
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger != null) {
             try {

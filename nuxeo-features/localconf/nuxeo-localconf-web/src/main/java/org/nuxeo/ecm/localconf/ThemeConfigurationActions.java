@@ -155,7 +155,7 @@ public class ThemeConfigurationActions implements Serializable {
         return null;
     }
 
-    public String getCurrentLocalFlavorName() throws ClientException {
+    public String getCurrentLocalFlavorName() {
         DocumentModel currentSuperSpace = navigationContext.getCurrentSuperSpace();
         if (currentSuperSpace != null) {
             LocalThemeConfig localThemeConfig = LocalThemeHelper.getLocalThemeConfig(currentSuperSpace);

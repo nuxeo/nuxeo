@@ -157,7 +157,7 @@ public class TaskPageProvidersTest extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testTaskPageProviderSorting() throws ClientException {
+    public void testTaskPageProviderSorting() {
         Map<String, Serializable> properties = new HashMap<>();
         properties.put(UserTaskPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
         PageProvider<DashBoardItem> taskProvider = (PageProvider<DashBoardItem>) ppService.getPageProvider(

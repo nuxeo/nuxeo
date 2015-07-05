@@ -297,7 +297,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testRemoveTags() throws ClientException {
+    public void testRemoveTags() {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
         file = session.createDocument(file);
@@ -317,7 +317,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testRemoveDoc() throws ClientException {
+    public void testRemoveDoc() {
         DocumentModel file = session.createDocumentModel("/", "foo", "File");
         file.setPropertyValue("dc:title", "File1");
         file = session.createDocument(file);
@@ -343,7 +343,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testCopyTags() throws ClientException {
+    public void testCopyTags() {
         DocumentModel srcFile = session.createDocumentModel("/", "srcFile", "File");
         srcFile.setPropertyValue("dc:title", "File1");
         srcFile = session.createDocument(srcFile);
@@ -382,7 +382,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testReplaceTags() throws ClientException {
+    public void testReplaceTags() {
         DocumentModel srcFile = session.createDocumentModel("/", "srcFile", "File");
         srcFile.setPropertyValue("dc:title", "File1");
         srcFile = session.createDocument(srcFile);
@@ -425,7 +425,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testCopyTagsOnVersion() throws ClientException {
+    public void testCopyTagsOnVersion() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("dc:title", "File1");
@@ -459,7 +459,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testCopyTagsOnProxy() throws ClientException {
+    public void testCopyTagsOnProxy() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("dc:title", "File1");
@@ -492,7 +492,7 @@ public class TestTagService {
     }
 
     @Test
-    public void testCopyTagsOnRestoredVersion() throws ClientException {
+    public void testCopyTagsOnRestoredVersion() {
         DocumentModel doc;
         doc = session.createDocumentModel("/", "doc", "File");
         doc.setPropertyValue("dc:title", "File1");
@@ -529,7 +529,7 @@ public class TestTagService {
         tagService.removeTags(session, docId);
     }
 
-    protected DocumentRef checkIn(DocumentRef ref) throws ClientException {
+    protected DocumentRef checkIn(DocumentRef ref) {
         DocumentRef versionRef = session.checkIn(ref, null, null);
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -537,7 +537,7 @@ public class TestTagService {
         return versionRef;
     }
 
-    protected DocumentModel publishDocument(DocumentModel doc) throws ClientException {
+    protected DocumentModel publishDocument(DocumentModel doc) {
         DocumentModel proxy = session.publishDocument(doc, session.getRootDocument());
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -545,7 +545,7 @@ public class TestTagService {
         return proxy;
     }
 
-    protected DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) throws ClientException {
+    protected DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) {
         DocumentModel docModel = session.restoreToVersion(docRef, versionRef);
         TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();

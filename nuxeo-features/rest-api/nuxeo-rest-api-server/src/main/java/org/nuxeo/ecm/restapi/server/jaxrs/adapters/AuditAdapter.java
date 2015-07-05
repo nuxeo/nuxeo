@@ -69,7 +69,7 @@ public class AuditAdapter extends PaginableAdapter<LogEntry> {
     }
 
     @Override
-    protected DocumentModel getSearchDocument() throws ClientException {
+    protected DocumentModel getSearchDocument() {
         HttpServletRequest request = ctx.getRequest();
         CoreSession session = ctx.getCoreSession();
 

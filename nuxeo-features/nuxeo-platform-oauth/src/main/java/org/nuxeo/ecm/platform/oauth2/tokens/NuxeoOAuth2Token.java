@@ -72,7 +72,7 @@ public class NuxeoOAuth2Token {
         this(credential.getAccessToken(), credential.getRefreshToken(), credential.getExpirationTimeMilliseconds());
     }
 
-    public NuxeoOAuth2Token(DocumentModel entry) throws ClientException {
+    public NuxeoOAuth2Token(DocumentModel entry) {
         this.id = (Long) entry.getProperty(SCHEMA, "id");
         this.accessToken = (String) entry.getProperty(SCHEMA, "accessToken");
         this.refreshToken = (String) entry.getProperty(SCHEMA, "refreshToken");
@@ -120,7 +120,7 @@ public class NuxeoOAuth2Token {
         return m;
     }
 
-    public void updateEntry(DocumentModel entry) throws ClientException {
+    public void updateEntry(DocumentModel entry) {
         entry.setProperty(SCHEMA, "serviceName", this.serviceName);
         entry.setProperty(SCHEMA, "nuxeoLogin", this.nuxeoLogin);
         entry.setProperty(SCHEMA, "accessToken", this.accessToken);

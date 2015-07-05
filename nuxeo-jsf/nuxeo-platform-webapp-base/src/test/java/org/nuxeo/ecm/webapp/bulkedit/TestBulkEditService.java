@@ -65,7 +65,7 @@ public class TestBulkEditService {
     @Inject
     protected BulkEditService bulkEditService;
 
-    protected List<DocumentModel> createTestDocuments() throws ClientException {
+    protected List<DocumentModel> createTestDocuments() {
         List<DocumentModel> docs = new ArrayList<>();
         DocumentModel file = session.createDocumentModel("/", "doc1", "File");
         file.setPropertyValue("dc:title", "doc1");
@@ -89,7 +89,7 @@ public class TestBulkEditService {
         return docs;
     }
 
-    protected DocumentModel buildSimpleDocumentModel() throws ClientException {
+    protected DocumentModel buildSimpleDocumentModel() {
         DocumentModel sourceDoc = new SimpleDocumentModel();
         sourceDoc.setProperty("dublincore", "title", "new title");
         sourceDoc.setProperty("dublincore", "description", "new description");
@@ -104,7 +104,7 @@ public class TestBulkEditService {
     }
 
     @Test
-    public void testBulkEdit() throws ClientException {
+    public void testBulkEdit() {
         // for tests, force the versioning policy to be the default one
         ((BulkEditServiceImpl) bulkEditService).defaultVersioningOption = BulkEditServiceImpl.DEFAULT_VERSIONING_OPTION;
 

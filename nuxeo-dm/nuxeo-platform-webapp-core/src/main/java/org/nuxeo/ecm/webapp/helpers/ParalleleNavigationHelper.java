@@ -54,7 +54,7 @@ public class ParalleleNavigationHelper implements Serializable {
 
     // Start a new Main conversation
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}")
-    public String navigateToURL() throws ClientException {
+    public String navigateToURL() {
         if (docRef == null) {
             return null;
         }

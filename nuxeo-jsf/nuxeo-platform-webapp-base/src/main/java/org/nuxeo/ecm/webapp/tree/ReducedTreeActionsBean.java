@@ -45,16 +45,15 @@ public class ReducedTreeActionsBean extends TreeActionsBean {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public List<DocumentTreeNode> getTreeRoots() throws ClientException {
+    public List<DocumentTreeNode> getTreeRoots() {
         return getTreeRoots(true);
     }
 
     /**
      * @since 5.4
      * @return a list containing a DocumentTreeNode for the Root document
-     * @throws ClientException
      */
-    public List<DocumentTreeNode> getRootNode() throws ClientException {
+    public List<DocumentTreeNode> getRootNode() {
         return getTreeRoots(true, documentManager.getRootDocument());
     }
 

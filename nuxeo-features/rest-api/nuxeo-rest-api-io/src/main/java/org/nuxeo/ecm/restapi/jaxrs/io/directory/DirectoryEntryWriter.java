@@ -49,7 +49,7 @@ public class DirectoryEntryWriter extends EntityWriter<DirectoryEntry> {
     public static final String ENTITY_TYPE = "directoryEntry";
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, DirectoryEntry directoryEntry) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, DirectoryEntry directoryEntry) throws IOException {
         String directoryName = directoryEntry.getDirectoryName();
 
         jg.writeStringField("directoryName", directoryName);

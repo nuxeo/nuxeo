@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 public class NoopRepositoryInit implements RepositoryInit {
 
     @Override
-    public void populate(CoreSession session) throws ClientException {
+    public void populate(CoreSession session) {
     }
 
 }

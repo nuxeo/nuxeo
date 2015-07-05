@@ -146,7 +146,7 @@ public abstract class AbstractUnicityChecker {
         return unicityCheckEnabled;
     }
 
-    private FileManager getFileManagerService() throws ClientException {
+    private FileManager getFileManagerService() {
         if (fileManager == null) {
             fileManager = Framework.getRuntime().getService(FileManager.class);
         }

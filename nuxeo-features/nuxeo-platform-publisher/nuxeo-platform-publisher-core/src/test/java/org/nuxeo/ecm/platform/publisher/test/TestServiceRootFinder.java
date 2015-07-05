@@ -67,7 +67,7 @@ public class TestServiceRootFinder extends PublisherTestCase {
         protected static Populate self;
 
         @Override
-        public void populate(CoreSession session) throws ClientException {
+        public void populate(CoreSession session) {
             self = this;
             createInitialDocs(session, "default-domain", 1);
             createInitialDocs(session, "another-default-domain", 2);

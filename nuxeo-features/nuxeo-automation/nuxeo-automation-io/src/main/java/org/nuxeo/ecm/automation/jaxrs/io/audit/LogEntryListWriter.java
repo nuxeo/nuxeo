@@ -56,7 +56,7 @@ public class LogEntryListWriter extends EntityListWriter<LogEntry> {
     }
 
     @Override
-    protected void writeItem(JsonGenerator jg, LogEntry item) throws ClientException, IOException {
+    protected void writeItem(JsonGenerator jg, LogEntry item) throws IOException {
         LogEntryWriter ngw = new LogEntryWriter();
         ngw.writeEntity(jg, item);
     }

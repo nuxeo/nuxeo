@@ -100,7 +100,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     protected void process(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException,
-            ServletException, ClientException {
+            ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
@@ -126,7 +126,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     protected void processAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ClientException, IOException, ServletException {
+            throws IOException, ServletException {
         String key = URLDecoder.decode(request.getHeader("Authorization").substring(7), "UTF-8").trim();
         NuxeoOAuth2Token token = getTokenStore().getToken(key);
 
@@ -154,7 +154,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         }
     }
 
-    protected LoginContext buildLoginContext(NuxeoOAuth2Token token) throws ClientException {
+    protected LoginContext buildLoginContext(NuxeoOAuth2Token token) {
         try {
             return NuxeoAuthenticationFilter.loginAs(token.getNuxeoLogin());
         } catch (LoginException e) {
@@ -169,7 +169,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     protected void processAuthorization(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ClientException {
+            throws IOException {
         AuthorizationRequest authRequest = AuthorizationRequest.from(request);
         String error = authRequest.checkError();
         if (isNotBlank(error)) {
@@ -213,7 +213,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
     }
 
     protected void processToken(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws IOException, ClientException {
+            throws IOException {
         TokenRequest tokRequest = new TokenRequest(request);
         // Process Authorization code
         if ("authorization_code".equals(tokRequest.getGrantType())) {

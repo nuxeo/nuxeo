@@ -169,7 +169,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
 
             @Override
             protected DocumentReader makeDocumentReader(CoreSession documentManager, DocumentModel root)
-                    throws ClientException {
+                    {
                 DocumentReader documentReader;
                 if (exportAsTree) {
                     documentReader = new DocumentTreeReader(documentManager, root, false);
@@ -211,7 +211,7 @@ public class ExportRestlet extends BaseStatelessNuxeoRestlet implements Serializ
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             root = session.getDocument(new IdRef(docid));
         }
 

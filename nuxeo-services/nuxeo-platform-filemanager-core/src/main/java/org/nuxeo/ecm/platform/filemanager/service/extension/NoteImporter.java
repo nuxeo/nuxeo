@@ -73,7 +73,7 @@ public class NoteImporter extends AbstractFileImporter {
     }
 
     @Override
-    public void updateDocument(DocumentModel doc, Blob content) throws ClientException {
+    public void updateDocument(DocumentModel doc, Blob content) {
         String string;
         try {
             string = getString(content);

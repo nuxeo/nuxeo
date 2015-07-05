@@ -27,7 +27,7 @@ public class ShallowFilterPostCommitEventListener implements PostCommitFiltering
     public static volatile int handledCount;
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         handledCount++;
     }
 

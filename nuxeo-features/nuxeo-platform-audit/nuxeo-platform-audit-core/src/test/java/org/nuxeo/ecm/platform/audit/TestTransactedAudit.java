@@ -55,7 +55,7 @@ public class TestTransactedAudit {
     }
 
     @Test
-    public void canLogMultipleLifecycleTransitionsInSameTx() throws ClientException {
+    public void canLogMultipleLifecycleTransitionsInSameTx() {
         // generate events
         DocumentModel doc = repo.createDocumentModel("/", "a-file", "File");
         doc = repo.createDocument(doc);
@@ -103,7 +103,7 @@ public class TestTransactedAudit {
     }
 
     @Test
-    public void testLogDate() throws ClientException, InterruptedException {
+    public void testLogDate() throws InterruptedException {
         // generate doc creation events
         DocumentModel doc = repo.createDocumentModel("/", "a-file", "File");
         doc = repo.createDocument(doc);

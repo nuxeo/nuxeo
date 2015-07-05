@@ -120,7 +120,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Override
     @Factory(value = "versionList", scope = EVENT)
-    public PageSelections<VersionModel> getVersionList() throws ClientException {
+    public PageSelections<VersionModel> getVersionList() {
         if (versionModelList == null || versionModelList.getEntries() == null
                 || versionModelList.getEntries().isEmpty()) {
             retrieveVersions();
@@ -129,7 +129,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
-    public void retrieveVersions() throws ClientException {
+    public void retrieveVersions() {
         /**
          * in case the document is a proxy,meaning is the result of a publishing,to have the history of the document
          * from which this proxy was created,first we have to get to the version that was created when the document was
@@ -159,7 +159,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @return true, if the {@versionModel} is selected
      * @throws ClientException if the version document could not be retrieved
      */
-    protected boolean isVersionSelected(VersionModel versionModel) throws ClientException {
+    protected boolean isVersionSelected(VersionModel versionModel) {
 
         List<DocumentModel> currentVersionSelection = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_VERSION_SELECTION);
         if (currentVersionSelection != null) {
@@ -180,7 +180,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @return the page that needs to be displayed next
      */
     @Override
-    public String restoreToVersion(VersionModel selectedVersion) throws ClientException {
+    public String restoreToVersion(VersionModel selectedVersion) {
         DocumentModel restoredDocument = documentManager.restoreToVersion(
                 navigationContext.getCurrentDocument().getRef(), new IdRef(selectedVersion.getId()), true, true);
         documentManager.save();
@@ -192,7 +192,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
-    public String restoreToVersion() throws ClientException {
+    public String restoreToVersion() {
         if (getSelectedVersionId() != null) {
             VersionModel selectedVersion = new VersionModelImpl();
             selectedVersion.setId(getSelectedVersionId());
@@ -202,12 +202,12 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
-    public String viewArchivedVersion(VersionModel selectedVersion) throws ClientException {
+    public String viewArchivedVersion(VersionModel selectedVersion) {
         return navigationContext.navigateToDocument(navigationContext.getCurrentDocument(), selectedVersion);
     }
 
     @Override
-    public String viewArchivedVersion() throws ClientException {
+    public String viewArchivedVersion() {
         if (getSelectedVersionId() != null) {
             VersionModel selectedVersion = new VersionModelImpl();
             selectedVersion.setId(getSelectedVersionId());
@@ -217,7 +217,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
-    public boolean getCanRestore() throws ClientException {
+    public boolean getCanRestore() {
         // TODO: should check for a specific RESTORE permission instead
         return documentManager.hasPermission(navigationContext.getCurrentDocument().getRef(),
                 SecurityConstants.WRITE_VERSION);
@@ -227,7 +227,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * Tells if the current selected document is checked out or not.
      */
     @Override
-    public String getCheckedOut() throws ClientException {
+    public String getCheckedOut() {
         if (documentManager.isCheckedOut(navigationContext.getCurrentDocument().getRef())) {
             checkedOut = "Checked-out";
         } else {
@@ -247,7 +247,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @return the next page
      */
     @Override
-    public String checkOut() throws ClientException {
+    public String checkOut() {
         documentManager.checkOut(navigationContext.getCurrentDocument().getRef());
         return null;
     }
@@ -256,7 +256,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * Checks the selected document in, with the selected version.
      */
     @Override
-    public String checkIn() throws ClientException {
+    public String checkIn() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         documentManager.checkIn(currentDocument.getRef(), null, null);
         retrieveVersions();
@@ -264,7 +264,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
-    public DocumentModel getSourceDocument() throws ClientException {
+    public DocumentModel getSourceDocument() {
         return getSourceDocument(navigationContext.getCurrentDocument());
     }
 
@@ -272,7 +272,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @since 5.4
      */
     @Override
-    public DocumentModel getSourceDocument(DocumentModel document) throws ClientException {
+    public DocumentModel getSourceDocument(DocumentModel document) {
         return documentManager.getSourceDocument(document.getRef());
     }
 
@@ -297,7 +297,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @since 5.6
      */
     @Override
-    public boolean getCanRemoveSelectedArchivedVersions() throws ClientException {
+    public boolean getCanRemoveSelectedArchivedVersions() {
         List<DocumentModel> currentVersionSelection = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_VERSION_SELECTION);
         if (currentVersionSelection != null && currentVersionSelection.size() > 0) {
             for (DocumentModel version : currentVersionSelection) {
@@ -311,7 +311,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
     }
 
     @Override
-    public String removeArchivedVersion(VersionModel selectedVersion) throws ClientException {
+    public String removeArchivedVersion(VersionModel selectedVersion) {
         DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
         DocumentModel docVersion = documentManager.getDocumentWithVersion(docRef, selectedVersion);
         if (docVersion == null) {
@@ -331,7 +331,7 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      * @since 5.6
      */
     @Override
-    public String removeSelectedArchivedVersions() throws ClientException {
+    public String removeSelectedArchivedVersions() {
 
         List<DocumentModel> currentVersionSelection = documentsListsManager.getWorkingList(DocumentsListsManager.CURRENT_VERSION_SELECTION);
         if (currentVersionSelection == null || currentVersionSelection.isEmpty()) {

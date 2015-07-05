@@ -28,6 +28,6 @@ import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
  */
 public interface DocumentsExporter {
 
-    DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, ClientException, IOException;
+    DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, IOException;
 
 }

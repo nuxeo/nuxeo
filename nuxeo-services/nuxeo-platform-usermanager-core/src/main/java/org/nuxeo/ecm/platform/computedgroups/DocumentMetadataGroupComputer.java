@@ -46,7 +46,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
 
     private String xpath;
 
-    public DocumentMetadataGroupComputer(String whereClause, String groupPattern, String xpath) throws ClientException {
+    public DocumentMetadataGroupComputer(String whereClause, String groupPattern, String xpath) {
         this.whereClause = whereClause;
         this.xpath = xpath;
         this.groupPattern = groupPattern;
@@ -119,7 +119,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
         }
 
         @Override
-        public void run() throws ClientException {
+        public void run() {
             String whereClause = String.format(whereClausePattern, username);
             String query = String.format(QUERY_PATTERN, xpath, whereClause);
 

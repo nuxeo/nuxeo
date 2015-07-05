@@ -302,7 +302,7 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
      */
     @Override
     public PageProvider<?> getPageProvider(DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,
-            Long currentPage, Object... params) throws ClientException {
+            Long currentPage, Object... params) {
         // resolve search doc so that it can be used in EL expressions defined
         // in XML configuration
         boolean setSearchDoc = false;
@@ -386,12 +386,12 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
     }
 
     @Override
-    public PageProvider<?> getPageProviderWithParams(Object... params) throws ClientException {
+    public PageProvider<?> getPageProviderWithParams(Object... params) {
         return getPageProvider(null, null, null, null, params);
     }
 
     @Override
-    public PageProvider<?> getPageProvider() throws ClientException {
+    public PageProvider<?> getPageProvider() {
         return getPageProviderWithParams((Object[]) null);
     }
 

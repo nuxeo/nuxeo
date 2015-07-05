@@ -53,16 +53,15 @@ public interface RelationManager extends Serializable {
      * @return the graph
      * @throws RuntimeException if the graph is not found
      */
-    Graph getGraphByName(String name) throws ClientException;
+    Graph getGraphByName(String name);
 
     /**
      * Gets a transient graph.
      *
      * @param type The graph type.
      * @return the graph.
-     * @throws ClientException
      */
-    Graph getTransientGraph(String type) throws ClientException;
+    Graph getTransientGraph(String type);
 
     /**
      * Gets a resource given a namespace and a serializable object.
@@ -73,9 +72,8 @@ public interface RelationManager extends Serializable {
      * Context can hold any object useful for the adapters, like a {@link CoreSession}.
      *
      * @since 5.2-M1
-     * @throws ClientException
      */
-    Resource getResource(String namespace, Serializable object, Map<String, Object> context) throws ClientException;
+    Resource getResource(String namespace, Serializable object, Map<String, Object> context);
 
     /**
      * Computes all resources corresponding to the given object.
@@ -84,9 +82,8 @@ public interface RelationManager extends Serializable {
      *
      * @since 5.2-M1
      * @return the resources as a set
-     * @throws ClientException
      */
-    Set<Resource> getAllResources(Serializable object, Map<String, Object> context) throws ClientException;
+    Set<Resource> getAllResources(Serializable object, Map<String, Object> context);
 
     /**
      * Gets an object representing this resource given a namespace.
@@ -94,114 +91,112 @@ public interface RelationManager extends Serializable {
      * Context can hold any object useful for the adapters, like a {@link CoreSession}.
      *
      * @since 5.2-M1
-     * @throws ClientException
      */
-    Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context)
-            throws ClientException;
+    Serializable getResourceRepresentation(String namespace, Resource resource, Map<String, Object> context);
 
     /**
      * Gets the list containing the graph names.
      *
      * @since 5.2-GA
      */
-    List<String> getGraphNames() throws ClientException;
+    List<String> getGraphNames();
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#add
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    void add(String graphName, List<Statement> statements) throws ClientException;
+    void add(String graphName, List<Statement> statements);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#remove
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    void remove(String graphName, List<Statement> statements) throws ClientException;
+    void remove(String graphName, List<Statement> statements);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getStatements
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    List<Statement> getStatements(String graphName) throws ClientException;
+    List<Statement> getStatements(String graphName);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getStatements
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    List<Statement> getStatements(String graphName, Statement statement) throws ClientException;
+    List<Statement> getStatements(String graphName, Statement statement);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getSubjects
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    List<Node> getSubjects(String graphName, Node predicate, Node object) throws ClientException;
+    List<Node> getSubjects(String graphName, Node predicate, Node object);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getPredicates
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    List<Node> getPredicates(String graphName, Node subject, Node object) throws ClientException;
+    List<Node> getPredicates(String graphName, Node subject, Node object);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#getObjects
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    List<Node> getObjects(String graphName, Node subject, Node predicate) throws ClientException;
+    List<Node> getObjects(String graphName, Node subject, Node predicate);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#hasStatement
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    boolean hasStatement(String graphName, Statement statement) throws ClientException;
+    boolean hasStatement(String graphName, Statement statement);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#hasResource
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    boolean hasResource(String graphName, Resource resource) throws ClientException;
+    boolean hasResource(String graphName, Resource resource);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#size
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    Long size(String graphName) throws ClientException;
+    Long size(String graphName);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#clear
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    void clear(String graphName) throws ClientException;
+    void clear(String graphName);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#query
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    QueryResult query(String graphName, String queryString, String language, String baseURI) throws ClientException;
+    QueryResult query(String graphName, String queryString, String language, String baseURI);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#read
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    boolean read(String graphName, InputStream in, String lang, String base) throws ClientException;
+    boolean read(String graphName, InputStream in, String lang, String base);
 
     /**
      * @see org.nuxeo.ecm.platform.relations.api.Graph#write
      * @deprecated since 5.5, use the Graph API directly
      */
     @Deprecated
-    boolean write(String graphName, OutputStream out, String lang, String base) throws ClientException;
+    boolean write(String graphName, OutputStream out, String lang, String base);
 
 }

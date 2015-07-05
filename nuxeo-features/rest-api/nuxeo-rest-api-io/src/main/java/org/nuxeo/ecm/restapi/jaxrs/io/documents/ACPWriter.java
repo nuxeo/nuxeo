@@ -41,7 +41,7 @@ public class ACPWriter extends EntityWriter<ACP> {
     public static final String ENTITY_TYPE = "acls";
 
     @Override
-    protected void writeEntityBody(JsonGenerator jg, ACP item) throws IOException, ClientException {
+    protected void writeEntityBody(JsonGenerator jg, ACP item) throws IOException {
 
         jg.writeArrayFieldStart("acl");
         for (ACL acl : item.getACLs()) {

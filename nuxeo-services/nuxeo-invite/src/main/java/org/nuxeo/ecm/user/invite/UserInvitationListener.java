@@ -31,7 +31,7 @@ public class UserInvitationListener implements EventListener {
 
     protected static Log log = LogFactory.getLog(UserInvitationListener.class);
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         try {
             UserInvitationService userRegistrationService = Framework.getService(UserInvitationService.class);
 

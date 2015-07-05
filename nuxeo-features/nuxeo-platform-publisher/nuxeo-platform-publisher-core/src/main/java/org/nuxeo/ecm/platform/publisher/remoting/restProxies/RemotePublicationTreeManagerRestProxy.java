@@ -65,14 +65,14 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         invoker.init(baseURL, userName, password, marshaler);
     }
 
-    public List<PublishedDocument> getChildrenDocuments(PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getChildrenDocuments(PublicationNode node) {
 
         List<Object> params = new ArrayList<Object>();
         params.add(node);
         return (List<PublishedDocument>) invoker.invoke("getChildrenDocuments", params);
     }
 
-    public List<PublicationNode> getChildrenNodes(PublicationNode node) throws ClientException {
+    public List<PublicationNode> getChildrenNodes(PublicationNode node) {
 
         List<Object> params = new ArrayList<Object>();
         params.add(node);
@@ -80,14 +80,14 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
     }
 
     public List<PublishedDocument> getExistingPublishedDocument(String sid, DocumentLocation docLoc)
-            throws ClientException {
+            {
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
         params.add(docLoc);
         return (List<PublishedDocument>) invoker.invoke("getExistingPublishedDocument", params);
     }
 
-    public PublicationNode getNodeByPath(String sid, String path) throws ClientException {
+    public PublicationNode getNodeByPath(String sid, String path) {
 
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
@@ -107,14 +107,14 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         }
     }
 
-    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) throws ClientException {
+    public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) {
 
         List<Object> params = new ArrayList<Object>();
         params.add(node);
         return (List<PublishedDocument>) invoker.invoke("getPublishedDocumentInNode", params);
     }
 
-    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode) {
 
         List<Object> params = new ArrayList<Object>();
         params.add(doc);
@@ -125,7 +125,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
     }
 
     public PublishedDocument publish(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            throws ClientException {
+            {
 
         List<Object> cparams = new ArrayList<Object>();
         cparams.add(doc);
@@ -135,7 +135,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         return (PublishedDocument) invoker.invoke("publish", cparams);
     }
 
-    public void unpublish(DocumentModel doc, PublicationNode targetNode) throws ClientException {
+    public void unpublish(DocumentModel doc, PublicationNode targetNode) {
 
         List<Object> params = new ArrayList<Object>();
         params.add(doc);
@@ -144,7 +144,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         invoker.invoke("unpublish", params);
     }
 
-    public void unpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
+    public void unpublish(String sid, PublishedDocument publishedDocument) {
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
         params.add(publishedDocument);
@@ -153,7 +153,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
     }
 
     public Map<String, String> initRemoteSession(String treeConfigName, Map<String, String> params)
-            throws ClientException {
+            {
 
         List<Object> cparams = new ArrayList<Object>();
         cparams.add(treeConfigName);
@@ -162,7 +162,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         return (Map<String, String>) invoker.invoke("initRemoteSession", cparams);
     }
 
-    public void setCurrentDocument(String sid, DocumentModel currentDocument) throws ClientException {
+    public void setCurrentDocument(String sid, DocumentModel currentDocument) {
         // The current document is useless on a remote tree
     }
 
@@ -176,26 +176,26 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         throw new UnsupportedOperationException();
     }
 
-    public boolean canPublishTo(String sid, PublicationNode publicationNode) throws ClientException {
+    public boolean canPublishTo(String sid, PublicationNode publicationNode) {
         if (publicationNode == null || publicationNode.getParent() == null) {
             return false;
         }
         return true;
     }
 
-    public boolean canUnpublish(String sid, PublishedDocument publishedDocument) throws ClientException {
+    public boolean canUnpublish(String sid, PublishedDocument publishedDocument) {
         return true;
     }
 
-    public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) throws ClientException {
+    public boolean canManagePublishing(String sid, PublishedDocument publishedDocument) {
         return true;
     }
 
-    public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) throws ClientException {
+    public boolean hasValidationTask(String sid, PublishedDocument publishedDocument) {
         return false;
     }
 
-    public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) throws ClientException {
+    public PublishedDocument wrapToPublishedDocument(String sid, DocumentModel documentModel) {
         throw new UnsupportedOperationException();
     }
 
@@ -203,7 +203,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         throw new UnsupportedOperationException();
     }
 
-    public PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) throws ClientException {
+    public PublicationNode wrapToPublicationNode(String sid, DocumentModel documentModel) {
         throw new UnsupportedOperationException();
     }
 

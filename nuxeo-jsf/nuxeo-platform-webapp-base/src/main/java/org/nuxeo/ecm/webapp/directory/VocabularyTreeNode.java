@@ -208,7 +208,7 @@ public class VocabularyTreeNode {
         }
     }
 
-    protected DocumentModelList getChildrenEntries() throws ClientException {
+    protected DocumentModelList getChildrenEntries() {
         if (childrenEntries != null) {
             // memorized directory lookup since directory content is not
             // suppose to change
@@ -268,11 +268,11 @@ public class VocabularyTreeNode {
         return directoryService;
     }
 
-    protected String getDirectorySchema() throws ClientException {
+    protected String getDirectorySchema() {
         return getDirectoryService().getDirectorySchema(vocabularyName);
     }
 
-    protected Session getDirectorySession() throws ClientException {
+    protected Session getDirectorySession() {
         return getDirectoryService().open(vocabularyName);
     }
 

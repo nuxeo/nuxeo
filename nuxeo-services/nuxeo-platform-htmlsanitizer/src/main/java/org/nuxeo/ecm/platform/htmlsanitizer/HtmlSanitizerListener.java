@@ -33,7 +33,7 @@ public class HtmlSanitizerListener implements EventListener {
 
     public static final String DISABLE_HTMLSANITIZER_LISTENER = "disableHtmlSanitizerListener";
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         String eventId = event.getName();
         if (!eventId.equals(DocumentEventTypes.ABOUT_TO_CREATE)
                 && !eventId.equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
