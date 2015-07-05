@@ -56,7 +56,7 @@ public class DocumentModelFactory {
     private DocumentModelFactory() {
     }
 
-    public static DocumentModelImpl createDocumentModel(Document doc) throws DocumentException {
+    public static DocumentModelImpl createDocumentModel(Document doc) {
         DocumentType docType = doc.getType();
         String[] schemas;
         if (docType == null) {
@@ -73,13 +73,12 @@ public class DocumentModelFactory {
      * @param doc the document
      * @param schemas the schemas to prefetch (deprecated), or {@code null}
      * @return the new document model
-     * @throws DocumentException
      */
-    public static DocumentModelImpl createDocumentModel(Document doc, String[] schemas) throws DocumentException {
+    public static DocumentModelImpl createDocumentModel(Document doc, String[] schemas) {
 
         DocumentType type = doc.getType();
         if (type == null) {
-            throw new DocumentException("Type not found for doc " + doc);
+            throw new NuxeoException("Type not found for doc " + doc);
         }
 
         String sid = doc.getSession().getSessionId();
@@ -186,11 +185,7 @@ public class DocumentModelFactory {
     public static DocumentModelImpl createDocumentModel(String docType) {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(docType);
-        try {
-            return createDocumentModel(null, type);
-        } catch (DocumentException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return createDocumentModel(null, type);
     }
 
     /**
@@ -201,10 +196,8 @@ public class DocumentModelFactory {
      * @param sessionId the CoreSession id
      * @param docType the document type
      * @return the document model
-     * @throws DocumentException
      */
-    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType)
-            throws DocumentException {
+    public static DocumentModelImpl createDocumentModel(String sessionId, DocumentType docType) {
         DocumentModelImpl docModel = new DocumentModelImpl(sessionId, docType.getName(), null, null, null, null, null,
                 null, null, null, null);
         for (Schema schema : docType.getSchemas()) {
@@ -216,14 +209,10 @@ public class DocumentModelFactory {
     /**
      * Creates a data model from a document and a schema. If the document is null, just creates empty data models.
      */
-    public static DataModel createDataModel(Document doc, Schema schema) throws DocumentException {
+    public static DataModel createDataModel(Document doc, Schema schema) {
         DocumentPart part = new DocumentPartImpl(schema);
         if (doc != null) {
-            try {
-                doc.readDocumentPart(part);
-            } catch (PropertyException e) {
-                throw new DocumentException("failed to read document part", e);
-            }
+            doc.readDocumentPart(part);
         }
         return new DataModelImpl(part);
     }
@@ -231,8 +220,7 @@ public class DocumentModelFactory {
     /**
      * Writes a document model to a document. Returns the re-read document model.
      */
-    public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) throws DocumentException,
-            ClientException {
+    public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) throws ClientException {
         if (!(docModel instanceof DocumentModelImpl)) {
             throw new ClientRuntimeException("Must be a DocumentModelImpl: " + docModel);
         }
@@ -279,7 +267,7 @@ public class DocumentModelFactory {
      * Gets what's to refresh in a model (except for the ACPs, which need the session).
      */
     public static DocumentModelRefresh refreshDocumentModel(Document doc, int flags, String[] schemas)
-            throws DocumentException, LifeCycleException {
+            throws LifeCycleException {
         DocumentModelRefresh refresh = new DocumentModelRefresh();
 
         refresh.instanceFacets = new HashSet<String>(Arrays.asList(doc.getFacets()));
@@ -409,10 +397,9 @@ public class DocumentModelFactory {
      * @param type
      * @param id
      * @return
-     * @throws DocumentException
      * @since 5.7.2
      */
-    public static DocumentModel createDocumentModel(String type, String id) throws DocumentException {
+    public static DocumentModel createDocumentModel(String type, String id) {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
         DocumentModel doc = new DocumentModelImpl(null, docType.getName(), id, null, null, new IdRef(id), null, null,

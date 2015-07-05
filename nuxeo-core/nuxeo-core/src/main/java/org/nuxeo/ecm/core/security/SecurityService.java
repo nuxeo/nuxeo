@@ -113,7 +113,7 @@ public class SecurityService extends DefaultComponent {
         return securityPolicyService.getPoliciesQueryTransformers(repositoryName);
     }
 
-    public boolean checkPermission(Document doc, Principal principal, String permission) throws SecurityException {
+    public boolean checkPermission(Document doc, Principal principal, String permission) {
         String username = principal.getName();
 
         // system bypass

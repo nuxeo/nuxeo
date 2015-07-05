@@ -22,7 +22,6 @@ import javax.resource.cci.ResourceAdapterMetaData;
 import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.Repository;
@@ -159,7 +158,7 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
     }
 
     @Override
-    public org.nuxeo.ecm.core.model.Session getSession(String sessionId) throws DocumentException {
+    public org.nuxeo.ecm.core.model.Session getSession(String sessionId) {
         return new SQLSession(getConnection(), this, sessionId);
     }
 

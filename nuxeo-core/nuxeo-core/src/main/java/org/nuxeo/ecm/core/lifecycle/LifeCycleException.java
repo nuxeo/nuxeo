@@ -14,12 +14,14 @@
 
 package org.nuxeo.ecm.core.lifecycle;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+
 /**
  * Life cycle exception.
  *
  * @author <a href="mailto:ja@nuxeo.com">Julien Anguenot</a>
  */
-public class LifeCycleException extends Exception {
+public class LifeCycleException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.local.LocalSession;
@@ -222,11 +221,7 @@ public class RepositoryService extends DefaultComponent {
             if (repository == null) {
                 throw new LocalException("No such repository: " + repositoryName);
             }
-            try {
-                return repository.getSession(sessionId);
-            } catch (DocumentException e) {
-                throw new LocalException("Failed to load repository " + repositoryName + ": " + e.getMessage(), e);
-            }
+            return repository.getSession(sessionId);
         }
     }
 

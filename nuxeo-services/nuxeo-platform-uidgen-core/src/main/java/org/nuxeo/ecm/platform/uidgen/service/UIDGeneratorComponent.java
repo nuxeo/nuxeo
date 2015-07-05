@@ -25,8 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.uidgen.UIDGenerator;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.runtime.api.Framework;
@@ -228,7 +228,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
      * Creates a new UID for the given doc and sets the field configured in the generator component with this value.
      */
     @Override
-    public void setUID(DocumentModel doc) throws DocumentException {
+    public void setUID(DocumentModel doc) throws PropertyNotFoundException {
         final UIDGenerator generator = getUIDGeneratorFor(doc);
         if (generator != null) {
             generator.setUID(doc);
@@ -239,7 +239,7 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
      * @return a new UID for the given document
      */
     @Override
-    public String createUID(DocumentModel doc) throws DocumentException {
+    public String createUID(DocumentModel doc) {
         final UIDGenerator generator = getUIDGeneratorFor(doc);
         if (generator == null) {
             return null;

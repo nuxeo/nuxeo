@@ -18,8 +18,8 @@
  */
 package org.nuxeo.ecm.platform.uidgen;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 
 /**
  * Common interface for UID generators. All UID generators must implement this interface.
@@ -67,16 +67,16 @@ public interface UIDGenerator {
      */
     void setSequencer(UIDSequencer sequencer);
 
-    String getSequenceKey(DocumentModel document) throws DocumentException;
+    String getSequenceKey(DocumentModel document);
 
     /**
      * Returns a new UID for the given doc.
      */
-    String createUID(DocumentModel document) throws DocumentException;
+    String createUID(DocumentModel document);
 
     /**
      * Creates a new UID for the given doc and sets the field configured in the generator component with this value.
      */
-    void setUID(DocumentModel document) throws DocumentException;
+    void setUID(DocumentModel document) throws PropertyNotFoundException;
 
 }

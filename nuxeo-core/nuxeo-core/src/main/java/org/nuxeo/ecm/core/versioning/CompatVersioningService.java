@@ -17,12 +17,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 
 /**
  * Compatibility implementation of the versioning service in Nuxeo.
@@ -44,13 +42,13 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    protected void setInitialVersion(Document doc) throws DocumentException {
+    protected void setInitialVersion(Document doc) {
         setVersion(doc, 1, 0);
     }
 
     @Override
     public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         option = validateOption(doc, option);
         boolean increment = option != VersioningOption.NONE;
         return increment || (isDirty && !doc.isCheckedOut());
@@ -62,7 +60,7 @@ public class CompatVersioningService extends StandardVersioningService {
      */
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         option = validateOption(doc, option);
         boolean increment = option != VersioningOption.NONE;
         if (increment) {
@@ -78,7 +76,7 @@ public class CompatVersioningService extends StandardVersioningService {
 
     @Override
     public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         if (!doc.isCheckedOut()) {
             return null;
         }
@@ -89,12 +87,12 @@ public class CompatVersioningService extends StandardVersioningService {
     }
 
     @Override
-    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
+    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) {
         return doc.checkIn(null, checkinComment); // auto-label
     }
 
     @Override
-    public void doCheckOut(Document doc) throws DocumentException {
+    public void doCheckOut(Document doc) {
         doc.checkOut();
         // set version number to that of the last version + inc minor
         try {
@@ -102,7 +100,7 @@ public class CompatVersioningService extends StandardVersioningService {
             if (last != null) {
                 setVersion(doc, getMajor(last), getMinor(last) + 1);
             }
-        } catch (NoSuchPropertyException e) {
+        } catch (PropertyNotFoundException e) {
             // ignore
         }
     }

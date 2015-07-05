@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -47,7 +46,7 @@ public class BusinessCreateOperation {
     protected String name;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException, DocumentException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException {
         DocumentModel document = input.getDocument();
         DocumentModel createDocumentModel = session.createDocumentModel(parentPath, name, input.getType());
 

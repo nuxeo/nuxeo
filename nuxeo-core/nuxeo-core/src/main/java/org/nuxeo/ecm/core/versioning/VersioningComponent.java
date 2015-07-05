@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
@@ -204,7 +203,7 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
     }
 
     @Override
-    public void doPostCreate(Document doc, Map<String, Serializable> options) throws DocumentException {
+    public void doPostCreate(Document doc, Map<String, Serializable> options) {
         service.doPostCreate(doc, options);
     }
 
@@ -215,35 +214,34 @@ public class VersioningComponent extends DefaultComponent implements VersioningS
 
     @Override
     public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         return service.isPreSaveDoingCheckOut(doc, isDirty, option, options);
     }
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         return service.doPreSave(doc, isDirty, option, checkinComment, options);
     }
 
     @Override
-    public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options)
-            throws DocumentException {
+    public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options) {
         return service.isPostSaveDoingCheckIn(doc, option, options);
     }
 
     @Override
     public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         return service.doPostSave(doc, option, checkinComment, options);
     }
 
     @Override
-    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
+    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) {
         return service.doCheckIn(doc, option, checkinComment);
     }
 
     @Override
-    public void doCheckOut(Document doc) throws DocumentException {
+    public void doCheckOut(Document doc) {
         service.doCheckOut(doc);
     }
 }

@@ -31,7 +31,7 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
@@ -83,25 +83,20 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      * Initializes the root and its ACP.
      */
     public void initRoot() {
-        try {
-            Session session = getSession(null);
-            Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT,
-                    new HashMap<String, Serializable>());
-            ACLImpl acl = new ACLImpl();
-            acl.add(new ACE(SecurityConstants.ADMINISTRATORS, SecurityConstants.EVERYTHING, true));
-            acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING, true));
-            acl.add(new ACE(SecurityConstants.MEMBERS, SecurityConstants.READ, true));
-            ACPImpl acp = new ACPImpl();
-            acp.addACL(acl);
-            session.setACP(root, acp, true);
-            session.save();
-            session.close();
-            if (TransactionHelper.isTransactionActive()) {
-                TransactionHelper.commitOrRollbackTransaction();
-                TransactionHelper.startTransaction();
-            }
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
+        Session session = getSession(null);
+        Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT, new HashMap<String, Serializable>());
+        ACLImpl acl = new ACLImpl();
+        acl.add(new ACE(SecurityConstants.ADMINISTRATORS, SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.ADMINISTRATOR, SecurityConstants.EVERYTHING, true));
+        acl.add(new ACE(SecurityConstants.MEMBERS, SecurityConstants.READ, true));
+        ACPImpl acp = new ACPImpl();
+        acp.addACL(acl);
+        session.setACP(root, acp, true);
+        session.save();
+        session.close();
+        if (TransactionHelper.isTransactionActive()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
         }
     }
 
@@ -126,7 +121,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
-    public Session getSession(String sessionId) throws DocumentException {
+    public Session getSession(String sessionId) {
         Transaction transaction;
         try {
             transaction = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -198,11 +193,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         @Override
         public void beforeCompletion() {
-            try {
-                baseSession.commit();
-            } catch (DocumentException e) {
-                throw new RuntimeException(e);
-            }
+            baseSession.commit();
         }
 
         @Override
@@ -261,7 +252,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
 
             if (closed) {
-                throw new DocumentException("Cannot use closed connection handle: " + sessionId);
+                throw new NuxeoException("Cannot use closed connection handle: " + sessionId);
             }
 
             try {

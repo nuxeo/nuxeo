@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.security;
 
 import java.security.Principal;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
@@ -34,10 +33,7 @@ public class MockCreatorSecurityPolicy extends AbstractSecurityPolicy {
         Access access = Access.UNKNOWN;
         String creator = null;
         if (doc != null) {
-            try {
-                creator = (String) doc.getPropertyValue("dc:creator");
-            } catch (DocumentException e) {
-            }
+            creator = (String) doc.getPropertyValue("dc:creator");
         }
         if (creator != null && creator.equals(principal.getName())) {
             access = Access.GRANT;

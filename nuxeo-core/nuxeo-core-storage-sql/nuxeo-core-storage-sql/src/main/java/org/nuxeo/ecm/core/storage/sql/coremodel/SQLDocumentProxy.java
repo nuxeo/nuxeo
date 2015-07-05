@@ -19,10 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
@@ -47,15 +48,15 @@ public class SQLDocumentProxy implements SQLDocument {
 
     // private SQLDocumentVersion version;
 
-    protected SQLDocumentProxy(Document proxy, Document target) throws DocumentException {
+    protected SQLDocumentProxy(Document proxy, Document target) {
         this.proxy = proxy;
         this.target = target;
     }
 
-    protected String getSchema(String xpath) throws DocumentException {
+    protected String getSchema(String xpath) {
         int p = xpath.indexOf(':');
         if (p == -1) {
-            throw new DocumentException("Schema not specified: " + xpath);
+            throw new PropertyNotFoundException("Schema not specified: " + xpath);
         }
         String prefix = xpath.substring(0, p);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -63,7 +64,7 @@ public class SQLDocumentProxy implements SQLDocument {
         if (schema == null) {
             schema = schemaManager.getSchema(prefix);
             if (schema == null) {
-                throw new DocumentException("No schema for prefix: " + xpath);
+                throw new PropertyNotFoundException("No schema for prefix: " + xpath);
             }
         }
         return schema.getName();
@@ -80,7 +81,7 @@ public class SQLDocumentProxy implements SQLDocument {
     /**
      * Checks if the given property should be resolved on the proxy or the target.
      */
-    protected boolean isPropertyForProxy(String xpath) throws DocumentException {
+    protected boolean isPropertyForProxy(String xpath) {
         if (Model.MAIN_MINOR_VERSION_PROP.equals(xpath) || Model.MAIN_MAJOR_VERSION_PROP.equals(xpath)) {
             return false;
         }
@@ -121,17 +122,17 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Document getParent() throws DocumentException {
+    public Document getParent() {
         return proxy.getParent();
     }
 
     @Override
-    public String getPath() throws DocumentException {
+    public String getPath() {
         return proxy.getPath();
     }
 
     @Override
-    public void remove() throws DocumentException {
+    public void remove() {
         proxy.remove();
     }
 
@@ -200,12 +201,12 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value) throws DocumentException {
+    public void setSystemProp(String name, Serializable value) {
         target.setSystemProp(name, value);
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) {
         return target.getSystemProp(name, type);
     }
 
@@ -225,12 +226,12 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public boolean addFacet(String facet) throws DocumentException {
+    public boolean addFacet(String facet) {
         return target.addFacet(facet); // TODO proxy facets
     }
 
     @Override
-    public boolean removeFacet(String facet) throws DocumentException {
+    public boolean removeFacet(String facet) {
         return target.removeFacet(facet); // TODO proxy facets
     }
 
@@ -269,17 +270,17 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Lock getLock() throws DocumentException {
+    public Lock getLock() {
         return target.getLock();
     }
 
     @Override
-    public Lock setLock(Lock lock) throws DocumentException {
+    public Lock setLock(Lock lock) {
         return target.setLock(lock);
     }
 
     @Override
-    public Lock removeLock(String owner) throws DocumentException {
+    public Lock removeLock(String owner) {
         return target.removeLock(owner);
     }
 
@@ -289,133 +290,133 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Document getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() {
         return null;
     }
 
     @Override
-    public String getVersionSeriesId() throws DocumentException {
+    public String getVersionSeriesId() {
         return target.getVersionSeriesId();
     }
 
     @Override
-    public Document getSourceDocument() throws DocumentException {
+    public Document getSourceDocument() {
         // this is what the rest of Nuxeo expects for a proxy
         return target;
     }
 
     @Override
-    public Document checkIn(String label, String checkinComment) throws DocumentException {
+    public Document checkIn(String label, String checkinComment) {
         return target.checkIn(label, checkinComment);
     }
 
     @Override
-    public void checkOut() throws DocumentException {
+    public void checkOut() {
         target.checkOut();
     }
 
     @Override
-    public boolean isCheckedOut() throws DocumentException {
+    public boolean isCheckedOut() {
         return target.isCheckedOut();
     }
 
     @Override
-    public boolean isLatestVersion() throws DocumentException {
+    public boolean isLatestVersion() {
         return target.isLatestVersion();
     }
 
     @Override
-    public boolean isMajorVersion() throws DocumentException {
+    public boolean isMajorVersion() {
         return target.isMajorVersion();
     }
 
     @Override
-    public boolean isLatestMajorVersion() throws DocumentException {
+    public boolean isLatestMajorVersion() {
         return target.isLatestMajorVersion();
     }
 
     @Override
-    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+    public boolean isVersionSeriesCheckedOut() {
         return target.isVersionSeriesCheckedOut();
     }
 
     @Override
-    public String getVersionLabel() throws DocumentException {
+    public String getVersionLabel() {
         return target.getVersionLabel();
     }
 
     @Override
-    public String getCheckinComment() throws DocumentException {
+    public String getCheckinComment() {
         return target.getCheckinComment();
     }
 
     @Override
-    public Document getWorkingCopy() throws DocumentException {
+    public Document getWorkingCopy() {
         return target.getWorkingCopy();
     }
 
     @Override
-    public Calendar getVersionCreationDate() throws DocumentException {
+    public Calendar getVersionCreationDate() {
         return target.getVersionCreationDate();
     }
 
     @Override
-    public void restore(Document version) throws DocumentException {
+    public void restore(Document version) {
         target.restore(version);
     }
 
     @Override
-    public List<String> getVersionsIds() throws DocumentException {
+    public List<String> getVersionsIds() {
         return target.getVersionsIds();
     }
 
     @Override
-    public Document getVersion(String label) throws DocumentException {
+    public Document getVersion(String label) {
         return target.getVersion(label);
     }
 
     @Override
-    public List<Document> getVersions() throws DocumentException {
+    public List<Document> getVersions() {
         return target.getVersions();
     }
 
     @Override
-    public Document getLastVersion() throws DocumentException {
+    public Document getLastVersion() {
         return target.getLastVersion();
     }
 
     @Override
-    public Document getChild(String name) throws DocumentException {
+    public Document getChild(String name) {
         return proxy.getChild(name);
     }
 
     @Override
-    public List<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() {
         return proxy.getChildren();
     }
 
     @Override
-    public List<String> getChildrenIds() throws DocumentException {
+    public List<String> getChildrenIds() {
         return proxy.getChildrenIds();
     }
 
     @Override
-    public boolean hasChild(String name) throws DocumentException {
+    public boolean hasChild(String name) {
         return proxy.hasChild(name);
     }
 
     @Override
-    public boolean hasChildren() throws DocumentException {
+    public boolean hasChildren() {
         return proxy.hasChildren();
     }
 
     @Override
-    public Document addChild(String name, String typeName) throws DocumentException {
+    public Document addChild(String name, String typeName) {
         return proxy.addChild(name, typeName);
     }
 
     @Override
-    public void orderBefore(String src, String dest) throws DocumentException {
+    public void orderBefore(String src, String dest) {
         proxy.orderBefore(src, dest);
     }
 
@@ -429,19 +430,19 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setTargetDocument(Document target) throws DocumentException {
+    public void setTargetDocument(Document target) {
         if (((SQLDocumentLive) proxy).isReadOnly()) {
-            throw new DocumentException("Cannot write proxy: " + this);
+            throw new ReadOnlyPropertyException("Cannot write proxy: " + this);
         }
         if (!target.getVersionSeriesId().equals(getVersionSeriesId())) {
-            throw new DocumentException("Cannot set proxy target to different version series");
+            throw new ReadOnlyPropertyException("Cannot set proxy target to different version series");
         }
         getSession().setProxyTarget(proxy, target);
         this.target = target;
     }
 
     @Override
-    public Serializable getPropertyValue(String name) throws DocumentException {
+    public Serializable getPropertyValue(String name) {
         if (isPropertyForProxy(name)) {
             return proxy.getPropertyValue(name);
         } else {
@@ -450,7 +451,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setPropertyValue(String name, Serializable value) throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) {
         if (isPropertyForProxy(name)) {
             proxy.setPropertyValue(name, value);
         } else {
@@ -459,7 +460,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Object getValue(String xpath) throws PropertyException, DocumentException {
+    public Object getValue(String xpath) throws PropertyException {
         if (isPropertyForProxy(xpath)) {
             return proxy.getValue(xpath);
         } else {
@@ -468,7 +469,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void setValue(String xpath, Object value) throws PropertyException, DocumentException {
+    public void setValue(String xpath, Object value) throws PropertyException {
         if (isPropertyForProxy(xpath)) {
             proxy.setValue(xpath, value);
         } else {
@@ -477,7 +478,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException, DocumentException {
+    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException {
         // visit all blobs from the proxy AND the target
         proxy.visitBlobs(blobVisitor);
         target.visitBlobs(blobVisitor);

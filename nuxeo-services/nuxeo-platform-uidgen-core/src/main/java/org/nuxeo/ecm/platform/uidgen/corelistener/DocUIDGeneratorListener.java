@@ -24,8 +24,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_CREATED;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -57,13 +57,13 @@ public class DocUIDGeneratorListener implements EventListener {
             log.debug("eventId : " + eventId);
             try {
                 addUIDtoDoc(doc);
-            } catch (DocumentException e) {
+            } catch (PropertyNotFoundException e) {
                 log.error("Error occurred while generating UID for doc: " + doc, e);
             }
         }
     }
 
-    private static void addUIDtoDoc(DocumentModel doc) throws DocumentException {
+    private static void addUIDtoDoc(DocumentModel doc) throws PropertyNotFoundException {
         UIDGeneratorService service = Framework.getService(UIDGeneratorService.class);
         if (service == null) {
             log.error("<addUIDtoDoc> UIDGeneratorService service not found ... !");

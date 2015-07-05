@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleTransition;
 
@@ -82,7 +81,7 @@ public class LifeCycleImpl implements LifeCycle {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitionsFrom(String stateName) throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitionsFrom(String stateName) {
         LifeCycleState lifeCycleState = getStateByName(stateName);
         if (lifeCycleState != null) {
             return lifeCycleState.getAllowedStateTransitions();

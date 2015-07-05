@@ -154,22 +154,10 @@ public class WebException extends WebApplicationException {
             return new WebSecurityException(message, exception);
         } else if (exception instanceof WebException) {
             return (WebException) exception;
+        } else if (exception instanceof NoSuchDocumentException) {
+            return new WebResourceNotFoundException(message, exception);
         } else if (exception instanceof ClientException) {
-            Throwable cause = exception.getCause();
-            boolean notFound = false;
-            if (cause instanceof NoSuchDocumentException) {
-                notFound = true;
-            } else if (cause != null && cause.getMessage() != null) {
-                // not sure if this is still needed (?) see NXP-9636
-                if (cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-                    notFound = true;
-                }
-            }
-            if (notFound) {
-                return new WebResourceNotFoundException(message, cause);
-            } else {
-                return new WebDocumentException(message, exception);
-            }
+            return new WebDocumentException(message, exception);
         } else {
             return new WebException(message, exception);
         }

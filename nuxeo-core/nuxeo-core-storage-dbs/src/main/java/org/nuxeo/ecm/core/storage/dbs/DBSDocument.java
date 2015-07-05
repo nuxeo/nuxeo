@@ -34,17 +34,20 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -248,7 +251,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document getParent() throws DocumentException {
+    public Document getParent() {
         if (isVersion()) {
             return session.getDocument(getVersionSeriesId()).getParent();
         }
@@ -267,7 +270,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public String getPath() throws DocumentException {
+    public String getPath() {
         if (isVersion()) {
             return session.getDocument(getVersionSeriesId()).getPath();
         }
@@ -290,12 +293,12 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document getChild(String name) throws DocumentException {
+    public Document getChild(String name) {
         return session.getChild(id, name);
     }
 
     @Override
-    public List<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() {
         if (!isFolder()) {
             return Collections.emptyList();
         }
@@ -303,7 +306,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public List<String> getChildrenIds() throws DocumentException {
+    public List<String> getChildrenIds() {
         if (!isFolder()) {
             return Collections.emptyList();
         }
@@ -311,7 +314,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean hasChild(String name) throws DocumentException {
+    public boolean hasChild(String name) {
         if (!isFolder()) {
             return false;
         }
@@ -319,7 +322,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean hasChildren() throws DocumentException {
+    public boolean hasChildren() {
         if (!isFolder()) {
             return false;
         }
@@ -327,7 +330,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document addChild(String name, String typeName) throws DocumentException {
+    public Document addChild(String name, String typeName) {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
@@ -335,10 +338,10 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void orderBefore(String src, String dest) throws DocumentException {
+    public void orderBefore(String src, String dest) {
         Document srcDoc = getChild(src);
         if (srcDoc == null) {
-            throw new DocumentException("Document " + this + " has no child: " + src);
+            throw new NoSuchDocumentException("Document " + this + " has no child: " + src);
         }
         Document destDoc;
         if (dest == null) {
@@ -346,7 +349,7 @@ public class DBSDocument extends BaseDocument<State> {
         } else {
             destDoc = getChild(dest);
             if (destDoc == null) {
-                throw new DocumentException("Document " + this + " has no child: " + dest);
+                throw new NoSuchDocumentException("Document " + this + " has no child: " + dest);
             }
         }
         session.orderBefore(id, srcDoc.getUUID(), destDoc == null ? null : destDoc.getUUID());
@@ -354,14 +357,14 @@ public class DBSDocument extends BaseDocument<State> {
 
     // simple property only
     @Override
-    public Serializable getPropertyValue(String name) throws DocumentException {
+    public Serializable getPropertyValue(String name) {
         DBSDocumentState docState = getStateMaybeProxyTarget(name);
         return docState.get(name);
     }
 
     // simple property only
     @Override
-    public void setPropertyValue(String name, Serializable value) throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) {
         DBSDocumentState docState = getStateMaybeProxyTarget(name);
         docState.put(name, value);
     }
@@ -415,13 +418,13 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Object getValue(String xpath) throws PropertyException, DocumentException {
+    public Object getValue(String xpath) throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(xpath);
         return getValueObject(docState.getState(), xpath);
     }
 
     @Override
-    public void setValue(String xpath, Object value) throws PropertyException, DocumentException {
+    public void setValue(String xpath, Object value) throws PropertyException {
         DBSDocumentState docState = getStateMaybeProxyTarget(xpath);
         // markDirty has to be called *before* we change the state
         docState.markDirty();
@@ -429,7 +432,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException, DocumentException {
+    public void visitBlobs(Consumer<BlobAccessor> blobVisitor) throws PropertyException {
         if (isProxy()) {
             ((DBSDocument) getTargetDocument()).visitBlobs(blobVisitor);
             // fall through for proxy schemas
@@ -439,9 +442,9 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document checkIn(String label, String checkinComment) throws DocumentException {
+    public Document checkIn(String label, String checkinComment) {
         if (isProxy()) {
-            throw new DocumentException("Proxies cannot be checked in");
+            throw new NuxeoException("Proxies cannot be checked in");
         } else if (isVersion()) {
             throw new VersionNotModifiableException();
         } else {
@@ -452,9 +455,9 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void checkOut() throws DocumentException {
+    public void checkOut() {
         if (isProxy()) {
-            throw new DocumentException("Proxies cannot be checked out");
+            throw new NuxeoException("Proxies cannot be checked out");
         } else if (isVersion()) {
             throw new VersionNotModifiableException();
         } else {
@@ -463,12 +466,12 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public List<String> getVersionsIds() throws DocumentException {
+    public List<String> getVersionsIds() {
         return session.getVersionsIds(getVersionSeriesId());
     }
 
     @Override
-    public List<Document> getVersions() throws DocumentException {
+    public List<Document> getVersions() {
         List<String> ids = session.getVersionsIds(getVersionSeriesId());
         List<Document> versions = new ArrayList<Document>();
         for (String id : ids) {
@@ -478,12 +481,12 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document getLastVersion() throws DocumentException {
+    public Document getLastVersion() {
         return session.getLastVersion(getVersionSeriesId());
     }
 
     @Override
-    public Document getSourceDocument() throws DocumentException {
+    public Document getSourceDocument() {
         if (isProxy()) {
             return getTargetDocument();
         } else if (isVersion()) {
@@ -494,21 +497,21 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void restore(Document version) throws DocumentException {
+    public void restore(Document version) {
         if (!version.isVersion()) {
-            throw new DocumentException("Cannot restore a non-version: " + version);
+            throw new NuxeoException("Cannot restore a non-version: " + version);
         }
         session.restoreVersion(this, version);
     }
 
     @Override
-    public Document getVersion(String label) throws DocumentException {
+    public Document getVersion(String label) {
         DBSDocumentState state = session.getVersionByLabel(getVersionSeriesId(), label);
         return session.getDocument(state);
     }
 
     @Override
-    public Document getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() {
         if (isProxy() || isVersion()) {
             return null;
         } else {
@@ -526,7 +529,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean isCheckedOut() throws DocumentException {
+    public boolean isCheckedOut() {
         if (isVersion()) {
             return false;
         } else { // also if isProxy()
@@ -535,7 +538,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public String getVersionSeriesId() throws DocumentException {
+    public String getVersionSeriesId() {
         if (isProxy()) {
             return (String) docState.get(KEY_PROXY_VERSION_SERIES_ID);
         } else if (isVersion()) {
@@ -546,22 +549,22 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Calendar getVersionCreationDate() throws DocumentException {
+    public Calendar getVersionCreationDate() {
         return (Calendar) docState.get(KEY_VERSION_CREATED);
     }
 
     @Override
-    public String getVersionLabel() throws DocumentException {
+    public String getVersionLabel() {
         return (String) docState.get(KEY_VERSION_LABEL);
     }
 
     @Override
-    public String getCheckinComment() throws DocumentException {
+    public String getCheckinComment() {
         return (String) docState.get(KEY_VERSION_DESCRIPTION);
     }
 
     @Override
-    public boolean isLatestVersion() throws DocumentException {
+    public boolean isLatestVersion() {
         if (isProxy() || isVersion()) {
             return TRUE.equals(docState.get(KEY_IS_LATEST_VERSION));
         } else {
@@ -570,7 +573,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean isMajorVersion() throws DocumentException {
+    public boolean isMajorVersion() {
         if (isProxy() || isVersion()) {
             return ZERO.equals(docState.get(KEY_MINOR_VERSION));
         } else {
@@ -579,7 +582,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean isLatestMajorVersion() throws DocumentException {
+    public boolean isLatestMajorVersion() {
         if (isProxy() || isVersion()) {
             return TRUE.equals(docState.get(KEY_IS_LATEST_MAJOR_VERSION));
         } else {
@@ -588,7 +591,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+    public boolean isVersionSeriesCheckedOut() {
         if (isProxy() || isVersion()) {
             Document workingCopy = getWorkingCopy();
             return workingCopy == null ? false : workingCopy.isCheckedOut();
@@ -598,7 +601,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document getWorkingCopy() throws DocumentException {
+    public Document getWorkingCopy() {
         if (isProxy() || isVersion()) {
             String versionSeriesId = getVersionSeriesId();
             return versionSeriesId == null ? null : session.getDocument(versionSeriesId);
@@ -608,7 +611,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Lock setLock(Lock lock) throws DocumentException {
+    public Lock setLock(Lock lock) {
         Lock oldLock = getLock();
         if (oldLock == null) {
             docState.put(KEY_LOCK_OWNER, lock.getOwner());
@@ -618,7 +621,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Lock removeLock(String owner) throws DocumentException {
+    public Lock removeLock(String owner) {
         Lock oldLock = getLock();
         if (owner != null) {
             if (oldLock != null && !AbstractLockManager.canLockBeRemovedStatic(oldLock, owner)) {
@@ -633,7 +636,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Lock getLock() throws DocumentException {
+    public Lock getLock() {
         String owner = (String) docState.get(KEY_LOCK_OWNER);
         if (owner == null) {
             return null;
@@ -659,12 +662,12 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void remove() throws DocumentException {
+    public void remove() {
         session.remove(id);
     }
 
     @Override
-    public String getLifeCycleState() throws LifeCycleException {
+    public String getLifeCycleState() {
         return (String) docState.get(KEY_LIFECYCLE_STATE);
     }
 
@@ -676,7 +679,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public String getLifeCyclePolicy() throws LifeCycleException {
+    public String getLifeCyclePolicy() {
         return (String) docState.get(KEY_LIFECYCLE_POLICY);
     }
 
@@ -712,21 +715,21 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value) throws DocumentException {
+    public void setSystemProp(String name, Serializable value) {
 
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
-            throw new DocumentException("Unknown system property: " + name);
+            throw new PropertyNotFoundException("Unknown system property: " + name);
         }
         setPropertyValue(propertyName, value);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) {
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
-            throw new DocumentException("Unknown system property: " + name);
+            throw new PropertyNotFoundException("Unknown system property: " + name);
         }
         Serializable value = getPropertyValue(propertyName);
         if (value == null) {
@@ -744,17 +747,13 @@ public class DBSDocument extends BaseDocument<State> {
      */
     protected DBSDocumentState getStateMaybeProxyTarget(Type type) throws PropertyException {
         if (isProxy() && !isSchemaForProxy(type.getName())) {
-            try {
-                return ((DBSDocument) getTargetDocument()).docState;
-            } catch (DocumentException e) {
-                throw new PropertyException(e.getMessage(), e);
-            }
+            return ((DBSDocument) getTargetDocument()).docState;
         } else {
             return docState;
         }
     }
 
-    protected DBSDocumentState getStateMaybeProxyTarget(String xpath) throws DocumentException {
+    protected DBSDocumentState getStateMaybeProxyTarget(String xpath) {
         if (isProxy() && !isSchemaForProxy(getSchema(xpath))) {
             return ((DBSDocument) getTargetDocument()).docState;
         } else {
@@ -767,10 +766,10 @@ public class DBSDocument extends BaseDocument<State> {
         return schemaManager.isProxySchema(schema, getType().getName());
     }
 
-    protected String getSchema(String xpath) throws DocumentException {
+    protected String getSchema(String xpath) {
         int p = xpath.indexOf(':');
         if (p == -1) {
-            throw new DocumentException("Schema not specified: " + xpath);
+            throw new PropertyNotFoundException("Schema not specified: " + xpath);
         }
         String prefix = xpath.substring(0, p);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -778,7 +777,7 @@ public class DBSDocument extends BaseDocument<State> {
         if (schema == null) {
             schema = schemaManager.getSchema(prefix);
             if (schema == null) {
-                throw new DocumentException("No schema for prefix: " + xpath);
+                throw new PropertyNotFoundException("No schema for prefix: " + xpath);
             }
         }
         return schema.getName();
@@ -843,7 +842,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean addFacet(String facet) throws DocumentException {
+    public boolean addFacet(String facet) {
         if (getType().getFacets().contains(facet)) {
             return false; // already present in type
         }
@@ -864,7 +863,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public boolean removeFacet(String facet) throws DocumentException {
+    public boolean removeFacet(String facet) {
         Object[] mixins = (Object[]) docState.get(KEY_MIXIN_TYPES);
         if (mixins == null) {
             return false;
@@ -891,7 +890,7 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public Document getTargetDocument() throws DocumentException {
+    public Document getTargetDocument() {
         if (isProxy()) {
             String targetId = (String) docState.get(KEY_PROXY_TARGET_ID);
             return session.getDocument(targetId);
@@ -901,17 +900,17 @@ public class DBSDocument extends BaseDocument<State> {
     }
 
     @Override
-    public void setTargetDocument(Document target) throws DocumentException {
+    public void setTargetDocument(Document target) {
         if (isProxy()) {
             if (isReadOnly()) {
-                throw new DocumentException("Cannot write proxy: " + this);
+                throw new ReadOnlyPropertyException("Cannot write proxy: " + this);
             }
             if (!target.getVersionSeriesId().equals(getVersionSeriesId())) {
-                throw new DocumentException("Cannot set proxy target to different version series");
+                throw new ReadOnlyPropertyException("Cannot set proxy target to different version series");
             }
             session.setProxyTarget(this, target);
         } else {
-            throw new DocumentException("Cannot set proxy target on non-proxy");
+            throw new NuxeoException("Cannot set proxy target on non-proxy");
         }
     }
 

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
@@ -82,25 +81,23 @@ public interface DBSRepository extends Repository {
      * Creates a document.
      *
      * @param state the document state
-     * @throws DocumentException if the document already exists
      */
-    void createState(State state) throws DocumentException;
+    void createState(State state);
 
     /**
      * Updates a document.
      *
      * @param id the document id
      * @param diff the diff to apply
-     * @throws DocumentException if the document does not exist
      */
-    void updateState(String id, StateDiff diff) throws DocumentException;
+    void updateState(String id, StateDiff diff);
 
     /**
      * Deletes a set of document.
      *
      * @param ids the document ids
      */
-    void deleteStates(Set<String> ids) throws DocumentException;
+    void deleteStates(Set<String> ids);
 
     /**
      * Reads the state of a child document.

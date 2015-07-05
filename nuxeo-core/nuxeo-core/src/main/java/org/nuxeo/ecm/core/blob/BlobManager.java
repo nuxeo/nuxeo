@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -156,7 +155,7 @@ public interface BlobManager {
      * @param doc the new document version
      * @since 7.3
      */
-    void freezeVersion(Document doc) throws DocumentException;
+    void freezeVersion(Document doc);
 
     /**
      * Notifies the blob manager that a set of xpaths have changed on a document.

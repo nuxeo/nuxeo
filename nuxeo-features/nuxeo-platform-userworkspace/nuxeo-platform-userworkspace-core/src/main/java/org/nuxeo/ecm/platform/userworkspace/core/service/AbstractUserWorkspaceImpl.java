@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -284,7 +285,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 DocumentModel root;
                 try {
                     root = doCreateUserWorkspacesRoot(session, rootRef);
-                } catch (ClientException e) {
+                } catch (NoSuchDocumentException e) {
                     // domain may have been removed !
                     targetDomainName = null;
                     rootRef = new PathRef(computePathUserWorkspaceRoot(session, userName, null));

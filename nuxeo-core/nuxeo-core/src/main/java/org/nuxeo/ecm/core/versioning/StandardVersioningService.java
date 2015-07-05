@@ -24,13 +24,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchPropertyException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 
 /**
@@ -98,15 +96,15 @@ public class StandardVersioningService implements ExtendableVersioningService {
         }
     }
 
-    protected long getMajor(Document doc) throws DocumentException {
+    protected long getMajor(Document doc) {
         return getVersion(doc, MAJOR_VERSION);
     }
 
-    protected long getMinor(Document doc) throws DocumentException {
+    protected long getMinor(Document doc) {
         return getVersion(doc, MINOR_VERSION);
     }
 
-    protected long getVersion(Document doc, String prop) throws DocumentException {
+    protected long getVersion(Document doc, String prop) {
         Object propVal = doc.getPropertyValue(prop);
         if (propVal == null || !(propVal instanceof Long)) {
             return 0;
@@ -115,20 +113,20 @@ public class StandardVersioningService implements ExtendableVersioningService {
         }
     }
 
-    protected void setVersion(Document doc, long major, long minor) throws DocumentException {
+    protected void setVersion(Document doc, long major, long minor) {
         doc.setPropertyValue(MAJOR_VERSION, Long.valueOf(major));
         doc.setPropertyValue(MINOR_VERSION, Long.valueOf(minor));
     }
 
-    protected void incrementMajor(Document doc) throws DocumentException {
+    protected void incrementMajor(Document doc) {
         setVersion(doc, getMajor(doc) + 1, 0);
     }
 
-    protected void incrementMinor(Document doc) throws DocumentException {
+    protected void incrementMinor(Document doc) {
         doc.setPropertyValue(MINOR_VERSION, Long.valueOf(getMinor(doc) + 1));
     }
 
-    protected void incrementByOption(Document doc, VersioningOption option) throws DocumentException {
+    protected void incrementByOption(Document doc, VersioningOption option) {
         try {
             if (option == MAJOR) {
                 incrementMajor(doc);
@@ -136,7 +134,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
                 incrementMinor(doc);
             }
             // else nothing
-        } catch (NoSuchPropertyException e) {
+        } catch (PropertyNotFoundException e) {
             // ignore
         }
     }
@@ -146,17 +144,13 @@ public class StandardVersioningService implements ExtendableVersioningService {
         if (doc.isVersion() || doc.isProxy()) {
             return;
         }
-        try {
-            setInitialVersion(doc);
-        } catch (DocumentException e) {
-            // ignore
-        }
+        setInitialVersion(doc);
     }
 
     /**
      * Sets the initial version on a document. Can be overridden.
      */
-    protected void setInitialVersion(Document doc) throws DocumentException {
+    protected void setInitialVersion(Document doc) {
         InitialStateDescriptor initialState = null;
         if (versioningRules != null) {
             VersioningRuleDescriptor versionRule = versioningRules.get(doc.getType().getName());
@@ -189,7 +183,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return getSaveOptions(versionable, lifecycleState, type);
     }
 
-    protected List<VersioningOption> getSaveOptions(Document doc) throws DocumentException {
+    protected List<VersioningOption> getSaveOptions(Document doc) {
         boolean versionable = doc.getType().getFacets().contains(FacetNames.VERSIONABLE);
         String lifecycleState;
         try {
@@ -239,7 +233,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return Arrays.asList(NONE);
     }
 
-    protected VersioningOption validateOption(Document doc, VersioningOption option) throws DocumentException {
+    protected VersioningOption validateOption(Document doc, VersioningOption option) {
         List<VersioningOption> options = getSaveOptions(doc);
         if (!options.contains(option)) {
             option = options.isEmpty() ? NONE : options.get(0);
@@ -249,14 +243,14 @@ public class StandardVersioningService implements ExtendableVersioningService {
 
     @Override
     public boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         boolean disableAutoCheckOut = Boolean.TRUE.equals(options.get(VersioningService.DISABLE_AUTO_CHECKOUT));
         return !doc.isCheckedOut() && isDirty && !disableAutoCheckOut;
     }
 
     @Override
     public VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         option = validateOption(doc, option);
         if (isPreSaveDoingCheckOut(doc, isDirty, option, options)) {
             doCheckOut(doc);
@@ -266,27 +260,22 @@ public class StandardVersioningService implements ExtendableVersioningService {
         return option;
     }
 
-    protected void followTransitionByOption(Document doc, VersioningOption option) throws DocumentException {
-        try {
-            String lifecycleState = doc.getLifeCycleState();
-            if (APPROVED_STATE.equals(lifecycleState) || OBSOLETE_STATE.equals(lifecycleState)) {
-                doc.followTransition(BACK_TO_PROJECT_TRANSITION);
-            }
-        } catch (LifeCycleException e) {
-            throw new DocumentException(e);
+    protected void followTransitionByOption(Document doc, VersioningOption option) {
+        String lifecycleState = doc.getLifeCycleState();
+        if (APPROVED_STATE.equals(lifecycleState) || OBSOLETE_STATE.equals(lifecycleState)) {
+            doc.followTransition(BACK_TO_PROJECT_TRANSITION);
         }
     }
 
     @Override
-    public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options)
-            throws DocumentException {
+    public boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options) {
         // option = validateOption(doc, option); // validated before
         return doc.isCheckedOut() && option != NONE;
     }
 
     @Override
     public Document doPostSave(Document doc, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException {
+            Map<String, Serializable> options) {
         if (isPostSaveDoingCheckIn(doc, option, options)) {
             incrementByOption(doc, option);
             return doc.checkIn(null, checkinComment); // auto-label
@@ -295,7 +284,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException {
+    public Document doCheckIn(Document doc, VersioningOption option, String checkinComment) {
         if (option != VersioningOption.NONE) {
             incrementByOption(doc, option == MAJOR ? MAJOR : MINOR);
         }
@@ -303,7 +292,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     }
 
     @Override
-    public void doCheckOut(Document doc) throws DocumentException {
+    public void doCheckOut(Document doc) {
         doc.checkOut();
         // set version number to that of the last version
         try {
@@ -311,7 +300,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
             if (last != null) {
                 setVersion(doc, getMajor(last), getMinor(last));
             }
-        } catch (NoSuchPropertyException e) {
+        } catch (PropertyNotFoundException e) {
             // ignore
         }
     }

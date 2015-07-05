@@ -39,7 +39,6 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
@@ -449,7 +448,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void createState(State state) throws DocumentException {
+    public void createState(State state) {
         DBObject ob = stateToBson(state);
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: CREATE " + ob);
@@ -472,7 +471,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff) throws DocumentException {
+    public void updateState(String id, StateDiff diff) {
         DBObject query = new BasicDBObject(KEY_ID, id);
         for (DBObject update : diffToBson(diff)) {
             if (log.isTraceEnabled()) {
@@ -485,7 +484,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void deleteStates(Set<String> ids) throws DocumentException {
+    public void deleteStates(Set<String> ids) {
         DBObject query = new BasicDBObject(KEY_ID, new BasicDBObject(QueryOperators.IN, ids));
         if (log.isTraceEnabled()) {
             log.trace("MongoDB: REMOVE " + ids);

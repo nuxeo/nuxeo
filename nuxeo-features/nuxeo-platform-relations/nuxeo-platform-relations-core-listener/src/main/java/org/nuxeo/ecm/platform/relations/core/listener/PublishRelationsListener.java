@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -122,12 +121,8 @@ public class PublishRelationsListener implements EventListener {
                     // copy the relations from the working copy (the source
                     // document getting published)
                     copyRelationsFromWorkingCopy(rmanager, sourceResource, publishedResource);
-                } catch (ClientException e) {
-                    if (e.getCause() instanceof DocumentException || e instanceof DocumentSecurityException) {
-                        log.warn("working copy of the proxy is no longer available or not readable by the current user, cannot copy the source relations");
-                    } else {
-                        throw e;
-                    }
+                } catch (DocumentSecurityException e) {
+                    log.warn("working copy of the proxy is no longer available or not readable by the current user, cannot copy the source relations");
                 }
             }
 

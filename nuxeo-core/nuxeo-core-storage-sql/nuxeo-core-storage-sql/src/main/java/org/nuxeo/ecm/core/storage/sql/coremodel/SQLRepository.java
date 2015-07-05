@@ -13,7 +13,6 @@ package org.nuxeo.ecm.core.storage.sql.coremodel;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
@@ -56,7 +55,7 @@ public class SQLRepository implements Repository {
      * Called by LocalSession.createSession
      */
     @Override
-    public Session getSession(String sessionId) throws DocumentException {
+    public Session getSession(String sessionId) {
         return new SQLSession(repository.getConnection(), this, sessionId);
     }
 

@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
-import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
@@ -119,13 +119,13 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void createState(State state) throws DocumentException {
+    public void createState(State state) {
         String id = (String) state.get(KEY_ID);
         if (log.isTraceEnabled()) {
             log.trace("create " + id + ": " + state);
         }
         if (states.containsKey(id)) {
-            throw new DocumentException("Already exists: " + id);
+            throw new NuxeoException("Already exists: " + id);
         }
         state = StateHelper.deepCopy(state, true); // thread-safe
         StateHelper.resetDeltas(state);
@@ -133,7 +133,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void updateState(String id, StateDiff diff) throws DocumentException {
+    public void updateState(String id, StateDiff diff) {
         if (log.isTraceEnabled()) {
             log.trace("update " + id + ": " + diff);
         }
@@ -145,7 +145,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public void deleteStates(Set<String> ids) throws DocumentException {
+    public void deleteStates(Set<String> ids) {
         if (log.isTraceEnabled()) {
             log.trace("delete " + ids);
         }

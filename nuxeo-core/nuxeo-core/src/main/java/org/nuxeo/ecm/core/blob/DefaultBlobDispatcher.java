@@ -32,8 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.DocumentException;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.model.Document;
@@ -193,7 +191,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         return providerIds;
     }
 
-    protected String getProviderId(Document doc, Blob blob) throws DocumentException {
+    protected String getProviderId(Document doc, Blob blob) {
         if (useRepositoryName) {
             return doc.getRepositoryName();
         }
@@ -286,12 +284,8 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             String providerId = doc.getRepositoryName();
             return new BlobDispatch(providerId, false);
         }
-        try {
-            String providerId = getProviderId(doc, blob);
-            return new BlobDispatch(providerId, true);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+        String providerId = getProviderId(doc, blob);
+        return new BlobDispatch(providerId, true);
     }
 
     @Override
@@ -301,11 +295,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
         }
         for (String xpath : rulesXPaths) {
             if (xpaths.contains(xpath)) {
-                try {
-                    doc.visitBlobs(accessor -> checkBlob(doc, accessor));
-                } catch (DocumentException e) {
-                    throw new RuntimeException(e);
-                }
+                doc.visitBlobs(accessor -> checkBlob(doc, accessor));
                 return;
             }
         }
@@ -317,12 +307,7 @@ public class DefaultBlobDispatcher implements BlobDispatcher {
             return;
         }
         // compare current provider with expected
-        String expectedProviderId;
-        try {
-            expectedProviderId = getProviderId(doc, blob);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+        String expectedProviderId = getProviderId(doc, blob);
         if (((ManagedBlob) blob).getProviderId().equals(expectedProviderId)) {
             return;
         }

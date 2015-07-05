@@ -25,7 +25,6 @@ import org.elasticsearch.search.lookup.SourceLookup;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -75,17 +74,13 @@ public class JsonDocumentModelReader {
         String parentId = getPropertyAsString("ecm:parentId");
         String repository = getPropertyAsString("ecm:repository");
 
-        DocumentModelImpl doc = new DocumentModelImpl(sid, getType(), id, new Path(path), new IdRef(id), new IdRef(
-                parentId), null, null, null, repository, false);
+        DocumentModelImpl doc = new DocumentModelImpl(sid, getType(), id, new Path(path), new IdRef(id),
+                new IdRef(parentId), null, null, null, repository, false);
 
-        try {
-            // pre load datamodel to prevent DB access
-            DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
-            for (Schema schema : docType.getSchemas()) {
-                doc.addDataModel(DocumentModelFactory.createDataModel(null, schema));
-            }
-        } catch (DocumentException e) {
-            log.error("Unable to preload DataModels: " + e.getMessage(), e);
+        // pre load datamodel to prevent DB access
+        DocumentType docType = Framework.getService(SchemaManager.class).getDocumentType(type);
+        for (Schema schema : docType.getSchemas()) {
+            doc.addDataModel(DocumentModelFactory.createDataModel(null, schema));
         }
 
         for (String prop : source.keySet()) {

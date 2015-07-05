@@ -18,7 +18,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -35,7 +34,7 @@ public class BusinessUpdateOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public BusinessAdapter run(BusinessAdapter input) throws ClientException, ClassNotFoundException, DocumentException {
+    public BusinessAdapter run(BusinessAdapter input) throws ClientException, ClassNotFoundException {
         DocumentModel document = input.getDocument();
         session.saveDocument(document);
         return input;

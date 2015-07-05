@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.uidgen.generators;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.uidgen.AbstractUIDGenerator;
 
@@ -34,7 +33,7 @@ public class UIDGenerator1 extends AbstractUIDGenerator {
 
     private static final String NFORMAT = "%05d";
 
-    public String getSequenceKey(DocumentModel doc) throws DocumentException {
+    public String getSequenceKey(DocumentModel doc) {
         Calendar cal = new GregorianCalendar();
         int year = cal.get(Calendar.YEAR);
 
@@ -43,7 +42,7 @@ public class UIDGenerator1 extends AbstractUIDGenerator {
         return (isPropValueDefined(P1, doc) ? str(P1, doc) : str(P2, doc)) + year;
     }
 
-    public String createUID(DocumentModel doc) throws DocumentException {
+    public String createUID(DocumentModel doc) {
         int index = getNext(doc);
         String n = String.format(NFORMAT, index);
 

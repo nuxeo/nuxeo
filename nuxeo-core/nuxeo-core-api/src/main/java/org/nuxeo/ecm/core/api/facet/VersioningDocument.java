@@ -14,8 +14,6 @@
 
 package org.nuxeo.ecm.core.api.facet;
 
-import org.nuxeo.ecm.core.api.DocumentException;
-
 /**
  * Declares constants and methods used to control document versions mostly when a document is saved.
  *
@@ -52,13 +50,13 @@ public interface VersioningDocument {
      * @deprecated use {@link VersioningService#getVersionLabel} instead
      */
     @Deprecated
-    Long getMinorVersion() throws DocumentException;
+    Long getMinorVersion();
 
     /**
      * @deprecated use {@link VersioningService#getVersionLabel} instead
      */
     @Deprecated
-    Long getMajorVersion() throws DocumentException;
+    Long getMajorVersion();
 
     /**
      * Returns a string representation of the version number.

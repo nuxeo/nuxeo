@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.versioning;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.runtime.api.Framework;
@@ -35,12 +34,12 @@ public class VersioningDocumentAdapter implements VersioningDocument {
     }
 
     @Override
-    public Long getMajorVersion() throws DocumentException {
+    public Long getMajorVersion() {
         return Long.valueOf(getValidVersionNumber(VersioningService.MAJOR_VERSION_PROP));
     }
 
     @Override
-    public Long getMinorVersion() throws DocumentException {
+    public Long getMinorVersion() {
         return Long.valueOf(getValidVersionNumber(VersioningService.MINOR_VERSION_PROP));
     }
 

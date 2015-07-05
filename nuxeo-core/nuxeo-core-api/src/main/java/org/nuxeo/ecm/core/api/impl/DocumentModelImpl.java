@@ -44,7 +44,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Lock;
@@ -1321,15 +1320,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
 
     @Override
     public <T extends Serializable> T getSystemProp(final String systemProperty, final Class<T> type)
-            throws ClientException, DocumentException {
+            throws ClientException {
         return new RunWithCoreSession<T>() {
             @Override
             public T run() throws ClientException {
-                try {
-                    return session.getDocumentSystemProp(ref, systemProperty, type);
-                } catch (DocumentException e) {
-                    throw new ClientException(e);
-                }
+                return session.getDocumentSystemProp(ref, systemProperty, type);
             }
         }.execute();
     }

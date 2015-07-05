@@ -192,8 +192,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return Framework.getLocalService(SchemaManager.class).getDocumentType(type);
     }
 
-    protected final void checkPermission(Document doc, String permission) throws DocumentSecurityException,
-            DocumentException {
+    protected final void checkPermission(Document doc, String permission) throws DocumentSecurityException {
         if (isAdministrator()) {
             return;
         }
@@ -294,30 +293,21 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public boolean hasPermission(Principal principal, DocumentRef docRef, String permission) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            return hasPermission(principal, doc, permission);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to resolve document ref: " + docRef.toString(), e);
-        }
+        Document doc = resolveReference(docRef);
+        return hasPermission(principal, doc, permission);
     }
 
-    protected final boolean hasPermission(Principal principal, Document doc, String permission)
-            throws DocumentException {
+    protected final boolean hasPermission(Principal principal, Document doc, String permission) {
         return getSecurityService().checkPermission(doc, principal, permission);
     }
 
     @Override
     public boolean hasPermission(DocumentRef docRef, String permission) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            return hasPermission(doc, permission);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to resolve document ref: " + docRef.toString(), e);
-        }
+        Document doc = resolveReference(docRef);
+        return hasPermission(doc, permission);
     }
 
-    protected final boolean hasPermission(Document doc, String permission) throws DocumentException {
+    protected final boolean hasPermission(Document doc, String permission) {
         // TODO: optimize this - usually ACP is already available when calling
         // this method.
         // -> cache ACP at securitymanager level or try to reuse the ACP when
@@ -327,13 +317,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // getPrincipal().getName(), permission);
     }
 
-    protected Document resolveReference(DocumentRef docRef) throws DocumentException, ClientException {
+    protected Document resolveReference(DocumentRef docRef) throws ClientException {
         if (docRef == null) {
-            throw new DocumentException("Invalid reference (null)");
+            throw new NuxeoException("Invalid reference (null)");
         }
         Object ref = docRef.reference();
         if (ref == null) {
-            throw new DocumentException("Invalid reference (null)");
+            throw new NuxeoException("Invalid reference (null)");
         }
         int type = docRef.type();
         switch (type) {
@@ -353,11 +343,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return the document model
      */
     protected DocumentModel readModel(Document doc) throws ClientException {
-        try {
-            return DocumentModelFactory.createDocumentModel(doc, null);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to create document model", e);
-        }
+        return DocumentModelFactory.createDocumentModel(doc, null);
     }
 
     /**
@@ -377,65 +363,57 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      */
     @Deprecated
     protected DocumentModel readModel(Document doc, String[] schemas) throws ClientException {
-        try {
-            return DocumentModelFactory.createDocumentModel(doc, schemas);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to create document model", e);
-        }
+        return DocumentModelFactory.createDocumentModel(doc, schemas);
     }
 
-    protected DocumentModel writeModel(Document doc, DocumentModel docModel) throws DocumentException, ClientException {
+    protected DocumentModel writeModel(Document doc, DocumentModel docModel) throws ClientException {
         return DocumentModelFactory.writeDocumentModel(docModel, doc);
     }
 
     @Override
     public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
             throws ClientException {
-        try {
-            Document dstDoc = resolveReference(dst);
-            checkPermission(dstDoc, ADD_CHILDREN);
+        Document dstDoc = resolveReference(dst);
+        checkPermission(dstDoc, ADD_CHILDREN);
 
-            Document srcDoc = resolveReference(src);
-            if (name == null) {
-                name = srcDoc.getName();
-            } else {
-                PathRef.checkName(name);
-            }
-
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-
-            // add the destination name, destination, resetLifeCycle flag and
-            // source references in
-            // the options of the event
-            options.put(CoreEventConstants.SOURCE_REF, src);
-            options.put(CoreEventConstants.DESTINATION_REF, dst);
-            options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
-            options.put(CoreEventConstants.DESTINATION_NAME, name);
-            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
-            options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
-            DocumentModel srcDocModel = readModel(srcDoc);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options, null, null, true, true);
-
-            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-            Document doc = getSession().copy(srcDoc, dstDoc, name);
-            // no need to clear lock, locks table is not copied
-
-            // notify document created by copy
-            DocumentModel docModel = readModel(doc);
-
-            String comment = srcDoc.getRepositoryName() + ':' + src.toString();
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
-            docModel = writeModel(doc, docModel);
-
-            // notify document copied
-            comment = doc.getRepositoryName() + ':' + docModel.getRef().toString();
-
-            notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel, options, null, comment, true, false);
-
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to copy document: " + e.getMessage(), e);
+        Document srcDoc = resolveReference(src);
+        if (name == null) {
+            name = srcDoc.getName();
+        } else {
+            PathRef.checkName(name);
         }
+
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+
+        // add the destination name, destination, resetLifeCycle flag and
+        // source references in
+        // the options of the event
+        options.put(CoreEventConstants.SOURCE_REF, src);
+        options.put(CoreEventConstants.DESTINATION_REF, dst);
+        options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
+        options.put(CoreEventConstants.DESTINATION_NAME, name);
+        options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
+        options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
+        DocumentModel srcDocModel = readModel(srcDoc);
+        notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, options, null, null, true, true);
+
+        name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+        Document doc = getSession().copy(srcDoc, dstDoc, name);
+        // no need to clear lock, locks table is not copied
+
+        // notify document created by copy
+        DocumentModel docModel = readModel(doc);
+
+        String comment = srcDoc.getRepositoryName() + ':' + src.toString();
+        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
+        docModel = writeModel(doc, docModel);
+
+        // notify document copied
+        comment = doc.getRepositoryName() + ':' + docModel.getRef().toString();
+
+        notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel, options, null, comment, true, false);
+
+        return docModel;
     }
 
     @Override
@@ -463,38 +441,34 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
             throws ClientException {
-        try {
-            Document srcDoc = resolveReference(src);
-            if (!srcDoc.isProxy()) {
-                return copy(src, dst, name);
-            }
-            Document dstDoc = resolveReference(dst);
-            checkPermission(dstDoc, WRITE);
-
-            // create a new document using the expanded proxy
-            DocumentModel srcDocModel = readModel(srcDoc);
-            String docName = (name != null) ? name : srcDocModel.getName();
-            DocumentModel docModel = createDocumentModel(dstDoc.getPath(), docName, srcDocModel.getType());
-            docModel.copyContent(srcDocModel);
-            notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null, null, null, true, true);
-            docModel = createDocument(docModel);
-            Document doc = resolveReference(docModel.getRef());
-
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            // add resetLifeCycle flag to the event
-            options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
-            // notify document created by copy
-            String comment = srcDoc.getRepositoryName() + ':' + src.toString();
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
-
-            // notify document copied
-            comment = doc.getRepositoryName() + ':' + docModel.getRef().toString();
-            notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel, options, null, comment, true, false);
-
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to copy document: " + e.getMessage(), e);
+        Document srcDoc = resolveReference(src);
+        if (!srcDoc.isProxy()) {
+            return copy(src, dst, name);
         }
+        Document dstDoc = resolveReference(dst);
+        checkPermission(dstDoc, WRITE);
+
+        // create a new document using the expanded proxy
+        DocumentModel srcDocModel = readModel(srcDoc);
+        String docName = (name != null) ? name : srcDocModel.getName();
+        DocumentModel docModel = createDocumentModel(dstDoc.getPath(), docName, srcDocModel.getType());
+        docModel.copyContent(srcDocModel);
+        notifyEvent(DocumentEventTypes.ABOUT_TO_COPY, srcDocModel, null, null, null, true, true);
+        docModel = createDocument(docModel);
+        Document doc = resolveReference(docModel.getRef());
+
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        // add resetLifeCycle flag to the event
+        options.put(CoreEventConstants.RESET_LIFECYCLE, resetLifeCycle);
+        // notify document created by copy
+        String comment = srcDoc.getRepositoryName() + ':' + src.toString();
+        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED_BY_COPY, docModel, options, null, comment, true, false);
+
+        // notify document copied
+        comment = doc.getRepositoryName() + ':' + docModel.getRef().toString();
+        notifyEvent(DocumentEventTypes.DOCUMENT_DUPLICATED, srcDocModel, options, null, comment, true, false);
+
+        return docModel;
     }
 
     @Override
@@ -521,57 +495,53 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel move(DocumentRef src, DocumentRef dst, String name) throws ClientException {
-        try {
-            Document srcDoc = resolveReference(src);
-            Document dstDoc;
-            if (dst == null) {
-                // rename
-                dstDoc = srcDoc.getParent();
-                checkPermission(dstDoc, WRITE_PROPERTIES);
-            } else {
-                dstDoc = resolveReference(dst);
-                checkPermission(dstDoc, ADD_CHILDREN);
-                checkPermission(srcDoc.getParent(), REMOVE_CHILDREN);
-                checkPermission(srcDoc, REMOVE);
-            }
-
-            DocumentModel srcDocModel = readModel(srcDoc);
-            String originalName = srcDocModel.getName();
-            if (name == null) {
-                name = srcDocModel.getName();
-            } else {
-                PathRef.checkName(name);
-            }
-            Map<String, Serializable> options = getContextMapEventInfo(srcDocModel);
-            // add the destination name, destination and source references in
-            // the options of the event
-            options.put(CoreEventConstants.SOURCE_REF, src);
-            options.put(CoreEventConstants.DESTINATION_REF, dst);
-            options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
-            options.put(CoreEventConstants.DESTINATION_NAME, name);
-            options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
-
-            notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options, null, null, true, true);
-
-            name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-
-            if (!originalName.equals(name)) {
-                options.put(CoreEventConstants.ORIGINAL_NAME, originalName);
-            }
-
-            String comment = srcDoc.getRepositoryName() + ':' + srcDoc.getParent().getUUID();
-
-            Document doc = getSession().move(srcDoc, dstDoc, name);
-
-            // notify document moved
-            DocumentModel docModel = readModel(doc);
-            options.put(CoreEventConstants.PARENT_PATH, srcDocModel.getParentRef());
-            notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options, null, comment, true, false);
-
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to move document: " + e.getMessage(), e);
+        Document srcDoc = resolveReference(src);
+        Document dstDoc;
+        if (dst == null) {
+            // rename
+            dstDoc = srcDoc.getParent();
+            checkPermission(dstDoc, WRITE_PROPERTIES);
+        } else {
+            dstDoc = resolveReference(dst);
+            checkPermission(dstDoc, ADD_CHILDREN);
+            checkPermission(srcDoc.getParent(), REMOVE_CHILDREN);
+            checkPermission(srcDoc, REMOVE);
         }
+
+        DocumentModel srcDocModel = readModel(srcDoc);
+        String originalName = srcDocModel.getName();
+        if (name == null) {
+            name = srcDocModel.getName();
+        } else {
+            PathRef.checkName(name);
+        }
+        Map<String, Serializable> options = getContextMapEventInfo(srcDocModel);
+        // add the destination name, destination and source references in
+        // the options of the event
+        options.put(CoreEventConstants.SOURCE_REF, src);
+        options.put(CoreEventConstants.DESTINATION_REF, dst);
+        options.put(CoreEventConstants.DESTINATION_PATH, dstDoc.getPath());
+        options.put(CoreEventConstants.DESTINATION_NAME, name);
+        options.put(CoreEventConstants.DESTINATION_EXISTS, dstDoc.hasChild(name));
+
+        notifyEvent(DocumentEventTypes.ABOUT_TO_MOVE, srcDocModel, options, null, null, true, true);
+
+        name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+
+        if (!originalName.equals(name)) {
+            options.put(CoreEventConstants.ORIGINAL_NAME, originalName);
+        }
+
+        String comment = srcDoc.getRepositoryName() + ':' + srcDoc.getParent().getUUID();
+
+        Document doc = getSession().move(srcDoc, dstDoc, name);
+
+        // notify document moved
+        DocumentModel docModel = readModel(doc);
+        options.put(CoreEventConstants.PARENT_PATH, srcDocModel.getParentRef());
+        notifyEvent(DocumentEventTypes.DOCUMENT_MOVED, docModel, options, null, comment, true, false);
+
+        return docModel;
     }
 
     @Override
@@ -583,34 +553,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public ACP getACP(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_SECURITY);
-            return getSession().getMergedACP(doc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get acp", e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_SECURITY);
+        return getSession().getMergedACP(doc);
     }
 
     @Override
     public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_SECURITY);
-            DocumentModel docModel = readModel(doc);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, WRITE_SECURITY);
+        DocumentModel docModel = readModel(doc);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
-            options.put(CoreEventConstants.NEW_ACP, newAcp);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
+        options.put(CoreEventConstants.NEW_ACP, newAcp);
 
-            notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel, options, null, null, true, true);
-            getSession().setACP(doc, newAcp, overwrite);
-            docModel = readModel(doc);
-            options.put(CoreEventConstants.NEW_ACP, newAcp.clone());
-            notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel, options, null, null, true, false);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to set acp", e);
-        }
+        notifyEvent(DocumentEventTypes.BEFORE_DOC_SECU_UPDATE, docModel, options, null, null, true, true);
+        getSession().setACP(doc, newAcp, overwrite);
+        docModel = readModel(doc);
+        options.put(CoreEventConstants.NEW_ACP, newAcp.clone());
+        notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel, options, null, null, true, false);
     }
 
     @Override
@@ -625,23 +587,19 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     private DocumentModel createDocumentModelFromTypeName(String typeName, Map<String, Serializable> options)
             throws ClientException {
-        try {
-            SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
-            DocumentType docType = schemaManager.getDocumentType(typeName);
-            if (docType == null) {
-                throw new ClientException(typeName + " is not a registered core type");
-            }
-            DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType);
-            if (options == null) {
-                options = new HashMap<String, Serializable>();
-            }
-            // do not forward this event on the JMS Bus
-            options.put("BLOCK_JMS_PRODUCING", true);
-            notifyEvent(DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED, docModel, options, null, null, false, true);
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to create document model", e);
+        SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
+        DocumentType docType = schemaManager.getDocumentType(typeName);
+        if (docType == null) {
+            throw new ClientException(typeName + " is not a registered core type");
         }
+        DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType);
+        if (options == null) {
+            options = new HashMap<String, Serializable>();
+        }
+        // do not forward this event on the JMS Bus
+        options.put("BLOCK_JMS_PRODUCING", true);
+        notifyEvent(DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED, docModel, options, null, null, false, true);
+        return docModel;
     }
 
     @Override
@@ -684,71 +642,67 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             throw new ClientException("Only Administrators can create placeless documents");
         }
         String childName = docModel.getName();
-        try {
-            Map<String, Serializable> options = getContextMapEventInfo(docModel);
+        Map<String, Serializable> options = getContextMapEventInfo(docModel);
 
-            // document validation
-            if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
-                DocumentValidationReport report = getValidationService().validate(docModel, true);
-                if (report.hasError()) {
-                    throw new DocumentValidationException(report);
-                }
+        // document validation
+        if (getValidationService().isActivated(DocumentValidationService.CTX_CREATEDOC, options)) {
+            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
             }
-
-            Document folder = fillCreateOptions(parentRef, childName, options);
-
-            // get initial life cycle state info
-            String initialLifecycleState = null;
-            Object lifecycleStateInfo = docModel.getContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME);
-            if (lifecycleStateInfo instanceof String) {
-                initialLifecycleState = (String) lifecycleStateInfo;
-            }
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options, null, null, false, true); // no lifecycle
-                                                                                                         // yet
-            childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-            Document doc = folder.addChild(childName, typeName);
-
-            // update facets too since some of them may be dynamic
-            for (String facetName : docModel.getFacets()) {
-                if (!doc.getAllFacets().contains(facetName) && !FacetNames.IMMUTABLE.equals(facetName)) {
-                    doc.addFacet(facetName);
-                }
-            }
-
-            // init document life cycle
-            LifeCycleService service = NXCore.getLifeCycleService();
-            if (service != null) {
-                try {
-                    service.initialize(doc, initialLifecycleState);
-                } catch (LifeCycleException e) {
-                    throw new ClientException("Failed to initialize document lifecycle", e);
-                }
-            } else {
-                log.debug("No lifecycle service registered");
-            }
-
-            // init document with data from doc model
-            docModel = writeModel(doc, docModel);
-
-            if (!Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING))) {
-                // during remote publishing we want to skip versioning
-                // to avoid overwriting the version number
-                getVersioningService().doPostCreate(doc, options);
-                docModel = readModel(doc, docModel);
-            }
-
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options, null, null, true, false);
-            docModel = writeModel(doc, docModel);
-
-            createDocumentCount.inc();
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to create document: " + childName, e);
         }
+
+        Document folder = fillCreateOptions(parentRef, childName, options);
+
+        // get initial life cycle state info
+        String initialLifecycleState = null;
+        Object lifecycleStateInfo = docModel.getContextData(LifeCycleConstants.INITIAL_LIFECYCLE_STATE_OPTION_NAME);
+        if (lifecycleStateInfo instanceof String) {
+            initialLifecycleState = (String) lifecycleStateInfo;
+        }
+        notifyEvent(DocumentEventTypes.ABOUT_TO_CREATE, docModel, options, null, null, false, true); // no lifecycle
+                                                                                                     // yet
+        childName = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+        Document doc = folder.addChild(childName, typeName);
+
+        // update facets too since some of them may be dynamic
+        for (String facetName : docModel.getFacets()) {
+            if (!doc.getAllFacets().contains(facetName) && !FacetNames.IMMUTABLE.equals(facetName)) {
+                doc.addFacet(facetName);
+            }
+        }
+
+        // init document life cycle
+        LifeCycleService service = NXCore.getLifeCycleService();
+        if (service != null) {
+            try {
+                service.initialize(doc, initialLifecycleState);
+            } catch (LifeCycleException e) {
+                throw new ClientException("Failed to initialize document lifecycle", e);
+            }
+        } else {
+            log.debug("No lifecycle service registered");
+        }
+
+        // init document with data from doc model
+        docModel = writeModel(doc, docModel);
+
+        if (!Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST, VersioningService.SKIP_VERSIONING))) {
+            // during remote publishing we want to skip versioning
+            // to avoid overwriting the version number
+            getVersioningService().doPostCreate(doc, options);
+            docModel = readModel(doc, docModel);
+        }
+
+        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, docModel, options, null, null, true, false);
+        docModel = writeModel(doc, docModel);
+
+        createDocumentCount.inc();
+        return docModel;
     }
 
     protected Document fillCreateOptions(DocumentRef parentRef, String childName, Map<String, Serializable> options)
-            throws DocumentException, ClientException, DocumentSecurityException {
+            throws ClientException, DocumentSecurityException {
         Document folder;
         if (parentRef == null || EMPTY_PATH.equals(parentRef)) {
             folder = getSession().getNullDocument();
@@ -769,18 +723,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void importDocuments(List<DocumentModel> docModels) throws ClientException {
-        try {
-            for (DocumentModel docModel : docModels) {
-                importDocument(docModel);
-            }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to import documents", e);
+        for (DocumentModel docModel : docModels) {
+            importDocument(docModel);
         }
     }
 
     protected static final PathRef EMPTY_PATH = new PathRef("");
 
-    protected void importDocument(DocumentModel docModel) throws DocumentException, ClientException {
+    protected void importDocument(DocumentModel docModel) throws ClientException {
         if (!isAdministrator()) {
             throw new DocumentSecurityException("Only Administrator can import");
         }
@@ -848,33 +798,23 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             return hasPermission(doc, BROWSE);
         } catch (NoSuchDocumentException e) {
             return false;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check existence of " + docRef, e);
         }
     }
 
     @Override
     public DocumentModel getChild(DocumentRef parent, String name) throws ClientException {
-        try {
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            Document child = doc.getChild(name);
-            checkPermission(child, READ);
-            return readModel(child);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get child " + name, e);
-        }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        Document child = doc.getChild(name);
+        checkPermission(child, READ);
+        return readModel(child);
     }
 
     @Override
     public boolean hasChild(DocumentRef parent, String name) throws ClientException {
-        try {
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            return doc.hasChild(name);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check existence of child " + name, e);
-        }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        return doc.hasChild(name);
     }
 
     @Override
@@ -901,30 +841,26 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModelList getChildren(DocumentRef parent, String type, String perm, Filter filter, Sorter sorter)
             throws ClientException {
-        try {
-            if (perm == null) {
-                perm = READ;
-            }
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            DocumentModelList docs = new DocumentModelListImpl();
-            for (Document child : doc.getChildren()) {
-                if (hasPermission(child, perm)) {
-                    if (child.getType() != null && (type == null || type.equals(child.getType().getName()))) {
-                        DocumentModel childModel = readModel(child);
-                        if (filter == null || filter.accept(childModel)) {
-                            docs.add(childModel);
-                        }
+        if (perm == null) {
+            perm = READ;
+        }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        DocumentModelList docs = new DocumentModelListImpl();
+        for (Document child : doc.getChildren()) {
+            if (hasPermission(child, perm)) {
+                if (child.getType() != null && (type == null || type.equals(child.getType().getName()))) {
+                    DocumentModel childModel = readModel(child);
+                    if (filter == null || filter.accept(childModel)) {
+                        docs.add(childModel);
                     }
                 }
             }
-            if (sorter != null) {
-                Collections.sort(docs, sorter);
-            }
-            return docs;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get children for " + parent.toString(), e);
         }
+        if (sorter != null) {
+            Collections.sort(docs, sorter);
+        }
+        return docs;
     }
 
     @Override
@@ -933,18 +869,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             // XXX TODO
             throw new ClientException("perm != null not implemented");
         }
-        try {
-            Document parent = resolveReference(parentRef);
-            checkPermission(parent, READ_CHILDREN);
-            List<String> ids = parent.getChildrenIds();
-            List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
-            for (String id : ids) {
-                refs.add(new IdRef(id));
-            }
-            return refs;
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+        Document parent = resolveReference(parentRef);
+        checkPermission(parent, READ_CHILDREN);
+        List<String> ids = parent.getChildrenIds();
+        List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
+        for (String id : ids) {
+            refs.add(new IdRef(id));
         }
+        return refs;
     }
 
     @Override
@@ -966,13 +898,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel getDocument(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            return readModel(doc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get document " + docRef.toString(), e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return readModel(doc);
     }
 
     @Override
@@ -983,8 +911,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             try {
                 doc = resolveReference(docRef);
                 checkPermission(doc, READ);
-            } catch (DocumentException e) {
-                // no permission, or other low-level error
+            } catch (DocumentSecurityException e) {
+                // no permission
                 continue;
             }
             docs.add(readModel(doc));
@@ -994,110 +922,86 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModelList getFiles(DocumentRef parent) throws ClientException {
-        try {
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            DocumentModelList docs = new DocumentModelListImpl();
-            for (Document child : doc.getChildren()) {
-                if (!child.isFolder() && hasPermission(child, READ)) {
-                    docs.add(readModel(child));
-                }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        DocumentModelList docs = new DocumentModelListImpl();
+        for (Document child : doc.getChildren()) {
+            if (!child.isFolder() && hasPermission(child, READ)) {
+                docs.add(readModel(child));
             }
-            return docs;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get leaf children for " + parent.toString(), e);
         }
+        return docs;
     }
 
     @Override
     public DocumentModelList getFiles(DocumentRef parent, Filter filter, Sorter sorter) throws ClientException {
-        try {
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            DocumentModelList docs = new DocumentModelListImpl();
-            for (Document child : doc.getChildren()) {
-                if (!child.isFolder() && hasPermission(child, READ)) {
-                    DocumentModel docModel = readModel(doc);
-                    if (filter == null || filter.accept(docModel)) {
-                        docs.add(readModel(child));
-                    }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        DocumentModelList docs = new DocumentModelListImpl();
+        for (Document child : doc.getChildren()) {
+            if (!child.isFolder() && hasPermission(child, READ)) {
+                DocumentModel docModel = readModel(doc);
+                if (filter == null || filter.accept(docModel)) {
+                    docs.add(readModel(child));
                 }
             }
-            if (sorter != null) {
-                Collections.sort(docs, sorter);
-            }
-            return docs;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get files for " + parent.toString(), e);
         }
+        if (sorter != null) {
+            Collections.sort(docs, sorter);
+        }
+        return docs;
     }
 
     @Override
     public DocumentModelList getFolders(DocumentRef parent) throws ClientException {
-        try {
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            DocumentModelList docs = new DocumentModelListImpl();
-            for (Document child : doc.getChildren()) {
-                if (child.isFolder() && hasPermission(child, READ)) {
-                    docs.add(readModel(child));
-                }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        DocumentModelList docs = new DocumentModelListImpl();
+        for (Document child : doc.getChildren()) {
+            if (child.isFolder() && hasPermission(child, READ)) {
+                docs.add(readModel(child));
             }
-            return docs;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get folders " + parent, e);
         }
+        return docs;
     }
 
     @Override
     public DocumentModelList getFolders(DocumentRef parent, Filter filter, Sorter sorter) throws ClientException {
-        try {
-            Document doc = resolveReference(parent);
-            checkPermission(doc, READ_CHILDREN);
-            DocumentModelList docs = new DocumentModelListImpl();
-            for (Document child : doc.getChildren()) {
-                if (child.isFolder() && hasPermission(child, READ)) {
-                    DocumentModel childModel = readModel(child);
-                    if (filter == null || filter.accept(childModel)) {
-                        docs.add(childModel);
-                    }
+        Document doc = resolveReference(parent);
+        checkPermission(doc, READ_CHILDREN);
+        DocumentModelList docs = new DocumentModelListImpl();
+        for (Document child : doc.getChildren()) {
+            if (child.isFolder() && hasPermission(child, READ)) {
+                DocumentModel childModel = readModel(child);
+                if (filter == null || filter.accept(childModel)) {
+                    docs.add(childModel);
                 }
             }
-            if (sorter != null) {
-                Collections.sort(docs, sorter);
-            }
-            return docs;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get folders " + parent.toString(), e);
         }
+        if (sorter != null) {
+            Collections.sort(docs, sorter);
+        }
+        return docs;
     }
 
     @Override
     public DocumentRef getParentDocumentRef(DocumentRef docRef) throws ClientException {
-        try {
-            final Document doc = resolveReference(docRef);
-            Document parentDoc = doc.getParent();
-            return parentDoc != null ? new IdRef(parentDoc.getUUID()) : null;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get parent document ref for: " + docRef, e);
-        }
+        final Document doc = resolveReference(docRef);
+        Document parentDoc = doc.getParent();
+        return parentDoc != null ? new IdRef(parentDoc.getUUID()) : null;
     }
 
     @Override
     public DocumentModel getParentDocument(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document parentDoc = doc.getParent();
-            if (parentDoc == null) {
-                return null;
-            }
-            if (!hasPermission(parentDoc, READ)) {
-                throw new DocumentSecurityException("Privilege READ is not granted to " + getPrincipal().getName());
-            }
-            return readModel(parentDoc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get parent document of " + docRef, e);
+        Document doc = resolveReference(docRef);
+        Document parentDoc = doc.getParent();
+        if (parentDoc == null) {
+            return null;
         }
+        if (!hasPermission(parentDoc, READ)) {
+            throw new DocumentSecurityException("Privilege READ is not granted to " + getPrincipal().getName());
+        }
+        return readModel(parentDoc);
     }
 
     @Override
@@ -1108,44 +1012,31 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
 
         final List<DocumentModel> docsList = new ArrayList<DocumentModel>();
-        try {
-            Document doc = resolveReference(docRef);
-            while (doc != null && !"/".equals(doc.getPath())) {
-                // XXX OG: shouldn't we check BROWSE and READ_PROPERTIES
-                // instead?
-                if (!hasPermission(doc, READ)) {
-                    break;
-                }
-                docsList.add(readModel(doc));
-                doc = doc.getParent();
+        Document doc = resolveReference(docRef);
+        while (doc != null && !"/".equals(doc.getPath())) {
+            // XXX OG: shouldn't we check BROWSE and READ_PROPERTIES
+            // instead?
+            if (!hasPermission(doc, READ)) {
+                break;
             }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get parent documents: " + docRef, e);
+            docsList.add(readModel(doc));
+            doc = doc.getParent();
         }
         Collections.reverse(docsList);
-
         return docsList;
     }
 
     @Override
     public DocumentModel getRootDocument() throws ClientException {
-        try {
-            return readModel(getSession().getRootDocument());
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get the root document", e);
-        }
+        return readModel(getSession().getRootDocument());
     }
 
     @Override
     public boolean hasChildren(DocumentRef docRef) throws ClientException {
-        try {
-            // TODO: validate permission check with td
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, BROWSE);
-            return doc.hasChildren();
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check for children for " + docRef, e);
-        }
+        // TODO: validate permission check with td
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, BROWSE);
+        return doc.hasChildren();
     }
 
     @Override
@@ -1330,42 +1221,34 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public void removeChildren(DocumentRef docRef) throws ClientException {
         // TODO: check req permissions with td
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, REMOVE_CHILDREN);
-            List<Document> children = doc.getChildren();
-            // remove proxies first, otherwise they could become dangling
-            for (Document child : children) {
-                if (child.isProxy()) {
-                    if (hasPermission(child, REMOVE)) {
-                        removeNotifyOneDoc(child);
-                    }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, REMOVE_CHILDREN);
+        List<Document> children = doc.getChildren();
+        // remove proxies first, otherwise they could become dangling
+        for (Document child : children) {
+            if (child.isProxy()) {
+                if (hasPermission(child, REMOVE)) {
+                    removeNotifyOneDoc(child);
                 }
             }
-            // then remove regular docs or versions, both of which could be proxies targets
-            for (Document child : children) {
-                if (!child.isProxy()) {
-                    if (hasPermission(child, REMOVE)) {
-                        removeNotifyOneDoc(child);
-                    }
+        }
+        // then remove regular docs or versions, both of which could be proxies targets
+        for (Document child : children) {
+            if (!child.isProxy()) {
+                if (hasPermission(child, REMOVE)) {
+                    removeNotifyOneDoc(child);
                 }
             }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to remove children for " + docRef, e);
         }
     }
 
     @Override
     public boolean canRemoveDocument(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            return canRemoveDocument(doc);
-        } catch (DocumentException e) {
-            throw new ClientException(e);
-        }
+        Document doc = resolveReference(docRef);
+        return canRemoveDocument(doc);
     }
 
-    protected boolean canRemoveDocument(Document doc) throws ClientException, DocumentException {
+    protected boolean canRemoveDocument(Document doc) throws ClientException {
         // TODO must also check for proxies on live docs
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
@@ -1374,12 +1257,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 return false;
             }
             // find a working document to check security
-            Document working;
-            try {
-                working = doc.getSourceDocument();
-            } catch (DocumentException e) {
-                working = null;
-            }
+            Document working = doc.getSourceDocument();
             if (working != null) {
                 return hasPermission(working, WRITE_VERSION);
             } else {
@@ -1400,12 +1278,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void removeDocument(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            removeDocument(doc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to fetch document " + docRef + " before removal", e);
-        }
+        Document doc = resolveReference(docRef);
+        removeDocument(doc);
     }
 
     protected void removeDocument(Document doc) throws ClientException {
@@ -1417,13 +1291,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         } catch (ConcurrentUpdateException e) {
             throw new ConcurrentUpdateException("Failed to remove document " + doc.getUUID(), e);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to remove document " + doc.getUUID(), e);
         }
         deleteDocumentCount.inc();
     }
 
-    protected void removeNotifyOneDoc(Document doc) throws ClientException, DocumentException {
+    protected void removeNotifyOneDoc(Document doc) throws ClientException {
         // XXX notify with options if needed
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -1440,11 +1312,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             coreService.getVersionRemovalPolicy().removeVersions(getSession(), doc, this);
         } else {
             versionLabel = docModel.getVersionLabel();
-            try {
-                sourceDoc = doc.getSourceDocument();
-            } catch (DocumentException e) {
-                sourceDoc = null;
-            }
+            sourceDoc = doc.getSourceDocument();
             notifyEvent(DocumentEventTypes.ABOUT_TO_REMOVE_VERSION, docModel, options, null, null, true, true);
 
         }
@@ -1474,30 +1342,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Document[] docs = new Document[docRefs.length];
 
         for (int i = 0; i < docs.length; i++) {
-            try {
-                docs[i] = resolveReference(docRefs[i]);
-            } catch (DocumentException e) {
-                throw new ClientException("Failed to resolve reference " + docRefs[i], e);
-            }
+            docs[i] = resolveReference(docRefs[i]);
         }
         // TODO OPTIM: it's not guaranteed that getPath is cheap and
         // we call it a lot. Should use an object for pairs (document, path)
         // to call it just once per doc.
         Arrays.sort(docs, pathComparator);
         String[] paths = new String[docs.length];
-        try {
-            for (int i = 0; i < docs.length; i++) {
-                paths[i] = docs[i].getPath();
+        for (int i = 0; i < docs.length; i++) {
+            paths[i] = docs[i].getPath();
+        }
+        String latestRemoved = null;
+        for (int i = 0; i < docs.length; i++) {
+            if (i == 0 || !paths[i].startsWith(latestRemoved + "/")) {
+                removeDocument(docs[i]);
+                latestRemoved = paths[i];
             }
-            String latestRemoved = null;
-            for (int i = 0; i < docs.length; i++) {
-                if (i == 0 || !paths[i].startsWith(latestRemoved + "/")) {
-                    removeDocument(docs[i]);
-                    latestRemoved = paths[i];
-                }
-            }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get path of document", e);
         }
     }
 
@@ -1509,123 +1369,114 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             notifyEvent(DocumentEventTypes.SESSION_SAVED, null, options, null, null, true, false);
         } catch (ConcurrentUpdateException e) {
             throw new ConcurrentUpdateException("Failed to save session", e);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to save session", e);
         }
     }
 
     @Override
     public DocumentModel saveDocument(DocumentModel docModel) throws ClientException {
-        try {
-            if (docModel.getRef() == null) {
-                throw new ClientException(String.format("cannot save document '%s' with null reference: "
-                        + "document has probably not yet been created " + "in the repository with "
-                        + "'CoreSession.createDocument(docModel)'", docModel.getTitle()));
-            }
-            Document doc = resolveReference(docModel.getRef());
-            checkPermission(doc, WRITE_PROPERTIES);
-
-            Map<String, Serializable> options = getContextMapEventInfo(docModel);
-
-            boolean dirty = docModel.isDirty();
-
-            // document validation
-            if (dirty && getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
-                DocumentValidationReport report = getValidationService().validate(docModel, true);
-                if (report.hasError()) {
-                    throw new DocumentValidationException(report);
-                }
-            }
-
-            options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
-            // regular event, last chance to modify docModel
-            options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
-            options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
-            notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel, options, null, null, true, true);
-            String name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
-            // did the event change the name? not applicable to Root whose
-            // name is null/empty
-            if (name != null && !name.equals(docModel.getName())) {
-                doc = getSession().move(doc, doc.getParent(), name);
-            }
-
-            VersioningOption versioningOption = (VersioningOption) docModel.getContextData(VersioningService.VERSIONING_OPTION);
-            docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
-            String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
-            docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
-            Boolean disableAutoCheckOut = (Boolean) docModel.getContextData(VersioningService.DISABLE_AUTO_CHECKOUT);
-            docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
-            options.put(VersioningService.DISABLE_AUTO_CHECKOUT, disableAutoCheckOut);
-            // compat
-            boolean snapshot = Boolean.TRUE.equals(docModel.getContextData(ScopeType.REQUEST,
-                    VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
-            docModel.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
-            if (versioningOption == null && snapshot && dirty) {
-                String key = String.valueOf(docModel.getContextData(ScopeType.REQUEST,
-                        VersioningDocument.KEY_FOR_INC_OPTION));
-                docModel.putContextData(ScopeType.REQUEST, VersioningDocument.KEY_FOR_INC_OPTION, null);
-                versioningOption = "inc_major".equals(key) ? VersioningOption.MAJOR : VersioningOption.MINOR;
-            }
-
-            if (!docModel.isImmutable()) {
-                // pre-save versioning
-                boolean checkout = getVersioningService().isPreSaveDoingCheckOut(doc, dirty, versioningOption, options);
-                if (checkout) {
-                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
-                }
-                versioningOption = getVersioningService().doPreSave(doc, dirty, versioningOption, checkinComment,
-                        options);
-                if (checkout) {
-                    DocumentModel checkedOutDoc = readModel(doc);
-                    notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, checkedOutDoc, options, null, null, true, false);
-                }
-            }
-
-            boolean allowVersionWrite = Boolean.TRUE.equals(docModel.getContextData(ALLOW_VERSION_WRITE));
-            docModel.putContextData(ALLOW_VERSION_WRITE, null);
-            boolean setReadWrite = allowVersionWrite && doc.isVersion() && doc.isReadOnly();
-
-            // actual save
-            if (setReadWrite) {
-                doc.setReadOnly(false);
-            }
-            docModel = writeModel(doc, docModel);
-            if (setReadWrite) {
-                doc.setReadOnly(true);
-            }
-
-            Document checkedInDoc = null;
-            if (!docModel.isImmutable()) {
-                // post-save versioning
-                boolean checkin = getVersioningService().isPostSaveDoingCheckIn(doc, versioningOption, options);
-                if (checkin) {
-                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
-                }
-                checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
-            }
-
-            // post-save events
-            docModel = readModel(doc);
-            if (checkedInDoc != null) {
-                DocumentRef checkedInVersionRef = new IdRef(checkedInDoc.getUUID());
-                notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
-            }
-            notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
-            updateDocumentCount.inc();
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to save document " + docModel, e);
+        if (docModel.getRef() == null) {
+            throw new ClientException(String.format(
+                    "cannot save document '%s' with null reference: " + "document has probably not yet been created "
+                            + "in the repository with " + "'CoreSession.createDocument(docModel)'",
+                    docModel.getTitle()));
         }
+        Document doc = resolveReference(docModel.getRef());
+        checkPermission(doc, WRITE_PROPERTIES);
+
+        Map<String, Serializable> options = getContextMapEventInfo(docModel);
+
+        boolean dirty = docModel.isDirty();
+
+        // document validation
+        if (dirty && getValidationService().isActivated(DocumentValidationService.CTX_SAVEDOC, options)) {
+            DocumentValidationReport report = getValidationService().validate(docModel, true);
+            if (report.hasError()) {
+                throw new DocumentValidationException(report);
+            }
+        }
+
+        options.put(CoreEventConstants.PREVIOUS_DOCUMENT_MODEL, readModel(doc));
+        // regular event, last chance to modify docModel
+        options.put(CoreEventConstants.DESTINATION_NAME, docModel.getName());
+        options.put(CoreEventConstants.DOCUMENT_DIRTY, dirty);
+        notifyEvent(DocumentEventTypes.BEFORE_DOC_UPDATE, docModel, options, null, null, true, true);
+        String name = (String) options.get(CoreEventConstants.DESTINATION_NAME);
+        // did the event change the name? not applicable to Root whose
+        // name is null/empty
+        if (name != null && !name.equals(docModel.getName())) {
+            doc = getSession().move(doc, doc.getParent(), name);
+        }
+
+        VersioningOption versioningOption = (VersioningOption) docModel.getContextData(
+                VersioningService.VERSIONING_OPTION);
+        docModel.putContextData(VersioningService.VERSIONING_OPTION, null);
+        String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
+        docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+        Boolean disableAutoCheckOut = (Boolean) docModel.getContextData(VersioningService.DISABLE_AUTO_CHECKOUT);
+        docModel.putContextData(VersioningService.DISABLE_AUTO_CHECKOUT, null);
+        options.put(VersioningService.DISABLE_AUTO_CHECKOUT, disableAutoCheckOut);
+        // compat
+        boolean snapshot = Boolean.TRUE.equals(
+                docModel.getContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY));
+        docModel.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, null);
+        if (versioningOption == null && snapshot && dirty) {
+            String key = String.valueOf(
+                    docModel.getContextData(ScopeType.REQUEST, VersioningDocument.KEY_FOR_INC_OPTION));
+            docModel.putContextData(ScopeType.REQUEST, VersioningDocument.KEY_FOR_INC_OPTION, null);
+            versioningOption = "inc_major".equals(key) ? VersioningOption.MAJOR : VersioningOption.MINOR;
+        }
+
+        if (!docModel.isImmutable()) {
+            // pre-save versioning
+            boolean checkout = getVersioningService().isPreSaveDoingCheckOut(doc, dirty, versioningOption, options);
+            if (checkout) {
+                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
+            }
+            versioningOption = getVersioningService().doPreSave(doc, dirty, versioningOption, checkinComment, options);
+            if (checkout) {
+                DocumentModel checkedOutDoc = readModel(doc);
+                notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, checkedOutDoc, options, null, null, true, false);
+            }
+        }
+
+        boolean allowVersionWrite = Boolean.TRUE.equals(docModel.getContextData(ALLOW_VERSION_WRITE));
+        docModel.putContextData(ALLOW_VERSION_WRITE, null);
+        boolean setReadWrite = allowVersionWrite && doc.isVersion() && doc.isReadOnly();
+
+        // actual save
+        if (setReadWrite) {
+            doc.setReadOnly(false);
+        }
+        docModel = writeModel(doc, docModel);
+        if (setReadWrite) {
+            doc.setReadOnly(true);
+        }
+
+        Document checkedInDoc = null;
+        if (!docModel.isImmutable()) {
+            // post-save versioning
+            boolean checkin = getVersioningService().isPostSaveDoingCheckIn(doc, versioningOption, options);
+            if (checkin) {
+                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
+            }
+            checkedInDoc = getVersioningService().doPostSave(doc, versioningOption, checkinComment, options);
+        }
+
+        // post-save events
+        docModel = readModel(doc);
+        if (checkedInDoc != null) {
+            DocumentRef checkedInVersionRef = new IdRef(checkedInDoc.getUUID());
+            notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
+        }
+        notifyEvent(DocumentEventTypes.DOCUMENT_UPDATED, docModel, options, null, null, true, false);
+        updateDocumentCount.inc();
+        return docModel;
     }
 
     @Override
     @Deprecated
     public boolean isDirty(DocumentRef docRef) throws ClientException {
-        try {
-            return resolveReference(docRef).isCheckedOut();
-        } catch (DocumentException e) {
-            throw new ClientException(e);
-        }
+        return resolveReference(docRef).isCheckedOut();
     }
 
     @Override
@@ -1640,20 +1491,16 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public DocumentModel getSourceDocument(DocumentRef docRef) throws ClientException {
         assert null != docRef;
 
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            Document headDocument = doc.getSourceDocument();
-            if (headDocument == null) {
-                throw new DocumentException("Source document has been deleted");
-            }
-            return readModel(headDocument);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get head document for " + docRef, e);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        Document headDocument = doc.getSourceDocument();
+        if (headDocument == null) {
+            throw new NoSuchDocumentException("Source document has been deleted");
         }
+        return readModel(headDocument);
     }
 
-    protected VersionModel getVersionModel(Document version) throws DocumentException {
+    protected VersionModel getVersionModel(Document version) {
         VersionModel versionModel = new VersionModelImpl();
         versionModel.setId(version.getUUID());
         versionModel.setCreated(version.getVersionCreationDate());
@@ -1664,98 +1511,70 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public VersionModel getLastVersion(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            Document version = doc.getLastVersion();
-            return version == null ? null : getVersionModel(version);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get versions for " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        Document version = doc.getLastVersion();
+        return version == null ? null : getVersionModel(version);
     }
 
     @Override
     public DocumentModel getLastDocumentVersion(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            Document version = doc.getLastVersion();
-            return version == null ? null : readModel(version);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get versions for " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        Document version = doc.getLastVersion();
+        return version == null ? null : readModel(version);
     }
 
     @Override
     public DocumentRef getLastDocumentVersionRef(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            Document version = doc.getLastVersion();
-            return version == null ? null : new IdRef(version.getUUID());
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get versions for " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        Document version = doc.getLastVersion();
+        return version == null ? null : new IdRef(version.getUUID());
     }
 
     @Override
     public List<DocumentRef> getVersionsRefs(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            List<String> ids = doc.getVersionsIds();
-            List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
-            for (String id : ids) {
-                refs.add(new IdRef(id));
-            }
-            return refs;
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        List<String> ids = doc.getVersionsIds();
+        List<DocumentRef> refs = new ArrayList<DocumentRef>(ids.size());
+        for (String id : ids) {
+            refs.add(new IdRef(id));
         }
+        return refs;
     }
 
     @Override
     public List<DocumentModel> getVersions(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            List<Document> docVersions = doc.getVersions();
-            List<DocumentModel> versions = new ArrayList<DocumentModel>(docVersions.size());
-            for (Document version : docVersions) {
-                versions.add(readModel(version));
-            }
-            return versions;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get versions for " + docRef, e);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        List<Document> docVersions = doc.getVersions();
+        List<DocumentModel> versions = new ArrayList<DocumentModel>(docVersions.size());
+        for (Document version : docVersions) {
+            versions.add(readModel(version));
         }
+        return versions;
     }
 
     @Override
     public List<VersionModel> getVersionsForDocument(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            List<Document> docVersions = doc.getVersions();
-            List<VersionModel> versions = new ArrayList<VersionModel>(docVersions.size());
-            for (Document version : docVersions) {
-                versions.add(getVersionModel(version));
-            }
-            return versions;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get versions for " + docRef, e);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        List<Document> docVersions = doc.getVersions();
+        List<VersionModel> versions = new ArrayList<VersionModel>(docVersions.size());
+        for (Document version : docVersions) {
+            versions.add(getVersionModel(version));
         }
+        return versions;
 
     }
 
     @Override
     public DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document ver = resolveReference(versionRef);
-            return restoreToVersion(doc, ver, false, true);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to restore document", e);
-        }
+        Document doc = resolveReference(docRef);
+        Document ver = resolveReference(versionRef);
+        return restoreToVersion(doc, ver, false, true);
     }
 
     @Override
@@ -1768,134 +1587,110 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Deprecated
     public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation)
             throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document ver = doc.getVersion(version.getLabel());
-            return restoreToVersion(doc, ver, skipSnapshotCreation, false);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to restore document", e);
-        }
+        Document doc = resolveReference(docRef);
+        Document ver = doc.getVersion(version.getLabel());
+        return restoreToVersion(doc, ver, skipSnapshotCreation, false);
     }
 
     @Override
     public DocumentModel restoreToVersion(DocumentRef docRef, DocumentRef versionRef, boolean skipSnapshotCreation,
             boolean skipCheckout) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document ver = resolveReference(versionRef);
-            return restoreToVersion(doc, ver, skipSnapshotCreation, skipCheckout);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to restore document", e);
-        }
+        Document doc = resolveReference(docRef);
+        Document ver = resolveReference(versionRef);
+        return restoreToVersion(doc, ver, skipSnapshotCreation, skipCheckout);
     }
 
     protected DocumentModel restoreToVersion(Document doc, Document version, boolean skipSnapshotCreation,
             boolean skipCheckout) throws ClientException {
-        try {
-            checkPermission(doc, WRITE_VERSION);
+        checkPermission(doc, WRITE_VERSION);
 
-            DocumentModel docModel = readModel(doc);
+        DocumentModel docModel = readModel(doc);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
 
-            // we're about to overwrite the document, make sure it's archived
-            if (!skipSnapshotCreation && doc.isCheckedOut()) {
-                String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
-                docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
-                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
-                Document ver = getVersioningService().doCheckIn(doc, null, checkinComment);
-                docModel.refresh(DocumentModel.REFRESH_STATE, null);
-                notifyCheckedInVersion(docModel, new IdRef(ver.getUUID()), null, checkinComment);
-            }
-
-            // FIXME: the fields are hardcoded. should be moved in versioning
-            // component
-            // HOW?
-            final Long majorVer = (Long) doc.getPropertyValue("major_version");
-            final Long minorVer = (Long) doc.getPropertyValue("minor_version");
-            if (majorVer != null || minorVer != null) {
-                options.put(VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY, majorVer);
-                options.put(VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY, minorVer);
-            }
-            // add the uuid of the version being restored
-            String versionUUID = version.getUUID();
-            options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY, versionUUID);
-
-            notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel, options, null, null, true, true);
-            writeModel(doc, docModel);
-
-            doc.restore(version);
-            // re-read doc model after restoration
-            docModel = readModel(doc);
-            notifyEvent(DocumentEventTypes.DOCUMENT_RESTORED, docModel, options, null, docModel.getVersionLabel(),
-                    true, false);
-            docModel = writeModel(doc, docModel);
-
-            if (!skipCheckout) {
-                // restore gives us a checked in document, so do a checkout
-                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
-                getVersioningService().doCheckOut(doc);
-                docModel = readModel(doc);
-                notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
-            }
-
-            log.debug("Document restored to version:" + version.getUUID());
-            return docModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to restore document " + doc, e);
+        // we're about to overwrite the document, make sure it's archived
+        if (!skipSnapshotCreation && doc.isCheckedOut()) {
+            String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
+            docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
+            Document ver = getVersioningService().doCheckIn(doc, null, checkinComment);
+            docModel.refresh(DocumentModel.REFRESH_STATE, null);
+            notifyCheckedInVersion(docModel, new IdRef(ver.getUUID()), null, checkinComment);
         }
+
+        // FIXME: the fields are hardcoded. should be moved in versioning
+        // component
+        // HOW?
+        final Long majorVer = (Long) doc.getPropertyValue("major_version");
+        final Long minorVer = (Long) doc.getPropertyValue("minor_version");
+        if (majorVer != null || minorVer != null) {
+            options.put(VersioningDocument.CURRENT_DOCUMENT_MAJOR_VERSION_KEY, majorVer);
+            options.put(VersioningDocument.CURRENT_DOCUMENT_MINOR_VERSION_KEY, minorVer);
+        }
+        // add the uuid of the version being restored
+        String versionUUID = version.getUUID();
+        options.put(VersioningDocument.RESTORED_VERSION_UUID_KEY, versionUUID);
+
+        notifyEvent(DocumentEventTypes.BEFORE_DOC_RESTORE, docModel, options, null, null, true, true);
+        writeModel(doc, docModel);
+
+        doc.restore(version);
+        // re-read doc model after restoration
+        docModel = readModel(doc);
+        notifyEvent(DocumentEventTypes.DOCUMENT_RESTORED, docModel, options, null, docModel.getVersionLabel(), true,
+                false);
+        docModel = writeModel(doc, docModel);
+
+        if (!skipCheckout) {
+            // restore gives us a checked in document, so do a checkout
+            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
+            getVersioningService().doCheckOut(doc);
+            docModel = readModel(doc);
+            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
+        }
+
+        log.debug("Document restored to version:" + version.getUUID());
+        return docModel;
     }
 
     @Override
     public DocumentRef getBaseVersion(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            Document ver = doc.getBaseVersion();
-            if (ver == null) {
-                return null;
-            }
-            checkPermission(ver, READ);
-            return new IdRef(ver.getUUID());
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        Document ver = doc.getBaseVersion();
+        if (ver == null) {
+            return null;
         }
+        checkPermission(ver, READ);
+        return new IdRef(ver.getUUID());
     }
 
     @Override
     @Deprecated
     public DocumentModel checkIn(DocumentRef docRef, VersionModel ver) throws ClientException {
-        try {
-            DocumentRef verRef = checkIn(docRef, VersioningOption.MINOR, ver == null ? null : ver.getDescription());
-            return readModel(resolveReference(verRef));
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check in document " + docRef, e);
-        }
+        DocumentRef verRef = checkIn(docRef, VersioningOption.MINOR, ver == null ? null : ver.getDescription());
+        return readModel(resolveReference(verRef));
     }
 
     @Override
     public DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment)
             throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_PROPERTIES);
-            DocumentModel docModel = readModel(doc);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, WRITE_PROPERTIES);
+        DocumentModel docModel = readModel(doc);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
-            writeModel(doc, docModel);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
+        writeModel(doc, docModel);
 
-            Document version = getVersioningService().doCheckIn(doc, option, checkinComment);
+        Document version = getVersioningService().doCheckIn(doc, option, checkinComment);
 
-            docModel = readModel(doc);
-            DocumentRef checkedInVersionRef = new IdRef(version.getUUID());
-            notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
-            writeModel(doc, docModel);
+        docModel = readModel(doc);
+        DocumentRef checkedInVersionRef = new IdRef(version.getUUID());
+        notifyCheckedInVersion(docModel, checkedInVersionRef, options, checkinComment);
+        writeModel(doc, docModel);
 
-            return checkedInVersionRef;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check in document " + docRef, e);
-        }
+        return checkedInVersionRef;
     }
 
     /**
@@ -1937,69 +1732,44 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void checkOut(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            // TODO: add a new permission names CHECKOUT and use it instead of
-            // WRITE_PROPERTIES
-            checkPermission(doc, WRITE_PROPERTIES);
-            DocumentModel docModel = readModel(doc);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
+        Document doc = resolveReference(docRef);
+        // TODO: add a new permission names CHECKOUT and use it instead of
+        // WRITE_PROPERTIES
+        checkPermission(doc, WRITE_PROPERTIES);
+        DocumentModel docModel = readModel(doc);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
 
-            notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
+        notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
 
-            getVersioningService().doCheckOut(doc);
-            docModel = readModel(doc);
+        getVersioningService().doCheckOut(doc);
+        docModel = readModel(doc);
 
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
-            writeModel(doc, docModel);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check out document " + docRef, e);
-        }
-    }
-
-    public void internalCheckOut(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check out document " + docRef, e);
-        }
+        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
+        writeModel(doc, docModel);
     }
 
     @Override
     public boolean isCheckedOut(DocumentRef docRef) throws ClientException {
         assert null != docRef;
-
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, BROWSE);
-            return doc.isCheckedOut();
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to check out document " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, BROWSE);
+        return doc.isCheckedOut();
     }
 
     @Override
     public String getVersionSeriesId(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            return doc.getVersionSeriesId();
-        } catch (DocumentException e) {
-            throw new ClientException(e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.getVersionSeriesId();
     }
 
     @Override
     public DocumentModel getWorkingCopy(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_VERSION);
-            Document pwc = doc.getWorkingCopy();
-            checkPermission(pwc, READ);
-            return pwc == null ? null : readModel(pwc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get versions for " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_VERSION);
+        Document pwc = doc.getWorkingCopy();
+        checkPermission(pwc, READ);
+        return pwc == null ? null : readModel(pwc);
     }
 
     @Override
@@ -2008,17 +1778,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (id != null) {
             return getDocument(new IdRef(id));
         }
-        try {
-            Document doc = getSession().getVersion(versionableId, versionModel);
-            if (doc == null) {
-                return null;
-            }
-            checkPermission(doc, READ_PROPERTIES);
-            checkPermission(doc, READ_VERSION);
-            return readModel(doc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get version " + versionModel.getLabel() + " for " + versionableId, e);
+        Document doc = getSession().getVersion(versionableId, versionModel);
+        if (doc == null) {
+            return null;
         }
+        checkPermission(doc, READ_PROPERTIES);
+        checkPermission(doc, READ_VERSION);
+        return readModel(doc);
     }
 
     @Override
@@ -2032,59 +1798,46 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (id != null) {
             return getDocument(new IdRef(id));
         }
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ_PROPERTIES);
-            checkPermission(doc, READ_VERSION);
-            String docPath = doc.getPath();
-            doc = doc.getVersion(version.getLabel());
-            if (doc == null) {
-                // SQL Storage uses to return null if version not found
-                log.debug("Version " + version.getLabel() + " does not exist for " + docPath);
-                return null;
-            }
-            log.debug("Retrieved the version " + version.getLabel() + " of the document " + docPath);
-            return readModel(doc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get version for " + docRef, e);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_PROPERTIES);
+        checkPermission(doc, READ_VERSION);
+        String docPath = doc.getPath();
+        doc = doc.getVersion(version.getLabel());
+        if (doc == null) {
+            // SQL Storage uses to return null if version not found
+            log.debug("Version " + version.getLabel() + " does not exist for " + docPath);
+            return null;
         }
+        log.debug("Retrieved the version " + version.getLabel() + " of the document " + docPath);
+        return readModel(doc);
     }
 
     @Override
     public DocumentModel createProxy(DocumentRef docRef, DocumentRef folderRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document fold = resolveReference(folderRef);
-            checkPermission(doc, READ);
-            checkPermission(fold, ADD_CHILDREN);
-            return createProxyInternal(doc, fold, new HashMap<String, Serializable>());
-        } catch (DocumentException e) {
-            throw new ClientException(e);
-        }
+        Document doc = resolveReference(docRef);
+        Document fold = resolveReference(folderRef);
+        checkPermission(doc, READ);
+        checkPermission(fold, ADD_CHILDREN);
+        return createProxyInternal(doc, fold, new HashMap<String, Serializable>());
     }
 
     protected DocumentModel createProxyInternal(Document doc, Document folder, Map<String, Serializable> options)
             throws ClientException {
-        try {
-            // create the new proxy
-            Document proxy = getSession().createProxy(doc, folder);
-            DocumentModel proxyModel = readModel(proxy);
+        // create the new proxy
+        Document proxy = getSession().createProxy(doc, folder);
+        DocumentModel proxyModel = readModel(proxy);
 
-            notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel, options, null, null, true, false);
-            notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED, proxyModel, options, null, null, true, false);
-            DocumentModel folderModel = readModel(folder);
-            notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, folderModel, options, null, null, true, false);
-            return proxyModel;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to create proxy for doc: " + doc, e);
-        }
+        notifyEvent(DocumentEventTypes.DOCUMENT_CREATED, proxyModel, options, null, null, true, false);
+        notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED, proxyModel, options, null, null, true, false);
+        DocumentModel folderModel = readModel(folder);
+        notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, folderModel, options, null, null, true, false);
+        return proxyModel;
     }
 
     /**
      * Remove proxies for the same base document in the folder. doc may be a normal document or a proxy.
      */
-    protected List<String> removeExistingProxies(Document doc, Document folder) throws DocumentException,
-            ClientException {
+    protected List<String> removeExistingProxies(Document doc, Document folder) throws ClientException {
         Collection<Document> otherProxies = getSession().getProxies(doc, folder);
         List<String> removedProxyIds = new ArrayList<String>(otherProxies.size());
         for (Document otherProxy : otherProxies) {
@@ -2101,7 +1854,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return the proxy if it was updated, or {@code null} if none or several were found
      */
     protected DocumentModel updateExistingProxies(Document doc, Document folder, Document target)
-            throws DocumentException, ClientException {
+            throws ClientException {
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
@@ -2118,52 +1871,44 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModelList getProxies(DocumentRef docRef, DocumentRef folderRef) throws ClientException {
-        try {
-            Document folder = null;
-            if (folderRef != null) {
-                folder = resolveReference(folderRef);
-                checkPermission(folder, READ_CHILDREN);
-            }
-            Document doc = resolveReference(docRef);
-            Collection<Document> children = getSession().getProxies(doc, folder);
-            DocumentModelList docs = new DocumentModelListImpl();
-            for (Document child : children) {
-                if (hasPermission(child, READ)) {
-                    docs.add(readModel(child));
-                }
-            }
-            return docs;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get children for " + folderRef, e);
+        Document folder = null;
+        if (folderRef != null) {
+            folder = resolveReference(folderRef);
+            checkPermission(folder, READ_CHILDREN);
         }
+        Document doc = resolveReference(docRef);
+        Collection<Document> children = getSession().getProxies(doc, folder);
+        DocumentModelList docs = new DocumentModelListImpl();
+        for (Document child : children) {
+            if (hasPermission(child, READ)) {
+                docs.add(readModel(child));
+            }
+        }
+        return docs;
     }
 
     @Override
     public String[] getProxyVersions(DocumentRef docRef, DocumentRef folderRef) throws ClientException {
-        try {
-            Document folder = resolveReference(folderRef);
-            Document doc = resolveReference(docRef);
-            checkPermission(folder, READ_CHILDREN);
-            Collection<Document> children = getSession().getProxies(doc, folder);
-            if (children.isEmpty()) {
-                return null;
-            }
-            List<String> versions = new ArrayList<String>();
-            for (Document child : children) {
-                if (hasPermission(child, READ)) {
-                    Document target = child.getTargetDocument();
-                    if (target.isVersion()) {
-                        versions.add(target.getVersionLabel());
-                    } else {
-                        // live proxy
-                        versions.add("");
-                    }
+        Document folder = resolveReference(folderRef);
+        Document doc = resolveReference(docRef);
+        checkPermission(folder, READ_CHILDREN);
+        Collection<Document> children = getSession().getProxies(doc, folder);
+        if (children.isEmpty()) {
+            return null;
+        }
+        List<String> versions = new ArrayList<String>();
+        for (Document child : children) {
+            if (hasPermission(child, READ)) {
+                Document target = child.getTargetDocument();
+                if (target.isVersion()) {
+                    versions.add(target.getVersionLabel());
+                } else {
+                    // live proxy
+                    versions.add("");
                 }
             }
-            return versions.toArray(new String[versions.size()]);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get children for " + folderRef.toString(), e);
         }
+        return versions.toArray(new String[versions.size()]);
     }
 
     @Override
@@ -2174,73 +1919,43 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DataModel getDataModel(DocumentRef docRef, Schema schema) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            return DocumentModelFactory.createDataModel(doc, schema);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get data model for " + docRef + ':' + schema, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return DocumentModelFactory.createDataModel(doc, schema);
     }
 
     protected Object getDataModelField(DocumentRef docRef, String schema, String field) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            if (doc != null) {
-                checkPermission(doc, READ);
-                Schema docSchema = doc.getType().getSchema(schema);
-                if (docSchema != null) {
-                    String prefix = docSchema.getNamespace().prefix;
-                    if (prefix != null && prefix.length() > 0) {
-                        field = prefix + ':' + field;
-                    }
-                    return doc.getPropertyValue(field);
-                } else {
-                    log.warn("Cannot find schema with name=" + schema);
+        Document doc = resolveReference(docRef);
+        if (doc != null) {
+            checkPermission(doc, READ);
+            Schema docSchema = doc.getType().getSchema(schema);
+            if (docSchema != null) {
+                String prefix = docSchema.getNamespace().prefix;
+                if (prefix != null && prefix.length() > 0) {
+                    field = prefix + ':' + field;
                 }
+                return doc.getPropertyValue(field);
             } else {
-                log.warn("Cannot resolve docRef=" + docRef);
+                log.warn("Cannot find schema with name=" + schema);
             }
-            return null;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get data model field " + schema + ':' + field, e);
+        } else {
+            log.warn("Cannot resolve docRef=" + docRef);
         }
+        return null;
     }
 
     @Override
     public String getCurrentLifeCycleState(DocumentRef docRef) throws ClientException {
-        String lifeCycleState;
-        try {
-            Document doc = resolveReference(docRef);
-
-            checkPermission(doc, READ_LIFE_CYCLE);
-            lifeCycleState = doc.getLifeCycleState();
-        } catch (LifeCycleException e) {
-            ClientException ce = new ClientException("Failed to get life cycle " + docRef, e);
-            ce.fillInStackTrace();
-            throw ce;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        }
-        return lifeCycleState;
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_LIFE_CYCLE);
+        return doc.getLifeCycleState();
     }
 
     @Override
     public String getLifeCyclePolicy(DocumentRef docRef) throws ClientException {
-        String lifecyclePolicy;
-        try {
-            Document doc = resolveReference(docRef);
-
-            checkPermission(doc, READ_LIFE_CYCLE);
-            lifecyclePolicy = doc.getLifeCyclePolicy();
-        } catch (LifeCycleException e) {
-            ClientException ce = new ClientException("Failed to get life cycle policy" + docRef, e);
-            ce.fillInStackTrace();
-            throw ce;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        }
-        return lifecyclePolicy;
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_LIFE_CYCLE);
+        return doc.getLifeCyclePolicy();
     }
 
     /**
@@ -2254,38 +1969,27 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @since 5.9.3
      */
     private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_LIFE_CYCLE);
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, WRITE_LIFE_CYCLE);
 
-            if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
-                checkOut(docRef);
-                doc = resolveReference(docRef);
-            }
-            String formerStateName = doc.getLifeCycleState();
-            doc.followTransition(transition);
+        if (!doc.isVersion() && !doc.isProxy() && !doc.isCheckedOut()) {
+            checkOut(docRef);
+            doc = resolveReference(docRef);
+        }
+        String formerStateName = doc.getLifeCycleState();
+        doc.followTransition(transition);
 
-            // Construct a map holding meta information about the event.
-            Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
-            eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
-            eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO,
-                    doc.getLifeCycleState());
-            eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
-            String comment = (String) options.getScopedValue("comment");
-            DocumentModel docModel = readModel(doc);
-            notifyEvent(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT, docModel, eventOptions,
-                    DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
-            if (!docModel.isImmutable()) {
-                writeModel(doc, docModel);
-            }
-
-        } catch (LifeCycleException e) {
-            ClientException ce = new ClientException("Unable to follow transition <" + transition + "> for document : "
-                    + docRef, e);
-            ce.fillInStackTrace();
-            throw ce;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
+        // Construct a map holding meta information about the event.
+        Map<String, Serializable> eventOptions = new HashMap<String, Serializable>();
+        eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM, formerStateName);
+        eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TO, doc.getLifeCycleState());
+        eventOptions.put(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION, transition);
+        String comment = (String) options.getScopedValue("comment");
+        DocumentModel docModel = readModel(doc);
+        notifyEvent(org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSITION_EVENT, docModel, eventOptions,
+                DocumentEventCategories.EVENT_LIFE_CYCLE_CATEGORY, comment, true, false);
+        if (!docModel.isImmutable()) {
+            writeModel(doc, docModel);
         }
         return true; // throws if error
     }
@@ -2302,35 +2006,17 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public Collection<String> getAllowedStateTransitions(DocumentRef docRef) throws ClientException {
-        Collection<String> allowedStateTransitions;
-        try {
-            Document doc = resolveReference(docRef);
-
-            checkPermission(doc, READ_LIFE_CYCLE);
-            allowedStateTransitions = doc.getAllowedStateTransitions();
-        } catch (LifeCycleException e) {
-            ClientException ce = new ClientException(
-                    "Unable to get allowed state transitions for document : " + docRef, e);
-            ce.fillInStackTrace();
-            throw ce;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        }
-        return allowedStateTransitions;
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ_LIFE_CYCLE);
+        return doc.getAllowedStateTransitions();
     }
 
     @Override
     public void reinitLifeCycleState(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, WRITE_LIFE_CYCLE);
-            LifeCycleService service = NXCore.getLifeCycleService();
-            service.reinitLifeCycle(doc);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get content data " + docRef, e);
-        } catch (LifeCycleException e) {
-            throw new ClientException("Failed to reinit life cycle " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, WRITE_LIFE_CYCLE);
+        LifeCycleService service = NXCore.getLifeCycleService();
+        service.reinitLifeCycle(doc);
     }
 
     @Override
@@ -2352,23 +2038,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentRef[] getParentDocumentRefs(DocumentRef docRef) throws ClientException {
-
         final List<DocumentRef> docRefs = new ArrayList<DocumentRef>();
-        try {
-            final Document doc = resolveReference(docRef);
-
-            Document parentDoc = doc.getParent();
-            while (parentDoc != null) {
-                final DocumentRef parentDocRef = new IdRef(parentDoc.getUUID());
-                docRefs.add(parentDocRef);
-                parentDoc = parentDoc.getParent();
-            }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get all parent documents: " + docRef, e);
+        final Document doc = resolveReference(docRef);
+        Document parentDoc = doc.getParent();
+        while (parentDoc != null) {
+            final DocumentRef parentDocRef = new IdRef(parentDoc.getUUID());
+            docRefs.add(parentDocRef);
+            parentDoc = parentDoc.getParent();
         }
-
         DocumentRef[] refs = new DocumentRef[docRefs.size()];
-
         return docRefs.toArray(refs);
     }
 
@@ -2415,65 +2093,53 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public Lock setLock(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            // TODO: add a new permission named LOCK and use it instead of
-            // WRITE_PROPERTIES
-            checkPermission(doc, WRITE_PROPERTIES);
-            Lock lock = new Lock(getPrincipal().getName(), new GregorianCalendar());
-            Lock oldLock = doc.setLock(lock);
-            if (oldLock != null) {
-                throw new ClientException("Document already locked by " + oldLock.getOwner() + ": " + docRef);
-            }
-            DocumentModel docModel = readModel(doc);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put("lock", lock);
-            notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options, null, null, true, false);
-            return lock;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to set lock on " + docRef, e);
+        Document doc = resolveReference(docRef);
+        // TODO: add a new permission named LOCK and use it instead of
+        // WRITE_PROPERTIES
+        checkPermission(doc, WRITE_PROPERTIES);
+        Lock lock = new Lock(getPrincipal().getName(), new GregorianCalendar());
+        Lock oldLock = doc.setLock(lock);
+        if (oldLock != null) {
+            throw new ClientException("Document already locked by " + oldLock.getOwner() + ": " + docRef);
         }
+        DocumentModel docModel = readModel(doc);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        options.put("lock", lock);
+        notifyEvent(DocumentEventTypes.DOCUMENT_LOCKED, docModel, options, null, null, true, false);
+        return lock;
     }
 
     @Override
     public Lock getLockInfo(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            checkPermission(doc, READ);
-            return doc.getLock();
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get lock info on " + docRef, e);
-        }
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, READ);
+        return doc.getLock();
     }
 
     @Override
     public Lock removeLock(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            String owner;
-            if (hasPermission(docRef, UNLOCK)) {
-                // always unlock
-                owner = null;
-            } else {
-                owner = getPrincipal().getName();
-            }
-            Lock lock = doc.removeLock(owner);
-            if (lock == null) {
-                // there was no lock, we're done
-                return null;
-            }
-            if (lock.getFailed()) {
-                // lock removal failed due to owner check
-                throw new ClientException("Document already locked by " + lock.getOwner() + ": " + docRef);
-            }
-            DocumentModel docModel = readModel(doc);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            options.put("lock", lock);
-            notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel, options, null, null, true, false);
-            return lock;
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to set lock on " + docRef, e);
+        Document doc = resolveReference(docRef);
+        String owner;
+        if (hasPermission(docRef, UNLOCK)) {
+            // always unlock
+            owner = null;
+        } else {
+            owner = getPrincipal().getName();
         }
+        Lock lock = doc.removeLock(owner);
+        if (lock == null) {
+            // there was no lock, we're done
+            return null;
+        }
+        if (lock.getFailed()) {
+            // lock removal failed due to owner check
+            throw new ClientException("Document already locked by " + lock.getOwner() + ": " + docRef);
+        }
+        DocumentModel docModel = readModel(doc);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        options.put("lock", lock);
+        notifyEvent(DocumentEventTypes.DOCUMENT_UNLOCKED, docModel, options, null, null, true, false);
+        return lock;
     }
 
     protected boolean isAdministrator() {
@@ -2521,72 +2187,67 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section, boolean overwriteExistingProxy)
             throws ClientException {
-        try {
-            Document doc = resolveReference(docModel.getRef());
-            Document sec = resolveReference(section.getRef());
-            checkPermission(doc, READ);
-            checkPermission(sec, ADD_CHILDREN);
+        Document doc = resolveReference(docModel.getRef());
+        Document sec = resolveReference(section.getRef());
+        checkPermission(doc, READ);
+        checkPermission(sec, ADD_CHILDREN);
 
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-            DocumentModel proxy = null;
-            Document target;
-            if (docModel.isProxy() || docModel.isVersion()) {
-                target = doc;
-                if (overwriteExistingProxy) {
-                    if (docModel.isVersion()) {
-                        Document base = resolveReference(new IdRef(doc.getVersionSeriesId()));
-                        proxy = updateExistingProxies(base, sec, target);
-                    }
-                    if (proxy == null) {
-                        // remove previous
-                        List<String> removedProxyIds = removeExistingProxies(doc, sec);
-                        options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
-                    }
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        DocumentModel proxy = null;
+        Document target;
+        if (docModel.isProxy() || docModel.isVersion()) {
+            target = doc;
+            if (overwriteExistingProxy) {
+                if (docModel.isVersion()) {
+                    Document base = resolveReference(new IdRef(doc.getVersionSeriesId()));
+                    proxy = updateExistingProxies(base, sec, target);
                 }
-
-            } else {
-                String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
-                docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
-                if (doc.isCheckedOut() || doc.getLastVersion() == null) {
-                    if (!doc.isCheckedOut()) {
-                        // last version was deleted while leaving a checked in
-                        // doc. recreate a version
-                        notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
-                        getVersioningService().doCheckOut(doc);
-                        docModel = readModel(doc);
-                        notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
-                    }
-                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
-                    Document version = getVersioningService().doCheckIn(doc, null, checkinComment);
-                    docModel.refresh(DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT_LAZY, null);
-                    notifyCheckedInVersion(docModel, new IdRef(version.getUUID()), null, checkinComment);
-                }
-                // NXP-12921: use base version because we could need to publish
-                // a previous version (after restoring for example)
-                target = doc.getBaseVersion();
-                if (overwriteExistingProxy) {
-                    proxy = updateExistingProxies(doc, sec, target);
-                    if (proxy == null) {
-                        // no or several proxies, remove them
-                        List<String> removedProxyIds = removeExistingProxies(doc, sec);
-                        options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
-                    } else {
-                        // notify proxy updates
-                        notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, proxy, options, null, null, true, false);
-                        notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED, proxy, options, null, null, true,
-                                false);
-                        notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, section, options, null, null, true,
-                                false);
-                    }
+                if (proxy == null) {
+                    // remove previous
+                    List<String> removedProxyIds = removeExistingProxies(doc, sec);
+                    options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
                 }
             }
-            if (proxy == null) {
-                proxy = createProxyInternal(target, sec, options);
+
+        } else {
+            String checkinComment = (String) docModel.getContextData(VersioningService.CHECKIN_COMMENT);
+            docModel.putContextData(VersioningService.CHECKIN_COMMENT, null);
+            if (doc.isCheckedOut() || doc.getLastVersion() == null) {
+                if (!doc.isCheckedOut()) {
+                    // last version was deleted while leaving a checked in
+                    // doc. recreate a version
+                    notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKOUT, docModel, options, null, null, true, true);
+                    getVersioningService().doCheckOut(doc);
+                    docModel = readModel(doc);
+                    notifyEvent(DocumentEventTypes.DOCUMENT_CHECKEDOUT, docModel, options, null, null, true, false);
+                }
+                notifyEvent(DocumentEventTypes.ABOUT_TO_CHECKIN, docModel, options, null, null, true, true);
+                Document version = getVersioningService().doCheckIn(doc, null, checkinComment);
+                docModel.refresh(DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT_LAZY, null);
+                notifyCheckedInVersion(docModel, new IdRef(version.getUUID()), null, checkinComment);
             }
-            return proxy;
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+            // NXP-12921: use base version because we could need to publish
+            // a previous version (after restoring for example)
+            target = doc.getBaseVersion();
+            if (overwriteExistingProxy) {
+                proxy = updateExistingProxies(doc, sec, target);
+                if (proxy == null) {
+                    // no or several proxies, remove them
+                    List<String> removedProxyIds = removeExistingProxies(doc, sec);
+                    options.put(CoreEventConstants.REPLACED_PROXY_IDS, (Serializable) removedProxyIds);
+                } else {
+                    // notify proxy updates
+                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_UPDATED, proxy, options, null, null, true, false);
+                    notifyEvent(DocumentEventTypes.DOCUMENT_PROXY_PUBLISHED, proxy, options, null, null, true, false);
+                    notifyEvent(DocumentEventTypes.SECTION_CONTENT_PUBLISHED, section, options, null, null, true,
+                            false);
+                }
+            }
         }
+        if (proxy == null) {
+            proxy = createProxyInternal(target, sec, options);
+        }
+        return proxy;
     }
 
     @Override
@@ -2620,111 +2281,84 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     // walk the tree up until a accessible doc is found
     private DocumentModel getDirectAccessibleParent(DocumentRef docRef) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            Document parentDoc = doc.getParent();
-            if (parentDoc == null) {
-                return readModel(doc);
-            }
-            if (!hasPermission(parentDoc, READ)) {
-                String parentPath = parentDoc.getPath();
-                if ("/".equals(parentPath)) {
-                    return getRootDocument();
-                } else {
-                    // try on parent
-                    return getDirectAccessibleParent(new PathRef(parentDoc.getPath()));
-                }
-            }
-            return readModel(parentDoc);
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+        Document doc = resolveReference(docRef);
+        Document parentDoc = doc.getParent();
+        if (parentDoc == null) {
+            return readModel(doc);
         }
+        if (!hasPermission(parentDoc, READ)) {
+            String parentPath = parentDoc.getPath();
+            if ("/".equals(parentPath)) {
+                return getRootDocument();
+            } else {
+                // try on parent
+                return getDirectAccessibleParent(new PathRef(parentDoc.getPath()));
+            }
+        }
+        return readModel(parentDoc);
     }
 
     @Override
     public <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type)
-            throws ClientException, DocumentException {
-
-        Document doc;
-        try {
-            doc = resolveReference(ref);
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get document " + ref, e);
-        }
-
+            throws ClientException {
+        Document doc = resolveReference(ref);
         return doc.getSystemProp(systemProperty, type);
     }
 
     @Override
     public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value)
-            throws ClientException, DocumentException {
-        Document doc;
-        try {
-            doc = resolveReference(ref);
-            if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
-                DocumentModel docModel = readModel(doc);
-                Map<String, Serializable> options = new HashMap<String, Serializable>();
-                options.put(systemProperty, value != null);
-                notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
-            }
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get document " + ref, e);
+            throws ClientException {
+        Document doc = resolveReference(ref);
+        if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
+            DocumentModel docModel = readModel(doc);
+            Map<String, Serializable> options = new HashMap<String, Serializable>();
+            options.put(systemProperty, value != null);
+            notifyEvent(DocumentEventTypes.BINARYTEXT_UPDATED, docModel, options, null, null, false, true);
         }
         doc.setSystemProp(systemProperty, value);
     }
 
     @Override
     public void orderBefore(DocumentRef parent, String src, String dest) throws ClientException {
-        try {
-            if ((src == null) || (src.equals(dest))) {
-                return;
-            }
-            Document doc = resolveReference(parent);
-            doc.orderBefore(src, dest);
-            Map<String, Serializable> options = new HashMap<String, Serializable>();
-
-            // send event on container passing the reordered child as parameter
-            DocumentModel docModel = readModel(doc);
-            String comment = src;
-            options.put(CoreEventConstants.REORDERED_CHILD, src);
-            notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED, docModel, options, null, comment, true,
-                    false);
-
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to resolve documents: " + src + ", " + dest, e);
+        if ((src == null) || (src.equals(dest))) {
+            return;
         }
+        Document doc = resolveReference(parent);
+        doc.orderBefore(src, dest);
+        Map<String, Serializable> options = new HashMap<String, Serializable>();
+
+        // send event on container passing the reordered child as parameter
+        DocumentModel docModel = readModel(doc);
+        String comment = src;
+        options.put(CoreEventConstants.REORDERED_CHILD, src);
+        notifyEvent(DocumentEventTypes.DOCUMENT_CHILDREN_ORDER_CHANGED, docModel, options, null, comment, true, false);
     }
 
     @Override
     public DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
             throws ClientException {
-        try {
-            Document doc = resolveReference(ref);
-            if (doc == null) {
-                throw new ClientException("No Such Document: " + ref);
-            }
-
-            // permission checks
-            if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE | DocumentModel.REFRESH_CONTENT)) != 0) {
-                checkPermission(doc, READ);
-            }
-            if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
-                checkPermission(doc, READ_SECURITY);
-            }
-
-            DocumentModelRefresh refresh = DocumentModelFactory.refreshDocumentModel(doc, refreshFlags, schemas);
-
-            // ACPs need the session, so aren't done in the factory method
-            if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
-                refresh.acp = getSession().getMergedACP(doc);
-            }
-
-            return refresh;
-        } catch (ClientException e) {
-            throw e;
-        } catch (DocumentException | LifeCycleException e) {
-            throw new ClientException("Failed to get refresh data", e);
+        Document doc = resolveReference(ref);
+        if (doc == null) {
+            throw new ClientException("No Such Document: " + ref);
         }
+
+        // permission checks
+        if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE
+                | DocumentModel.REFRESH_CONTENT)) != 0) {
+            checkPermission(doc, READ);
+        }
+        if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
+            checkPermission(doc, READ_SECURITY);
+        }
+
+        DocumentModelRefresh refresh = DocumentModelFactory.refreshDocumentModel(doc, refreshFlags, schemas);
+
+        // ACPs need the session, so aren't done in the factory method
+        if ((refreshFlags & DocumentModel.REFRESH_ACP) != 0) {
+            refresh.acp = getSession().getMergedACP(doc);
+        }
+
+        return refresh;
     }
 
     @Override
@@ -2756,12 +2390,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
         String[] facetSchemas = facet.getSchemaNames();
         for (String schema : facetSchemas) {
-            try {
-                DataModel dm = DocumentModelFactory.createDataModel(doc, schemaManager.getSchema(schema));
-                docModel.getDataModels().put(schema, dm);
-            } catch (DocumentException e) {
-                throw new ClientException(e);
-            }
+            DataModel dm = DocumentModelFactory.createDataModel(doc, schemaManager.getSchema(schema));
+            docModel.getDataModels().put(schema, dm);
         }
     }
 
@@ -2772,26 +2402,18 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * This method does not check security rights.
      */
     protected Document getFirstParentDocumentWithFacet(DocumentRef docRef, String facet) throws ClientException {
-        try {
-            Document doc = resolveReference(docRef);
-            while (doc != null && !doc.hasFacet(facet)) {
-                doc = doc.getParent();
-            }
-            return doc;
-        } catch (DocumentException e) {
-            throw new ClientException(e);
+        Document doc = resolveReference(docRef);
+        while (doc != null && !doc.hasFacet(facet)) {
+            doc = doc.getParent();
         }
+        return doc;
     }
 
     @Override
     public Map<String, String> getBinaryFulltext(DocumentRef ref) throws ClientException {
-        try {
-            Document doc = resolveReference(ref);
-            checkPermission(doc, READ);
-            return getSession().getBinaryFulltext(doc.getUUID());
-        } catch (DocumentException e) {
-            throw new ClientException("Failed to get fulltext info  on " + ref, e);
-        }
+        Document doc = resolveReference(ref);
+        checkPermission(doc, READ);
+        return getSession().getBinaryFulltext(doc.getUUID());
     }
 
 }

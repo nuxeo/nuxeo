@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Lock;
@@ -595,8 +594,7 @@ public class SimpleDocumentModel implements DocumentModel {
     }
 
     @Override
-    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException,
-            DocumentException {
+    public <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException {
         throw new UnsupportedOperationException();
     }
 

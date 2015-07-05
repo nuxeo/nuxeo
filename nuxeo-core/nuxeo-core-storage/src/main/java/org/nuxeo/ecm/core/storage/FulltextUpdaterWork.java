@@ -20,7 +20,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -136,24 +135,14 @@ public class FulltextUpdaterWork extends AbstractWork {
         }
         for (DocumentModel doc : docs) {
             for (IndexAndText indexAndText : indexesAndText) {
-                try {
-                    session.setDocumentSystemProp(doc.getRef(), getFulltextPropertyName(indexAndText.indexName),
-                            indexAndText.text);
-                } catch (DocumentException e) {
-                    log.error("Could not set fulltext on: " + doc.getId(), e);
-                    continue;
-                }
+                session.setDocumentSystemProp(doc.getRef(), getFulltextPropertyName(indexAndText.indexName),
+                        indexAndText.text);
             }
         }
         if (isJob) {
             // reset job id
             for (DocumentModel doc : docs) {
-                try {
-                    session.setDocumentSystemProp(doc.getRef(), SYSPROP_FULLTEXT_JOBID, null);
-                } catch (DocumentException e) {
-                    log.error("Could not set fulltext on: " + doc.getId(), e);
-                    continue;
-                }
+                session.setDocumentSystemProp(doc.getRef(), SYSPROP_FULLTEXT_JOBID, null);
             }
         }
     }

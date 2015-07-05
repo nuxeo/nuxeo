@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -39,8 +38,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     }
 
-    protected SQLDocumentVersion(Node node, ComplexType type, SQLSession session, boolean readonly)
-            throws DocumentException {
+    protected SQLDocumentVersion(Node node, ComplexType type, SQLSession session, boolean readonly) {
         super(node, type, session, readonly);
         Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
         if (versionSeriesId == null) {
@@ -59,12 +57,12 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public boolean isCheckedOut() throws DocumentException {
+    public boolean isCheckedOut() {
         return false;
     }
 
     @Override
-    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+    public boolean isVersionSeriesCheckedOut() {
         if (versionableNode == null) {
             return false;
         }
@@ -72,22 +70,22 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public boolean isMajorVersion() throws DocumentException {
+    public boolean isMajorVersion() {
         return Long.valueOf(0).equals(getPropertyValue(Model.MAIN_MINOR_VERSION_PROP));
     }
 
     @Override
-    public boolean isLatestVersion() throws DocumentException {
+    public boolean isLatestVersion() {
         return Boolean.TRUE.equals(getPropertyValue(Model.VERSION_IS_LATEST_PROP));
     }
 
     @Override
-    public boolean isLatestMajorVersion() throws DocumentException {
+    public boolean isLatestMajorVersion() {
         return Boolean.TRUE.equals(getPropertyValue(Model.VERSION_IS_LATEST_MAJOR_PROP));
     }
 
     @Override
-    public Document getWorkingCopy() throws DocumentException {
+    public Document getWorkingCopy() {
         if (versionableNode == null) {
             return null;
         }
@@ -95,23 +93,23 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public Document getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() {
         return null;
     }
 
     @Override
-    public String getVersionSeriesId() throws DocumentException {
+    public String getVersionSeriesId() {
         Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
         return session.idToString(versionSeriesId);
     }
 
     @Override
-    public Document getSourceDocument() throws DocumentException {
+    public Document getSourceDocument() {
         return getWorkingCopy();
     }
 
     @Override
-    public String getPath() throws DocumentException {
+    public String getPath() {
         if (versionableNode == null) {
             return null; // TODO return what? error?
         }
@@ -119,7 +117,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public Document getParent() throws DocumentException {
+    public Document getParent() {
         if (versionableNode == null) {
             return null;
         }
@@ -138,37 +136,37 @@ public class SQLDocumentVersion extends SQLDocumentLive {
     }
 
     @Override
-    public void orderBefore(String src, String dest) throws DocumentException {
+    public void orderBefore(String src, String dest) {
         throw new VersionNotModifiableException();
     }
 
     @Override
-    public Document addChild(String name, String typeName) throws DocumentException {
+    public Document addChild(String name, String typeName) {
         throw new VersionNotModifiableException();
     }
 
     @Override
-    public Document getChild(String name) throws DocumentException {
+    public Document getChild(String name) {
         throw new NoSuchDocumentException(name);
     }
 
     @Override
-    public List<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() {
         return Collections.emptyList();
     }
 
     @Override
-    public List<String> getChildrenIds() throws DocumentException {
+    public List<String> getChildrenIds() {
         return Collections.emptyList();
     }
 
     @Override
-    public boolean hasChild(String name) throws DocumentException {
+    public boolean hasChild(String name) {
         return false;
     }
 
     @Override
-    public boolean hasChildren() throws DocumentException {
+    public boolean hasChildren() {
         return false;
     }
 
@@ -201,7 +199,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
      */
 
     @Override
-    public void setPropertyValue(String name, Serializable value) throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) {
         if (isReadOnlyProperty(name)) {
             throw new VersionNotModifiableException(String.format("Cannot set property on a version: %s = %s", name,
                     value));

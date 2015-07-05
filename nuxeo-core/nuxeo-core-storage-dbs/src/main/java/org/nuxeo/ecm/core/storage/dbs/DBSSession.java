@@ -81,14 +81,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -100,6 +98,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.DocumentExistsException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -113,7 +112,6 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.security.SecurityException;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.QueryOptimizer;
@@ -129,8 +127,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.9.4
  */
 public class DBSSession implements Session {
-
-    private static final Log log = LogFactory.getLog(DBSSession.class);
 
     protected final DBSRepository repository;
 
@@ -167,14 +163,14 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public void save() throws DocumentException {
+    public void save() {
         transaction.save();
         if (!TransactionHelper.isTransactionActive()) {
             transaction.commit();
         }
     }
 
-    public void commit() throws DocumentException {
+    public void commit() {
         transaction.commit();
     }
 
@@ -203,7 +199,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document resolvePath(String path) throws DocumentException {
+    public Document resolvePath(String path) {
         // TODO move checks and normalize higher in call stack
         if (path == null) {
             throw new IllegalArgumentException("Null path");
@@ -282,12 +278,12 @@ public class DBSSession implements Session {
         return docState.getId();
     }
 
-    protected Document getChild(String parentId, String name) throws DocumentException {
+    protected Document getChild(String parentId, String name) {
         DBSDocumentState docState = transaction.getChildState(parentId, name);
         return getDocument(docState);
     }
 
-    protected List<Document> getChildren(String parentId) throws DocumentException {
+    protected List<Document> getChildren(String parentId) {
         List<DBSDocumentState> docStates = transaction.getChildrenStates(parentId);
         if (isOrderable(parentId)) {
             // sort children in order
@@ -297,7 +293,7 @@ public class DBSSession implements Session {
         for (DBSDocumentState docState : docStates) {
             try {
                 children.add(getDocument(docState));
-            } catch (DocumentException e) {
+            } catch (NoSuchDocumentException e) {
                 // ignore error retrieving one of the children
                 // (Unknown document type)
                 continue;
@@ -328,7 +324,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document getDocumentByUUID(String id) throws DocumentException {
+    public Document getDocumentByUUID(String id) {
         Document doc = getDocument(id);
         if (doc != null) {
             return doc;
@@ -338,21 +334,21 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document getRootDocument() throws DocumentException {
+    public Document getRootDocument() {
         return getDocument(getRootId());
     }
 
     @Override
-    public Document getNullDocument() throws DocumentException {
+    public Document getNullDocument() {
         return new DBSDocument(null, null, this, true);
     }
 
-    protected Document getDocument(String id) throws DocumentException {
+    protected Document getDocument(String id) {
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         return getDocument(docState);
     }
 
-    protected List<Document> getDocuments(List<String> ids) throws DocumentException {
+    protected List<Document> getDocuments(List<String> ids) {
         List<DBSDocumentState> docStates = transaction.getStatesForUpdate(ids);
         List<Document> docs = new ArrayList<Document>(ids.size());
         for (DBSDocumentState docState : docStates) {
@@ -361,11 +357,11 @@ public class DBSSession implements Session {
         return docs;
     }
 
-    protected Document getDocument(DBSDocumentState docState) throws DocumentException {
+    protected Document getDocument(DBSDocumentState docState) {
         return getDocument(docState, true);
     }
 
-    protected Document getDocument(DBSDocumentState docState, boolean readonly) throws DocumentException {
+    protected Document getDocument(DBSDocumentState docState, boolean readonly) {
         if (docState == null) {
             return null;
         }
@@ -375,7 +371,7 @@ public class DBSSession implements Session {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
-            throw new DocumentException("Unknown document type: " + typeName);
+            throw new NoSuchDocumentException("Unknown document type: " + typeName);
         }
 
         if (isVersion) {
@@ -389,14 +385,12 @@ public class DBSSession implements Session {
         return transaction.hasChild(parentId, normalize(name));
     }
 
-    public Document createChild(String id, String parentId, String name, Long pos, String typeName)
-            throws DocumentException {
+    public Document createChild(String id, String parentId, String name, Long pos, String typeName) {
         DBSDocumentState docState = createChildState(id, parentId, name, pos, typeName);
         return getDocument(docState);
     }
 
-    protected DBSDocumentState createChildState(String id, String parentId, String name, Long pos, String typeName)
-            throws DocumentException {
+    protected DBSDocumentState createChildState(String id, String parentId, String name, Long pos, String typeName) {
         if (pos == null && parentId != null) {
             pos = getNextPos(parentId);
         }
@@ -424,7 +418,7 @@ public class DBSSession implements Session {
         return Long.valueOf(max + 1);
     }
 
-    protected void orderBefore(String parentId, String sourceId, String destId) throws DocumentException {
+    protected void orderBefore(String parentId, String sourceId, String destId) {
         if (!isOrderable(parentId)) {
             // TODO throw exception?
             return;
@@ -474,19 +468,19 @@ public class DBSSession implements Session {
         }
     }
 
-    protected void checkOut(String id) throws DocumentException {
+    protected void checkOut(String id) {
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         if (!TRUE.equals(docState.get(KEY_IS_CHECKED_IN))) {
-            throw new DocumentException("Already checked out");
+            throw new NuxeoException("Already checked out");
         }
         docState.put(KEY_IS_CHECKED_IN, null);
     }
 
-    protected Document checkIn(String id, String label, String checkinComment) throws DocumentException {
+    protected Document checkIn(String id, String label, String checkinComment) {
         transaction.save();
         DBSDocumentState docState = transaction.getStateForUpdate(id);
         if (TRUE.equals(docState.get(KEY_IS_CHECKED_IN))) {
-            throw new DocumentException("Already checked in");
+            throw new NuxeoException("Already checked in");
         }
         if (label == null) {
             // use version major + minor as label
@@ -594,7 +588,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document copy(Document source, Document parent, String name) throws DocumentException {
+    public Document copy(Document source, Document parent, String name) {
         transaction.save();
         if (name == null) {
             name = source.getName();
@@ -615,7 +609,7 @@ public class DBSSession implements Session {
         ancestorIds.add(parentId);
         if (oldParentId != null && !oldParentId.equals(parentId)) {
             if (ancestorIds.contains(sourceId)) {
-                throw new DocumentException("Cannot copy a node under itself: " + parentId + " is under " + sourceId);
+                throw new DocumentExistsException("Cannot copy a node under itself: " + parentId + " is under " + sourceId);
 
             }
             // checkNotUnder(parentId, sourceId, "copy");
@@ -677,24 +671,24 @@ public class DBSSession implements Session {
     }
 
     /** Checks that we don't move/copy under ourselves. */
-    protected void checkNotUnder(String parentId, String id, String op) throws DocumentException {
+    protected void checkNotUnder(String parentId, String id, String op) {
         // TODO use ancestors
         String pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new DocumentException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
+                throw new DocumentExistsException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
             }
             State state = transaction.getStateForRead(pid);
             if (state == null) {
                 // cannot happen
-                throw new DocumentException("No parent: " + pid);
+                throw new NuxeoException("No parent: " + pid);
             }
             pid = (String) state.get(KEY_PARENT_ID);
         } while (pid != null);
     }
 
     @Override
-    public Document move(Document source, Document parent, String name) throws DocumentException {
+    public Document move(Document source, Document parent, String name) {
         String oldName = (String) source.getName();
         if (name == null) {
             name = oldName;
@@ -708,7 +702,7 @@ public class DBSSession implements Session {
         if (ObjectUtils.equals(oldParentId, parentId)) {
             if (!oldName.equals(name)) {
                 if (hasChild(parentId, name)) {
-                    throw new DocumentException("Destination name already exists: " + name);
+                    throw new DocumentExistsException("Destination name already exists: " + name);
                 }
                 // do the move
                 sourceState.put(KEY_NAME, name);
@@ -719,7 +713,7 @@ public class DBSSession implements Session {
             // if not just a simple rename, flush
             transaction.save();
             if (hasChild(parentId, name)) {
-                throw new DocumentException("Destination name already exists: " + name);
+                throw new DocumentExistsException("Destination name already exists: " + name);
             }
         }
 
@@ -736,7 +730,7 @@ public class DBSSession implements Session {
         Object[] ancestorIds = ancestorIdsList.toArray(new Object[ancestorIdsList.size()]);
 
         if (ancestorIdsList.contains(sourceId)) {
-            throw new DocumentException("Cannot move a node under itself: " + parentId + " is under " + sourceId);
+            throw new DocumentExistsException("Cannot move a node under itself: " + parentId + " is under " + sourceId);
         }
 
         // do the move
@@ -764,7 +758,7 @@ public class DBSSession implements Session {
      * raise an error if a proxy still exists for that target.
      * </ul>
      */
-    protected void remove(String id) throws DocumentException {
+    protected void remove(String id) {
         transaction.save();
 
         State state = transaction.getStateForRead(id);
@@ -799,7 +793,7 @@ public class DBSSession implements Session {
             }
             for (Object proxyId : en.getValue()) {
                 if (!removedIds.contains(proxyId)) {
-                    throw new DocumentException("Cannot remove " + id + ", subdocument " + targetId
+                    throw new DocumentExistsException("Cannot remove " + id + ", subdocument " + targetId
                             + " is the target of proxy " + proxyId);
                 }
             }
@@ -827,7 +821,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document createProxy(Document doc, Document folder) throws DocumentException {
+    public Document createProxy(Document doc, Document folder) {
         if (doc == null) {
             throw new NullPointerException();
         }
@@ -857,7 +851,7 @@ public class DBSSession implements Session {
     }
 
     protected DBSDocumentState addProxyState(String id, String parentId, String name, Long pos, String targetId,
-            String versionSeriesId) throws DocumentException {
+            String versionSeriesId) {
         DBSDocumentState target = transaction.getStateForUpdate(targetId);
         String typeName = (String) target.get(KEY_PRIMARY_TYPE);
 
@@ -919,7 +913,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Collection<Document> getProxies(Document doc, Document folder) throws DocumentException {
+    public Collection<Document> getProxies(Document doc, Document folder) {
         List<DBSDocumentState> docStates;
         String docId = doc.getUUID();
         if (doc.isVersion()) {
@@ -948,7 +942,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public void setProxyTarget(Document proxy, Document target) throws DocumentException {
+    public void setProxyTarget(Document proxy, Document target) {
         String proxyId = proxy.getUUID();
         String targetId = target.getUUID();
         DBSDocumentState proxyState = transaction.getStateForUpdate(proxyId);
@@ -966,7 +960,7 @@ public class DBSSession implements Session {
 
     @Override
     public Document importDocument(String id, Document parent, String name, String typeName,
-            Map<String, Serializable> properties) throws DocumentException {
+            Map<String, Serializable> properties) {
         String parentId = parent == null ? null : parent.getUUID();
         boolean isProxy = typeName.equals(CoreSession.IMPORT_PROXY_TYPE);
         Map<String, Serializable> props = new HashMap<String, Serializable>();
@@ -976,11 +970,11 @@ public class DBSSession implements Session {
             // check that target exists and find its typeName
             String targetId = (String) properties.get(CoreSession.IMPORT_PROXY_TARGET_ID);
             if (targetId == null) {
-                throw new DocumentException("Cannot import proxy " + id + " with null target");
+                throw new NuxeoException("Cannot import proxy " + id + " with null target");
             }
             State targetState = transaction.getStateForRead(targetId);
             if (targetState == null) {
-                throw new DocumentException("Cannot import proxy " + id + " with missing target " + targetId);
+                throw new NoSuchDocumentException("Cannot import proxy " + id + " with missing target " + targetId);
             }
             String versionSeriesId = (String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID);
             docState = addProxyState(id, parentId, name, pos, targetId, versionSeriesId);
@@ -1047,7 +1041,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Document getVersion(String versionSeriesId, VersionModel versionModel) throws DocumentException {
+    public Document getVersion(String versionSeriesId, VersionModel versionModel) {
         DBSDocumentState docState = getVersionByLabel(versionSeriesId, versionModel.getLabel());
         if (docState == null) {
             return null;
@@ -1078,7 +1072,7 @@ public class DBSSession implements Session {
         return ids;
     }
 
-    protected Document getLastVersion(String versionSeriesId) throws DocumentException {
+    protected Document getLastVersion(String versionSeriesId) {
         List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
         if (docStates.isEmpty()) {
             return null;
@@ -1141,38 +1135,34 @@ public class DBSSession implements Session {
 
     // TODO move logic higher
     @Override
-    public ACP getMergedACP(Document doc) throws SecurityException {
-        try {
-            Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
-            if (base == null) {
+    public ACP getMergedACP(Document doc) {
+        Document base = doc.isVersion() ? doc.getSourceDocument() : doc;
+        if (base == null) {
+            return null;
+        }
+        ACP acp = getACP(base);
+        if (doc.getParent() == null) {
+            return acp;
+        }
+        // get inherited ACLs only if no blocking inheritance ACE exists
+        // in the top level ACP.
+        ACL acl = null;
+        if (acp == null || acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) != Access.DENY) {
+            acl = getInheritedACLs(doc);
+        }
+        if (acp == null) {
+            if (acl == null) {
                 return null;
             }
-            ACP acp = getACP(base);
-            if (doc.getParent() == null) {
-                return acp;
-            }
-            // get inherited ACLs only if no blocking inheritance ACE exists
-            // in the top level ACP.
-            ACL acl = null;
-            if (acp == null || acp.getAccess(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING) != Access.DENY) {
-                acl = getInheritedACLs(doc);
-            }
-            if (acp == null) {
-                if (acl == null) {
-                    return null;
-                }
-                acp = new ACPImpl();
-            }
-            if (acl != null) {
-                acp.addACL(acl);
-            }
-            return acp;
-        } catch (DocumentException e) {
-            throw new SecurityException("Failed to get merged acp", e);
+            acp = new ACPImpl();
         }
+        if (acl != null) {
+            acp.addACL(acl);
+        }
+        return acp;
     }
 
-    protected ACL getInheritedACLs(Document doc) throws DocumentException {
+    protected ACL getInheritedACLs(Document doc) {
         doc = doc.getParent();
         ACL merged = null;
         while (doc != null) {
@@ -1193,13 +1183,13 @@ public class DBSSession implements Session {
         return merged;
     }
 
-    protected ACP getACP(Document doc) throws SecurityException {
+    protected ACP getACP(Document doc) {
         State state = transaction.getStateForRead(doc.getUUID());
         return memToAcp(state.get(KEY_ACP));
     }
 
     @Override
-    public void setACP(Document doc, ACP acp, boolean overwrite) throws DocumentException {
+    public void setACP(Document doc, ACP acp, boolean overwrite) {
         checkNegativeAcl(acp);
         if (!overwrite) {
             if (acp == null) {
@@ -1332,7 +1322,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Map<String, String> getBinaryFulltext(String id) throws DocumentException {
+    public Map<String, String> getBinaryFulltext(String id) {
         State state = transaction.getStateForRead(id);
         String fulltext = (String) state.get(KEY_FULLTEXT_BINARY);
         return Collections.singletonMap("binarytext", fulltext);
@@ -1345,22 +1335,13 @@ public class DBSSession implements Session {
         PartialList<String> pl = doQuery(query, queryType, queryFilter, (int) countUpTo);
 
         // get Documents in bulk
-        List<Document> docs;
-        try {
-            docs = getDocuments(pl.list);
-        } catch (DocumentException e) {
-            throw new QueryException(e);
-        }
+        List<Document> docs = getDocuments(pl.list);
 
         // build DocumentModels from Documents
         String[] schemas = { "common" };
         List<DocumentModel> list = new ArrayList<DocumentModel>(docs.size());
         for (Document doc : docs) {
-            try {
-                list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
-            } catch (DocumentException e) {
-                log.error("Could not create document model for doc: " + doc, e);
-            }
+            list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
         }
 
         return new DocumentModelListImpl(list, pl.totalSize);

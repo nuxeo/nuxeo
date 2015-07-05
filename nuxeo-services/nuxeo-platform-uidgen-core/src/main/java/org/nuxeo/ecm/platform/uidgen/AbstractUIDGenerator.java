@@ -20,9 +20,10 @@ package org.nuxeo.ecm.platform.uidgen;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
@@ -47,7 +48,7 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         this.sequencer = sequencer;
     }
 
-    protected int getNext(final DocumentModel document) throws DocumentException {
+    protected int getNext(final DocumentModel document) {
         if (null == sequencer) {
             throw new IllegalStateException("sequencer not defined");
         }
@@ -88,30 +89,25 @@ public abstract class AbstractUIDGenerator implements UIDGenerator {
         }
     }
 
-    protected final String str(String propName, DocumentModel document) throws DocumentException {
-        try {
-            Object val = document.getProperty(getSchemaName(propName), getFieldName(propName));
-            if (val == null) {
-                return null;
-            }
-            if (val instanceof String) {
-                return (String) val;
-            }
-        } catch (PropertyException e) {
-            throw new DocumentException(e);
+    protected final String str(String propName, DocumentModel document) {
+        Object val = document.getProperty(getSchemaName(propName), getFieldName(propName));
+        if (val == null) {
+            return null;
         }
-
-        throw new DocumentException("Doc property '" + propName + "' is not of String type.");
+        if (val instanceof String) {
+            return (String) val;
+        }
+        throw new NuxeoException("Doc property '" + propName + "' is not of String type.");
     }
 
-    public void setUID(DocumentModel document) throws DocumentException {
+    public void setUID(DocumentModel document) throws PropertyNotFoundException {
         String uid = createUID(document);
         for (String propertyName : propertyNames) {
             try {
                 document.setProperty(getSchemaName(propertyName), getFieldName(propertyName), uid);
-            } catch (PropertyException e) {
-                throw new DocumentException(String.format("Cannot set uid %s on property %s for doc %s", uid,
-                        propertyName, document));
+            } catch (PropertyNotFoundException e) {
+                e.addInfo(String.format("Cannot set uid %s on property %s for doc %s", uid, propertyName, document));
+                throw e;
             }
         }
     }

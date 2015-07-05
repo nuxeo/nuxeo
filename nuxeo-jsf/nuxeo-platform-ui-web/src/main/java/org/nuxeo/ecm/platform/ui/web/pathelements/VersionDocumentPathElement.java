@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.ui.web.pathelements;
 
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 
@@ -38,14 +37,10 @@ public class VersionDocumentPathElement extends DocumentPathElement {
 
     @Override
     public String getName() {
-        try {
-            VersioningDocument docVer = docModel.getAdapter(VersioningDocument.class);
-            String minorVer = docVer.getMinorVersion().toString();
-            String majorVer = docVer.getMajorVersion().toString();
-            return majorVer + '.' + minorVer;
-        } catch (DocumentException e) {
-            throw new RuntimeException("failed to compute document version", e);
-        }
+        VersioningDocument docVer = docModel.getAdapter(VersioningDocument.class);
+        String minorVer = docVer.getMinorVersion().toString();
+        String majorVer = docVer.getMajorVersion().toString();
+        return majorVer + '.' + minorVer;
     }
 
     @Override

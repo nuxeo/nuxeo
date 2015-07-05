@@ -18,7 +18,6 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 
 @Operation(id = TestBusinessArray.ID, category = Constants.CAT_SERVICES, label = "", description = "")
 public class TestBusinessArray {
@@ -26,7 +25,7 @@ public class TestBusinessArray {
     public static final String ID = "Business.TestBusinessArray";
 
     @OperationMethod
-    public BusinessBean[] run() throws ClientException, DocumentException {
+    public BusinessBean[] run() throws ClientException {
         BusinessBean[] businessBeans = new BusinessBean[] { new BusinessBean(), new BusinessBean() };
         return businessBeans;
     }

@@ -14,14 +14,14 @@
 
 package org.nuxeo.ecm.core.model;
 
-import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class NoSuchDocumentException extends DocumentException {
+public class NoSuchDocumentException extends NuxeoException {
 
-    private static final long serialVersionUID = -5072868555418278491L;
+    private static final long serialVersionUID = 1L;
 
     public NoSuchDocumentException(String path) {
         this(path, null);

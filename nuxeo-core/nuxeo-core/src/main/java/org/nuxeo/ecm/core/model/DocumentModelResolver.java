@@ -177,10 +177,8 @@ public class DocumentModelResolver implements ObjectResolver {
                         case PATH_REF:
                             return session.getDocument(new PathRef(ref.ref));
                         }
-                    } catch (ClientException e) {
-                        if (e.getCause() != null && e.getCause() instanceof NoSuchDocumentException) {
-                            return null;
-                        }
+                    } catch (NoSuchDocumentException e) {
+                        return null;
                     }
                 } catch (LocalException le) { // no such repo
                     return null;

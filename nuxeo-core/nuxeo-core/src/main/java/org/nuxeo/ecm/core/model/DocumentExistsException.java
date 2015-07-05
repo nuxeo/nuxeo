@@ -14,14 +14,14 @@
 
 package org.nuxeo.ecm.core.model;
 
-import org.nuxeo.ecm.core.api.DocumentException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class DocumentExistsException extends DocumentException {
+public class DocumentExistsException extends NuxeoException {
 
-    private static final long serialVersionUID = 5877553029055132076L;
+    private static final long serialVersionUID = 1L;
 
     public DocumentExistsException() {
         super("The document already exists");

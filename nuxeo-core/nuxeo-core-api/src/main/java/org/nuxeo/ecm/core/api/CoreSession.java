@@ -192,7 +192,6 @@ public interface CoreSession extends AutoCloseable {
      *
      * @return the root document. cannot be null
      * @throws ClientException
-     * @throws SecurityException
      */
     DocumentModel getRootDocument() throws ClientException;
 
@@ -207,7 +206,6 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document reference
      * @return the document
      * @throws ClientException
-     * @throws SecurityException
      */
     DocumentModel getDocument(DocumentRef docRef) throws ClientException;
 
@@ -599,7 +597,6 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
      * @throws ClientException
-     * @throws SecurityException
      */
     DocumentModel copy(DocumentRef src, DocumentRef dst, String name) throws ClientException;
 
@@ -627,7 +624,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the documents to copy
      * @param dst the destination folder
      * @throws ClientException
-     * @throws SecurityException
      */
     List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst) throws ClientException;
 
@@ -651,7 +647,6 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder reference
      * @param name the new name of the file or null if the original name must be preserved
      * @throws ClientException
-     * @throws SecurityException
      */
     DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name) throws ClientException;
 
@@ -675,7 +670,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the documents to copy
      * @param dst the destination folder
      * @throws ClientException
-     * @throws SecurityException
      */
     List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst) throws ClientException;
 
@@ -702,7 +696,6 @@ public interface CoreSession extends AutoCloseable {
      * @param dst the destination folder reference
      * @param name the new name of the file, or {@code null}
      * @throws ClientException
-     * @throws SecurityException
      */
     DocumentModel move(DocumentRef src, DocumentRef dst, String name) throws ClientException;
 
@@ -712,7 +705,6 @@ public interface CoreSession extends AutoCloseable {
      * @param src the documents to move
      * @param dst the destination folder
      * @throws ClientException
-     * @throws SecurityException
      */
     void move(List<DocumentRef> src, DocumentRef dst) throws ClientException;
 
@@ -762,7 +754,6 @@ public interface CoreSession extends AutoCloseable {
      * @param acp
      * @param overwrite
      * @throws ClientException
-     * @throws SecurityException
      */
     void setACP(DocumentRef docRef, ACP acp, boolean overwrite) throws ClientException;
 
@@ -1431,10 +1422,9 @@ public interface CoreSession extends AutoCloseable {
      * @param type
      * @return
      * @throws ClientException
-     * @throws DocumentException
      */
     <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type)
-            throws ClientException, DocumentException;
+            throws ClientException;
 
     /**
      * Sets given value as a system property.
@@ -1444,10 +1434,9 @@ public interface CoreSession extends AutoCloseable {
      * @param systemProperty
      * @param value
      * @throws ClientException
-     * @throws DocumentException
      */
     <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value)
-            throws ClientException, DocumentException;
+            throws ClientException;
 
     /**
      * Given a parent document, order the source child before the destination child. The source and destination must be

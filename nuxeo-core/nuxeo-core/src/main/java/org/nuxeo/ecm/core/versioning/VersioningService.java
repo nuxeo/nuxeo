@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.model.Document;
@@ -82,7 +81,7 @@ public interface VersioningService {
      * @param doc the document
      * @param context map event info
      */
-    void doPostCreate(Document doc, Map<String, Serializable> options) throws DocumentException;
+    void doPostCreate(Document doc, Map<String, Serializable> options);
 
     /**
      * Checks if {@link #doPreSave} will do a checkout when called with the same arguments.
@@ -94,10 +93,9 @@ public interface VersioningService {
      * @param option an option chosen by the user or framework
      * @param options map event info and options
      * @return {@code true} if {@link #doPreSave} will do a checkout
-     * @throws DocumentException
      */
     boolean isPreSaveDoingCheckOut(Document doc, boolean isDirty, VersioningOption option,
-            Map<String, Serializable> options) throws DocumentException;
+            Map<String, Serializable> options);
 
     /**
      * Applies versioning options before document save.
@@ -110,7 +108,7 @@ public interface VersioningService {
      * @return the validated option (to use in doPostSave)
      */
     VersioningOption doPreSave(Document doc, boolean isDirty, VersioningOption option, String checkinComment,
-            Map<String, Serializable> options) throws DocumentException;
+            Map<String, Serializable> options);
 
     /**
      * Checks if {@link #doPostSave} will do a checkin when called with the same arguments.
@@ -119,10 +117,8 @@ public interface VersioningService {
      * @param option an option chosen by the user or framework
      * @param options map event info
      * @return {@code true} if {@link #doPostSave} will do a checkin
-     * @throws DocumentException
      */
-    boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options)
-            throws DocumentException;
+    boolean isPostSaveDoingCheckIn(Document doc, VersioningOption option, Map<String, Serializable> options);
 
     /**
      * Applies versioning options after document save. If a new version is checked in during the operation, the document
@@ -134,8 +130,8 @@ public interface VersioningService {
      * @param context map event info
      * @return checkedInDocument or null
      */
-    Document doPostSave(Document doc, VersioningOption option, String checkinComment, Map<String, Serializable> options)
-            throws DocumentException;
+    Document doPostSave(Document doc, VersioningOption option, String checkinComment,
+            Map<String, Serializable> options);
 
     /**
      * Applies version increment option and does a checkin.
@@ -145,13 +141,13 @@ public interface VersioningService {
      * @param checkinComment a checkin comment
      * @return the version
      */
-    Document doCheckIn(Document doc, VersioningOption option, String checkinComment) throws DocumentException;
+    Document doCheckIn(Document doc, VersioningOption option, String checkinComment);
 
     /**
      * Apply modifications after doing a checkout.
      *
      * @param doc the document
      */
-    void doCheckOut(Document doc) throws DocumentException;
+    void doCheckOut(Document doc);
 
 }

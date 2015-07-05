@@ -14,9 +14,6 @@ package org.nuxeo.ecm.core.security;
 import java.security.Principal;
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -32,20 +29,14 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  */
 public class CheckInSecurityPolicy extends AbstractSecurityPolicy {
 
-    private static final Log log = LogFactory.getLog(CheckInSecurityPolicy.class);
-
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         Access access = Access.UNKNOWN;
         if (Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE_PROPERTIES) && !doc.isVersion()
                 && !doc.isProxy()) {
-            try {
-                if (!doc.isCheckedOut()) {
-                    access = Access.DENY;
-                }
-            } catch (DocumentException e) {
-                log.debug("Failed to get checked-out status on document", e);
+            if (!doc.isCheckedOut()) {
+                access = Access.DENY;
             }
         }
         return access;

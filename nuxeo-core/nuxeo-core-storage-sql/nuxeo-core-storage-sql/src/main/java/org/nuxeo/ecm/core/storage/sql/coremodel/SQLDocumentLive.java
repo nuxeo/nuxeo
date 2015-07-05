@@ -23,17 +23,19 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -126,12 +128,12 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public Document getParent() throws DocumentException {
+    public Document getParent() {
         return session.getParent(getNode());
     }
 
     @Override
-    public String getPath() throws DocumentException {
+    public String getPath() {
         return session.getPath(getNode());
     }
 
@@ -151,7 +153,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public void remove() throws DocumentException {
+    public void remove() {
         session.remove(getNode());
     }
 
@@ -188,11 +190,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
 
     @Override
     protected List<Node> getChildAsList(Node node, String name) throws PropertyException {
-        try {
-            return session.getComplexList(node, name);
-        } catch (DocumentException e) {
-            throw new PropertyException(e.getMessage(), e);
-        }
+        return session.getComplexList(node, name);
     }
 
     @Override
@@ -203,23 +201,15 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         // remove extra list elements
         if (oldSize > newSize) {
             for (int i = oldSize - 1; i >= newSize; i--) {
-                try {
-                    session.removeProperty(childNodes.remove(i));
-                } catch (DocumentException e) {
-                    throw new PropertyException(e.getMessage(), e);
-                }
+                session.removeProperty(childNodes.remove(i));
             }
         }
         // add new list elements
         if (oldSize < newSize) {
             String typeName = field.getType().getName();
             for (int i = oldSize; i < newSize; i++) {
-                try {
-                    Node childNode = session.addChildProperty(node, name, Long.valueOf(i), typeName);
-                    childNodes.add(childNode);
-                } catch (DocumentException e) {
-                    throw new PropertyException(e.getMessage(), e);
-                }
+                Node childNode = session.addChildProperty(node, name, Long.valueOf(i), typeName);
+                childNodes.add(childNode);
             }
         }
         // write values
@@ -239,23 +229,15 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         // remove extra list elements
         if (oldSize > newSize) {
             for (int i = oldSize - 1; i >= newSize; i--) {
-                try {
-                    session.removeProperty(childNodes.remove(i));
-                } catch (DocumentException e) {
-                    throw new PropertyException(e.getMessage(), e);
-                }
+                session.removeProperty(childNodes.remove(i));
             }
         }
         // add new list elements
         if (oldSize < newSize) {
             String typeName = ((ListType) property.getType()).getFieldType().getName();
             for (int i = oldSize; i < newSize; i++) {
-                try {
-                    Node childNode = session.addChildProperty(node, name, Long.valueOf(i), typeName);
-                    childNodes.add(childNode);
-                } catch (DocumentException e) {
-                    throw new PropertyException(e.getMessage(), e);
-                }
+                Node childNode = session.addChildProperty(node, name, Long.valueOf(i), typeName);
+                childNodes.add(childNode);
             }
         }
         return childNodes;
@@ -282,12 +264,12 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public Serializable getPropertyValue(String name) throws DocumentException {
+    public Serializable getPropertyValue(String name) {
         return getNode().getSimpleProperty(name).getValue();
     }
 
     @Override
-    public void setPropertyValue(String name, Serializable value) throws DocumentException {
+    public void setPropertyValue(String name, Serializable value) {
         getNode().setSimpleProperty(name, value);
     }
 
@@ -299,7 +281,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public void setSystemProp(String name, Serializable value) throws DocumentException {
+    public void setSystemProp(String name, Serializable value) {
         String propertyName;
         if (name.startsWith(SIMPLE_TEXT_SYS_PROP)) {
             propertyName = name.replace(SIMPLE_TEXT_SYS_PROP, Model.FULLTEXT_SIMPLETEXT_PROP);
@@ -309,17 +291,17 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             propertyName = systemPropNameMap.get(name);
         }
         if (propertyName == null) {
-            throw new DocumentException("Unknown system property: " + name);
+            throw new PropertyNotFoundException("Unknown system property: " + name);
         }
         setPropertyValue(propertyName, value);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends Serializable> T getSystemProp(String name, Class<T> type) throws DocumentException {
+    public <T extends Serializable> T getSystemProp(String name, Class<T> type) {
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
-            throw new DocumentException("Unknown system property: " + name);
+            throw new PropertyNotFoundException("Unknown system property: " + name);
         }
         Serializable value = getPropertyValue(propertyName);
         if (value == null) {
@@ -337,59 +319,43 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
      */
 
     @Override
-    public String getLifeCyclePolicy() throws LifeCycleException {
-        try {
-            return (String) getPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP);
-        } catch (DocumentException e) {
-            throw new LifeCycleException("Failed to get policy", e);
-        }
+    public String getLifeCyclePolicy() {
+        return (String) getPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP);
     }
 
     @Override
-    public void setLifeCyclePolicy(String policy) throws LifeCycleException {
-        try {
-            setPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
-            BlobManager blobManager = Framework.getService(BlobManager.class);
-            blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_POLICY_PROP));
-        } catch (DocumentException e) {
-            throw new LifeCycleException("Failed to set policy", e);
-        }
+    public void setLifeCyclePolicy(String policy) {
+        setPropertyValue(Model.MISC_LIFECYCLE_POLICY_PROP, policy);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_POLICY_PROP));
     }
 
     @Override
-    public String getLifeCycleState() throws LifeCycleException {
-        try {
-            return (String) getPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP);
-        } catch (DocumentException e) {
-            throw new LifeCycleException("Failed to get state", e);
-        }
+    public String getLifeCycleState() {
+        return (String) getPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP);
     }
 
     @Override
-    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
-        try {
-            setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
-            BlobManager blobManager = Framework.getService(BlobManager.class);
-            blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_STATE_PROP));
-        } catch (DocumentException e) {
-            throw new LifeCycleException("Failed to set state", e);
-        }
+    public void setCurrentLifeCycleState(String state) {
+        setPropertyValue(Model.MISC_LIFECYCLE_STATE_PROP, state);
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        blobManager.notifyChanges(this, Collections.singleton(Model.MISC_LIFECYCLE_STATE_PROP));
     }
 
     @Override
     public void followTransition(String transition) throws LifeCycleException {
         LifeCycleService service = NXCore.getLifeCycleService();
         if (service == null) {
-            throw new LifeCycleException("LifeCycleService not available");
+            throw new NuxeoException("LifeCycleService not available");
         }
         service.followTransition(this, transition);
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitions() {
         LifeCycleService service = NXCore.getLifeCycleService();
         if (service == null) {
-            throw new LifeCycleException("LifeCycleService not available");
+            throw new NuxeoException("LifeCycleService not available");
         }
         LifeCycle lifeCycle = service.getLifeCycleFor(this);
         if (lifeCycle == null) {
@@ -403,17 +369,17 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
      */
 
     @Override
-    public Lock getLock() throws DocumentException {
+    public Lock getLock() {
         return session.getLock(getNode());
     }
 
     @Override
-    public Lock setLock(Lock lock) throws DocumentException {
+    public Lock setLock(Lock lock) {
         return session.setLock(getNode(), lock);
     }
 
     @Override
-    public Lock removeLock(String owner) throws DocumentException {
+    public Lock removeLock(String owner) {
         return session.removeLock(getNode(), owner);
     }
 
@@ -427,7 +393,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public Document getBaseVersion() throws DocumentException {
+    public Document getBaseVersion() {
         if (isCheckedOut()) {
             return null;
         }
@@ -440,82 +406,82 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public String getVersionSeriesId() throws DocumentException {
+    public String getVersionSeriesId() {
         return getUUID();
     }
 
     @Override
-    public Document getSourceDocument() throws DocumentException {
+    public Document getSourceDocument() {
         return this;
     }
 
     @Override
-    public Document checkIn(String label, String checkinComment) throws DocumentException {
+    public Document checkIn(String label, String checkinComment) {
         Document version = session.checkIn(getNode(), label, checkinComment);
         Framework.getService(BlobManager.class).freezeVersion(version);
         return version;
     }
 
     @Override
-    public void checkOut() throws DocumentException {
+    public void checkOut() {
         session.checkOut(getNode());
     }
 
     @Override
-    public boolean isCheckedOut() throws DocumentException {
+    public boolean isCheckedOut() {
         return !Boolean.TRUE.equals(getPropertyValue(Model.MAIN_CHECKED_IN_PROP));
     }
 
     @Override
-    public boolean isMajorVersion() throws DocumentException {
+    public boolean isMajorVersion() {
         return false;
     }
 
     @Override
-    public boolean isLatestVersion() throws DocumentException {
+    public boolean isLatestVersion() {
         return false;
     }
 
     @Override
-    public boolean isLatestMajorVersion() throws DocumentException {
+    public boolean isLatestMajorVersion() {
         return false;
     }
 
     @Override
-    public boolean isVersionSeriesCheckedOut() throws DocumentException {
+    public boolean isVersionSeriesCheckedOut() {
         return isCheckedOut();
     }
 
     @Override
-    public String getVersionLabel() throws DocumentException {
+    public String getVersionLabel() {
         return (String) getPropertyValue(Model.VERSION_LABEL_PROP);
     }
 
     @Override
-    public String getCheckinComment() throws DocumentException {
+    public String getCheckinComment() {
         return (String) getPropertyValue(Model.VERSION_DESCRIPTION_PROP);
     }
 
     @Override
-    public Document getWorkingCopy() throws DocumentException {
+    public Document getWorkingCopy() {
         return this;
     }
 
     @Override
-    public Calendar getVersionCreationDate() throws DocumentException {
+    public Calendar getVersionCreationDate() {
         return (Calendar) getPropertyValue(Model.VERSION_CREATED_PROP);
     }
 
     @Override
-    public void restore(Document version) throws DocumentException {
+    public void restore(Document version) {
         if (!version.isVersion()) {
-            throw new DocumentException("Cannot restore a non-version: " + version);
+            throw new NuxeoException("Cannot restore a non-version: " + version);
         }
         session.restore(getNode(), ((SQLDocument) version).getNode());
     }
 
     @Override
-    public List<String> getVersionsIds() throws DocumentException {
+    public List<String> getVersionsIds() {
         String versionSeriesId = getVersionSeriesId();
         Collection<Document> versions = session.getVersions(versionSeriesId);
         List<String> ids = new ArrayList<String>(versions.size());
@@ -526,30 +492,30 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public Document getVersion(String label) throws DocumentException {
+    public Document getVersion(String label) {
         String versionSeriesId = getVersionSeriesId();
         return session.getVersionByLabel(versionSeriesId, label);
     }
 
     @Override
-    public List<Document> getVersions() throws DocumentException {
+    public List<Document> getVersions() {
         String versionSeriesId = getVersionSeriesId();
         return session.getVersions(versionSeriesId);
     }
 
     @Override
-    public Document getLastVersion() throws DocumentException {
+    public Document getLastVersion() {
         String versionSeriesId = getVersionSeriesId();
         return session.getLastVersion(versionSeriesId);
     }
 
     @Override
-    public Document getChild(String name) throws DocumentException {
+    public Document getChild(String name) {
         return session.getChild(getNode(), name);
     }
 
     @Override
-    public List<Document> getChildren() throws DocumentException {
+    public List<Document> getChildren() {
         if (!isFolder()) {
             return Collections.emptyList();
         }
@@ -557,7 +523,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public List<String> getChildrenIds() throws DocumentException {
+    public List<String> getChildrenIds() {
         if (!isFolder()) {
             return Collections.emptyList();
         }
@@ -571,7 +537,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public boolean hasChild(String name) throws DocumentException {
+    public boolean hasChild(String name) {
         if (!isFolder()) {
             return false;
         }
@@ -579,7 +545,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public boolean hasChildren() throws DocumentException {
+    public boolean hasChildren() {
         if (!isFolder()) {
             return false;
         }
@@ -587,7 +553,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public Document addChild(String name, String typeName) throws DocumentException {
+    public Document addChild(String name, String typeName) {
         if (!isFolder()) {
             throw new IllegalArgumentException("Not a folder");
         }
@@ -595,10 +561,10 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public void orderBefore(String src, String dest) throws DocumentException {
+    public void orderBefore(String src, String dest) {
         SQLDocument srcDoc = (SQLDocument) getChild(src);
         if (srcDoc == null) {
-            throw new DocumentException("Document " + this + " has no child: " + src);
+            throw new NoSuchDocumentException("Document " + this + " has no child: " + src);
         }
         SQLDocument destDoc;
         if (dest == null) {
@@ -606,7 +572,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         } else {
             destDoc = (SQLDocument) getChild(dest);
             if (destDoc == null) {
-                throw new DocumentException("Document " + this + " has no child: " + dest);
+                throw new NoSuchDocumentException("Document " + this + " has no child: " + dest);
             }
         }
         session.orderBefore(getNode(), srcDoc.getNode(), destDoc == null ? null : destDoc.getNode());
@@ -628,12 +594,12 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public boolean addFacet(String facet) throws DocumentException {
+    public boolean addFacet(String facet) {
         return session.addMixinType(getNode(), facet);
     }
 
     @Override
-    public boolean removeFacet(String facet) throws DocumentException {
+    public boolean removeFacet(String facet) {
         return session.removeMixinType(getNode(), facet);
     }
 
@@ -679,8 +645,8 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     }
 
     @Override
-    public void setTargetDocument(Document target) throws DocumentException {
-        throw new DocumentException();
+    public void setTargetDocument(Document target) {
+        throw new NuxeoException("Not a proxy");
     }
 
 }

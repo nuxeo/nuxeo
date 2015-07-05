@@ -29,7 +29,7 @@ public interface LifeCycle {
      * @param stateName the current state name
      * @return collection of allowed state transition names.
      */
-    Collection<String> getAllowedStateTransitionsFrom(String stateName) throws LifeCycleException;
+    Collection<String> getAllowedStateTransitionsFrom(String stateName);
 
     /**
      * Returns the default initial state name.

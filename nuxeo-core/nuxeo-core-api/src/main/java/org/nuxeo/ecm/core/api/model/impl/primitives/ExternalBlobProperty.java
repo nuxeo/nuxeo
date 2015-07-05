@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterService;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
@@ -195,7 +194,7 @@ public class ExternalBlobProperty extends MapProperty {
         try {
             BlobHolderAdapterService service = Framework.getService(BlobHolderAdapterService.class);
             if (service == null) {
-                throw new DocumentException("BlobHolderAdapterService not found");
+                throw new NuxeoException("BlobHolderAdapterService not found");
             }
             Blob blob = service.getExternalBlobForUri(uri);
             if (filename != null) {
@@ -206,7 +205,7 @@ public class ExternalBlobProperty extends MapProperty {
             // TODO maybe check if digest is still a match to the retrieved blob
             blob.setDigest(digest);
             return blob;
-        } catch (DocumentException | IOException e) {
+        } catch (IOException e) {
             throw new NuxeoException(e);
         }
     }

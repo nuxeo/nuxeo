@@ -263,7 +263,7 @@ public interface DocumentModel extends Serializable {
      *
      * @param facet the facet name
      * @return {@code true} if the facet was added, or {@code false} if it is already present
-     * @throws DocumentException if the facet does not exist
+     * @throws IllegalArgumentException if the facet does not exist
      * @since 5.4.2
      */
     boolean addFacet(String facet);
@@ -796,8 +796,7 @@ public interface DocumentModel extends Serializable {
      * Gets system property of the specified type. This is not a lazy loaded property, thus the request is made directly
      * to the server. This is needed as some critical system properties might be changed directly in the core.
      */
-    <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException,
-            DocumentException;
+    <T extends Serializable> T getSystemProp(String systemProperty, Class<T> type) throws ClientException;
 
     /**
      * Get a document part given its schema name

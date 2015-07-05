@@ -19,7 +19,6 @@ package org.nuxeo.elasticsearch.work;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
@@ -82,12 +81,8 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
         DocumentModel doc;
         try {
             doc = cmd.getTargetDocument();
-        } catch (ClientException e) {
-            if (e.getCause() instanceof NoSuchDocumentException) {
-                doc = null;
-            } else {
-                throw e;
-            }
+        } catch (NoSuchDocumentException e) {
+            doc = null;
         }
         if (doc == null) {
             // doc has been deleted

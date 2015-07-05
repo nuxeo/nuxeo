@@ -60,7 +60,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -475,7 +474,7 @@ public class DBSTransactionState {
      * <p>
      * Called after a {@link #save} has been done.
      */
-    public void removeStates(Set<String> ids) throws DocumentException {
+    public void removeStates(Set<String> ids) {
         for (String id : ids) {
             transientStates.remove(id);
         }
@@ -487,7 +486,7 @@ public class DBSTransactionState {
      * <p>
      * An undo log is kept in order to rollback the transaction later if needed.
      */
-    public void save() throws DocumentException {
+    public void save() {
         updateProxies();
         List<Work> works;
         if (!repository.isFulltextDisabled()) {
@@ -600,7 +599,7 @@ public class DBSTransactionState {
     /**
      * Saves and flushes to database.
      */
-    public void commit() throws DocumentException {
+    public void commit() {
         save();
         commitSave();
     }
@@ -608,7 +607,7 @@ public class DBSTransactionState {
     /**
      * Commits the saved state to the database.
      */
-    protected void commitSave() throws DocumentException {
+    protected void commitSave() {
         // clear transient, this means that after this references to states
         // will be stale
         // TODO mark states as invalid

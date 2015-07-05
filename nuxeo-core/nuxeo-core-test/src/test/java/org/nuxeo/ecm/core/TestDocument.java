@@ -43,7 +43,6 @@ import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -100,20 +99,12 @@ public class TestDocument {
     }
 
     protected final BiFunction<Document, String, Object> DocumentGetValue = (Document doc, String xpath) -> {
-        try {
-            return doc.getValue(xpath);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+        return doc.getValue(xpath);
     };
 
     protected final TriConsumer<Document, String, Object> DocumentSetValue = (Document doc, String xpath,
             Object value) -> {
-        try {
-            doc.setValue(xpath, value);
-        } catch (DocumentException e) {
-            throw new RuntimeException(e);
-        }
+        doc.setValue(xpath, value);
     };
 
     @Test

@@ -16,9 +16,6 @@ package org.nuxeo.ecm.core.security;
 import java.security.Principal;
 import java.util.Arrays;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -34,8 +31,6 @@ import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
  */
 public class LockSecurityPolicy extends AbstractSecurityPolicy {
 
-    private static final Log log = LogFactory.getLog(LockSecurityPolicy.class);
-
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
@@ -45,16 +40,11 @@ public class LockSecurityPolicy extends AbstractSecurityPolicy {
             return access;
         }
         // check the lock
-        try {
-            String username = principal.getName();
-            Lock lock = doc.getLock();
-            if (lock != null && !username.equals(lock.getOwner())) {
-                // locked by another user => deny
-                access = Access.DENY;
-            }
-        } catch (DocumentException e) {
-            // ignore
-            log.debug("Failed to get lock status on document ", e);
+        String username = principal.getName();
+        Lock lock = doc.getLock();
+        if (lock != null && !username.equals(lock.getOwner())) {
+            // locked by another user => deny
+            access = Access.DENY;
         }
         return access;
     }

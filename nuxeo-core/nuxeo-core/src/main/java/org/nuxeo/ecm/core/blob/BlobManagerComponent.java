@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
@@ -355,7 +354,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     }
 
     @Override
-    public void freezeVersion(Document doc) throws DocumentException {
+    public void freezeVersion(Document doc) {
         // finds all blobs, then ask their providers if there's anything to do on check in
         doc.visitBlobs(this::freezeVersion);
     }

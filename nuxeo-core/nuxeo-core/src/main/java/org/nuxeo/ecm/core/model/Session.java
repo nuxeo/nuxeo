@@ -17,14 +17,12 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.security.SecurityException;
 
 /**
  * Internal Session accessing the low-level storage.
@@ -64,10 +62,8 @@ public interface Session {
 
     /**
      * Saves this session.
-     *
-     * @throws DocumentException if any error occurs
      */
-    void save() throws DocumentException;
+    void save();
 
     /**
      * Checks whether the session is alive.
@@ -83,8 +79,6 @@ public interface Session {
 
     /**
      * Closes this session. Does not save.
-     *
-     * @throws DocumentException if any error occurs
      */
     void close();
 
@@ -93,34 +87,32 @@ public interface Session {
      *
      * @param path
      * @return
-     * @throws DocumentException if any error occurs
+     * @throws NoSuchDocumentException if the document doesn't exist
      */
-    Document resolvePath(String path) throws DocumentException;
+    Document resolvePath(String path) throws NoSuchDocumentException;
 
     /**
      * Gets a document given its ID.
      *
      * @param uuid the document id
      * @return the document
-     * @throws DocumentException if any error occurs
+     * @throws NoSuchDocumentException if the document doesn't exist
      */
-    Document getDocumentByUUID(String uuid) throws DocumentException;
+    Document getDocumentByUUID(String uuid) throws NoSuchDocumentException;
 
     /**
      * Gets the root document in this repository.
      *
      * @return the root document
-     * @throws DocumentException if any error occurs
      */
-    Document getRootDocument() throws DocumentException;
+    Document getRootDocument();
 
     /**
      * Gets the null document, to be used as a fake parent to add placeless children.
      *
      * @return the null document
-     * @throws DocumentException
      */
-    Document getNullDocument() throws DocumentException;
+    Document getNullDocument();
 
     /**
      * Copies the source document to the given folder.
@@ -130,9 +122,8 @@ public interface Session {
      * @param src
      * @param dst
      * @param name
-     * @throws DocumentException if any error occurs
      */
-    Document copy(Document src, Document dst, String name) throws DocumentException;
+    Document copy(Document src, Document dst, String name);
 
     /**
      * Moves the source document to the given folder.
@@ -142,9 +133,8 @@ public interface Session {
      * @param src the source document to move
      * @param dst the destination folder
      * @param name the new name of the document or null if the original name should be preserved
-     * @throws DocumentException if any error occurs
      */
-    Document move(Document src, Document dst, String name) throws DocumentException;
+    Document move(Document src, Document dst, String name);
 
     /**
      * Creates a generic proxy to the given document inside the given folder.
@@ -152,9 +142,8 @@ public interface Session {
      * @param doc the document
      * @param folder the folder
      * @return the proxy
-     * @throws DocumentException if any error occurs
      */
-    Document createProxy(Document doc, Document folder) throws DocumentException;
+    Document createProxy(Document doc, Document folder);
 
     /**
      * Finds the proxies for a document. If the folder is not null, the search will be limited to its children.
@@ -164,10 +153,9 @@ public interface Session {
      * @param doc the document or version
      * @param folder the folder, or null
      * @return the list of proxies if any is found otherwise an empty list
-     * @throws DocumentException if any error occurs
      * @since 1.4.1 for the case where doc is a proxy
      */
-    Collection<Document> getProxies(Document doc, Document folder) throws DocumentException;
+    Collection<Document> getProxies(Document doc, Document folder);
 
     /**
      * Sets a proxies' target.
@@ -178,7 +166,7 @@ public interface Session {
      * @param target the new target
      * @since 5.5
      */
-    void setProxyTarget(Document proxy, Document target) throws DocumentException;
+    void setProxyTarget(Document proxy, Document target);
 
     /**
      * Imports a document with a given id and parent.
@@ -192,10 +180,9 @@ public interface Session {
      * @param properties system properties of the document, which will vary depending whether it's a live document, a
      *            version or a proxy (see the various {@code IMPORT_*} constants of {@link CoreSession})
      * @return a writable {@link Document}, even for proxies and versions
-     * @throws DocumentException
      */
     Document importDocument(String uuid, Document parent, String name, String typeName,
-            Map<String, Serializable> properties) throws DocumentException;
+            Map<String, Serializable> properties);
 
     /**
      * Gets a version of a document, given its versionable id and label.
@@ -206,9 +193,8 @@ public interface Session {
      * @param versionableId the versionable id
      * @param versionModel the version model
      * @return the version, or {@code null} if not found
-     * @throws DocumentException
      */
-    Document getVersion(String versionableId, VersionModel versionModel) throws DocumentException;
+    Document getVersion(String versionableId, VersionModel versionModel);
 
     /**
      * Returns {@code true} if negative ACLs are allowed.
@@ -221,15 +207,15 @@ public interface Session {
      */
     boolean isNegativeAclAllowed();
 
-    ACP getMergedACP(Document doc) throws SecurityException;
+    ACP getMergedACP(Document doc);
 
-    void setACP(Document doc, ACP acp, boolean overwrite) throws DocumentException;
+    void setACP(Document doc, ACP acp, boolean overwrite);
 
     /**
      * Gets the fulltext extracted from the binary fields.
      *
      * @since 5.9.3
      */
-    Map<String, String> getBinaryFulltext(String id) throws DocumentException;
+    Map<String, String> getBinaryFulltext(String id);
 
 }

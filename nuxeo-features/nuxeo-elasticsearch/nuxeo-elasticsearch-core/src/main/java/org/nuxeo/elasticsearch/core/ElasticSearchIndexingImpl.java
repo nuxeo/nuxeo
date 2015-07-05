@@ -150,12 +150,10 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 }
             } catch (ConcurrentUpdateException e) {
                 throw e; // bubble up, usually until AbstractWork catches it and maybe retries
+            } catch (NoSuchDocumentException e) {
+                log.info("Skip indexing command to bulk, doc does not exists anymore: " + cmd);
             } catch (ClientException | IllegalArgumentException e) {
-                if (e.getCause() instanceof NoSuchDocumentException) {
-                    log.info("Skip indexing command to bulk, doc does not exists anymore: " + cmd);
-                } else {
-                    log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
-                }
+                log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
             }
         }
         if (bulkRequest.numberOfActions() > 0) {
@@ -210,13 +208,11 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         IndexRequestBuilder request;
         try {
             request = buildEsIndexingRequest(cmd);
+        } catch (NoSuchDocumentException e) {
+            request = null;
         } catch (ClientException | IllegalStateException e) {
-            if (e.getCause() instanceof NoSuchDocumentException) {
-                request = null;
-            } else {
-                log.error("Fail to create request for indexing command: " + cmd, e);
-                return;
-            }
+            log.error("Fail to create request for indexing command: " + cmd, e);
+            return;
         }
         if (request == null) {
             log.info("Cancel indexing command because target document does not exists anymore: " + cmd);
