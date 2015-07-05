@@ -214,7 +214,7 @@ public class Helper {
         return session.saveDocument(doc);
     }
 
-    public static String createUserWorkspace(CoreSession repo, String username) throws ClientException {
+    public static String createUserWorkspace(CoreSession repo, String username) {
 
         DocumentModel container = new DocumentModelImpl("/", "UserWorkspaceRoot", "UserWorkspaceRoot");
         container = repo.createDocument(container);

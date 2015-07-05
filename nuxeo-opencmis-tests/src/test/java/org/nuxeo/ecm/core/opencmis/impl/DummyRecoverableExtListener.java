@@ -24,7 +24,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 public class DummyRecoverableExtListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         DocumentEventContext ctx = (DocumentEventContext) event.getContext();
         DocumentModel doc = ctx.getSourceDocument();
         if (doc.getName().startsWith("throw")) {
