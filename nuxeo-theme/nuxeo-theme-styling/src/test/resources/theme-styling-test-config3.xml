@@ -3,7 +3,7 @@
 
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
-    <!-- check no append behaviour + override default flavor-->
+    <!-- check no append behaviour + override default flavor -->
     <themePage name="testStyling/default">
       <defaultFlavor>dark</defaultFlavor>
       <flavors>

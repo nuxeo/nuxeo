@@ -19,6 +19,9 @@
       <resources>
         <resource>jquery.fancybox.js</resource>
       </resources>
+      <resourceBundles>
+        <bundle>nuxeo_includes</bundle>
+      </resourceBundles>
     </page>
 
     <themePage name="testStyling/print">
@@ -111,6 +114,24 @@
     <resource name="jquery.fancybox.js">
       <path>scripts/jquery/jquery.fancybox.pack.js</path>
     </resource>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <resource name="jsf.js" type="jsfjs">
+      <uri>javax.faces:jsf.js</uri>
+    </resource>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+
+    <resourceBundle name="nuxeo_includes">
+      <resources>
+        <resource>jsf.js</resource>
+      </resources>
+    </resourceBundle>
+
   </extension>
 
 </component>

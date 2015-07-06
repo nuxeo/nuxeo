@@ -2,7 +2,6 @@
 
 <component name="org.nuxeo.theme.styling.service">
 
-  <require>org.nuxeo.theme.core</require>
   <require>org.nuxeo.ecm.platform.WebResources</require>
 
   <service>

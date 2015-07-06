@@ -44,6 +44,11 @@ public class ResourceBundleRegistry extends ContributionFragmentRegistry<Resourc
     }
 
     @Override
+    public synchronized void removeContribution(ResourceBundle contrib) {
+        removeContribution(contrib, true);
+    }
+
+    @Override
     public void contributionRemoved(String id, ResourceBundle origContrib) {
         bundles.remove(id);
     }

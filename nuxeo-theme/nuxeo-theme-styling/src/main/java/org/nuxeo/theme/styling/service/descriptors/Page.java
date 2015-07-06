@@ -166,6 +166,9 @@ public class Page {
     }
 
     public String getComputedResourceBundleName() {
+        if ("*".equals(getName())) {
+            return RESOURCE_BUNDLE_PREFIX + "*";
+        }
         return RESOURCE_BUNDLE_PREFIX + getName().replaceAll("[^a-zA-Z]+", "_");
     }
 
@@ -287,14 +290,14 @@ public class Page {
             setFlavors(merged);
         }
 
-        List<String> newResources = src.getResources();
+        List<String> newResources = src.resources;
         if (newResources != null) {
             List<String> merged = new ArrayList<String>();
             merged.addAll(newResources);
             boolean keepOld = src.getAppendResources() || (newResources.isEmpty() && !src.getAppendResources());
             if (keepOld) {
                 // add back old contributions
-                List<String> oldResources = getResources();
+                List<String> oldResources = resources;
                 if (oldResources != null) {
                     merged.addAll(0, oldResources);
                 }
@@ -302,14 +305,14 @@ public class Page {
             setResources(merged);
         }
 
-        List<String> newBundles = src.getResourceBundles();
+        List<String> newBundles = src.bundles;
         if (newBundles != null) {
             List<String> merged = new ArrayList<String>();
             merged.addAll(newBundles);
             boolean keepOld = src.getAppendResources() || (newBundles.isEmpty() && !src.getAppendResources());
             if (keepOld) {
                 // add back old contributions
-                List<String> oldBundles = getResourceBundles();
+                List<String> oldBundles = bundles;
                 if (oldBundles != null) {
                     merged.addAll(0, oldBundles);
                 }
@@ -343,11 +346,9 @@ public class Page {
             clone.setFlavors(new ArrayList<String>(flavors));
         }
         clone.setAppendResources(getAppendResources());
-        List<String> resources = getResources();
         if (resources != null) {
             clone.setResources(new ArrayList<String>(resources));
         }
-        List<String> bundles = getResourceBundles();
         if (bundles != null) {
             clone.setResourceBundles(new ArrayList<String>(bundles));
         }
