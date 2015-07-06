@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
@@ -143,7 +142,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                 comments.add(String.format("%s %d", blob.getFilename(), i));
             }
             return bh;
-        } catch (IOException | CommandNotAvailable | ClientException | CommandException e) {
+        } catch (IOException | CommandNotAvailable | CommandException e) {
             String msg;
             if (blob != null) {
                 msg = "Error extracting story board from '" + blob.getFilename() + "'";

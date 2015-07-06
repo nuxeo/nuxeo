@@ -20,9 +20,9 @@ import java.io.IOException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
@@ -37,7 +37,7 @@ public class ThumbnailVideoFactory implements ThumbnailFactory {
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.hasFacet(VIDEO_FACET)) {
-            throw new ClientException("Document is not a video");
+            throw new NuxeoException("Document is not a video");
         }
         // Choose the nuxeo default thumbnail of the picture views (screenshots
         // of the video taken during creation)
@@ -52,7 +52,7 @@ public class ThumbnailVideoFactory implements ThumbnailFactory {
                     return Blobs.createBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
                             + docType.getBigIcon()));
                 } catch (IOException e) {
-                    throw new ClientException(e);
+                    throw new NuxeoException(e);
                 }
             }
         }

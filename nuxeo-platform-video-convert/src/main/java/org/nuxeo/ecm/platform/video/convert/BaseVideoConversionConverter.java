@@ -34,7 +34,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolderWithProperties;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -55,11 +54,7 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder,
             Map<String, Serializable> stringSerializableMap) throws ConversionException {
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
-        try {
-            cmdBlobParams.put(INPUT_FILE_PATH_PARAMETER, blobHolder.getBlob());
-        } catch (ClientException e) {
-            throw new ConversionException("Unable to get Blob for holder", e);
-        }
+        cmdBlobParams.put(INPUT_FILE_PATH_PARAMETER, blobHolder.getBlob());
         return cmdBlobParams;
     }
 

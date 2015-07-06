@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -90,7 +89,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
             outBlob.setMimeType("image/jpeg");
             outBlob.setFilename(String.format("video-screenshot-%05d.000.jpeg", positionParam));
             return new SimpleCachableBlobHolder(outBlob);
-        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
+        } catch (CommandNotAvailable | IOException | CommandException e) {
             String msg;
             if (blob != null) {
                 msg = "error extracting screenshot from '" + blob.getFilename() + "'";

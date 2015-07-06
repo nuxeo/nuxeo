@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -52,15 +51,7 @@ public class VideoServiceBusinessDelegate implements Serializable {
     @Unwrap
     public VideoService getService() {
         if (videoService == null) {
-            try {
-                videoService = Framework.getService(VideoService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to VideoService. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (videoService == null) {
-                throw new ClientException("VideoService service not bound");
-            }
+            videoService = Framework.getService(VideoService.class);
         }
         return videoService;
     }

@@ -28,8 +28,8 @@ import static org.nuxeo.ecm.platform.video.VideoConstants.VIDEO_CHANGED_EVENT;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -86,7 +86,7 @@ public class VideoChangedListener implements EventListener {
     protected void updateVideoInfo(DocumentModel doc, Blob video) {
         try {
             VideoHelper.updateVideoInfo(doc, video);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             // may happen if ffmpeg is not installed
             log.error(String.format("Unable to retrieve video info: %s", e.getMessage()));
             log.debug(e, e);

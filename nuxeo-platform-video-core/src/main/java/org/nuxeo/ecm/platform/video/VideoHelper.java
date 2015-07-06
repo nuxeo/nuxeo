@@ -30,9 +30,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -109,8 +109,6 @@ public class VideoHelper {
                     docModel.getTitle(), video.getFilename(), e.getMessage()));
             log.debug(e, e);
             return;
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
         }
         List<Blob> blobs = result.getBlobs();
         List<String> comments = (List<String>) result.getProperty("comments");
@@ -151,8 +149,6 @@ public class VideoHelper {
                     docModel.getTitle(), video.getFilename(), e.getMessage()));
             log.debug(e, e);
             return;
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
         }
 
         // compute the thumbnail preview
@@ -221,7 +217,7 @@ public class VideoHelper {
             }
             return VideoInfo.fromFFmpegOutput(result.getOutput());
         } catch (CommandNotAvailable | CommandException | IOException e) {
-            throw ClientException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 
