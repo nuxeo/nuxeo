@@ -20,7 +20,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.api.RouteModelResourceType;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 

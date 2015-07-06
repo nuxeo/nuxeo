@@ -16,14 +16,14 @@
  */
 package org.nuxeo.ecm.platform.routing.api.exception;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Basic document routing exception.
  *
  * @since 5.6
  */
-public class DocumentRouteException extends ClientException {
+public class DocumentRouteException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

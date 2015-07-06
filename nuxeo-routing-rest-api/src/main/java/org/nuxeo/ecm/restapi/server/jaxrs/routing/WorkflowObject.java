@@ -34,9 +34,9 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -84,9 +84,9 @@ public class WorkflowObject extends DefaultObject {
         try {
             workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
             return workflowInstance.getAdapter(DocumentRoute.class);
-        } catch (ClientException e) {
-            log.error("Can not get workflow instance with id" + workflowInstanceId);
-            throw new ClientException(e);
+        } catch (NuxeoException e) {
+            e.addInfo("Can not get workflow instance with id: " + workflowInstanceId);
+            throw e;
         }
     }
 
@@ -95,9 +95,9 @@ public class WorkflowObject extends DefaultObject {
     public JsonGraphRoute getWorkflowGraph(@PathParam("workflowInstanceId") String workflowInstanceId) {
         try {
             return new JsonGraphRoute(getContext().getCoreSession(), workflowInstanceId, getContext().getLocale());
-        } catch (ClientException e) {
-            log.error("Can not get workflow instance graph with id" + workflowInstanceId);
-            throw new ClientException(e);
+        } catch (NuxeoException e) {
+            e.addInfo("Can not get workflow instance graph with id: " + workflowInstanceId);
+            throw e;
         }
     }
 
@@ -110,9 +110,9 @@ public class WorkflowObject extends DefaultObject {
             workflowInstance = getContext().getCoreSession().getDocument(new IdRef(workflowInstanceId));
             route = workflowInstance.getAdapter(DocumentRoute.class);
             checkCancelGuards(route);
-        } catch (ClientException e) {
-            log.error("Can not get workflow instance with id" + workflowInstanceId);
-            throw new ClientException(e);
+        } catch (NuxeoException e) {
+            e.addInfo("Can not get workflow instance with id: " + workflowInstanceId);
+            throw e;
         }
         Framework.getService(DocumentRoutingEngineService.class).cancel(route, getContext().getCoreSession());
         return Response.ok().status(Status.NO_CONTENT).build();
@@ -128,7 +128,7 @@ public class WorkflowObject extends DefaultObject {
                 return;
             }
             throw new WebSecurityException("You don't have the permission to cancel this workflow");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

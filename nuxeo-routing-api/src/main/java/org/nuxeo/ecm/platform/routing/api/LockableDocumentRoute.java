@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.routing.api;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**

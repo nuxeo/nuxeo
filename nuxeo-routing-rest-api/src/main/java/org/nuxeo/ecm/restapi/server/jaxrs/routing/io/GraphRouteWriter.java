@@ -31,7 +31,6 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
 
 @Provider

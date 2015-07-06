@@ -23,7 +23,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -57,14 +56,10 @@ public class RouteSecurityChecker implements Serializable {
      *             instead.
      */
     public boolean canValidateRoute() {
-        try {
-            DocumentModel currentDoc = navigationContext.getCurrentDocument();
-            if (!documentManager.hasChildren(currentDoc.getRef())) {
-                // Cannot validate an empty route
-                return false;
-            }
-        } catch (ClientException e) {
-            new RuntimeException(e);
+        DocumentModel currentDoc = navigationContext.getCurrentDocument();
+        if (!documentManager.hasChildren(currentDoc.getRef())) {
+            // Cannot validate an empty route
+            return false;
         }
         return getDocumentRoutingService().canUserValidateRoute(currentUser);
     }

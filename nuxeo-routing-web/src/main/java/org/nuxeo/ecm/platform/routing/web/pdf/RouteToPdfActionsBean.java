@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Conversation;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -64,12 +63,7 @@ public class RouteToPdfActionsBean implements Serializable {
     }
 
     public int getLayoutColumnsCount(String layoutName) {
-        WebLayoutManager wlm;
-        try {
-            wlm = Framework.getService(WebLayoutManager.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        WebLayoutManager wlm = Framework.getService(WebLayoutManager.class);
         return wlm.getLayoutDefinition(layoutName).getRows().length;
     }
 

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -188,11 +187,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     @Override
     public String getNewModelName(DocumentModel instance) {
-        try {
-            return "(COPY) " + instance.getPropertyValue("dc:title");
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return "(COPY) " + instance.getPropertyValue("dc:title");
     }
 
     protected DocumentModel undoReadOnlySecurityPolicy(DocumentModel instance, CoreSession session)

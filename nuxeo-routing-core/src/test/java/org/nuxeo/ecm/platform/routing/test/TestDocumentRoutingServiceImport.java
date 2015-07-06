@@ -35,10 +35,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -80,7 +80,7 @@ public class TestDocumentRoutingServiceImport extends DocumentRoutingTestCase {
             try {
                 populate0(session);
             } catch (IOException | URISyntaxException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
         }
 

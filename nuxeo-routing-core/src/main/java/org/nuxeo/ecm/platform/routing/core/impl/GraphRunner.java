@@ -31,7 +31,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -329,34 +328,28 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // evaluate taskDueDate from the taskDueDateExpr;
         Date dueDate = node.computeTaskDueDate();
         DocumentModelList docs = graph.getAttachedDocumentModels();
-        try {
-            TaskService taskService = Framework.getLocalService(TaskService.class);
-            DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-            // TODO documents other than the first are not attached to the task
-            // (task API allows only one document)
-            // we may get several tasks if there's one per actor when the node
-            // has the property
-            // hasMultipleTasks set to true
-            List<Task> tasks = taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), docs,
-                    node.getTaskDocType(), node.getDocument().getTitle(), node.getId(),
-                    routeInstance.getDocument().getId(), new ArrayList<String>(actors), node.hasMultipleTasks(),
-                    node.getTaskDirective(), null, dueDate, taskVariables, null,
-                    node.getWorkflowContextualInfo(session, true));
+        TaskService taskService = Framework.getLocalService(TaskService.class);
+        DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
+        // TODO documents other than the first are not attached to the task
+        // (task API allows only one document)
+        // we may get several tasks if there's one per actor when the node
+        // has the property
+        // hasMultipleTasks set to true
+        List<Task> tasks = taskService.createTask(session, (NuxeoPrincipal) session.getPrincipal(), docs,
+                node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
+                new ArrayList<String>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate,
+                taskVariables, null, node.getWorkflowContextualInfo(session, true));
 
-            //routing.makeRoutingTasks(session, tasks);
-            for (Task task : tasks) {
-                node.addTaskInfo(task.getId());
-            }
-            String taskAssigneesPermission = node.getTaskAssigneesPermission();
-            if (StringUtils.isEmpty(taskAssigneesPermission)) {
-                return;
-            }
-            for (Task task : tasks) {
-                routing.grantPermissionToTaskAssignees(session, taskAssigneesPermission, docs, task);
-            }
-
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Can not create task", e);
+        // routing.makeRoutingTasks(session, tasks);
+        for (Task task : tasks) {
+            node.addTaskInfo(task.getId());
+        }
+        String taskAssigneesPermission = node.getTaskAssigneesPermission();
+        if (StringUtils.isEmpty(taskAssigneesPermission)) {
+            return;
+        }
+        for (Task task : tasks) {
+            routing.grantPermissionToTaskAssignees(session, taskAssigneesPermission, docs, task);
         }
     }
 
@@ -369,23 +362,19 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
             String status) throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
         DocumentModelList docs = graph.getAttachedDocumentModels();
-        try {
-            routing.removePermissionsForTaskActors(session, docs, task);
-            // delete task
-            if (delete) {
-                session.removeDocument(new IdRef(task.getId()));
-            }
-            // get the last comment on the task, if there are several:
-            // task might have been previously reassigned or delegated
-            List<TaskComment> comments = task.getComments();
-            String comment = comments.size() > 0 ? comments.get(comments.size() - 1).getText() : "";
-            // actor
-            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-            String actor = principal.getActingUser();
-            node.updateTaskInfo(task.getId(), true, status, actor, comment);
-
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Cannot finish task", e);
+        routing.removePermissionsForTaskActors(session, docs, task);
+        // delete task
+        if (delete) {
+            session.removeDocument(new IdRef(task.getId()));
         }
+        // get the last comment on the task, if there are several:
+        // task might have been previously reassigned or delegated
+        List<TaskComment> comments = task.getComments();
+        String comment = comments.size() > 0 ? comments.get(comments.size() - 1).getText() : "";
+        // actor
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        String actor = principal.getActingUser();
+        node.updateTaskInfo(task.getId(), true, status, actor, comment);
     }
+
 }

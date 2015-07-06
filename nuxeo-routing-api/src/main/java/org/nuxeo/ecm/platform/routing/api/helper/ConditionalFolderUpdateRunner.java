@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.api.helper;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -39,24 +38,20 @@ public class ConditionalFolderUpdateRunner {
     }
 
     public void setStepToBeExecutedNext(CoreSession session, final String nextStepPos) {
-        try {
-            new UnrestrictedSessionRunner(session) {
+        new UnrestrictedSessionRunner(session) {
 
-                @Override
-                public void run() {
-                    // get the parent container and set on it the id of the doc
-                    // to be run next
-                    DocumentModel condFolder = session.getDocument(session.getParentDocumentRef(new IdRef(stepDocId)));
-                    if (!condFolder.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
-                        return;
-                    }
-                    condFolder.setPropertyValue(DocumentRoutingConstants.STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME,
-                            nextStepPos);
-                    session.saveDocument(condFolder);
+            @Override
+            public void run() {
+                // get the parent container and set on it the id of the doc
+                // to be run next
+                DocumentModel condFolder = session.getDocument(session.getParentDocumentRef(new IdRef(stepDocId)));
+                if (!condFolder.hasFacet(DocumentRoutingConstants.CONDITIONAL_STEP_FACET)) {
+                    return;
                 }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+                condFolder.setPropertyValue(DocumentRoutingConstants.STEP_TO_BE_EXECUTED_NEXT_PROPERTY_NAME,
+                        nextStepPos);
+                session.saveDocument(condFolder);
+            }
+        }.runUnrestricted();
     }
 }

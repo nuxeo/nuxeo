@@ -21,10 +21,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -55,7 +55,7 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent implement
                 DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
                 DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
                 if (routeInstance == null) {
-                    throw new ClientException("Document " + routeDoc + " can not be adapted to a DocumentRoute");
+                    throw new NuxeoException("Document " + routeDoc + " can not be adapted to a DocumentRoute");
                 }
                 routeInstance.cancel(session);
             }

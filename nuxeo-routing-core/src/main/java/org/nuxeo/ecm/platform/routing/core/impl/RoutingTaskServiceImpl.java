@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -45,25 +44,13 @@ public class RoutingTaskServiceImpl extends DefaultComponent implements RoutingT
     public void endTask(CoreSession session, Task task, Map<String, Object> data, String status)
             throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        try {
-            routing.endTask(session, task, data, status);
-        } catch (DocumentRouteException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Cannot resume workflow", e);
-        }
+        routing.endTask(session, task, data, status);
     }
 
     @Override
     public List<DocumentModel> getWorkflowInputDocuments(CoreSession session, Task task) throws DocumentRouteException {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        try {
-            return routing.getWorkflowInputDocuments(session, task);
-        } catch (DocumentRouteException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new DocumentRouteException(e);
-        }
+        return routing.getWorkflowInputDocuments(session, task);
     }
 
 }

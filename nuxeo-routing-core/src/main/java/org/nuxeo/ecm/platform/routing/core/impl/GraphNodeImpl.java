@@ -38,7 +38,6 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -432,12 +431,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         DocumentModelList documents = graph.getAttachedDocuments(session);
         if (detached) {
             for (DocumentModel documentModel : documents) {
-                try {
-                    documentModel.detach(true);
-                } catch (ClientException e) {
-                    log.error(e);
-                    throw new NuxeoException(e);
-                }
+                documentModel.detach(true);
             }
         }
         context.put("workflowDocuments", documents);
@@ -767,25 +761,21 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         DocumentRoutingService service = Framework.getLocalService(DocumentRoutingService.class);
         List<String> docs = graph.getAttachedDocuments();
         String subRouteInstanceId = service.createNewInstance(subRouteModelId, docs, getSession(), false);
-        try {
-            // set info about parent in subroute
-            DocumentModel subRouteInstance = getSession().getDocument(new IdRef(subRouteInstanceId));
-            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_ROUTE, getDocument().getParentRef().toString());
-            subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_NODE, getDocument().getName());
-            subRouteInstance = getSession().saveDocument(subRouteInstance);
-            // set info about subroute in parent
-            document.setPropertyValue(PROP_SUB_ROUTE_INSTANCE_ID, subRouteInstanceId);
-            saveDocument();
-            // start the sub-route
-            Map<String, Serializable> map = getSubRouteInitialVariables();
-            service.startInstance(subRouteInstanceId, docs, map, getSession());
-            // return the sub-route
-            // subRouteInstance.refresh();
-            DocumentRoute subRoute = subRouteInstance.getAdapter(DocumentRoute.class);
-            return subRoute;
-        } catch (ClientException e) {
-            throw new DocumentRouteException(e);
-        }
+        // set info about parent in subroute
+        DocumentModel subRouteInstance = getSession().getDocument(new IdRef(subRouteInstanceId));
+        subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_ROUTE, getDocument().getParentRef().toString());
+        subRouteInstance.setPropertyValue(GraphRoute.PROP_PARENT_NODE, getDocument().getName());
+        subRouteInstance = getSession().saveDocument(subRouteInstance);
+        // set info about subroute in parent
+        document.setPropertyValue(PROP_SUB_ROUTE_INSTANCE_ID, subRouteInstanceId);
+        saveDocument();
+        // start the sub-route
+        Map<String, Serializable> map = getSubRouteInitialVariables();
+        service.startInstance(subRouteInstanceId, docs, map, getSession());
+        // return the sub-route
+        // subRouteInstance.refresh();
+        DocumentRoute subRoute = subRouteInstance.getAdapter(DocumentRoute.class);
+        return subRoute;
     }
 
     protected Map<String, Serializable> getSubRouteInitialVariables() {
@@ -838,13 +828,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     public void cancelSubRoute() throws DocumentRouteException {
         String subRouteInstanceId = getSubRouteInstanceId();
         if (!StringUtils.isEmpty(subRouteInstanceId)) {
-            try {
-                DocumentModel subRouteDoc = getSession().getDocument(new IdRef(subRouteInstanceId));
-                DocumentRoute subRoute = subRouteDoc.getAdapter(DocumentRoute.class);
-                subRoute.cancel(getSession());
-            } catch (ClientException e) {
-                throw new DocumentRouteException(e);
-            }
+            DocumentModel subRouteDoc = getSession().getDocument(new IdRef(subRouteInstanceId));
+            DocumentRoute subRoute = subRouteDoc.getAdapter(DocumentRoute.class);
+            subRoute.cancel(getSession());
         }
     }
 
@@ -1000,37 +986,34 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected void cancelTask(CoreSession session, final String taskId) throws DocumentRouteException {
-        try {
-            DocumentRef taskRef = new IdRef(taskId);
-            if (!session.exists(taskRef)) {
-                log.info(String.format("Task with id %s does not exist anymore", taskId));
-                DocumentModelList docs = graph.getAttachedDocumentModels();
-                Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, taskId);
-                NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-                String actor = principal.getActingUser();
-                updateTaskInfo(taskId, true, null, actor, null);
-                return;
-            }
-            DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-            Task task = taskDoc.getAdapter(Task.class);
-            if (task == null) {
-                throw new DocumentRouteException("Invalid taskId: " + taskId);
-            }
+        DocumentRef taskRef = new IdRef(taskId);
+        if (!session.exists(taskRef)) {
+            log.info(String.format("Task with id %s does not exist anymore", taskId));
             DocumentModelList docs = graph.getAttachedDocumentModels();
-            Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, task);
-            if (task.isOpened()) {
-                task.cancel(session);
-            }
-            session.saveDocument(task.getDocument());
-            // task is considered processed with the status "null" when is
-            // canceled
-            // actor
+            Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs,
+                    taskId);
             NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
             String actor = principal.getActingUser();
             updateTaskInfo(taskId, true, null, actor, null);
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Cannot cancel task", e);
+            return;
         }
+        DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+        Task task = taskDoc.getAdapter(Task.class);
+        if (task == null) {
+            throw new DocumentRouteException("Invalid taskId: " + taskId);
+        }
+        DocumentModelList docs = graph.getAttachedDocumentModels();
+        Framework.getLocalService(DocumentRoutingService.class).removePermissionsForTaskActors(session, docs, task);
+        if (task.isOpened()) {
+            task.cancel(session);
+        }
+        session.saveDocument(task.getDocument());
+        // task is considered processed with the status "null" when is
+        // canceled
+        // actor
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        String actor = principal.getActingUser();
+        updateTaskInfo(taskId, true, null, actor, null);
     }
 
     @Override

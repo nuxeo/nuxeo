@@ -17,8 +17,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 
 /**
@@ -55,7 +55,7 @@ public class ResumeNodeOperation {
             nodeId = (String) ctx.get("nodeId");
         }
         if (workflowInstanceId == null) {
-            throw new ClientException("Can not resume workflow instance with id " + workflowInstanceId
+            throw new NuxeoException("Can not resume workflow instance with id " + workflowInstanceId
                     + ". No current instance in the context");
         }
         documentRoutingService.resumeInstance(workflowInstanceId, nodeId, null, null, session);

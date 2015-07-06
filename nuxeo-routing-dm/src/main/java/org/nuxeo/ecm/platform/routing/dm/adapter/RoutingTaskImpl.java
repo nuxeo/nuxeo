@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.platform.routing.dm.adapter;
 
 import org.nuxeo.ecm.automation.task.CreateTask.OperationTaskVariableName;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -47,45 +46,29 @@ public class RoutingTaskImpl extends TaskImpl implements RoutingTask {
     @Deprecated
     @Override
     public DocumentModelList getAttachedDocuments(CoreSession coreSession) {
-        try {
-            DocumentRef stepIdRef = new IdRef(getTargetDocumentId());
-            DocumentModel targetDocument = coreSession.getDocument(stepIdRef);
-            DocumentModelList docList = new DocumentModelListImpl();
-            docList.add(targetDocument);
-            return docList;
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        DocumentRef stepIdRef = new IdRef(getTargetDocumentId());
+        DocumentModel targetDocument = coreSession.getDocument(stepIdRef);
+        DocumentModelList docList = new DocumentModelListImpl();
+        docList.add(targetDocument);
+        return docList;
     }
 
     @Override
     public DocumentRouteStep getDocumentRouteStep(CoreSession coreSession) {
-        try {
-            String docStepId = getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
-            DocumentRef stepIdRef = new IdRef(docStepId);
-            DocumentModel docStep = coreSession.getDocument(stepIdRef);
-            return docStep.getAdapter(DocumentRouteStep.class);
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        String docStepId = getVariable(DocumentRoutingConstants.OPERATION_STEP_DOCUMENT_KEY);
+        DocumentRef stepIdRef = new IdRef(docStepId);
+        DocumentModel docStep = coreSession.getDocument(stepIdRef);
+        return docStep.getAdapter(DocumentRouteStep.class);
     }
 
     @Override
     public String getRefuseOperationChainId() {
-        try {
-            return getVariable(OperationTaskVariableName.rejectOperationChain.name());
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return getVariable(OperationTaskVariableName.rejectOperationChain.name());
     }
 
     @Override
     public String getValidateOperationChainId() {
-        try {
-            return getVariable(OperationTaskVariableName.acceptOperationChain.name());
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return getVariable(OperationTaskVariableName.acceptOperationChain.name());
     }
 
 }

@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.routing.core.impl.jsongraph;
 
 import java.util.Locale;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 
 /**

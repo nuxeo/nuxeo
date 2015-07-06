@@ -39,8 +39,8 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.node.ArrayNode;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.io.util.JsonEncodeDecodeUtils;
 import org.nuxeo.ecm.restapi.server.jaxrs.routing.model.WorkflowRequest;
 import org.nuxeo.ecm.webengine.WebException;
@@ -84,7 +84,7 @@ public class WorkflowRequestReader implements MessageBodyReader<WorkflowRequest>
 
         try {
             return readRequest(content, httpHeaders);
-        } catch (IOException | ClientException | ClassNotFoundException e) {
+        } catch (IOException | NuxeoException | ClassNotFoundException e) {
             throw WebException.wrap(e);
         }
     }

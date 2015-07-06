@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -31,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Fire events for Route audit logs (used by previous route content view)
- * 
+ *
  * @since 5.6
  */
 public class AuditEventFirer {
@@ -47,11 +46,7 @@ public class AuditEventFirer {
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentEventCategories.EVENT_DOCUMENT_CATEGORY);
         DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(), doc);
         envContext.setProperties(eventProperties);
-        try {
-            getEventProducer().fireEvent(envContext.newEvent(eventName));
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        getEventProducer().fireEvent(envContext.newEvent(eventName));
     }
 
     static protected EventProducer getEventProducer() {

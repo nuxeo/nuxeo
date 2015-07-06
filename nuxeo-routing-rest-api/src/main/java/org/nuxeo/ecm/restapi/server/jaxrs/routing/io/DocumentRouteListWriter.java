@@ -40,7 +40,6 @@ import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 
 /**

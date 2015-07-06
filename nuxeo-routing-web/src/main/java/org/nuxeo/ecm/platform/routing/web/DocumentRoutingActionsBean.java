@@ -46,7 +46,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -233,12 +232,7 @@ public class DocumentRoutingActionsBean implements Serializable {
 
     protected void queryForRelatedRoutes() {
         if (relatedRoutes == null) {
-            try {
-                relatedRoutes = relatedRouteAction.findRelatedRoute();
-            } catch (ClientException e) {
-                log.error("Cannot get related routes", e);
-                relatedRoutes = Collections.emptyList();
-            }
+            relatedRoutes = relatedRouteAction.findRelatedRoute();
         }
     }
 
@@ -614,17 +608,13 @@ public class DocumentRoutingActionsBean implements Serializable {
         // we cannot use typesTool as intermediary since the DataModel callback
         // will alter whatever type we set
         typesTool.setSelectedType(docType);
-        try {
-            DocumentModel changeableDocument = documentManager.createDocumentModel(typeName);
-            ScopedMap context = changeableDocument.getContextData();
-            context.put(CoreEventConstants.PARENT_PATH, parentPath);
-            context.put(SOURCE_DOC_NAME, sourceDocName);
-            context.put(ROUTE_DOCUMENT_REF, routeRef);
-            navigationContext.setChangeableDocument(changeableDocument);
-            return "create_route_element";
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
-        }
+        DocumentModel changeableDocument = documentManager.createDocumentModel(typeName);
+        ScopedMap context = changeableDocument.getContextData();
+        context.put(CoreEventConstants.PARENT_PATH, parentPath);
+        context.put(SOURCE_DOC_NAME, sourceDocName);
+        context.put(ROUTE_DOCUMENT_REF, routeRef);
+        navigationContext.setChangeableDocument(changeableDocument);
+        return "create_route_element";
     }
 
     /**
@@ -726,32 +716,28 @@ public class DocumentRoutingActionsBean implements Serializable {
             log.debug("Document " + newDocument.getName() + " already created");
             return navigationContext.navigateToDocument(newDocument, "after-create");
         }
+        String parentDocumentPath = (String) newDocument.getContextData().get(CoreEventConstants.PARENT_PATH);
+        String sourceDocumentName = (String) newDocument.getContextData().get(SOURCE_DOC_NAME);
+        DocumentRef routeDocRef = (DocumentRef) newDocument.getContextData().get(ROUTE_DOCUMENT_REF);
         try {
-            String parentDocumentPath = (String) newDocument.getContextData().get(CoreEventConstants.PARENT_PATH);
-            String sourceDocumentName = (String) newDocument.getContextData().get(SOURCE_DOC_NAME);
-            DocumentRef routeDocRef = (DocumentRef) newDocument.getContextData().get(ROUTE_DOCUMENT_REF);
-            try {
-                getDocumentRoutingService().addRouteElementToRoute(new PathRef(parentDocumentPath), sourceDocumentName,
-                        newDocument.getAdapter(DocumentRouteElement.class), documentManager);
-            } catch (DocumentRouteNotLockedException e) {
-                facesMessages.add(StatusMessage.Severity.WARN,
-                        resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.not.locked"));
-                return null;
-            }
-            DocumentModel routeDocument = documentManager.getDocument(routeDocRef);
-            facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
-                    resourcesAccessor.getMessages().get(newDocument.getType()));
-
-            Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, routeDocument);
-            // Release the lock only when currentUser had locked it before
-            // entering this method.
-            if (!alreadyLockedByCurrentUser) {
-                getDocumentRoutingService().unlockDocumentRoute(routeModel, documentManager);
-            }
-            return navigationContext.navigateToDocument(routeDocument);
-        } catch (Throwable t) {
-            throw ClientException.wrap(t);
+            getDocumentRoutingService().addRouteElementToRoute(new PathRef(parentDocumentPath), sourceDocumentName,
+                    newDocument.getAdapter(DocumentRouteElement.class), documentManager);
+        } catch (DocumentRouteNotLockedException e) {
+            facesMessages.add(StatusMessage.Severity.WARN,
+                    resourcesAccessor.getMessages().get("feedback.casemanagement.document.route.not.locked"));
+            return null;
         }
+        DocumentModel routeDocument = documentManager.getDocument(routeDocRef);
+        facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("document_saved"),
+                resourcesAccessor.getMessages().get(newDocument.getType()));
+
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, routeDocument);
+        // Release the lock only when currentUser had locked it before
+        // entering this method.
+        if (!alreadyLockedByCurrentUser) {
+            getDocumentRoutingService().unlockDocumentRoute(routeModel, documentManager);
+        }
+        return navigationContext.navigateToDocument(routeDocument);
     }
 
     @Deprecated

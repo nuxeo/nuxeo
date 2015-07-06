@@ -24,8 +24,8 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants.EvaluationOperators;
 
@@ -66,7 +66,7 @@ public class EvaluateCondition extends AbstractTaskStepOperation {
                 longValue = Long.parseLong(value);
             } catch (NumberFormatException e) {
                 log.error("Invalid long value");
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
             result = ((Long) subjectValue).compareTo(longValue);
         }

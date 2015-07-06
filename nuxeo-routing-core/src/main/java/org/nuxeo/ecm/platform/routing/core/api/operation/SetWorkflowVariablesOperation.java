@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.platform.routing.core.api.operation;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -20,10 +22,11 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Set a list of variable on the workflow instance with the given id
@@ -55,9 +58,11 @@ public class SetWorkflowVariablesOperation {
         DocumentModel workflowInstance = session.getDocument(new IdRef(id));
         try {
             DocumentHelper.setProperties(session, workflowInstance, properties);
-        } catch (Exception e) {
-            log.error("Can not set properties on workflow instance with the id " + id);
-            throw new ClientException(e);
+        } catch (PropertyException e) {
+            e.addInfo("Cannot set properties on workflow instance with the id: " + id);
+            throw e;
+        } catch (IOException e) {
+            throw new NuxeoException("Cannot set properties on workflow instance with the id: " + id, e);
         }
     }
 }

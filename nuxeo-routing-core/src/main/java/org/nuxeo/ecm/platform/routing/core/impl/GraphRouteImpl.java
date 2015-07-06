@@ -30,12 +30,12 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -249,7 +249,7 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     public String getAvailabilityFilter() {
         try {
             return (String) document.getPropertyValue(PROP_AVAILABILITY_FILTER);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return null;
         }
     }

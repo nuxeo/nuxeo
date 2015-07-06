@@ -33,7 +33,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -170,9 +169,7 @@ public class BulkRestartWorkflow {
 
     public static Throwable unwrapException(Throwable t) {
         Throwable cause = null;
-        if (t instanceof ClientException) {
-            cause = t.getCause();
-        } else if (t instanceof Exception) {
+        if (t != null) {
             cause = t.getCause();
         }
         if (cause == null) {

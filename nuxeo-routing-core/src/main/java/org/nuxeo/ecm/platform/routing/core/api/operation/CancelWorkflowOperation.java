@@ -23,10 +23,10 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 
@@ -57,9 +57,9 @@ public class CancelWorkflowOperation {
         DocumentModel workflowInstance;
         try {
             workflowInstance = session.getDocument(new IdRef(id));
-        } catch (ClientException e) {
-            log.error("Can not get workflow instance with id" + id);
-            throw new ClientException(e);
+        } catch (NoSuchDocumentException e) {
+            e.addInfo("Cannot get workflow instance with id: " + id);
+            throw e;
         }
         documentRoutingEngineService.cancel(workflowInstance.getAdapter(DocumentRoute.class), session);
     }

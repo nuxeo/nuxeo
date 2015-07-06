@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.api.helper;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -40,21 +39,17 @@ public class StepResumeRunner {
     }
 
     public void resumeStep(CoreSession session) {
-        try {
-            DocumentModel model = session.getDocument(new IdRef(stepDocId));
-            DocumentRouteStep step = model.getAdapter(DocumentRouteStep.class);
-            step.setDone(session);
-            new UnrestrictedSessionRunner(session) {
-                @Override
-                public void run() {
-                    DocumentModel model = session.getDocument(new IdRef(stepDocId));
-                    DocumentRouteStep step = model.getAdapter(DocumentRouteStep.class);
-                    DocumentRoute route = step.getDocumentRoute(session);
-                    route.run(session);
-                }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        DocumentModel model = session.getDocument(new IdRef(stepDocId));
+        DocumentRouteStep step = model.getAdapter(DocumentRouteStep.class);
+        step.setDone(session);
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                DocumentModel model = session.getDocument(new IdRef(stepDocId));
+                DocumentRouteStep step = model.getAdapter(DocumentRouteStep.class);
+                DocumentRoute route = step.getDocumentRoute(session);
+                route.run(session);
+            }
+        }.runUnrestricted();
     }
 }

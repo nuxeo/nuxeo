@@ -22,6 +22,7 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MA
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -36,7 +37,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -56,6 +57,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -259,25 +261,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void startInstance(final String routeInstanceId, final List<String> docIds,
             final Map<String, Serializable> map, CoreSession session) {
-        try {
-            new UnrestrictedSessionRunner(session) {
-                @Override
-                public void run() {
-                    DocumentModel instance = session.getDocument(new IdRef(routeInstanceId));
-                    DocumentRoute route = instance.getAdapter(DocumentRoute.class);
-                    if (docIds != null) {
-                        route.setAttachedDocuments(docIds);
-                        route.save(session);
-                    }
-                    fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(),
-                            new HashMap<String, Serializable>(), route, session);
-                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
-                    routingEngine.start(route, map, session);
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                DocumentModel instance = session.getDocument(new IdRef(routeInstanceId));
+                DocumentRoute route = instance.getAdapter(DocumentRoute.class);
+                if (docIds != null) {
+                    route.setAttachedDocuments(docIds);
+                    route.save(session);
                 }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+                fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(), new HashMap<String, Serializable>(),
+                        route, session);
+                DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                        DocumentRoutingEngineService.class);
+                routingEngine.start(route, map, session);
+            }
+        }.runUnrestricted();
     }
 
     @Override
@@ -400,27 +399,23 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Deprecated
     protected void processElementsInFolder(DocumentModel doc, List<DocumentRouteTableElement> elements,
             RouteTable table, CoreSession session, int depth, RouteFolderElement folder) {
-        try {
-            DocumentModelList children = session.getChildren(doc.getRef());
-            boolean first = true;
-            for (DocumentModel child : children) {
-                if (child.isFolder() && !session.getChildren(child.getRef()).isEmpty()) {
-                    RouteFolderElement thisFolder = new RouteFolderElement(
-                            child.getAdapter(DocumentRouteElement.class), table, first, folder, depth);
-                    processElementsInFolder(child, elements, table, session, depth + 1, thisFolder);
+        DocumentModelList children = session.getChildren(doc.getRef());
+        boolean first = true;
+        for (DocumentModel child : children) {
+            if (child.isFolder() && !session.getChildren(child.getRef()).isEmpty()) {
+                RouteFolderElement thisFolder = new RouteFolderElement(child.getAdapter(DocumentRouteElement.class),
+                        table, first, folder, depth);
+                processElementsInFolder(child, elements, table, session, depth + 1, thisFolder);
+            } else {
+                if (folder != null) {
+                    folder.increaseTotalChildCount();
                 } else {
-                    if (folder != null) {
-                        folder.increaseTotalChildCount();
-                    } else {
-                        table.increaseTotalChildCount();
-                    }
-                    elements.add(new DocumentRouteTableElement(child.getAdapter(DocumentRouteElement.class), table,
-                            depth, folder, first));
+                    table.increaseTotalChildCount();
                 }
-                first = false;
+                elements.add(new DocumentRouteTableElement(child.getAdapter(DocumentRouteElement.class), table, depth,
+                        folder, first));
             }
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
+            first = false;
         }
     }
 
@@ -592,20 +587,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         DocumentModel instanceModel = instance.getDocument();
         DocumentModel parent = persister.getParentFolderForNewModel(session, instanceModel);
         String newName = persister.getNewModelName(instanceModel);
-        try {
-            DocumentModel newmodel = persister.saveDocumentRouteInstanceAsNewModel(instanceModel, parent, newName,
-                    session);
-            DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
-            if (!newRoute.isDraft()) {
-                newRoute.followTransition(DocumentRouteElement.ElementLifeCycleTransistion.toDraft, session, false);
-            }
-            newRoute.getDocument().setPropertyValue("dc:title", newName);
-            newRoute.setAttachedDocuments(new ArrayList<String>());
-            newRoute.save(session);
-            return newRoute;
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
+        DocumentModel newmodel = persister.saveDocumentRouteInstanceAsNewModel(instanceModel, parent, newName, session);
+        DocumentRoute newRoute = newmodel.getAdapter(DocumentRoute.class);
+        if (!newRoute.isDraft()) {
+            newRoute.followTransition(DocumentRouteElement.ElementLifeCycleTransistion.toDraft, session, false);
         }
+        newRoute.getDocument().setPropertyValue("dc:title", newName);
+        newRoute.setAttachedDocuments(new ArrayList<String>());
+        newRoute.save(session);
+        return newRoute;
     }
 
     @Override
@@ -629,25 +619,26 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     public DocumentRoute importRouteModel(URL modelToImport, boolean overwrite, CoreSession session)
             {
         if (modelToImport == null) {
-            throw new ClientException(("No resource containing route templates found"));
+            throw new NuxeoException(("No resource containing route templates found"));
         }
         Blob blob = new URLBlob(modelToImport);
+        final String file = modelToImport.getFile();
+        DocumentModel doc;
         try {
-            final String file = modelToImport.getFile();
-            DocumentModel doc = getFileManager().createDocumentFromBlob(session, blob,
+            doc = getFileManager().createDocumentFromBlob(session, blob,
                     persister.getParentFolderForDocumentRouteModels(session).getPathAsString(), true, file);
-            if (doc == null) {
-                throw new ClientException("Can not import document " + file);
-            }
-            // remove model from cache if any model with the same id existed
-            if (modelsChache != null) {
-                modelsChache.invalidate(doc.getName());
-            }
-
-            return doc.getAdapter(DocumentRoute.class);
-        } catch (Exception e) {
-            throw new ClientException(e);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         }
+        if (doc == null) {
+            throw new NuxeoException("Can not import document " + file);
+        }
+        // remove model from cache if any model with the same id existed
+        if (modelsChache != null) {
+            modelsChache.invalidate(doc.getName());
+        }
+
+        return doc.getAdapter(DocumentRoute.class);
     }
 
     protected FileManager getFileManager() {
@@ -808,7 +799,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         String routeInstanceId;
         try {
             routeInstanceId = task.getProcessId();
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             throw new DocumentRouteException("Can not get the related workflow instance");
         }
         if (StringUtils.isEmpty(routeInstanceId)) {
@@ -817,7 +808,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         DocumentModel routeDoc;
         try {
             routeDoc = session.getDocument(new IdRef(routeInstanceId));
-        } catch (ClientException e) {
+        } catch (NoSuchDocumentException e) {
             throw new DocumentRouteException("No workflow with the id:" + routeInstanceId);
         }
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
@@ -994,53 +985,49 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
             }
-        } catch (ClientException e) {
+        } catch (NoSuchDocumentException e) {
             throw new DocumentRouteException("Cannot finish task", e);
         }
     }
 
     @Override
     public void cancelTask(CoreSession session, final String taskId) throws DocumentRouteException {
-        try {
-            new UnrestrictedSessionRunner(session) {
-                @Override
-                public void run() {
-                    DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                    Task task = taskDoc.getAdapter(Task.class);
-                    if (task == null) {
-                        throw new DocumentRouteException("Invalid taskId: " + taskId);
-                    }
-
-                    if (!task.isOpened()) {
-                        log.info("Can not cancel task " + taskId + "as is not open");
-                        return;
-                    }
-                    task.cancel(session);
-
-                    // if the task was created by an workflow , update info
-                    String routeId = task.getProcessId();
-                    if (routeId != null) {
-                        DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                        GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                        if (routeInstance == null) {
-                            throw new DocumentRouteException("Invalid routeInstanceId: " + routeId);
-                        }
-
-                        DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                        removePermissionsForTaskActors(session, docs, task);
-                        // task is considered processed with the status "null"
-                        // when
-                        // is
-                        // canceled
-                        updateTaskInfo(session, routeInstance, task, null);
-                    }
-                    session.saveDocument(task.getDocument());
-
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+                Task task = taskDoc.getAdapter(Task.class);
+                if (task == null) {
+                    throw new DocumentRouteException("Invalid taskId: " + taskId);
                 }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Cannot cancel task", e);
-        }
+
+                if (!task.isOpened()) {
+                    log.info("Can not cancel task " + taskId + "as is not open");
+                    return;
+                }
+                task.cancel(session);
+
+                // if the task was created by an workflow , update info
+                String routeId = task.getProcessId();
+                if (routeId != null) {
+                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                    if (routeInstance == null) {
+                        throw new DocumentRouteException("Invalid routeInstanceId: " + routeId);
+                    }
+
+                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                    removePermissionsForTaskActors(session, docs, task);
+                    // task is considered processed with the status "null"
+                    // when
+                    // is
+                    // canceled
+                    updateTaskInfo(session, routeInstance, task, null);
+                }
+                session.saveDocument(task.getDocument());
+
+            }
+        }.runUnrestricted();
     }
 
     protected void updateTaskInfo(CoreSession session, GraphRoute graph, Task task, String status)
@@ -1059,92 +1046,84 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public void reassignTask(CoreSession session, final String taskId, final List<String> actors, final String comment)
             throws DocumentRouteException {
-        try {
-            new UnrestrictedSessionRunner(session) {
+        new UnrestrictedSessionRunner(session) {
 
-                @Override
-                public void run() {
-                    DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                    Task task = taskDoc.getAdapter(Task.class);
-                    if (task == null) {
-                        throw new DocumentRouteException("Invalid taskId: " + taskId);
-                    }
-                    if (!task.isOpened()) {
-                        throw new DocumentRouteException("Task  " + taskId + " is not opened, can not reassign it");
-                    }
-                    String routeId = task.getProcessId();
-                    if (routeId != null) {
-                        DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                        GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                        if (routeInstance == null) {
-                            throw new DocumentRouteException("Invalid routeInstanceId: " + routeId
-                                    + " referenced by the task " + taskId);
-                        }
-                        GraphNode node = routeInstance.getNode(task.getType());
-                        if (node == null) {
-                            throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task "
-                                    + taskId);
-                        }
-                        if (!node.allowTaskReassignment()) {
-                            throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node "
-                                    + node.getId() + " doesn't allow reassignment.");
-                        }
-                        DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                        // remove permissions on the document following the
-                        // workflow for the current assignees
-                        removePermissionFromTaskAssignees(session, docs, task);
-                        Framework.getLocalService(TaskService.class).reassignTask(session, taskId, actors, comment);
-                        // refresh task
-                        task.getDocument().refresh();
-                        // grant permission to the new assignees
-                        grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
-                    }
+            @Override
+            public void run() {
+                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+                Task task = taskDoc.getAdapter(Task.class);
+                if (task == null) {
+                    throw new DocumentRouteException("Invalid taskId: " + taskId);
                 }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Can not reassign task " + taskId, e);
-        }
+                if (!task.isOpened()) {
+                    throw new DocumentRouteException("Task  " + taskId + " is not opened, can not reassign it");
+                }
+                String routeId = task.getProcessId();
+                if (routeId != null) {
+                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                    if (routeInstance == null) {
+                        throw new DocumentRouteException(
+                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
+                    }
+                    GraphNode node = routeInstance.getNode(task.getType());
+                    if (node == null) {
+                        throw new DocumentRouteException(
+                                "Invalid node " + routeId + " referenced by the task " + taskId);
+                    }
+                    if (!node.allowTaskReassignment()) {
+                        throw new DocumentRouteException("Task " + taskId + " can not be reassigned. Node "
+                                + node.getId() + " doesn't allow reassignment.");
+                    }
+                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                    // remove permissions on the document following the
+                    // workflow for the current assignees
+                    removePermissionFromTaskAssignees(session, docs, task);
+                    Framework.getLocalService(TaskService.class).reassignTask(session, taskId, actors, comment);
+                    // refresh task
+                    task.getDocument().refresh();
+                    // grant permission to the new assignees
+                    grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
+                }
+            }
+        }.runUnrestricted();
     }
 
     @Override
     public void delegateTask(CoreSession session, final String taskId, final List<String> delegatedActors,
             final String comment) throws DocumentRouteException {
-        try {
-            new UnrestrictedSessionRunner(session) {
+        new UnrestrictedSessionRunner(session) {
 
-                @Override
-                public void run() {
-                    DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                    Task task = taskDoc.getAdapter(Task.class);
-                    if (task == null) {
-                        throw new DocumentRouteException("Invalid taskId: " + taskId);
-                    }
-                    String routeId = task.getProcessId();
-                    if (routeId != null) {
-                        DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                        GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
-                        if (routeInstance == null) {
-                            throw new DocumentRouteException("Invalid routeInstanceId: " + routeId
-                                    + " referenced by the task " + taskId);
-                        }
-                        GraphNode node = routeInstance.getNode(task.getType());
-                        if (node == null) {
-                            throw new DocumentRouteException("Invalid node " + routeId + " referenced by the task "
-                                    + taskId);
-                        }
-                        DocumentModelList docs = routeInstance.getAttachedDocumentModels();
-                        Framework.getLocalService(TaskService.class).delegateTask(session, taskId, delegatedActors,
-                                comment);
-                        // refresh task
-                        task.getDocument().refresh();
-                        // grant permission to the new assignees
-                        grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
-                    }
+            @Override
+            public void run() {
+                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+                Task task = taskDoc.getAdapter(Task.class);
+                if (task == null) {
+                    throw new DocumentRouteException("Invalid taskId: " + taskId);
                 }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new DocumentRouteException("Can not delegate task " + taskId, e);
-        }
+                String routeId = task.getProcessId();
+                if (routeId != null) {
+                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                    GraphRoute routeInstance = routeDoc.getAdapter(GraphRoute.class);
+                    if (routeInstance == null) {
+                        throw new DocumentRouteException(
+                                "Invalid routeInstanceId: " + routeId + " referenced by the task " + taskId);
+                    }
+                    GraphNode node = routeInstance.getNode(task.getType());
+                    if (node == null) {
+                        throw new DocumentRouteException(
+                                "Invalid node " + routeId + " referenced by the task " + taskId);
+                    }
+                    DocumentModelList docs = routeInstance.getAttachedDocumentModels();
+                    Framework.getLocalService(TaskService.class).delegateTask(session, taskId, delegatedActors,
+                            comment);
+                    // refresh task
+                    task.getDocument().refresh();
+                    // grant permission to the new assignees
+                    grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
+                }
+            }
+        }.runUnrestricted();
     }
 
     protected void setAclForActors(CoreSession session, final String aclName, final String permission,

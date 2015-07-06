@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.test;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -48,11 +47,7 @@ public class SimpleActionableObject implements ActionableObject {
 
     @Override
     public DocumentRouteStep getDocumentRouteStep(CoreSession session) {
-        try {
-            return session.getDocument(new IdRef(id)).getAdapter(DocumentRouteStep.class);
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return session.getDocument(new IdRef(id)).getAdapter(DocumentRouteStep.class);
     }
 
     @Override

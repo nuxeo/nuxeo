@@ -51,12 +51,13 @@ import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -320,10 +321,10 @@ public class RoutingTaskActionsBean implements Serializable {
         final String routeDocId = task.getVariable(DocumentRoutingConstants.TASK_ROUTE_INSTANCE_DOCUMENT_ID_KEY);
         final String nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
         if (routeDocId == null) {
-            throw new ClientException("Can not get the source graph for this task");
+            throw new NuxeoException("Can not get the source graph for this task");
         }
         if (nodeId == null) {
-            throw new ClientException("Can not get the source node for this task");
+            throw new NuxeoException("Can not get the source node for this task");
         }
         final TaskInfo[] res = new TaskInfo[1];
         new UnrestrictedSessionRunner(documentManager) {
@@ -613,7 +614,7 @@ public class RoutingTaskActionsBean implements Serializable {
         try {
             DocumentModel routeInstance = documentManager.getDocument(new IdRef(instanceId));
             workflowTitle = routeInstance.getTitle();
-        } catch (ClientException e) {
+        } catch (NoSuchDocumentException e) {
             log.error("Can not fetch route instance with id " + instanceId, e);
         }
         return workflowTitle;

@@ -24,11 +24,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -109,7 +109,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
             DocumentModel nodeDoc = session.getDocument(new IdRef(nodeDocId));
             GraphNode node = nodeDoc.getAdapter(GraphNode.class);
             if (node == null) {
-                throw new ClientException("Can't execute worker '" + getId() + "' : the document '" + nodeDocId
+                throw new NuxeoException("Can't execute worker '" + getId() + "' : the document '" + nodeDocId
                         + "' can not be adapted to a GraphNode");
             }
             List<EscalationRule> rules = node.getEscalationRules();
@@ -121,7 +121,7 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
                 }
             }
             if (rule == null) {
-                throw new ClientException("Can't execute worker '" + getId() + "' : the rule '" + escalationRuleId
+                throw new NuxeoException("Can't execute worker '" + getId() + "' : the rule '" + escalationRuleId
                         + "' was not found on the node '" + nodeDocId + "'");
             }
             OperationContext context = new OperationContext(session);
@@ -137,10 +137,9 @@ public class DocumentRoutingEscalationServiceImpl implements DocumentRoutingEsca
                 node.executeChain(rule.getChain());
                 // mark the rule as resolved
                 markRuleAsExecuted(nodeDocId, escalationRuleId, session);
-            } catch (RuntimeException e) {
+            } catch (NuxeoException e) {
+                e.addInfo("Error when executing worker: " + getTitle());
                 throw e;
-            } catch (Exception e) {
-                throw new ClientException("Error when executing worker: " + getTitle(), e);
             }
         }
 

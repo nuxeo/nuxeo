@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -45,11 +44,7 @@ public class EventFirer {
         DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(),
                 element.getDocument());
         envContext.setProperties(eventProperties);
-        try {
-            getEventProducer().fireEvent(envContext.newEvent(eventName));
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        getEventProducer().fireEvent(envContext.newEvent(eventName));
     }
 
     /**
@@ -63,22 +58,14 @@ public class EventFirer {
             eventProperties = new HashMap<String, Serializable>();
         }
         eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
-        try {
-            for (DocumentModel doc : docs) {
-                DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(), doc);
-                envContext.setProperties(eventProperties);
-                getEventProducer().fireEvent(envContext.newEvent(eventName));
-            }
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
+        for (DocumentModel doc : docs) {
+            DocumentEventContext envContext = new DocumentEventContext(coreSession, coreSession.getPrincipal(), doc);
+            envContext.setProperties(eventProperties);
+            getEventProducer().fireEvent(envContext.newEvent(eventName));
         }
     }
 
     static protected EventProducer getEventProducer() {
-        try {
-            return Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(EventProducer.class);
     }
 }

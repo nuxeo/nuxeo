@@ -18,7 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
@@ -54,7 +54,7 @@ public class RouteModelsReloader implements EventListener {
         try {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
             if (rm == null) {
-                throw new ClientException("Can not acces the RepositoryManager");
+                throw new NuxeoException("Can not acces the RepositoryManager");
             }
             // Transaction management
             final boolean txStarted = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();

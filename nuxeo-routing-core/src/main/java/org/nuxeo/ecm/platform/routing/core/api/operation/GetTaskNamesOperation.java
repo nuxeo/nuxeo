@@ -27,7 +27,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -89,44 +88,39 @@ public class GetTaskNamesOperation {
         DocumentModelList list = new DocumentModelListImpl();
         String query = "Select * from TaskDoc where ecm:mixinType IN ('RoutingTask') AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState = 'opened'";
         Map<String, DocumentModel> results = new HashMap<String, DocumentModel>();
-        try {
-            DocumentModelList docs = session.query(query);
-            int i = 0;
-            for (DocumentModel doc : docs) {
-                String taskName = (String) doc.getPropertyValue("nt:name");
-                String taskLabel = getI18nLabel(taskName, locale);
-                if (partialMatch) {
-                    // a translaedLabel == "" corresponds to the list of all
-                    // tasks
-                    if (searchTerm == null || "".equals(searchTerm)) {
-                        doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " "
-                                + taskLabel);
-                        results.put(taskName, doc);
-                        i++;
-                    } else {
-                        // add doc to result set only if the translated label
-                        // starts with the 'searchTerm'
-                        if (taskLabel.startsWith(searchTerm)) {
-                            doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " "
-                                    + taskLabel);
-                            results.put(taskName, doc);
-                            i++;
-                        }
-                    }
-                }
-                if (!partialMatch && searchTerm.equals(taskName)) {
-                    doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " "
-                            + taskLabel);
+        DocumentModelList docs = session.query(query);
+        int i = 0;
+        for (DocumentModel doc : docs) {
+            String taskName = (String) doc.getPropertyValue("nt:name");
+            String taskLabel = getI18nLabel(taskName, locale);
+            if (partialMatch) {
+                // a translaedLabel == "" corresponds to the list of all
+                // tasks
+                if (searchTerm == null || "".equals(searchTerm)) {
+                    doc.setPropertyValue("dc:title",
+                            "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " " + taskLabel);
                     results.put(taskName, doc);
                     i++;
-                    break;
-                }
-                if (i > LIMIT_RESULTS) {
-                    break;
+                } else {
+                    // add doc to result set only if the translated label
+                    // starts with the 'searchTerm'
+                    if (taskLabel.startsWith(searchTerm)) {
+                        doc.setPropertyValue("dc:title",
+                                "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " " + taskLabel);
+                        results.put(taskName, doc);
+                        i++;
+                    }
                 }
             }
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
+            if (!partialMatch && searchTerm.equals(taskName)) {
+                doc.setPropertyValue("dc:title", "[" + getWorkflowTranslatedTitle(doc, locale) + "]" + " " + taskLabel);
+                results.put(taskName, doc);
+                i++;
+                break;
+            }
+            if (i > LIMIT_RESULTS) {
+                break;
+            }
         }
         list.addAll(results.values());
         return list;

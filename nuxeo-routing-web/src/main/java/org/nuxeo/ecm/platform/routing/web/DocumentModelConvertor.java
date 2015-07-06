@@ -24,7 +24,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -56,12 +55,8 @@ public class DocumentModelConvertor implements Converter {
     @Override
     public String getAsString(FacesContext arg0, UIComponent component, Object value) {
         if (value instanceof String && !StringUtils.isEmpty((String) value)) {
-            try {
-                DocumentModel doc = session.getDocument((new IdRef((String) value)));
-                return doc.getTitle();
-            } catch (ClientException e) {
-                return null;
-            }
+            DocumentModel doc = session.getDocument((new IdRef((String) value)));
+            return doc.getTitle();
         }
         if (value != null) {
             return value.toString();

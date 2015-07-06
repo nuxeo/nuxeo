@@ -28,9 +28,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.impl.jsongraph.JsonGraphRoute;
@@ -44,8 +42,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "workflowModel")
 @Produces(MediaType.APPLICATION_JSON)
 public class WorkflowModelObject extends DefaultObject {
-
-    private static Log log = LogFactory.getLog(WorkflowModelObject.class);
 
     @GET
     public List<DocumentRoute> getWorkflowModels(@Context UriInfo uriInfo) {
@@ -68,9 +64,9 @@ public class WorkflowModelObject extends DefaultObject {
             final String id = Framework.getService(DocumentRoutingService.class).getRouteModelDocIdWithId(
                     getContext().getCoreSession(), modelName);
             return new JsonGraphRoute(getContext().getCoreSession(), id, getContext().getLocale());
-        } catch (ClientException e) {
-            log.error("Can not get workflow model graph with name" + modelName);
-            throw new ClientException(e);
+        } catch (NuxeoException e) {
+            e.addInfo("Can not get workflow model graph with name: " + modelName);
+            throw e;
         }
     }
 

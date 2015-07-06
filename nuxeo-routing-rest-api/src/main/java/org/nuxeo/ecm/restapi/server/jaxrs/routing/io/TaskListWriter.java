@@ -38,7 +38,6 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.task.Task;
 
 /**

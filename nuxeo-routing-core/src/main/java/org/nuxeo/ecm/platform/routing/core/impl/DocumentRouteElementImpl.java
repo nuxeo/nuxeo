@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -62,11 +61,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
         for (String id : docIds) {
             refs.add(new IdRef(id));
         }
-        try {
-            return session.getDocuments(refs.toArray(new DocumentRef[] {}));
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return session.getDocuments(refs.toArray(new DocumentRef[] {}));
     }
 
     @Override
@@ -88,14 +83,10 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     public DocumentRoute getDocumentRoute(CoreSession session) {
         DocumentModel parent = document;
         while (true) {
-            try {
-                if (parent.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
-                    break;
-                }
-                parent = session.getParentDocument(parent.getRef());
-            } catch (ClientException e) {
-                throw new RuntimeException(e);
+            if (parent.hasFacet(DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_FACET)) {
+                break;
             }
+            parent = session.getParentDocument(parent.getRef());
         }
         return parent.getAdapter(DocumentRoute.class);
     }
@@ -248,11 +239,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     }
 
     protected boolean hasPermissionOnDocument(CoreSession session, String permission) {
-        try {
-            return session.hasPermission(document.getRef(), permission);
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return session.hasPermission(document.getRef(), permission);
     }
 
     @Override
@@ -261,15 +248,11 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     }
 
     protected void setPermissionOnDocument(CoreSession session, String userOrGroup, String permission) {
-        try {
-            ACP acp = document.getACP();
-            ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
-            routingACL.add(new ACE(userOrGroup, permission, true));
-            document.setACP(acp, true);
-            session.saveDocument(document);
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        ACP acp = document.getACP();
+        ACL routingACL = acp.getOrCreateACL(DocumentRoutingConstants.DOCUMENT_ROUTING_ACL);
+        routingACL.add(new ACE(userOrGroup, permission, true));
+        document.setACP(acp, true);
+        session.saveDocument(document);
     }
 
     @Override
@@ -307,23 +290,15 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     @Override
     public DocumentRouteStep undo(CoreSession session) {
         runner.undo(session, this);
-        try {
-            document = session.getDocument(document.getRef());
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        document = session.getDocument(document.getRef());
         return this;
     }
 
     @Override
     public boolean canUndoStep(CoreSession session) {
-        try {
-            GetIsParentRunningUnrestricted runner = new GetIsParentRunningUnrestricted(session);
-            runner.runUnrestricted();
-            return runner.isRunning();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        GetIsParentRunningUnrestricted runner = new GetIsParentRunningUnrestricted(session);
+        runner.runUnrestricted();
+        return runner.isRunning();
     }
 
     protected class GetIsParentRunningUnrestricted extends UnrestrictedSessionRunner {

@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.routing.dm.adapter;
 import java.util.Date;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

@@ -1,6 +1,5 @@
 package org.nuxeo.ecm.platform.routing.test;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -28,13 +27,8 @@ public class SimpleDecisionalActionableObject implements ActionableObject {
 
     @Override
     public DocumentRouteStep getDocumentRouteStep(CoreSession session) {
-        try {
-            DocumentModel docStep = session.getDocument(new IdRef(stepDocId));
-            return docStep.getAdapter(DocumentRouteStep.class);
-        } catch (ClientException e) {
-            return null;
-        }
-
+        DocumentModel docStep = session.getDocument(new IdRef(stepDocId));
+        return docStep.getAdapter(DocumentRouteStep.class);
     }
 
     @Override
