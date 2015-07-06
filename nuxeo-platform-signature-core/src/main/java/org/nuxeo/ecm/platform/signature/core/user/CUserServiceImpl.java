@@ -29,8 +29,8 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -79,26 +79,21 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     @Override
     public UserInfo getUserInfo(DocumentModel userModel) throws CertException {
         UserInfo userInfo = null;
-        try {
-            String userID = (String) userModel.getPropertyValue("user:username");
-            String firstName = (String) userModel.getPropertyValue("user:firstName");
-            String lastName = (String) userModel.getPropertyValue("user:lastName");
-            String email = (String) userModel.getPropertyValue("user:email");
+        String userID = (String) userModel.getPropertyValue("user:username");
+        String firstName = (String) userModel.getPropertyValue("user:firstName");
+        String lastName = (String) userModel.getPropertyValue("user:lastName");
+        String email = (String) userModel.getPropertyValue("user:email");
 
-            Map<CNField, String> userFields = new HashMap<CNField, String>();
+        Map<CNField, String> userFields = new HashMap<CNField, String>();
 
-            userFields.put(CNField.C, countryCode);
-            userFields.put(CNField.O, organization);
-            userFields.put(CNField.OU, organizationalUnit);
+        userFields.put(CNField.C, countryCode);
+        userFields.put(CNField.O, organization);
+        userFields.put(CNField.OU, organizationalUnit);
 
-            userFields.put(CNField.CN, firstName + " " + lastName);
-            userFields.put(CNField.Email, email);
-            userFields.put(CNField.UserID, userID);
-            userInfo = new UserInfo(userFields);
-        } catch (ClientException e) {
-            LOG.error(e);
-            throw new CertException("User data could not be retrieved from the system");
-        }
+        userFields.put(CNField.CN, firstName + " " + lastName);
+        userFields.put(CNField.Email, email);
+        userFields.put(CNField.UserID, userID);
+        userInfo = new UserInfo(userFields);
         return userInfo;
     }
 
@@ -109,7 +104,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             // Open directory session
@@ -133,7 +128,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -145,7 +140,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             try (Session session = getDirectoryService().open(CERTIFICATE_DIRECTORY_NAME)) {
@@ -187,7 +182,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -228,7 +223,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             // Open directory session
@@ -243,7 +238,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -261,7 +256,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             // Open directory session
@@ -275,7 +270,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -287,7 +282,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             // Open directory session
@@ -295,8 +290,6 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                 DocumentModel certEntry = session.getEntry(userID);
                 session.deleteEntry(certEntry);
                 assert (null == session.getEntry(userID));
-            } catch (ClientException e) {
-                throw new CertException(e);
             }
         } finally {
             try {
@@ -305,7 +298,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -322,26 +315,14 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
 
     protected CertService getCertService() {
         if (certService == null) {
-            try {
-                certService = Framework.getService(CertService.class);
-            } catch (Exception e) {
-                String message = "CertService not found";
-                LOG.error(message + " " + e);
-                throw new ClientException(message);
-            }
+            certService = Framework.getService(CertService.class);
         }
         return certService;
     }
 
     protected RootService getRootService() {
         if (rootService == null) {
-            try {
-                rootService = Framework.getService(RootService.class);
-            } catch (Exception e) {
-                String message = "RootService not found";
-                LOG.error(message + " " + e);
-                throw new ClientException(message);
-            }
+            rootService = Framework.getService(RootService.class);
         }
         return rootService;
     }

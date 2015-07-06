@@ -33,7 +33,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -49,7 +48,7 @@ import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 /**
  * Certificate management actions exposed as a Seam component. Used for launching certificate generation, storage and
  * retrieving operations from low level services. Allows verifying if a user certificate is already present.
- * 
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 @Name("certActions")
@@ -107,7 +106,7 @@ public class CertActions implements Serializable {
 
     /**
      * Retrieves a user certificate and returns a certificate's document model object
-     * 
+     *
      * @return
      */
     public DocumentModel getCertificate() {
@@ -117,7 +116,7 @@ public class CertActions implements Serializable {
 
     /**
      * Checks if a specified user has a certificate
-     * 
+     *
      * @param user
      * @return
      */
@@ -128,7 +127,7 @@ public class CertActions implements Serializable {
 
     /**
      * Checks if a specified user has a certificate
-     * 
+     *
      * @param userID
      * @return
      */
@@ -138,7 +137,7 @@ public class CertActions implements Serializable {
 
     /**
      * Checks if a specified user has a certificate
-     * 
+     *
      * @return
      */
     public boolean hasCertificate() {
@@ -147,7 +146,7 @@ public class CertActions implements Serializable {
 
     /**
      * Indicates whether a user has the right to generate a certificate.
-     * 
+     *
      * @param user
      * @return
      */
@@ -161,7 +160,7 @@ public class CertActions implements Serializable {
 
     /**
      * Launches certificate generation. Requires valid passwords for certificate encryption.
-     * 
+     *
      * @param user
      * @param firstPassword
      * @param secondPassword
@@ -187,10 +186,6 @@ public class CertActions implements Serializable {
                 LOG.error(e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get("label.cert.generate.problem") + e.getMessage());
-            } catch (ClientException e) {
-                LOG.error(e);
-                facesMessages.add(StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get("label.cert.generate.problem"));
             }
         }
     }
@@ -202,7 +197,7 @@ public class CertActions implements Serializable {
         try {
             cUserService.deleteCertificate((String) getCurrentUserModel().getPropertyValue("user:username"));
             facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("label.cert.deleted"));
-        } catch (ClientException e) {
+        } catch (CertException e) {
             LOG.error("Digital signature certificate deletion issue", e);
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("label.cert.delete.problem") + e.getMessage());
@@ -217,7 +212,7 @@ public class CertActions implements Serializable {
      * <p>
      * The validations are performed in the following sequence cheapest validations first, then the ones requiring more
      * system resources.
-     * 
+     *
      * @param firstPassword
      * @param secondPassword
      */
@@ -299,8 +294,6 @@ public class CertActions implements Serializable {
             writer.flush();
             writer.close();
             FacesContext.getCurrentInstance().responseComplete();
-        } catch (ClientException e) {
-            throw new CertException(e);
         } catch (IOException e) {
             throw new CertException(e);
         }

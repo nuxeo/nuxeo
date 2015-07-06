@@ -17,23 +17,19 @@
 
 package org.nuxeo.ecm.platform.signature.api.exception;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * A generic exception indicating signature generation problems
  *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
-public class SignException extends ClientException {
+public class SignException extends NuxeoException {
 
-    private static final long serialVersionUID = 532586426137845735L;
+    private static final long serialVersionUID = 1L;
 
     public SignException(String message) {
         super(message);
-    }
-
-    public SignException(String message, ClientException cause) {
-        super(message, cause);
     }
 
     public SignException(String message, Throwable cause) {
@@ -41,10 +37,6 @@ public class SignException extends ClientException {
     }
 
     public SignException(Throwable cause) {
-        super(cause);
-    }
-
-    public SignException(ClientException cause) {
         super(cause);
     }
 

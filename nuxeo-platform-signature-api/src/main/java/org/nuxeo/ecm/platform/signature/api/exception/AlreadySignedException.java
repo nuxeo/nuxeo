@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.signature.api.exception;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
@@ -27,10 +26,6 @@ public class AlreadySignedException extends SignException {
 
     public AlreadySignedException(String message) {
         super(message);
-    }
-
-    public AlreadySignedException(String message, ClientException cause) {
-        super(message, cause);
     }
 
     public AlreadySignedException(String message, Throwable cause) {

@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.signature.api.sign.SignatureService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,15 +49,7 @@ public class SignatureServiceBusinessDelegate implements Serializable {
     @Unwrap
     public SignatureService getService() {
         if (signatureService == null) {
-            try {
-                signatureService = Framework.getService(SignatureService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to SignatureService. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (signatureService == null) {
-                throw new ClientException("SignatureService service not bound");
-            }
+            signatureService = Framework.getService(SignatureService.class);
         }
         return signatureService;
     }

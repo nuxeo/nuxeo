@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.signature.api.pki.CertService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,15 +52,7 @@ public class CertServiceBusinessDelegate implements Serializable {
     @Unwrap
     public CertService getService() {
         if (certService == null) {
-            try {
-                certService = Framework.getService(CertService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to CertService. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (certService == null) {
-                throw new ClientException("CertService service not bound");
-            }
+            certService = Framework.getService(CertService.class);
         }
         return certService;
     }

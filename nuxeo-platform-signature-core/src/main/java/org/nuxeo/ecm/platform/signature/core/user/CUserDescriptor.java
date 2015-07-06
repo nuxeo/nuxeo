@@ -24,11 +24,11 @@ import java.util.Set;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 
 /**
  * Provides default values for new user certificates.
- * 
+ *
  * @author <a href="mailto:ws@nuxeo.com">Wojciech Sulejman</a>
  */
 
@@ -59,7 +59,7 @@ public class CUserDescriptor {
 
     public void setCountryCode(String countryCode) {
         if (!validateCountryCode(countryCode)) {
-            throw new ClientException("Invalid country code for user certificate");
+            throw new CertException("Invalid country code for user certificate");
         }
         this.countryCode = countryCode;
     }

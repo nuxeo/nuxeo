@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.signature.api.user;
 
 import java.security.KeyStore;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.signature.api.exception.CertException;
 

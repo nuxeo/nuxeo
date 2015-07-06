@@ -27,7 +27,6 @@ import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.signature.api.user.CUserService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -50,15 +49,7 @@ public class CUserServiceBusinessDelegate implements Serializable {
     @Unwrap
     public CUserService getService() {
         if (cUserService == null) {
-            try {
-                cUserService = Framework.getService(CUserService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to CUserService. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (cUserService == null) {
-                throw new ClientException("CUserService service not bound");
-            }
+            cUserService = Framework.getService(CUserService.class);
         }
         return cUserService;
     }
