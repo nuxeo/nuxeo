@@ -18,7 +18,6 @@ package org.nuxeo.ecm.webdav.backend;
 
 import java.util.LinkedList;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 public interface VirtualBackend extends Backend {
 

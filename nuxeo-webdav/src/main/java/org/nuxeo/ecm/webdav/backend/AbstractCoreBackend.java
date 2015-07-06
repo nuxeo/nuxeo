@@ -17,7 +17,6 @@
  */
 package org.nuxeo.ecm.webdav.backend;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 public abstract class AbstractCoreBackend implements Backend {

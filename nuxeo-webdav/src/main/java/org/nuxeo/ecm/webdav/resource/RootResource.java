@@ -40,11 +40,11 @@ import net.java.dev.webdav.jaxrs.methods.PROPFIND;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
 
@@ -114,7 +114,7 @@ public class RootResource {
         DocumentModel doc = null;
         try {
             doc = backend.getDocument(path);
-        } catch (ClientException e) {
+        } catch (NoSuchDocumentException e) {
             log.error("Error during resolving path: " + path, e);
             throw new WebApplicationException(Response.Status.CONFLICT);
         }

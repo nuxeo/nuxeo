@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -152,12 +151,7 @@ public abstract class AbstractVirtualBackend extends AbstractCoreBackend impleme
             return this;
         } else {
             String key = path.segment(0);
-            try {
-                initIfNeed();
-            } catch (ClientException e) {
-                log.error("Error during backend initialization", e);
-                return null;
-            }
+            initIfNeed();
             if (backendMap == null) {
                 return null;
             }

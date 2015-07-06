@@ -64,7 +64,6 @@ import net.java.dev.webdav.jaxrs.xml.properties.LockDiscovery;
 import net.java.dev.webdav.jaxrs.xml.properties.SupportedLock;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.webdav.jaxrs.IsCollection;
 import org.nuxeo.ecm.webdav.jaxrs.IsFolder;
 import org.nuxeo.ecm.webdav.jaxrs.IsHidden;

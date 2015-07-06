@@ -51,7 +51,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -74,11 +73,7 @@ public class FileResource extends ExistingResource {
         Blob content = null;
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
-            try {
-                content = bh.getBlob();
-            } catch (ClientException e) {
-                log.error("Unable to get blob", e);
-            }
+            content = bh.getBlob();
         }
         if (content == null) {
             return Response.ok("").build();
@@ -112,7 +107,7 @@ public class FileResource extends ExistingResource {
             } catch (URISyntaxException e) {
                 throw new NuxeoException(e);
             }
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             log.error("Error during PUT method execution", e);
             return Response.status(409).build();
         }

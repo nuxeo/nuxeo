@@ -64,11 +64,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.webdav.backend.Backend;
 import org.nuxeo.ecm.webdav.backend.BackendHelper;
 import org.nuxeo.ecm.webdav.jaxrs.Win32CreationTime;
@@ -105,7 +106,7 @@ public class ExistingResource extends AbstractResource {
             backend.removeItem(doc.getRef());
             backend.saveChanges();
             return Response.status(204).build();
-        } catch (ClientException e) {
+        } catch (DocumentSecurityException e) {
             log.error("Can't remove item: " + doc.getPathAsString() + e.getMessage());
             log.debug(e);
             return Response.status(FORBIDDEN).build();
@@ -130,7 +131,7 @@ public class ExistingResource extends AbstractResource {
         try {
             return new String(bytes, encoding);
         } catch (UnsupportedEncodingException e) {
-            throw new ClientException("Unsupported encoding " + encoding);
+            throw new NuxeoException("Unsupported encoding " + encoding);
         }
     }
 
@@ -313,14 +314,10 @@ public class ExistingResource extends AbstractResource {
             long size = 0;
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {
-                try {
-                    Blob blob = bh.getBlob();
-                    if (blob != null) {
-                        size = blob.getLength();
-                        mimeType = blob.getMimeType();
-                    }
-                } catch (ClientException e) {
-                    log.error("Unable to get blob Size", e);
+                Blob blob = bh.getBlob();
+                if (blob != null) {
+                    size = blob.getLength();
+                    mimeType = blob.getMimeType();
                 }
             }
             if (StringUtils.isEmpty(mimeType) || "???".equals(mimeType)) {
@@ -335,7 +332,7 @@ public class ExistingResource extends AbstractResource {
         Object property;
         try {
             property = doc.getPropertyValue(name);
-        } catch (ClientException e) {
+        } catch (PropertyNotFoundException e) {
             property = null;
             log.debug("Can't get property " + name + " from document " + doc.getId());
         }

@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -47,6 +46,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -113,9 +113,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             } else {
                 return false;
             }
-        } catch (ClientException e) {
-            return false;
-        } catch (NuxeoException e2) {
+        } catch (NoSuchDocumentException e) {
             return false;
         }
     }
@@ -142,7 +140,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             // doc.putContextData(SOURCE_EDIT_KEYWORD, "webdav");
             doc = fileManager.createDocumentFromBlob(getSession(), content, parentPath, true, name); // overwrite=true
         } catch (IOException e) {
-            throw new ClientException("Error while updating document", e);
+            throw new NuxeoException("Error while updating document", e);
         }
         return doc;
     }
@@ -299,7 +297,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     public void removeItem(String location) {
         DocumentModel docToRemove = resolveLocation(location);
         if (docToRemove == null) {
-            throw new ClientException("Document path not found");
+            throw new NuxeoException("Document path not found: " + location);
         }
         removeItem(docToRemove.getRef());
     }
@@ -359,33 +357,25 @@ public class SimpleBackend extends AbstractCoreBackend {
     @Override
     public DocumentModel moveItem(DocumentModel source, DocumentRef targetParentRef, String name)
             {
-        try {
-            cleanTrashPath(targetParentRef, name);
-            DocumentModel model = getSession().move(source.getRef(), targetParentRef, name);
-            getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + name, model);
-            getPathCache().remove(source.getPathAsString());
-            return model;
-        } catch (ClientException e) {
-            throw new ClientException("Error while doing move", e);
-        }
+        cleanTrashPath(targetParentRef, name);
+        DocumentModel model = getSession().move(source.getRef(), targetParentRef, name);
+        getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + name, model);
+        getPathCache().remove(source.getPathAsString());
+        return model;
     }
 
     @Override
     public DocumentModel copyItem(DocumentModel source, PathRef targetParentRef) {
-        try {
-            DocumentModel model = getSession().copy(source.getRef(), targetParentRef, source.getName());
-            getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + source.getName(), model);
-            return model;
-        } catch (ClientException e) {
-            throw new ClientException("Error while doing move", e);
-        }
+        DocumentModel model = getSession().copy(source.getRef(), targetParentRef, source.getName());
+        getPathCache().put(parseLocation(targetParentRef.toString()) + "/" + source.getName(), model);
+        return model;
     }
 
     @Override
     public DocumentModel createFolder(String parentPath, String name) {
         DocumentModel parent = resolveLocation(parentPath);
         if (!parent.isFolder()) {
-            throw new ClientException("Can not create a child in a non folderish node");
+            throw new NuxeoException("Can not create a child in a non folderish node");
         }
 
         String targetType = "Folder";
@@ -405,7 +395,7 @@ public class SimpleBackend extends AbstractCoreBackend {
     public DocumentModel createFile(String parentPath, String name, Blob content) {
         DocumentModel parent = resolveLocation(parentPath);
         if (!parent.isFolder()) {
-            throw new ClientException("Can not create a child in a non folderish node");
+            throw new NuxeoException("Can not create a child in a non folderish node");
         }
         try {
             cleanTrashPath(parent, name);
@@ -429,7 +419,7 @@ public class SimpleBackend extends AbstractCoreBackend {
             getPathCache().put(parseLocation(parentPath) + "/" + name, file);
             return file;
         } catch (IOException e) {
-            throw new ClientException("Error child creating new folder", e);
+            throw new NuxeoException("Error child creating new folder", e);
         }
     }
 
@@ -534,13 +524,9 @@ public class SimpleBackend extends AbstractCoreBackend {
     protected String getFileName(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null) {
-            try {
-                Blob blob = bh.getBlob();
-                if (blob != null) {
-                    return blob.getFilename();
-                }
-            } catch (ClientException e) {
-                log.error("Unable to get filename", e);
+            Blob blob = bh.getBlob();
+            if (blob != null) {
+                return blob.getFilename();
             }
         }
         return null;
@@ -585,7 +571,7 @@ public class SimpleBackend extends AbstractCoreBackend {
         try {
             return new String(bytes, encoding);
         } catch (UnsupportedEncodingException e) {
-            throw new ClientException("Unsupported encoding " + encoding);
+            throw new NuxeoException("Unsupported encoding " + encoding);
         }
     }
 
