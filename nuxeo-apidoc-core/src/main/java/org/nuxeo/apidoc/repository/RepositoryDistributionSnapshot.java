@@ -17,7 +17,6 @@
 package org.nuxeo.apidoc.repository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -35,15 +34,13 @@ import org.nuxeo.apidoc.api.ServiceInfo;
 import org.nuxeo.apidoc.documentation.JavaDocHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-
-import com.google.common.collect.Lists;
 
 public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter implements DistributionSnapshot {
 
@@ -88,16 +85,12 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public static List<DistributionSnapshot> readPersistentSnapshots(CoreSession session) {
         List<DistributionSnapshot> result = new ArrayList<DistributionSnapshot>();
         String query = "SELECT * FROM " + TYPE_NAME + " where ecm:currentLifeCycleState != 'deleted'";
-        try {
-            DocumentModelList docs = session.query(query);
-            for (DocumentModel child : docs) {
-                DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
-                if (ob != null) {
-                    result.add(ob);
-                }
+        DocumentModelList docs = session.query(query);
+        for (DocumentModel child : docs) {
+            DistributionSnapshot ob = child.getAdapter(DistributionSnapshot.class);
+            if (ob != null) {
+                result.add(ob);
             }
-        } catch (ClientException e) {
-            log.error("Error while executing query " + query, e);
         }
         return result;
     }
@@ -109,34 +102,26 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     protected <T> List<T> getChildren(Class<T> adapter, String docType) {
         List<T> result = new ArrayList<T>();
         String query = QueryHelper.select(docType, doc);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel child : docs) {
-                T ob = child.getAdapter(adapter);
-                if (ob != null) {
-                    result.add(ob);
-                }
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel child : docs) {
+            T ob = child.getAdapter(adapter);
+            if (ob != null) {
+                result.add(ob);
             }
-        } catch (ClientException e) {
-            log.error("Error while executing query " + query, e);
         }
         return result;
     }
 
     protected <T> T getChild(Class<T> adapter, String docType, String idField, String id) {
         String query = QueryHelper.select(docType, doc) + " AND " + idField + " = " + NXQL.escapeString(id);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            if (docs.isEmpty()) {
-                log.error("Unable to find " + docType + " for id " + id);
-            } else if (docs.size() == 1) {
-                return docs.get(0).getAdapter(adapter);
-            } else {
-                log.error("multiple match for " + docType + " for id " + id);
-                return docs.get(0).getAdapter(adapter);
-            }
-        } catch (ClientException e) {
-            log.error("Error while executing query " + query, e);
+        DocumentModelList docs = getCoreSession().query(query);
+        if (docs.isEmpty()) {
+            log.error("Unable to find " + docType + " for id " + id);
+        } else if (docs.size() == 1) {
+            return docs.get(0).getAdapter(adapter);
+        } else {
+            log.error("multiple match for " + docType + " for id " + id);
+            return docs.get(0).getAdapter(adapter);
         }
         return null;
     }
@@ -164,18 +149,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public List<BundleGroup> getBundleGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
-        try {
-            String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc, NXQL.ECM_PARENTID,
-                    getBundleContainer().getId());
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel child : docs) {
-                BundleGroup bg = child.getAdapter(BundleGroup.class);
-                if (bg != null) {
-                    grps.add(bg);
-                }
+        String query = QueryHelper.select(BundleGroup.TYPE_NAME, doc, NXQL.ECM_PARENTID, getBundleContainer().getId());
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel child : docs) {
+            BundleGroup bg = child.getAdapter(BundleGroup.class);
+            if (bg != null) {
+                grps.add(bg);
             }
-        } catch (ClientException e) {
-            log.error("Error while getting bundle groups", e);
         }
         return grps;
     }
@@ -253,17 +233,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public List<String> getServiceIds() {
         List<String> ids = new ArrayList<String>();
-        try {
-            String query = QueryHelper.select(ComponentInfo.TYPE_NAME, doc);
-            DocumentModelList components = getCoreSession().query(query);
-            for (DocumentModel componentDoc : components) {
-                ComponentInfo ci = componentDoc.getAdapter(ComponentInfo.class);
-                if (ci != null) {
-                    ids.addAll(ci.getServiceNames());
-                }
+        String query = QueryHelper.select(ComponentInfo.TYPE_NAME, doc);
+        DocumentModelList components = getCoreSession().query(query);
+        for (DocumentModel componentDoc : components) {
+            ComponentInfo ci = componentDoc.getAdapter(ComponentInfo.class);
+            if (ci != null) {
+                ids.addAll(ci.getServiceNames());
             }
-        } catch (ClientException e) {
-            log.error("Error while getting service ids", e);
         }
         return ids;
     }
@@ -272,7 +248,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getName() {
         try {
             return (String) doc.getPropertyValue(PROP_NAME);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading nxdistribution:name", e);
             return "!unknown!";
         }
@@ -282,7 +258,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getVersion() {
         try {
             return (String) doc.getPropertyValue(PROP_VERSION);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading nxdistribution:version", e);
             return "!unknown!";
         }
@@ -292,7 +268,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public String getKey() {
         try {
             return (String) doc.getPropertyValue(PROP_KEY);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading nxdistribution:key", e);
             return "!unknown!";
         }
@@ -317,18 +293,13 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public ServiceInfo getService(String id) {
         String query = QueryHelper.select(ServiceInfo.TYPE_NAME, getDoc()) + " AND " + ServiceInfo.PROP_CLASS_NAME
                 + " = " + NXQL.escapeString(id);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            if (docs.size() == 1) {
-                return docs.get(0).getAdapter(ServiceInfo.class);
-            } else {
-                log.error("Multiple services found");
-                return null;
-            }
-        } catch (ClientException e) {
-            log.error("Unable to fetch NXService", e);
+        DocumentModelList docs = getCoreSession().query(query);
+        if (docs.size() == 1) {
+            return docs.get(0).getAdapter(ServiceInfo.class);
+        } else {
+            log.error("Multiple services found");
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -358,7 +329,7 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         try {
             Calendar cal = (Calendar) getDoc().getPropertyValue("dc:created");
             return cal == null ? null : cal.getTime();
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return null;
         }
     }
@@ -373,26 +344,17 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         String name = id.replace("seam:", "");
         String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc()) + " AND "
                 + SeamComponentInfo.PROP_COMPONENT_NAME + " = " + NXQL.escapeString(name);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            return docs.isEmpty() ? null : docs.get(0).getAdapter(SeamComponentInfo.class);
-        } catch (ClientException e) {
-            log.error("Unable to fetch Seam Component", e);
-            return null;
-        }
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.isEmpty() ? null : docs.get(0).getAdapter(SeamComponentInfo.class);
     }
 
     @Override
     public List<String> getSeamComponentIds() {
         List<String> result = new ArrayList<String>();
         String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc());
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel doc : docs) {
-                result.add(doc.getAdapter(SeamComponentInfo.class).getId());
-            }
-        } catch (ClientException e) {
-            log.error("Unable to fetch NXService", e);
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel doc : docs) {
+            result.add(doc.getAdapter(SeamComponentInfo.class).getId());
         }
         return result;
     }
@@ -401,13 +363,9 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     public List<SeamComponentInfo> getSeamComponents() {
         List<SeamComponentInfo> result = new ArrayList<SeamComponentInfo>();
         String query = QueryHelper.select(SeamComponentInfo.TYPE_NAME, getDoc());
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel doc : docs) {
-                result.add(doc.getAdapter(SeamComponentInfo.class));
-            }
-        } catch (ClientException e) {
-            log.error("Unable to fetch NXService", e);
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel doc : docs) {
+            result.add(doc.getAdapter(SeamComponentInfo.class));
         }
         return result;
     }
@@ -422,28 +380,19 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
         if (id.startsWith(OperationInfo.ARTIFACT_PREFIX)) {
             id = id.substring(OperationInfo.ARTIFACT_PREFIX.length());
         }
-        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME
-                + " = " + NXQL.escapeString(id);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            return docs.isEmpty() ? null : docs.get(0).getAdapter(OperationInfo.class);
-        } catch (ClientException e) {
-            log.error("Unable to fetch Seam Component", e);
-            return null;
-        }
+        String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc()) + " AND " + OperationInfo.PROP_NAME + " = "
+                + NXQL.escapeString(id);
+        DocumentModelList docs = getCoreSession().query(query);
+        return docs.isEmpty() ? null : docs.get(0).getAdapter(OperationInfo.class);
     }
 
     @Override
     public List<OperationInfo> getOperations() {
         List<OperationInfo> result = new ArrayList<OperationInfo>();
         String query = QueryHelper.select(OperationInfo.TYPE_NAME, getDoc());
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel doc : docs) {
-                result.add(doc.getAdapter(OperationInfo.class));
-            }
-        } catch (ClientException e) {
-            log.error("Unable to query", e);
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel doc : docs) {
+            result.add(doc.getAdapter(OperationInfo.class));
         }
         // TODO sort
         return result;
@@ -460,15 +409,11 @@ public class RepositoryDistributionSnapshot extends BaseNuxeoArtifactDocAdapter 
     @Override
     public void cleanPreviousArtifacts() {
         String query = QueryHelper.select("Document", getDoc());
-        try {
-            List<DocumentRef> refs = new ArrayList<>();
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel doc : docs) {
-                refs.add(doc.getRef());
-            }
-            getCoreSession().removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
-        } catch (ClientException e) {
-            log.warn("Unable to query", e);
+        List<DocumentRef> refs = new ArrayList<>();
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel doc : docs) {
+            refs.add(doc.getRef());
         }
+        getCoreSession().removeDocuments(refs.toArray(new DocumentRef[refs.size()]));
     }
 }

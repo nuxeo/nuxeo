@@ -27,7 +27,6 @@ import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -85,18 +84,12 @@ public class BundleInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements
     @Override
     public Collection<ComponentInfo> getComponents() {
         List<ComponentInfo> components = new ArrayList<ComponentInfo>();
-
-        try {
-            List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
-
-            for (DocumentModel child : children) {
-                ComponentInfo comp = child.getAdapter(ComponentInfo.class);
-                if (comp != null) {
-                    components.add(comp);
-                }
+        List<DocumentModel> children = getCoreSession().getChildren(doc.getRef());
+        for (DocumentModel child : children) {
+            ComponentInfo comp = child.getAdapter(ComponentInfo.class);
+            if (comp != null) {
+                components.add(comp);
             }
-        } catch (ClientException e) {
-            log.error(e, e);
         }
         return components;
     }

@@ -28,8 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class DocumentationItemDocAdapter extends AbstractDocumentationItem implements DocumentationItem {
 
@@ -50,7 +50,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public List<String> getApplicableVersion() {
         try {
             return (List<String>) doc.getPropertyValue(PROP_APPLICABLE_VERSIONS);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading applicable version", e);
             return new ArrayList<String>();
         }
@@ -69,7 +69,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
                 blob.setEncoding("utf-8");
             }
             return blob.getString();
-        } catch (ClientException | IOException e) {
+        } catch (IOException | PropertyException e) {
             log.error("Error while reading content with encoding " + encoding, e);
             return "ERROR : " + e.getMessage();
         }
@@ -79,7 +79,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getRenderingType() {
         try {
             return (String) doc.getPropertyValue(PROP_RENDERING_TYPE);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading rendering type", e);
             return "";
         }
@@ -89,7 +89,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getTarget() {
         try {
             return (String) doc.getPropertyValue(PROP_TARGET);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading target", e);
             return "";
         }
@@ -99,7 +99,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getTargetType() {
         try {
             return (String) doc.getPropertyValue(PROP_TARGET_TYPE);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading targetType", e);
             return "";
         }
@@ -109,7 +109,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getType() {
         try {
             return (String) doc.getPropertyValue(PROP_TYPE);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading type", e);
             return "";
         }
@@ -120,7 +120,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
         try {
             Boolean approved = (Boolean) doc.getPropertyValue(PROP_NUXEO_APPROVED);
             return approved == null ? false : approved.booleanValue();
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading type", e);
             return false;
         }
@@ -130,7 +130,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getId() {
         try {
             return (String) doc.getPropertyValue(PROP_DOCUMENTATION_ID);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading target", e);
             return "";
         }
@@ -145,7 +145,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
     public String getTitle() {
         try {
             return (String) doc.getPropertyValue("dc:title");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while reading title", e);
             return "";
         }
@@ -166,7 +166,7 @@ public class DocumentationItemDocAdapter extends AbstractDocumentationItem imple
                     attachments.put((String) att.get("filename"), attBlob.getString());
                 }
             }
-        } catch (ClientException | IOException e) {
+        } catch (IOException | PropertyException e) {
             log.error("Error while reading Attachments", e);
         }
         return attachments;

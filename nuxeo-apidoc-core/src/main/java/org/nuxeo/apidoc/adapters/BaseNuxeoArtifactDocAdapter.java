@@ -23,10 +23,10 @@ import org.nuxeo.apidoc.api.NuxeoArtifact;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 import java.util.Collections;
 import java.util.List;
@@ -93,17 +93,12 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
     }
 
     protected <T> T getParentNuxeoArtifact(Class<T> artifactClass) {
-        try {
-            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
-            for (DocumentModel parent : parents) {
-                T result = parent.getAdapter(artifactClass);
-                if (result != null) {
-                    return result;
-                }
+        List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+        for (DocumentModel parent : parents) {
+            T result = parent.getAdapter(artifactClass);
+            if (result != null) {
+                return result;
             }
-        } catch (ClientException e) {
-            log.error("Error while getting Parent artifact", e);
-            return null;
         }
         log.error("Parent artifact not found ");
         return null;
@@ -122,7 +117,7 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
         try {
             T value = (T) doc.getPropertyValue(xPath);
             return value;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while getting property " + xPath, e);
             if (defaultValue == null) {
                 return null;
@@ -133,29 +128,23 @@ public abstract class BaseNuxeoArtifactDocAdapter extends BaseNuxeoArtifact {
 
     @Override
     public String getHierarchyPath() {
-        try {
-            List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
-            Collections.reverse(parents);
+        List<DocumentModel> parents = getCoreSession().getParentDocuments(doc.getRef());
+        Collections.reverse(parents);
 
-            String path = "";
-            for (DocumentModel doc : parents) {
-                if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
-                    break;
-                }
-                if (doc.getType().equals(DistributionSnapshot.CONTAINER_TYPE_NAME)) {
-                    // skip containers
-                    continue;
-                }
-                NuxeoArtifact item = doc.getAdapter(NuxeoArtifact.class);
-
-                path = "/" + item.getId() + path;
+        String path = "";
+        for (DocumentModel doc : parents) {
+            if (doc.getType().equals(DistributionSnapshot.TYPE_NAME)) {
+                break;
             }
-            return path;
-        } catch (ClientException e) {
-            log.error("Error while computing Hierarchy path", e);
-            return null;
-        }
+            if (doc.getType().equals(DistributionSnapshot.CONTAINER_TYPE_NAME)) {
+                // skip containers
+                continue;
+            }
+            NuxeoArtifact item = doc.getAdapter(NuxeoArtifact.class);
 
+            path = "/" + item.getId() + path;
+        }
+        return path;
     }
 
 }

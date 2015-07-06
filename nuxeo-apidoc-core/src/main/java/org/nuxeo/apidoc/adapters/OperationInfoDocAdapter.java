@@ -25,10 +25,10 @@ import java.util.Map;
 import org.nuxeo.apidoc.api.OperationInfo;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.automation.OperationDocumentation.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Adapter from a Nuxeo document to the {@link OperationInfo} interface.
@@ -60,7 +60,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public String[] getAliases() {
         try {
             return ((List<String>) doc.getPropertyValue(PROP_ALIASES)).toArray(new String[0]);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Unable to get signature field", e);
         }
         return null;
@@ -81,7 +81,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public String[] getSignature() {
         try {
             return ((List<String>) doc.getPropertyValue(PROP_SIGNATURE)).toArray(new String[0]);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Unable to get signature field", e);
         }
         return null;
@@ -115,12 +115,7 @@ public class OperationInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @SuppressWarnings("unchecked")
     @Override
     public List<Param> getParams() {
-        List<Map<String, Serializable>> maps;
-        try {
-            maps = (List<Map<String, Serializable>>) doc.getPropertyValue(PROP_PARAMS);
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        List<Map<String, Serializable>> maps = (List<Map<String, Serializable>>) doc.getPropertyValue(PROP_PARAMS);
         List<Param> params = new ArrayList<Param>();
         if (maps != null) {
             for (Map<String, Serializable> map : maps) {

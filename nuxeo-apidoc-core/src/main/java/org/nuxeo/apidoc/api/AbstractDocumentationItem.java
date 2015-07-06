@@ -7,8 +7,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.documentation.DocumentationComponent;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -56,7 +56,7 @@ public abstract class AbstractDocumentationItem implements DocumentationItem {
             try {
                 DocumentModel entry = session.getEntry(type);
                 return (String) entry.getProperty("vocabulary", "label");
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 log.error("Error while resolving typeLabel", e);
             }
         }

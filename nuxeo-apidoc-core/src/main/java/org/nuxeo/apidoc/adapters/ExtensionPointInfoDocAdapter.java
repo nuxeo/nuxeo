@@ -29,11 +29,11 @@ import org.nuxeo.apidoc.api.VirtualNodesConsts;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ExtensionPointInfo {
 
@@ -94,23 +94,18 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
     @Override
     public Collection<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> result = new ArrayList<ExtensionInfo>();
-        try {
-            // find root doc for distribution
-            DocumentModel dist = doc;
-            while (!DistributionSnapshot.TYPE_NAME.equals(dist.getType())) {
-                dist = getCoreSession().getParentDocument(dist.getRef());
+        // find root doc for distribution
+        DocumentModel dist = doc;
+        while (!DistributionSnapshot.TYPE_NAME.equals(dist.getType())) {
+            dist = getCoreSession().getParentDocument(dist.getRef());
+        }
+        String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist, ExtensionInfo.PROP_EXTENSION_POINT, getId());
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel contribDoc : docs) {
+            ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
+            if (contrib != null) {
+                result.add(contrib);
             }
-            String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, dist, ExtensionInfo.PROP_EXTENSION_POINT,
-                    getId());
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel contribDoc : docs) {
-                ExtensionInfo contrib = contribDoc.getAdapter(ExtensionInfo.class);
-                if (contrib != null) {
-                    result.add(contrib);
-                }
-            }
-        } catch (ClientException e) {
-            log.error("Error while fetching contributions", e);
         }
         return result;
     }
@@ -126,7 +121,7 @@ public class ExtensionPointInfoDocAdapter extends BaseNuxeoArtifactDocAdapter im
             @SuppressWarnings("unchecked")
             List<String> descriptors = (List<String>) doc.getPropertyValue(PROP_DESCRIPTORS);
             return descriptors.toArray(new String[0]);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Unable to get descriptors field", e);
         }
         return null;

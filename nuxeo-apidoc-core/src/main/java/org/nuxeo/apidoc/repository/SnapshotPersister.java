@@ -53,10 +53,10 @@ import org.nuxeo.apidoc.snapshot.SnapshotFilter;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -153,7 +153,7 @@ public class SnapshotPersister {
     }
 
     public DistributionSnapshot persist(DistributionSnapshot snapshot, CoreSession session, String label,
-            SnapshotFilter filter) throws OperationException {
+            SnapshotFilter filter) {
 
         RepositoryDistributionSnapshot distribContainer = createDistributionDoc(snapshot, session, label);
 
@@ -200,11 +200,7 @@ public class SnapshotPersister {
 
     public void persistSeamComponent(DistributionSnapshot snapshot, SeamComponentInfo seamComponent,
             CoreSession session, String label, DocumentModel parent) {
-        try {
-            SeamComponentInfoDocAdapter.create(seamComponent, session, parent.getPathAsString());
-        } catch (ClientException e) {
-            throw new ClientException("Errors while persisting Seam Component as document", e);
-        }
+        SeamComponentInfoDocAdapter.create(seamComponent, session, parent.getPathAsString());
     }
 
     public void persistOperations(DistributionSnapshot snapshot, List<OperationInfo> operations, CoreSession session,
@@ -218,11 +214,7 @@ public class SnapshotPersister {
 
     public void persistOperation(DistributionSnapshot snapshot, OperationInfo op, CoreSession session, String label,
             DocumentModel parent) {
-        try {
-            OperationInfoDocAdapter.create(op, session, parent.getPathAsString());
-        } catch (ClientException e) {
-            throw new ClientException("Errors while persisting Operation as document", e);
-        }
+        OperationInfoDocAdapter.create(op, session, parent.getPathAsString());
     }
 
     public void persistBundleGroup(DistributionSnapshot snapshot, BundleGroup bundleGroup, CoreSession session,
@@ -317,38 +309,25 @@ public class SnapshotPersister {
 
     protected DocumentModel createContributionDoc(DistributionSnapshot snapshot, CoreSession session, String label,
             ExtensionInfo ei, DocumentModel parent) {
-        try {
-            return ExtensionInfoDocAdapter.create(ei, session, parent.getPathAsString()).getDoc();
-        } catch (ClientException e) {
-            throw new ClientException("Unable to create Contribution Document", e);
-        }
+        return ExtensionInfoDocAdapter.create(ei, session, parent.getPathAsString()).getDoc();
     }
 
     protected DocumentModel createServiceDoc(DistributionSnapshot snapshot, CoreSession session, String label,
             ServiceInfo si, DocumentModel parent) {
-        try {
-            return ServiceInfoDocAdapter.create(si, session, parent.getPathAsString()).getDoc();
-        } catch (ClientException e) {
-            throw new ClientException("Unable to create Contribution Document", e);
-        }
+        return ServiceInfoDocAdapter.create(si, session, parent.getPathAsString()).getDoc();
     }
 
     protected DocumentModel createExtensionPointDoc(DistributionSnapshot snapshot, CoreSession session, String label,
             ExtensionPointInfo epi, DocumentModel parent) {
-
-        try {
-            return ExtensionPointInfoDocAdapter.create(epi, session, parent.getPathAsString()).getDoc();
-        } catch (ClientException e) {
-            throw new ClientException("Unable to create ExtensionPoint Document", e);
-        }
+        return ExtensionPointInfoDocAdapter.create(epi, session, parent.getPathAsString()).getDoc();
     }
 
     protected DocumentModel createComponentDoc(DistributionSnapshot snapshot, CoreSession session, String label,
             ComponentInfo ci, DocumentModel parent) {
         try {
             return ComponentInfoDocAdapter.create(ci, session, parent.getPathAsString()).getDoc();
-        } catch (ClientException | IOException e) {
-            throw new ClientException("Unable to create Component Doc", e);
+        } catch (IOException e) {
+            throw new NuxeoException("Unable to create Component Doc", e);
         }
     }
 

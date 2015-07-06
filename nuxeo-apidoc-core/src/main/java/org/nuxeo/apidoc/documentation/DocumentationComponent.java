@@ -39,12 +39,12 @@ import org.nuxeo.apidoc.security.SecurityConstants;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -439,7 +439,7 @@ public class DocumentationComponent extends DefaultComponent implements Document
             pipe.run();
             reader.close();
             writer.close();
-        } catch (IOException | ClientException e) {
+        } catch (IOException | NuxeoException e) {
             log.error("Error while exporting documentation", e);
         }
     }
@@ -465,23 +465,16 @@ public class DocumentationComponent extends DefaultComponent implements Document
             pipe.run();
             reader.close();
             writer.close();
-        } catch (IOException | ClientException e) {
+        } catch (IOException | NuxeoException e) {
             log.error("Error while importing documentation", e);
         }
     }
 
     @Override
     public String getDocumentationStats(CoreSession session) {
-        String result = "";
-        try {
-            String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME + " WHERE " + QueryHelper.NOT_DELETED;
-            DocumentModelList docList = session.query(query);
-            result = docList.size() + " documents";
-
-        } catch (ClientException e) {
-            log.error("Error while exporting documentation", e);
-        }
-        return result;
+        String query = "SELECT * FROM " + DocumentationItem.TYPE_NAME + " WHERE " + QueryHelper.NOT_DELETED;
+        DocumentModelList docList = session.query(query);
+        return docList.size() + " documents";
     }
 
     @Override

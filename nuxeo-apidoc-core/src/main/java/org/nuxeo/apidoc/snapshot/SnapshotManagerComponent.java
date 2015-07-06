@@ -42,7 +42,6 @@ import org.nuxeo.apidoc.introspection.RuntimeSnapshot;
 import org.nuxeo.apidoc.repository.RepositoryDistributionSnapshot;
 import org.nuxeo.apidoc.repository.SnapshotPersister;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -160,12 +159,7 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
     @Override
     public DistributionSnapshot persistRuntimeSnapshot(CoreSession session, String name, SnapshotFilter filter) {
         DistributionSnapshot liveSnapshot = getRuntimeSnapshot();
-        DistributionSnapshot snap;
-        try {
-            snap = persister.persist(liveSnapshot, session, name, filter);
-        } catch (ClientException | OperationException e) {
-            throw new NuxeoException(e);
-        }
+        DistributionSnapshot snap = persister.persist(liveSnapshot, session, name, filter);
         addPersistentSnapshot(snap.getKey(), snap);
         return snap;
     }
@@ -253,20 +247,15 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public void importSnapshot(CoreSession session, InputStream is) throws IOException {
-        try {
-            String importPath = persister.getDistributionRoot(session).getPathAsString();
-            DocumentReader reader = new NuxeoArchiveReader(is);
-            DocumentWriter writer = new DocumentModelWriter(session, importPath);
-
-            DocumentPipe pipe = new DocumentPipeImpl(10);
-            pipe.setReader(reader);
-            pipe.setWriter(writer);
-            pipe.run();
-            reader.close();
-            writer.close();
-        } catch (ClientException e) {
-            log.error("Error while importing snapshot", e);
-        }
+        String importPath = persister.getDistributionRoot(session).getPathAsString();
+        DocumentReader reader = new NuxeoArchiveReader(is);
+        DocumentWriter writer = new DocumentModelWriter(session, importPath);
+        DocumentPipe pipe = new DocumentPipeImpl(10);
+        pipe.setReader(reader);
+        pipe.setWriter(writer);
+        pipe.run();
+        reader.close();
+        writer.close();
     }
 
     @Override
@@ -297,38 +286,32 @@ public class SnapshotManagerComponent extends DefaultComponent implements Snapsh
 
     @Override
     public DocumentModel importTmpSnapshot(CoreSession session, InputStream is) throws IOException {
-        try {
+        DocumentModel container = persister.getDistributionRoot(session);
+        DocumentRef tmpRef = new PathRef(container.getPathAsString(), IMPORT_TMP);
 
-            DocumentModel container = persister.getDistributionRoot(session);
-            DocumentRef tmpRef = new PathRef(container.getPathAsString(), IMPORT_TMP);
+        DocumentModel tmp = null;
 
-            DocumentModel tmp = null;
-
-            if (session.exists(tmpRef)) {
-                tmp = session.getChild(container.getRef(), IMPORT_TMP);
-                session.removeChildren(tmp.getRef());
-            } else {
-                tmp = session.createDocumentModel(container.getPathAsString(), IMPORT_TMP, "Workspace");
-                tmp.setPropertyValue("dc:title", "tmpImport");
-                tmp = session.createDocument(tmp);
-                session.save();
-            }
-
-            DocumentReader reader = new NuxeoArchiveReader(is);
-            DocumentWriter writer = new DocumentModelWriter(session, tmp.getPathAsString());
-
-            DocumentPipe pipe = new DocumentPipeImpl(10);
-            pipe.setReader(reader);
-            pipe.setWriter(writer);
-            pipe.run();
-            reader.close();
-            writer.close();
-
-            return session.getChildren(tmp.getRef()).get(0);
-        } catch (ClientException e) {
-            log.error("Error while importing snapshot", e);
-            return null;
+        if (session.exists(tmpRef)) {
+            tmp = session.getChild(container.getRef(), IMPORT_TMP);
+            session.removeChildren(tmp.getRef());
+        } else {
+            tmp = session.createDocumentModel(container.getPathAsString(), IMPORT_TMP, "Workspace");
+            tmp.setPropertyValue("dc:title", "tmpImport");
+            tmp = session.createDocument(tmp);
+            session.save();
         }
+
+        DocumentReader reader = new NuxeoArchiveReader(is);
+        DocumentWriter writer = new DocumentModelWriter(session, tmp.getPathAsString());
+
+        DocumentPipe pipe = new DocumentPipeImpl(10);
+        pipe.setReader(reader);
+        pipe.setWriter(writer);
+        pipe.run();
+        reader.close();
+        writer.close();
+
+        return session.getChildren(tmp.getRef()).get(0);
     }
 
     @Override

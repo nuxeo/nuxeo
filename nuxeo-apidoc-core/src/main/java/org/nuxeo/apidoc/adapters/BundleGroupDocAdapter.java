@@ -24,7 +24,6 @@ import org.nuxeo.apidoc.api.BundleInfo;
 import org.nuxeo.apidoc.api.QueryHelper;
 import org.nuxeo.apidoc.snapshot.DistributionSnapshot;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -63,18 +62,13 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     @Override
     public List<String> getBundleIds() {
         List<String> bundles = new ArrayList<String>();
-
         String query = QueryHelper.select(BundleInfo.TYPE_NAME, doc);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel child : docs) {
-                BundleInfo bi = child.getAdapter(BundleInfo.class);
-                if (bi != null && !bi.getId().equals(this.getId())) {
-                    bundles.add(bi.getId());
-                }
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel child : docs) {
+            BundleInfo bi = child.getAdapter(BundleInfo.class);
+            if (bi != null && !bi.getId().equals(this.getId())) {
+                bundles.add(bi.getId());
             }
-        } catch (ClientException e) {
-            log.error("Error while getting subGroups", e);
         }
         return bundles;
     }
@@ -92,16 +86,12 @@ public class BundleGroupDocAdapter extends BaseNuxeoArtifactDocAdapter implement
     public List<BundleGroup> getSubGroups() {
         List<BundleGroup> grps = new ArrayList<BundleGroup>();
         String query = QueryHelper.select(TYPE_NAME, doc);
-        try {
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel child : docs) {
-                BundleGroup grp = child.getAdapter(BundleGroup.class);
-                if (grp != null) {
-                    grps.add(grp);
-                }
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel child : docs) {
+            BundleGroup grp = child.getAdapter(BundleGroup.class);
+            if (grp != null) {
+                grps.add(grp);
             }
-        } catch (ClientException e) {
-            log.error("Error while getting subGroups", e);
         }
         return grps;
     }

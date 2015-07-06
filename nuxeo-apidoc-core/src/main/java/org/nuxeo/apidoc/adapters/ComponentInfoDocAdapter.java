@@ -33,11 +33,11 @@ import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter implements ComponentInfo {
 
@@ -80,13 +80,8 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
 
     @Override
     public BundleInfo getBundle() {
-        try {
-            DocumentModel parent = getCoreSession().getDocument(doc.getParentRef());
-            return parent.getAdapter(BundleInfo.class);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return null;
+        DocumentModel parent = getCoreSession().getDocument(doc.getParentRef());
+        return parent.getAdapter(BundleInfo.class);
     }
 
     @Override
@@ -113,17 +108,13 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public Collection<ExtensionPointInfo> getExtensionPoints() {
         List<ExtensionPointInfo> xps = new ArrayList<ExtensionPointInfo>();
-        try {
-            String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc);
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel child : docs) {
-                ExtensionPointInfo xp = child.getAdapter(ExtensionPointInfo.class);
-                if (xp != null) {
-                    xps.add(xp);
-                }
+        String query = QueryHelper.select(ExtensionPointInfo.TYPE_NAME, doc);
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel child : docs) {
+            ExtensionPointInfo xp = child.getAdapter(ExtensionPointInfo.class);
+            if (xp != null) {
+                xps.add(xp);
             }
-        } catch (ClientException e) {
-            log.error(e, e);
         }
         return xps;
     }
@@ -131,17 +122,13 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public Collection<ExtensionInfo> getExtensions() {
         List<ExtensionInfo> contribs = new ArrayList<ExtensionInfo>();
-        try {
-            String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc);
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel child : docs) {
-                ExtensionInfo xp = child.getAdapter(ExtensionInfo.class);
-                if (xp != null) {
-                    contribs.add(xp);
-                }
+        String query = QueryHelper.select(ExtensionInfo.TYPE_NAME, doc);
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel child : docs) {
+            ExtensionInfo xp = child.getAdapter(ExtensionInfo.class);
+            if (xp != null) {
+                contribs.add(xp);
             }
-        } catch (ClientException e) {
-            log.error(e, e);
         }
         return contribs;
     }
@@ -156,7 +143,7 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     public List<String> getServiceNames() {
         try {
             return (List<String>) doc.getPropertyValue(PROP_SERVICES);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while getting service names", e);
         }
         return null;
@@ -219,17 +206,13 @@ public class ComponentInfoDocAdapter extends BaseNuxeoArtifactDocAdapter impleme
     @Override
     public List<ServiceInfo> getServices() {
         List<ServiceInfo> result = new ArrayList<ServiceInfo>();
-        try {
-            String query = QueryHelper.select(ServiceInfo.TYPE_NAME, doc);
-            DocumentModelList docs = getCoreSession().query(query);
-            for (DocumentModel siDoc : docs) {
-                ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
-                if (si != null) {
-                    result.add(si);
-                }
+        String query = QueryHelper.select(ServiceInfo.TYPE_NAME, doc);
+        DocumentModelList docs = getCoreSession().query(query);
+        for (DocumentModel siDoc : docs) {
+            ServiceInfo si = siDoc.getAdapter(ServiceInfo.class);
+            if (si != null) {
+                result.add(si);
             }
-        } catch (ClientException e) {
-            log.error("Unable to fetch NXService", e);
         }
         return result;
     }

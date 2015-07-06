@@ -52,8 +52,8 @@ import org.nuxeo.apidoc.snapshot.SnapshotManagerComponent;
 import org.nuxeo.apidoc.snapshot.SnapshotResolverHelper;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -232,7 +232,7 @@ public class Distribution extends ModuleRoot {
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Error during storage", e);
             if (tx != null) {
                 tx.rollback();
@@ -288,7 +288,7 @@ public class Distribution extends ModuleRoot {
         }
         try {
             getSnapshotManager().persistRuntimeSnapshot(getContext().getCoreSession(), distribLabel, filter);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Error during storage", e);
             if (tx != null) {
                 tx.rollback();

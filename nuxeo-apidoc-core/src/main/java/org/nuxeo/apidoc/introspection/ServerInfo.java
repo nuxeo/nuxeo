@@ -51,7 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.apidoc.api.ComponentInfo;
 import org.nuxeo.apidoc.documentation.DocumentationHelper;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.osgi.BundleImpl;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
@@ -250,7 +250,7 @@ public class ServerInfo {
                 EmbeddedDocExtractor.extractEmbeddedDoc(zFile, binfo);
                 zFile.close();
             }
-        } catch (ClientException | IOException | ParserConfigurationException | SAXException | XPathException e) {
+        } catch (IOException | ParserConfigurationException | SAXException | XPathException | NuxeoException e) {
             log.error(e, e);
         }
         return binfo;
