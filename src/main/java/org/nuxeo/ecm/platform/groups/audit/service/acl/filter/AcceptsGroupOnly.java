@@ -21,7 +21,6 @@ import java.util.Collection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -47,14 +46,7 @@ public class AcceptsGroupOnly extends AbstractContentFilter implements IContentF
     public boolean acceptsUserOrGroup(String userOrGroup) {
         if (isEveryone(userOrGroup))
             return true;
-
-        try {
-            final boolean s = isGroup(userOrGroup);
-            return s;
-        } catch (ClientException e) {
-            log.error(e, e);
-            return false;
-        }
+        return isGroup(userOrGroup);
     }
 
     public boolean isGroup(String user) {

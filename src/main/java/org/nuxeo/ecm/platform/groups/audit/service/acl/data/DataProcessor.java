@@ -28,10 +28,10 @@ import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.Pair;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.filter.IContentFilter;
 
@@ -105,7 +105,7 @@ public class DataProcessor implements IDataProcessor {
         try {
             list = fetch.getAllChildren(session, root);
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
         initSummarySet();
 

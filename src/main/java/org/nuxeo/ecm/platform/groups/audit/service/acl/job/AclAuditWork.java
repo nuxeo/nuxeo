@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -102,13 +101,9 @@ public class AclAuditWork extends AbstractWork {
         // generate XLS report
         log.debug("Start audit");
         IAclExcelLayoutBuilder v = new AclExcelLayoutBuilder(s, filter);
-        try {
-            DocumentModel root = session.getDocument(new IdRef(docId));
-            v.renderAudit(session, root, true, timeout);
-            log.debug("End audit");
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        DocumentModel root = session.getDocument(new IdRef(docId));
+        v.renderAudit(session, root, true, timeout);
+        log.debug("End audit");
 
         // save
         try {
@@ -125,7 +120,7 @@ public class AclAuditWork extends AbstractWork {
             Blob fb = Blobs.createBlob(getOutputFile(), "application/xls");
             // do publish
             publisher.publish(fb);
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             log.error(e, e);
         }
     }

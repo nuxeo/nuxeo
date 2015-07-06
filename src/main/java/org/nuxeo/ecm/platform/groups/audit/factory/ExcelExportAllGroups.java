@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.groups.audit.service.ExcelExportFactory;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -22,15 +21,11 @@ public class ExcelExportAllGroups implements ExcelExportFactory {
         UserManager userManager = Framework.getLocalService(UserManager.class);
         List<String> groupsId = new ArrayList<String>();
         List<NuxeoGroup> groups = new ArrayList<NuxeoGroup>();
-        try {
-            groupsId = userManager.getGroupIds();
-            for (String groupId : groupsId) {
-                NuxeoGroup group;
-                group = userManager.getGroup(groupId);
-                groups.add(group);
-            }
-        } catch (ClientException e) {
-            log.debug("Unable to fetch Nuxeo groups" + e.getCause().getMessage());
+        groupsId = userManager.getGroupIds();
+        for (String groupId : groupsId) {
+            NuxeoGroup group;
+            group = userManager.getGroup(groupId);
+            groups.add(group);
         }
         Map<String, Object> beans = new HashMap<String, Object>();
         beans.put("groups", groups);

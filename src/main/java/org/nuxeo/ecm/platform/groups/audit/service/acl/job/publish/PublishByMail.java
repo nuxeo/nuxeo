@@ -15,9 +15,9 @@ import org.nuxeo.ecm.automation.core.mail.Mailer;
 import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.utils.MessageAccessor;
@@ -97,12 +97,8 @@ public class PublishByMail implements IResultPublisher {
             log.debug("Automation run " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN + " for " + to);
             automation.run(ctx, chain);
             log.debug("Automation done " + PROPERTY_ACLAUDIT_SENDMAIL_CHAIN + " for " + to);
-        } catch (InvalidChainException e) {
-            throw new ClientException(e);
         } catch (OperationException e) {
-            throw new ClientException(e);
-        } catch (Exception e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
     }
 

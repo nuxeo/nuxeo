@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.ReportLayoutSettings.SpanMode;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ByteColor;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.excel.ExcelBuilder;
