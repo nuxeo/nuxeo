@@ -64,9 +64,9 @@ import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -583,7 +583,8 @@ public class CSVImporterWork extends AbstractWork {
             try {
                 return IOUtils.toString(io, Charsets.UTF_8);
             } catch (IOException e) {
-                throw new ClientRuntimeException(e);
+                // cannot happen
+                throw new NuxeoException(e);
             } finally {
                 try {
                     io.close();
