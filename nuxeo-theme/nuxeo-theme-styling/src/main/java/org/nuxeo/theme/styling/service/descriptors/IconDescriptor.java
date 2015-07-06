@@ -33,6 +33,9 @@ public class IconDescriptor {
 
     protected String value;
 
+    @XNode("@sizes")
+    protected String sizes;
+
     public String getName() {
         return name;
     }
@@ -54,10 +57,19 @@ public class IconDescriptor {
         }
     }
 
+    public String getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(String sizes) {
+        this.sizes = sizes;
+    }
+
     public IconDescriptor clone() {
         IconDescriptor clone = new IconDescriptor();
         clone.name = name;
         clone.value = value;
+        clone.sizes = sizes;
         return clone;
     }
 
