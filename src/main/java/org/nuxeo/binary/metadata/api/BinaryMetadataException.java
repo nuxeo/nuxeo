@@ -16,12 +16,12 @@
  */
 package org.nuxeo.binary.metadata.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @since 7.1
  */
-public class BinaryMetadataException extends ClientException {
+public class BinaryMetadataException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,19 +32,11 @@ public class BinaryMetadataException extends ClientException {
         super(message);
     }
 
-    public BinaryMetadataException(String message, ClientException cause) {
-        super(message, cause);
-    }
-
     public BinaryMetadataException(String message, Throwable cause) {
         super(message, cause);
     }
 
     public BinaryMetadataException(Throwable cause) {
-        super(cause);
-    }
-
-    public BinaryMetadataException(ClientException cause) {
         super(cause);
     }
 

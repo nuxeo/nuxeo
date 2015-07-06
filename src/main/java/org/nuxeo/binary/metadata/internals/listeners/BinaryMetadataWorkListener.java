@@ -25,7 +25,6 @@ import java.util.LinkedList;
 import org.nuxeo.binary.metadata.api.BinaryMetadataConstants;
 import org.nuxeo.binary.metadata.internals.BinaryMetadataWork;
 import org.nuxeo.binary.metadata.internals.MetadataMappingDescriptor;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
