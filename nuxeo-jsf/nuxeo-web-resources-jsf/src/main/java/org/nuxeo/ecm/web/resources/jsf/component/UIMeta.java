@@ -23,6 +23,8 @@ import javax.faces.component.UIOutput;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Component rendering a "meta" HTML tag.
  *
@@ -33,10 +35,8 @@ public class UIMeta extends UIComponentBase {
     public static final String COMPONENT_TYPE = UIMeta.class.getName();
 
     public static enum PropertyKeys {
-        charset
+        charset, content, httpequiv, name
     }
-
-    protected String charset;
 
     @Override
     public String getFamily() {
@@ -49,6 +49,30 @@ public class UIMeta extends UIComponentBase {
 
     public void setCharset(String charset) {
         getStateHelper().put(PropertyKeys.charset, charset);
+    }
+
+    public String getContent() {
+        return (String) getStateHelper().eval(PropertyKeys.content);
+    }
+
+    public void setContent(String content) {
+        getStateHelper().put(PropertyKeys.content, content);
+    }
+
+    public String getHttpequiv() {
+        return (String) getStateHelper().eval(PropertyKeys.httpequiv);
+    }
+
+    public void setHttpequiv(String httpequiv) {
+        getStateHelper().put(PropertyKeys.httpequiv, httpequiv);
+    }
+
+    public String getName() {
+        return (String) getStateHelper().eval(PropertyKeys.name);
+    }
+
+    public void setName(String name) {
+        getStateHelper().put(PropertyKeys.name, name);
     }
 
     public String getRendererType() {
@@ -67,8 +91,20 @@ public class UIMeta extends UIComponentBase {
 
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("meta", this);
-        writer.writeAttribute("http-equiv", "Content-Type", "http-equiv");
-        writer.writeAttribute("content", String.format("text/html;charset=%s", getCharset()), "content");
+        writer.writeAttribute("charset", getCharset(), "charset");
+        // charset, content, httpequiv, name, scheme
+        String content = getContent();
+        if (!StringUtils.isBlank(content)) {
+            writer.writeAttribute("content", content, "content");
+        }
+        String httpEquiv = getHttpequiv();
+        if (!StringUtils.isBlank(httpEquiv)) {
+            writer.writeAttribute("http-equiv", httpEquiv, "http-equiv");
+        }
+        String name = getName();
+        if (!StringUtils.isBlank(name)) {
+            writer.writeAttribute("name", name, "name");
+        }
         writer.endElement("meta");
 
         popComponentFromEL(context);
