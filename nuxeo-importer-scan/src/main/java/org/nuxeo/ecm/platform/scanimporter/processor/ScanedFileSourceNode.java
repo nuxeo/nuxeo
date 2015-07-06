@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -122,16 +121,9 @@ public class ScanedFileSourceNode extends FileSourceNode {
     @Override
     public String getName() {
         if (bh != null) {
-            try {
-                Blob blob = bh.getBlob();
-                if (blob != null && blob.getFilename() != null) {
-                    return blob.getFilename();
-                }
-            } catch (ClientException e) {
-                String title = (String) bh.getProperties().get("dc:title");
-                if (title != null) {
-                    return title;
-                }
+            Blob blob = bh.getBlob();
+            if (blob != null && blob.getFilename() != null) {
+                return blob.getFilename();
             }
         }
         return file.getName();

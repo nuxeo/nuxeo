@@ -26,7 +26,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
@@ -112,10 +111,10 @@ public class ScannedFileImporter {
     public void doImport(File folder, ImporterConfig config) {
 
         if (folder == null || !folder.exists()) {
-            throw new ClientException("Unable to access source folder " + folder);
+            throw new NuxeoException("Unable to access source folder " + folder);
         }
         if (config.getTargetPath() == null) {
-            throw new ClientException("target path must be set");
+            throw new NuxeoException("target path must be set");
         }
 
         if (folder.listFiles().length == 0) {

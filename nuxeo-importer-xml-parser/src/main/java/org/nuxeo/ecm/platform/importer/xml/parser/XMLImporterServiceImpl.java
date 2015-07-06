@@ -48,12 +48,12 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.runtime.api.Framework;
 
@@ -188,7 +188,7 @@ public class XMLImporterServiceImpl {
                     return parse(child);
                 }
             }
-            throw new ClientException("Can not find XML file inside the zip archive", e);
+            throw new NuxeoException("Can not find XML file inside the zip archive", e);
         } finally {
             FileUtils.deleteQuietly(directory);
         }
@@ -463,8 +463,9 @@ public class XMLImporterServiceImpl {
 
         try {
             doc = session.createDocument(doc);
-        } catch (ClientException e) {
-            throw new RuntimeException(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()), e);
+        } catch (NuxeoException e) {
+            e.addInfo(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+            throw e;
         }
         pushInStack(doc);
         elToDoc.put(el, doc);

@@ -20,9 +20,9 @@
 import java.io.IOException;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.importer.base.GenericMultiThreadedImporter;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.source.FileSourceNode;
@@ -53,7 +53,7 @@ public class AdvancedScannedFileFactory extends ScanedFileFactory implements Imp
 
         XMLImporterService importer = Framework.getLocalService(XMLImporterService.class);
         if (!(node instanceof FileSourceNode)) {
-            throw new ClientException("Waiting a FileSourceNode object not: " + node.getClass().getName());
+            throw new NuxeoException("Waiting a FileSourceNode object not: " + node.getClass().getName());
         }
         FileSourceNode fileNode = (FileSourceNode) node;
         List<DocumentModel> docCreated = importer.importDocuments(parent, fileNode.getFile());

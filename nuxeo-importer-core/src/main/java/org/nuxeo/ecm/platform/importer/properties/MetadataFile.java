@@ -33,9 +33,9 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
 
@@ -186,7 +186,7 @@ public class MetadataFile {
             fos = new FileOutputStream(file);
             metadataProperties.store(fos, null);
         } catch (IOException e) {
-            throw new ClientException("Unable to write the metadata properties to " + file.getAbsolutePath(), e);
+            throw new NuxeoException("Unable to write the metadata properties to " + file.getAbsolutePath(), e);
         } finally {
             if (fos != null) {
                 try {

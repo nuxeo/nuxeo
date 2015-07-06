@@ -35,12 +35,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.javasimon.SimonManager;
 import org.javasimon.Stopwatch;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.importer.factories.DefaultDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.factories.ImporterDocumentModelFactory;
 import org.nuxeo.ecm.platform.importer.filter.ImporterFilter;
@@ -103,7 +103,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
     protected int queueSize = DEFAULT_QUEUE_SIZE;
 
     protected String repositoryName;
-    
+
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
     }
@@ -385,14 +385,13 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
      * overridden in subclasses.
      *
      * @return
-     * @throws Exception
      */
     protected DocumentModel createTargetContainer() {
         try {
             return session.getDocument(new PathRef(importWritePath));
-        } catch (ClientException e) {
+        } catch (NoSuchDocumentException e) {
             log.error(e.getMessage());
-            throw new NuxeoException(e);
+            throw e;
         }
     }
 

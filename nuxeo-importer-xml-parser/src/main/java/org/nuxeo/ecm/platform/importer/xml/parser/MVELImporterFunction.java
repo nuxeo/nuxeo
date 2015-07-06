@@ -30,7 +30,6 @@ import java.util.Stack;
 
 import org.dom4j.Element;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;

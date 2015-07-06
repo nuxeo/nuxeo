@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.scanimporter.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.platform.scanimporter.processor.ScannedFileImporter;
