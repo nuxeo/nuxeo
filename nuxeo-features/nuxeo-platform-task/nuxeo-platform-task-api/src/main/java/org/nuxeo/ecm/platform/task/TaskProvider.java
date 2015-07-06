@@ -102,6 +102,16 @@ public interface TaskProvider extends Serializable {
             CoreSession session);
 
     /**
+     * Returns the list of task instances associated assigned to the current user.
+     * Takes into account tasks that were delegated to this user.
+     * The query is done in unrestricted mode and so the documents linked to the tasks are detached.
+     *
+     * @since 7.4
+     */
+    List<Task> getAllCurrentTaskInstances(CoreSession session, List<SortInfo> sortInfos);
+
+
+    /**
      * Returns all the tasks instances for the given {@code processId}.
      * <p>
      * The query is done in unrestricted mode and so the documents linked to the tasks are detached.

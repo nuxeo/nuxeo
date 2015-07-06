@@ -151,6 +151,11 @@ public class TaskQueryConstant {
     public static final String GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS_PP = "GET_TASKS_FOR_TARGET_DOCUMENTS_AND_ACTORS_OR_DELEGATED_ACTORS";
 
     /**
+     * @since 7.4
+     */
+    public static final String GET_TASKS_FOR_ACTORS_OR_DELEGATED_ACTORS_PP = "GET_TASKS_FOR_ACTORS_OR_DELEGATED_ACTORS";
+
+    /**
      * @since 5.8
      * @deprecated since 6.0: use page providers instead.
      */

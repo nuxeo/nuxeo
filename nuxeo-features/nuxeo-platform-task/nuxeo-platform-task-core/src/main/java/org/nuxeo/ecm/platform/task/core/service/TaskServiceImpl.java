@@ -297,6 +297,20 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         return tasks;
     }
 
+    @Override
+    public List<Task> getAllCurrentTaskInstances(CoreSession coreSession, List<SortInfo> sortInfos) {
+        List<Task> tasks = new ArrayList<Task>();
+        List<Task> newTasks;
+        for (TaskProvider taskProvider : tasksProviders.values()) {
+            newTasks = taskProvider.getAllCurrentTaskInstances(coreSession,
+                    sortInfos);
+            if (newTasks != null) {
+                tasks.addAll(newTasks);
+            }
+        }
+        return tasks;
+    }
+
     /**
      * Returns a list of task instances assigned to one of the actors in the list or to its pool.
      *
