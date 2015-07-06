@@ -19,7 +19,6 @@ package org.nuxeo.ecm.diff.service;
 import java.io.Serializable;
 
 import org.custommonkey.xmlunit.Diff;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.diff.model.DocumentDiff;

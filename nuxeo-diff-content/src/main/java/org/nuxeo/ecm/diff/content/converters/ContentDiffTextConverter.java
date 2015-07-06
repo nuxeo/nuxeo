@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
@@ -56,13 +55,9 @@ public class ContentDiffTextConverter extends AbstractContentDiffConverter {
             // converter was found (see FullTextConverter). Throw
             // appropriate exception.
             String srcMimeType = null;
-            try {
-                Blob blob = blobHolder.getBlob();
-                if (blob != null) {
-                    srcMimeType = blob.getMimeType();
-                }
-            } catch (ClientException ce) {
-                throw new ConversionException("Error while getting blob from blob holder.", ce);
+            Blob blob = blobHolder.getBlob();
+            if (blob != null) {
+                srcMimeType = blob.getMimeType();
             }
             throw new ConverterNotRegistered(String.format("for sourceMimeType = %s, destinationMimeType = text/plain",
                     srcMimeType));

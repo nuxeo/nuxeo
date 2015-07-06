@@ -25,8 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
@@ -70,25 +70,21 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         BlobHolder adaptedDocBlobHolder = null;
         BlobHolder otherDocBlobHolder = null;
 
-        try {
-            if ((xpath == null) || ("default".equals(xpath))) {
-                adaptedDocBlobHolder = adaptedDoc.getAdapter(BlobHolder.class);
-                otherDocBlobHolder = otherDoc.getAdapter(BlobHolder.class);
-            } else {
-                adaptedDocBlobHolder = getBlobHolder(adaptedDoc, xpath);
-                otherDocBlobHolder = getBlobHolder(otherDoc, xpath);
-            }
-            if (adaptedDocBlobHolder == null || otherDocBlobHolder == null) {
-                throw new ContentDiffException("Can not make a content diff of documents without a blob");
-            }
+        if ((xpath == null) || ("default".equals(xpath))) {
+            adaptedDocBlobHolder = adaptedDoc.getAdapter(BlobHolder.class);
+            otherDocBlobHolder = otherDoc.getAdapter(BlobHolder.class);
+        } else {
+            adaptedDocBlobHolder = getBlobHolder(adaptedDoc, xpath);
+            otherDocBlobHolder = getBlobHolder(otherDoc, xpath);
+        }
+        if (adaptedDocBlobHolder == null || otherDocBlobHolder == null) {
+            throw new ContentDiffException("Can not make a content diff of documents without a blob");
+        }
 
-            adaptedDocBlob = adaptedDocBlobHolder.getBlob();
-            otherDocBlob = otherDocBlobHolder.getBlob();
-            if (adaptedDocBlob == null || otherDocBlob == null) {
-                throw new ContentDiffException("Can not make a content diff of documents without a blob");
-            }
-        } catch (ClientException ce) {
-            throw new ContentDiffException("Error while getting blobs", ce);
+        adaptedDocBlob = adaptedDocBlobHolder.getBlob();
+        otherDocBlob = otherDocBlobHolder.getBlob();
+        if (adaptedDocBlob == null || otherDocBlob == null) {
+            throw new ContentDiffException("Can not make a content diff of documents without a blob");
         }
 
         List<Blob> blobResults = new ArrayList<Blob>();
@@ -119,38 +115,32 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         // Docs have a different mime type or no content differ found for the
         // common mime type.
         // Fall back on a conversion (conversionType) + HtmlContentDiffer.
-        try {
-            // Default conversion type is HTML
-            if (conversionType == null) {
-                conversionType = ContentDiffConversionType.html;
-            }
-            String converterName = conversionType.getValue();
-            BlobHolder adaptedDocConvertedBlobHolder = getConvertedBlobHolder(adaptedDocBlobHolder, converterName);
-            BlobHolder otherDocConvertedBlobHolder = getConvertedBlobHolder(otherDocBlobHolder, converterName);
-            Blob adaptedDocConvertedBlob = adaptedDocConvertedBlobHolder.getBlob();
-            Blob otherDocConvertedBlob = otherDocConvertedBlobHolder.getBlob();
-
-            // In the case of a text conversion, we need to transform the blob
-            // strings to encode XML entities and replace all occurrences of
-            // "\n" with "<br />", since they will then be displayed in HTML by
-            // the HtmlContentDiffer.
-            if (ContentDiffConversionType.text.equals(conversionType)) {
-                adaptedDocConvertedBlob = getHtmlStringBlob(adaptedDocConvertedBlob);
-                otherDocConvertedBlob = getHtmlStringBlob(otherDocConvertedBlob);
-            }
-
-            // Add html content diff blob
-            MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
-            blobResults.addAll(contentDiffer.getContentDiff(adaptedDocConvertedBlob, otherDocConvertedBlob, locale));
-
-            // Add secondary blobs (mostly images)
-            addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder, adaptedDocConvertedBlob.getFilename());
-            addSecondaryBlobs(blobResults, otherDocConvertedBlobHolder, otherDocConvertedBlob.getFilename());
-        } catch (ConversionException ce) {
-            throw ce;
-        } catch (ClientException ce) {
-            throw new ContentDiffException("Error while getting HTML content diff on converted blobs", ce);
+        // Default conversion type is HTML
+        if (conversionType == null) {
+            conversionType = ContentDiffConversionType.html;
         }
+        String converterName = conversionType.getValue();
+        BlobHolder adaptedDocConvertedBlobHolder = getConvertedBlobHolder(adaptedDocBlobHolder, converterName);
+        BlobHolder otherDocConvertedBlobHolder = getConvertedBlobHolder(otherDocBlobHolder, converterName);
+        Blob adaptedDocConvertedBlob = adaptedDocConvertedBlobHolder.getBlob();
+        Blob otherDocConvertedBlob = otherDocConvertedBlobHolder.getBlob();
+
+        // In the case of a text conversion, we need to transform the blob
+        // strings to encode XML entities and replace all occurrences of
+        // "\n" with "<br />", since they will then be displayed in HTML by
+        // the HtmlContentDiffer.
+        if (ContentDiffConversionType.text.equals(conversionType)) {
+            adaptedDocConvertedBlob = getHtmlStringBlob(adaptedDocConvertedBlob);
+            otherDocConvertedBlob = getHtmlStringBlob(otherDocConvertedBlob);
+        }
+
+        // Add html content diff blob
+        MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getHtmlContentDiffer();
+        blobResults.addAll(contentDiffer.getContentDiff(adaptedDocConvertedBlob, otherDocConvertedBlob, locale));
+
+        // Add secondary blobs (mostly images)
+        addSecondaryBlobs(blobResults, adaptedDocConvertedBlobHolder, adaptedDocConvertedBlob.getFilename());
+        addSecondaryBlobs(blobResults, otherDocConvertedBlobHolder, otherDocConvertedBlob.getFilename());
         return blobResults;
     }
 
@@ -186,7 +176,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
             }
             return new DocumentStringBlobHolder(doc, xPath, mimeType);
         }
-        throw new ClientException(String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.", doc.getTitle(),
+        throw new NuxeoException(String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.", doc.getTitle(),
                 xPath));
     }
 
@@ -229,7 +219,6 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
      * @param blobHolder the blob holder
      * @param converterName the converter name
      * @return the converted blob holder
-     * @throws ClientException if an error occurs while getting the conversion service
      * @throws ConversionException if an error occurs while converting the blob holder
      */
     protected BlobHolder getConvertedBlobHolder(BlobHolder blobHolder, String converterName)
@@ -273,15 +262,9 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
      * @return the conversion service
      */
     protected final ConversionService getConversionService() {
-
-        ConversionService conversionService;
-        try {
-            conversionService = Framework.getService(ConversionService.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
+        ConversionService conversionService = Framework.getService(ConversionService.class);
         if (conversionService == null) {
-            throw new ClientException("ConversionService service is null.");
+            throw new NuxeoException("ConversionService service is null.");
         }
         return conversionService;
     }

@@ -18,6 +18,7 @@ package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.DifferenceConstants;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.diff.DiffTestCase;
 import org.nuxeo.ecm.diff.model.DifferenceType;
@@ -535,8 +536,10 @@ public class TestXMLDiff extends DiffTestCase {
         try {
             getPropertyDiff(leftXML, rightXML, 1, "complexType");
             fail("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
-        } catch (ClientException ce) {
-            LOGGER.debug("Exception thrown as expected: " + ce.getMessage());
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg,
+                    msg.contains("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type"));
         }
 
     }
@@ -555,8 +558,10 @@ public class TestXMLDiff extends DiffTestCase {
         try {
             getPropertyDiff(leftXML, rightXML, 1, "content");
             fail("A CHILD_NODE_NOT_FOUND difference should never be found within a content type.");
-        } catch (ClientException ce) {
-            LOGGER.debug("Exception thrown as expected: " + ce.getMessage());
+        } catch (NuxeoException e) {
+            String msg = e.getMessage();
+            assertTrue(msg,
+                    msg.contains("A CHILD_NODE_NOT_FOUND difference should never be found within a content type"));
         }
 
     }

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.diff.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -26,15 +27,16 @@ import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.ElementNameAndAttributeQualifier;
 import org.custommonkey.xmlunit.NodeDetail;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentXMLExporter;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
 import org.nuxeo.ecm.diff.model.impl.DocumentDiffImpl;
 import org.nuxeo.ecm.diff.service.DocumentDiffService;
 import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * Implementation of DocumentDiffService.
@@ -129,16 +131,9 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * @throws ClientException if the document XML exporter service cannot be found
      */
     protected final DocumentXMLExporter getDocumentXMLExporter() {
-
-        DocumentXMLExporter docXMLExporter;
-
-        try {
-            docXMLExporter = Framework.getService(DocumentXMLExporter.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
+        DocumentXMLExporter docXMLExporter = Framework.getService(DocumentXMLExporter.class);
         if (docXMLExporter == null) {
-            throw new ClientException("DocumentXMLExporter service is null.");
+            throw new NuxeoException("DocumentXMLExporter service is null.");
         }
         return docXMLExporter;
     }
@@ -163,8 +158,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
             configureDiff(diff);
             // Build detailed diff
             detailedDiff = new DetailedDiff(diff);
-        } catch (Exception e) {
-            throw new ClientException("Error while trying to make a detailed diff between two documents.", e);
+        } catch (SAXException | IOException e) {
+            throw new NuxeoException("Error while trying to make a detailed diff between two documents.", e);
         }
         return detailedDiff;
     }
@@ -188,8 +183,8 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
             configureDiff(diff);
             // Build detailed diff
             detailedDiff = new DetailedDiff(diff);
-        } catch (Exception e) {
-            throw new ClientException("Error while trying to make a detailed diff between two XML strings.", e);
+        } catch (SAXException | IOException e) {
+            throw new NuxeoException("Error while trying to make a detailed diff between two XML strings.", e);
         }
         return detailedDiff;
     }

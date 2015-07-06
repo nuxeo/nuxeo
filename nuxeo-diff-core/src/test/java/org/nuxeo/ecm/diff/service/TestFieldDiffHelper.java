@@ -18,12 +18,14 @@ package org.nuxeo.ecm.diff.service;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.custommonkey.xmlunit.XMLUnit;
+import org.custommonkey.xmlunit.exceptions.XpathException;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.diff.DiffTestCase;
 import org.nuxeo.ecm.diff.model.PropertyDiff;
 import org.nuxeo.ecm.diff.model.PropertyType;
@@ -35,6 +37,7 @@ import org.nuxeo.ecm.diff.service.impl.FieldDiffHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Tests the {@link FieldDiffHelper}.
@@ -254,12 +257,12 @@ public class TestFieldDiffHelper extends DiffTestCase {
         try {
             Document xmlDoc = XMLUnit.buildControlDocument(xml);
             matchingNodes = xPathEngine.getMatchingNodes(xPath, xmlDoc);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
+        } catch (SAXException | IOException | XpathException e) {
+            throw new NuxeoException(e);
         }
 
         if (!(matchingNodes.getLength() > 0)) {
-            throw new ClientException(String.format("No node matches the xPath expression [%s] in the XML doc", xPath));
+            throw new NuxeoException(String.format("No node matches the xPath expression [%s] in the XML doc", xPath));
         }
         return matchingNodes.item(0);
     }

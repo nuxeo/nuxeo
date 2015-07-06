@@ -18,7 +18,7 @@ package org.nuxeo.ecm.diff.model.impl;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.ExportConstants;
 
 /**
@@ -94,7 +94,7 @@ public class ContentProperty implements Serializable {
             // Nothing to do here, the data property is not interesting for the
             // content diff
         } else {
-            throw new ClientException(
+            throw new NuxeoException(
                     String.format(
                             "Error while trying to set sub property '%s' on an object of type ContentProperty: no such sub property.",
                             subPropertyName));

@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
@@ -80,7 +80,7 @@ public final class ContentDiffHelper {
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
         String docUrl = urlPolicyService.getUrlFromDocumentView(docView, null);
         if (docUrl == null) {
-            throw new ClientException(
+            throw new NuxeoException(
                     "Cannot get URL from document view, probably because of a missing urlPattern contribution.");
         }
         StringBuilder urlSb = new StringBuilder(docUrl);

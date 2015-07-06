@@ -19,7 +19,7 @@ package org.nuxeo.ecm.diff.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.TypeConstants;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -42,12 +42,12 @@ public final class ComplexPropertyHelper {
 
         Schema schema = getSchemaManager().getSchema(schemaName);
         if (schema == null) {
-            throw new ClientException(String.format("Schema [%s] does not exist.", schemaName));
+            throw new NuxeoException(String.format("Schema [%s] does not exist.", schemaName));
         }
 
         Field field = schema.getField(fieldName);
         if (field == null) {
-            throw new ClientException(String.format("Field [%s] does not exist in schema [%s].", fieldName, schemaName));
+            throw new NuxeoException(String.format("Field [%s] does not exist in schema [%s].", fieldName, schemaName));
         }
         return field;
     }
@@ -56,7 +56,7 @@ public final class ComplexPropertyHelper {
 
         Type fieldType = field.getType();
         if (!fieldType.isComplexType()) {
-            throw new ClientException(String.format("Field '%s' is not a complex type.", field));
+            throw new NuxeoException(String.format("Field '%s' is not a complex type.", field));
         }
 
         return ((ComplexType) fieldType).getField(complexItemName);
@@ -67,7 +67,7 @@ public final class ComplexPropertyHelper {
 
         Type fieldType = field.getType();
         if (!fieldType.isComplexType()) {
-            throw new ClientException(
+            throw new NuxeoException(
                     String.format("Field [%s] is not a complex type.", field.getName().getLocalName()));
         }
 
@@ -78,12 +78,12 @@ public final class ComplexPropertyHelper {
 
         Type fieldType = field.getType();
         if (!fieldType.isListType()) {
-            throw new ClientException(String.format("Field [%s] is not a list type.", field.getName().getLocalName()));
+            throw new NuxeoException(String.format("Field [%s] is not a list type.", field.getName().getLocalName()));
         }
 
         Field listFieldItem = ((ListType) fieldType).getField();
         if (listFieldItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Field [%s] is a list type but has no field defining the elements stored by this list.",
                     field.getName().getLocalName()));
         }
@@ -129,15 +129,9 @@ public final class ComplexPropertyHelper {
     }
 
     private static final SchemaManager getSchemaManager() {
-
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (schemaManager == null) {
-            throw new ClientException("SchemaManager service is null.");
+            throw new NuxeoException("SchemaManager service is null.");
         }
         return schemaManager;
     }

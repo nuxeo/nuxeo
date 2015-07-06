@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.DifferenceConstants;
 import org.custommonkey.xmlunit.NodeDetail;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.ExportConstants;
 import org.nuxeo.ecm.diff.model.DifferenceType;
 import org.nuxeo.ecm.diff.model.DocumentDiff;
@@ -75,18 +75,18 @@ public final class FieldDiffHelper {
      * If it is a complex item node, we set its name in the hierarchy.
      * If it is a content item node (ie. "encoding", "mime-type", "filename" or "digest"),
      * we set its name in the hierarchy.
-     * 
+     *
      * Example: complex list
-     * 
+     *
      * The "true" property's hierarchy is:
      * [{list,"0"},{complex, "complexBoolean"}]
-     * 
+     *
      * The "jack" property's hierarchy is:
      * [{list,"1"},{complex, "complexString"}]
-     * 
+     *
      * The "UTF-8" property's hierarchy is:
      * [{list,"0"},{complex, "complexString"},{content, "encoding"}]
-     * 
+     *
      * <list type="complexList">
      *   <complexItem type="complex">
      *     <complexString type="string">joe</complexString>
@@ -263,7 +263,7 @@ public final class FieldDiffHelper {
             List<PropertyHierarchyNode> propertyHierarchy) {
 
         if (propertyHierarchy.isEmpty()) {
-            throw new ClientException("Empty property hierarchy.");
+            throw new NuxeoException("Empty property hierarchy.");
         }
 
         // Get first property hierarchy node
@@ -273,7 +273,7 @@ public final class FieldDiffHelper {
 
         if ((PropertyType.isSimpleType(firstPropertyType) || PropertyType.isContentType(firstPropertyType))
                 && propertyHierarchy.size() > 1) {
-            throw new ClientException(String.format("Inconsistant property hierarchy %s.", propertyHierarchy));
+            throw new NuxeoException(String.format("Inconsistant property hierarchy %s.", propertyHierarchy));
         }
 
         // Go through the property hierarchy
@@ -335,7 +335,7 @@ public final class FieldDiffHelper {
             NodeDetail testNodeDetail) {
 
         if (propertyHierarchy.isEmpty()) {
-            throw new ClientException("Empty property hierarchy.");
+            throw new NuxeoException("Empty property hierarchy.");
         }
 
         // Get first property hierarchy node
@@ -413,12 +413,12 @@ public final class FieldDiffHelper {
 
         Node controlNode = controlNodeDetail.getNode();
         if (controlNode == null) {
-            throw new ClientException("Control node should never be null.");
+            throw new NuxeoException("Control node should never be null.");
         }
 
         Node controlParentNode = controlNode.getParentNode();
         if (controlParentNode == null) {
-            throw new ClientException("Control parent node should never be null.");
+            throw new NuxeoException("Control parent node should never be null.");
         }
 
         String controlParentNodePropertyType = getPropertyType(controlParentNode);
@@ -464,7 +464,7 @@ public final class FieldDiffHelper {
         }
 
         if (childNode == null) {
-            throw new ClientException("Child node should never be null.");
+            throw new NuxeoException("Child node should never be null.");
         }
 
         String propertyType = fieldDiff.getPropertyType();
@@ -472,7 +472,7 @@ public final class FieldDiffHelper {
         if (PropertyType.isSimpleType(propertyType)) {
             // Should never happen as then it would be marked as a
             // HAS_CHILD_NODES difference.
-            throw new ClientException("A CHILD_NODE_NOT_FOUND difference should never be found within a simple type.");
+            throw new NuxeoException("A CHILD_NODE_NOT_FOUND difference should never be found within a simple type.");
         }
         // List type
         else if (PropertyType.isListType(propertyType)) {
@@ -481,11 +481,11 @@ public final class FieldDiffHelper {
         }
         // Complex type
         else if (PropertyType.isComplexType(propertyType)) { // Complex type
-            throw new ClientException("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
+            throw new NuxeoException("A CHILD_NODE_NOT_FOUND difference should never be found within a complex type.");
         }
         // Content type
         else {
-            throw new ClientException("A CHILD_NODE_NOT_FOUND difference should never be found within a content type.");
+            throw new NuxeoException("A CHILD_NODE_NOT_FOUND difference should never be found within a content type.");
         }
     }
 
@@ -508,7 +508,7 @@ public final class FieldDiffHelper {
         }
 
         if (nodeWithChildren == null) {
-            throw new ClientException("Node with children should never be null.");
+            throw new NuxeoException("Node with children should never be null.");
         }
 
         String propertyType = fieldDiff.getPropertyType();

@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -53,12 +52,7 @@ public class ContentDiffHtmlConverter extends AbstractContentDiffConverter {
         String converterName = null;
 
         // Fetch blob from blob holder
-        Blob blob = null;
-        try {
-            blob = blobHolder.getBlob();
-        } catch (ClientException ce) {
-            throw new ConversionException("Cannot fetch blob from blob holder.", ce);
-        }
+        Blob blob = blobHolder.getBlob();
         if (blob == null) {
             LOGGER.warn("Trying to convert a blob holder that has a null blob. Nothing to do, returning the blob holder.");
             return blobHolder;

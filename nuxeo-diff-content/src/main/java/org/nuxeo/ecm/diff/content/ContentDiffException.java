@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.diff.content;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Content diff exception.
@@ -24,9 +24,9 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @author Antoine Taillefer
  * @since 5.6
  */
-public class ContentDiffException extends ClientException {
+public class ContentDiffException extends NuxeoException {
 
-    private static final long serialVersionUID = 1515522281717216692L;
+    private static final long serialVersionUID = 1L;
 
     public ContentDiffException(Throwable cause) {
         super(cause);

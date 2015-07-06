@@ -37,10 +37,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.convert.api.ConverterNotRegistered;
 import org.nuxeo.ecm.diff.content.ContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
@@ -129,7 +129,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
             documentManager = navigationContext.getOrCreateDocumentManager();
             leftDoc = documentManager.getDocument(new IdRef(leftDocId));
             rightDoc = documentManager.getDocument(new IdRef(rightDocId));
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -180,7 +180,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
                 contentDiffBlobs = contentDiffAdapter.getFileContentDiffBlobs(rightDoc, xpath, conversionType,
                         localeSelector.getLocale());
             }
-        } catch (ClientException ce) {
+        } catch (NuxeoException ce) {
             handleNoContentDiff(res, xpath, ce);
             return null;
         }
@@ -192,7 +192,7 @@ public class ContentDiffRestlet extends BaseNuxeoRestlet {
         return contentDiffBlobs;
     }
 
-    protected void handleNoContentDiff(Response res, String xpath, ClientException e) {
+    protected void handleNoContentDiff(Response res, String xpath, NuxeoException e) {
         StringBuilder sb = new StringBuilder();
 
         sb.append("<html><body><center><h1>");

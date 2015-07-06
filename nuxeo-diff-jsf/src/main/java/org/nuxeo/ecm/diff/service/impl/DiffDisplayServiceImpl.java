@@ -30,8 +30,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.FieldImpl;
@@ -485,7 +485,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
                                     complexField = ComplexPropertyHelper.getListFieldItem(complexField);
                                 }
                                 if (!complexField.getType().isComplexType()) {
-                                    throw new ClientException(
+                                    throw new NuxeoException(
                                             String.format(
                                                     "Cannot compute field items for [%s:%s] since it is not a complex nor a complex list property.",
                                                     schemaName, fieldName));
@@ -785,7 +785,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
             ComplexPropertyDiff complexPropertyDiff = null;
             if (propertyDiff != null) {
                 if (!propertyDiff.isComplexType()) {
-                    throw new ClientException(
+                    throw new NuxeoException(
                             "'fieldDiffDisplay' is of complex type whereas 'propertyDiff' is not, this is inconsistent");
                 }
                 complexPropertyDiff = (ComplexPropertyDiff) propertyDiff;
@@ -947,7 +947,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
 
         PropertyDiffDisplay fieldXPaths = null;
         if (propertyDiff == null) {
-            throw new ClientException("The 'propertyDiff' parameter cannot be null.");
+            throw new NuxeoException("The 'propertyDiff' parameter cannot be null.");
         }
 
         boolean isDisplayHtmlConversion = ContentDiffHelper.isDisplayHtmlConversion(leftProperty)
@@ -1217,13 +1217,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      *
      * @param property the property
      * @return the list property if the {@code property} is not null, null otherwise
-     * @throws ClientException if the {@code property} is not a list.
+     * @throws NuxeoException if the {@code property} is not a list.
      */
     protected List<Serializable> getListPropertyIfNotNull(Serializable property) {
 
         if (property != null) {
             if (!isListType(property)) {
-                throw new ClientException(
+                throw new NuxeoException(
                         "Tryed to get a list property from a Serializable property that is not a list, this is inconsistent.");
             }
             return getListProperty(property);
@@ -1248,13 +1248,13 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      *
      * @param property the property
      * @return the complex property if the {@code property} is not null, null otherwise
-     * @throws ClientException if the {@code property} is not a list.
+     * @throws NuxeoException if the {@code property} is not a list.
      */
     protected Map<String, Serializable> getComplexPropertyIfNotNull(Serializable property) {
 
         if (property != null) {
             if (!isComplexType(property)) {
-                throw new ClientException(
+                throw new NuxeoException(
                         "Tryed to get a complex property from a Serializable property that is not a map, this is inconsistent.");
             }
             return getComplexProperty(property);
@@ -1282,7 +1282,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
                 // with the property type
                 wDef = getLayoutStore().getWidgetDefinition(category, propertyType);
                 if (wDef == null) {
-                    throw new ClientException(
+                    throw new NuxeoException(
                             String.format(
                                     "Could not find any specific widget named '%s', nor any generic widget named '%s'. Please make sure at least a generic widget is defined for this type.",
                                     propertyName, propertyType));
@@ -1293,7 +1293,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
             if (PropertyType.isSimpleType(propertyType) || PropertyType.isContentType(propertyType)) {
                 wDef = getLayoutStore().getWidgetDefinition(category, CONTENT_DIFF_LINKS_WIDGET_NAME);
                 if (wDef == null) {
-                    throw new ClientException(
+                    throw new NuxeoException(
                             String.format(
                                     "Could not find any generic widget named '%s'. Please make sure a generic widget is defined with this name.",
                                     CONTENT_DIFF_LINKS_WIDGET_NAME));
@@ -1303,7 +1303,7 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
                 // the property type
                 wDef = getLayoutStore().getWidgetDefinition(category, propertyType);
                 if (wDef == null) {
-                    throw new ClientException(
+                    throw new NuxeoException(
                             String.format(
                                     "Could not find any generic widget named '%s'. Please make sure a generic widget is defined for this type.",
                                     propertyType));
@@ -1578,18 +1578,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * Gets the schema manager.
      *
      * @return the schema manager
-     * @throws ClientException if the schema manager cannot be found
      */
     protected final SchemaManager getSchemaManager() {
-
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         if (schemaManager == null) {
-            throw new ClientException("SchemaManager service is null.");
+            throw new NuxeoException("SchemaManager service is null.");
         }
         return schemaManager;
     }
@@ -1598,18 +1591,11 @@ public class DiffDisplayServiceImpl extends DefaultComponent implements DiffDisp
      * Gets the layout store service.
      *
      * @return the layout store service
-     * @throws ClientException if the layout store service cannot be found
      */
     protected final LayoutStore getLayoutStore() {
-
-        LayoutStore layoutStore;
-        try {
-            layoutStore = Framework.getService(LayoutStore.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
+        LayoutStore layoutStore = Framework.getService(LayoutStore.class);
         if (layoutStore == null) {
-            throw new ClientException("LayoutStore service is null.");
+            throw new NuxeoException("LayoutStore service is null.");
         }
         return layoutStore;
     }
