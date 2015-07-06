@@ -28,10 +28,11 @@ import org.jaudiotagger.tag.id3.framebody.FrameBodyAPIC;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.platform.types.adapter.TypeInfo;
 
@@ -47,14 +48,14 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.hasFacet("Audio")) {
-            throw new ClientException("Document is not audio type");
+            throw new NuxeoException("Document is not audio type");
         }
         Blob thumbnailBlob = null;
         try {
             if (doc.hasFacet(AudioThumbnailConstants.THUMBNAIL_FACET)) {
                 thumbnailBlob = (Blob) doc.getPropertyValue(AudioThumbnailConstants.THUMBNAIL_PROPERTY_NAME);
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Could not fetch the thumbnail blob", e);
         }
         if (thumbnailBlob == null) {
@@ -63,7 +64,7 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                 return Blobs.createBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
                         + docType.getBigIcon()));
             } catch (IOException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
         }
         return thumbnailBlob;
@@ -89,7 +90,7 @@ public class ThumbnailAudioFactory implements ThumbnailFactory {
                     thumbnailBlob = Blobs.createBlob(framePic.getImageData());
                 }
             }
-        } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException | ClientException e) {
+        } catch (IOException | TagException | InvalidAudioFrameException | ReadOnlyFileException e) {
             log.warn("Unable to get the audio file cover art", e);
         }
         return thumbnailBlob;
