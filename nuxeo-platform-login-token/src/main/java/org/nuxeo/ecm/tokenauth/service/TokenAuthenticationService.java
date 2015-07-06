@@ -18,7 +18,6 @@ package org.nuxeo.ecm.tokenauth.service;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.ui.web.auth.token.TokenAuthenticator;
 import org.nuxeo.ecm.tokenauth.TokenAuthenticationException;
@@ -47,7 +46,7 @@ public interface TokenAuthenticationService extends Serializable {
      *
      * @throws TokenAuthenticationException if one of the required parameters is null or empty (all parameters are
      *             required except for the device description)
-     * @throws ClientRuntimeException if multiple tokens are found for the same triplet
+     * @throws NuxeoException if multiple tokens are found for the same triplet
      */
     String acquireToken(String userName, String applicationName, String deviceId, String deviceDescription,
             String permission) throws TokenAuthenticationException;
@@ -58,8 +57,7 @@ public interface TokenAuthenticationService extends Serializable {
      * @return null if such a token doesn't exist
      * @throws TokenAuthenticationException if one of the required parameters is null or empty (all parameters are
      *             required except for the device description)
-     * @throws ClientRuntimeException if multiple tokens are found for the same (userName, applicationName, deviceId)
-     *             triplet
+     * @throws NuxeoException if multiple tokens are found for the same (userName, applicationName, deviceId) triplet
      */
     String getToken(String userName, String applicationName, String deviceId) throws TokenAuthenticationException;
 

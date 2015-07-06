@@ -30,9 +30,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -168,10 +168,9 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     // Multiple tokens found for the same triplet, this is
                     // inconsistent
                     if (tokens.size() > 1) {
-                        throw new ClientRuntimeException(
-                                String.format(
-                                        "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
-                                        userName, applicationName, deviceId));
+                        throw new NuxeoException(String.format(
+                                "Found multiple tokens for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), this is inconsistent.",
+                                userName, applicationName, deviceId));
                     }
                     // Return token
                     log.debug(String.format(

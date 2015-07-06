@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.client.TokenCallback;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -86,7 +85,8 @@ public class TokenAuthenticationCallback implements TokenCallback {
             return tokenAuthenticationService.acquireToken(userName, applicationName, deviceId, deviceDescription,
                     permission);
         } catch (TokenAuthenticationException e) {
-            throw new ClientRuntimeException("Error while trying to get remote token.", e);
+            e.addInfo("Error while trying to get remote token");
+            throw e;
         }
     }
 
