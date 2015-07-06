@@ -98,7 +98,7 @@ public class AsyncEventExecutor {
 
         private static final long serialVersionUID = 1L;
 
-        private static final int DEFAULT_RETRY_COUNT = 1;
+        private static final int DEFAULT_RETRY_COUNT = 2;
 
         protected final String title;
 
