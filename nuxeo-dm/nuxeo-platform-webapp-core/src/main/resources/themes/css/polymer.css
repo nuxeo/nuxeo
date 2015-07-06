@@ -1,0 +1,61 @@
+/*
+Overriding the styles in conflicts between the default css framework and Polymer Paper elements
+=Reset inherited styles from the Nuxeo UI Framework
+author: lkemen@nuxeo.com
+*/
+
+/* =Reset inherited styles from the Nuxeo UI Framework */
+
+/* Buttons */
+.nx-wc .content.paper-button {
+  background-color: #f1f4f8;
+  box-shadow: none;
+  padding: .7em .57em; }
+
+.nx-wc .dataTable tr:hover .content.paper-button,
+.nx-wc .dataList tr:hover .content.paper-button,
+.nx-wc .dataOutput tr:hover .content.paper-button {
+  background-color: #fff; }
+
+.nx-wc .content.paper-button:hover,
+.nx-wc .colorful .content.paper-button,
+.nx-wc .dataTable tr:hover .content.paper-button:hover,
+.nx-wc .dataList tr:hover .content.paper-button:hover,
+.nx-wc .dataOutput tr:hover .content.paper-button:hover  {
+  background-color: #00adff;
+  color: #fff; }
+
+/* Dialog */
+.nx-wc paper-dialog > * {
+  margin-top: 20px;
+  padding: 0 24px; }
+
+ .nx-wc paper-dialog span {
+  margin: 0;
+  padding: 0; }
+
+.nx-wc paper-dialog .buttons {
+  margin: 0;
+  padding: 8px 8px 8px 24px;
+  position: relative; }
+
+.nx-wc paper-dialog > *:last-child {
+  margin-bottom: 24px; }
+
+/* Bubble Boxes */
+.nx-wc .bubbleBox .bubbleHeader h3 {
+  float: left; }
+
+.nx-wc .bubbleBox .bubbleHeader paper-button {
+  float: right; }
+
+/* Forms */
+.nx-wc textarea {
+  border: medium none;
+  box-shadow: none;
+  margin: auto;
+  min-height: auto; }
+
+iron-autogrow-textarea {
+  border-color: #888;
+  min-height: 5em; }

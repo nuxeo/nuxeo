@@ -22,7 +22,7 @@
       <paper-button raised="true" on-click="togglePopup">Update</paper-button>
     </template>
 
-    <paper-dialog id="popupRight">
+    <paper-dialog id="popupRight" modal>
       <template is="dom-if" if="{{!updatingACE}}">
         <h2>Add new permission</h2>
       </template>
@@ -31,47 +31,49 @@
       </template>
 
       <!-- Give acces to row -->
-      <div>
-        <div>Give access to</div>
+      <paper-dialog-scrollable>
         <div>
-          <paper-input
-            id="user"
-            value="{{params.username}}">
-          </paper-input>
+          <div>Give access to</div>
+          <div>
+            <paper-input
+              id="user"
+              value="{{params.username}}">
+            </paper-input>
+          </div>
         </div>
-      </div>
-      <div>
-        <div>Start</div>
         <div>
-          <paper-input id="begin" type="date" value="{{params.begin}}" />
+          <div>Start</div>
+          <div>
+            <paper-input id="begin" type="date" value="{{params.begin}}" />
+          </div>
         </div>
-      </div>
-      <div>
-        <div>End</div>
         <div>
-          <paper-input id="end" type="date" value="{{params.end}}" />
+          <div>End</div>
+          <div>
+            <paper-input id="end" type="date" value="{{params.end}}" />
+          </div>
         </div>
-      </div>
-      <!-- Allowed rights row -->
-      <div layout horizontal>
-        <div>Allowed rights</div>
-        <select id="allowedRights" flex two value="{{params.permission::change}}">
-          <option value="Read">Read</option>
-          <option value="Write">Write</option>
-          <option value="Everything">Everything</option>
-        </select>
-      </div>
+        <!-- Allowed rights row -->
+        <div layout horizontal>
+          <div>Allowed rights</div>
+          <select id="allowedRights" flex two value="{{params.permission::change}}">
+            <option value="Read">Read</option>
+            <option value="Write">Write</option>
+            <option value="Everything">Everything</option>
+          </select>
+        </div>
 
-      <div id="notification">
-        <template is="dom-if" if="{{showNotificationFields}}">
-          <div layout horizontal>
-            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify</paper-checkbox>
-          </div>
-          <div layout horizontal>
-            <iron-autogrow-textarea id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
-          </div>
-        </template>
-      </div>
+        <div id="notification">
+          <template is="dom-if" if="{{showNotificationFields}}">
+            <div layout horizontal>
+              <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify users by sending them a message </paper-checkbox>
+            </div>
+            <div layout horizontal>
+              <iron-autogrow-textarea placeholder="Hi! Could you comment this document and ..." id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+            </div>
+          </template>
+        </div>
+      </paper-dialog-scrollable>
 
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
@@ -80,7 +82,7 @@
             Create and add a new one
           </paper-button>
         </template>
-        <paper-button dialog-confirm on-tap="doSend">
+        <paper-button class="colorful" dialog-confirm on-tap="doSend">
           <template is="dom-if" if="{{!updatingACE}}">
             Create
           </template>

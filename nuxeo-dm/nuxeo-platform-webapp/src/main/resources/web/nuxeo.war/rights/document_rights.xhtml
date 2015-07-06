@@ -1,6 +1,6 @@
-<ui:composition
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets">
+<div xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  class="nx-wc">
 
   <script type="text/javascript"
     src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
@@ -23,15 +23,58 @@
 
     <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="extendedAcls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
-    <div>
-      <h2>Access rights defined explicitely on this folder</h2>
-      <template is="dom-if" if="{{hasEverythingRight}}">
-        <popup-right doc-id="#{currentDocument.id}" on-acecreated="refresh"></popup-right>
+    <div class="bubbleBox">
+      <div class="bubbleHeader">
+        <h3>Access rights defined explicitely on this folder</h3>
+        <template is="dom-if" if="{{hasEverythingRight}}">
+          <popup-right doc-id="#{currentDocument.id}" on-acecreated="refresh"></popup-right>
+        </template>
+      </div>
+      <template is="dom-if" if="{{hasLocalRights}}">
+        <div>
+          <table class="dataTable tmp-tab">
+            <tr class="tmp-tab">
+              <th class="tmp-tab">Username</th>
+              <th class="tmp-tab">Creator</th>
+              <th class="tmp-tab">Permission</th>
+              <th class="tmp-tab">Granted</th>
+              <th class="tmp-tab">Begin</th>
+              <th class="tmp-tab">End</th>
+              <th class="tmp-tab">Actions</th>
+            </tr>
+            <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
+              <tr>
+                <td><span>{{item.username}}</span></td>
+                <td><span>{{item.creator}}</span></td>
+                <td><span>{{item.permission}}</span></td>
+                <td><span>{{item.granted}}</span></td>
+                <td><span>{{format(item.begin)}}</span></td>
+                <td><span>{{format(item.end)}}</span></td>
+                <td>
+                  <template is="dom-if" if="{{hasEverythingRight}}">
+                    <popup-right doc-id="#{currentDocument.id}" ace="{{item}}" on-aceupdated="refresh"></popup-right>
+                    <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
+                  </template>
+                </td>
+              </tr>
+            </template>
+          </table>
+        </div>
+      </template>
+      <template is="dom-if" if="{{!hasLocalRights}}">
+        <p class="emptyResult">There is no specific right defined here.</p>
       </template>
     </div>
-    <template is="dom-if" if="{{hasLocalRights}}">
+
+    <div class="bubbleBox">
+      <div class="bubbleHeader">
+        <h3>Access rights coming from upper folders in the hierarchy</h3>
+        <template is="dom-if" if="{{!hasLocalRights}}">
+          <paper-button raised="true" class="button">Redefine Access Rights From This Folder Only</paper-button>
+        </template>
+      </div>
       <div>
-        <table class="tmp-tab">
+        <table class="dataTable tmp-tab">
           <tr class="tmp-tab">
             <th class="tmp-tab">Username</th>
             <th class="tmp-tab">Creator</th>
@@ -39,9 +82,8 @@
             <th class="tmp-tab">Granted</th>
             <th class="tmp-tab">Begin</th>
             <th class="tmp-tab">End</th>
-            <th class="tmp-tab">Actions</th>
           </tr>
-          <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
+          <template is="dom-repeat" items="{{inheritedRights}}">
             <tr>
               <td><span>{{item.username}}</span></td>
               <td><span>{{item.creator}}</span></td>
@@ -49,47 +91,11 @@
               <td><span>{{item.granted}}</span></td>
               <td><span>{{format(item.begin)}}</span></td>
               <td><span>{{format(item.end)}}</span></td>
-              <td>
-                <template is="dom-if" if="{{hasEverythingRight}}">
-                  <popup-right doc-id="#{currentDocument.id}" ace="{{item}}" on-aceupdated="refresh"></popup-right>
-                  <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
-                </template>
-              </td>
             </tr>
           </template>
         </table>
       </div>
-    </template>
-
-    <div>
-      <h2>Access rights coming from upper folders in the hierarchy</h2>
     </div>
-    <div>
-      <table>
-        <tr class="tmp-tab">
-          <th class="tmp-tab">Username</th>
-          <th class="tmp-tab">Creator</th>
-          <th class="tmp-tab">Permission</th>
-          <th class="tmp-tab">Granted</th>
-          <th class="tmp-tab">Begin</th>
-          <th class="tmp-tab">End</th>
-        </tr>
-        <template is="dom-repeat" items="{{inheritedRights}}">
-          <tr>
-            <td><span>{{item.username}}</span></td>
-            <td><span>{{item.creator}}</span></td>
-            <td><span>{{item.permission}}</span></td>
-            <td><span>{{item.granted}}</span></td>
-            <td><span>{{format(item.begin)}}</span></td>
-            <td><span>{{format(item.end)}}</span></td>
-          </tr>
-        </template>
-      </table>
-    </div>
-
-    <template is="dom-if" if="{{!hasLocalRights}}">
-      <paper-button raised="true">Redefine Access Rights From This Folder Only</paper-button>
-    </template>
 
     <popup-confirm id="confirmation">
       <h2>Confirm ACE deletion?</h2>
@@ -141,4 +147,4 @@
   })();
   //]]></script>
 
-</ui:composition>
+</div>
