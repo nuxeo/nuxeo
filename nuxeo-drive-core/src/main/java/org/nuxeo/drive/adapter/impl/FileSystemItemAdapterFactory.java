@@ -18,9 +18,8 @@ package org.nuxeo.drive.adapter.impl;
 
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -35,9 +34,10 @@ public class FileSystemItemAdapterFactory implements DocumentAdapterFactory {
     public Object getAdapter(DocumentModel doc, Class<?> itf) {
         try {
             return getService().getFileSystemItem(doc);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(String.format("Error while trying to get adapter of class %s for doc %s.",
-                    itf.getName(), doc.getId()), e);
+        } catch (NuxeoException e) {
+            e.addInfo(String.format("Error while trying to get adapter of class %s for doc %s.", itf.getName(),
+                    doc.getId()));
+            throw e;
         }
     }
 

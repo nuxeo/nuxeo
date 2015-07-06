@@ -30,8 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.impl.FileSystemItemChangeImpl;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -81,10 +79,6 @@ public class MockChangeFinder implements FileSystemChangeFinder {
             for (String repositoryName : repositoryManager.getRepositoryNames()) {
                 try (CoreSession repoSession = CoreInstance.openCoreSession(repositoryName, principal)) {
                     docChanges.addAll(getDocumentChanges(repoSession, query, limit));
-                } catch (TooManyChangesException e) {
-                    throw e;
-                } catch (Exception e) {
-                    throw new ClientRuntimeException(e);
                 }
             }
         }
@@ -118,29 +112,22 @@ public class MockChangeFinder implements FileSystemChangeFinder {
 
     protected List<FileSystemItemChange> getDocumentChanges(CoreSession session, String query, int limit)
             throws TooManyChangesException {
-
-        try {
-            List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
-            DocumentModelList queryResult = session.query(query, limit);
-            if (queryResult.size() >= limit) {
-                throw new TooManyChangesException("Too many document changes found in the repository.");
-            }
-            for (DocumentModel doc : queryResult) {
-                String repositoryId = session.getRepositoryName();
-                String eventId = "documentChanged";
-                long eventDate = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
-                String docUuid = doc.getId();
-                FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
-                if (fsItem != null) {
-                    docChanges.add(new FileSystemItemChangeImpl(eventId, eventDate, repositoryId, docUuid, fsItem));
-                }
-            }
-            return docChanges;
-        } catch (TooManyChangesException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        List<FileSystemItemChange> docChanges = new ArrayList<FileSystemItemChange>();
+        DocumentModelList queryResult = session.query(query, limit);
+        if (queryResult.size() >= limit) {
+            throw new TooManyChangesException("Too many document changes found in the repository.");
         }
+        for (DocumentModel doc : queryResult) {
+            String repositoryId = session.getRepositoryName();
+            String eventId = "documentChanged";
+            long eventDate = ((Calendar) doc.getPropertyValue("dc:modified")).getTimeInMillis();
+            String docUuid = doc.getId();
+            FileSystemItem fsItem = doc.getAdapter(FileSystemItem.class);
+            if (fsItem != null) {
+                docChanges.add(new FileSystemItemChangeImpl(eventId, eventDate, repositoryId, docUuid, fsItem));
+            }
+        }
+        return docChanges;
     }
 
     @Override

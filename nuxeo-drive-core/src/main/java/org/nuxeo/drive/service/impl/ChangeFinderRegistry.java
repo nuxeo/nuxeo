@@ -20,7 +20,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -51,7 +51,7 @@ public class ChangeFinderRegistry extends ContributionFragmentRegistry<ChangeFin
             }
             changeFinder = contrib.getChangeFinder();
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new ClientRuntimeException("Cannot update changeFinder contribution.", e);
+            throw new NuxeoException("Cannot update changeFinder contribution.", e);
         }
     }
 

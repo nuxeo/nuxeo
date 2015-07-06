@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -44,7 +44,7 @@ public class TopLevelFolderItemFactoryRegistry extends
     public String getContributionId(TopLevelFolderItemFactoryDescriptor contrib) {
         String name = contrib.getName();
         if (StringUtils.isEmpty(name)) {
-            throw new ClientRuntimeException("Cannot register topLevelFolderItemFactory without a name.");
+            throw new NuxeoException("Cannot register topLevelFolderItemFactory without a name.");
         }
         return name;
     }
@@ -59,7 +59,7 @@ public class TopLevelFolderItemFactoryRegistry extends
             }
             factories.put(id, contrib.getFactory());
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new ClientRuntimeException("Cannot update topLevelFolderItemFactory contribution.", e);
+            throw new NuxeoException("Cannot update topLevelFolderItemFactory contribution.", e);
         }
     }
 

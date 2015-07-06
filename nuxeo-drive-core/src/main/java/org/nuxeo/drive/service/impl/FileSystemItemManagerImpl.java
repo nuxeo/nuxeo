@@ -39,9 +39,9 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -79,7 +79,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
                 }
                 t.registerSynchronization(new SessionCloser(newSession, sessionKey));
             } catch (SystemException | NamingException | RollbackException e) {
-                throw new ClientRuntimeException(e);
+                throw new NuxeoException(e);
             }
             session = newSession;
         }

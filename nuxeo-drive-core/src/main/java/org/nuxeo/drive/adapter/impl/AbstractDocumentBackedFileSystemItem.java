@@ -31,7 +31,6 @@ import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -301,17 +300,11 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
     /*---------- Needed for JSON deserialization ----------*/
     @Override
     protected void setId(String id) {
-        try {
-            super.setId(id);
-            String[] idFragments = parseFileSystemId(id);
-            this.factoryName = idFragments[0];
-            this.repositoryName = idFragments[1];
-            this.docId = idFragments[2];
-
-        } catch (ClientException e) {
-            throw new ClientRuntimeException("Cannot set id as it cannot be parsed.", e);
-        }
-
+        super.setId(id);
+        String[] idFragments = parseFileSystemId(id);
+        this.factoryName = idFragments[0];
+        this.repositoryName = idFragments[1];
+        this.docId = idFragments[2];
     }
 
     protected String[] parseFileSystemId(String id) {

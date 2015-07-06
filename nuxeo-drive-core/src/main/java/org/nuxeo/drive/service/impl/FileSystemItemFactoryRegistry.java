@@ -32,7 +32,7 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -51,7 +51,7 @@ public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<
     public String getContributionId(FileSystemItemFactoryDescriptor contrib) {
         String name = contrib.getName();
         if (StringUtils.isEmpty(name)) {
-            throw new ClientRuntimeException("Cannot register fileSystemItemFactory without a name.");
+            throw new NuxeoException("Cannot register fileSystemItemFactory without a name.");
         }
         return name;
     }
@@ -86,7 +86,7 @@ public class FileSystemItemFactoryRegistry extends ContributionFragmentRegistry<
             ObjectInputStream ois = new ObjectInputStream(bis);
             return (FileSystemItemFactoryDescriptor) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
-            throw new ClientRuntimeException("Cannot clone contribution " + orig, e);
+            throw new NuxeoException("Cannot clone contribution " + orig, e);
         }
     }
 
