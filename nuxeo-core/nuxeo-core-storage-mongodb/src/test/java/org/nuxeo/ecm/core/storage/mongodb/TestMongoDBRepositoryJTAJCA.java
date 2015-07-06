@@ -28,12 +28,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.api.local.LocalException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
@@ -43,7 +43,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
 
-    private static final String NO_TX_CANNOT_RECONN = "No transaction, cannot reconnect";
+    private static final String NO_TX_CANNOT_RECONN = "No transaction active, cannot reconnect";
 
     @Before
     public void checkAssumptions() {
@@ -154,7 +154,7 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
         try {
             session.getRootDocument();
             fail("should throw");
-        } catch (ClientRuntimeException e) {
+        } catch (LocalException e) {
             assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
         }
     }
@@ -266,7 +266,7 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
         try {
             closedSession.getRootDocument();
             fail("should throw");
-        } catch (ClientRuntimeException e) {
+        } catch (LocalException e) {
             assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
         }
     }

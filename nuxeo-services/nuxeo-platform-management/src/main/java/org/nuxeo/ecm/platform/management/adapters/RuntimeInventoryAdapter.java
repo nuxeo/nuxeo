@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentName;
@@ -80,7 +80,7 @@ public class RuntimeInventoryAdapter implements RuntimeInventoryMBean {
         try {
             return runtimeService.getHome().getCanonicalPath();
         } catch (IOException e) {
-            throw new ClientRuntimeException("cannot get path", e);
+            throw new NuxeoException("cannot get path", e);
         }
     }
 

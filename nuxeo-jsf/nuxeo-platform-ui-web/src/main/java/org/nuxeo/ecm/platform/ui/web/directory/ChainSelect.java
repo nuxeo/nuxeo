@@ -41,7 +41,7 @@ import javax.faces.context.ResponseWriter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 
@@ -383,8 +383,7 @@ public class ChainSelect extends UIInput implements ResettableComponent {
 
     public Selection getSelection(int i) {
         if (selections == null) {
-            throw new ClientRuntimeException("ChainSelect is mis-behaving, "
-                    + "it's probable you're experiencing issue NXP-5762");
+            throw new NuxeoException("ChainSelect is mis-behaving, it's probable you're experiencing issue NXP-5762");
         }
         return selections[i];
     }

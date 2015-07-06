@@ -22,8 +22,6 @@ import java.util.Set;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DataModelMap;
@@ -91,11 +89,7 @@ public class ShallowDocumentModel implements DocumentModel {
         contextData = doc.getContextData();
         facets = doc.getFacets();
         if (doc.isLifeCycleLoaded()) {
-            try {
-                lifecycleState = doc.getCurrentLifeCycleState();
-            } catch (ClientException e) {
-                throw new ClientRuntimeException("Cannot get lifecycle state", e);
-            }
+            lifecycleState = doc.getCurrentLifeCycleState();
         } else {
             lifecycleState = null;
         }

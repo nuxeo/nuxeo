@@ -25,9 +25,9 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -91,8 +91,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 buildQuery();
             }
             if (query == null) {
-                throw new ClientRuntimeException(String.format("Cannot perform null query: check provider '%s'",
-                        getName()));
+                throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
             }
 
             currentItems = new ArrayList<Map<String, Serializable>>();
@@ -100,7 +99,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
             Map<String, Serializable> props = getProperties();
             CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
             if (coreSession == null) {
-                throw new ClientRuntimeException("cannot find core session");
+                throw new NuxeoException("cannot find core session");
             }
 
             IterableQueryResult result = null;
@@ -186,26 +185,21 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
     }
 
     protected void buildQuery() {
-        try {
-            PageProviderDefinition def = getDefinition();
-            String originalQuery = def.getPattern();
+        PageProviderDefinition def = getDefinition();
+        String originalQuery = def.getPattern();
 
-            SortInfo[] sortArray = null;
-            if (sortInfos != null) {
-                sortArray = sortInfos.toArray(new SortInfo[] {});
-            }
-            String newQuery = NXQLQueryBuilder.getQuery(originalQuery, getParameters(),
-                    def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
-                    sortArray);
-
-            if (query != null && newQuery != null && !newQuery.equals(query)) {
-                // query has changed => refresh
-                refresh();
-            }
-            query = newQuery;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        SortInfo[] sortArray = null;
+        if (sortInfos != null) {
+            sortArray = sortInfos.toArray(new SortInfo[] {});
         }
+        String newQuery = NXQLQueryBuilder.getQuery(originalQuery, getParameters(), def.getQuotePatternParameters(),
+                def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
+
+        if (query != null && newQuery != null && !newQuery.equals(query)) {
+            // query has changed => refresh
+            refresh();
+        }
+        query = newQuery;
     }
 
     @Override

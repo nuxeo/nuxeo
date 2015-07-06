@@ -14,7 +14,6 @@
 package org.nuxeo.ecm.core.versioning;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.runtime.api.Framework;
@@ -49,12 +48,7 @@ public class VersioningDocumentAdapter implements VersioningDocument {
     }
 
     private long getValidVersionNumber(String propName) {
-        Object propVal;
-        try {
-            propVal = doc.getPropertyValue(propName);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        Object propVal = doc.getPropertyValue(propName);
         return (propVal == null || !(propVal instanceof Long)) ? 0 : ((Long) propVal).longValue();
     }
 

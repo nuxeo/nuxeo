@@ -25,10 +25,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -154,7 +154,7 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
         Map<String, Serializable> props = getProperties();
         CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
         if (coreSession == null) {
-            throw new ClientRuntimeException("cannot find core session");
+            throw new NuxeoException("cannot find core session");
         }
         return coreSession;
     }

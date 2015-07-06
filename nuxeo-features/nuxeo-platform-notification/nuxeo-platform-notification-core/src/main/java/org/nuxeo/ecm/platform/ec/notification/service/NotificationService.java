@@ -34,11 +34,11 @@ import javax.mail.MessagingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -363,8 +363,9 @@ public class NotificationService extends DefaultComponent implements Notificatio
 
         try {
             doFireEvent(event);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException("Cannot fire event " + event, e);
+        } catch (NuxeoException e) {
+            e.addInfo("Cannot fire event " + event);
+            throw e;
         }
     }
 

@@ -12,6 +12,12 @@
  */
 package org.nuxeo.ecm.core.api;
 
+/**
+ * Deprecated and unused in Nuxeo, see NXP-17449.
+ *
+ * @deprecated since 7.4
+ */
+@Deprecated
 public class ClientRuntimeException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;

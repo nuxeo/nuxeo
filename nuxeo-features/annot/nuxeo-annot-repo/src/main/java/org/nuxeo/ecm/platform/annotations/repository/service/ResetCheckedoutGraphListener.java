@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 import java.net.URI;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -57,12 +55,7 @@ public class ResetCheckedoutGraphListener implements GraphManagerEventListener {
         final DocumentModel doc = (DocumentModel) context.getArguments()[0];
         final String repo = doc.getRepositoryName();
 
-        try {
-            removeGraphFor(session, repo, doc, (NuxeoPrincipal) context.getPrincipal());
-        } catch (ClientException e) {
-            throw new ClientRuntimeException("Cannot remove annotations from checked-out version of "
-                    + doc.getPathAsString(), e);
-        }
+        removeGraphFor(session, repo, doc, (NuxeoPrincipal) context.getPrincipal());
     }
 
     protected void removeGraphFor(CoreSession session, String repositoryName, DocumentModel doc, NuxeoPrincipal user)

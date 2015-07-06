@@ -14,8 +14,6 @@
 
 package org.nuxeo.ecm.core.event.test;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -37,15 +35,11 @@ public class ShallowFilterPostCommitEventListener implements PostCommitFiltering
             return false;
         }
         DocumentEventContext ctx = (DocumentEventContext) event.getContext();
-        try {
-            DocumentModel doc = ctx.getSourceDocument();
-            if (doc == null) {
-                return false;
-            }
-            return doc.getCurrentLifeCycleState().equals("undefined");
-        } catch (ClientException e) {
-            throw new ClientRuntimeException("Cannot access to shallowed property");
+        DocumentModel doc = ctx.getSourceDocument();
+        if (doc == null) {
+            return false;
         }
+        return doc.getCurrentLifeCycleState().equals("undefined");
     }
 
 }

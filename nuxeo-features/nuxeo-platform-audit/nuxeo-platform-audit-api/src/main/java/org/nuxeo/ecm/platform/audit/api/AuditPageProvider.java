@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -212,21 +210,15 @@ public class AuditPageProvider extends AbstractPageProvider<LogEntry> implements
                 for (PredicateDefinition predicate : predicates) {
 
                     // extract data from DocumentModel
-                    Object[] val;
-                    try {
-                        PredicateFieldDefinition[] fieldDef = predicate.getValues();
-                        val = new Object[fieldDef.length];
-
-                        for (int fidx = 0; fidx < fieldDef.length; fidx++) {
-                            if (fieldDef[fidx].getXpath() != null) {
-                                val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
-                            } else {
-                                val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(),
-                                        fieldDef[fidx].getName());
-                            }
+                    PredicateFieldDefinition[] fieldDef = predicate.getValues();
+                    Object[] val = new Object[fieldDef.length];
+                    for (int fidx = 0; fidx < fieldDef.length; fidx++) {
+                        if (fieldDef[fidx].getXpath() != null) {
+                            val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
+                        } else {
+                            val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(),
+                                    fieldDef[fidx].getName());
                         }
-                    } catch (ClientException e) {
-                        throw new ClientRuntimeException(e);
                     }
 
                     if (!isNonNullParam(val)) {

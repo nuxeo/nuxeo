@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.platform.content.template.tests;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandler;
@@ -37,13 +35,9 @@ public class SimplePostContentCreationHandler implements PostContentCreationHand
 
     @Override
     public void execute(CoreSession session) {
-        try {
-            DocumentModel root = session.getRootDocument();
-            DocumentModel doc = session.createDocumentModel(root.getPathAsString(), DOC_NAME, DOC_TYPE);
-            session.createDocument(doc);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        DocumentModel root = session.getRootDocument();
+        DocumentModel doc = session.createDocumentModel(root.getPathAsString(), DOC_NAME, DOC_TYPE);
+        session.createDocument(doc);
     }
 
 }

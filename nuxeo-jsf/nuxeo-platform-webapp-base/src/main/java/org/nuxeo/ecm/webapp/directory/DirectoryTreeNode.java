@@ -36,7 +36,6 @@ import org.jboss.seam.Component;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
@@ -364,15 +363,11 @@ public class DirectoryTreeNode {
         }
         String aPath = null;
         if (config.hasContentViewSupport()) {
-            try {
-                DocumentModel searchDoc = getContentViewSearchDocumentModel();
-                if (searchDoc != null) {
-                    aPath = (String) searchDoc.getProperty(config.getSchemaName(), config.getFieldName());
-                } else {
-                    log.error("Cannot perform path preprocessing: " + "search document model is null");
-                }
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
+            DocumentModel searchDoc = getContentViewSearchDocumentModel();
+            if (searchDoc != null) {
+                aPath = (String) searchDoc.getProperty(config.getSchemaName(), config.getFieldName());
+            } else {
+                log.error("Cannot perform path preprocessing: " + "search document model is null");
             }
         }
         if (aPath != null && aPath != "") {

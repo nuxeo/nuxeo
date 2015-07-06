@@ -23,8 +23,6 @@ import java.util.List;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -82,18 +80,13 @@ public class PageProviderQueryBuilder {
         // Process predicates
         for (PredicateDefinition predicate : whereClause.getPredicates()) {
             PredicateFieldDefinition[] fieldDef = predicate.getValues();
-            Object[] values;
-            try {
-                values = new Object[fieldDef.length];
-                for (int fidx = 0; fidx < fieldDef.length; fidx++) {
-                    if (fieldDef[fidx].getXpath() != null) {
-                        values[fidx] = model.getPropertyValue(fieldDef[fidx].getXpath());
-                    } else {
-                        values[fidx] = model.getProperty(fieldDef[fidx].getSchema(), fieldDef[fidx].getName());
-                    }
+            Object[] values = new Object[fieldDef.length];
+            for (int fidx = 0; fidx < fieldDef.length; fidx++) {
+                if (fieldDef[fidx].getXpath() != null) {
+                    values[fidx] = model.getPropertyValue(fieldDef[fidx].getXpath());
+                } else {
+                    values[fidx] = model.getProperty(fieldDef[fidx].getSchema(), fieldDef[fidx].getName());
                 }
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
             }
             if (!isNonNullParam(values)) {
                 // skip predicate where all values are null

@@ -25,8 +25,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.event.Event;
@@ -46,26 +44,14 @@ public class DublinCoreStorageService extends DefaultComponent {
     public static final String ID = "DublinCoreStorageService";
 
     public void setCreationDate(DocumentModel doc, Calendar creationDate, Event event) {
-        try {
-            doc.setProperty("dublincore", "created", creationDate);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        doc.setProperty("dublincore", "created", creationDate);
         addContributor(doc, event);
     }
 
     public void setModificationDate(DocumentModel doc, Calendar modificationDate, Event event) {
-        try {
-            doc.setProperty("dublincore", "modified", modificationDate);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-        try {
-            if (doc.getProperty("dublincore", "created") == null) {
-                setCreationDate(doc, modificationDate, event);
-            }
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        doc.setProperty("dublincore", "modified", modificationDate);
+        if (doc.getProperty("dublincore", "created") == null) {
+            setCreationDate(doc, modificationDate, event);
         }
     }
 
@@ -87,12 +73,7 @@ public class DublinCoreStorageService extends DefaultComponent {
             }
         }
 
-        String[] contributorsArray;
-        try {
-            contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        String[] contributorsArray = (String[]) doc.getProperty("dublincore", "contributors");
 
         List<String> contributorsList = new ArrayList<String>();
 
@@ -105,11 +86,7 @@ public class DublinCoreStorageService extends DefaultComponent {
             SchemaManager schemaMgr = Framework.getLocalService(SchemaManager.class);
             if (schemaMgr.getSchema("dublincore").getField("creator") != null) {
                 // First time only => creator
-                try {
-                    doc.setProperty("dublincore", "creator", principalName);
-                } catch (ClientException e) {
-                    throw new ClientRuntimeException(e);
-                }
+                doc.setProperty("dublincore", "creator", principalName);
             }
         }
 
@@ -117,26 +94,14 @@ public class DublinCoreStorageService extends DefaultComponent {
             contributorsList.add(principalName);
             String[] contributorListIn = new String[contributorsList.size()];
             contributorsList.toArray(contributorListIn);
-            try {
-                doc.setProperty("dublincore", "contributors", contributorListIn);
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
-            }
+            doc.setProperty("dublincore", "contributors", contributorListIn);
         }
 
-        try {
-            doc.setProperty("dublincore", "lastContributor", principalName);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        doc.setProperty("dublincore", "lastContributor", principalName);
     }
 
     public void setIssuedDate(DocumentModel doc, Calendar issuedDate) {
-        try {
-            doc.setPropertyValue("dc:issued", issuedDate);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        doc.setPropertyValue("dc:issued", issuedDate);
     }
 
 }

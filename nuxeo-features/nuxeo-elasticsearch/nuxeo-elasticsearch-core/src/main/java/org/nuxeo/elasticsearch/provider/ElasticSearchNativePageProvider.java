@@ -27,10 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
@@ -126,22 +126,18 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
 
     protected QueryBuilder makeQueryBuilder() {
         QueryBuilder ret;
-        try {
-            PageProviderDefinition def = getDefinition();
-            if (def.getWhereClause() == null) {
-                ret = PageProviderQueryBuilder.makeQuery(def.getPattern(), getParameters(),
-                        def.getQuotePatternParameters(), def.getEscapePatternParameters(), isNativeQuery());
-            } else {
-                DocumentModel searchDocumentModel = getSearchDocumentModel();
-                if (searchDocumentModel == null) {
-                    throw new ClientException(String.format("Cannot build query of provider '%s': "
-                            + "no search document model is set", getName()));
-                }
-                ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
-                        isNativeQuery());
+        PageProviderDefinition def = getDefinition();
+        if (def.getWhereClause() == null) {
+            ret = PageProviderQueryBuilder.makeQuery(def.getPattern(), getParameters(), def.getQuotePatternParameters(),
+                    def.getEscapePatternParameters(), isNativeQuery());
+        } else {
+            DocumentModel searchDocumentModel = getSearchDocumentModel();
+            if (searchDocumentModel == null) {
+                throw new ClientException(String.format(
+                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+            ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
+                    isNativeQuery());
         }
         return ret;
     }
@@ -164,7 +160,7 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         Map<String, Serializable> props = getProperties();
         CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
         if (coreSession == null) {
-            throw new ClientRuntimeException("cannot find core session");
+            throw new NuxeoException("cannot find core session");
         }
         return coreSession;
     }

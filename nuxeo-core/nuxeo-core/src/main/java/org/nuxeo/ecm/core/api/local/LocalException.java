@@ -13,9 +13,9 @@
  *******************************************************************************/
 package org.nuxeo.ecm.core.api.local;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
-public class LocalException extends ClientRuntimeException {
+public class LocalException extends NuxeoException {
 
     public LocalException(String message, Throwable t) {
         super(message, t);

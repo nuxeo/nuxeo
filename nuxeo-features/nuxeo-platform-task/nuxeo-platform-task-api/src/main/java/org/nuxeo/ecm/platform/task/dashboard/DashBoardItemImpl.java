@@ -19,8 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.task.Task;
@@ -61,30 +59,26 @@ public class DashBoardItemImpl extends AbstractDashBoardItemImpl implements Dash
     }
 
     public DashBoardItemImpl(Task task, DocumentModel document, Locale locale) {
-        try {
-            this.task = task;
-            this.document = document;
-            this.locale = locale;
-            id = task.getId();
-            name = task.getName();
-            description = task.getDescription();
-            dueDate = task.getDueDate();
-            startDate = task.getCreated();
-            directive = task.getDirective();
-            List<TaskComment> comments = task.getComments();
-            if (comments != null && !comments.isEmpty()) {
-                comment = comments.get(comments.size() - 1).getText();
-            } else {
-                comment = null;
-            }
-            if (dueDate != null) {
-                Date today = new Date();
-                expired = dueDate.before(today);
-            } else {
-                expired = false;
-            }
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        this.task = task;
+        this.document = document;
+        this.locale = locale;
+        id = task.getId();
+        name = task.getName();
+        description = task.getDescription();
+        dueDate = task.getDueDate();
+        startDate = task.getCreated();
+        directive = task.getDirective();
+        List<TaskComment> comments = task.getComments();
+        if (comments != null && !comments.isEmpty()) {
+            comment = comments.get(comments.size() - 1).getText();
+        } else {
+            comment = null;
+        }
+        if (dueDate != null) {
+            Date today = new Date();
+            expired = dueDate.before(today);
+        } else {
+            expired = false;
         }
     }
 

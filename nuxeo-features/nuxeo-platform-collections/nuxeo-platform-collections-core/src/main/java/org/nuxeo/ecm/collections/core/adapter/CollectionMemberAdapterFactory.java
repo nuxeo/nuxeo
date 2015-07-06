@@ -17,8 +17,8 @@
 package org.nuxeo.ecm.collections.core.adapter;
 
 import org.nuxeo.ecm.collections.api.CollectionConstants;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
 /**
@@ -31,7 +31,7 @@ public class CollectionMemberAdapterFactory implements DocumentAdapterFactory {
         if (doc.hasSchema(CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME)) {
             return new CollectionMember(doc);
         }
-        throw new ClientRuntimeException(String.format("The document %s does not have the %s schema",
+        throw new NuxeoException(String.format("The document %s does not have the %s schema",
                 doc.getPath().toString(), CollectionConstants.COLLECTION_MEMBER_SCHEMA_NAME));
     }
 

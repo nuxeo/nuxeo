@@ -23,8 +23,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.comment.CommentProcessorHelper;
@@ -143,7 +143,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         if (backend instanceof ESAuditBackend) {
             return (ESAuditBackend) backend;
         }
-        throw new ClientRuntimeException(
+        throw new NuxeoException(
                 "Unable to use ESAuditPageProvider if audit service is not configured to run with ElasticSearch");
     }
 

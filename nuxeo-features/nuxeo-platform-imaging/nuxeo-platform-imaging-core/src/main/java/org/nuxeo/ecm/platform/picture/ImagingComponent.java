@@ -46,9 +46,9 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.BlobWrapper;
@@ -464,7 +464,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             }
             return viewBlob;
         } catch (OperationException e) {
-            throw new ClientRuntimeException(e);
+            throw new NuxeoException(e);
         } finally {
             if (txWasActive && !TransactionHelper.isTransactionActiveOrMarkedRollback()) {
                 TransactionHelper.startTransaction();

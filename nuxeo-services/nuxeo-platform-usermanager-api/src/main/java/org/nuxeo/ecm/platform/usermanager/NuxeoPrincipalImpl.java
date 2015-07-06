@@ -38,8 +38,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -132,11 +130,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public void setCompany(String company) {
-        try {
-            dataModel.setData(config.companyKey, company);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dataModel.setData(config.companyKey, company);
     }
 
     @Override
@@ -150,11 +144,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public void setFirstName(String firstName) {
-        try {
-            dataModel.setData(config.firstNameKey, firstName);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dataModel.setData(config.firstNameKey, firstName);
     }
 
     @Override
@@ -168,21 +158,13 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public void setLastName(String lastName) {
-        try {
-            dataModel.setData(config.lastNameKey, lastName);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dataModel.setData(config.lastNameKey, lastName);
     }
 
     // impossible to modify the name - it is PK
     @Override
     public void setName(String name) {
-        try {
-            dataModel.setData(config.nameKey, name);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dataModel.setData(config.nameKey, name);
     }
 
     @Override
@@ -200,17 +182,9 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
                     groupsToWrite.add(group);
                 }
             }
-            try {
-                dataModel.setData(config.groupsKey, groupsToWrite);
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            dataModel.setData(config.groupsKey, groupsToWrite);
         } else {
-            try {
-                dataModel.setData(config.groupsKey, groups);
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            dataModel.setData(config.groupsKey, groups);
         }
     }
 
@@ -248,11 +222,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public void setPassword(String password) {
-        try {
-            dataModel.setData(config.passwordKey, password);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dataModel.setData(config.passwordKey, password);
     }
 
     @Override
@@ -265,11 +235,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public String toString() {
-        try {
-            return (String) dataModel.getData(config.nameKey);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (String) dataModel.getData(config.nameKey);
     }
 
     @Override
@@ -293,11 +259,7 @@ public class NuxeoPrincipalImpl implements NuxeoPrincipal {
 
     @Override
     public void setEmail(String email) {
-        try {
-            dataModel.setData(config.emailKey, email);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dataModel.setData(config.emailKey, email);
     }
 
     @Override

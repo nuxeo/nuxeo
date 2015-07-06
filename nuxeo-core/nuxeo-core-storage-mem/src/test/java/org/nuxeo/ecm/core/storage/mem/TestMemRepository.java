@@ -44,7 +44,6 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -1681,7 +1680,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         try {
             doc.addFacet("nosuchfacet");
             fail();
-        } catch (ClientRuntimeException e) {
+        } catch (IllegalArgumentException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("No such facet"));
         }
         assertEquals(baseFacets, doc.getFacets());

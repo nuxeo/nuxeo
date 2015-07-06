@@ -23,10 +23,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -182,86 +181,82 @@ public class CreateTaskUnrestricted extends UnrestrictedSessionRunner {
                         parentPath);
             }
         } else {
-            try {
-                // use task type as a docName (is actually the nodeId so it
-                // doesn't contain "/" characters), but fallback on task name
-                // if task type is null (for old API kept for compat)
-                String docName = taskType == null ? taskName : taskType;
-                DocumentModel taskDocument = session.createDocumentModel(parentPath, docName, taskDocumentType);
-                Task task = taskDocument.getAdapter(Task.class);
-                if (task == null) {
-                    throw new ClientRuntimeException("Document " + taskDocumentType + "  can not be adapted to a Task");
-                }
-                task.setName(taskName);
-                task.setType(taskType);
-                task.setProcessId(processId);
-                task.setCreated(new Date());
-                if (principal != null) {
-                    String username = principal.getActingUser();
-                    task.setInitiator(username);
-                }
-                task.setActors(prefixedActorIds);
-                task.setDueDate(dueDate);
-
-                if (documents != null) {
-                    List<String> docIds = new ArrayList<String>();
-                    for (DocumentModel doc : documents) {
-                        docIds.add(doc.getId());
-                    }
-                    task.setTargetDocumentsIds(docIds);
-                }
-                task.setDirective(directive);
-
-                if (!StringUtils.isEmpty(comment)) {
-                    task.addComment(principal.getName(), comment);
-                }
-
-                // add variables
-                Map<String, String> variables = new HashMap<String, String>();
-                if (document != null) {
-                    variables.put(TaskService.VariableName.documentId.name(), document.getId());
-                    variables.put(TaskService.VariableName.documentRepositoryName.name(), document.getRepositoryName());
-                }
-                variables.put(TaskService.VariableName.directive.name(), directive);
-                variables.put(TaskService.VariableName.createdFromTaskService.name(), "true");
-                if (taskVariables != null) {
-                    variables.putAll(taskVariables);
-                }
-                task.setVariables(variables);
-
-                // create document in order to set its ACP
-                taskDocument = session.createDocument(taskDocument);
-
-                // re-fetch task from task document to set its id
-                task = taskDocument.getAdapter(Task.class);
-
-                // Set rights
-                List<String> actorIds = new ArrayList<String>();
-                for (String actor : prefixedActorIds) {
-                    if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
-                            || actor.startsWith(NotificationConstants.USER_PREFIX)) {
-                        // prefixed assignees with "user:" or "group:"
-                        actorIds.add(actor.substring(actor.indexOf(":") + 1));
-                    } else {
-                        actorIds.add(actor);
-                    }
-                }
-                ACP acp = taskDocument.getACP();
-                ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-                if (principal != null) {
-                    acl.add(new ACE(principal.getName(), SecurityConstants.EVERYTHING, true));
-
-                }
-                for (String actorId : actorIds) {
-                    acl.add(new ACE(actorId, SecurityConstants.EVERYTHING, true));
-                }
-                acp.addACL(acl);
-                taskDocument.setACP(acp, true);
-                taskDocument = session.saveDocument(taskDocument);
-                tasks.add(task);
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
+            // use task type as a docName (is actually the nodeId so it
+            // doesn't contain "/" characters), but fallback on task name
+            // if task type is null (for old API kept for compat)
+            String docName = taskType == null ? taskName : taskType;
+            DocumentModel taskDocument = session.createDocumentModel(parentPath, docName, taskDocumentType);
+            Task task = taskDocument.getAdapter(Task.class);
+            if (task == null) {
+                throw new NuxeoException("Document " + taskDocumentType + "  can not be adapted to a Task");
             }
+            task.setName(taskName);
+            task.setType(taskType);
+            task.setProcessId(processId);
+            task.setCreated(new Date());
+            if (principal != null) {
+                String username = principal.getActingUser();
+                task.setInitiator(username);
+            }
+            task.setActors(prefixedActorIds);
+            task.setDueDate(dueDate);
+
+            if (documents != null) {
+                List<String> docIds = new ArrayList<String>();
+                for (DocumentModel doc : documents) {
+                    docIds.add(doc.getId());
+                }
+                task.setTargetDocumentsIds(docIds);
+            }
+            task.setDirective(directive);
+
+            if (!StringUtils.isEmpty(comment)) {
+                task.addComment(principal.getName(), comment);
+            }
+
+            // add variables
+            Map<String, String> variables = new HashMap<String, String>();
+            if (document != null) {
+                variables.put(TaskService.VariableName.documentId.name(), document.getId());
+                variables.put(TaskService.VariableName.documentRepositoryName.name(), document.getRepositoryName());
+            }
+            variables.put(TaskService.VariableName.directive.name(), directive);
+            variables.put(TaskService.VariableName.createdFromTaskService.name(), "true");
+            if (taskVariables != null) {
+                variables.putAll(taskVariables);
+            }
+            task.setVariables(variables);
+
+            // create document in order to set its ACP
+            taskDocument = session.createDocument(taskDocument);
+
+            // re-fetch task from task document to set its id
+            task = taskDocument.getAdapter(Task.class);
+
+            // Set rights
+            List<String> actorIds = new ArrayList<String>();
+            for (String actor : prefixedActorIds) {
+                if (actor.startsWith(NotificationConstants.GROUP_PREFIX)
+                        || actor.startsWith(NotificationConstants.USER_PREFIX)) {
+                    // prefixed assignees with "user:" or "group:"
+                    actorIds.add(actor.substring(actor.indexOf(":") + 1));
+                } else {
+                    actorIds.add(actor);
+                }
+            }
+            ACP acp = taskDocument.getACP();
+            ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+            if (principal != null) {
+                acl.add(new ACE(principal.getName(), SecurityConstants.EVERYTHING, true));
+
+            }
+            for (String actorId : actorIds) {
+                acl.add(new ACE(actorId, SecurityConstants.EVERYTHING, true));
+            }
+            acp.addACL(acl);
+            taskDocument.setACP(acp, true);
+            taskDocument = session.saveDocument(taskDocument);
+            tasks.add(task);
         }
     }
 

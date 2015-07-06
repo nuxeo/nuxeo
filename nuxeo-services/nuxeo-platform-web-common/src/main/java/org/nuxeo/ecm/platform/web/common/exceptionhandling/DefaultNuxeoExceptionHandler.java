@@ -32,9 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.WrappedException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.descriptor.ErrorHandler;
 
@@ -156,7 +155,7 @@ public class DefaultNuxeoExceptionHandler implements NuxeoExceptionHandler {
                 return handler;
             }
         }
-        throw new ClientRuntimeException("No error handler set.");
+        throw new NuxeoException("No error handler set.");
     }
 
     protected Object getUserMessage(String messageKey, Locale locale) {

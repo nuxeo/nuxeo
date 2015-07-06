@@ -57,7 +57,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -381,21 +380,14 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         for (PredicateDefinition predicate : predicates) {
 
             // extract data from DocumentModel
-            Object[] val;
-            try {
-                PredicateFieldDefinition[] fieldDef = predicate.getValues();
-                val = new Object[fieldDef.length];
-
-                for (int fidx = 0; fidx < fieldDef.length; fidx++) {
-                    if (fieldDef[fidx].getXpath() != null) {
-                        val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
-                    } else {
-                        val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(),
-                                fieldDef[fidx].getName());
-                    }
+            PredicateFieldDefinition[] fieldDef = predicate.getValues();
+            Object[] val = new Object[fieldDef.length];
+            for (int fidx = 0; fidx < fieldDef.length; fidx++) {
+                if (fieldDef[fidx].getXpath() != null) {
+                    val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
+                } else {
+                    val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(), fieldDef[fidx].getName());
                 }
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
             }
 
             if (!isNonNullParam(val)) {

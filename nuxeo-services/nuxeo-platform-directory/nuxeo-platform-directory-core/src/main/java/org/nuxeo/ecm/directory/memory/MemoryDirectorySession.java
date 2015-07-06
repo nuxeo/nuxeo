@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -147,11 +146,7 @@ public class MemoryDirectorySession extends BaseSession {
                 continue;
             }
             // TODO references
-            try {
-                map.put(fieldName, dataModel.getData(fieldName));
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            map.put(fieldName, dataModel.getData(fieldName));
         }
         dataModel.getDirtyFields().clear();
     }

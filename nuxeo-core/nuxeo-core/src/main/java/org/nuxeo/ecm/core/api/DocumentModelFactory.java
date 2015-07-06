@@ -222,7 +222,7 @@ public class DocumentModelFactory {
      */
     public static DocumentModel writeDocumentModel(DocumentModel docModel, Document doc) {
         if (!(docModel instanceof DocumentModelImpl)) {
-            throw new ClientRuntimeException("Must be a DocumentModelImpl: " + docModel);
+            throw new NuxeoException("Must be a DocumentModelImpl: " + docModel);
         }
 
         boolean changed = false;
@@ -354,12 +354,7 @@ public class DocumentModelFactory {
             if (schemaXpaths.isEmpty()) {
                 continue;
             }
-            Map<String, Serializable> map;
-            try {
-                map = doc.readPrefetch(schema, schemaXpaths);
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            Map<String, Serializable> map = doc.readPrefetch(schema, schemaXpaths);
             for (Entry<String, Serializable> en : map.entrySet()) {
                 String xpath = en.getKey();
                 Serializable value = en.getValue();

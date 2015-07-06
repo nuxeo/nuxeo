@@ -37,7 +37,6 @@ import org.jboss.seam.core.ConversationEntry;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -111,13 +110,7 @@ public class LogoHelper implements Serializable {
             return DEFAULT_LOGO;
         }
 
-        String key;
-        try {
-            key = doc.getCacheKey();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-
+        String key = doc.getCacheKey();
         if (key.equals(lastLogoHolderKey)) {
             return lastURL;
         }

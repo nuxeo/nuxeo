@@ -32,7 +32,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -307,11 +306,7 @@ public class CommentManagerImpl implements CommentManager {
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { grantAddChildren, grantRemoveChildren, grantRemove });
         acp.addACL(acl);
-        try {
-            dm.setACP(acp, true);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dm.setACP(acp, true);
     }
 
     private static void setCommentPermissions(DocumentModel dm) {
@@ -321,11 +316,7 @@ public class CommentManagerImpl implements CommentManager {
         ACL acl = new ACLImpl();
         acl.setACEs(new ACE[] { grantRead, grantRemove });
         acp.addACL(acl);
-        try {
-            dm.setACP(acp, true);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        dm.setACP(acp, true);
     }
 
     private String[] getCommentPathList(DocumentModel comment) {

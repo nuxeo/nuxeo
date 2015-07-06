@@ -39,7 +39,7 @@ import javax.transaction.SystemException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.transaction.Transaction;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.NuxeoExceptionHandler;
@@ -114,10 +114,8 @@ public class RestfulPhaseListener implements PhaseListener {
             NuxeoExceptionHandler handler = exceptionHandlingService.getExceptionHandler();
             handler.handleException((HttpServletRequest) externalContext.getRequest(),
                     (HttpServletResponse) externalContext.getResponse(), e);
-        } catch (ServletException e1) {
-            throw new ClientRuntimeException(e1);
-        } catch (IOException e1) {
-            throw new ClientRuntimeException(e1);
+        } catch (ServletException | IOException e1) {
+            throw new NuxeoException(e1);
         }
     }
 

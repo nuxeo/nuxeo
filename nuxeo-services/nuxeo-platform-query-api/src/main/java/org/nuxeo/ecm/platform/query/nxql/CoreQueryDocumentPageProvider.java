@@ -25,11 +25,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.Filter;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
@@ -110,8 +110,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                 buildQuery(coreSession);
             }
             if (query == null) {
-                throw new ClientRuntimeException(String.format("Cannot perform null query: check provider '%s'",
-                        getName()));
+                throw new NuxeoException(String.format("Cannot perform null query: check provider '%s'", getName()));
             }
 
             currentPageDocuments = new ArrayList<DocumentModel>();
@@ -217,35 +216,29 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
     }
 
     protected void buildQuery(CoreSession coreSession) {
-        try {
-            SortInfo[] sortArray = null;
-            if (sortInfos != null) {
-                sortArray = sortInfos.toArray(new SortInfo[] {});
-            }
-            String newQuery;
-            PageProviderDefinition def = getDefinition();
-            if (def.getWhereClause() == null) {
-                newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(),
-                        def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
-                        sortArray);
-            } else {
-                DocumentModel searchDocumentModel = getSearchDocumentModel();
-                if (searchDocumentModel == null) {
-                    throw new ClientException(String.format("Cannot build query of provider '%s': "
-                            + "no search document model is set", getName()));
-                }
-                newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
-                        sortArray);
-            }
-
-            if (query != null && newQuery != null && !newQuery.equals(query)) {
-                // query has changed => refresh
-                refresh();
-            }
-            query = newQuery;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        SortInfo[] sortArray = null;
+        if (sortInfos != null) {
+            sortArray = sortInfos.toArray(new SortInfo[] {});
         }
+        String newQuery;
+        PageProviderDefinition def = getDefinition();
+        if (def.getWhereClause() == null) {
+            newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(), def.getQuotePatternParameters(),
+                    def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
+        } else {
+            DocumentModel searchDocumentModel = getSearchDocumentModel();
+            if (searchDocumentModel == null) {
+                throw new ClientException(String.format(
+                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
+            }
+            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(), sortArray);
+        }
+
+        if (query != null && newQuery != null && !newQuery.equals(query)) {
+            // query has changed => refresh
+            refresh();
+        }
+        query = newQuery;
     }
 
     protected void checkQueryCache() {
@@ -268,7 +261,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         Map<String, Serializable> props = getProperties();
         CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
         if (coreSession == null) {
-            throw new ClientRuntimeException("cannot find core session");
+            throw new NuxeoException("cannot find core session");
         }
         return coreSession;
     }

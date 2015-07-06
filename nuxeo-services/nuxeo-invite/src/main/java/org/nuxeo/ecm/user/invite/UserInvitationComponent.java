@@ -50,12 +50,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -759,16 +759,16 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                 throw new ClientException("Configuration " + configurationName + " is not registered");
             }
             return configurations.get(configurationName);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.info("Unable to get request parent document: " + e.getMessage());
-            throw new ClientRuntimeException(e);
+            throw e;
         }
     }
 
     @Override
     public UserRegistrationConfiguration getConfiguration(String name) {
         if (!configurations.containsKey(name)) {
-            throw new ClientRuntimeException("Trying to get unknown user registration configuration.");
+            throw new NuxeoException("Trying to get unknown user registration configuration.");
         }
         return configurations.get(name);
     }

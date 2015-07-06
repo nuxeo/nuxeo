@@ -1966,7 +1966,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return
      * @since 5.9.3
      */
-    private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options) {
+    private boolean followTransition(DocumentRef docRef, String transition, ScopedMap options)
+            throws LifeCycleException {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_LIFE_CYCLE);
 
@@ -1993,12 +1994,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public boolean followTransition(DocumentModel docModel, String transition) {
+    public boolean followTransition(DocumentModel docModel, String transition) throws LifeCycleException {
         return followTransition(docModel.getRef(), transition, docModel.getContextData());
     }
 
     @Override
-    public boolean followTransition(DocumentRef docRef, String transition) {
+    public boolean followTransition(DocumentRef docRef, String transition) throws LifeCycleException {
         return followTransition(docRef, transition, new ScopedMap());
     }
 

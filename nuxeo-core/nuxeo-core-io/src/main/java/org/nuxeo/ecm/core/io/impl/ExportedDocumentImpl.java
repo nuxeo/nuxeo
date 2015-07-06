@@ -33,7 +33,6 @@ import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -99,12 +98,7 @@ public class ExportedDocumentImpl implements ExportedDocument {
         } else {
             this.path = path.makeRelative();
         }
-        try {
-            readDocument(doc, inlineBlobs);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
-
+        readDocument(doc, inlineBlobs);
         srcLocation = new DocumentLocationImpl(doc);
     }
 

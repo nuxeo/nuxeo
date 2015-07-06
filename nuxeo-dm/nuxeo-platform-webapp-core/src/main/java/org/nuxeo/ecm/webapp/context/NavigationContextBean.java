@@ -45,7 +45,6 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -282,15 +281,12 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         if (ctxDoc == null && newDoc == null) {
             return false;
         }
-        try {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Check if update needed: compare cache key on "
-                        + "context doc '%s' with new doc '%s'", ctxDoc.getCacheKey(), newDoc.getCacheKey()));
-            }
-            return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format(
+                    "Check if update needed: compare cache key on " + "context doc '%s' with new doc '%s'",
+                    ctxDoc.getCacheKey(), newDoc.getCacheKey()));
         }
+        return !ctxDoc.getCacheKey().equals(newDoc.getCacheKey());
     }
 
     @Override

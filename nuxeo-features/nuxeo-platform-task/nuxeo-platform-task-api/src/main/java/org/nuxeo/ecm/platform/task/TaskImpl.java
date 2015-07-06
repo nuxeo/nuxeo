@@ -25,11 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 
 /**
  * @since 5.5
@@ -223,12 +221,12 @@ public class TaskImpl implements Task {
         followTransition(coreSession, TaskConstants.TASK_END_LIFE_CYCLE_TRANSITION);
     }
 
-    protected void followTransition(CoreSession coreSession, String transition) {
+    protected void followTransition(CoreSession coreSession, String transition) throws LifeCycleException {
         if (doc.getAllowedStateTransitions().contains(transition)) {
             coreSession.followTransition(doc.getRef(), transition);
         } else {
-            throw new ClientRuntimeException("Cannot follow transition " + transition + " on the document "
-                    + doc.getPathAsString());
+            throw new LifeCycleException(
+                    "Cannot follow transition " + transition + " on the document " + doc.getPathAsString());
         }
 
     }
@@ -282,48 +280,30 @@ public class TaskImpl implements Task {
 
     @SuppressWarnings("unchecked")
     protected <T> T getPropertyValue(String propertyName) {
-        try {
-            Serializable value = doc.getPropertyValue(propertyName);
-            if (value instanceof Object[]) {
-                value = new ArrayList<Object>(Arrays.asList((Object[]) value));
-            }
-            return (T) value;
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        Serializable value = doc.getPropertyValue(propertyName);
+        if (value instanceof Object[]) {
+            value = new ArrayList<Object>(Arrays.asList((Object[]) value));
         }
+        return (T) value;
     }
 
     protected Date getDatePropertyValue(String propertyName) {
-        try {
-            Calendar cal = (Calendar) doc.getPropertyValue(propertyName);
-            if (cal != null) {
-                return cal.getTime();
-            }
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        Calendar cal = (Calendar) doc.getPropertyValue(propertyName);
+        if (cal != null) {
+            return cal.getTime();
         }
         return null;
     }
 
     protected void setPropertyValue(String propertyName, Object value) {
-        try {
-            if (value != null) {
-                if (value instanceof Date) {
-                    Calendar cal = Calendar.getInstance();
-                    cal.setTime((Date) value);
-                    doc.setPropertyValue(propertyName, cal);
-                } else {
-                    doc.setPropertyValue(propertyName, (Serializable) value);
-                }
+        if (value != null) {
+            if (value instanceof Date) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime((Date) value);
+                doc.setPropertyValue(propertyName, cal);
+            } else {
+                doc.setPropertyValue(propertyName, (Serializable) value);
             }
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
         }
     }
 

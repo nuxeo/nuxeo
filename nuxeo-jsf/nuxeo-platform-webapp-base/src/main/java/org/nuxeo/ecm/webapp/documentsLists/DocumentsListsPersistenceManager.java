@@ -31,7 +31,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -209,7 +208,7 @@ public class DocumentsListsPersistenceManager {
                 repo = (String) entry.getProperty(directorySchema, DIR_COL_REPO);
             } catch (ClientException e1) {
                 releasePersistenceService();
-                throw new ClientRuntimeException(e1);
+                throw e1;
             }
 
             DocumentModel doc = getDocModel(currentSession, ref, reftype, repo);

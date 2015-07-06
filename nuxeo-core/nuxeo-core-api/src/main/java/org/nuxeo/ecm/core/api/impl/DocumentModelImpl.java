@@ -39,7 +39,6 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -533,7 +532,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public boolean addFacet(String facet) {
         if (facet == null) {
-            throw new ClientRuntimeException("Null facet");
+            throw new IllegalArgumentException("Null facet");
         }
         if (facets.contains(facet)) {
             return false;
@@ -541,7 +540,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         TypeProvider typeProvider = Framework.getLocalService(SchemaManager.class);
         CompositeType facetType = typeProvider.getFacet(facet);
         if (facetType == null) {
-            throw new ClientRuntimeException("No such facet: " + facet);
+            throw new IllegalArgumentException("No such facet: " + facet);
         }
         // add it
         facets.add(facet);
@@ -553,7 +552,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public boolean removeFacet(String facet) {
         if (facet == null) {
-            throw new ClientRuntimeException("Null facet");
+            throw new IllegalArgumentException("Null facet");
         }
         if (!instanceFacets.contains(facet)) {
             return false;
@@ -663,20 +662,12 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     @Deprecated
     public String getLock() {
-        try {
-            return oldLockKey(getLockInfo());
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return oldLockKey(getLockInfo());
     }
 
     @Override
     public boolean isLocked() {
-        try {
-            return getLockInfo() != null;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return getLockInfo() != null;
     }
 
     @Override
@@ -764,11 +755,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (getCoreSession() == null) {
             return null;
         }
-        try {
-            return getCoreSession().getVersionLabel(this);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return getCoreSession().getVersionLabel(this);
     }
 
     @Override
@@ -1207,11 +1194,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
                 continue;
             }
             Object clone = cloneField(field, key, value);
-            try {
-                dm.setData(key, clone);
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            dm.setData(key, clone);
         }
         return dm;
     }
@@ -1496,12 +1479,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         for (Map.Entry<String, DataModel> entry : dataModels.entrySet()) {
             String key = entry.getKey();
             DataModel data = entry.getValue();
-            DataModelImpl newData;
-            try {
-                newData = new DataModelImpl(key, data.getMap());
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            DataModelImpl newData = new DataModelImpl(key, data.getMap());
             dm.dataModels.put(key, newData);
         }
         return dm;

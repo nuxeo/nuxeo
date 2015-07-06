@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -64,11 +63,7 @@ public class DataModelImpl implements DataModel {
         Schema schema = schemaManager.getSchema(schemaName);
         dp = new DocumentPartImpl(schema);
         if (!data.isEmpty()) {
-            try {
-                dp.init((Serializable) data);
-            } catch (PropertyException e) {
-                throw new ClientRuntimeException(e);
-            }
+            dp.init((Serializable) data);
         }
     }
 

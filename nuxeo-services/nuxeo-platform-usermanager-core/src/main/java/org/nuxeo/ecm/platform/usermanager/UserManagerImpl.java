@@ -40,7 +40,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -1379,69 +1378,58 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         // permission
         ArrayList<ACE> filteredACEbyPerm = new ArrayList<ACE>();
 
-        List<String> currentPermissions = null;
+        List<String> currentPermissions = getLeafPermissions(perm);
 
-        try {
-            currentPermissions = getLeafPermissions(perm);
+        for (ACE ace : merged.getACEs()) {
+            // Checking if the permission contains the permission we want to
+            // check (we use the security service method for coumpound
+            // permissions)
+            List<String> acePermissions;
 
-            for (ACE ace : merged.getACEs()) {
-                // Checking if the permission contains the permission we want to
-                // check (we use the security service method for coumpound
-                // permissions)
-                List<String> acePermissions;
+            acePermissions = getLeafPermissions(ace.getPermission());
+            // Everything is a special permission (not compound)
+            if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
+                acePermissions = Arrays.asList(permissionProvider.getPermissions());
+            }
 
-                acePermissions = getLeafPermissions(ace.getPermission());
-                // Everything is a special permission (not compound)
-                if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
-                    acePermissions = Arrays.asList(permissionProvider.getPermissions());
-                }
-
-                if (acePermissions.containsAll(currentPermissions)) {
-                    // special case: everybody perm grant false, don't take in
-                    // account the previous ace
-                    if (SecurityConstants.EVERYONE.equals(ace.getUsername()) && !ace.isGranted()) {
-                        filteredACEbyPerm.clear();
-                    } else {
-                        filteredACEbyPerm.add(ace);
-                    }
+            if (acePermissions.containsAll(currentPermissions)) {
+                // special case: everybody perm grant false, don't take in
+                // account the previous ace
+                if (SecurityConstants.EVERYONE.equals(ace.getUsername()) && !ace.isGranted()) {
+                    filteredACEbyPerm.clear();
+                } else {
+                    filteredACEbyPerm.add(ace);
                 }
             }
-        } catch (ClientException e2) {
-            throw new ClientRuntimeException("An unexpected error occured", e2);
         }
 
         for (ACE ace : filteredACEbyPerm) {
-            try {
-                String aceUsername = ace.getUsername();
-                List<String> users = null;
-                // If everyone, add/remove all the users
-                if (SecurityConstants.EVERYONE.equals(aceUsername)) {
-                    users = getUserIds();
-                }
-                // if a group, add/remove all the user from the group (and
-                // subgroups)
-                if (users == null) {
-                    NuxeoGroup group;
-                    group = getGroup(aceUsername, context);
-                    if (group != null) {
-                        users = getUsersInGroupAndSubGroups(aceUsername, context);
-                    }
-
-                }
-                // otherwise, add the user
-                if (users == null) {
-                    users = new ArrayList<String>();
-                    users.add(aceUsername);
-                }
-                if (ace.isGranted()) {
-                    usernames.addAll(users);
-                } else {
-                    usernames.removeAll(users);
-                }
-            } catch (ClientException e) {
-                throw new ClientRuntimeException("An unexpected error occured while getting user ids", e);
+            String aceUsername = ace.getUsername();
+            List<String> users = null;
+            // If everyone, add/remove all the users
+            if (SecurityConstants.EVERYONE.equals(aceUsername)) {
+                users = getUserIds();
             }
+            // if a group, add/remove all the user from the group (and
+            // subgroups)
+            if (users == null) {
+                NuxeoGroup group;
+                group = getGroup(aceUsername, context);
+                if (group != null) {
+                    users = getUsersInGroupAndSubGroups(aceUsername, context);
+                }
 
+            }
+            // otherwise, add the user
+            if (users == null) {
+                users = new ArrayList<String>();
+                users.add(aceUsername);
+            }
+            if (ace.isGranted()) {
+                usernames.addAll(users);
+            } else {
+                usernames.removeAll(users);
+            }
         }
         return usernames.toArray(new String[usernames.size()]);
     }

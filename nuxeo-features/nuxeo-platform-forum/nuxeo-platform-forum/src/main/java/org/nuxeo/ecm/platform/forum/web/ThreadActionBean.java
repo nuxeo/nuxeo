@@ -38,7 +38,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -172,11 +171,7 @@ public class ThreadActionBean implements ThreadAction {
     @SuppressWarnings({ "unchecked" })
     public List<String> getModerators() {
         DocumentModel currentThread = navigationContext.getCurrentDocument();
-        try {
-            return (List<String>) currentThread.getProperty("thread", "moderators");
-        } catch (ClientException ce) {
-            throw new ClientRuntimeException(ce);
-        }
+        return (List<String>) currentThread.getProperty("thread", "moderators");
     }
 
     public boolean isPrincipalModerator() {
