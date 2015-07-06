@@ -32,7 +32,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -67,16 +66,12 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
     @Override
     public void run(CoreSession session, DocumentRouteElement element, Map<String, Serializable> map) {
-        try {
-            GraphRoute graph = (GraphRoute) element;
-            element.setRunning(session);
-            if (map != null) {
-                graph.setVariables(map);
-            }
-            runGraph(session, element, graph.getStartNode());
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        GraphRoute graph = (GraphRoute) element;
+        element.setRunning(session);
+        if (map != null) {
+            graph.setVariables(map);
         }
+        runGraph(session, element, graph.getStartNode());
     }
 
     @Override
@@ -88,68 +83,64 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
     @Override
     public void resume(CoreSession session, DocumentRouteElement element, String nodeId, String taskId,
             Map<String, Object> varData, String status) {
-        try {
-            GraphRoute graph = (GraphRoute) element;
-            Task task = null;
-            if (taskId == null) {
-                if (nodeId == null) {
-                    throw new DocumentRouteException("nodeId and taskId both missing");
-                }
-            } else {
-                DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
-                task = taskDoc.getAdapter(Task.class);
-                if (task == null) {
-                    throw new DocumentRouteException("Invalid taskId: " + taskId);
-                }
-                if (nodeId == null) {
-                    nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
-                    if (StringUtils.isEmpty(nodeId)) {
-                        throw new DocumentRouteException("No nodeId found on task: " + taskId);
-                    }
+        GraphRoute graph = (GraphRoute) element;
+        Task task = null;
+        if (taskId == null) {
+            if (nodeId == null) {
+                throw new DocumentRouteException("nodeId and taskId both missing");
+            }
+        } else {
+            DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
+            task = taskDoc.getAdapter(Task.class);
+            if (task == null) {
+                throw new DocumentRouteException("Invalid taskId: " + taskId);
+            }
+            if (nodeId == null) {
+                nodeId = task.getVariable(DocumentRoutingConstants.TASK_NODE_ID_KEY);
+                if (StringUtils.isEmpty(nodeId)) {
+                    throw new DocumentRouteException("No nodeId found on task: " + taskId);
                 }
             }
-            GraphNode node = graph.getNode(nodeId);
-            if (node == null) {
-                throw new DocumentRouteException("Invalid nodeId: " + nodeId);
-            }
-            boolean forceResume = (varData != null
-                    && varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME) != null && (Boolean) varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME));
-
-            if (forceResume && node.getState() != State.SUSPENDED && node.getState() != State.WAITING) {
-                throw new DocumentRouteException("Cannot force resume on non-suspended or non-waiting node: " + node);
-            }
-            if (!forceResume && node.getState() != State.SUSPENDED) {
-                throw new DocumentRouteException("Cannot resume on non-suspended node: " + node);
-            }
-            node.setAllVariables(varData, false);
-            if (StringUtils.isNotEmpty(status)) {
-                node.setButton(status);
-            }
-            if (task != null) {
-                finishTask(session, graph, node, task, false, status);
-                // don't delete (yet)
-            } else {
-                // cancel any remaing tasks on this node
-                node.cancelTasks();
-            }
-            if (node.hasOpenTasks()) {
-                log.info("Node " + node.getId() + "has open tasks, the workflow can not be resumed for now.");
-                // do nothing, the workflow is resumed only when all the tasks
-                // created from
-                // this node are processed
-                // as this is a multi-task node, reset comment if it was
-                // previously set
-                if (varData != null
-                        && varData.get(Constants.VAR_WORKFLOW_NODE) != null
-                        && ((Map<String, Serializable>) varData.get(Constants.VAR_WORKFLOW_NODE)).containsKey(GraphNode.NODE_VARIABLE_COMMENT)) {
-                    node.setVariable(GraphNode.NODE_VARIABLE_COMMENT, "");
-                }
-                return;
-            }
-            runGraph(session, element, node);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
         }
+        GraphNode node = graph.getNode(nodeId);
+        if (node == null) {
+            throw new DocumentRouteException("Invalid nodeId: " + nodeId);
+        }
+        boolean forceResume = (varData != null && varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME) != null
+                && (Boolean) varData.get(DocumentRoutingConstants.WORKFLOW_FORCE_RESUME));
+
+        if (forceResume && node.getState() != State.SUSPENDED && node.getState() != State.WAITING) {
+            throw new DocumentRouteException("Cannot force resume on non-suspended or non-waiting node: " + node);
+        }
+        if (!forceResume && node.getState() != State.SUSPENDED) {
+            throw new DocumentRouteException("Cannot resume on non-suspended node: " + node);
+        }
+        node.setAllVariables(varData, false);
+        if (StringUtils.isNotEmpty(status)) {
+            node.setButton(status);
+        }
+        if (task != null) {
+            finishTask(session, graph, node, task, false, status);
+            // don't delete (yet)
+        } else {
+            // cancel any remaing tasks on this node
+            node.cancelTasks();
+        }
+        if (node.hasOpenTasks()) {
+            log.info("Node " + node.getId() + "has open tasks, the workflow can not be resumed for now.");
+            // do nothing, the workflow is resumed only when all the tasks
+            // created from
+            // this node are processed
+            // as this is a multi-task node, reset comment if it was
+            // previously set
+            if (varData != null && varData.get(Constants.VAR_WORKFLOW_NODE) != null
+                    && ((Map<String, Serializable>) varData.get(Constants.VAR_WORKFLOW_NODE)).containsKey(
+                            GraphNode.NODE_VARIABLE_COMMENT)) {
+                node.setVariable(GraphNode.NODE_VARIABLE_COMMENT, "");
+            }
+            return;
+        }
+        runGraph(session, element, node);
     }
 
     @Override
@@ -161,13 +152,9 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         // also cancel tasks
         GraphRoute graph = (GraphRoute) element;
         // also cancel sub-workflows
-        try {
-            for (GraphNode node : graph.getNodes()) {
-                node.cancelTasks();
-                node.cancelSubRoute();
-            }
-        } catch (DocumentRouteException e) {
-            throw new ClientRuntimeException(e);
+        for (GraphNode node : graph.getNodes()) {
+            node.cancelTasks();
+            node.cancelSubRoute();
         }
     }
 

@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -32,16 +30,12 @@ import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 public abstract class AbstractRunner implements ElementRunner {
 
     protected List<DocumentRouteElement> getChildrenElement(CoreSession session, DocumentRouteElement element) {
-        try {
-            DocumentModelList children = session.getChildren(element.getDocument().getRef());
-            List<DocumentRouteElement> elements = new ArrayList<DocumentRouteElement>();
-            for (DocumentModel model : children) {
-                elements.add(model.getAdapter(DocumentRouteElement.class));
-            }
-            return elements;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        DocumentModelList children = session.getChildren(element.getDocument().getRef());
+        List<DocumentRouteElement> elements = new ArrayList<DocumentRouteElement>();
+        for (DocumentModel model : children) {
+            elements.add(model.getAdapter(DocumentRouteElement.class));
         }
+        return elements;
     }
 
     @Override

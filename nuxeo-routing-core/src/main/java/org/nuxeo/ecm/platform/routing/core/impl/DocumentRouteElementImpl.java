@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -107,11 +106,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     }
 
     protected Object getProperty(String propertyName) {
-        try {
-            return document.getPropertyValue(propertyName);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return document.getPropertyValue(propertyName);
     }
 
     @Override
@@ -143,11 +138,7 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
     }
 
     protected boolean checkLifeCycleState(ElementLifeCycleState state) {
-        try {
-            return document.getCurrentLifeCycleState().equalsIgnoreCase(state.name());
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return document.getCurrentLifeCycleState().equalsIgnoreCase(state.name());
     }
 
     @Override
@@ -177,34 +168,25 @@ public class DocumentRouteElementImpl implements DocumentRouteElement, DocumentR
 
     @Override
     public void followTransition(ElementLifeCycleTransistion transition, CoreSession session, boolean recursive) {
-        try {
-            if (document.followTransition(transition.name())) {
-                if (Framework.isTestModeSet()) {
-                    session.save();
-                }
-                document = session.getDocument(document.getRef());
+        if (document.followTransition(transition.name())) {
+            if (Framework.isTestModeSet()) {
+                session.save();
             }
-            if (recursive) {
-                DocumentModelList children = session.getChildren(document.getRef());
-                for (DocumentModel child : children) {
-                    DocumentRouteElement element = child.getAdapter(DocumentRouteElement.class);
-                    element.followTransition(transition, session, recursive);
-                }
-
+            document = session.getDocument(document.getRef());
+        }
+        if (recursive) {
+            DocumentModelList children = session.getChildren(document.getRef());
+            for (DocumentModel child : children) {
+                DocumentRouteElement element = child.getAdapter(DocumentRouteElement.class);
+                element.followTransition(transition, session, recursive);
             }
 
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
         }
     }
 
     @Override
     public void save(CoreSession session) {
-        try {
-            session.saveDocument(document);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        session.saveDocument(document);
     }
 
     @Override

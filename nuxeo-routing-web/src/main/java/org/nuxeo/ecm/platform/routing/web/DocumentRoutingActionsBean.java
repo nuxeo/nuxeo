@@ -47,7 +47,6 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -154,11 +153,7 @@ public class DocumentRoutingActionsBean implements Serializable {
     }
 
     public DocumentRoutingService getDocumentRoutingService() {
-        try {
-            return Framework.getService(DocumentRoutingService.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
+        return Framework.getService(DocumentRoutingService.class);
     }
 
     @Observer(value = { EventNames.DOCUMENT_CHANGED, EventNames.DOCUMENT_SELECTION_CHANGED })

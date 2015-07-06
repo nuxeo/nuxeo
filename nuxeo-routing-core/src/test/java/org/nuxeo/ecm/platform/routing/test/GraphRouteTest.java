@@ -41,8 +41,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -54,6 +52,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
+import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
 import org.nuxeo.ecm.platform.routing.api.operation.BulkRestartWorkflow;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
@@ -131,7 +130,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         try {
             instantiateAndRun(session);
             fail("Should throw because no start node");
-        } catch (ClientRuntimeException e) {
+        } catch (DocumentRouteException e) {
             String msg = e.getMessage();
             assertTrue(msg, msg.contains("No start node for graph"));
         }
@@ -145,7 +144,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         try {
             instantiateAndRun(session);
             fail("Should throw because no transition is true");
-        } catch (ClientRuntimeException e) {
+        } catch (DocumentRouteException e) {
             String msg = e.getMessage();
             assertTrue(msg, msg.contains("No transition evaluated to true"));
         }
@@ -161,7 +160,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         try {
             instantiateAndRun(session);
             fail("Should throw because transition condition is no bool");
-        } catch (ClientRuntimeException e) {
+        } catch (DocumentRouteException e) {
             String msg = e.getMessage();
             assertTrue(msg, msg.contains("does not evaluate to a boolean"));
         }
@@ -203,7 +202,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         try {
             instantiateAndRun(session);
             fail("Should throw because execution is looping");
-        } catch (ClientRuntimeException e) {
+        } catch (DocumentRouteException e) {
             String msg = e.getMessage();
             assertTrue(msg, msg.contains("Execution is looping"));
         }

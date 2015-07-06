@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -50,22 +49,17 @@ public class DocumentRoutingEngineServiceImpl extends DefaultComponent implement
     @Override
     public void cancel(DocumentRoute routeInstance, CoreSession session) {
         final String routeDocId = routeInstance.getDocument().getId();
-
-        try {
-            new UnrestrictedSessionRunner(session) {
-                @Override
-                public void run() {
-                    DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
-                    DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-                    if (routeInstance == null) {
-                        throw new ClientException("Document " + routeDoc + " can not be adapted to a DocumentRoute");
-                    }
-                    routeInstance.cancel(session);
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                DocumentModel routeDoc = session.getDocument(new IdRef(routeDocId));
+                DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+                if (routeInstance == null) {
+                    throw new ClientException("Document " + routeDoc + " can not be adapted to a DocumentRoute");
                 }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+                routeInstance.cancel(session);
+            }
+        }.runUnrestricted();
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put(WORKFLOW_NAME_EVENT_PROPERTY_KEY, routeInstance.getTitle());
         EventFirer.fireEvent(session, routeInstance.getAttachedDocuments(session), properties,

@@ -31,7 +31,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -74,13 +73,9 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
     }
 
     protected void compute() {
-        try {
-            String startNodeId = computeNodes();
-            computeTransitions();
-            computeLoopTransitions(startNodeId);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        String startNodeId = computeNodes();
+        computeTransitions();
+        computeLoopTransitions(startNodeId);
     }
 
     protected String computeNodes() {
@@ -240,17 +235,14 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     @Override
     public DocumentModelList getAttachedDocumentModels() {
-        try {
-            @SuppressWarnings("unchecked")
-            List<String> ids = (List<String>) document.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
-            ArrayList<DocumentRef> docRefs = new ArrayList<DocumentRef>();
-            for (String id : ids) {
-                docRefs.add(new IdRef(id));
-            }
-            return document.getCoreSession().getDocuments(docRefs.toArray(new DocumentRef[0]));
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        @SuppressWarnings("unchecked")
+        List<String> ids = (List<String>) document.getPropertyValue(
+                DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
+        ArrayList<DocumentRef> docRefs = new ArrayList<DocumentRef>();
+        for (String id : ids) {
+            docRefs.add(new IdRef(id));
         }
+        return document.getCoreSession().getDocuments(docRefs.toArray(new DocumentRef[0]));
     }
 
     @Override
@@ -264,24 +256,16 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
 
     @Override
     public boolean hasParentRoute() {
-        try {
-            String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
-            return !StringUtils.isEmpty(parentRouteInstanceId);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
+        return !StringUtils.isEmpty(parentRouteInstanceId);
     }
 
     @Override
     public void resumeParentRoute(CoreSession session) {
         DocumentRoutingService routing = Framework.getLocalService(DocumentRoutingService.class);
-        try {
-            String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
-            String parentRouteNodeId = (String) document.getPropertyValue(PROP_PARENT_NODE);
-            routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId, null, null, session);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
+        String parentRouteNodeId = (String) document.getPropertyValue(PROP_PARENT_NODE);
+        routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId, null, null, session);
     }
 
 }

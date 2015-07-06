@@ -370,9 +370,7 @@ public class WorkflowEndpointTest extends BaseTest {
         final String responseEntityType = node.get("entity-type").getTextValue();
         final String responseMessage = node.get("message").getTextValue();
         assertEquals("exception", responseEntityType);
-        assertEquals("org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException:"
-                + " You don't have the permission to set the workflow variable review_result", responseMessage);
-
+        assertEquals("You don't have the permission to set the workflow variable review_result", responseMessage);
     }
 
     @Test

@@ -39,12 +39,12 @@ import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -125,16 +125,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected void incrementProp(String prop) {
-        try {
-            Long count = (Long) getProperty(prop);
-            if (count == null) {
-                count = Long.valueOf(0);
-            }
-            document.setPropertyValue(prop, Long.valueOf(count.longValue() + 1));
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        Long count = (Long) getProperty(prop);
+        if (count == null) {
+            count = Long.valueOf(0);
         }
+        document.setPropertyValue(prop, Long.valueOf(count.longValue() + 1));
+        saveDocument();
     }
 
     protected CoreSession getSession() {
@@ -152,38 +148,30 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public State getState() {
-        try {
-            if (localState != null) {
-                return localState;
-            }
-            String s = document.getCurrentLifeCycleState();
-            return State.fromString(s);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        if (localState != null) {
+            return localState;
         }
+        String s = document.getCurrentLifeCycleState();
+        return State.fromString(s);
     }
 
     @Override
     public void setState(State state) {
-        try {
-            if (state == null) {
-                throw new NullPointerException("null state");
-            }
-            String lc = state.getLifeCycleState();
-            if (lc == null) {
-                localState = state;
+        if (state == null) {
+            throw new NullPointerException("null state");
+        }
+        String lc = state.getLifeCycleState();
+        if (lc == null) {
+            localState = state;
+            return;
+        } else {
+            localState = null;
+            String oldLc = document.getCurrentLifeCycleState();
+            if (lc.equals(oldLc)) {
                 return;
-            } else {
-                localState = null;
-                String oldLc = document.getCurrentLifeCycleState();
-                if (lc.equals(oldLc)) {
-                    return;
-                }
-                document.followTransition(state.getTransition());
-                saveDocument();
             }
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+            document.followTransition(state.getTransition());
+            saveDocument();
         }
     }
 
@@ -273,32 +261,24 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public void starting() {
-        try {
-            // Allow input transitions reevaluation (needed for loop case)
-            for (Transition t : inputTransitions) {
-                t.setResult(false);
-                getSession().saveDocument(t.source.getDocument());
-            }
-            // Increment node counter
-            incrementProp(PROP_COUNT);
-            document.setPropertyValue(PROP_NODE_START_DATE, Calendar.getInstance());
-            // reset taskInfo property
-            tasksInfo = null;
-            document.setPropertyValue(PROP_TASKS_INFO, new ArrayList<TaskInfo>());
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        // Allow input transitions reevaluation (needed for loop case)
+        for (Transition t : inputTransitions) {
+            t.setResult(false);
+            getSession().saveDocument(t.source.getDocument());
         }
+        // Increment node counter
+        incrementProp(PROP_COUNT);
+        document.setPropertyValue(PROP_NODE_START_DATE, Calendar.getInstance());
+        // reset taskInfo property
+        tasksInfo = null;
+        document.setPropertyValue(PROP_TASKS_INFO, new ArrayList<TaskInfo>());
+        saveDocument();
     }
 
     @Override
     public void ending() {
-        try {
-            document.setPropertyValue(PROP_NODE_END_DATE, Calendar.getInstance());
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        document.setPropertyValue(PROP_NODE_END_DATE, Calendar.getInstance());
+        saveDocument();
     }
 
     @Override
@@ -456,7 +436,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
                     documentModel.detach(true);
                 } catch (ClientException e) {
                     log.error(e);
-                    throw new ClientRuntimeException(e);
+                    throw new NuxeoException(e);
                 }
             }
         }
@@ -484,59 +464,31 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected String getWorkflowInitiator() {
-        try {
-            return (String) graph.getDocument().getPropertyValue(DocumentRoutingConstants.INITIATOR);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (String) graph.getDocument().getPropertyValue(DocumentRoutingConstants.INITIATOR);
     }
 
     protected Calendar getWorkflowStartTime() {
-        try {
-            return (Calendar) graph.getDocument().getPropertyValue("dc:created");
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (Calendar) graph.getDocument().getPropertyValue("dc:created");
     }
 
     protected String getWorkflowParentRouteId() {
-        try {
-            return (String) graph.getDocument().getPropertyValue(GraphRoute.PROP_PARENT_ROUTE);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (String) graph.getDocument().getPropertyValue(GraphRoute.PROP_PARENT_ROUTE);
     }
 
     protected String getWorkflowParentNodeId() {
-        try {
-            return (String) graph.getDocument().getPropertyValue(GraphRoute.PROP_PARENT_NODE);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (String) graph.getDocument().getPropertyValue(GraphRoute.PROP_PARENT_NODE);
     }
 
     protected Calendar getNodeStartTime() {
-        try {
-            return (Calendar) getDocument().getPropertyValue(PROP_NODE_START_DATE);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (Calendar) getDocument().getPropertyValue(PROP_NODE_START_DATE);
     }
 
     protected Calendar getNodeEndTime() {
-        try {
-            return (Calendar) getDocument().getPropertyValue(PROP_NODE_END_DATE);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (Calendar) getDocument().getPropertyValue(PROP_NODE_END_DATE);
     }
 
     protected String getNodeLastActor() {
-        try {
-            return (String) getDocument().getPropertyValue(PROP_NODE_LAST_ACTOR);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (String) getDocument().getPropertyValue(PROP_NODE_LAST_ACTOR);
     }
 
     @Override
@@ -577,16 +529,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected List<Transition> computeOutputTransitions() {
-        try {
-            ListProperty props = (ListProperty) document.getProperty(PROP_TRANSITIONS);
-            List<Transition> trans = new ArrayList<Transition>(props.size());
-            for (Property p : props) {
-                trans.add(new Transition(this, p));
-            }
-            return trans;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        ListProperty props = (ListProperty) document.getProperty(PROP_TRANSITIONS);
+        List<Transition> trans = new ArrayList<Transition>(props.size());
+        for (Property p : props) {
+            trans.add(new Transition(this, p));
         }
+        return trans;
     }
 
     @Override
@@ -599,40 +547,34 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public List<Transition> evaluateTransitions() throws DocumentRouteException {
-        try {
-            List<Transition> trueTrans = new ArrayList<Transition>();
-            OperationContext context = getExecutionContext(getSession());
-            for (Transition t : getOutputTransitions()) {
-                context.put("transition", t.id);
-                Expression expr = new RoutingScriptingExpression(t.condition, new RoutingScriptingFunctions(context));
-                Object res = null;
-                try {
-                    res = expr.eval(context);
-                    // stupid eval() method throws generic Exception
-                } catch (RuntimeException e) {
-                    throw new DocumentRouteException("Error evaluating condition: " + t.condition, e);
-                }
-                if (!(res instanceof Boolean)) {
-                    throw new DocumentRouteException("Condition for transition " + t + " of node '" + getId()
-                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + t.condition);
-                }
-                boolean bool = Boolean.TRUE.equals(res);
-                t.setResult(bool);
-                if (bool) {
-                    trueTrans.add(t);
-                    if (executeOnlyFirstTransition()) {
-                        // if node is exclusive, no need to evaluate others
-                        break;
-                    }
+        List<Transition> trueTrans = new ArrayList<Transition>();
+        OperationContext context = getExecutionContext(getSession());
+        for (Transition t : getOutputTransitions()) {
+            context.put("transition", t.id);
+            Expression expr = new RoutingScriptingExpression(t.condition, new RoutingScriptingFunctions(context));
+            Object res = null;
+            try {
+                res = expr.eval(context);
+                // stupid eval() method throws generic Exception
+            } catch (RuntimeException e) {
+                throw new DocumentRouteException("Error evaluating condition: " + t.condition, e);
+            }
+            if (!(res instanceof Boolean)) {
+                throw new DocumentRouteException("Condition for transition " + t + " of node '" + getId()
+                        + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + t.condition);
+            }
+            boolean bool = Boolean.TRUE.equals(res);
+            t.setResult(bool);
+            if (bool) {
+                trueTrans.add(t);
+                if (executeOnlyFirstTransition()) {
+                    // if node is exclusive, no need to evaluate others
+                    break;
                 }
             }
-            saveDocument();
-            return trueTrans;
-        } catch (DocumentRouteException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
         }
+        saveDocument();
+        return trueTrans;
     }
 
     @Override
@@ -691,7 +633,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
         } else if (MERGE_ALL.equals(merge)) {
             return n == inputTransitions.size();
         } else {
-            throw new ClientRuntimeException("Illegal merge mode '" + merge + "' for node " + this);
+            throw new NuxeoException("Illegal merge mode '" + merge + "' for node " + this);
         }
     }
 
@@ -703,15 +645,11 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public void cancelTasks() {
         CoreSession session = getSession();
-        try {
-            List<TaskInfo> tasks = getTasksInfo();
-            for (TaskInfo task : tasks) {
-                if (!task.isEnded()) {
-                    cancelTask(session, task.getTaskDocId());
-                }
+        List<TaskInfo> tasks = getTasksInfo();
+        for (TaskInfo task : tasks) {
+            if (!task.isEnded()) {
+                cancelTask(session, task.getTaskDocId());
             }
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
         }
     }
 
@@ -724,48 +662,32 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected List<Button> computeTaskButtons() {
-        try {
-            ListProperty props = (ListProperty) document.getProperty(PROP_TASK_BUTTONS);
-            List<Button> btns = new ArrayList<Button>(props.size());
-            for (Property p : props) {
-                btns.add(new Button(this, p));
-            }
-            Collections.sort(btns);
-            return btns;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        ListProperty props = (ListProperty) document.getProperty(PROP_TASK_BUTTONS);
+        List<Button> btns = new ArrayList<Button>(props.size());
+        for (Property p : props) {
+            btns.add(new Button(this, p));
         }
+        Collections.sort(btns);
+        return btns;
     }
 
     @Override
     public void setButton(String status) {
-        try {
-            document.setPropertyValue(PROP_NODE_BUTTON, status);
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        document.setPropertyValue(PROP_NODE_BUTTON, status);
+        saveDocument();
     }
 
     @Override
     public void setLastActor(String actor) {
-        try {
-            document.setPropertyValue(PROP_NODE_LAST_ACTOR, actor);
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        document.setPropertyValue(PROP_NODE_LAST_ACTOR, actor);
+        saveDocument();
     }
 
     protected void addTaskAssignees(List<String> taskAssignees) {
         List<String> allTasksAssignees = getTaskAssignees();
         allTasksAssignees.addAll(taskAssignees);
-        try {
-            document.setPropertyValue(PROP_TASK_ASSIGNEES, (Serializable) allTasksAssignees);
-            saveDocument();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        document.setPropertyValue(PROP_TASK_ASSIGNEES, (Serializable) allTasksAssignees);
+        saveDocument();
     }
 
     @Override
@@ -807,13 +729,9 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     @Override
     public Date computeTaskDueDate() throws DocumentRouteException {
         Date dueDate = evaluateDueDate();
-        try {
-            document.setPropertyValue(PROP_TASK_DUE_DATE, dueDate);
-            CoreSession session = document.getCoreSession();
-            session.saveDocument(document);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        document.setPropertyValue(PROP_TASK_DUE_DATE, dueDate);
+        CoreSession session = document.getCoreSession();
+        session.saveDocument(document);
         return dueDate;
     }
 
@@ -931,17 +849,13 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected List<EscalationRule> computeEscalationRules() {
-        try {
-            ListProperty props = (ListProperty) document.getProperty(PROP_ESCALATION_RULES);
-            List<EscalationRule> rules = new ArrayList<EscalationRule>(props.size());
-            for (Property p : props) {
-                rules.add(new EscalationRule(this, p));
-            }
-            Collections.sort(rules);
-            return rules;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        ListProperty props = (ListProperty) document.getProperty(PROP_ESCALATION_RULES);
+        List<EscalationRule> rules = new ArrayList<EscalationRule>(props.size());
+        for (Property p : props) {
+            rules.add(new EscalationRule(this, p));
         }
+        Collections.sort(rules);
+        return rules;
     }
 
     public List<EscalationRule> getEscalationRules() {
@@ -953,33 +867,29 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
 
     @Override
     public List<EscalationRule> evaluateEscalationRules() {
-        try {
-            List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
-            OperationContext context = getExecutionContext(getSession());
-            // add specific helpers for escalation
-            for (EscalationRule rule : getEscalationRules()) {
-                Expression expr = new RoutingScriptingExpression(rule.condition, new RoutingScriptingFunctions(context,
-                        rule));
-                Object res = null;
-                try {
-                    res = expr.eval(context);
-                } catch (RuntimeException e) {
-                    throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
-                }
-                if (!(res instanceof Boolean)) {
-                    throw new DocumentRouteException("Condition for rule " + rule + " of node '" + getId()
-                            + "' of graph '" + graph.getName() + "' does not evaluate to a boolean: " + rule.condition);
-                }
-                boolean bool = Boolean.TRUE.equals(res);
-                if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
-                    rulesToExecute.add(rule);
-                }
+        List<EscalationRule> rulesToExecute = new ArrayList<EscalationRule>();
+        OperationContext context = getExecutionContext(getSession());
+        // add specific helpers for escalation
+        for (EscalationRule rule : getEscalationRules()) {
+            Expression expr = new RoutingScriptingExpression(rule.condition,
+                    new RoutingScriptingFunctions(context, rule));
+            Object res = null;
+            try {
+                res = expr.eval(context);
+            } catch (RuntimeException e) {
+                throw new DocumentRouteException("Error evaluating condition: " + rule.condition, e);
             }
-            saveDocument();
-            return rulesToExecute;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+            if (!(res instanceof Boolean)) {
+                throw new DocumentRouteException("Condition for rule " + rule + " of node '" + getId() + "' of graph '"
+                        + graph.getName() + "' does not evaluate to a boolean: " + rule.condition);
+            }
+            boolean bool = Boolean.TRUE.equals(res);
+            if ((!rule.isExecuted() || rule.isMultipleExecution()) && bool) {
+                rulesToExecute.add(rule);
+            }
         }
+        saveDocument();
+        return rulesToExecute;
     }
 
     @Override
@@ -988,16 +898,12 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
     }
 
     protected List<TaskInfo> computeTasksInfo() {
-        try {
-            ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
-            List<TaskInfo> tasks = new ArrayList<TaskInfo>(props.size());
-            for (Property p : props) {
-                tasks.add(new TaskInfo(this, p));
-            }
-            return tasks;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        ListProperty props = (ListProperty) document.getProperty(PROP_TASKS_INFO);
+        List<TaskInfo> tasks = new ArrayList<TaskInfo>(props.size());
+        for (Property p : props) {
+            tasks.add(new TaskInfo(this, p));
         }
+        return tasks;
     }
 
     @Override

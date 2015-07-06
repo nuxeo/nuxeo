@@ -25,9 +25,7 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.dm.api.RoutingTaskConstants.EvaluationOperators;
 
@@ -90,12 +88,7 @@ public class EvaluateCondition extends AbstractTaskStepOperation {
 
     @SuppressWarnings("unchecked")
     protected <T> T getPropertyValue(DocumentModel doc, String propertyName) {
-        try {
-            return (T) doc.getPropertyValue(propertyName);
-        } catch (PropertyException e) {
-            throw new ClientRuntimeException(e);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (T) doc.getPropertyValue(propertyName);
     }
+
 }

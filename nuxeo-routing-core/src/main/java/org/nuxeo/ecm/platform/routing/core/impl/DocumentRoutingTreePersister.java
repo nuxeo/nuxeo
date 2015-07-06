@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -57,70 +56,49 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     @Override
     public DocumentModel getParentFolderForDocumentRouteInstance(DocumentModel document, CoreSession session) {
-        try {
-            return TreeHelper.getOrCreateDateTreeFolder(session,
-                    getOrCreateRootOfDocumentRouteInstanceStructure(session), new Date(), "HiddenFolder");
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return TreeHelper.getOrCreateDateTreeFolder(session, getOrCreateRootOfDocumentRouteInstanceStructure(session),
+                new Date(), "HiddenFolder");
     }
 
     @Override
     public DocumentModel createDocumentRouteInstanceFromDocumentRouteModel(DocumentModel model, CoreSession session) {
         DocumentModel parent = getParentFolderForDocumentRouteInstance(model, session);
-        DocumentModel result = null;
-        try {
-            result = session.copy(model.getRef(), parent.getRef(), null);
-            // copy now copies all the acls, and we don't need the readOnly
-            // policy applied on the model
-            // on the instance, too => removing acls
-            result = undoReadOnlySecurityPolicy(result, session);
-            // set initiator
-            NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
-            String initiator = principal.getActingUser();
-            result.setPropertyValue(DocumentRoutingConstants.INITIATOR, initiator);
-            // using the ref, the value of the attached document might not been
-            // saved on the model
-            result.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                    model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
-            // reset creation date, used for workflow start time
-            result.setPropertyValue("dc:created", Calendar.getInstance());
-            result.setPropertyValue(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCE_MODEL_ID, model.getId());
-            session.saveDocument(result);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        DocumentModel result = session.copy(model.getRef(), parent.getRef(), null);
+        // copy now copies all the acls, and we don't need the readOnly
+        // policy applied on the model
+        // on the instance, too => removing acls
+        result = undoReadOnlySecurityPolicy(result, session);
+        // set initiator
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        String initiator = principal.getActingUser();
+        result.setPropertyValue(DocumentRoutingConstants.INITIATOR, initiator);
+        // using the ref, the value of the attached document might not been
+        // saved on the model
+        result.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                model.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME));
+        // reset creation date, used for workflow start time
+        result.setPropertyValue("dc:created", Calendar.getInstance());
+        result.setPropertyValue(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCE_MODEL_ID, model.getId());
+        session.saveDocument(result);
         return result;
     }
 
     @Override
     public DocumentModel saveDocumentRouteInstanceAsNewModel(DocumentModel routeInstance, DocumentModel parentFolder,
             String newName, CoreSession session) {
-        DocumentModel result = null;
-        try {
-            result = session.copy(routeInstance.getRef(), parentFolder.getRef(), newName);
-            return undoReadOnlySecurityPolicy(result, session);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        DocumentModel result = session.copy(routeInstance.getRef(), parentFolder.getRef(), newName);
+        return undoReadOnlySecurityPolicy(result, session);
     }
 
     @Override
     public DocumentModel getOrCreateRootOfDocumentRouteInstanceStructure(CoreSession session) {
-        DocumentModel root;
-        try {
-            root = getDocumentRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
-                    session);
-
-            if (root == null) {
-                root = createDocumentRoutesStructure(
-                        DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
-                        DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID, session);
-            }
-            return root;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        DocumentModel root = getDocumentRoutesStructure(
+                DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE, session);
+        if (root == null) {
+            root = createDocumentRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_DOCUMENT_TYPE,
+                    DocumentRoutingConstants.DOCUMENT_ROUTE_INSTANCES_ROOT_ID, session);
         }
+        return root;
     }
 
     /**
@@ -256,17 +234,12 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     @Override
     public DocumentModel getParentFolderForDocumentRouteModels(CoreSession session) {
-        DocumentModel root;
-        try {
-            root = getDocumentRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
-                    session);
-            if (root == null) {
-                root = createModelsRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
-                        DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_ID, session);
-            }
-            return root;
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        DocumentModel root = getDocumentRoutesStructure(
+                DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE, session);
+        if (root == null) {
+            root = createModelsRoutesStructure(DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_DOCUMENT_TYPE,
+                    DocumentRoutingConstants.DOCUMENT_ROUTE_MODELS_ROOT_ID, session);
         }
+        return root;
     }
 }

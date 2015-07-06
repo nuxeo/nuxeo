@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.routing.core.adapter;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
@@ -74,17 +72,9 @@ public class DocumentRouteAdapterFactory implements DocumentAdapterFactory {
     }
 
     protected ExecutionTypeValues getExecutionType(DocumentModel doc, String type) {
-        ExecutionTypeValues executionType = ExecutionTypeValues.valueOf((String) getProperty(doc,
-                DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
+        ExecutionTypeValues executionType = ExecutionTypeValues.valueOf(
+                (String) doc.getPropertyValue(DocumentRoutingConstants.EXECUTION_TYPE_PROPERTY_NAME));
         return executionType;
-    }
-
-    protected Object getProperty(DocumentModel doc, String xpath) {
-        try {
-            return doc.getPropertyValue(xpath);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
     }
 
 }

@@ -37,7 +37,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
@@ -180,56 +180,49 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), route.getDocument());
         envContext.setProperties(eventProperties);
         EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
-        try {
-            eventProducer.fireEvent(envContext.newEvent(eventName));
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        eventProducer.fireEvent(envContext.newEvent(eventName));
     }
 
     @Override
     public String createNewInstance(final String routeModelId, final List<String> docIds,
             final Map<String, Serializable> map, CoreSession session, final boolean startInstance) {
-        try {
-            final String initiator = session.getPrincipal().getName();
-            final String res[] = new String[1];
-            new UnrestrictedSessionRunner(session) {
+        final String initiator = session.getPrincipal().getName();
+        final String res[] = new String[1];
+        new UnrestrictedSessionRunner(session) {
 
-                protected DocumentRoute route;
+            protected DocumentRoute route;
 
-                @Override
-                public void run() {
-                    String routeDocId = getRouteModelDocIdWithId(session, routeModelId);
-                    DocumentModel model = session.getDocument(new IdRef(routeDocId));
-                    DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
-                    route = instance.getAdapter(DocumentRoute.class);
-                    route.setAttachedDocuments(docIds);
-                    route.save(session);
-                    Map<String, Serializable> props = new HashMap<String, Serializable>();
-                    props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, initiator);
-                    fireEvent(DocumentRoutingConstants.Events.beforeRouteReady.name(), props);
-                    route.setReady(session);
-                    fireEvent(DocumentRoutingConstants.Events.afterRouteReady.name(), props);
-                    route.save(session);
-                    if (startInstance) {
-                        fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(),
-                                new HashMap<String, Serializable>());
-                        DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
-                        routingEngine.start(route, map, session);
-                    }
-                    res[0] = instance.getId();
+            @Override
+            public void run() {
+                String routeDocId = getRouteModelDocIdWithId(session, routeModelId);
+                DocumentModel model = session.getDocument(new IdRef(routeDocId));
+                DocumentModel instance = persister.createDocumentRouteInstanceFromDocumentRouteModel(model, session);
+                route = instance.getAdapter(DocumentRoute.class);
+                route.setAttachedDocuments(docIds);
+                route.save(session);
+                Map<String, Serializable> props = new HashMap<String, Serializable>();
+                props.put(DocumentRoutingConstants.INITIATOR_EVENT_CONTEXT_KEY, initiator);
+                fireEvent(DocumentRoutingConstants.Events.beforeRouteReady.name(), props);
+                route.setReady(session);
+                fireEvent(DocumentRoutingConstants.Events.afterRouteReady.name(), props);
+                route.save(session);
+                if (startInstance) {
+                    fireEvent(DocumentRoutingConstants.Events.beforeRouteStart.name(),
+                            new HashMap<String, Serializable>());
+                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                            DocumentRoutingEngineService.class);
+                    routingEngine.start(route, map, session);
                 }
+                res[0] = instance.getId();
+            }
 
-                protected void fireEvent(String eventName, Map<String, Serializable> eventProperties) {
-                    DocumentRoutingServiceImpl.fireEvent(eventName, eventProperties, route, session);
-                }
+            protected void fireEvent(String eventName, Map<String, Serializable> eventProperties) {
+                DocumentRoutingServiceImpl.fireEvent(eventName, eventProperties, route, session);
+            }
 
-            }.runUnrestricted();
+        }.runUnrestricted();
 
-            return res[0];
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        return res[0];
     }
 
     @Override
@@ -241,11 +234,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     public DocumentRoute createNewInstance(DocumentRoute model, List<String> docIds, CoreSession session,
             boolean startInstance) {
         String id = createNewInstance(model.getDocument().getName(), docIds, session, startInstance);
-        try {
-            return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return session.getDocument(new IdRef(id)).getAdapter(DocumentRoute.class);
     }
 
     @Override
@@ -304,29 +293,21 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     protected void completeTask(final String routeId, final String nodeId, final String taskId,
             final Map<String, Object> data, final String status, CoreSession session) {
-        try {
-            new UnrestrictedSessionRunner(session) {
-                @Override
-                public void run() {
-                    DocumentRoutingEngineService routingEngine = Framework.getLocalService(DocumentRoutingEngineService.class);
-                    DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                    DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-                    routingEngine.resume(routeInstance, nodeId, taskId, data, status, session);
-                }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        new UnrestrictedSessionRunner(session) {
+            @Override
+            public void run() {
+                DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                        DocumentRoutingEngineService.class);
+                DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+                DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+                routingEngine.resume(routeInstance, nodeId, taskId, data, status, session);
+            }
+        }.runUnrestricted();
     }
 
     @Override
     public List<DocumentRoute> getAvailableDocumentRouteModel(CoreSession session) {
-        DocumentModelList list = null;
-        try {
-            list = session.query(AVAILABLE_ROUTES_MODEL_QUERY);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        DocumentModelList list = session.query(AVAILABLE_ROUTES_MODEL_QUERY);
         List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
         for (DocumentModel model : list) {
             routes.add(model.getAdapter(DocumentRoute.class));
@@ -337,12 +318,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public List<DocumentRoute> getAvailableDocumentRoute(CoreSession session) {
-        DocumentModelList list = null;
-        try {
-            list = session.query(AVAILABLE_ROUTES_QUERY);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        DocumentModelList list = session.query(AVAILABLE_ROUTES_QUERY);
         List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
         for (DocumentModel model : list) {
             routes.add(model.getAdapter(DocumentRoute.class));
@@ -480,12 +456,8 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 // ordering by dc:created makes sure that
                 // a sub-workflow is listed under its parent
                 + " ORDER BY dc:created", attachedDocId);
-        try {
-            UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, query);
-            list = queryRunner.runQuery();
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        UnrestrictedQueryRunner queryRunner = new UnrestrictedQueryRunner(session, query);
+        list = queryRunner.runQuery();
         List<DocumentRoute> routes = new ArrayList<DocumentRoute>();
         for (DocumentModel model : list) {
             routes.add(model.getAdapter(DocumentRoute.class));
@@ -536,12 +508,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (!isLockedByCurrentUser(parentRoute, session)) {
             throw new DocumentRouteNotLockedException();
         }
-        PathSegmentService pss;
-        try {
-            pss = Framework.getService(PathSegmentService.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
+        PathSegmentService pss = Framework.getService(PathSegmentService.class);
         DocumentModel docRouteElement = routeElement.getDocument();
         DocumentModel parentDocument = session.getDocument(parentDocumentRef);
         docRouteElement.setPathInfo(parentDocument.getPathAsString(), pss.generatePathSegment(docRouteElement));
@@ -684,11 +651,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     }
 
     protected FileManager getFileManager() {
-        try {
-            return Framework.getService(FileManager.class);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
-        }
+        return Framework.getService(FileManager.class);
     }
 
     @Override
@@ -788,10 +751,10 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         IterableQueryResult results = session.queryAndFetch(query, "NXQL");
         try {
             if (results.size() == 0) {
-                throw new ClientRuntimeException("No route found for id: " + id);
+                throw new NuxeoException("No route found for id: " + id);
             }
             if (results.size() != 1) {
-                throw new ClientRuntimeException("More than one route model found with id: " + id);
+                throw new NuxeoException("More than one route model found with id: " + id);
             }
             for (Map<String, Serializable> map : results) {
                 routeIds.add(map.get("ecm:uuid").toString());

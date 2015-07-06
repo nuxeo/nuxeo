@@ -29,10 +29,9 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
@@ -65,27 +64,27 @@ public class GraphVariablesUtil {
      * @since 7.2
      */
     public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp, boolean mapToJSON) {
-        try {
-            String facet = (String) doc.getPropertyValue(facetProp);
-            Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
-            if (StringUtils.isBlank(facet)) {
-                return map;
-            }
-            CompositeType type = getSchemaManager().getFacet(facet);
-            if (type == null) {
-                return map;
-            }
-            boolean hasFacet = doc.hasFacet(facet);
-            for (Field f : type.getFields()) {
-                String name = f.getName().getLocalName();
-                Serializable value = hasFacet ? doc.getPropertyValue(name) : null;
-                if (value instanceof Calendar) {
-                    if (mapToJSON) {
-                        value = DateParser.formatW3CDateTime(((Calendar) value).getTime());
-                    } else {
-                        value = ((Calendar) value).getTime();
-                    }
-                } else if (value instanceof Object[] && mapToJSON) {
+        String facet = (String) doc.getPropertyValue(facetProp);
+        Map<String, Serializable> map = new LinkedHashMap<String, Serializable>();
+        if (StringUtils.isBlank(facet)) {
+            return map;
+        }
+        CompositeType type = getSchemaManager().getFacet(facet);
+        if (type == null) {
+            return map;
+        }
+        boolean hasFacet = doc.hasFacet(facet);
+        for (Field f : type.getFields()) {
+            String name = f.getName().getLocalName();
+            Serializable value = hasFacet ? doc.getPropertyValue(name) : null;
+            if (value instanceof Calendar) {
+                if (mapToJSON) {
+                    value = DateParser.formatW3CDateTime(((Calendar) value).getTime());
+                } else {
+                    value = ((Calendar) value).getTime();
+                }
+            } else if (value instanceof Object[] && mapToJSON) {
+                try {
                     Object[] objects = (Object[]) value;
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     JsonGenerator jg = getFactory().createJsonGenerator(out);
@@ -97,17 +96,17 @@ public class GraphVariablesUtil {
                     jg.flush();
                     jg.close();
                     value = out.toString("UTF-8");
-                }
-                if (mapToJSON) {
-                    map.put(name, value != null ? value.toString() : null);
-                } else {
-                    map.put(name, value);
+                } catch (IOException e) {
+                    throw new NuxeoException(e);
                 }
             }
-            return map;
-        } catch (ClientException | IOException e) {
-            throw new ClientRuntimeException(e);
+            if (mapToJSON) {
+                map.put(name, value != null ? value.toString() : null);
+            } else {
+                map.put(name, value);
+            }
         }
+        return map;
     }
 
     public static Map<String, Serializable> getVariables(DocumentModel doc, String facetProp) {
@@ -128,49 +127,45 @@ public class GraphVariablesUtil {
             map.remove(DocumentRoutingConstants._MAP_VAR_FORMAT_JSON);
             for (String key : map.keySet()) {
                 if (map.get(key) != null && !(map.get(key) instanceof String)) {
-                    throw new ClientRuntimeException(
+                    throw new NuxeoException(
                             "Trying to decode JSON variables: The parameter 'map' should contain only Strings as it contains the marker '_MAP_VAR_FORMAT_JSON' ");
                 }
                 vars.put(key, (String) map.get(key));
             }
             GraphVariablesUtil.setJSONVariables(doc, facetProp, vars, save);
         } else {
+            String facet = null;
             try {
-                String facet = null;
-                try {
-                    facet = (String) doc.getPropertyValue(facetProp);
-                } catch (PropertyNotFoundException e) {
-                    facet = facetProp;
+                facet = (String) doc.getPropertyValue(facetProp);
+            } catch (PropertyNotFoundException e) {
+                facet = facetProp;
+            }
+            if (StringUtils.isBlank(facet)) {
+                return;
+            }
+            CompositeType type = getSchemaManager().getFacet(facet);
+            if (type == null) {
+                return;
+            }
+            boolean hasFacet = doc.hasFacet(facet);
+            for (Field f : type.getFields()) {
+                String name = f.getName().getLocalName();
+                if (!map.containsKey(name)) {
+                    continue;
                 }
-                if (StringUtils.isBlank(facet)) {
-                    return;
+                Serializable value = map.get(name);
+                if (value == null && !hasFacet) {
+                    continue;
                 }
-                CompositeType type = getSchemaManager().getFacet(facet);
-                if (type == null) {
-                    return;
+                if (!hasFacet) {
+                    doc.addFacet(facet);
+                    hasFacet = true;
                 }
-                boolean hasFacet = doc.hasFacet(facet);
-                for (Field f : type.getFields()) {
-                    String name = f.getName().getLocalName();
-                    if (!map.containsKey(name)) {
-                        continue;
-                    }
-                    Serializable value = map.get(name);
-                    if (value == null && !hasFacet) {
-                        continue;
-                    }
-                    if (!hasFacet) {
-                        doc.addFacet(facet);
-                        hasFacet = true;
-                    }
-                    doc.setPropertyValue(name, value);
-                }
-                if (save) {
-                    CoreSession session = doc.getCoreSession();
-                    session.saveDocument(doc);
-                }
-            } catch (ClientException e) {
-                throw new ClientRuntimeException(e);
+                doc.setPropertyValue(name, value);
+            }
+            if (save) {
+                CoreSession session = doc.getCoreSession();
+                session.saveDocument(doc);
             }
         }
     }
@@ -195,44 +190,43 @@ public class GraphVariablesUtil {
     public static void setJSONVariables(DocumentModel doc, String facetProp, Map<String, String> map, final boolean save) {
         // normally the variables in the map don't contain the schema prefix
         Properties jsonProperties = new Properties();
+        String facet = null;
         try {
-            String facet = null;
-            try {
-                facet = (String) doc.getPropertyValue(facetProp);
-            } catch (PropertyNotFoundException e) {
-                facet = facetProp;
-            }
-            if (StringUtils.isBlank(facet)) {
-                return;
-            }
-            CompositeType type = getSchemaManager().getFacet(facet);
-            if (type == null) {
-            }
-            boolean hasFacet = doc.hasFacet(facet);
-            for (Field f : type.getFields()) {
-                String name = f.getName().getLocalName();
-                if (!map.containsKey(name)) {
-                    continue;
-                }
-                String value = map.get(name);
-                if (value == null && !hasFacet) {
-                    continue;
-                }
-                if (!hasFacet) {
-                    doc.addFacet(facet);
-                    hasFacet = true;
-                }
-                jsonProperties.put(name, value);
-            }
-            CoreSession session = doc.getCoreSession();
-            DocumentHelper.setJSONProperties(session, doc, jsonProperties);
-            if (save) {
-                session.saveDocument(doc);
-            }
-        } catch (IOException | ClientException e) {
-            throw new ClientRuntimeException(e);
+            facet = (String) doc.getPropertyValue(facetProp);
+        } catch (PropertyNotFoundException e) {
+            facet = facetProp;
         }
-
+        if (StringUtils.isBlank(facet)) {
+            return;
+        }
+        CompositeType type = getSchemaManager().getFacet(facet);
+        if (type == null) {
+        }
+        boolean hasFacet = doc.hasFacet(facet);
+        for (Field f : type.getFields()) {
+            String name = f.getName().getLocalName();
+            if (!map.containsKey(name)) {
+                continue;
+            }
+            String value = map.get(name);
+            if (value == null && !hasFacet) {
+                continue;
+            }
+            if (!hasFacet) {
+                doc.addFacet(facet);
+                hasFacet = true;
+            }
+            jsonProperties.put(name, value);
+        }
+        CoreSession session = doc.getCoreSession();
+        try {
+            DocumentHelper.setJSONProperties(session, doc, jsonProperties);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
+        if (save) {
+            session.saveDocument(doc);
+        }
     }
 
 }

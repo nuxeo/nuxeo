@@ -21,7 +21,7 @@ import java.util.Calendar;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode;
 
 /**
@@ -75,7 +75,7 @@ public class RoutingScriptingFunctions {
      */
     public long timeSinceRuleHasBeenFalse() {
         if (rule == null) {
-            throw new ClientRuntimeException("No escalation rule available in this context");
+            throw new NuxeoException("No escalation rule available in this context");
         }
         Calendar lastExecutionTime = rule.getLastExecutionTime();
         if (lastExecutionTime == null) {
@@ -96,7 +96,7 @@ public class RoutingScriptingFunctions {
      */
     public boolean ruleAlreadyExecuted() {
         if (rule == null) {
-            throw new ClientRuntimeException("No escalation rule available in this context");
+            throw new NuxeoException("No escalation rule available in this context");
         }
         return rule.isExecuted();
     }

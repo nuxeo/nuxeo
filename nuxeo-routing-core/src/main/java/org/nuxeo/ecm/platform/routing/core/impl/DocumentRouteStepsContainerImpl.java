@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStepsContainer;
@@ -38,21 +36,13 @@ public class DocumentRouteStepsContainerImpl extends DocumentRouteElementImpl im
     }
 
     public void setAttachedDocuments(List<String> documentIds) {
-        try {
-            document.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
-                    (Serializable) documentIds);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        document.setPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME,
+                (Serializable) documentIds);
     }
 
     @SuppressWarnings("unchecked")
     public List<String> getAttachedDocuments() {
-        try {
-            return (List<String>) document.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        return (List<String>) document.getPropertyValue(DocumentRoutingConstants.ATTACHED_DOCUMENTS_PROPERTY_NAME);
     }
 
     @Override
