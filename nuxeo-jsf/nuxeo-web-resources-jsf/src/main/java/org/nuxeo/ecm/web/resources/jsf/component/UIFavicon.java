@@ -42,7 +42,7 @@ public class UIFavicon extends UIComponentBase {
     protected static Map<String, String> iconsMime = new HashMap<>();
 
     public static enum PropertyKeys {
-        name, src, mimetype
+        name, src, mimetype, sizes
     }
 
     @Override
@@ -74,6 +74,14 @@ public class UIFavicon extends UIComponentBase {
         getStateHelper().put(PropertyKeys.mimetype, mimetype);
     }
 
+    public String getSizes() {
+        return (String) getStateHelper().eval(PropertyKeys.sizes);
+    }
+
+    public void setSizes(String sizes) {
+        getStateHelper().put(PropertyKeys.sizes, sizes);
+    }
+
     public String getRendererType() {
         return null;
     }
@@ -97,7 +105,12 @@ public class UIFavicon extends UIComponentBase {
         writer.startElement("link", this);
         writer.writeAttribute("rel", getName(), "rel");
         writer.writeAttribute("type", mt, "rel");
-        writer.writeURIAttribute("href", src, "href");
+        String encodedSrc = context.getApplication().getViewHandler().getResourceURL(context, src);
+        writer.writeURIAttribute("href", encodedSrc, "href");
+        String sizes = getSizes();
+        if (StringUtils.isBlank(sizes)) {
+            writer.writeAttribute("sizes", sizes, "sizes");
+        }
         writer.endElement("link");
 
         popComponentFromEL(context);
