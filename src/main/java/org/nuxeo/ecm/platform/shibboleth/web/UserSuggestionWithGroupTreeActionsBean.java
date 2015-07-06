@@ -28,7 +28,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
@@ -65,8 +64,6 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
     /**
      * Build the tree with all groups (not virtual) / shibbGroup and merge them into a List of UserTreeNode to be
      * displayed
-     * 
-     * @throws org.nuxeo.ecm.core.api.ClientException thrown from getGroups() or getShibbGroups()
      */
     protected void buildTree() {
         List<DocumentModel> groups = getGroups();
@@ -81,7 +78,6 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
      * Get all groups (without virtual) and shibbGroups with the userManager bean
      *
      * @return list of group which match the pattern
-     * @throws ClientException if error occurred while getting all groups.
      * @see UserManagerImpl
      */
     protected List<DocumentModel> getGroups() {
@@ -93,8 +89,6 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
             return userManager.searchGroups(filter, new HashSet<String>(filter.keySet()));
         } catch (SizeLimitExceededException e) {
             return Collections.emptyList();
-        } catch (Exception e) {
-            throw new ClientException("error searching for groups", e);
         }
     }
 
@@ -102,7 +96,6 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
      * Get all shibboleth group with the Shibboleth Helper
      *
      * @return All Shibboleth groups, or an empty list if SizeLimitExceededException is reached.
-     * @throws ClientException encapsulated another one
      * @see ShibbolethGroupHelper
      */
     protected List<DocumentModel> getShibbGroups() {
@@ -110,8 +103,6 @@ public class UserSuggestionWithGroupTreeActionsBean extends UserSuggestionAction
             return ShibbolethGroupHelper.getGroups();
         } catch (SizeLimitExceededException e) {
             return Collections.emptyList();
-        } catch (Exception e) {
-            throw new ClientException("error searching for Shibboleth Groups", e);
         }
     }
 
