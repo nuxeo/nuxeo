@@ -52,7 +52,6 @@
     <nuxeo.drive.version>7.4-SNAPSHOT</nuxeo.drive.version>
     <nuxeo.resources.compat.version>7.4-SNAPSHOT</nuxeo.resources.compat.version>
     <nuxeo.dmk.version>7.4-SNAPSHOT</nuxeo.dmk.version>
-    <nuxeo.webengine.sites.version>7.4-SNAPSHOT</nuxeo.webengine.sites.version>
     <nuxeo.style.guide.version>7.4-SNAPSHOT</nuxeo.style.guide.version>
     <nuxeo.imaging.recompute.version>7.4-SNAPSHOT</nuxeo.imaging.recompute.version>
     <nuxeo.box.version>7.4-SNAPSHOT</nuxeo.box.version>
@@ -110,7 +109,6 @@
     <module>nuxeo-drive-server</module>
     <module>nuxeo-resources-compat</module>
     <module>nuxeo-dmk-adaptor</module>
-    <module>nuxeo-webengine-sites</module>
     <module>nuxeo-style-guide</module>
     <module>nuxeo-imaging-recompute</module>
     <module>nuxeo-javaagent</module>
@@ -806,38 +804,6 @@
         <groupId>org.nuxeo</groupId>
         <artifactId>nuxeo-dmk-adaptor</artifactId>
         <version>${nuxeo.dmk.version}</version>
-      </dependency>
-
-      <!-- WebEngine Sites -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-blogs</artifactId>
-        <version>${nuxeo.webengine.sites.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-blogs-api</artifactId>
-        <version>${nuxeo.webengine.sites.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-blogs-core</artifactId>
-        <version>${nuxeo.webengine.sites.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-sites</artifactId>
-        <version>${nuxeo.webengine.sites.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-sites-api</artifactId>
-        <version>${nuxeo.webengine.sites.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-webengine-sites-core-contrib</artifactId>
-        <version>${nuxeo.webengine.sites.version}</version>
       </dependency>
 
       <!-- DEPRECATED jBPM -->
