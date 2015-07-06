@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 import org.nuxeo.template.api.descriptor.TemplateProcessorDescriptor;
 
@@ -38,7 +38,7 @@ public class TemplateProcessorRegistry extends ContributionFragmentRegistry<Temp
             if (tpd.init()) {
                 processors.put(id, tpd);
             } else {
-                throw new ClientRuntimeException("Unable to register processor");
+                throw new NuxeoException("Unable to register processor");
             }
         }
     }
