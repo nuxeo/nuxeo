@@ -4,7 +4,11 @@
 var NxDiffPictures;
 (function scope_NxDiffPictures() {
 
-	var leftDocId, rightDocId, xpath, resultImgObj, fuzzLabelObj, fuzzObj, highlightColorObj, lowlightColorObj, highlightColorDropdownObj, lowlightColorDropdownObj, resultImgSizeClass = "large"; // WARNING: Must match the original declaration in nuxeo-diff-pictures.xhtml
+	var leftDocId, rightDocId, xpath, resultImgObj, fuzzLabelObj, fuzzObj,
+		highlightColorObj, lowlightColorObj, highlightColorDropdownObj,
+		contextPath,
+		lowlightColorDropdownObj,
+		resultImgSizeClass = "large"; // WARNING: Must match the original declaration in nuxeo-diff-pictures.xhtml
 
 	NxDiffPictures = this;
 
@@ -19,7 +23,7 @@ var NxDiffPictures;
 			// tell server to cleanup temp files
 			// The call must be synchronous in this context
 			jQuery.ajax({
-				url: "/nuxeo/diffPictures?action=cleanup&leftDocId=" + leftDocId + "&rightDocId=" + rightDocId,
+				url: contextPath + "/diffPictures?action=cleanup&leftDocId=" + leftDocId + "&rightDocId=" + rightDocId,
 				async: false
 			});
 
@@ -28,6 +32,7 @@ var NxDiffPictures;
 			}
 		}
 
+		contextPath = inParams.contextPath;
 		leftDocId = inParams.leftDocId;
 		rightDocId = inParams.rightDocId;
 		xpath = inParams.xpath;
@@ -60,7 +65,7 @@ var NxDiffPictures;
 	function buildUrl() {
 		var url, lowLight, commandLine;
 		
-		url = "/nuxeo/diffPictures?leftDocId=" + leftDocId + "&rightDocId=" + rightDocId;
+		url = contextPath + "/diffPictures?leftDocId=" + leftDocId + "&rightDocId=" + rightDocId;
 		lowLight = lowlightColorObj.val();
 		if(lowLight === "" || lowLight.toLowerCase() === "default") {
 			commandLine = "diff-pictures-default";
