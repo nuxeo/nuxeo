@@ -32,7 +32,7 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.smart.query.HistoryList;
 import org.nuxeo.ecm.platform.smart.query.SmartQuery;
@@ -164,7 +164,7 @@ public class SmartNXQLQueryActions implements Serializable {
                 addToQueryPartHistory(newQuery);
             }
         } else {
-            throw new ClientException("Component not found");
+            throw new NuxeoException("Component not found");
         }
     }
 
@@ -177,7 +177,7 @@ public class SmartNXQLQueryActions implements Serializable {
      * @param newQuery the new query to set.
      * @param rebuildSmartQuery if true, will rebuild the smart query completely, otherwise will just set the query part
      *            on it.
-     * @throws ClientException if target JSF component is not found in the JSF tree.
+     * @throws NuxeoException if target JSF component is not found in the JSF tree.
      */
     protected void setQueryPart(ActionEvent event, String newQuery, boolean rebuildSmartQuery) {
         if (currentSmartQuery != null) {
@@ -209,7 +209,7 @@ public class SmartNXQLQueryActions implements Serializable {
                     addToQueryPartHistory(newQuery);
                 }
             } else {
-                throw new ClientException("Component not found");
+                throw new NuxeoException("Component not found");
             }
         }
     }
