@@ -19,6 +19,7 @@ package org.nuxeo.ecm.web.resources.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -99,6 +100,18 @@ public class ResourceBundleDescriptor implements ResourceBundle {
             resources = merged;
         }
         return this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ResourceBundleDescriptor)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        ResourceBundleDescriptor b = (ResourceBundleDescriptor) obj;
+        return new EqualsBuilder().append(name, b.name).append(append, b.append).append(resources, b.resources).isEquals();
     }
 
 }

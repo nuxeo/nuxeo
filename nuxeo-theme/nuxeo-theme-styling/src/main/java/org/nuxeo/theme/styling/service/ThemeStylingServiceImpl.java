@@ -456,7 +456,19 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public Page getPage(String name) {
-        return pageReg.getPage(name);
+        Page page = pageReg.getPage(name);
+        if (page != null) {
+            // merge with global resources
+            Page globalPage = pageReg.getPage("*");
+            if (globalPage != null) {
+                Page clone = globalPage.clone();
+                clone.setAppendFlavors(true);
+                clone.setAppendResources(true);
+                clone.setAppendStyles(true);
+                page.merge(clone);
+            }
+        }
+        return page;
     }
 
 }
