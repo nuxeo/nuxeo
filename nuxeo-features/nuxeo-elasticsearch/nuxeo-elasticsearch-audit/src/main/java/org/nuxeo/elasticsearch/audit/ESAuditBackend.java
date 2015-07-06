@@ -307,7 +307,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         JsonFactory factory = new JsonFactory();
 
         UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
-        UIDSequencer seq = uidGeneratorService.getSequencer(ESUIDSequencer.SEQUENCER_CONTRIB);
+        UIDSequencer seq = uidGeneratorService.getSequencer();
 
         try {
 

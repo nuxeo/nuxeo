@@ -34,8 +34,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ESUIDSequencer implements UIDSequencer {
 
-    public static final String SEQUENCER_CONTRIB = "esSequencer";
-
     public static final String IDX_NAME = "uidgen";
 
     public static final String IDX_TYPE = "seqId";
