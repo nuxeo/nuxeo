@@ -28,10 +28,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -140,23 +139,18 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public TranscodedVideo convert(Video originalVideo, String conversionName) {
-        try {
-            if (!videoConversions.registry.containsKey(conversionName)) {
-                throw new ClientRuntimeException(String.format("'%s' is not a registered video conversion.",
-                        conversionName));
-            }
-            BlobHolder blobHolder = new SimpleBlobHolder(originalVideo.getBlob());
-            VideoConversion conversion = videoConversions.registry.get(conversionName);
-            Map<String, Serializable> parameters = new HashMap<>();
-            parameters.put("height", conversion.getHeight());
-            parameters.put("videoInfo", originalVideo.getVideoInfo());
-            ConversionService conversionService = Framework.getLocalService(ConversionService.class);
-            BlobHolder result = conversionService.convert(conversion.getConverter(), blobHolder, parameters);
-            VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
-            return TranscodedVideo.fromBlobAndInfo(conversionName, result.getBlob(), videoInfo);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
+        if (!videoConversions.registry.containsKey(conversionName)) {
+            throw new NuxeoException(String.format("'%s' is not a registered video conversion.", conversionName));
         }
+        BlobHolder blobHolder = new SimpleBlobHolder(originalVideo.getBlob());
+        VideoConversion conversion = videoConversions.registry.get(conversionName);
+        Map<String, Serializable> parameters = new HashMap<>();
+        parameters.put("height", conversion.getHeight());
+        parameters.put("videoInfo", originalVideo.getVideoInfo());
+        ConversionService conversionService = Framework.getLocalService(ConversionService.class);
+        BlobHolder result = conversionService.convert(conversion.getConverter(), blobHolder, parameters);
+        VideoInfo videoInfo = VideoHelper.getVideoInfo(result.getBlob());
+        return TranscodedVideo.fromBlobAndInfo(conversionName, result.getBlob(), videoInfo);
     }
 
     @Override

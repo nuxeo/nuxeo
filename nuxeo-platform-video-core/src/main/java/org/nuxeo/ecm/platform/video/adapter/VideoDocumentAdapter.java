@@ -28,9 +28,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
 import org.nuxeo.ecm.platform.video.Video;
@@ -59,19 +58,15 @@ public class VideoDocumentAdapter implements VideoDocument {
     @SuppressWarnings("unchecked")
     public VideoDocumentAdapter(DocumentModel doc) {
         if (!doc.hasFacet(VideoConstants.VIDEO_FACET)) {
-            throw new ClientRuntimeException(doc + " is not a Video document.");
+            throw new NuxeoException(doc + " is not a Video document.");
         }
-        try {
-            this.doc = doc;
-            BlobHolder bh = doc.getAdapter(BlobHolder.class);
-            Blob blob = bh.getBlob();
+        this.doc = doc;
+        BlobHolder bh = doc.getAdapter(BlobHolder.class);
+        Blob blob = bh.getBlob();
 
-            Map<String, Serializable> videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue(INFO_PROPERTY);
-            VideoInfo videoInfo = VideoInfo.fromMap(videoInfoMap);
-            video = Video.fromBlobAndInfo(blob, videoInfo);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        Map<String, Serializable> videoInfoMap = (Map<String, Serializable>) doc.getPropertyValue(INFO_PROPERTY);
+        VideoInfo videoInfo = VideoInfo.fromMap(videoInfoMap);
+        video = Video.fromBlobAndInfo(blob, videoInfo);
     }
 
     @Override
@@ -96,18 +91,15 @@ public class VideoDocumentAdapter implements VideoDocument {
     }
 
     private void initTranscodedVideos() {
-        try {
-            if (transcodedVideos == null) {
-                @SuppressWarnings("unchecked")
-                List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue(TRANSCODED_VIDEOS_PROPERTY);
-                transcodedVideos = Maps.newHashMap();
-                for (int i = 0; i < videos.size(); i++) {
-                    TranscodedVideo transcodedVideo = TranscodedVideo.fromMapAndPosition(videos.get(i), i);
-                    transcodedVideos.put(transcodedVideo.getName(), transcodedVideo);
-                }
+        if (transcodedVideos == null) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Serializable>> videos = (List<Map<String, Serializable>>) doc.getPropertyValue(
+                    TRANSCODED_VIDEOS_PROPERTY);
+            transcodedVideos = Maps.newHashMap();
+            for (int i = 0; i < videos.size(); i++) {
+                TranscodedVideo transcodedVideo = TranscodedVideo.fromMapAndPosition(videos.get(i), i);
+                transcodedVideos.put(transcodedVideo.getName(), transcodedVideo);
             }
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
         }
     }
 
