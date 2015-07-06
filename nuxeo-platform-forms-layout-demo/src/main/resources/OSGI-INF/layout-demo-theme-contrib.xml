@@ -72,8 +72,8 @@
 
     <page name="layoutDemo/default" charset="utf-8">
       <links>
-        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
-        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
       </links>
       <defaultFlavor>default</defaultFlavor>
       <resources>
@@ -87,8 +87,8 @@
 
     <themePage name="layoutDemo/frame" charset="utf-8">
       <favorites>
-        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
-        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
       </favorites>
       <defaultFlavor>default</defaultFlavor>
       <resources>
