@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -188,13 +187,9 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
 
     @Override
     public void computeInitialStatistics(CoreSession session, QuotaStatsInitialWork currentWorker) {
-        try {
-            Map<String, String> folders = getFolders(session);
-            Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(session, folders);
-            saveDocumentsCount(session, documentsCountByFolder);
-        } catch (ClientException e) {
-            throw new ClientRuntimeException(e);
-        }
+        Map<String, String> folders = getFolders(session);
+        Map<String, Count> documentsCountByFolder = computeDocumentsCountByFolder(session, folders);
+        saveDocumentsCount(session, documentsCountByFolder);
     }
 
     protected Map<String, String> getFolders(CoreSession session) {

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.quota.automation;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -31,10 +32,10 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.quota.size.QuotaAware;
 import org.nuxeo.ecm.quota.size.QuotaInfo;
 
@@ -86,8 +87,8 @@ public class GetQuotaStatisticsOperation {
         StringWriter writer = new StringWriter();
         try {
             mapper.writeValue(writer, stats);
-        } catch (Exception e) {
-            throw new ClientRuntimeException(e);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         }
         return writer.toString();
     }

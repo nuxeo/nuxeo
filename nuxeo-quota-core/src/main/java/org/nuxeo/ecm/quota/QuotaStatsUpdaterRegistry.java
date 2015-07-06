@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientRuntimeException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -59,8 +59,8 @@ public class QuotaStatsUpdaterRegistry extends ContributionFragmentRegistry<Quot
                 updater.setLabel(contrib.getLabel());
                 updater.setDescriptionLabel(contrib.getDescriptionLabel());
                 quotaStatsUpdaters.put(id, updater);
-            } catch (Exception e) {
-                throw new ClientRuntimeException(e);
+            } catch (ReflectiveOperationException e) {
+                throw new NuxeoException(e);
             }
         } else {
             quotaStatsUpdaters.remove(id);
