@@ -277,9 +277,18 @@ public class DiffPictures {
 		html = html.replace(TMPL_LEFT_DOC_LABEL, leftLabel);
 		html = html.replace(TMPL_RIGHT_DOC_ID, rightDocId);
 		html = html.replace(TMPL_RIGHT_DOC_LABEL, rightLabel);
+		if(StringUtils.isBlank(xpath) || xpath.toLowerCase().equals("default")) {
+			xpath = DEFAULT_XPATH;
+		}
 		html = html.replace(TMPL_XPATH, xpath);
-		String lastModification = ""
-                + (((Calendar) rightDoc.getPropertyValue("dc:modified")).getTimeInMillis());
+		// dc:modified can be null... When running the Unit Tests for example
+		String lastModification;
+		Calendar cal = (Calendar) rightDoc.getPropertyValue("dc:modified");
+		if(cal == null) {
+			lastModification = "1234567";
+		} else {
+			lastModification = "" + cal.getTimeInMillis();
+		}
 		html = html.replace(TMPL_TIME_STAMP, lastModification);
 
 		return html;

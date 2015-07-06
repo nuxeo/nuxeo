@@ -146,7 +146,6 @@ public class TestContentDiffAdapter {
      */
     @Test
     public void testImageFilesContentDiff() {
-
         // Get left and right image docs
         DocumentModel leftDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getLeftImageDocPath()));
         DocumentModel rightDoc = session.getDocument(new PathRef(ContentDiffRepositoryInit.getRightImageDocPath()));

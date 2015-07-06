@@ -122,7 +122,7 @@ public class DiffPicturesTest {
         // (when using the default color values). Reduces it a lot.
         // WARNING: This is a 100% dependence on ImageMagic
         params = new HashMap<String, Serializable>();
-        params.put("fuzz", "10%");
+        params.put("fuzz", "20%");
         result = dp.compare(null, params);
 
         BufferedImage bi = checkIsImage(result);
@@ -130,7 +130,7 @@ public class DiffPicturesTest {
         assertEquals(bi.getHeight(), ISLAND_H);
 
         aFile = ((FileBlob) result).getFile();
-        assertTrue("Result image with fuzz should be lower than original",
+        assertTrue("Result image with fuzz should be smaller than original",
                 aFile.length() < (len1 / 2));
 
         deleteFile(result);
@@ -150,11 +150,12 @@ public class DiffPicturesTest {
         HashMap<String, Serializable> params;
         DiffPictures dp = new DiffPictures(blob1, blob2);
 
-        // We make the whole thing red
+        // We make the whole thing red.
+        // We need the command line that allows to change the background
         params = new HashMap<String, Serializable>();
         params.put("highlightColor", "Red");
         params.put("lowlightColor", "Red");
-        result = dp.compare(null, params);
+        result = dp.compare("diff-pictures-default-with-params", params);
 
         BufferedImage bi = checkIsImage(result);
         assertEquals(bi.getWidth(), ISLAND_W);
