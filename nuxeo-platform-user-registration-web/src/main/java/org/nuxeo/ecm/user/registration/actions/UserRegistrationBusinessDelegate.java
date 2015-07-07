@@ -18,7 +18,7 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(ScopeType.APPLICATION)
 public class UserRegistrationBusinessDelegate {
     @Factory(value = "userRegistrationService", scope = ScopeType.APPLICATION)
-    public UserRegistrationService UserRegistrationServiceFactory() throws Exception {
+    public UserRegistrationService UserRegistrationServiceFactory() {
         return Framework.getService(UserRegistrationService.class);
     }
 }

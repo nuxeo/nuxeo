@@ -21,13 +21,16 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.naming.NamingException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -36,6 +39,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.RegistrationRules;
@@ -205,8 +209,8 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         UserRegistrationConfiguration configuration = getConfiguration((DocumentModel) registrationInfo.get(REGISTRATION_DATA_DOC));
         try {
             rh.getRenderingEngine().render(configuration.getSuccessEmailTemplate(), input, writer);
-        } catch (Exception e) {
-            throw new ClientException("Error during rendering email", e);
+        } catch (RenderingException e) {
+            throw new NuxeoException("Error during rendering email", e);
         }
 
         String emailAdress = ((NuxeoPrincipalImpl) registrationInfo.get("registeredUser")).getEmail();
@@ -215,8 +219,8 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
         if (!Framework.isTestModeSet()) {
             try {
                 generateMail(emailAdress, null, title, body);
-            } catch (Exception e) {
-                throw new ClientException("Error while sending mail : ", e);
+            } catch (NamingException | MessagingException e) {
+                throw new NuxeoException("Error while sending mail", e);
             }
         } else {
             testRendering = body;

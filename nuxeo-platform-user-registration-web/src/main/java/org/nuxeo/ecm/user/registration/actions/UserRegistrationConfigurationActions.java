@@ -15,9 +15,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.user.invite.RegistrationRules;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
@@ -81,7 +81,7 @@ public class UserRegistrationConfigurationActions implements Serializable {
             documentManager.saveDocument(selectedConfigurationDocument);
             selectedConfigurationDocument = null;
             facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.save.configuration.registration"));
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.warn("Unable to save configuration document: " + e.getMessage());
             log.info(e);
             facesMessages.add(ERROR,

@@ -18,7 +18,6 @@ package org.nuxeo.ecm.user.registration;
 import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;

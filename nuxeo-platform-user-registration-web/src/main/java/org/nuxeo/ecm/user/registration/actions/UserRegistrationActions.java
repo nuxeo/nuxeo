@@ -42,11 +42,11 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -189,7 +189,7 @@ public class UserRegistrationActions implements Serializable {
 
             // EventManager.raiseEventsOnDocumentChange(request);
             Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             facesMessages.add(ERROR, e.getMessage());
         }
     }
@@ -201,7 +201,7 @@ public class UserRegistrationActions implements Serializable {
             userRegistrationService.rejectRegistrationRequest(request.getId(), additionalInfo);
             // EventManager.raiseEventsOnDocumentChange(request);
             Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             facesMessages.add(ERROR, e.getMessage());
         }
     }
@@ -213,7 +213,7 @@ public class UserRegistrationActions implements Serializable {
             doSubmitUserRegistration(configurationName);
             resetPojos();
             Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             facesMessages.add(ERROR, e.getMessage());
         }
     }
@@ -269,13 +269,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected boolean isDocumentValidable(DocumentModel doc) {
-        try {
-            return "accepted".equals(doc.getCurrentLifeCycleState());
-        } catch (ClientException e) {
-            log.warn("Unable to get lifecycle state for " + doc.getId() + ": " + e.getMessage());
-            log.debug(e);
-            return false;
-        }
+        return "accepted".equals(doc.getCurrentLifeCycleState());
     }
 
     public boolean getCanDelete() {
@@ -287,13 +281,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected boolean isDocumentDeletable(DocumentModel doc) {
-        try {
-            return !"validated".equals(doc.getCurrentLifeCycleState());
-        } catch (ClientException e) {
-            log.warn("Unable to get lifecycle state for " + doc.getId() + ": " + e.getMessage());
-            log.debug(e);
-            return false;
-        }
+        return !"validated".equals(doc.getCurrentLifeCycleState());
     }
 
     public boolean getCanRevive() {
@@ -305,13 +293,7 @@ public class UserRegistrationActions implements Serializable {
     }
 
     protected boolean isDocumentRevivable(DocumentModel doc) {
-        try {
-            return "accepted".equals(doc.getCurrentLifeCycleState());
-        } catch (ClientException e) {
-            log.warn("Unable to get lifecycle state for " + doc.getId() + ": " + e.getMessage());
-            log.info(e);
-            return false;
-        }
+        return "accepted".equals(doc.getCurrentLifeCycleState());
     }
 
     public void validateUserRegistration() {
@@ -324,7 +306,7 @@ public class UserRegistrationActions implements Serializable {
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
                 facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.validate.request"));
                 documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 log.warn("Unable to validate registration: " + e.getMessage());
                 log.info(e);
                 facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.validate.request"));
@@ -340,7 +322,7 @@ public class UserRegistrationActions implements Serializable {
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
                 facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.revive.request"));
                 documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 log.warn("Unable to revive user: " + e.getMessage());
                 log.info(e);
                 facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.revive.request"));
@@ -356,7 +338,7 @@ public class UserRegistrationActions implements Serializable {
                 Events.instance().raiseEvent(REQUESTS_DOCUMENT_LIST_CHANGED);
                 facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.delete.request"));
                 documentsListsManager.resetWorkingList(REQUEST_DOCUMENT_LIST);
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 log.warn("Unable to delete user request:" + e.getMessage());
                 log.info(e);
                 facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.delete.request"));
@@ -375,7 +357,7 @@ public class UserRegistrationActions implements Serializable {
                     getAdditionalsParameters(), EMAIL, false, documentManager.getPrincipal().getName());
 
             facesMessages.add(INFO, resourcesAccessor.getMessages().get("label.user.invited.success"));
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.info("Unable to register user: " + e.getMessage());
             log.debug(e, e);
             facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.invite.user"));
@@ -390,7 +372,7 @@ public class UserRegistrationActions implements Serializable {
                 additionalsInfo.put("registration:copyTo", ((NuxeoPrincipal) documentManager.getPrincipal()).getEmail());
             }
             additionalsInfo.put("registration:comment", comment);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             // log it silently as it will break anything
             log.debug(e, e);
         }
