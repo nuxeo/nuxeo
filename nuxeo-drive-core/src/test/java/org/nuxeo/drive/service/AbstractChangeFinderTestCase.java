@@ -45,7 +45,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
 import org.nuxeo.drive.service.impl.RootDefinitionsHelper;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
