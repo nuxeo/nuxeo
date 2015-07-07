@@ -71,20 +71,9 @@ public abstract class AbstractContentDiffAdapter implements ContentDiffAdapter {
      * Gets the content diff adapter manager.
      *
      * @return the content diff adapter manager
-     * @throws ContentDiffException the content diff exception
      */
-    protected final ContentDiffAdapterManager getContentDiffAdapterManager() throws ContentDiffException {
-
-        ContentDiffAdapterManager contentDiffAdapterManager;
-        try {
-            contentDiffAdapterManager = Framework.getService(ContentDiffAdapterManager.class);
-        } catch (Exception e) {
-            throw new ContentDiffException(e);
-        }
-        if (contentDiffAdapterManager == null) {
-            throw new ContentDiffException("ContentDiffAdapterManager service is null.");
-        }
-        return contentDiffAdapterManager;
+    protected final ContentDiffAdapterManager getContentDiffAdapterManager() {
+        return Framework.getService(ContentDiffAdapterManager.class);
     }
 
 }

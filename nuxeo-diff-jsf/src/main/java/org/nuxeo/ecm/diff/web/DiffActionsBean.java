@@ -46,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Handles document diff actions.
- * 
+ *
  * @author <a href="mailto:ataillefer@nuxeo.com">Antoine Taillefer</a>
  * @since 5.6
  */
@@ -90,7 +90,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Checks if the diff action is available for the {@link DocumentsListsManager#CURRENT_DOCUMENT_SELECTION} working
      * list.
-     * 
+     *
      * @return true if can diff the current document selection
      */
     public boolean getCanDiffCurrentDocumentSelection() {
@@ -101,7 +101,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Checks if the diff action is available for the {@link DocumentsListsManager#CURRENT_DOCUMENT_TRASH_SELECTION}
      * working list.
-     * 
+     *
      * @return true if can diff the current document trash selection
      */
     public boolean getCanDiffCurrentTrashSelection() {
@@ -112,7 +112,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Checks if the diff action is available for the {@link DocumentsListsManager#CURRENT_DOCUMENT_SECTION_SELECTION}
      * working list.
-     * 
+     *
      * @return true if can diff the current section selection
      */
     public boolean getCanDiffCurrentSectionSelection() {
@@ -123,7 +123,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Checks if the diff action is available for the {@link VersionDocumentsListsConstants#CURRENT_VERSION_SELECTION}
      * working list.
-     * 
+     *
      * @return true if can diff the current version selection
      */
     public boolean getCanDiffCurrentVersionSelection() {
@@ -133,7 +133,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Checks if the diff action is available for the {@link DocumentsListsManager#DEFAULT_WORKING_LIST} working list.
-     * 
+     *
      * @return true if can diff the current default working list selection
      */
     public boolean getCanDiffCurrentDefaultSelection() {
@@ -145,7 +145,7 @@ public class DiffActionsBean implements Serializable {
      * Checks if the diff action is available for the {@code listName} working list.
      * <p>
      * Condition: the working list has exactly 2 documents.
-     * 
+     *
      * @param listName the list name
      * @return true if can diff the {@code listName} working list
      */
@@ -157,7 +157,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current document selection.
-     * 
+     *
      * @return the view id
      */
     public String prepareCurrentDocumentSelectionDiff() {
@@ -168,7 +168,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current document trash selection.
-     * 
+     *
      * @return the view id
      */
     public String prepareCurrentTrashSelectionDiff() {
@@ -179,7 +179,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current section selection.
-     * 
+     *
      * @return the view id
      */
     public String prepareCurrentSectionSelectionDiff() {
@@ -190,7 +190,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current version selection.
-     * 
+     *
      * @return the view id
      */
     public String prepareCurrentVersionSelectionDiff() {
@@ -201,7 +201,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the current default selection.
-     * 
+     *
      * @return the view id
      */
     public String prepareCurrentDefaultSelectionDiff() {
@@ -212,7 +212,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the {@code listName} working list.
-     * 
+     *
      * @return the view id
      */
     public String prepareWorkingListDiff(String listName) {
@@ -227,7 +227,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepare a diff of the current document with a specific version
-     * 
+     *
      * @param versionLabel version label to look for, if you want the last version use org.nuxeo.ecm.diff.web
      *            .DiffActionsBean#LAST_VERSION_PROPERTY
      * @throws ClientException if current document is null or if the expected version is missing.
@@ -272,7 +272,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Prepares a diff of the selected version with the live doc.
-     * 
+     *
      * @return the view id
      */
     public String prepareCurrentVersionDiff() {
@@ -305,7 +305,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Refreshes the diff between leftDoc and rightDoc.
-     * 
+     *
      * @return the view id
      */
     public String refresh() {
@@ -321,7 +321,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Checks if document diff is available.
-     * 
+     *
      * @return true, if is document diff available
      */
     public boolean isDocumentDiffAvailable() {
@@ -330,7 +330,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the document diff.
-     * 
+     *
      * @return the document diff between leftDoc and rightDoc if leftDoc and rightDoc aren't null, else null
      */
     @Factory(value = "defaultDiffDisplayBlocks", scope = PAGE)
@@ -346,7 +346,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the content diff fancybox URL for the property with xpath {@code propertyXPath}.
-     * 
+     *
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @return the content diff fancybox URL
@@ -360,7 +360,7 @@ public class DiffActionsBean implements Serializable {
     /**
      * Gets the content diff fancybox URL for the property with xpath {@code propertyXPath} using {@code conversionType}
      * .
-     * 
+     *
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
@@ -420,7 +420,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the content diff URL.
-     * 
+     *
      * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
      * @return the content diff URL
@@ -445,7 +445,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the content diff with blob post processing URL.
-     * 
+     *
      * @param propertyXPath the property xpath
      * @param conversionTypeParam the conversion type param
      * @return the content diff with blob post processing URL
@@ -470,7 +470,7 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the {@code listName} working list.
-     * 
+     *
      * @return the {@code listName} working list
      */
     protected final List<DocumentModel> getWorkingList(String listName) {
@@ -487,43 +487,21 @@ public class DiffActionsBean implements Serializable {
 
     /**
      * Gets the document diff service.
-     * 
+     *
      * @return the document diff service
      * @throws ClientException if cannot get the document diff service
      */
     protected final DocumentDiffService getDocumentDiffService() {
-
-        DocumentDiffService documentDiffService;
-
-        try {
-            documentDiffService = Framework.getService(DocumentDiffService.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
-        if (documentDiffService == null) {
-            throw new ClientException("DocumentDiffService is null.");
-        }
-        return documentDiffService;
+        return Framework.getService(DocumentDiffService.class);
     }
 
     /**
      * Gets the diff display service.
-     * 
+     *
      * @return the diff display service
      */
     protected final DiffDisplayService getDiffDisplayService() {
-
-        DiffDisplayService diffDisplayService;
-
-        try {
-            diffDisplayService = Framework.getService(DiffDisplayService.class);
-        } catch (Exception e) {
-            throw ClientException.wrap(e);
-        }
-        if (diffDisplayService == null) {
-            throw new ClientException("DiffDisplayService is null.");
-        }
-        return diffDisplayService;
+        return Framework.getService(DiffDisplayService.class);
     }
 
     public DocumentModel getLeftDoc() {

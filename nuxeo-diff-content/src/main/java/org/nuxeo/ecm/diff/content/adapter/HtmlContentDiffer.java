@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.diff.content.adapter;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
@@ -43,6 +45,7 @@ import org.outerj.daisy.diff.html.TextNodeComparator;
 import org.outerj.daisy.diff.html.dom.DomTreeBuilder;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
@@ -120,7 +123,7 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
             blobResults.add(mainBlob);
             return blobResults;
 
-        } catch (Exception e) {
+        } catch (TransformerConfigurationException | SAXException | IOException e) {
             throw new ContentDiffException(e);
         }
     }

@@ -36,6 +36,7 @@ import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.diff.content.HtmlGuesser;
 import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
+import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
 import org.nuxeo.runtime.api.Framework;
 
@@ -193,7 +194,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
                 srcMT = mtr.getMimetypeFromFilenameAndBlobWithDefault(blob.getFilename(), blob,
                         "application/octet-stream");
                 log.debug("mime type service returned " + srcMT);
-            } catch (Exception e) {
+            } catch (MimetypeDetectionException e) {
                 log.warn("error while calling Mimetype service", e);
             }
         }

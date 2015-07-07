@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.diff.content.converters;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class ContentDiffTextConverter extends AbstractContentDiffConverter {
             if (convertedBlob != null) {
                 convertedBlobString = convertedBlob.getString();
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ConversionException("Error while getting converted blob string.");
         }
         if (StringUtils.isEmpty(convertedBlobString)) {
