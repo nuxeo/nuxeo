@@ -63,7 +63,6 @@ import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -262,7 +261,7 @@ public class CSVImporterWork extends AbstractWork {
                             startTransaction();
                         }
                     }
-                } catch (ClientException e) {
+                } catch (NuxeoException e) {
                     // try next line
                     Throwable unwrappedException = unwrapException(e);
                     logError(parser.getRecordNumber(), "Error while importing line: %s",
@@ -273,7 +272,7 @@ public class CSVImporterWork extends AbstractWork {
 
             try {
                 session.save();
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 Throwable ue = unwrapException(e);
                 logError(parser.getRecordNumber(), "Unable to save: %s", LABEL_CSV_IMPORTER_UNABLE_TO_SAVE,
                         ue.getMessage());
@@ -598,7 +597,7 @@ public class CSVImporterWork extends AbstractWork {
 
     public static Throwable unwrapException(Throwable t) {
         Throwable cause = null;
-        if (t instanceof ClientException || t instanceof Exception) {
+        if (t != null) {
             cause = t.getCause();
         }
         if (cause == null) {
