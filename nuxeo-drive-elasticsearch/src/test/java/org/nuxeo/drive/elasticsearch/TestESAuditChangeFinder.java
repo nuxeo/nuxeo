@@ -19,7 +19,6 @@ package org.nuxeo.drive.elasticsearch;
 
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
@@ -68,14 +67,12 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
 
     @Override
     @Test
-    @Ignore("NXP-15859: Fails on 6.0 only, need to investigate")
     public void testRegisterSyncRootAndUpdate() throws Exception {
         super.testRegisterSyncRootAndUpdate();
     }
 
     @Override
     @Test
-    @Ignore("NXP-15859: Fails on 6.0 only, need to investigate")
     public void testMoveToOtherUsersSyncRoot() throws Exception {
         super.testMoveToOtherUsersSyncRoot();
     }
