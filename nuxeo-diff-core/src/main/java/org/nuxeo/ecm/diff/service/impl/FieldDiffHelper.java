@@ -619,7 +619,6 @@ public final class FieldDiffHelper {
      * @param fieldDiff the field diff
      * @param textNode the text node
      * @param hasControlNodeContent the has control node content
-     * @throws ClientException if content sub property cannot be set
      */
     private static void setContentPropertyDiff(ContentPropertyDiff fieldDiff, Node textNode,
             boolean hasControlNodeContent) {

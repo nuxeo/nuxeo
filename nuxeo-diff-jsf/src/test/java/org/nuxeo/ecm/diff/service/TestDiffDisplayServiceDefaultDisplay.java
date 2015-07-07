@@ -74,9 +74,6 @@ public class TestDiffDisplayServiceDefaultDisplay extends DiffDisplayServiceTest
 
     /**
      * Tests the default diff display on 2 documents of a different type.
-     *
-     * @throws ClientException if an error occurs while creating the docs, doing the diff or getting the dif display
-     *             blocks
      */
     @Test
     public void testDefaultDiffDisplay() {

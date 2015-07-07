@@ -69,7 +69,6 @@ public final class ContentDiffHelper {
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
      * @return the content diff fancy box URL
-     * @throws ClientException if URL cannot be retrieved from current doc view
      */
     public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel,
             String propertyXPath, String conversionType) {

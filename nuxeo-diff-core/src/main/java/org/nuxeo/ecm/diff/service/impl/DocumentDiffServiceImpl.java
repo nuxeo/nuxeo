@@ -128,14 +128,9 @@ public class DocumentDiffServiceImpl implements DocumentDiffService {
      * Gets the document XML exporter service.
      *
      * @return the document XML exporter
-     * @throws ClientException if the document XML exporter service cannot be found
      */
     protected final DocumentXMLExporter getDocumentXMLExporter() {
-        DocumentXMLExporter docXMLExporter = Framework.getService(DocumentXMLExporter.class);
-        if (docXMLExporter == null) {
-            throw new NuxeoException("DocumentXMLExporter service is null.");
-        }
-        return docXMLExporter;
+        return Framework.getService(DocumentXMLExporter.class);
     }
 
     /**

@@ -95,7 +95,6 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
      * @param filePath the document file path
      * @param mimeType the document file mime type
      * @return the document model
-     * @throws ClientException if an error occurs while creating the document
      */
     protected DocumentModel createFileDoc(CoreSession session, String id, String title, String filePath, String mimeType)
             {

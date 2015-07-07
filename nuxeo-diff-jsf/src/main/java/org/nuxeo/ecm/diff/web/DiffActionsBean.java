@@ -31,7 +31,11 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.model.DiffDisplayBlock;
@@ -230,7 +234,6 @@ public class DiffActionsBean implements Serializable {
      *
      * @param versionLabel version label to look for, if you want the last version use org.nuxeo.ecm.diff.web
      *            .DiffActionsBean#LAST_VERSION_PROPERTY
-     * @throws ClientException if current document is null or if the expected version is missing.
      */
     public String prepareCurrentVersionDiff(String versionLabel) {
         if (StringUtils.isBlank(versionLabel)) {
@@ -281,7 +284,7 @@ public class DiffActionsBean implements Serializable {
         if (selectedVersionId != null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
             if (currentDocument == null) {
-                throw new ClientException(
+                throw new NuxeoException(
                         "Cannot make a diff between selected version and current document since current document is null.");
             }
 
@@ -289,7 +292,7 @@ public class DiffActionsBean implements Serializable {
             selectedVersion.setId(selectedVersionId);
             DocumentModel docVersion = documentManager.getDocumentWithVersion(currentDocument.getRef(), selectedVersion);
             if (docVersion == null) {
-                throw new ClientException(
+                throw new NuxeoException(
                         "Cannot make a diff between selected version and current document since selected version document is null.");
             }
 
@@ -350,7 +353,6 @@ public class DiffActionsBean implements Serializable {
      * @param propertyLabel the property label
      * @param propertyXPath the property xpath
      * @return the content diff fancybox URL
-     * @throws ClientException if the content diff fancybox URL cannot be retrieved
      */
     public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath) {
 
@@ -365,7 +367,6 @@ public class DiffActionsBean implements Serializable {
      * @param propertyXPath the property xpath
      * @param conversionType the conversion type
      * @return the content diff fancybox URL
-     * @throws ClientException if the content diff fancybox URL cannot be retrieved
      */
     public String getContentDiffFancyBoxURL(String propertyLabel, String propertyXPath, String conversionType)
             {
@@ -478,7 +479,7 @@ public class DiffActionsBean implements Serializable {
         List<DocumentModel> currentSelectionWorkingList = documentsListsManager.getWorkingList(listName);
 
         if (currentSelectionWorkingList == null || currentSelectionWorkingList.size() != 2) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot make a diff of the %s working list: need to have exactly 2 documents in the working list.",
                     listName));
         }
@@ -489,7 +490,6 @@ public class DiffActionsBean implements Serializable {
      * Gets the document diff service.
      *
      * @return the document diff service
-     * @throws ClientException if cannot get the document diff service
      */
     protected final DocumentDiffService getDocumentDiffService() {
         return Framework.getService(DocumentDiffService.class);

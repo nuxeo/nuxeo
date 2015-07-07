@@ -148,7 +148,6 @@ public class TestContentDiffHelper {
      * @param type the document type
      * @param title the document title
      * @return the document model
-     * @throws ClientException if an arror occurs while document creation
      */
     protected DocumentModel createDoc(CoreSession session, String id, String type, String title) {
 
