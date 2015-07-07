@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo.utils</groupId>
     <artifactId>nuxeo-target-platforms-parent</artifactId>
-    <version>1.2.6015</version>
+    <version>1.2.1.6015-SNAPSHOT</version>
   </parent>
 
   <artifactId>nuxeo-target-platforms-io</artifactId>
