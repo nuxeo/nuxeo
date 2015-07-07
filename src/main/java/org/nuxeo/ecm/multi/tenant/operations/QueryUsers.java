@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.multi.tenant.operations;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,7 +37,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -64,7 +62,7 @@ public class QueryUsers {
     protected String tenantId;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         List<DocumentModel> users = new ArrayList<DocumentModel>();
         if (StringUtils.isBlank(pattern)) {
             Map<String, Serializable> filter = new HashMap<String, Serializable>();
@@ -89,7 +87,7 @@ public class QueryUsers {
         return buildResponse(users);
     }
 
-    protected Blob buildResponse(List<DocumentModel> users) throws UnsupportedEncodingException {
+    protected Blob buildResponse(List<DocumentModel> users) {
 
         JSONArray array = new JSONArray();
         for (DocumentModel user : users) {

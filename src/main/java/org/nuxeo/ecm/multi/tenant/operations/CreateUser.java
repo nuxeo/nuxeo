@@ -63,7 +63,7 @@ public class CreateUser {
     protected StringList groups;
 
     @OperationMethod
-    public void run() throws Exception {
+    public void run() {
         if (userManager.getPrincipal(username) != null) {
             return;
         }

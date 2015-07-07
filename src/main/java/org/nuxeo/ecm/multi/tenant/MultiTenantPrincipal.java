@@ -17,7 +17,7 @@
 
 package org.nuxeo.ecm.multi.tenant;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
@@ -37,7 +37,7 @@ public class MultiTenantPrincipal extends NuxeoPrincipalImpl {
     public String getTenantId() {
         try {
             return (String) model.getPropertyValue("user:tenantId");
-        } catch (ClientException e) {
+        } catch (PropertyNotFoundException e) {
             return null;
         }
     }
