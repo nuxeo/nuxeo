@@ -15,6 +15,9 @@
   <supported>false</supported>
   <platforms>
     <platform>cap-@DISTRIB_VERSION@</platform>
+    <platform>cap-@DISTRIB_VERSION@-SNAPSHOT</platform>
+    <platform>cap-@DISTRIB_VERSION@-HF*</platform>
+    <platform>cap-@DISTRIB_VERSION@-HF*-SNAPSHOT</platform>
   </platforms>
   <license>LGPL 2.1</license>
   <license-url>http://www.gnu.org/licenses/lgpl-2.1.html</license-url>
