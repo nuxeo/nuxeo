@@ -38,8 +38,6 @@ public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHa
 
     private static final Log log = LogFactory.getLog(ShibbolethSecurityExceptionHandler.class);
 
-    protected ShibbolethAuthenticationService service;
-
     @Override
     protected boolean handleAnonymousException(HttpServletRequest request, HttpServletResponse response)
             throws IOException, ServletException {
@@ -73,14 +71,7 @@ public class ShibbolethSecurityExceptionHandler extends NuxeoSecurityExceptionHa
     }
 
     protected ShibbolethAuthenticationService getService() {
-        if (service == null) {
-            try {
-                service = Framework.getService(ShibbolethAuthenticationService.class);
-            } catch (Exception e) {
-                log.error("Failed to get Shibboleth authentication service", e);
-            }
-        }
-        return service;
+        return Framework.getService(ShibbolethAuthenticationService.class);
     }
 
 }

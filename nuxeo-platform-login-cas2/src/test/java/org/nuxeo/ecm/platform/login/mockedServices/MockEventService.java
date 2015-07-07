@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.login.mockedServices;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventProducer;

@@ -41,17 +41,8 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
 
     private static final Log log = LogFactory.getLog(ShibbolethAuthenticationPlugin.class);
 
-    protected ShibbolethAuthenticationService service;
-
     protected ShibbolethAuthenticationService getService() {
-        if (service == null) {
-            try {
-                service = Framework.getService(ShibbolethAuthenticationService.class);
-            } catch (Exception e) {
-                log.error("Failed to get Shibboleth authentication service", e);
-            }
-        }
-        return service;
+        return Framework.getService(ShibbolethAuthenticationService.class);
     }
 
     @Override
@@ -118,7 +109,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
                 entry.getDataModel(userManager.getUserSchemaName()).setMap(fieldMap);
                 userDir.updateEntry(entry);
             }
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
             log.error("Failed to get or create user entry", e);
         }
 

@@ -63,6 +63,7 @@ import org.opensaml.saml2.metadata.provider.MetadataProvider;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.opensaml.security.MetadataCredentialResolver;
 import org.opensaml.util.URLBuilder;
+import org.opensaml.ws.message.decoder.MessageDecodingException;
 import org.opensaml.ws.transport.InTransport;
 import org.opensaml.ws.transport.http.HttpServletRequestAdapter;
 import org.opensaml.ws.transport.http.HttpServletResponseAdapter;
@@ -354,7 +355,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         // Decode the message
         try {
             binding.decode(context);
-        } catch (Exception e) {
+        } catch (org.opensaml.xml.security.SecurityException | MessageDecodingException e) {
             log.error("Error during SAML decoding", e);
             return null;
         }
@@ -401,7 +402,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
                     SAMLCredential credential = getSamlCredential(request);
                     slo.processLogoutRequest(context, credential);
                 }
-            } catch (Exception e) {
+            } catch (SAMLException e) {
                 log.debug("Error processing SAML message", e);
             }
             return null;
@@ -412,7 +413,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         try {
             credential = ((WebSSOProfile) processor).processAuthenticationResponse(context);
-        } catch (Exception e) {
+        } catch (SAMLException e) {
             log.error("Error processing SAML message", e);
             sendError(request, ERROR_AUTH);
             return null;

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.login.deputy.management;
 import java.util.Calendar;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface DeputyManager {

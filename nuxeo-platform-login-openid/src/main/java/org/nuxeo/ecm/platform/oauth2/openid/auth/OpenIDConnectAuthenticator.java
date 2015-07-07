@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProviderRegistry;
@@ -138,7 +139,7 @@ public class OpenIDConnectAuthenticator implements NuxeoAuthenticationPlugin {
 
             return new UserIdentificationInfo(userId, userId);
 
-        } catch (Exception e) {
+        } catch (NuxeoException e) {
             log.error("Error while retrieve Identity From OAuth", e);
         }
 

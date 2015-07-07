@@ -29,7 +29,6 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -96,7 +95,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             // Open directory session
@@ -132,7 +131,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -151,7 +150,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             // Open directory session
@@ -184,10 +183,6 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                         "No token found for the (userName, applicationName, deviceId) triplet: ('%s', '%s', '%s'), returning null.",
                         userName, applicationName, deviceId));
                 return null;
-
-            } catch (ClientException e) {
-                log.error(e);
-                throw e;
             }
         } finally {
             try {
@@ -196,7 +191,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -209,7 +204,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
@@ -229,7 +224,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -242,7 +237,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
@@ -256,7 +251,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }
@@ -269,7 +264,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
         try {
             lc = Framework.login();
         } catch (LoginException e) {
-            throw new ClientException("Cannot log in as system user", e);
+            throw new NuxeoException("Cannot log in as system user", e);
         }
         try {
             try (Session session = Framework.getService(DirectoryService.class).open(DIRECTORY_NAME)) {
@@ -286,7 +281,7 @@ public class TokenAuthenticationServiceImpl implements TokenAuthenticationServic
                     lc.logout();
                 }
             } catch (LoginException e) {
-                throw new ClientException("Cannot log out system user", e);
+                throw new NuxeoException("Cannot log out system user", e);
             }
         }
     }

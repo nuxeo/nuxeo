@@ -55,27 +55,6 @@ import edu.yale.its.tp.cas.util.SecureURL;
 public class ServiceTicketValidator {
 
     // *********************************************************************
-    // For testing...
-    public static void main(String args[]) throws Exception {
-        System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
-        edu.yale.its.tp.cas.client.ServiceTicketValidator sv = new edu.yale.its.tp.cas.client.ServiceTicketValidator();
-        sv.setCasValidateUrl("https://portal1.wss.yale.edu/cas/serviceValidate");
-        sv.setProxyCallbackUrl("https://portal1.wss.yale.edu/casProxy/receptor");
-        sv.setService(args[0]);
-        sv.setServiceTicket(args[1]);
-        sv.validate();
-        System.out.println(sv.getResponse());
-        System.out.println();
-        if (sv.isAuthenticationSuccesful()) {
-            System.out.println("user: " + sv.getUser());
-            System.out.println("pgtIou: " + sv.getPgtIou());
-        } else {
-            System.out.println("error code: " + sv.getErrorCode());
-            System.out.println("error message: " + sv.getErrorMessage());
-        }
-    }
-
-    // *********************************************************************
     // Private state
 
     protected String casValidateUrl, proxyCallbackUrl, st, service, pgtIou, user, errorCode, errorMessage,

@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -107,7 +108,7 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
                 return null;
             }
             return (String) entry.getPropertyValue(SCHEMA_NAME + ":" + NUXEO_LOGIN_KEY);
-        } catch (Exception e) {
+        } catch (PropertyNotFoundException e) {
             log.error("Error retrieving OpenID user info", e);
             return null;
         }
@@ -128,7 +129,7 @@ public class OpenIDUserInfoStoreImpl implements OpenIDUserInfoStore {
             DefaultOpenIDUserInfo userInfo = new DefaultOpenIDUserInfo();
             userInfo.putAll(entry.getProperties(SCHEMA_NAME));
             return userInfo;
-        } catch (Exception e) {
+        } catch (DirectoryException e) {
             log.error("Error retrieving OpenID user info", e);
             return null;
         }

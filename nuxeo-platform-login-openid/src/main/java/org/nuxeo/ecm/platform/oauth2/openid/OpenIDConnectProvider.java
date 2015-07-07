@@ -96,7 +96,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         try {
             Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[] { OpenIDConnectProvider.class });
             userResolver = c.newInstance(new Object[] { this });
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate UserResolver", e);
         }
 
@@ -108,7 +108,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     /**
      * Create a state token to prevent request forgery. Store it in the session for later validation.
-     * 
+     *
      * @param HttpServletRequest request
      * @return
      */
@@ -121,7 +121,7 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
     /**
      * Ensure that this is no request forgery going on, and that the user sending us this connect request is the user
      * that was supposed to.
-     * 
+     *
      * @param HttpServletRequest request
      * @return
      */

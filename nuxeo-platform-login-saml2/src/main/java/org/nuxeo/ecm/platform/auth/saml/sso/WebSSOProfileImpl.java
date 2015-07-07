@@ -129,7 +129,8 @@ public class WebSSOProfileImpl extends AbstractSAMLProfile implements WebSSOProf
                         sessionIndexes.add(statement.getSessionIndex());
                     }
 
-                } catch (Exception e) {
+                } catch (SAMLException | org.opensaml.xml.security.SecurityException | ValidationException
+                        | DecryptionException e) {
                     log.debug("Validation of received assertion failed, assertion will be skipped", e);
                     continue;
                 }

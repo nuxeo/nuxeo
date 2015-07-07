@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -65,15 +64,9 @@ public class DeputyManagementStorageService implements DeputyManager {
     }
 
     protected void initPersistentService() {
-
         if (directoryService == null) {
-            try {
-                directoryService = Framework.getService(DirectoryService.class);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            directoryService = Framework.getService(DirectoryService.class);
         }
-
         dirSession = directoryService.open(DIR_NAME);
         directorySchema = directoryService.getDirectorySchema(DIR_NAME);
     }
@@ -91,7 +84,7 @@ public class DeputyManagementStorageService implements DeputyManager {
         if (dirSession != null) {
             try {
                 dirSession.close();
-            } catch (Exception e) {
+            } catch (DirectoryException e) {
                 // do nothing
             }
         }
@@ -189,8 +182,6 @@ public class DeputyManagementStorageService implements DeputyManager {
             filter.put(DIR_COL_USERID, userName);
             return dirSession.query(filter);
         } catch (DirectoryException e) {
-            return deputies;
-        } catch (ClientException e) {
             return deputies;
         } finally {
             releasePersistenceService();

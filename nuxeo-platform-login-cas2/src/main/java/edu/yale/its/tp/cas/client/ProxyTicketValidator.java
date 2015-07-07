@@ -47,28 +47,6 @@ import org.xml.sax.helpers.DefaultHandler;
 public class ProxyTicketValidator extends ServiceTicketValidator {
 
     // *********************************************************************
-    // For testing...
-    public static void main(String args[]) throws Exception {
-        System.setProperty("java.protocol.handler.pkgs", "com.sun.net.ssl.internal.www.protocol");
-        edu.yale.its.tp.cas.client.ProxyTicketValidator pv = new edu.yale.its.tp.cas.client.ProxyTicketValidator();
-        pv.setCasValidateUrl("https://portal.yale.edu/cas/proxyValidate");
-        // pv.setProxyCallbackUrl("https://portal.yale.edu/casProxy/receptor");
-        pv.setService(args[0]);
-        pv.setServiceTicket(args[1]);
-        pv.validate();
-        System.out.println(pv.getResponse());
-        System.out.println();
-        if (pv.isAuthenticationSuccesful()) {
-            System.out.println("user: " + pv.getUser());
-            // System.out.println("pgtIou: " + pv.getPgtIou());
-            System.out.println("proxies:\n " + pv.getProxyList());
-        } else {
-            System.out.println("error code: " + pv.getErrorCode());
-            System.out.println("error message: " + pv.getErrorMessage());
-        }
-    }
-
-    // *********************************************************************
     // Additive state
 
     protected List proxyList;

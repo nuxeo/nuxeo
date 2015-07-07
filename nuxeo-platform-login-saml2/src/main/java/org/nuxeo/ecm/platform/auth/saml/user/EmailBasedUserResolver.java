@@ -18,9 +18,9 @@ package org.nuxeo.ecm.platform.auth.saml.user;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -50,7 +50,7 @@ public class EmailBasedUserResolver extends UserResolver {
             DocumentModel user = users.get(0);
             return (String) user.getPropertyValue(userManager.getUserIdField());
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);
             return null;
         }
@@ -61,7 +61,7 @@ public class EmailBasedUserResolver extends UserResolver {
         try {
             UserManager userManager = Framework.getLocalService(UserManager.class);
             user.setPropertyValue(userManager.getUserEmailField(), credential.getNameID().getValue());
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Error while search user in UserManager using email " + credential.getNameID().getValue(), e);
             return null;
         }

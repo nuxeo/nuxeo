@@ -111,7 +111,7 @@ public class NTLMAuthenticator implements NuxeoAuthenticationPlugin {
 
         try {
             ntlm = negotiate(httpRequest, httpResponse, false);
-        } catch (Exception e) {
+        } catch (IOException | ServletException e) {
             log.error("NTLM negotiation failed : " + e.getMessage(), e);
             return null;
         }

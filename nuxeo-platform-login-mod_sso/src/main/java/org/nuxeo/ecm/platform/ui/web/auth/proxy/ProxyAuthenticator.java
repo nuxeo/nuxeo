@@ -33,6 +33,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -106,7 +107,7 @@ public class ProxyAuthenticator implements NuxeoAuthenticationPlugin {
                 // use the ID of the found user entry as new identification for
                 // the principal
                 userName = result.get(0).getId();
-            } catch (Exception e) {
+            } catch (DirectoryException e) {
                 log.error(String.format("could not retrieve user entry with %s='%s':  %s", credentialFieldName,
                         userName, e.getMessage()), e);
                 return null;

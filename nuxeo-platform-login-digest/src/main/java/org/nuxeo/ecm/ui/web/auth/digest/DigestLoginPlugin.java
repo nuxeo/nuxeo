@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
@@ -85,7 +86,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
                         + loginParameters.get(REALM));
                 return null;
             }
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | DirectoryException e) {
             log.error("Digest authentication failed", e);
             return null;
         }
@@ -111,7 +112,7 @@ public class DigestLoginPlugin extends BaseLoginModule {
         return DigestUtils.md5Hex(a1);
     }
 
-    protected String getStoredHA1(String username) throws Exception {
+    protected String getStoredHA1(String username) throws DirectoryException {
         UserManager userManager = Framework.getService(UserManager.class);
         String dirName = userManager.getDigestAuthDirectory();
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);

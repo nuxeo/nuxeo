@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.ui.web.auth.cas2;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
@@ -28,9 +26,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -48,13 +44,9 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
 
     public static final String COOKIE_NAME_LOGOUT_URL = "cookie.name.logout.url";
 
-    private static final Log log = LogFactory.getLog(SecurityExceptionHandler.class);
-
     Cas2Authenticator cas2Authenticator;
 
-    protected URLPolicyService urlService;
-
-    public SecurityExceptionHandler() throws Exception {
+    public SecurityExceptionHandler() {
     }
 
     @Override
@@ -106,13 +98,13 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
         PluggableAuthenticationService service = (PluggableAuthenticationService) Framework.getRuntime().getComponent(
                 PluggableAuthenticationService.NAME);
         if (service == null) {
-            throw new ClientException("Can't initialize Nuxeo Pluggable Authentication Service");
+            throw new NuxeoException("Can't initialize Nuxeo Pluggable Authentication Service");
         }
 
         cas2Authenticator = (Cas2Authenticator) service.getPlugin("CAS2_AUTH");
 
         if (cas2Authenticator == null) {
-            throw new ClientException("Can't get CAS authenticator");
+            throw new NuxeoException("Can't get CAS authenticator");
         }
         return cas2Authenticator;
     }
@@ -131,14 +123,7 @@ public class SecurityExceptionHandler extends DefaultNuxeoExceptionHandler {
     }
 
     protected URLPolicyService getURLPolicyService() {
-        if (urlService == null) {
-            try {
-                urlService = Framework.getService(URLPolicyService.class);
-            } catch (Exception e) {
-                log.error("Could not retrieve the URLPolicyService", e);
-            }
-        }
-        return urlService;
+        return Framework.getService(URLPolicyService.class);
     }
 
 }

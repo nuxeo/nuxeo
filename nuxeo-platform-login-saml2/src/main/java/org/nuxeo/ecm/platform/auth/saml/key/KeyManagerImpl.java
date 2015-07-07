@@ -140,7 +140,7 @@ public class KeyManagerImpl extends DefaultComponent implements KeyManager {
         }
         try {
             return (X509Certificate) keyStore.getCertificate(alias);
-        } catch (Exception e) {
+        } catch (KeyStoreException e) {
             log.error("Error loading certificate", e);
         }
         return null;

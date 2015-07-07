@@ -22,8 +22,8 @@ import java.util.List;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.openid.OpenIDConnectProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -55,7 +55,7 @@ public abstract class UserResolver {
 
             userManager.createUser(userDoc);
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Error while creating user " + nuxeoLogin + "in UserManager", e);
             return null;
         }
@@ -85,7 +85,7 @@ public abstract class UserResolver {
             while (userId == null || userIds.contains(userId)) {
                 userId = "user_" + RandomStringUtils.randomNumeric(4);
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Error while generating random user id", e);
             return null;
         }

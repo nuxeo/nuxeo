@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.tokenauth;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 
 /**
@@ -25,9 +25,9 @@ import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
  * @author Antoine Taillefer (ataillefer@nuxeo.com)
  * @since 5.7
  */
-public class TokenAuthenticationException extends ClientException {
+public class TokenAuthenticationException extends NuxeoException {
 
-    private static final long serialVersionUID = 2074869903479308929L;
+    private static final long serialVersionUID = 1L;
 
     public TokenAuthenticationException(String message) {
         super(message);

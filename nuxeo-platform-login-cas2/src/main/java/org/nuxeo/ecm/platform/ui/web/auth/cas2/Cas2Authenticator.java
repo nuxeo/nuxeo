@@ -435,7 +435,7 @@ public class Cas2Authenticator implements NuxeoAuthenticationPlugin, NuxeoAuthen
             if (errorPage != null) {
                 response.sendRedirect(errorPage);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e);
             return false;
         }

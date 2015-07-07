@@ -23,9 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
@@ -43,36 +40,16 @@ import org.nuxeo.runtime.api.Framework;
 
 public class ShibbolethGroupHelper {
 
-    private static final Log log = LogFactory.getLog(ShibbolethGroupHelper.class);
-
-    protected static DirectoryService directory;
-
-    protected static UserManager userManager;
-
     private ShibbolethGroupHelper() {
         // Helper class
     }
 
     protected static DirectoryService getDirectoryService() {
-        if (directory == null) {
-            try {
-                directory = Framework.getService(DirectoryService.class);
-            } catch (Exception e) {
-                log.error("Failed to open directory service", e);
-            }
-        }
-        return directory;
+        return Framework.getService(DirectoryService.class);
     }
 
     protected static UserManager getUserManager() {
-        if (userManager == null) {
-            try {
-                userManager = Framework.getService(UserManager.class);
-            } catch (Exception e) {
-                log.error("Cannot access the userManager Service");
-            }
-        }
-        return userManager;
+        return Framework.getService(UserManager.class);
     }
 
     public static DocumentModel getBareGroupModel(CoreSession core) {

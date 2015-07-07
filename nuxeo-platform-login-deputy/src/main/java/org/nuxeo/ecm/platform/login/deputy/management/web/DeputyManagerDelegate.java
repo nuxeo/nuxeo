@@ -19,16 +19,13 @@
 
 package org.nuxeo.ecm.platform.login.deputy.management.web;
 
-import static org.jboss.seam.ScopeType.*;
+import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -36,24 +33,11 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(SESSION)
 public class DeputyManagerDelegate implements Serializable {
 
-    private static final long serialVersionUID = -4778456059717447736L;
-
-    private static final Log log = LogFactory.getLog(DeputyManagerDelegate.class);
-
-    private transient DeputyManager deputyManager;
+    private static final long serialVersionUID = 1L;
 
     @Unwrap
     public DeputyManager factoryForDeputyManager() {
-        if (deputyManager == null) {
-            try {
-                deputyManager = Framework.getService(DeputyManager.class);
-            } catch (Exception e) {
-                log.error("Unable to create deputyManager service : " + e.getMessage());
-                throw new ClientException("Unable to create deputyManager service", e);
-            }
-        }
-
-        return deputyManager;
+        return Framework.getService(DeputyManager.class);
     }
 
 }
