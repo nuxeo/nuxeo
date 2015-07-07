@@ -39,6 +39,10 @@ public class LocalConfigurationServiceImpl extends DefaultComponent implements L
 
         try {
             CoreSession session = currentDoc.getCoreSession();
+            if (session == null) {
+                return null;
+            }
+
             T localConfiguration = session.adaptFirstMatchingDocumentWithFacet(currentDoc.getRef(), configurationFacet,
                     configurationClass);
             if (localConfiguration == null) {
