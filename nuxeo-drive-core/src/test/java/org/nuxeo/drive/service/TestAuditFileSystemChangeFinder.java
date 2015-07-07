@@ -20,7 +20,6 @@ import javax.persistence.EntityManager;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.impl.AuditChangeFinder;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
