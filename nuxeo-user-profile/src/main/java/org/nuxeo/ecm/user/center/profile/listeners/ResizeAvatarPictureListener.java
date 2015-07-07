@@ -39,7 +39,6 @@ import static org.nuxeo.ecm.user.center.profile.UserProfileConstants.USER_PROFIL
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.event.Event;

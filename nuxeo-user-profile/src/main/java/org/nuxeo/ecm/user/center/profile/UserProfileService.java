@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.user.center.profile;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 

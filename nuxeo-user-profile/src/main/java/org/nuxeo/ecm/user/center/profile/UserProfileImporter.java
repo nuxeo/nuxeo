@@ -39,9 +39,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.annotation.Experimental;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -187,7 +187,7 @@ public class UserProfileImporter {
                             startTransaction();
                         }
                     }
-                } catch (ClientException e) {
+                } catch (NuxeoException e) {
                     // try next line
                     Throwable unwrappedException = unwrapException(e);
                     logImportError(lineNumber, "Error while importing line: %s", unwrappedException.getMessage());
@@ -195,12 +195,7 @@ public class UserProfileImporter {
                 }
             }
 
-            try {
-                session.save();
-            } catch (ClientException e) {
-                Throwable ue = unwrapException(e);
-                log.error("Unable to save:" + ue.getMessage() + " ( line :" + lineNumber + ")", e);
-            }
+            session.save();
         } finally {
             commitOrRollbackTransaction();
             startTransaction();
@@ -360,7 +355,7 @@ public class UserProfileImporter {
 
         try {
             session.saveDocument(doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             Throwable unwrappedException = unwrapException(e);
             logImportError(lineNumber, "Unable to update document for user: %s: %s", name,
                     unwrappedException.getMessage());
@@ -407,7 +402,7 @@ public class UserProfileImporter {
     public static Throwable unwrapException(Throwable t) {
         Throwable cause = null;
 
-        if (t instanceof ClientException || t instanceof Exception) {
+        if (t != null) {
             cause = t.getCause();
         }
 
