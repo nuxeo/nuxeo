@@ -18,7 +18,6 @@ package org.nuxeo.drive.listener;
 
 import java.security.Principal;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +35,11 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
@@ -91,7 +93,7 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         // Some events will only impact a specific user (e.g. root
         // unregistration)
         String impactedUserName = (String) ctx.getProperty(NuxeoDriveEvents.IMPACTED_USERNAME_PROPERTY);
-        logVirtualEvent(docForLogEntry, virtualEventName, ctx.getPrincipal(), impactedUserName);
+        fireVirtualEventLogEntry(docForLogEntry, virtualEventName, ctx.getPrincipal(), impactedUserName);
     }
 
     protected DocumentModel handleBeforeDocUpdate(DocumentEventContext ctx, DocumentModel doc) {
@@ -129,8 +131,8 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         return !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState());
     }
 
-    protected void logVirtualEvent(DocumentModel doc, String eventName, Principal principal, String impactedUserName)
-            {
+    protected void fireVirtualEventLogEntry(DocumentModel doc, String eventName, Principal principal,
+            String impactedUserName) {
 
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger == null) {
@@ -178,7 +180,10 @@ public class NuxeoDriveFileSystemDeletionListener implements EventListener {
         extendedInfos.put("fileSystemItemId", logger.newExtendedInfo(fsItem.getId()));
         extendedInfos.put("fileSystemItemName", logger.newExtendedInfo(fsItem.getName()));
         entry.setExtendedInfos(extendedInfos);
-        logger.addLogEntries(Collections.singletonList(entry));
+
+        EventContext eventContext = new EventContextImpl(entry);
+        Event event = eventContext.newEvent(NuxeoDriveEvents.VIRTUAL_EVENT_CREATED);
+        Framework.getService(EventProducer.class).fireEvent(event);
     }
 
 }

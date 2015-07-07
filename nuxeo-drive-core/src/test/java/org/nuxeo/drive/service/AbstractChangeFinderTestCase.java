@@ -58,8 +58,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
-import org.nuxeo.ecm.core.event.impl.EventListenerList;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -121,16 +119,6 @@ public abstract class AbstractChangeFinderTestCase {
 
     @Before
     public void init() throws Exception {
-        // Disable asynchronous event listeners except for the audit logger
-        EventListenerList eventListeners = eventServiceAdmin.getListenerList();
-        List<EventListenerDescriptor> postCommitListenerDescs = eventListeners.getAsyncPostCommitListenersDescriptors();
-        for (EventListenerDescriptor postCommitListenerDesc : postCommitListenerDescs) {
-            String postCommitListenerDescName = postCommitListenerDesc.getName();
-            if (!"auditLoggerListener".equals(postCommitListenerDescName)) {
-                eventServiceAdmin.setListenerEnabledFlag(postCommitListenerDescName, false);
-            }
-        }
-
         // Enable deletion listener because the tear down disables it
         eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
