@@ -253,10 +253,6 @@ public class CMISQLQueryMaker implements QueryMaker {
                         + walker.getErrorMessage(e, walker.getTokenNames());
             }
             throw new QueryParseException(msg, e);
-        } catch (QueryParseException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new QueryParseException(e.getMessage() + " for query: " + statement, e);
         }
 
         resolveQualifiers();

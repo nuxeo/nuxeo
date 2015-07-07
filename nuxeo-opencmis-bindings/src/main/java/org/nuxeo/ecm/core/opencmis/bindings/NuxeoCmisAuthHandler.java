@@ -90,7 +90,7 @@ public class NuxeoCmisAuthHandler extends CXFAuthHandler implements LoginProvide
                     } else {
                         log.error(className + " is not an instance of " + LoginProvider.class.getName());
                     }
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error(e);
                 }
             }
@@ -108,22 +108,13 @@ public class NuxeoCmisAuthHandler extends CXFAuthHandler implements LoginProvide
             }
             // login to Nuxeo framework
             return Framework.login(username, password);
-        } catch (Exception e) {
+        } catch (LoginException e) {
             throw new RuntimeException("Login failed for user '" + username + "'", e);
         }
     }
 
     protected static Authenticator getAuthenticator() {
-        Authenticator userManager;
-        try {
-            userManager = Framework.getService(Authenticator.class);
-        } catch (Exception e) {
-            throw new RuntimeException("Cannot get Authenticator service", e);
-        }
-        if (userManager == null) {
-            throw new RuntimeException("Cannot get Authenticator service");
-        }
-        return userManager;
+        return Framework.getService(Authenticator.class);
     }
 
 }

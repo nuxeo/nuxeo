@@ -486,7 +486,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
         try {
             return fileManager.createDocumentFromBlob(coreSession, blob, path, false, name);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
@@ -1013,8 +1013,6 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             collectObjectInfos = false;
             info = getObjectInfoIntern(repositoryId, data);
             getObjectInfo().put(info.getId(), info);
-        } catch (Exception e) {
-            log.error(e.toString(), e);
         } finally {
             collectObjectInfos = true;
         }
@@ -1094,9 +1092,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             NuxeoPropertyData.setContentStream(doc, contentStream, !Boolean.FALSE.equals(overwriteFlag));
             coreSession.saveDocument(doc);
             save();
-        } catch (CmisBaseException e) {
-            throw e;
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
@@ -1265,59 +1261,55 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 throw new CmisInvalidArgumentException("Invalid change log token");
             }
         }
-        try {
-            AuditReader reader = Framework.getService(AuditReader.class);
-            if (reader == null) {
-                throw new CmisRuntimeException("Cannot find audit service");
-            }
-            int max = maxItems == null ? -1 : maxItems.intValue();
-            if (max <= 0) {
-                max = DEFAULT_CHANGE_LOG_SIZE;
-            }
-            if (max > MAX_CHANGE_LOG_SIZE) {
-                max = MAX_CHANGE_LOG_SIZE;
-            }
-            List<ObjectData> ods = null;
-            // retry with increasingly larger page size if some items are
-            // skipped
-            for (int scale = 1; scale < 128; scale *= 2) {
-                int pageSize = max * scale + 1;
-                if (pageSize < 0) { // overflow
-                    pageSize = Integer.MAX_VALUE;
-                }
-                ods = readAuditLog(repositoryId, minDate, max, pageSize);
-                if (ods != null) {
-                    break;
-                }
-                if (pageSize == Integer.MAX_VALUE) {
-                    break;
-                }
-            }
-            if (ods == null) {
-                // couldn't find enough, too many items were skipped
-                ods = Collections.emptyList();
-
-            }
-            boolean hasMoreItems = ods.size() > max;
-            if (hasMoreItems) {
-                ods = ods.subList(0, max);
-            }
-            String latestChangeLogToken;
-            if (ods.size() == 0) {
-                latestChangeLogToken = null;
-            } else {
-                ObjectData last = ods.get(ods.size() - 1);
-                latestChangeLogToken = String.valueOf(last.getChangeEventInfo().getChangeTime().getTimeInMillis());
-            }
-            ObjectListImpl ol = new ObjectListImpl();
-            ol.setHasMoreItems(Boolean.valueOf(hasMoreItems));
-            ol.setObjects(ods);
-            ol.setNumItems(BigInteger.valueOf(-1));
-            changeLogTokenHolder.setValue(latestChangeLogToken);
-            return ol;
-        } catch (Exception e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        AuditReader reader = Framework.getService(AuditReader.class);
+        if (reader == null) {
+            throw new CmisRuntimeException("Cannot find audit service");
         }
+        int max = maxItems == null ? -1 : maxItems.intValue();
+        if (max <= 0) {
+            max = DEFAULT_CHANGE_LOG_SIZE;
+        }
+        if (max > MAX_CHANGE_LOG_SIZE) {
+            max = MAX_CHANGE_LOG_SIZE;
+        }
+        List<ObjectData> ods = null;
+        // retry with increasingly larger page size if some items are
+        // skipped
+        for (int scale = 1; scale < 128; scale *= 2) {
+            int pageSize = max * scale + 1;
+            if (pageSize < 0) { // overflow
+                pageSize = Integer.MAX_VALUE;
+            }
+            ods = readAuditLog(repositoryId, minDate, max, pageSize);
+            if (ods != null) {
+                break;
+            }
+            if (pageSize == Integer.MAX_VALUE) {
+                break;
+            }
+        }
+        if (ods == null) {
+            // couldn't find enough, too many items were skipped
+            ods = Collections.emptyList();
+
+        }
+        boolean hasMoreItems = ods.size() > max;
+        if (hasMoreItems) {
+            ods = ods.subList(0, max);
+        }
+        String latestChangeLogToken;
+        if (ods.size() == 0) {
+            latestChangeLogToken = null;
+        } else {
+            ObjectData last = ods.get(ods.size() - 1);
+            latestChangeLogToken = String.valueOf(last.getChangeEventInfo().getChangeTime().getTimeInMillis());
+        }
+        ObjectListImpl ol = new ObjectListImpl();
+        ol.setHasMoreItems(Boolean.valueOf(hasMoreItems));
+        ol.setObjects(ods);
+        ol.setNumItems(BigInteger.valueOf(-1));
+        changeLogTokenHolder.setValue(latestChangeLogToken);
+        return ol;
     }
 
     /**
@@ -1399,25 +1391,21 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     }
 
     protected String getLatestChangeLogToken(String repositoryId) {
-        try {
-            AuditReader reader = Framework.getService(AuditReader.class);
-            if (reader == null) {
-                log.warn("Audit Service not found. latest change log token will be '0'");
-                return "0";
-                // throw new CmisRuntimeException("Cannot find audit service");
-            }
-            // TODO XXX repositoryId as well
-            String[] events = new String[] {DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED};
-            String[] category = null;
-            List<?> entries = reader.queryLogsByPage(events, new Date(0), category, null, 1, 1);
-            if (entries.size() == 0) {
-                return "0";
-            }
-            LogEntry logEntry = (LogEntry) entries.get(0);
-            return String.valueOf(logEntry.getEventDate().getTime());
-        } catch (Exception e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        AuditReader reader = Framework.getService(AuditReader.class);
+        if (reader == null) {
+            log.warn("Audit Service not found. latest change log token will be '0'");
+            return "0";
+            // throw new CmisRuntimeException("Cannot find audit service");
         }
+        // TODO XXX repositoryId as well
+        String[] events = new String[] { DOCUMENT_CREATED, DOCUMENT_UPDATED, DOCUMENT_REMOVED };
+        String[] category = null;
+        List<?> entries = reader.queryLogsByPage(events, new Date(0), category, null, 1, 1);
+        if (entries.size() == 0) {
+            return "0";
+        }
+        LogEntry logEntry = (LogEntry) entries.get(0);
+        return String.valueOf(logEntry.getEventDate().getTime());
     }
 
     @Override
@@ -1502,7 +1490,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
      * @param typeInfo a map filled with type information for each returned property, or {@code null} if no such info is
      *            needed
      * @return an {@link IterableQueryResult}, which MUST be closed in a {@code finally} block
-     * @throws CmisRuntimeException if the query cannot be parsed or is invalid
+     * @throws CmisInvalidArgumentException if the query cannot be parsed or is invalid
      * @since 6.0
      */
     public IterableQueryResult queryAndFetch(String query, boolean searchAllVersions,
@@ -1518,7 +1506,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             try {
                 nxql = converter.getNXQL(query, this, typeInfo, searchAllVersions);
             } catch (QueryParseException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+                throw new CmisInvalidArgumentException(e.getMessage(), e);
             }
 
             IterableQueryResult it;

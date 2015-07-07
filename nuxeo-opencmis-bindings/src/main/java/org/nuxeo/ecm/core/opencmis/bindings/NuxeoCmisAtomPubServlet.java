@@ -104,11 +104,11 @@ public class NuxeoCmisAtomPubServlet extends CmisAtomPubServlet {
             }
 
             pw.print("</body></html>");
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOG.error(e.getMessage(), e);
             try {
                 response.sendError(errorInfo.statusCode, errorInfo.message);
-            } catch (Exception en) {
+            } catch (IOException en) {
                 // there is nothing else we can do
             }
         }

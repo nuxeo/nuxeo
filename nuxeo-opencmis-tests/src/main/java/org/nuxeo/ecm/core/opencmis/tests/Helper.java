@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -92,7 +93,7 @@ public class Helper {
     /**
      * Creates data in the repository using the Nuxeo API. This is then used as a starting point by unit tests.
      */
-    public static Map<String, String> makeNuxeoRepository(CoreSession session) throws Exception {
+    public static Map<String, String> makeNuxeoRepository(CoreSession session) {
         // remove default-domain
         DocumentRef defaultDomain = new PathRef("/default-domain");
         if (session.exists(defaultDomain)) {
@@ -121,7 +122,12 @@ public class Helper {
         file1.setPropertyValue("dc:coverage", "foo/bar");
         file1.setPropertyValue("dc:subjects", new String[] { "foo", "gee/moo" });
         file1.addFacet(ThumbnailConstants.THUMBNAIL_FACET);
-        Blob thumbnailBlob = Blobs.createBlob(Helper.class.getResource("/text.png").openStream(), "image/png");
+        Blob thumbnailBlob;
+        try {
+            thumbnailBlob = Blobs.createBlob(Helper.class.getResource("/text.png").openStream(), "image/png");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         thumbnailBlob.setFilename("test.png");
         file1.setPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME, (Serializable) thumbnailBlob);
         file1 = createDocument(session, file1);
@@ -197,18 +203,22 @@ public class Helper {
     /**
      * For audit, make sure event dates don't have the same millisecond.
      */
-    public static void sleepForAuditGranularity() throws InterruptedException {
-        Thread.sleep(2);
+    public static void sleepForAuditGranularity() {
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            ExceptionUtils.checkInterrupt(e);
+        }
     }
 
-    public static DocumentModel createDocument(CoreSession session, DocumentModel doc) throws Exception {
+    public static DocumentModel createDocument(CoreSession session, DocumentModel doc) {
         sleepForAuditGranularity();
         // avoid changes in last contributor in these tests
         doc.putContextData("disableDublinCoreListener", Boolean.TRUE);
         return session.createDocument(doc);
     }
 
-    public static DocumentModel saveDocument(CoreSession session, DocumentModel doc) throws Exception {
+    public static DocumentModel saveDocument(CoreSession session, DocumentModel doc) {
         sleepForAuditGranularity();
         return session.saveDocument(doc);
     }

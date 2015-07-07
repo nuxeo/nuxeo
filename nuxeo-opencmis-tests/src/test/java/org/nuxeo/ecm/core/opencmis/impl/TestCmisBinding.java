@@ -2016,7 +2016,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
             statement = "SELECT cmis:name FROM File" + " WHERE IN_TREE(g, 'abc')"; // invalid qual
             query(statement);
             fail("should fail");
-        } catch (CmisRuntimeException e) {
+        } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("g is neither a type query name nor an alias"));
         }
 
@@ -2024,7 +2024,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
             statement = "SELECT cmis:name FROM File f" + " WHERE IN_TREE(g, 'abc')"; // invalid qual
             query(statement);
             fail("should fail");
-        } catch (CmisRuntimeException e) {
+        } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("g is neither a type query name nor an alias"));
         }
     }
@@ -2132,7 +2132,7 @@ public class TestCmisBinding extends TestCmisBindingBase {
             if (!useElasticsearch()) { // ES turns this into the regular fulltext query
                 fail();
             }
-        } catch (CmisRuntimeException e) {
+        } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("No such fulltext index: borked"));
         }
     }
@@ -2425,19 +2425,19 @@ public class TestCmisBinding extends TestCmisBindingBase {
         try {
             query("SELECT foo bar baz");
             fail();
-        } catch (CmisRuntimeException e) {
+        } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("line 1:15 missing FROM at 'baz'"));
         }
         try {
             query("SELECT foo FROM bar");
             fail();
-        } catch (CmisRuntimeException e) {
+        } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("bar is neither a type query name nor an alias"));
         }
         try {
             query("SELECT foo FROM cmis:folder");
             fail();
-        } catch (CmisRuntimeException e) {
+        } catch (CmisInvalidArgumentException e) {
             assertTrue(e.getMessage().contains("foo is not a property query name in any of the types"));
         }
     }

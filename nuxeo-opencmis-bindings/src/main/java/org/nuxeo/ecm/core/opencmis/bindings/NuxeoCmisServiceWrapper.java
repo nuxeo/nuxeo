@@ -12,10 +12,12 @@
 package org.nuxeo.ecm.core.opencmis.bindings;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisBaseException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.support.wrapper.ConformanceCmisServiceWrapper;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +42,8 @@ public class NuxeoCmisServiceWrapper extends ConformanceCmisServiceWrapper {
             return (CmisBaseException) e;
         } else if (e instanceof RecoverableClientException) {
             throw new CmisRuntimeException("error", e);
+        } else if (e instanceof QueryParseException) {
+            throw new CmisInvalidArgumentException(e.getMessage(), e);
         } else {
             // should not happen if the connector works correctly
             // it's alarming enough to log the exception

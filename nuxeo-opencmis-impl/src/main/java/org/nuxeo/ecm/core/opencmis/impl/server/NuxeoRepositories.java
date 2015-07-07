@@ -57,18 +57,12 @@ public class NuxeoRepositories extends DefaultComponent {
         if (!repositories.isEmpty()) {
             return;
         }
-        try {
-            RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
-            for (String repositoryName : repositoryManager.getRepositoryNames()) {
-                try (CoreSession coreSession = CoreInstance.openCoreSession(repositoryName)) {
-                    String rootFolderId = coreSession.getRootDocument().getId();
-                    repositories.put(repositoryName, new NuxeoRepository(repositoryName, rootFolderId));
-                }
+        RepositoryManager repositoryManager = Framework.getService(RepositoryManager.class);
+        for (String repositoryName : repositoryManager.getRepositoryNames()) {
+            try (CoreSession coreSession = CoreInstance.openCoreSession(repositoryName)) {
+                String rootFolderId = coreSession.getRootDocument().getId();
+                repositories.put(repositoryName, new NuxeoRepository(repositoryName, rootFolderId));
             }
-        } catch (CmisRuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new CmisRuntimeException(e.toString(), e);
         }
     }
 

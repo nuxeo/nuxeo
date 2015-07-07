@@ -112,11 +112,11 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
 
             try {
                 CALL.writeJSON(jsonResponse, request, response);
-            } catch (Exception e) {
+            } catch (IOException e) {
                 LOG.error(e.getMessage(), e);
                 try {
                     response.sendError(errorInfo.statusCode, message);
-                } catch (Exception en) {
+                } catch (IOException en) {
                     // there is nothing else we can do
                 }
             }
@@ -134,8 +134,9 @@ public class NuxeoCmisBrowserBindingServlet extends CmisBrowserBindingServlet {
 
     // this class exists in order to call AbstractBrowserServiceCall methods
     public static class NuxeoBrowserServiceCall extends AbstractBrowserServiceCall {
+        @Override
         public void serve(CallContext context, CmisService service, String repositoryId, HttpServletRequest request,
-                HttpServletResponse response) throws Exception {
+                HttpServletResponse response) {
             // no implementation
         }
     }

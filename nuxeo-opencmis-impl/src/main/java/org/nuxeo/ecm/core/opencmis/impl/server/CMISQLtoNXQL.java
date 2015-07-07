@@ -155,10 +155,6 @@ public class CMISQLtoNXQL {
                         + walker.getErrorMessage(e, walker.getTokenNames());
             }
             throw new QueryParseException(msg, e);
-        } catch (QueryParseException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new QueryParseException(e.getMessage() + " for query: " + cmisql, e);
         }
         if (query.getTypes().size() != 1 && query.getJoinedSecondaryTypes() == null) {
             throw new QueryParseException("JOINs not supported in query: " + cmisql);

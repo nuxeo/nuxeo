@@ -176,15 +176,7 @@ public class NuxeoRepository {
     }
 
     protected static TypeManagerImpl initializeTypes() {
-        SchemaManager schemaManager;
-        try {
-            schemaManager = Framework.getService(SchemaManager.class);
-        } catch (Exception e) {
-            if (e instanceof RuntimeException) {
-                throw (RuntimeException) e;
-            }
-            throw new RuntimeException(e.toString(), e); // TODO
-        }
+        SchemaManager schemaManager = Framework.getService(SchemaManager.class);
         // scan the types to find super/inherited relationships
         Map<String, List<String>> typesChildren = new HashMap<String, List<String>>();
         for (DocumentType dt : schemaManager.getDocumentTypes()) {

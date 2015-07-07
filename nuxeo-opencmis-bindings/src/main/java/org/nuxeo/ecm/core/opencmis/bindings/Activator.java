@@ -17,8 +17,6 @@
 
 package org.nuxeo.ecm.core.opencmis.bindings;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkEvent;
@@ -29,19 +27,17 @@ import org.osgi.framework.FrameworkListener;
  */
 public class Activator implements BundleActivator, FrameworkListener {
 
-    private static final Log log = LogFactory.getLog(Activator.class);
-
     /*
      * Called when our bundle is started. All we do is ask for an event when the entire Framework is ready.
      * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext )
      */
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         context.addFrameworkListener(this);
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
 
     }
 
@@ -51,12 +47,8 @@ public class Activator implements BundleActivator, FrameworkListener {
      */
     @Override
     public void frameworkEvent(FrameworkEvent event) {
-        try {
-            if (event.getType() == FrameworkEvent.STARTED) {
-                ContextListenerDelayer.activate(event);
-            }
-        } catch (Exception e) {
-            log.error("Unable to initialize/configure the Cmis service", e);
+        if (event.getType() == FrameworkEvent.STARTED) {
+            ContextListenerDelayer.activate(event);
         }
     }
 
