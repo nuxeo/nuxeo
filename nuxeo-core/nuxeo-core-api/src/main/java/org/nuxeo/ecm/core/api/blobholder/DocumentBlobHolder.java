@@ -141,4 +141,11 @@ public class DocumentBlobHolder extends AbstractBlobHolder {
     public String getXpath() {
         return xPath;
     }
+
+    /**
+     * @since 7.4
+     */
+    public DocumentModel getDocument() {
+        return doc;
+    }
 }

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -137,9 +138,10 @@ public interface BlobManager {
      *
      * @param blob the blob
      * @param mimeType the MIME type to convert to
+     * @param doc the document that holds the blob
      * @return the stream, or {@code null} if no conversion is available for the given MIME type
      */
-    InputStream getConvertedStream(Blob blob, String mimeType) throws IOException;
+    InputStream getConvertedStream(Blob blob, String mimeType, DocumentModel doc) throws IOException;
 
     /**
      * Get the map of blob providers

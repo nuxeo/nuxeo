@@ -23,7 +23,9 @@ import java.net.URI;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.blob.BlobManager.UsageHint;
+import org.nuxeo.ecm.core.model.Document;
 
 /**
  * Interface for an extended provider of {@link Blob}s, which knows how to fetch alternate content.
@@ -77,18 +79,20 @@ public interface ExtendedBlobProvider extends BlobProvider {
      *
      * @param blob the managed blob
      * @param mimeType the MIME type to convert to
+     * @param doc the document that holds the blob
      * @return the stream, or {@code null} if no conversion is available for the given MIME type
      */
-    InputStream getConvertedStream(ManagedBlob blob, String mimeType) throws IOException;
+    InputStream getConvertedStream(ManagedBlob blob, String mimeType, DocumentModel doc) throws IOException;
 
     /**
      * Returns a new managed blob pointing to a fixed version of the original blob.
      * <p>
      *
      * @param blob the original managed blob
+     * @param doc the document that holds the blob
      * @return a managed blob with fixed version, or {@code null} if no change is needed
      */
-    ManagedBlob freezeVersion(ManagedBlob blob) throws IOException;
+    ManagedBlob freezeVersion(ManagedBlob blob, Document doc) throws IOException;
 
     /**
      * Returns true if version of the blob is a version.

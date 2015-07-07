@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.platform.mimetype.interfaces.MimetypeRegistry;
+import org.nuxeo.ecm.restapi.server.jaxrs.blob.BlobObject;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
 import org.nuxeo.ecm.webengine.model.exceptions.IllegalParameterException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
@@ -54,10 +55,11 @@ public class ConvertAdapter extends DefaultAdapter {
     public Blob convert(@QueryParam("converter") String converter, @QueryParam("type") String type,
             @QueryParam("format") String format, @Context UriInfo uriInfo) {
         Blob blob = getTarget().getAdapter(Blob.class);
+        BlobHolder bh = null;
         if (blob == null) {
             DocumentModel doc = getTarget().getAdapter(DocumentModel.class);
             if (doc != null) {
-                BlobHolder bh = doc.getAdapter(BlobHolder.class);
+                bh = doc.getAdapter(BlobHolder.class);
                 if (bh != null) {
                     blob = bh.getBlob();
                 }
@@ -65,6 +67,14 @@ public class ConvertAdapter extends DefaultAdapter {
         }
         if (blob == null) {
             throw new IllegalParameterException("No Blob found");
+        }
+
+        if (getTarget().isInstanceOf("blob")) {
+            bh = ((BlobObject) getTarget()).getBlobHolder();
+        }
+
+        if (bh == null) {
+            bh = new SimpleBlobHolder(blob);
         }
 
         boolean txWasActive = false;
@@ -75,11 +85,11 @@ public class ConvertAdapter extends DefaultAdapter {
             }
 
             if (StringUtils.isNotBlank(converter)) {
-                return convertWithConverter(blob, converter, uriInfo);
+                return convertWithConverter(bh, converter, uriInfo);
             } else if (StringUtils.isNotBlank(type)) {
-                return convertWithMimeType(blob, type, uriInfo);
+                return convertWithMimeType(bh, type, uriInfo);
             } else if (StringUtils.isNotBlank(format)) {
-                return convertWithFormat(blob, format, uriInfo);
+                return convertWithFormat(bh, format, uriInfo);
             } else {
                 throw new IllegalParameterException("No converter, type or format parameter specified");
             }
@@ -90,13 +100,13 @@ public class ConvertAdapter extends DefaultAdapter {
         }
     }
 
-    protected Blob convertWithConverter(Blob blob, String converter, UriInfo uriInfo) {
+    protected Blob convertWithConverter(BlobHolder bh, String converter, UriInfo uriInfo) {
         ConversionService conversionService = Framework.getService(ConversionService.class);
         if (!conversionService.isConverterAvailable(converter).isAvailable()) {
             throw new IllegalParameterException(String.format("The '%s' converter is not available", converter));
         }
         Map<String, Serializable> parameters = computeConversionParameters(uriInfo);
-        BlobHolder blobHolder = conversionService.convert(converter, new SimpleBlobHolder(blob), parameters);
+        BlobHolder blobHolder = conversionService.convert(converter, bh, parameters);
         Blob conversionBlob = blobHolder.getBlob();
         if (conversionBlob == null) {
             throw new WebResourceNotFoundException(String.format("No converted Blob using '%s' converter", converter));
@@ -113,10 +123,10 @@ public class ConvertAdapter extends DefaultAdapter {
         return parameters;
     }
 
-    protected Blob convertWithMimeType(Blob blob, String mimeType, UriInfo uriInfo) {
+    protected Blob convertWithMimeType(BlobHolder bh, String mimeType, UriInfo uriInfo) {
         Map<String, Serializable> parameters = computeConversionParameters(uriInfo);
         ConversionService conversionService = Framework.getService(ConversionService.class);
-        BlobHolder blobHolder = conversionService.convertToMimeType(mimeType, new SimpleBlobHolder(blob), parameters);
+        BlobHolder blobHolder = conversionService.convertToMimeType(mimeType, bh, parameters);
         Blob conversionBlob = blobHolder.getBlob();
         if (conversionBlob == null) {
             throw new WebResourceNotFoundException(String.format("No converted Blob for '%s' mime type", mimeType));
@@ -124,9 +134,9 @@ public class ConvertAdapter extends DefaultAdapter {
         return conversionBlob;
     }
 
-    protected Blob convertWithFormat(Blob blob, String format, UriInfo uriInfo) {
+    protected Blob convertWithFormat(BlobHolder bh, String format, UriInfo uriInfo) {
         MimetypeRegistry mimetypeRegistry = Framework.getService(MimetypeRegistry.class);
         String mimeType = mimetypeRegistry.getMimetypeFromExtension(format);
-        return convertWithMimeType(blob, mimeType, uriInfo);
+        return convertWithMimeType(bh, mimeType, uriInfo);
     }
 }

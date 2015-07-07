@@ -105,6 +105,10 @@ public class BlobObject extends DefaultObject {
         return (Blob) doc.getPropertyValue(fieldPath);
     }
 
+    public BlobHolder getBlobHolder() {
+        return bh;
+    }
+
     @GET
     public Object doGet(@Context Request request) {
         try {

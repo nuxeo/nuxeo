@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
@@ -324,22 +325,22 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     }
 
     @Override
-    public InputStream getConvertedStream(Blob blob, String mimeType) throws IOException {
+    public InputStream getConvertedStream(Blob blob, String mimeType, DocumentModel doc) throws IOException {
         ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return null;
         }
-        return blobProvider.getConvertedStream((ManagedBlob) blob, mimeType);
+        return blobProvider.getConvertedStream((ManagedBlob) blob, mimeType, doc);
     }
 
-    protected void freezeVersion(BlobAccessor accessor) {
+    protected void freezeVersion(BlobAccessor accessor, Document doc) {
         Blob blob = accessor.getBlob();
         ExtendedBlobProvider blobProvider = getExtendedBlobProvider(blob);
         if (blobProvider == null) {
             return;
         }
         try {
-            Blob newBlob = blobProvider.freezeVersion((ManagedBlob) blob);
+            Blob newBlob = blobProvider.freezeVersion((ManagedBlob) blob, doc);
             if (newBlob != null) {
                 accessor.setBlob(newBlob);
             }
@@ -356,7 +357,7 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     @Override
     public void freezeVersion(Document doc) {
         // finds all blobs, then ask their providers if there's anything to do on check in
-        doc.visitBlobs(this::freezeVersion);
+        doc.visitBlobs(accessor -> freezeVersion(accessor, doc));
     }
 
     @Override
