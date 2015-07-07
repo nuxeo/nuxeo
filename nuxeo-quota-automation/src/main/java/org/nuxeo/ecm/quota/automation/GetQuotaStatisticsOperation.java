@@ -31,7 +31,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -59,12 +58,12 @@ public class GetQuotaStatisticsOperation {
     protected String language;
 
     @OperationMethod()
-    public Blob run() throws Exception {
+    public Blob run() {
         Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
         DocumentModel doc = session.getDocument(documentRef);
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         if (qa == null) {
-            throw new ClientException("Quota not activated on doc");
+            throw new NuxeoException("Quota not activated on doc");
         }
         String string = toJSON(qa.getQuotaInfo(), locale);
         return Blobs.createBlob(string, "application/json");

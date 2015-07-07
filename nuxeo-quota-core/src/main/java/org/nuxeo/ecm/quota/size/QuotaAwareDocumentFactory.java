@@ -18,7 +18,6 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;

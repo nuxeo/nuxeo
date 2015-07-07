@@ -19,7 +19,6 @@
 package org.nuxeo.ecm.quota;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;

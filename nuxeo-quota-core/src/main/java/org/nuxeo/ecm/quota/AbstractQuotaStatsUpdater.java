@@ -40,7 +40,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -49,6 +48,7 @@ import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.versioning.VersioningService;
+import org.nuxeo.ecm.quota.size.QuotaExceededException;
 
 /**
  * Abstract class implementing {@code QuotaStatsUpdater} to handle common cases.
@@ -135,11 +135,9 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
             } else if (BEFORE_DOC_RESTORE.equals(eventName)) {
                 processDocumentBeforeRestore(session, doc, docCtx);
             }
-        } catch (ClientException e) {
-            ClientException e2 = handleException(e, event);
-            if (e2 != null) {
-                throw e2;
-            }
+        } catch (QuotaExceededException e) {
+            handleQuotaExceeded(e, event);
+            throw e;
         }
     }
 
@@ -155,7 +153,7 @@ public abstract class AbstractQuotaStatsUpdater implements QuotaStatsUpdater {
         return ancestors;
     }
 
-    protected abstract ClientException handleException(ClientException e, Event event);
+    protected abstract void handleQuotaExceeded(QuotaExceededException e, Event event);
 
     protected abstract boolean needToProcessEventOnDocument(Event event, DocumentModel targetDoc);
 

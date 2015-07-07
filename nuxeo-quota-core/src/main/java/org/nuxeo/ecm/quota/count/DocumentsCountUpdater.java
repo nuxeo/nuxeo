@@ -29,7 +29,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -37,8 +36,10 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
+import org.nuxeo.ecm.quota.size.QuotaExceededException;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -111,9 +112,8 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected ClientException handleException(ClientException e, Event event) {
+    protected void handleQuotaExceeded(QuotaExceededException e, Event event) {
         // never rollback on Exceptions
-        return e;
     }
 
     @Override
@@ -259,27 +259,26 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             if (folderId == null) {
                 continue;
             }
-
+            DocumentModel folder;
             try {
-                DocumentModel folder = session.getDocument(new IdRef(folderId));
-                if (folder.getPath().isRoot()) {
-                    // Root document
-                    continue;
-                }
-
-                saveDocumentsCount(session, folder, entry.getValue());
-                docsCount++;
-
-                if (docsCount % BATCH_SIZE == 0) {
-                    session.save();
-                    if (TransactionHelper.isTransactionActive()) {
-                        TransactionHelper.commitOrRollbackTransaction();
-                        TransactionHelper.startTransaction();
-                    }
-                }
-            } catch (ClientException e) {
+                folder = session.getDocument(new IdRef(folderId));
+            } catch (NoSuchDocumentException e) {
                 log.warn(e);
                 log.debug(e, e);
+                continue;
+            }
+            if (folder.getPath().isRoot()) {
+                // Root document
+                continue;
+            }
+            saveDocumentsCount(session, folder, entry.getValue());
+            docsCount++;
+            if (docsCount % BATCH_SIZE == 0) {
+                session.save();
+                if (TransactionHelper.isTransactionActive()) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                    TransactionHelper.startTransaction();
+                }
             }
         }
         session.save();

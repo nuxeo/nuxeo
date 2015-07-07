@@ -20,8 +20,8 @@ package org.nuxeo.ecm.quota.count;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY;
 import static org.nuxeo.ecm.quota.count.Constants.DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.quota.QuotaStatsNonFolderishCount;
 
 /**
@@ -48,7 +48,7 @@ public class QuotaStatsNonFolderishCountAdapter implements QuotaStatsNonFolderis
         try {
             Long count = (Long) doc.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_CHILDREN_COUNT_PROPERTY);
             return count != null ? count : 0;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return 0;
         }
     }
@@ -58,7 +58,7 @@ public class QuotaStatsNonFolderishCountAdapter implements QuotaStatsNonFolderis
         try {
             Long count = (Long) doc.getPropertyValue(DOCUMENTS_COUNT_STATISTICS_DESCENDANTS_COUNT_PROPERTY);
             return count != null ? count : 0;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return 0;
         }
     }

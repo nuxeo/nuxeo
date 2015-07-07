@@ -37,7 +37,6 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -85,11 +84,7 @@ public class QuotaStatsActions implements Serializable {
 
     @Create
     public void initialize() {
-        try {
-            initQuotaActivatedOnUserWorkspaces();
-        } catch (ClientException e) {
-            log.error(e);
-        }
+        initQuotaActivatedOnUserWorkspaces();
     }
 
     public List<QuotaStatsUpdater> getQuotaStatsUpdaters() {
@@ -130,12 +125,8 @@ public class QuotaStatsActions implements Serializable {
             throw new ValidatorException(message);
         }
 
-        try {
-            quotaAllowed = getQuotaStatsService().canSetMaxQuota(quotaValue, navigationContext.getCurrentDocument(),
-                    documentManager);
-        } catch (ClientException e) {
-            log.error(e);
-        }
+        quotaAllowed = getQuotaStatsService().canSetMaxQuota(quotaValue, navigationContext.getCurrentDocument(),
+                documentManager);
         if (quotaAllowed) {
             return;
         }
@@ -151,7 +142,7 @@ public class QuotaStatsActions implements Serializable {
         return qdv;
     }
 
-    public double getMinQuotaSliderValue(long totalSize) throws Exception {
+    public double getMinQuotaSliderValue(long totalSize) {
         long minSize = 100 * 1024;
         // 11.528
         if (totalSize > minSize) {
@@ -161,11 +152,11 @@ public class QuotaStatsActions implements Serializable {
         }
     }
 
-    public long getMinQuotaSliderValue() throws Exception {
+    public long getMinQuotaSliderValue() {
         return 102400;// 100KB
     }
 
-    public long getMaxQuotaSliderValue() throws Exception {
+    public long getMaxQuotaSliderValue() {
         long maxQuotaSize = -1L;
         DocumentModel doc = navigationContext.getCurrentDocument();
         if (doc != null) {

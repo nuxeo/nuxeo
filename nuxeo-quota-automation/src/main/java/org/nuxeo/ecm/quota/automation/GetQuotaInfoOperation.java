@@ -22,7 +22,7 @@ public class GetQuotaInfoOperation {
     protected DocumentRef documentRef;
 
     @OperationMethod()
-    public JsonAdapter run(DocumentModel doc) throws Exception {
+    public JsonAdapter run(DocumentModel doc) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         if (qa == null) {
             return new TestableJsonAdapter(new SimpleQuotaInfo());
@@ -32,12 +32,12 @@ public class GetQuotaInfoOperation {
     }
 
     @OperationMethod()
-    public JsonAdapter run(DocumentRef docRef) throws Exception {
+    public JsonAdapter run(DocumentRef docRef) {
         return run(session.getDocument(docRef));
     }
 
     @OperationMethod()
-    public JsonAdapter run() throws Exception {
+    public JsonAdapter run() {
         return run(documentRef);
     }
 

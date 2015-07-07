@@ -45,7 +45,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -85,51 +84,35 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
 
     @Override
     public void computeInitialStatistics(CoreSession unrestrictedSession, QuotaStatsInitialWork currentWorker) {
-
         QuotaComputerProcessor processor = new QuotaComputerProcessor();
+        String query = "SELECT ecm:uuid FROM Document where ecm:isCheckedInVersion=0 and ecm:isProxy=0 order by dc:created desc";
+        IterableQueryResult res = unrestrictedSession.queryAndFetch(query, "NXQL");
+        log.debug("Starting initial Quota computation");
+        long total = res.size();
+        log.debug("Start iteration on " + total + " items");
         try {
-            String query = "SELECT ecm:uuid FROM Document where ecm:isCheckedInVersion=0 and ecm:isProxy=0 order by dc:created desc";
-            IterableQueryResult res = unrestrictedSession.queryAndFetch(query, "NXQL");
-            log.debug("Starting initial Quota computation");
-            long total = res.size();
-            log.debug("Start iteration on " + total + " items");
-            try {
-                for (Map<String, Serializable> r : res) {
-                    String uuid = (String) r.get("ecm:uuid");
-                    // this will force an update if the plugin was installed and
-                    // then removed
-                    try {
-                        removeFacet(unrestrictedSession, uuid);
-                    } catch (ClientException e) {
-                        log.debug("Could not remove facet for uuid : " + uuid + ", error is : " + e.getMessage());
-                    }
-                }
-            } finally {
-                res.close();
+            for (Map<String, Serializable> r : res) {
+                String uuid = (String) r.get("ecm:uuid");
+                // this will force an update if the plugin was installed and
+                // then removed
+                removeFacet(unrestrictedSession, uuid);
             }
-            removeFacet(unrestrictedSession, unrestrictedSession.getRootDocument().getId());
-            unrestrictedSession.save();
-            try {
-                long idx = 0;
-                res = unrestrictedSession.queryAndFetch(query, "NXQL");
-                for (Map<String, Serializable> r : res) {
-                    String uuid = (String) r.get("ecm:uuid");
-                    try {
-                        computeSizeOnDocument(unrestrictedSession, uuid, processor);
-                    } catch (ClientException e) {
-                        log.warn("Could not computeSizeOnDocument : " + e.getMessage());
-                    }
-                    idx++;
-                    currentWorker.notifyProgress(idx++, total);
-                }
-            } finally {
-                res.close();
-            }
-
-        } catch (Exception e) {
-            log.error("Error during initial Quota Size computation", e);
+        } finally {
+            res.close();
         }
-
+        removeFacet(unrestrictedSession, unrestrictedSession.getRootDocument().getId());
+        unrestrictedSession.save();
+        try {
+            long idx = 0;
+            res = unrestrictedSession.queryAndFetch(query, "NXQL");
+            for (Map<String, Serializable> r : res) {
+                String uuid = (String) r.get("ecm:uuid");
+                computeSizeOnDocument(unrestrictedSession, uuid, processor);
+                currentWorker.notifyProgress(++idx, total);
+            }
+        } finally {
+            res.close();
+        }
     }
 
     private void removeFacet(CoreSession unrestrictedSession, String uuid) {
@@ -181,12 +164,11 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
     }
 
     @Override
-    protected ClientException handleException(ClientException e, Event event) {
-        if (e instanceof QuotaExceededException) {
-            log.info("Current event " + event.getName() + " would break Quota restriction, rolling back");
-            event.markRollBack("Quota Exceeded", e);
-        }
-        return e;
+    protected void handleQuotaExceeded(QuotaExceededException e, Event event) {
+        String msg = "Current event " + event.getName() + " would break Quota restriction, rolling back";
+        log.info(msg);
+        e.addInfo(msg);
+        event.markRollBack("Quota Exceeded", e);
     }
 
     @Override
@@ -543,43 +525,38 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
      * @return
      */
     protected List<Blob> getBlobs(DocumentModel doc, boolean onlyIfBlobHasChanged) {
+        QuotaSizeService sizeService = Framework.getService(QuotaSizeService.class);
+        Set<String> excludedPathSet = new HashSet<String>(sizeService.getExcludedPathList());
 
-        try {
-            QuotaSizeService sizeService = Framework.getLocalService(QuotaSizeService.class);
-            Set<String> excludedPathSet = new HashSet<String>(sizeService.getExcludedPathList());
+        BlobsExtractor extractor = new BlobsExtractor();
+        extractor.setExtractorProperties(null, new HashSet<String>(excludedPathSet), true);
 
-            BlobsExtractor extractor = new BlobsExtractor();
-            extractor.setExtractorProperties(null, new HashSet<String>(excludedPathSet), true);
+        Collection<Property> blobProperties = extractor.getBlobsProperties(doc);
 
-            Collection<Property> blobProperties = extractor.getBlobsProperties(doc);
+        boolean needRecompute = !onlyIfBlobHasChanged;
 
-            boolean needRecompute = !onlyIfBlobHasChanged;
-
-            if (onlyIfBlobHasChanged) {
-                for (Property blobProperty : blobProperties) {
-                    if (blobProperty.isDirty()) {
-                        needRecompute = true;
-                        break;
-                    }
+        if (onlyIfBlobHasChanged) {
+            for (Property blobProperty : blobProperties) {
+                if (blobProperty.isDirty()) {
+                    needRecompute = true;
+                    break;
                 }
             }
-
-            List<Blob> result = new ArrayList<Blob>();
-            if (needRecompute) {
-                for (Property blobProperty : blobProperties) {
-                    Blob blob = (Blob) blobProperty.getValue();
-                    String schema = blobProperty.getParent().getSchema().getName();
-                    String propName = blobProperty.getName();
-
-                    log.debug(String.format("Using [%s:%s] for quota blob computation (size : %d)", schema, propName,
-                            blob.getLength()));
-                    result.add(blob);
-                }
-            }
-            return result;
-        } catch (Exception e) {
-            throw new ClientException("Unable to extract Blob size", e);
         }
+
+        List<Blob> result = new ArrayList<Blob>();
+        if (needRecompute) {
+            for (Property blobProperty : blobProperties) {
+                Blob blob = (Blob) blobProperty.getValue();
+                String schema = blobProperty.getParent().getSchema().getName();
+                String propName = blobProperty.getName();
+
+                log.debug(String.format("Using [%s:%s] for quota blob computation (size : %d)", schema, propName,
+                        blob.getLength()));
+                result.add(blob);
+            }
+        }
+        return result;
     }
 
     @Override

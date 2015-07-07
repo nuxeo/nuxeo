@@ -23,10 +23,10 @@ import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISAB
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -70,7 +70,7 @@ public class QuotaAwareDocument implements QuotaAware {
         try {
             Long inner = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_INNER_SIZE_PROPERTY);
             return inner != null ? inner : 0;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return 0;
         }
     }
@@ -80,7 +80,7 @@ public class QuotaAwareDocument implements QuotaAware {
         try {
             Long total = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_TOTAL_SIZE_PROPERTY);
             return total != null ? total : 0;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return 0;
         }
     }
@@ -90,7 +90,7 @@ public class QuotaAwareDocument implements QuotaAware {
         try {
             Long total = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY);
             return total != null ? total : 0;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return 0;
         }
     }
@@ -100,7 +100,7 @@ public class QuotaAwareDocument implements QuotaAware {
         try {
             Long total = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY);
             return total != null ? total : 0;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return 0;
         }
     }
@@ -195,7 +195,7 @@ public class QuotaAwareDocument implements QuotaAware {
         try {
             Long count = (Long) doc.getPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY);
             return count != null ? count : -1;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return -1;
         }
     }

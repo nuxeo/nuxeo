@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.quota.size;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

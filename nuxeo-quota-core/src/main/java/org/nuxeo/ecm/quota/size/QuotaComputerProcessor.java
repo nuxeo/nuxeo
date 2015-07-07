@@ -33,7 +33,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -151,12 +150,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             if (sourceDocument.getRef() == null) {
                 log.error("SourceDocument has no ref");
             } else {
-                try {
-                    parents.addAll(getParents(sourceDocument, session));
-                } catch (ClientException e) {
-                    log.debug("Could not get parent for document " + sourceDocument.getRef() + ", error is "
-                            + e.getMessage());
-                }
+                parents.addAll(getParents(sourceDocument, session));
             }
 
             QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
@@ -216,8 +210,8 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
                 log.debug("Processing document about to be removed on parents. Total: " + quotaCtx.getBlobDelta()
                         + " , trash size: " + quotaCtx.getTrashSize() + " , versions size: "
                         + quotaCtx.getVersionsSize());
-                processOnParents(parents, quotaCtx.getBlobDelta(), 
-                        quotaCtx.getBlobDelta()-quotaCtx.getVersionsSize(), 
+                processOnParents(parents, quotaCtx.getBlobDelta(),
+                        quotaCtx.getBlobDelta()-quotaCtx.getVersionsSize(),
                         quotaCtx.getVersionsSize(),
                         true, quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null
                                 && (Boolean) quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE),
@@ -230,7 +224,7 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             } else if (DOCUMENT_UPDATE_INITIAL_STATISTICS.equals(sourceEvent)) {
                 QuotaAware quotaDoc = sourceDocument.getAdapter(QuotaAware.class);
                 if (quotaDoc.getInnerSize() > 0) {
-                    processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(), 
+                    processOnParents(parents, quotaCtx.getBlobSize() + quotaCtx.getVersionsSize(),
                             quotaCtx.getBlobSize(),
                             quotaCtx.getVersionsSize(), true,
                             quotaCtx.getProperties().get(SizeUpdateEventContext._UPDATE_TRASH_SIZE) != null

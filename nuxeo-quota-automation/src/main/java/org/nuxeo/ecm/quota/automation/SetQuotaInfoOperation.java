@@ -25,7 +25,7 @@ public class SetQuotaInfoOperation {
     protected DocumentRef documentRef;
 
     @OperationMethod()
-    public Long run(DocumentModel doc) throws Exception {
+    public Long run(DocumentModel doc) {
         QuotaAware qa = doc.getAdapter(QuotaAware.class);
         if (qa == null) {
             qa = QuotaAwareDocumentFactory.make(doc, false);
@@ -35,12 +35,12 @@ public class SetQuotaInfoOperation {
     }
 
     @OperationMethod()
-    public Long run(DocumentRef docRef) throws Exception {
+    public Long run(DocumentRef docRef) {
         return run(session.getDocument(docRef));
     }
 
     @OperationMethod()
-    public Long run() throws Exception {
+    public Long run() {
         return run(documentRef);
     }
 
