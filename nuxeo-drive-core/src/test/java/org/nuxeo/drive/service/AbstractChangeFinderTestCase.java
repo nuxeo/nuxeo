@@ -983,7 +983,6 @@ public abstract class AbstractChangeFinderTestCase {
     /**
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
-     *
      */
     protected List<FileSystemItemChange> getChanges(Principal principal) throws InterruptedException {
         return getChangeSummary(principal).getFileSystemChanges();
@@ -1000,8 +999,7 @@ public abstract class AbstractChangeFinderTestCase {
      * Gets the document changes summary for the given user's synchronization roots using the {@link NuxeoDriveManager}
      * and updates {@link #lastEventLogId}.
      */
-    protected FileSystemChangeSummary getChangeSummary(Principal principal) throws
-            InterruptedException {
+    protected FileSystemChangeSummary getChangeSummary(Principal principal) throws InterruptedException {
         Map<String, Set<IdRef>> lastSyncActiveRootRefs = RootDefinitionsHelper.parseRootDefinitions(lastSyncActiveRootDefinitions);
         FileSystemChangeSummary changeSummary = nuxeoDriveManager.getChangeSummaryIntegerBounds(principal,
                 lastSyncActiveRootRefs, lastEventLogId);
