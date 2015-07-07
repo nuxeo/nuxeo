@@ -112,7 +112,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -122,6 +121,7 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.CompoundFilter;
@@ -290,11 +290,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         if (repositoryName == null) {
             return null;
         }
-        try {
-            return CoreInstance.openCoreSession(repositoryName, username);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        return CoreInstance.openCoreSession(repositoryName, username);
     }
 
     public NuxeoRepository getNuxeoRepository() {
@@ -407,18 +403,14 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     protected DocumentModel getDocumentModel(String id) {
         DocumentRef docRef = new IdRef(id);
-        try {
-            if (!coreSession.exists(docRef)) {
-                throw new CmisObjectNotFoundException(docRef.toString());
-            }
-            DocumentModel doc = coreSession.getDocument(docRef);
-            if (isFilteredOut(doc)) {
-                throw new CmisObjectNotFoundException(docRef.toString());
-            }
-            return doc;
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        if (!coreSession.exists(docRef)) {
+            throw new CmisObjectNotFoundException(docRef.toString());
         }
+        DocumentModel doc = coreSession.getDocument(docRef);
+        if (isFilteredOut(doc)) {
+            throw new CmisObjectNotFoundException(docRef.toString());
+        }
+        return doc;
     }
 
     @Override
@@ -451,24 +443,14 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         } else if (BaseTypeId.CMIS_RELATIONSHIP.value().equals(typeId)) {
             nuxeoTypeId = NuxeoTypeHelper.NUXEO_RELATION_DEFAULT;
         }
-        try {
-            doc = coreSession.createDocumentModel(nuxeoTypeId);
-        } catch (ClientException e) {
-            throw new IllegalArgumentException(typeId);
-        }
+        doc = coreSession.createDocumentModel(nuxeoTypeId);
         if (folder != null) {
-            DocumentModel parentDoc;
-            try {
-                DocumentRef parentRef = new IdRef(folder.getId());
-                if (!coreSession.exists(parentRef)) {
-                    throw new CmisInvalidArgumentException(parentRef.toString());
-                }
-                parentDoc = coreSession.getDocument(parentRef);
-            } catch (ClientException e) {
-                throw new CmisRuntimeException("Cannot create object", e);
+            DocumentRef parentRef = new IdRef(folder.getId());
+            if (!coreSession.exists(parentRef)) {
+                throw new CmisInvalidArgumentException(parentRef.toString());
             }
-            String pathSegment = nuxeoTypeId; // default path segment based on
-                                              // id
+            DocumentModel parentDoc = coreSession.getDocument(parentRef);
+            String pathSegment = nuxeoTypeId; // default path segment based on id
             doc.setPathInfo(parentDoc.getPathAsString(), pathSegment);
         }
         return doc;
@@ -482,12 +464,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             return null;
         }
 
-        DocumentModel parent;
-        try {
-            parent = coreSession.getDocument(new IdRef(folder.getId()));
-        } catch (ClientException e) {
-            throw new CmisRuntimeException("Cannot create object", e);
-        }
+        DocumentModel parent = coreSession.getDocument(new IdRef(folder.getId()));
         String path = parent.getPathAsString();
 
         Blob blob;
@@ -595,22 +572,18 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 throw new CmisRuntimeException(e.toString(), e);
             }
         }
-        try {
-            if (!created) {
-                // set path segment from properties (name/title)
-                PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
-                String pathSegment = pss.generatePathSegment(doc);
-                Path path = doc.getPath();
-                doc.setPathInfo(path == null ? null : path.removeLastSegments(1).toString(), pathSegment);
-                doc = coreSession.createDocument(doc);
-            } else {
-                doc = coreSession.saveDocument(doc);
-            }
-            data.doc = doc;
-            save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException("Cannot create", e);
+        if (!created) {
+            // set path segment from properties (name/title)
+            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            String pathSegment = pss.generatePathSegment(doc);
+            Path path = doc.getPath();
+            doc.setPathInfo(path == null ? null : path.removeLastSegments(1).toString(), pathSegment);
+            doc = coreSession.createDocument(doc);
+        } else {
+            doc = coreSession.saveDocument(doc);
         }
+        data.doc = doc;
+        save();
         collectObjectInfo(repositoryId, data.getId());
         return data;
     }
@@ -683,39 +656,35 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     /** Sets initial versioning state and returns its id. */
     protected String setInitialVersioningState(NuxeoObjectData object, VersioningState versioningState) {
-        try {
-            if (versioningState == null) {
-                // default is MAJOR, per spec
-                versioningState = VersioningState.MAJOR;
-            }
-            String id;
-            DocumentRef ref = null;
-            switch (versioningState) {
-            case NONE: // cannot be made non-versionable in Nuxeo
-            case CHECKEDOUT:
-                object.doc.setLock();
-                save();
-                id = object.getId();
-                break;
-            case MINOR:
-                ref = object.doc.checkIn(VersioningOption.MINOR, null);
-                save();
-                // id = ref.toString();
-                id = object.getId();
-                break;
-            case MAJOR:
-                ref = object.doc.checkIn(VersioningOption.MAJOR, null);
-                save();
-                // id = ref.toString();
-                id = object.getId();
-                break;
-            default:
-                throw new AssertionError(versioningState);
-            }
-            return id;
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        if (versioningState == null) {
+            // default is MAJOR, per spec
+            versioningState = VersioningState.MAJOR;
         }
+        String id;
+        DocumentRef ref = null;
+        switch (versioningState) {
+        case NONE: // cannot be made non-versionable in Nuxeo
+        case CHECKEDOUT:
+            object.doc.setLock();
+            save();
+            id = object.getId();
+            break;
+        case MINOR:
+            ref = object.doc.checkIn(VersioningOption.MINOR, null);
+            save();
+            // id = ref.toString();
+            id = object.getId();
+            break;
+        case MAJOR:
+            ref = object.doc.checkIn(VersioningOption.MAJOR, null);
+            save();
+            // id = ref.toString();
+            id = object.getId();
+            break;
+        default:
+            throw new AssertionError(versioningState);
+        }
+        return id;
     }
 
     @Override
@@ -768,18 +737,14 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         }
         DocumentModel doc = getDocumentModel(sourceId);
         DocumentModel folder = getDocumentModel(folderId);
-        try {
-            DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
-            NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc);
-            if (properties != null && properties.getPropertyList() != null && !properties.getPropertyList().isEmpty()) {
-                updateProperties(copy, null, properties, false);
-                copy.doc = coreSession.saveDocument(copyDoc);
-            }
-            save();
-            return setInitialVersioningState(copy, versioningState);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
+        NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc);
+        if (properties != null && properties.getPropertyList() != null && !properties.getPropertyList().isEmpty()) {
+            updateProperties(copy, null, properties, false);
+            copy.doc = coreSession.saveDocument(copyDoc);
         }
+        save();
+        return setInitialVersioningState(copy, versioningState);
     }
 
     public NuxeoObjectData copy(String sourceId, String targetId, Map<String, ?> properties, TypeDefinition type,
@@ -787,26 +752,22 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             OperationContext context) {
         DocumentModel doc = getDocumentModel(sourceId);
         DocumentModel folder = getDocumentModel(targetId);
-        try {
-            DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
-            NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc, context);
-            if (properties != null && !properties.isEmpty()) {
-                updateProperties(copy, null, properties, type, false);
-                copy.doc = coreSession.saveDocument(copyDoc);
-            }
-            save();
-            String id = setInitialVersioningState(copy, versioningState);
-            NuxeoObjectData res;
-            if (id.equals(copy.getId())) {
-                res = copy;
-            } else {
-                // return the version
-                res = new NuxeoObjectData(this, getDocumentModel(id));
-            }
-            return res;
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        DocumentModel copyDoc = coreSession.copy(doc.getRef(), folder.getRef(), null);
+        NuxeoObjectData copy = new NuxeoObjectData(this, copyDoc, context);
+        if (properties != null && !properties.isEmpty()) {
+            updateProperties(copy, null, properties, type, false);
+            copy.doc = coreSession.saveDocument(copyDoc);
         }
+        save();
+        String id = setInitialVersioningState(copy, versioningState);
+        NuxeoObjectData res;
+        if (id.equals(copy.getId())) {
+            res = copy;
+        } else {
+            // return the version
+            res = new NuxeoObjectData(this, getDocumentModel(id));
+        }
+        return res;
     }
 
     @Override
@@ -824,19 +785,15 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         if (repository.getRootFolderId().equals(folderId)) {
             throw new CmisInvalidArgumentException("Cannot delete root");
         }
-        try {
-            DocumentModel doc = getDocumentModel(folderId);
-            if (!doc.isFolder()) {
-                throw new CmisInvalidArgumentException("Not a folder: " + folderId);
-            }
-            coreSession.removeDocument(new IdRef(folderId));
-            save();
-            // TODO returning null fails in opencmis 0.1.0 due to
-            // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
-            return new FailedToDeleteDataImpl();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        DocumentModel doc = getDocumentModel(folderId);
+        if (!doc.isFolder()) {
+            throw new CmisInvalidArgumentException("Not a folder: " + folderId);
         }
+        coreSession.removeDocument(new IdRef(folderId));
+        save();
+        // TODO returning null fails in opencmis 0.1.0 due to
+        // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
+        return new FailedToDeleteDataImpl();
     }
 
     @Override
@@ -857,14 +814,10 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             }
             throw new CmisConstraintException("No content stream: " + objectId);
         }
-        try {
-            String renditionName = streamId.replaceAll("^" + REND_STREAM_RENDITION_PREFIX, "");
-            ContentStream cs = getRenditionServiceStream(objectId, renditionName);
-            if (cs != null) {
-                return cs;
-            }
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        String renditionName = streamId.replaceAll("^" + REND_STREAM_RENDITION_PREFIX, "");
+        ContentStream cs = getRenditionServiceStream(objectId, renditionName);
+        if (cs != null) {
+            return cs;
         }
         throw new CmisInvalidArgumentException("Invalid stream id: " + streamId);
     }
@@ -969,20 +922,16 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             IncludeRelationships includeRelationships, String renditionFilter, Boolean includePolicyIds,
             Boolean includeAcl, ExtensionsData extension) {
         DocumentModel doc;
-        try {
-            DocumentRef pathRef = new PathRef(path);
-            if (coreSession.exists(pathRef)) {
-                doc = coreSession.getDocument(pathRef);
-                if (isFilteredOut(doc)) {
-                    throw new CmisObjectNotFoundException(path);
-                }
-            } else {
-                // Adobe Drive 2 confuses cmis:name and path segment
-                // try using sequence of titles
-                doc = getObjectByPathOfNames(path);
+        DocumentRef pathRef = new PathRef(path);
+        if (coreSession.exists(pathRef)) {
+            doc = coreSession.getDocument(pathRef);
+            if (isFilteredOut(doc)) {
+                throw new CmisObjectNotFoundException(path);
             }
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        } else {
+            // Adobe Drive 2 confuses cmis:name and path segment
+            // try using sequence of titles
+            doc = getObjectByPathOfNames(path);
         }
         ObjectData data = new NuxeoObjectData(this, doc, filter, includeAllowableActions, includeRelationships,
                 renditionFilter, includePolicyIds, includeAcl, extension);
@@ -1109,30 +1058,26 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         if (targetFolderId == null) {
             throw new CmisInvalidArgumentException("Missing target folder ID");
         }
-        try {
-            getDocumentModel(objectId); // check exists and not deleted
-            DocumentRef docRef = new IdRef(objectId);
-            DocumentModel parent = coreSession.getParentDocument(docRef);
-            if (isFilteredOut(parent)) {
-                throw new CmisObjectNotFoundException("No parent: " + objectId);
-            }
-            if (sourceFolderId == null) {
-                sourceFolderId = parent.getId();
-            } else {
-                // check it's the actual parent
-                if (!parent.getId().equals(sourceFolderId)) {
-                    throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in " + sourceFolderId);
-                }
-            }
-            DocumentModel target = getDocumentModel(targetFolderId);
-            if (!target.isFolder()) {
-                throw new CmisInvalidArgumentException("Target is not a folder: " + targetFolderId);
-            }
-            coreSession.move(docRef, new IdRef(targetFolderId), null);
-            save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        getDocumentModel(objectId); // check exists and not deleted
+        DocumentRef docRef = new IdRef(objectId);
+        DocumentModel parent = coreSession.getParentDocument(docRef);
+        if (isFilteredOut(parent)) {
+            throw new CmisObjectNotFoundException("No parent: " + objectId);
         }
+        if (sourceFolderId == null) {
+            sourceFolderId = parent.getId();
+        } else {
+            // check it's the actual parent
+            if (!parent.getId().equals(sourceFolderId)) {
+                throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in " + sourceFolderId);
+            }
+        }
+        DocumentModel target = getDocumentModel(targetFolderId);
+        if (!target.isFolder()) {
+            throw new CmisInvalidArgumentException("Target is not a folder: " + targetFolderId);
+        }
+        coreSession.move(docRef, new IdRef(targetFolderId), null);
+        save();
     }
 
     @Override
@@ -1159,12 +1104,8 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     @Override
     public void updateProperties(String repositoryId, Holder<String> objectIdHolder, Holder<String> changeTokenHolder,
             Properties properties, ExtensionsData extension) {
-        try {
-            updateProperties(objectIdHolder, changeTokenHolder, properties);
-            save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        updateProperties(objectIdHolder, changeTokenHolder, properties);
+        save();
     }
 
     /* does not save the session */
@@ -1187,19 +1128,15 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             List<String> addSecondaryTypeIds, List<String> removeSecondaryTypeIds, ExtensionsData extension) {
         List<BulkUpdateObjectIdAndChangeToken> list = new ArrayList<BulkUpdateObjectIdAndChangeToken>(
                 objectIdAndChangeToken.size());
-        try {
-            for (BulkUpdateObjectIdAndChangeToken idt : objectIdAndChangeToken) {
-                String id = idt.getId();
-                Holder<String> objectIdHolder = new Holder<String>(id);
-                Holder<String> changeTokenHolder = new Holder<String>(idt.getChangeToken());
-                updateProperties(objectIdHolder, changeTokenHolder, properties);
-                list.add(new BulkUpdateObjectIdAndChangeTokenImpl(id, objectIdHolder.getValue(),
-                        changeTokenHolder.getValue()));
-            }
-            save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        for (BulkUpdateObjectIdAndChangeToken idt : objectIdAndChangeToken) {
+            String id = idt.getId();
+            Holder<String> objectIdHolder = new Holder<String>(id);
+            Holder<String> changeTokenHolder = new Holder<String>(idt.getChangeToken());
+            updateProperties(objectIdHolder, changeTokenHolder, properties);
+            list.add(new BulkUpdateObjectIdAndChangeTokenImpl(id, objectIdHolder.getValue(),
+                    changeTokenHolder.getValue()));
         }
+        save();
         return list;
     }
 
@@ -1225,12 +1162,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         }
         DocumentRef docRef = new IdRef(objectId);
 
-        ACP acp;
-        try {
-            acp = coreSession.getACP(docRef);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        ACP acp = coreSession.getACP(docRef);
 
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
         if (clearFirst) {
@@ -1277,11 +1209,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 }
             }
         }
-        try {
-            coreSession.setACP(docRef, acp, true);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        coreSession.setACP(docRef, acp, true);
         return NuxeoObjectData.getAcl(acp, false, this);
     }
 
@@ -1314,13 +1242,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     @Override
     public Acl getAcl(String repositoryId, String objectId, Boolean onlyBasicPermissions, ExtensionsData extension) {
         boolean basic = !Boolean.FALSE.equals(onlyBasicPermissions);
-        try {
-            getDocumentModel(objectId); // does filtering
-            ACP acp = coreSession.getACP(new IdRef(objectId));
-            return NuxeoObjectData.getAcl(acp, basic, this);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        getDocumentModel(objectId); // does filtering
+        ACP acp = coreSession.getACP(new IdRef(objectId));
+        return NuxeoObjectData.getAcl(acp, basic, this);
     }
 
     @Override
@@ -1556,8 +1480,6 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 }
             }
             numItems = res.size();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.getMessage(), e);
         } finally {
             if (res != null) {
                 res.close();
@@ -1608,8 +1530,9 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 } else {
                     it = coreSession.queryAndFetch(nxql, NXQL.NXQL);
                 }
-            } catch (ClientException e) {
-                throw new CmisRuntimeException("Invalid query: CMISQL: " + query + ": " + e.toString(), e);
+            } catch (QueryParseException e) {
+                e.addInfo("Invalid query: CMISQL: " + query);
+                throw e;
             }
             // wrap result
             return converter.getIterableQueryResult(it, this);
@@ -1662,14 +1585,10 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     public void removeObjectFromFolder(String repositoryId, String objectId, String folderId, ExtensionsData extension) {
         if (folderId != null) {
             // check it's the actual parent
-            try {
-                DocumentModel folder = getDocumentModel(folderId);
-                DocumentModel parent = coreSession.getParentDocument(new IdRef(objectId));
-                if (!parent.getId().equals(folder.getId())) {
-                    throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in  " + folderId);
-                }
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            DocumentModel folder = getDocumentModel(folderId);
+            DocumentModel parent = coreSession.getParentDocument(new IdRef(objectId));
+            if (!parent.getId().equals(folder.getId())) {
+                throw new CmisInvalidArgumentException("Object " + objectId + " is not filed in  " + folderId);
             }
         }
         deleteObject(repositoryId, objectId, Boolean.FALSE, extension);
@@ -1721,12 +1640,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             offset = 0;
         }
 
-        DocumentModelList children;
-        try {
-            children = coreSession.query(query, null, limit, offset, true);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        DocumentModelList children = coreSession.query(query, null, limit, offset, true);
 
         for (DocumentModel child : children) {
             NuxeoObjectData data = new NuxeoObjectData(this, child, filter, includeAllowableActions,
@@ -1829,39 +1743,33 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
     protected List<ObjectParentData> getObjectParentsInternal(String repositoryId, String objectId, String filter,
             Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includeRelativePathSegment, boolean folderOnly) {
-        String pathSegment;
-        String parentId;
-        try {
-            DocumentRef docRef = new IdRef(objectId);
-            if (!coreSession.exists(docRef)) {
-                throw new CmisObjectNotFoundException(objectId);
-            }
-            DocumentModel doc = coreSession.getDocument(docRef);
-            if (isFilteredOut(doc)) {
-                throw new CmisObjectNotFoundException(objectId);
-            }
-            if (folderOnly && !doc.isFolder()) {
-                throw new CmisInvalidArgumentException("Not a folder: " + objectId);
-            }
-            pathSegment = doc.getName();
-            if (pathSegment == null) { // root
-                return Collections.emptyList();
-            }
-            DocumentRef parentRef = doc.getParentRef();
-            if (parentRef == null) { // placeless
-                return Collections.emptyList();
-            }
-            if (!coreSession.exists(parentRef)) { // non-accessible
-                return Collections.emptyList();
-            }
-            DocumentModel parent = coreSession.getDocument(parentRef);
-            if (isFilteredOut(parent)) { // filtered out
-                return Collections.emptyList();
-            }
-            parentId = parent.getId();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        DocumentRef docRef = new IdRef(objectId);
+        if (!coreSession.exists(docRef)) {
+            throw new CmisObjectNotFoundException(objectId);
         }
+        DocumentModel doc = coreSession.getDocument(docRef);
+        if (isFilteredOut(doc)) {
+            throw new CmisObjectNotFoundException(objectId);
+        }
+        if (folderOnly && !doc.isFolder()) {
+            throw new CmisInvalidArgumentException("Not a folder: " + objectId);
+        }
+        String pathSegment = doc.getName();
+        if (pathSegment == null) { // root
+            return Collections.emptyList();
+        }
+        DocumentRef parentRef = doc.getParentRef();
+        if (parentRef == null) { // placeless
+            return Collections.emptyList();
+        }
+        if (!coreSession.exists(parentRef)) { // non-accessible
+            return Collections.emptyList();
+        }
+        DocumentModel parent = coreSession.getDocument(parentRef);
+        if (isFilteredOut(parent)) { // filtered out
+            return Collections.emptyList();
+        }
+        String parentId = parent.getId();
 
         ObjectData od = getObject(repositoryId, parentId, filter, includeAllowableActions, includeRelationships,
                 renditionFilter, Boolean.FALSE, Boolean.FALSE, null);
@@ -1936,17 +1844,13 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 throw new CmisRuntimeException(e.toString(), e);
             }
         }
-        try {
-            // comment for save event
-            doc.putContextData("comment", checkinComment);
-            coreSession.saveDocument(doc);
-            DocumentRef ver = doc.checkIn(option, checkinComment);
-            doc.removeLock();
-            save();
-            objectIdHolder.setValue(getIdFromDocumentRef(ver));
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        // comment for save event
+        doc.putContextData("comment", checkinComment);
+        coreSession.saveDocument(doc);
+        DocumentRef ver = doc.checkIn(option, checkinComment);
+        doc.removeLock();
+        save();
+        objectIdHolder.setValue(getIdFromDocumentRef(ver));
     }
 
     public String checkIn(String objectId, boolean major, Map<String, ?> properties, ObjectType type,
@@ -1965,15 +1869,11 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
                 throw new CmisRuntimeException(e.toString(), e);
             }
         }
-        try {
-            coreSession.saveDocument(doc);
-            DocumentRef ver = doc.checkIn(option, checkinComment);
-            doc.removeLock();
-            save();
-            return getIdFromDocumentRef(ver);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        coreSession.saveDocument(doc);
+        DocumentRef ver = doc.checkIn(option, checkinComment);
+        doc.removeLock();
+        save();
+        return getIdFromDocumentRef(ver);
     }
 
     @Override
@@ -2018,7 +1918,7 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
             pwc.checkOut();
             save();
             return pwc.getId();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) { // TODO use a core LockException
             String message = e.getMessage();
             if (message != null && message.startsWith("Document already locked")) {
                 throw new CmisConstraintException("Cannot check out since currently locked: " + objectId);
@@ -2034,25 +1934,21 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     public void cancelCheckOut(String objectId) {
         DocumentModel doc = getDocumentModel(objectId);
-        try {
-            if (doc.isVersion() || doc.isProxy() || !doc.isCheckedOut()) {
-                throw new CmisInvalidArgumentException("Cannot cancel check out of non-PWC: " + doc);
-            }
-            DocumentRef docRef = doc.getRef();
-            // find last version
-            DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
-            if (verRef == null) {
-                // delete
-                coreSession.removeDocument(docRef);
-            } else {
-                // restore and keep checked in
-                coreSession.restoreToVersion(docRef, verRef, true, true);
-                doc.removeLock();
-            }
-            save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        if (doc.isVersion() || doc.isProxy() || !doc.isCheckedOut()) {
+            throw new CmisInvalidArgumentException("Cannot cancel check out of non-PWC: " + doc);
         }
+        DocumentRef docRef = doc.getRef();
+        // find last version
+        DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
+        if (verRef == null) {
+            // delete
+            coreSession.removeDocument(docRef);
+        } else {
+            // restore and keep checked in
+            coreSession.restoreToVersion(docRef, verRef, true, true);
+            doc.removeLock();
+        }
+        save();
     }
 
     @Override
@@ -2104,29 +2000,25 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         } else {
             throw new CmisInvalidArgumentException("Missing object ID or version series ID");
         }
-        try {
-            List<DocumentRef> versions = coreSession.getVersionsRefs(doc.getRef());
-            List<ObjectData> list = new ArrayList<ObjectData>(versions.size());
-            for (DocumentRef verRef : versions) {
-                String verId = getIdFromDocumentRef(verRef);
-                ObjectData od = getObject(repositoryId, verId, filter, includeAllowableActions,
-                        IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, null);
-                list.add(od);
-            }
-            // PWC last
-            DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef()) : doc;
-            if (pwc != null && pwc.isCheckedOut()) {
-                NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter, includeAllowableActions,
-                        IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, extension);
-                list.add(od);
-            }
-            // CoreSession returns them in creation order,
-            // CMIS wants them last first
-            Collections.reverse(list);
-            return list;
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        List<DocumentRef> versions = coreSession.getVersionsRefs(doc.getRef());
+        List<ObjectData> list = new ArrayList<ObjectData>(versions.size());
+        for (DocumentRef verRef : versions) {
+            String verId = getIdFromDocumentRef(verRef);
+            ObjectData od = getObject(repositoryId, verId, filter, includeAllowableActions, IncludeRelationships.NONE,
+                    null, Boolean.FALSE, Boolean.FALSE, null);
+            list.add(od);
         }
+        // PWC last
+        DocumentModel pwc = doc.isVersion() ? coreSession.getWorkingCopy(doc.getRef()) : doc;
+        if (pwc != null && pwc.isCheckedOut()) {
+            NuxeoObjectData od = new NuxeoObjectData(this, pwc, filter, includeAllowableActions,
+                    IncludeRelationships.NONE, null, Boolean.FALSE, Boolean.FALSE, extension);
+            list.add(od);
+        }
+        // CoreSession returns them in creation order,
+        // CMIS wants them last first
+        Collections.reverse(list);
+        return list;
     }
 
     @Override
@@ -2145,26 +2037,22 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
         } else {
             throw new CmisInvalidArgumentException("Missing object ID or version series ID");
         }
-        try {
-            if (Boolean.TRUE.equals(major)) {
-                // we must list all versions
-                List<DocumentModel> versions = coreSession.getVersions(doc.getRef());
-                Collections.reverse(versions);
-                for (DocumentModel ver : versions) {
-                    if (ver.isMajorVersion()) {
-                        return getObject(repositoryId, ver.getId(), filter, includeAllowableActions,
-                                includeRelationships, renditionFilter, includePolicyIds, includeAcl, null);
-                    }
+        if (Boolean.TRUE.equals(major)) {
+            // we must list all versions
+            List<DocumentModel> versions = coreSession.getVersions(doc.getRef());
+            Collections.reverse(versions);
+            for (DocumentModel ver : versions) {
+                if (ver.isMajorVersion()) {
+                    return getObject(repositoryId, ver.getId(), filter, includeAllowableActions, includeRelationships,
+                            renditionFilter, includePolicyIds, includeAcl, null);
                 }
-                return null;
-            } else {
-                DocumentRef verRef = coreSession.getLastDocumentVersionRef(doc.getRef());
-                String verId = getIdFromDocumentRef(verRef);
-                return getObject(repositoryId, verId, filter, includeAllowableActions, includeRelationships,
-                        renditionFilter, includePolicyIds, includeAcl, null);
             }
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+            return null;
+        } else {
+            DocumentRef verRef = coreSession.getLastDocumentVersionRef(doc.getRef());
+            String verId = getIdFromDocumentRef(verRef);
+            return getObject(repositoryId, verId, filter, includeAllowableActions, includeRelationships,
+                    renditionFilter, includePolicyIds, includeAcl, null);
         }
     }
 
@@ -2178,40 +2066,32 @@ public class NuxeoCmisService extends AbstractCmisService implements CallContext
 
     @Override
     public void deleteObject(String repositoryId, String objectId, Boolean allVersions, ExtensionsData extension) {
-        try {
-            DocumentModel doc = getDocumentModel(objectId);
-            if (doc.isFolder()) {
-                // check that there are no children left
-                DocumentModelList docs = coreSession.getChildren(new IdRef(objectId), null, documentFilter, null);
-                if (docs.size() > 0) {
-                    throw new CmisConstraintException("Cannot delete non-empty folder: " + objectId);
-                }
+        DocumentModel doc = getDocumentModel(objectId);
+        if (doc.isFolder()) {
+            // check that there are no children left
+            DocumentModelList docs = coreSession.getChildren(new IdRef(objectId), null, documentFilter, null);
+            if (docs.size() > 0) {
+                throw new CmisConstraintException("Cannot delete non-empty folder: " + objectId);
             }
-            coreSession.removeDocument(doc.getRef());
-            save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
         }
+        coreSession.removeDocument(doc.getRef());
+        save();
     }
 
     @Override
     public void deleteObjectOrCancelCheckOut(String repositoryId, String objectId, Boolean allVersions,
             ExtensionsData extension) {
-        try {
-            DocumentModel doc = getDocumentModel(objectId);
-            DocumentRef docRef = doc.getRef();
-            // find last version
-            DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
-            // If doc has versions, is locked, and is checkedOut, then it was
-            // likely
-            // explicitly checkedOut so invoke cancelCheckOut not delete
-            if (verRef != null && doc.isLocked() && doc.isCheckedOut()) {
-                cancelCheckOut(repositoryId, objectId, extension);
-            } else {
-                deleteObject(repositoryId, objectId, allVersions, extension);
-            }
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        DocumentModel doc = getDocumentModel(objectId);
+        DocumentRef docRef = doc.getRef();
+        // find last version
+        DocumentRef verRef = coreSession.getLastDocumentVersionRef(docRef);
+        // If doc has versions, is locked, and is checkedOut, then it was
+        // likely
+        // explicitly checkedOut so invoke cancelCheckOut not delete
+        if (verRef != null && doc.isLocked() && doc.isCheckedOut()) {
+            cancelCheckOut(repositoryId, objectId, extension);
+        } else {
+            deleteObject(repositoryId, objectId, allVersions, extension);
         }
     }
 

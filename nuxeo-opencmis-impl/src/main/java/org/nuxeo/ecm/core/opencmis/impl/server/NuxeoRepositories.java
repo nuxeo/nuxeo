@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -64,8 +63,6 @@ public class NuxeoRepositories extends DefaultComponent {
                 try (CoreSession coreSession = CoreInstance.openCoreSession(repositoryName)) {
                     String rootFolderId = coreSession.getRootDocument().getId();
                     repositories.put(repositoryName, new NuxeoRepository(repositoryName, rootFolderId));
-                } catch (ClientException e) {
-                    throw new CmisRuntimeException(e.toString(), e);
                 }
             }
         } catch (CmisRuntimeException e) {

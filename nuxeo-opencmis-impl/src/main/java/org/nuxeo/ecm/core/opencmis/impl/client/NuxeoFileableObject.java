@@ -22,7 +22,6 @@ import org.apache.chemistry.opencmis.client.api.OperationContext;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.spi.Holder;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -40,17 +39,13 @@ public abstract class NuxeoFileableObject extends NuxeoObject implements Fileabl
     @Override
     public List<Folder> getParents(OperationContext context) {
         // context ignored
-        try {
-            CoreSession coreSession = data.doc.getCoreSession();
-            DocumentModel parent = coreSession.getParentDocument(new IdRef(getId()));
-            if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
-                return Collections.emptyList();
-            }
-            Folder folder = (Folder) session.getObject(parent, session.getDefaultContext());
-            return Collections.singletonList(folder);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        CoreSession coreSession = data.doc.getCoreSession();
+        DocumentModel parent = coreSession.getParentDocument(new IdRef(getId()));
+        if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
+            return Collections.emptyList();
         }
+        Folder folder = (Folder) session.getObject(parent, session.getDefaultContext());
+        return Collections.singletonList(folder);
     }
 
     @Override

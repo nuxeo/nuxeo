@@ -37,7 +37,6 @@ import org.apache.chemistry.opencmis.commons.enums.VersioningState;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisInvalidArgumentException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -164,12 +163,7 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
             @Override
             protected Page<CmisObject> fetchPage(long skipCount) {
                 List<CmisObject> items = new ArrayList<CmisObject>();
-                DocumentModelList children;
-                try {
-                    children = nuxeoCmisService.getCoreSession().getChildren(data.doc.getRef());
-                } catch (ClientException e) {
-                    throw new CmisRuntimeException(e.toString(), e);
-                }
+                DocumentModelList children = nuxeoCmisService.getCoreSession().getChildren(data.doc.getRef());
                 long totalItems = 0;
                 long skip = skipCount;
                 // TODO orderBy
@@ -221,16 +215,12 @@ public class NuxeoFolder extends NuxeoFileableObject implements Folder {
 
     @Override
     public String getParentId() {
-        try {
-            CoreSession coreSession = data.doc.getCoreSession();
-            DocumentModel parent = coreSession.getParentDocument(new IdRef(getId()));
-            if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
-                return null;
-            }
-            return parent.getId();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        CoreSession coreSession = data.doc.getCoreSession();
+        DocumentModel parent = coreSession.getParentDocument(new IdRef(getId()));
+        if (parent == null || nuxeoCmisService.isFilteredOut(parent)) {
+            return null;
         }
+        return parent.getId();
     }
 
     @Override

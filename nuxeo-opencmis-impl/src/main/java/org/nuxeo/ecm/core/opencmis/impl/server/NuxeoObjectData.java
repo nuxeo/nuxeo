@@ -66,7 +66,6 @@ import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.commons.spi.BindingsObjectFactory;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -238,12 +237,7 @@ public class NuxeoObjectData implements ObjectData {
         boolean isDocument = baseType == BaseTypeId.CMIS_DOCUMENT;
         boolean isFolder = baseType == BaseTypeId.CMIS_FOLDER;
         boolean isRoot = "/".equals(doc.getPathAsString());
-        boolean canWrite;
-        try {
-            canWrite = creation || doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.WRITE);
-        } catch (ClientException e) {
-            canWrite = false;
-        }
+        boolean canWrite = creation || doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.WRITE);
 
         Set<Action> set = EnumSet.noneOf(Action.class);
         set.add(Action.CAN_GET_OBJECT_PARENTS);
@@ -260,15 +254,11 @@ public class NuxeoObjectData implements ObjectData {
             set.add(Action.CAN_GET_ALL_VERSIONS);
             set.add(Action.CAN_ADD_OBJECT_TO_FOLDER);
             set.add(Action.CAN_REMOVE_OBJECT_FROM_FOLDER);
-            try {
-                if (doc.isCheckedOut()) {
-                    set.add(Action.CAN_CHECK_IN);
-                    set.add(Action.CAN_CANCEL_CHECK_OUT);
-                } else {
-                    set.add(Action.CAN_CHECK_OUT);
-                }
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (doc.isCheckedOut()) {
+                set.add(Action.CAN_CHECK_IN);
+                set.add(Action.CAN_CANCEL_CHECK_OUT);
+            } else {
+                set.add(Action.CAN_CHECK_OUT);
             }
         }
         if (isFolder || isDocument) {
@@ -363,8 +353,6 @@ public class NuxeoObjectData implements ObjectData {
             list = ListUtils.batchList(list, maxItems, skipCount, DEFAULT_MAX_RENDITIONS);
             return list;
         } catch (IOException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
     }
@@ -486,8 +474,6 @@ public class NuxeoObjectData implements ObjectData {
             for (Map<String, Serializable> map : res) {
                 list.add(service.makeObjectData(map, typeInfo));
             }
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.getMessage(), e);
         } finally {
             if (res != null) {
                 res.close();
@@ -501,12 +487,8 @@ public class NuxeoObjectData implements ObjectData {
         if (!Boolean.TRUE.equals(includeAcl)) {
             return null;
         }
-        try {
-            ACP acp = doc.getACP();
-            return getAcl(acp, false, nuxeoCmisService);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        ACP acp = doc.getACP();
+        return getAcl(acp, false, nuxeoCmisService);
     }
 
     protected static Acl getAcl(ACP acp, boolean onlyBasicPermissions, NuxeoCmisService service) {

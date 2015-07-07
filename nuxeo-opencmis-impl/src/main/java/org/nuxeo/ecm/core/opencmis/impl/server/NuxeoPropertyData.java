@@ -60,7 +60,6 @@ import org.nuxeo.ecm.automation.core.util.ComplexPropertyJSONEncoder;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -143,12 +142,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return (PropertyData<U>) new NuxeoPropertyDataVersionLabel((PropertyDefinition<String>) pd, doc);
         } else if (PropertyIds.VERSION_SERIES_ID.equals(name)) {
             // doesn't change once computed, no need to have a dynamic prop
-            String versionSeriesId;
-            try {
-                versionSeriesId = doc.getVersionSeriesId();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
+            String versionSeriesId = doc.getVersionSeriesId();
             return (PropertyData<U>) new NuxeoPropertyIdDataFixed((PropertyDefinition<String>) pd, versionSeriesId);
         } else if (PropertyIds.IS_VERSION_SERIES_CHECKED_OUT.equals(name)) {
             return (PropertyData<U>) new NuxeoPropertyDataIsVersionSeriesCheckedOut((PropertyDefinition<Boolean>) pd,
@@ -163,21 +157,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed((PropertyDefinition<Boolean>) pd,
                     Boolean.valueOf(doc.isVersion()));
         } else if (NuxeoTypeHelper.NX_ISCHECKEDIN.equals(name)) {
-            boolean co;
-            try {
-                co = doc.isCheckedOut();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
+            boolean co = doc.isCheckedOut();
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed((PropertyDefinition<Boolean>) pd,
                     Boolean.valueOf(!co));
         } else if (PropertyIds.IS_PRIVATE_WORKING_COPY.equals(name)) {
-            boolean co;
-            try {
-                co = doc.isCheckedOut();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
+            boolean co = doc.isCheckedOut();
             return (PropertyData<U>) new NuxeoPropertyBooleanDataFixed((PropertyDefinition<Boolean>) pd,
                     Boolean.valueOf(co));
         } else if (PropertyIds.CHECKIN_COMMENT.equals(name)) {
@@ -235,12 +219,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             Collections.sort(facets);
             return (PropertyData<U>) new NuxeoPropertyIdMultiDataFixed((PropertyDefinition<String>) pd, facets);
         } else if (NuxeoTypeHelper.NX_LIFECYCLE_STATE.equals(name)) {
-            String state;
-            try {
-                state = doc.getCurrentLifeCycleState();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
+            String state = doc.getCurrentLifeCycleState();
             return (PropertyData<U>) new NuxeoPropertyStringDataFixed((PropertyDefinition<String>) pd, state);
         } else {
             boolean readOnly = pd.getUpdatability() != Updatability.READWRITE;
@@ -282,17 +261,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         if (blobHolder == null) {
             throw new CmisStreamNotSupportedException();
         }
-        Blob blob;
-        GregorianCalendar lastModified;
-        try {
-            blob = blobHolder.getBlob();
-            if (blob == null) {
-                return null;
-            }
-            lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+        Blob blob = blobHolder.getBlob();
+        if (blob == null) {
+            return null;
         }
+        GregorianCalendar lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
         DownloadService downloadService = Framework.getService(DownloadService.class);
         downloadService.logDownload(doc, "blobholder:0", blob.getFilename(), "cmis", null);
         return new NuxeoContentStream(blob, lastModified);
@@ -304,12 +277,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         if (blobHolder == null) {
             throw new CmisContentAlreadyExistsException();
         }
-        Blob oldBlob;
-        try {
-            oldBlob = blobHolder.getBlob();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        Blob oldBlob = blobHolder.getBlob();
         if (!overwrite && oldBlob != null) {
             throw new CmisContentAlreadyExistsException();
         }
@@ -323,19 +291,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 filename = oldBlob.getFilename();
             }
             if (filename == null) {
-                try {
-                    filename = doc.getTitle();
-                } catch (ClientException e) {
-                    filename = doc.getName();
-                }
+                filename = doc.getTitle();
             }
             blob = getPersistentBlob(contentStream, filename);
         }
-        try {
-            blobHolder.setBlob(blob);
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        blobHolder.setBlob(blob);
     }
 
     /** Returns a Blob whose stream can be used several times. */
@@ -366,47 +326,43 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <U> U getValue() {
-        try {
-            Property prop = doc.getProperty(name);
-            Serializable value = prop.getValue();
-            if (value == null) {
-                return null;
-            }
-            Type type = prop.getType();
-            if (type.isListType()) {
-                // array/list
-                type = ((ListType) type).getFieldType();
-                Collection<Object> values;
-                if (type.isComplexType()) {
-                    values = (Collection) ((ListProperty) prop).getChildren();
-                } else if (value instanceof Object[]) {
-                    values = Arrays.asList((Object[]) value);
-                } else if (value instanceof List<?>) {
-                    values = (List<Object>) value;
-                } else {
-                    throw new CmisRuntimeException("Unknown value type: " + value.getClass().getName());
-                }
-                List<Object> list = new ArrayList<Object>(values);
-                for (int i = 0; i < list.size(); i++) {
-                    if (type.isComplexType()) {
-                        value = (Serializable) convertComplexPropertyToCMIS((ComplexProperty) list.get(i), callContext);
-                    } else {
-                        value = (Serializable) convertToCMIS(list.get(i));
-                    }
-                    list.set(i, value);
-                }
-                return (U) list;
+        Property prop = doc.getProperty(name);
+        Serializable value = prop.getValue();
+        if (value == null) {
+            return null;
+        }
+        Type type = prop.getType();
+        if (type.isListType()) {
+            // array/list
+            type = ((ListType) type).getFieldType();
+            Collection<Object> values;
+            if (type.isComplexType()) {
+                values = (Collection) ((ListProperty) prop).getChildren();
+            } else if (value instanceof Object[]) {
+                values = Arrays.asList((Object[]) value);
+            } else if (value instanceof List<?>) {
+                values = (List<Object>) value;
             } else {
-                // primitive type or complex type
-                if (type.isComplexType()) {
-                    value = (Serializable) convertComplexPropertyToCMIS((ComplexProperty) prop, callContext);
-                } else {
-                    value = (Serializable) convertToCMIS(value);
-                }
-                return (U) convertToCMIS(value);
+                throw new CmisRuntimeException("Unknown value type: " + value.getClass().getName());
             }
-        } catch (ClientException | IOException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+            List<Object> list = new ArrayList<Object>(values);
+            for (int i = 0; i < list.size(); i++) {
+                if (type.isComplexType()) {
+                    value = (Serializable) convertComplexPropertyToCMIS((ComplexProperty) list.get(i), callContext);
+                } else {
+                    value = (Serializable) convertToCMIS(list.get(i));
+                }
+                list.set(i, value);
+            }
+            return (U) list;
+        } else {
+            // primitive type or complex type
+            if (type.isComplexType()) {
+                value = (Serializable) convertComplexPropertyToCMIS((ComplexProperty) prop, callContext);
+            } else {
+                value = (Serializable) convertToCMIS(value);
+            }
+            return (U) convertToCMIS(value);
         }
     }
 
@@ -423,12 +379,16 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
     }
 
-    protected static Object convertComplexPropertyToCMIS(ComplexProperty prop, CallContext callContext)
-            throws IOException {
+    protected static Object convertComplexPropertyToCMIS(ComplexProperty prop, CallContext callContext) {
         DateTimeFormat cmisDateTimeFormat = getCMISDateTimeFormat(callContext);
-        org.nuxeo.ecm.automation.core.util.DateTimeFormat nuxeoDateTimeFormat = cmisDateTimeFormat == DateTimeFormat.SIMPLE ? org.nuxeo.ecm.automation.core.util.DateTimeFormat.TIME_IN_MILLIS
+        org.nuxeo.ecm.automation.core.util.DateTimeFormat nuxeoDateTimeFormat = cmisDateTimeFormat == DateTimeFormat.SIMPLE
+                ? org.nuxeo.ecm.automation.core.util.DateTimeFormat.TIME_IN_MILLIS
                 : org.nuxeo.ecm.automation.core.util.DateTimeFormat.W3C;
-        return ComplexPropertyJSONEncoder.encode(prop, nuxeoDateTimeFormat);
+        try {
+            return ComplexPropertyJSONEncoder.encode(prop, nuxeoDateTimeFormat);
+        } catch (IOException e) {
+            throw new CmisRuntimeException(e.toString(), e);
+        }
     }
 
     protected static DateTimeFormat getCMISDateTimeFormat(CallContext callContext) {
@@ -451,13 +411,17 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
     }
 
     // conversion from CMIS value types to Nuxeo ones
-    protected static Object convertToNuxeo(Object value, Type type) throws IOException {
+    protected static Object convertToNuxeo(Object value, Type type) {
         if (value instanceof BigDecimal) {
             return Double.valueOf(((BigDecimal) value).doubleValue());
         } else if (value instanceof BigInteger) {
             return Long.valueOf(((BigInteger) value).longValue());
         } else if (type.isComplexType()) {
-            return ComplexTypeJSONDecoder.decode((ComplexType) type, value.toString());
+            try {
+                return ComplexTypeJSONDecoder.decode((ComplexType) type, value.toString());
+            } catch (IOException e) {
+                throw new CmisRuntimeException(e.toString(), e);
+            }
         } else {
             return value;
         }
@@ -555,32 +519,28 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
     @Override
     public void setValue(Object value) {
-        try {
-            if (readOnly) {
-                super.setValue(value);
-            } else {
-                Type type = doc.getProperty(name).getType();
-                if (type.isListType()) {
-                    type = ((ListType) type).getFieldType();
-                }
-                Object propValue;
-                if (value instanceof List<?>) {
-                    @SuppressWarnings("unchecked")
-                    List<Object> list = new ArrayList<Object>((List<Object>) value);
-                    for (int i = 0; i < list.size(); i++) {
-                        list.set(i, convertToNuxeo(list.get(i), type));
-                    }
-                    if (list.isEmpty()) {
-                        list = null;
-                    }
-                    propValue = list;
-                } else {
-                    propValue = convertToNuxeo(value, type);
-                }
-                doc.setPropertyValue(name, (Serializable) propValue);
+        if (readOnly) {
+            super.setValue(value);
+        } else {
+            Type type = doc.getProperty(name).getType();
+            if (type.isListType()) {
+                type = ((ListType) type).getFieldType();
             }
-        } catch (ClientException | IOException e) {
-            throw new CmisRuntimeException(e.toString(), e);
+            Object propValue;
+            if (value instanceof List<?>) {
+                @SuppressWarnings("unchecked")
+                List<Object> list = new ArrayList<Object>((List<Object>) value);
+                for (int i = 0; i < list.size(); i++) {
+                    list.set(i, convertToNuxeo(list.get(i), type));
+                }
+                if (list.isEmpty()) {
+                    list = null;
+                }
+                propValue = list;
+            } else {
+                propValue = convertToNuxeo(value, type);
+            }
+            doc.setPropertyValue(name, (Serializable) propValue);
         }
     }
 
@@ -589,11 +549,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         if (blobHolder == null) {
             return null;
         }
-        try {
-            return blobHolder.getBlob();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        return blobHolder.getBlob();
     }
 
     public static class NuxeoPropertyStringData extends NuxeoPropertyData<String> implements PropertyString {
@@ -678,11 +634,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         // throw new StreamNotSupportedException();
         // }
         // Blob blob;
-        // try {
         // blob = blobHolder.getBlob();
-        // } catch (ClientException e) {
-        // throw new CmisRuntimeException(e.toString(), e);
-        // }
         // if (blob != null) {
         // blob.setFilename((String) value);
         // }
@@ -775,13 +727,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
             if (doc.getPath().isRoot()) {
                 return ""; // Nuxeo root
             }
-            String name;
-            try {
-                name = doc.getTitle();
-            } catch (ClientException e) {
-                name = "";
-            }
-            return name;
+            return doc.getTitle();
         }
 
         @Override
@@ -797,8 +743,6 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 // trying to set the name of a type with no dublincore
                 // ignore
                 log.debug("Cannot set CMIS name on type: " + doc.getType());
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
             }
         }
     }
@@ -823,11 +767,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
                 } else if (parentRef instanceof IdRef) {
                     return ((IdRef) parentRef).value;
                 } else {
-                    try {
-                        return doc.getCoreSession().getDocument(parentRef).getId();
-                    } catch (ClientException e) {
-                        throw new CmisRuntimeException(e.toString(), e);
-                    }
+                    return doc.getCoreSession().getDocument(parentRef).getId();
                 }
             }
         }
@@ -865,15 +805,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            try {
-                if (doc.isVersion() || doc.isProxy()) {
-                    return Boolean.valueOf(doc.isMajorVersion());
-                }
-                // checked in doc considered latest version
-                return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (doc.isVersion() || doc.isProxy()) {
+                return Boolean.valueOf(doc.isMajorVersion());
             }
+            // checked in doc considered latest version
+            return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
         }
     }
 
@@ -889,15 +825,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            try {
-                if (doc.isVersion() || doc.isProxy()) {
-                    return Boolean.valueOf(doc.isLatestVersion());
-                }
-                // checked in doc considered latest version
-                return Boolean.valueOf(!doc.isCheckedOut());
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (doc.isVersion() || doc.isProxy()) {
+                return Boolean.valueOf(doc.isLatestVersion());
             }
+            // checked in doc considered latest version
+            return Boolean.valueOf(!doc.isCheckedOut());
         }
     }
 
@@ -914,15 +846,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            try {
-                if (doc.isVersion() || doc.isProxy()) {
-                    return Boolean.valueOf(doc.isLatestMajorVersion());
-                }
-                // checked in doc considered latest version
-                return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (doc.isVersion() || doc.isProxy()) {
+                return Boolean.valueOf(doc.isLatestMajorVersion());
             }
+            // checked in doc considered latest version
+            return Boolean.valueOf(isLiveDocumentMajorVersion(doc));
         }
     }
 
@@ -939,11 +867,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public Boolean getFirstValue() {
-            try {
-                return Boolean.valueOf(doc.isVersionSeriesCheckedOut());
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
-            }
+            return Boolean.valueOf(doc.isVersionSeriesCheckedOut());
         }
     }
 
@@ -960,15 +884,11 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public String getFirstValue() {
-            try {
-                if (!doc.isVersionSeriesCheckedOut()) {
-                    return null;
-                }
-                DocumentModel pwc = doc.getCoreSession().getWorkingCopy(doc.getRef());
-                return pwc == null ? null : pwc.getId();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (!doc.isVersionSeriesCheckedOut()) {
+                return null;
             }
+            DocumentModel pwc = doc.getCoreSession().getWorkingCopy(doc.getRef());
+            return pwc == null ? null : pwc.getId();
         }
     }
 
@@ -988,16 +908,12 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public String getFirstValue() {
-            try {
-                if (!doc.isVersionSeriesCheckedOut()) {
-                    return null;
-                }
-                DocumentModel pwc = doc.getCoreSession().getWorkingCopy(doc.getRef());
-                // TODO not implemented
-                return pwc == null ? null : callContext.getUsername();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (!doc.isVersionSeriesCheckedOut()) {
+                return null;
             }
+            DocumentModel pwc = doc.getCoreSession().getWorkingCopy(doc.getRef());
+            // TODO not implemented
+            return pwc == null ? null : callContext.getUsername();
         }
     }
 
@@ -1012,14 +928,10 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public String getFirstValue() {
-            try {
-                if (doc.isVersion() || doc.isProxy()) {
-                    return doc.getVersionLabel();
-                }
-                return doc.isCheckedOut() ? null : doc.getVersionLabel();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (doc.isVersion() || doc.isProxy()) {
+                return doc.getVersionLabel();
             }
+            return doc.isCheckedOut() ? null : doc.getVersionLabel();
         }
     }
 
@@ -1034,20 +946,16 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
 
         @Override
         public String getFirstValue() {
-            try {
-                if (doc.isVersion() || doc.isProxy()) {
-                    return doc.getCheckinComment();
-                }
-                if (doc.isCheckedOut()) {
-                    return null;
-                }
-                CoreSession session = doc.getCoreSession();
-                DocumentRef v = session.getBaseVersion(doc.getRef());
-                DocumentModel ver = session.getDocument(v);
-                return ver.getCheckinComment();
-            } catch (ClientException e) {
-                throw new CmisRuntimeException(e.toString(), e);
+            if (doc.isVersion() || doc.isProxy()) {
+                return doc.getCheckinComment();
             }
+            if (doc.isCheckedOut()) {
+                return null;
+            }
+            CoreSession session = doc.getCoreSession();
+            DocumentRef v = session.getBaseVersion(doc.getRef());
+            DocumentModel ver = session.getDocument(v);
+            return ver.getCheckinComment();
         }
     }
 

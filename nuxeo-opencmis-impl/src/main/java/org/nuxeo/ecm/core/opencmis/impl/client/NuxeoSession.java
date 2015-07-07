@@ -63,7 +63,6 @@ import org.apache.chemistry.opencmis.commons.impl.dataobjects.AccessControlListI
 import org.apache.chemistry.opencmis.commons.impl.dataobjects.BulkUpdateObjectIdAndChangeTokenImpl;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
@@ -121,11 +120,7 @@ public class NuxeoSession implements Session {
     }
 
     public void save() {
-        try {
-            coreSession.save();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        coreSession.save();
     }
 
     @Override

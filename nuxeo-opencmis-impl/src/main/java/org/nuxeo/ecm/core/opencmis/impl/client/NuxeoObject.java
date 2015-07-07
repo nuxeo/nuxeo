@@ -45,7 +45,6 @@ import org.apache.chemistry.opencmis.commons.enums.Updatability;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisRuntimeException;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoCmisService;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoObjectData;
@@ -198,14 +197,10 @@ public abstract class NuxeoObject implements CmisObject {
         for (Entry<String, ?> en : properties.entrySet()) {
             ((NuxeoPropertyDataBase<?>) data.getProperty(en.getKey())).setValue(en.getValue());
         }
-        try {
-            CoreSession coreSession = session.getCoreSession();
-            data.doc = coreSession.saveDocument(data.doc);
-            coreSession.save();
-            return this;
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        CoreSession coreSession = session.getCoreSession();
+        data.doc = coreSession.saveDocument(data.doc);
+        coreSession.save();
+        return this;
     }
 
     @Override
@@ -330,11 +325,7 @@ public abstract class NuxeoObject implements CmisObject {
 
     @Override
     public void refresh() {
-        try {
-            data.doc.refresh();
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        data.doc.refresh();
     }
 
     @Override

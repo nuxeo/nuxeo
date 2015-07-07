@@ -29,7 +29,6 @@ import org.apache.chemistry.opencmis.commons.impl.DateTimeHelper;
 import org.apache.chemistry.opencmis.commons.server.CallContext;
 import org.apache.chemistry.opencmis.commons.server.CmisService;
 import org.apache.chemistry.opencmis.server.support.wrapper.AbstractCmisServiceWrapper;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -52,12 +51,8 @@ public class LastModifiedServiceWrapper extends AbstractCmisServiceWrapper {
             Boolean includeAllowableActions, IncludeRelationships includeRelationships, String renditionFilter,
             Boolean includePathSegment, BigInteger maxItems, BigInteger skipCount, ExtensionsData extension) {
         GregorianCalendar lastModified;
-        try {
-            DocumentModel doc = getDocumentModel(folderId);
-            lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
-        } catch (ClientException e) {
-            throw new CmisRuntimeException(e.toString(), e);
-        }
+        DocumentModel doc = getDocumentModel(folderId);
+        lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
 
         ObjectInFolderList children = getWrappedService().getChildren(repositoryId, folderId, filter, orderBy,
                 includeAllowableActions, includeRelationships, renditionFilter, includePathSegment, maxItems,
