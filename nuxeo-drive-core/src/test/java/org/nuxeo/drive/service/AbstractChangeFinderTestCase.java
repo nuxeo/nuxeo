@@ -122,7 +122,7 @@ public abstract class AbstractChangeFinderTestCase {
         // Enable deletion listener because the tear down disables it
         eventServiceAdmin.setListenerEnabledFlag("nuxeoDriveFileSystemDeletionListener", true);
 
-        lastEventLogId = nuxeoDriveManager.getChangeFinder().getUpperBound();
+        lastEventLogId = 0;
         lastSyncActiveRootDefinitions = "";
         Framework.getProperties().put("org.nuxeo.drive.document.change.limit", "10");
 

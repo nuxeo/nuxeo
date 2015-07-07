@@ -24,12 +24,10 @@ import javax.inject.Inject;
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
-import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -63,9 +61,7 @@ public class TestESAuditChangeFinder extends AbstractChangeFinderTestCase {
 
     @Override
     protected void cleanUpAuditLog() {
-        NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
-                NXAuditEventsService.NAME);
-        ((ESAuditBackend) auditService.getBackend()).deactivate();
+        esa.dropAndInitIndex(ESAuditBackend.IDX_NAME);
     }
 
 }
