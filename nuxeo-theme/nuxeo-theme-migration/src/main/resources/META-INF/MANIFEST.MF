@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 1
+Bundle-Name: NXThemes Styling
+Bundle-SymbolicName: org.nuxeo.theme.migration;singleton:=true
+Bundle-Localization: plugin
+Bundle-Vendor: Nuxeo
+Bundle-Category: web
