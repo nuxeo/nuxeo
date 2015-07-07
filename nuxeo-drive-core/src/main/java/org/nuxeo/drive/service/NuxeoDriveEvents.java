@@ -42,6 +42,8 @@ public final class NuxeoDriveEvents {
 
     public static final Serializable EVENT_CATEGORY = "NuxeoDrive";
 
+    public static final String VIRTUAL_EVENT_CREATED = "virtualEventCreated";
+
     public static final String DELETED_EVENT = "deleted";
 
     public static final String SECURITY_UPDATED_EVENT = "securityUpdated";
