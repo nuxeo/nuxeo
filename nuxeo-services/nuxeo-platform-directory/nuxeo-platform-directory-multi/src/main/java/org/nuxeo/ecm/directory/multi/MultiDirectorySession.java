@@ -401,6 +401,7 @@ public class MultiDirectorySession extends BaseSession {
             return null;
         }
         init();
+        String entryId = id;
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             boolean isReadOnlyEntry = true;
             final Map<String, Object> map = new HashMap<String, Object>();
@@ -428,6 +429,9 @@ public class MultiDirectorySession extends BaseSession {
                     log.error("Cannot get readonly value from directory "
                             + dirInfo.dirName, ce);
                 }
+                if (entry != null && entry.getId() == null) {
+                    entryId = entry.getId();
+                }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
                         try {
@@ -452,7 +456,7 @@ public class MultiDirectorySession extends BaseSession {
             }
             // ok we have the data
             try {
-                return BaseSession.createEntryModel(null, schemaName, id, map,
+                return BaseSession.createEntryModel(null, schemaName, entryId, map,
                         isReadOnlyEntry);
             } catch (PropertyException e) {
                 throw new DirectoryException(e);
