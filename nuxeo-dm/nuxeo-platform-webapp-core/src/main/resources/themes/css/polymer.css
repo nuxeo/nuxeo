@@ -7,7 +7,11 @@ author: lkemen@nuxeo.com
 /* =Reset inherited styles from the Nuxeo UI Framework */
 
 /* Buttons */
-.nx-wc .content.paper-button {
+.nx-wc .content.paper-button,
+.nx-wc paper-dialog .buttons .content.paper-button,
+.nx-wc .dataTable tr:hover paper-dialog .content.paper-button,
+.nx-wc .dataList tr:hover paper-dialog .content.paper-button,
+.nx-wc .dataOutput tr:hover paper-dialog .content.paper-button  {
   background-color: #f1f4f8;
   box-shadow: none;
   padding: .7em .57em; }
@@ -19,6 +23,10 @@ author: lkemen@nuxeo.com
 
 .nx-wc .content.paper-button:hover,
 .nx-wc .colorful .content.paper-button,
+.nx-wc paper-dialog .colorful .content.paper-button,
+.nx-wc .dataTable tr:hover paper-dialog .colorful .content.paper-button,
+.nx-wc .dataList tr:hover paper-dialog .colorful .content.paper-button,
+.nx-wc .dataOutput tr:hover paper-dialog .colorful .content.paper-button,
 .nx-wc .dataTable tr:hover .content.paper-button:hover,
 .nx-wc .dataList tr:hover .content.paper-button:hover,
 .nx-wc .dataOutput tr:hover .content.paper-button:hover  {
