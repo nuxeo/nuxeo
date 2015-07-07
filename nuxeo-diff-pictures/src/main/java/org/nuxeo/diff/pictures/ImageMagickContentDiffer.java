@@ -16,7 +16,7 @@
  *     Thibaud Arguillere
  */
 
-package org.nuxeo.ecm.diff.content.adapter;
+package org.nuxeo.diff.pictures;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -29,6 +29,7 @@ import org.nuxeo.diff.pictures.DiffPictures;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 
 /**

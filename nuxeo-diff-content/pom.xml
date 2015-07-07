@@ -30,13 +30,6 @@
       <artifactId>nuxeo-platform-commandline-executor</artifactId>
     </dependency>
 
-    <!-- nuxeo diff -->
-    <dependency>
-      <groupId>org.nuxeo.ecm</groupId>
-      <artifactId>nuxeo-diff-pictures</artifactId>
-      <version>7.4-SNAPSHOT</version>
-    </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>

@@ -1,0 +1,12 @@
+<component name="org.nuxeo.diff.pictures.adapter">
+
+	<require>org.nuxeo.ecm.diff.content.adapter.contrib</require>
+	
+	<extension target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" point="mimeTypeContentDiffer">
+	  <contentDiffer class="org.nuxeo.diff.pictures.ImageMagickContentDiffer">
+        <pattern>image/.*</pattern>
+      </contentDiffer>
+	</extension>
+	
+</component>
+

@@ -32,14 +32,6 @@
       </diffBlocks>
     </diffDisplay>
 
-    <!-- TODO: externalize as this is DAM related? -->
-    <diffDisplay type="Picture">
-      <diffBlocks>
-        <diffBlock name="dublincore" />
-        <diffBlock name="picture" />
-      </diffBlocks>
-    </diffDisplay>
-
   </extension>
 
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService"
@@ -89,20 +81,6 @@
             <item name="file" displayContentDiffLinks="true" />
           </items>
         </field>
-      </fields>
-      <templates>
-        <template mode="any">/layouts/layout_diff_template.xhtml
-        </template>
-      </templates>
-    </diffBlock>
-
-    <diffBlock name="picture">
-      <properties mode="any">
-        <property name="label">label.diffBlock.picture</property>
-      </properties>
-      <fields>
-        <field schema="file" name="content"
-          displayContentDiffLinks="true" />
       </fields>
       <templates>
         <template mode="any">/layouts/layout_diff_template.xhtml
