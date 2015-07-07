@@ -39,7 +39,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestAuditFileSystemChangeFinder extends AbstractChangeFinderTestCase {
 
     @Override
-    protected void cleanUpAuditLog() throws Exception {
+    protected void cleanUpAuditLog() {
 
         NXAuditEventsService auditService = (NXAuditEventsService) Framework.getRuntime().getComponent(
                 NXAuditEventsService.NAME);
