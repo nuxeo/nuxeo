@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
@@ -51,22 +50,18 @@ public class NuxeoDriveVirtualEventLogger implements PostCommitFilteringEventLis
     public void handleEvent(EventBundle events) {
         AuditLogger logger = Framework.getService(AuditLogger.class);
         if (logger != null) {
-            try {
-                for (Event event : events) {
-                    EventContext ctx = event.getContext();
-                    Object[] args = ctx.getArguments();
-                    if (ArrayUtils.isEmpty(args)) {
-                        return;
-                    }
-                    Object arg = args[0];
-                    if (!(arg instanceof LogEntry)) {
-                        return;
-                    }
-                    LogEntry entry = (LogEntry) arg;
-                    logger.addLogEntries(Collections.singletonList(entry));
+            for (Event event : events) {
+                EventContext ctx = event.getContext();
+                Object[] args = ctx.getArguments();
+                if (ArrayUtils.isEmpty(args)) {
+                    return;
                 }
-            } catch (AuditException e) {
-                log.error("Unable to persist event bundle into audit log", e);
+                Object arg = args[0];
+                if (!(arg instanceof LogEntry)) {
+                    return;
+                }
+                LogEntry entry = (LogEntry) arg;
+                logger.addLogEntries(Collections.singletonList(entry));
             }
         } else {
             log.error("Can not reach AuditLogger");
