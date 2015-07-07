@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.suggestbox.service.GroupSuggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggester;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
@@ -65,9 +65,6 @@ public class UserGroupLookupSuggester implements Suggester {
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         I18nHelper i18n = I18nHelper.instanceFor(context.messages);
         UserManager userManager = Framework.getLocalService(UserManager.class);
-        if (userManager == null) {
-            throw new SuggestionException("UserManager is not active");
-        }
         List<Suggestion> suggestions = new ArrayList<Suggestion>();
         List<Suggestion> searchSuggestions = new ArrayList<Suggestion>();
         try {
@@ -107,7 +104,7 @@ public class UserGroupLookupSuggester implements Suggester {
             }
             suggestions.addAll(searchSuggestions);
             return suggestions;
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             throw new SuggestionException(String.format("Suggester '%s' failed to perform query with input '%s'",
                     descriptor.getName(), userInput), e);
         }

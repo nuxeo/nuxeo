@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.suggestbox.service.Suggestion;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionContext;
+import org.nuxeo.ecm.platform.suggestbox.service.SuggestionException;
 import org.nuxeo.ecm.platform.suggestbox.service.SuggestionService;
 
 /**
@@ -55,7 +56,7 @@ public class SuggestOperation {
     protected String searchTerm;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() throws SuggestionException {
         JSONArray result = new JSONArray();
 
         SuggestionContext suggestionContext = new SuggestionContext(SUGGESTER_GROUP, session.getPrincipal());

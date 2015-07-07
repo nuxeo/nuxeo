@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -62,9 +62,6 @@ public class DocumentLookupSuggester implements Suggester {
     @SuppressWarnings("unchecked")
     public List<Suggestion> suggest(String userInput, SuggestionContext context) throws SuggestionException {
         PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
-        if (ppService == null) {
-            throw new SuggestionException("PageProviderService is not active");
-        }
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) context.session);
         userInput = NXQLQueryBuilder.sanitizeFulltextInput(userInput);
@@ -83,7 +80,7 @@ public class DocumentLookupSuggester implements Suggester {
                 suggestions.add(DocumentSuggestion.fromDocumentModel(doc));
             }
             return suggestions;
-        } catch (ClientException e) {
+        } catch (QueryParseException e) {
             throw new SuggestionException(String.format("Suggester '%s' failed to perform query with input '%s'",
                     descriptor.getName(), userInput), e);
         }
