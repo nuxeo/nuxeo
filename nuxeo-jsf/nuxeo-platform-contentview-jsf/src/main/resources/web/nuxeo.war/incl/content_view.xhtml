@@ -251,8 +251,7 @@
               </ui:define>
 
               <ui:define name="buttons">
-                <a4j:outputPanel id="ajax_selection_buttons"
-                  layout="block">
+                <ui:insert name="bottom_buttons">
                   <div id="selection_buttons">
                     <table>
                       <tbody>
@@ -275,7 +274,7 @@
                       </tbody>
                     </table>
                   </div>
-                </a4j:outputPanel>
+                </ui:insert>
               </ui:define>
 
             </ui:decorate>
