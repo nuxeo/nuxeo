@@ -18,11 +18,11 @@
 package org.nuxeo.easyshare;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.Repository;
@@ -38,40 +38,39 @@ public abstract class EasyShareUnrestrictedRunner {
     protected CoreSession session;
 
     public Object runUnrestricted(String docId) {
+        final LoginContext lc;
         try {
-            IdRef docRef = new IdRef(docId);
-
-            final LoginContext lc = Framework.login();
-
-            CoreSession coreSession = null;
-            RepositoryManager rm;
-            try {
-                rm = Framework.getLocalService(RepositoryManager.class);
-                coreSession = rm.getDefaultRepository().open();
-
-                // Run unrestricted operation
-                return run(coreSession, docRef);
-
-            } finally {
-                final CoreSession session2close = coreSession;
-                RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
-
-                    @Override
-                    public void cleanup(HttpServletRequest req) {
-                        try {
-                            Repository.close(session2close);
-                            lc.logout();
-                        } catch (Exception e) {
-                            log.error("Error during request context cleanup", e);
-                        }
-                    }
-                });
-
-            }
-        } catch (Exception ex) {
+            lc = Framework.login();
+        } catch (LoginException ex) {
             log.error("Unable to render page", ex);
             return null;
         }
+        CoreSession coreSession = null;
+        try {
+            RepositoryManager rm = Framework.getService(RepositoryManager.class);
+            coreSession = rm.getDefaultRepository().open();
+
+            // Run unrestricted operation
+            IdRef docRef = new IdRef(docId);
+            return run(coreSession, docRef);
+
+        } finally {
+            final CoreSession session2close = coreSession;
+            RequestContext.getActiveContext().addRequestCleanupHandler(new RequestCleanupHandler() {
+
+                @Override
+                public void cleanup(HttpServletRequest req) {
+                    try {
+                        Repository.close(session2close);
+                        lc.logout();
+                    } catch (LoginException e) {
+                        log.error("Error during request context cleanup", e);
+                    }
+                }
+            });
+
+        }
+
 
     }
 

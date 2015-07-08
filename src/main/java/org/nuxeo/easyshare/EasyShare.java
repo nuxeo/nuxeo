@@ -17,6 +17,8 @@
 
 package org.nuxeo.easyshare;
 
+import java.io.IOException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -34,16 +36,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
+
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
@@ -72,8 +76,8 @@ public class EasyShare extends ModuleRoot {
                 if (session.exists(docRef)) {
                     DocumentModel docFolder = session.getDocument(docRef);
 
-                    Date today = new Date();
-                    if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
+                    Calendar today = Calendar.getInstance();
+                    if (today.after(docFolder.getPropertyValue("dc:expired"))) {
                         return getView("denied");
                     }
 
@@ -93,9 +97,9 @@ public class EasyShare extends ModuleRoot {
                         params.put("event", "Access");
                         params.put("category", "Document");
                         params.put("comment", "IP: " + request.getRemoteAddr());
-                        AutomationService service = Framework.getLocalService(AutomationService.class);
+                        AutomationService service = Framework.getService(AutomationService.class);
                         service.run(ctx, "Audit.Log", params);
-                    } catch (Exception ex) {
+                    } catch (OperationException ex) {
                         log.error(ex.getMessage());
                         return getView("denied");
                     }
@@ -133,10 +137,9 @@ public class EasyShare extends ModuleRoot {
                         OperationContext ctx = new OperationContext(session);
                         ctx.setInput(doc);
 
-                        Date today = new Date();
-                        if (today.after(docFolder.getProperty("dc:expired").getValue(Date.class))) {
+                        Calendar today = Calendar.getInstance();
+                        if (today.after(docFolder.getPropertyValue("dc:expired"))) {
                             return Response.serverError().status(Response.Status.NOT_FOUND).build();
-
                         }
 
                         // Audit.Log operation parameter setting
@@ -154,7 +157,7 @@ public class EasyShare extends ModuleRoot {
                         }
 
                         // Email notification
-                        String email = docFolder.getProperty("eshare:contactEmail").getValue(String.class);
+                        String email = (String) docFolder.getPropertyValue("eshare:contactEmail");
                         if (!StringUtils.isBlank(email)) {
                             String fileName = blob.getFilename();
                             String shareName = docFolder.getName();
@@ -177,7 +180,7 @@ public class EasyShare extends ModuleRoot {
 
                         return Response.ok(blob.getStream(), blob.getMimeType()).build();
 
-                    } catch (Exception ex) {
+                    } catch (OperationException | PropertyNotFoundException | IOException ex) {
                         log.error("error ", ex);
                         return Response.serverError().status(Response.Status.NOT_FOUND).build();
                     }
