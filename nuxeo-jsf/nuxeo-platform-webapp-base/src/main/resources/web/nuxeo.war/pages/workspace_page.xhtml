@@ -1,0 +1,20 @@
+<ui:composition template="nuxeo_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <ui:define name="nuxeo body">
+
+    <div class="themeCellFrame column" style="width:20%; float:left;">
+      <ui:include src="/incl/import.xhtml" />
+      <ui:include src="/incl/multi_tree_explorer.xhtml" />
+      <ui:include src="/incl/user_clipboard.xhtml" />
+    </div>
+    <div class="themeCellFrame content" style="width:70%; float:right;">
+      <ui:include src="/incl/breadcrumb.xhtml" />
+      <ui:insert name="workspace body" />
+    </div>
+    <div class="clear" />
+
+  </ui:define>
+
+</ui:composition>

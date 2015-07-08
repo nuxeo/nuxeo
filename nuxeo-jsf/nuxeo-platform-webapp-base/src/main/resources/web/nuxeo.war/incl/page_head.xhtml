@@ -8,7 +8,7 @@
 
   <base href="#{baseURL}" />
 
-  <nxu:set var="page" value="#{themeStylingService.getPage(name)}">
+  <nxu:set var="page" value="#{themeStylingService.getPage(pageName)}">
     <c:if test="#{page != null}">
       <nxr:meta charset="#{page.charset}" />
       <c:forEach var="fav" items="#{page.favicons}">

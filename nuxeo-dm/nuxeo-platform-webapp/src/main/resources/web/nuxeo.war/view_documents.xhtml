@@ -1,11 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
   xmlns:a4j="http://richfaces.org/a4j"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxl="http://nuxeo.org/nxforms/layout"
@@ -19,7 +17,8 @@
     <link rel="bookmark" href="#{navigationContext.currentDocumentFullUrl}"/>
   </ui:define>
 
-  <ui:define name="body">
+  <ui:define name="workspace body">
+
     <div>
 
       <h:form id="document_header_layout_form" class="titleBlock">
@@ -34,4 +33,5 @@
 
     </div>
   </ui:define>
-</nxthemes:composition>
+
+</ui:composition>

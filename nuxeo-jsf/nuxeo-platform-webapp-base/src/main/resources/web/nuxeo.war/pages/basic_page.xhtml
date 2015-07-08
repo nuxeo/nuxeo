@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <f:view contentType="text/html" />
+  <h:head id="pageHead">
+
+    <title>
+      <ui:insert name="page title" />
+    </title>
+
+    <ui:decorate template="/incl/page_head.xhtml">
+      <ui:param name="pageName" value="#{pageName}" />
+      <ui:param name="pageFlavor" value="#{pageFlavor}" />
+    </ui:decorate>
+
+    <ui:insert name="bookmark" />
+    <ui:insert name="stylesheets" />
+    <ui:insert name="header_scripts" />
+
+  </h:head>
+  <h:body>
+
+    <ui:include src="/incl/includes.xhtml" />
+    <ui:insert name="body" />
+
+  </h:body>
+
+</html>

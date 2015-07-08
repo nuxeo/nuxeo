@@ -7,7 +7,7 @@
   <c:if test="#{page != null}">
     <c:forEach var="bundle" items="#{page.resourceBundles}">
       <nxr:resourceBundle name="#{bundle}" target="#{target}">
-        <f:param name="flavor" value="#{empty flavor? 'default': flavor}" />
+        <f:param name="flavor" value="#{empty pageFlavor? 'default': pageFlavor}" />
       </nxr:resourceBundle>
     </c:forEach>
   </c:if>
