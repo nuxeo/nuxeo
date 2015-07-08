@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.login.LoginPlugin;
@@ -138,7 +137,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                         httpRequest.setAttribute(NXAuthConstants.LOGIN_ERROR, NXAuthConstants.LOGIN_FAILED);
                         return null;
                     }
-                } catch (LoginException | ClientException e) {
+                } catch (LoginException e) {
                     log.error(e, e);
                     return null;
                 }
@@ -203,7 +202,7 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
             return principal;
-        } catch (LoginException | ClientException e) {
+        } catch (LoginException e) {
             log.error("createIdentity failed", e);
             LoginException le = new LoginException("createIdentity failed for" + " user " + username);
             le.initCause(e);
