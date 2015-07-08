@@ -1,6 +1,7 @@
 package org.nuxeo.template.xdocreport.jaxrs;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.runtime.api.Framework;
@@ -68,7 +70,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
 
     @GET
     @Path("model/list")
-    public String listModels() throws Exception {
+    public String listModels() throws IOException {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
         DocumentType[] docTypes = sm.getDocumentTypes();
         List<String> names = new ArrayList<String>();
@@ -88,12 +90,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
     @GET
     @Path("model/{type}")
     public String getFieldDefinition(@PathParam("type") String type) {
-        try {
-            return FieldDefinitionGenerator.generate(type);
-        } catch (Exception e) {
-            log.error("Error during field xml definition generation", e);
-            return e.getMessage();
-        }
+        return FieldDefinitionGenerator.generate(type);
     }
 
     @Override
@@ -111,7 +108,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
                     newBlob.setFilename(oldBlob.getFilename());
                     template.setTemplateBlob(newBlob, true);
                 }
-            } catch (Exception e) {
+            } catch (PropertyException | IOException e) {
                 log.error("Error during template upload", e);
             }
         }
@@ -129,31 +126,33 @@ public class XDocReportResourceService extends AbstractResourceService implement
 
     @Override
     public LargeBinaryData downloadLarge(String resourcePath) throws ResourcesException {
-
         CoreSession session = getCoreSession();
-        try {
-            if (resourcePath.endsWith(".fields.xml")) {
-                String uuid = resourcePath.replace(".fields.xml", "");
-                DocumentModel targetDoc = session.getDocument(new IdRef(uuid));
-                TemplateSourceDocument template = targetDoc.getAdapter(TemplateSourceDocument.class);
+        if (resourcePath.endsWith(".fields.xml")) {
+            String uuid = resourcePath.replace(".fields.xml", "");
+            DocumentModel targetDoc = session.getDocument(new IdRef(uuid));
+            TemplateSourceDocument template = targetDoc.getAdapter(TemplateSourceDocument.class);
 
-                List<String> types = template.getApplicableTypes();
-                String targetType = "File";
-                if (types.size() > 0) {
-                    targetType = types.get(0);
-                }
-                String xml = FieldDefinitionGenerator.generate(targetType);
-                return BinaryDataWrapper.wrapXml(xml, resourcePath);
-            } else {
-                String uuid = resourcePath;
-                DocumentModel targetDoc = session.getDocument(new IdRef(uuid));
-                TemplateSourceDocument template = targetDoc.getAdapter(TemplateSourceDocument.class);
-                return BinaryDataWrapper.wrap(template);
+            List<String> types = template.getApplicableTypes();
+            String targetType = "File";
+            if (types.size() > 0) {
+                targetType = types.get(0);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            String xml = FieldDefinitionGenerator.generate(targetType);
+            try {
+                return BinaryDataWrapper.wrapXml(xml, resourcePath);
+            } catch (IOException e) {
+                throw new ResourcesException(e);
+            }
+        } else {
+            String uuid = resourcePath;
+            DocumentModel targetDoc = session.getDocument(new IdRef(uuid));
+            TemplateSourceDocument template = targetDoc.getAdapter(TemplateSourceDocument.class);
+            try {
+                return BinaryDataWrapper.wrap(template);
+            } catch (IOException e) {
+                throw new ResourcesException(e);
+            }
         }
-        return null;
     }
 
     @Override
@@ -175,7 +174,7 @@ public class XDocReportResourceService extends AbstractResourceService implement
                     newBlob.setFilename(oldBlob.getFilename());
                     template.setTemplateBlob(newBlob, true);
                 }
-            } catch (Exception e) {
+            } catch (PropertyException | IOException e) {
                 log.error("Error during template upload", e);
             }
         }

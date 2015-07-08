@@ -41,7 +41,7 @@ public class ContextExtensionFactoryDescriptor implements Serializable {
             if (factoryClass != null) {
                 try {
                     factory = factoryClass.newInstance();
-                } catch (Exception e) {
+                } catch (ReflectiveOperationException e) {
                     log.error("Unable to instanciate Processor", e);
                 }
             }

@@ -29,31 +29,19 @@ public abstract class AbstractResourceService extends DefaultObject {
     }
 
     protected List<TemplateSourceDocument> getTemplates() {
-        try {
-            List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
-            CoreSession session = getCoreSession();
-            StringBuffer sb = new StringBuffer(
-                    "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
-            sb.append(" AND tmpl:templateType = 'XDocReportProcessor'");
-            DocumentModelList docs = session.query(sb.toString());
-            for (DocumentModel doc : docs) {
-                TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
-                if (tmpl != null) {
-                    result.add(tmpl);
-                }
+        List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
+        CoreSession session = getCoreSession();
+        StringBuffer sb = new StringBuffer(
+                "select * from Document where ecm:mixinType = 'Template' AND ecm:currentLifeCycleState != 'deleted'");
+        sb.append(" AND tmpl:templateType = 'XDocReportProcessor'");
+        DocumentModelList docs = session.query(sb.toString());
+        for (DocumentModel doc : docs) {
+            TemplateSourceDocument tmpl = doc.getAdapter(TemplateSourceDocument.class);
+            if (tmpl != null) {
+                result.add(tmpl);
             }
-            return result;
-        } catch (Exception e) {
-            log.error("Error while getting templates", e);
-            return new ArrayList<TemplateSourceDocument>();
         }
-
-        /*
-         * StringBuffer sb = new StringBuffer(); sb.append("["); for (TemplateSourceDocument t : templates) {
-         * sb.append("{"); sb.append("\"label\":" + "\"" + t.getLabel() + "\","); sb.append("\"name\":" + "\"" +
-         * t.getName() + "\","); sb.append("\"id\":" + "\"" + t.getId() + "\""); sb.append("},"); } String result =
-         * sb.toString(); result = result.substring(0, result.length()-2) + "]"; return result;
-         */
+        return result;
     }
 
 }

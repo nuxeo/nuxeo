@@ -15,10 +15,11 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -60,7 +61,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
 
     protected String editableTemplateName;
 
-    public String createTemplate() throws Exception {
+    public String createTemplate() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         TemplateSourceDocument sourceTemplate = changeableDocument.getAdapter(TemplateSourceDocument.class);
         if (sourceTemplate != null && sourceTemplate.getTemplateBlob() != null) {
@@ -70,7 +71,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
                     templateInputs = sourceTemplate.getParams();
                     return "editTemplateRelatedData";
                 }
-            } catch (Exception e) {
+            } catch (PropertyException e) {
                 log.error("Error during parameter automatic initialization", e);
                 facesMessages.add(StatusMessage.Severity.ERROR,
                         resourcesAccessor.getMessages().get("label.template.err.parameterInit"));
@@ -87,7 +88,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         this.templateInputs = templateInputs;
     }
 
-    public String saveDocument() throws Exception {
+    public String saveDocument() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
 
         for (TemplateInput ti : templateInputs) {
@@ -111,7 +112,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         templateIdToAssociate = null;
     }
 
-    public List<TemplateInput> getTemplateEditableInputs() throws Exception {
+    public List<TemplateInput> getTemplateEditableInputs() {
         if (editableTemplateName == null) {
             return new ArrayList<TemplateInput>();
         }
@@ -128,7 +129,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         this.templateEditableInputs = templateEditableInputs;
     }
 
-    public String saveTemplateInputs() throws Exception {
+    public String saveTemplateInputs() {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
@@ -140,7 +141,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(currentDocument);
     }
 
-    public void cancelTemplateInputsEdit() throws Exception {
+    public void cancelTemplateInputsEdit() {
         reset();
     }
 
@@ -155,7 +156,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         this.newInput = newInput;
     }
 
-    public String addTemplateInput() throws Exception {
+    public String addTemplateInput() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         TemplateSourceDocument template = currentDocument.getAdapter(TemplateSourceDocument.class);
@@ -170,7 +171,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(currentDocument);
     }
 
-    public String render(String templateName) throws Exception {
+    public String render(String templateName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (doc == null) {
@@ -181,7 +182,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
             String filename = rendition.getFilename();
             ComponentUtils.download(currentDocument, null, rendition, filename, "templateRendition");
             return null;
-        } catch (Exception e) {
+        } catch (NuxeoException e) {
             log.error("Unable to render template ", e);
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("label.template.err.renderingFailed"));
@@ -189,7 +190,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         }
     }
 
-    public String renderAndStore(String templateName) throws Exception {
+    public String renderAndStore(String templateName) {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument doc = currentDocument.getAdapter(TemplateBasedDocument.class);
@@ -213,7 +214,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return false;
     }
 
-    public void resetParameters(String templateName) throws Exception {
+    public void resetParameters(String templateName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateBasedDocument templateBased = currentDocument.getAdapter(TemplateBasedDocument.class);
         if (templateBased != null) {
@@ -234,7 +235,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return false;
     }
 
-    public String detachTemplate(String templateName) throws Exception {
+    public String detachTemplate(String templateName) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         DocumentModel detachedDocument = tps.detachTemplateBasedDocument(currentDocument, templateName, true);
@@ -262,7 +263,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         try {
             currentDocument = tps.makeTemplateBasedDocument(currentDocument, sourceTemplate, true);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Unable to do template association", e);
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("label.template.err.associationFailed"),
@@ -337,7 +338,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
         return items;
     }
 
-    public boolean canBindNewTemplate() throws Exception {
+    public boolean canBindNewTemplate() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (!currentDocument.getCoreSession().hasPermission(currentDocument.getRef(), SecurityConstants.WRITE)) {
             return false;
@@ -354,7 +355,7 @@ public class TemplateBasedActionBean extends BaseTemplateAction {
     }
 
     @Factory(value = "associatedRenderableTemplates", scope = ScopeType.EVENT)
-    public List<TemplateSourceDocument> getRenderableTemplates() throws Exception {
+    public List<TemplateSourceDocument> getRenderableTemplates() {
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
         TemplateBasedDocument template = getCurrentDocumentAsTemplateBasedDocument();
         if (template != null) {

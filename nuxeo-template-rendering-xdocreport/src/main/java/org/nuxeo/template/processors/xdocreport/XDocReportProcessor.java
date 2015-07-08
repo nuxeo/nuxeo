@@ -2,6 +2,7 @@ package org.nuxeo.template.processors.xdocreport;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import org.nuxeo.template.fm.FMContextBuilder;
 import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
+import fr.opensagres.xdocreport.core.XDocReportException;
 import fr.opensagres.xdocreport.document.IXDocReport;
 import fr.opensagres.xdocreport.document.registry.XDocReportRegistry;
 import fr.opensagres.xdocreport.template.IContext;
@@ -65,7 +67,7 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException {
 
         List<TemplateInput> params = new ArrayList<TemplateInput>();
         String xmlContent = null;
@@ -88,13 +90,18 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws IOException {
 
         Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument, templateName);
 
         // load the template
-        IXDocReport report = XDocReportRegistry.getRegistry().loadReport(sourceTemplateBlob.getStream(),
-                TemplateEngineKind.Freemarker, false);
+        IXDocReport report;
+        try {
+            report = XDocReportRegistry.getRegistry().loadReport(sourceTemplateBlob.getStream(),
+                    TemplateEngineKind.Freemarker, false);
+        } catch (XDocReportException e) {
+            throw new IOException(e);
+        }
 
         // manage parameters
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
@@ -114,7 +121,12 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
         resolver.resolve(params, ctx, templateBasedDocument);
 
         // add default context vars
-        IContext context = report.createContext();
+        IContext context;
+        try {
+            context = report.createContext();
+        } catch (XDocReportException e) {
+            throw new IOException(e);
+        }
         for (String key : ctx.keySet()) {
             context.put(key, ctx.get(key));
         }
@@ -136,7 +148,11 @@ public class XDocReportProcessor extends AbstractTemplateProcessor implements Te
 
         OutputStream out = new FileOutputStream(generated);
 
-        report.process(context, out);
+        try {
+            report.process(context, out);
+        } catch (XDocReportException e) {
+            throw new IOException(e);
+        }
 
         Blob newBlob = Blobs.createBlob(generated);
 

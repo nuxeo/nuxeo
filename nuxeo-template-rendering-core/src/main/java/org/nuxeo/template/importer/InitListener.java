@@ -25,7 +25,7 @@ import org.nuxeo.ecm.platform.content.template.service.PostContentCreationHandle
 
 /**
  * Called by the ContentTemplateService at repository init time to trigger the models and samples import
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class InitListener implements PostContentCreationHandler {
@@ -34,14 +34,9 @@ public class InitListener implements PostContentCreationHandler {
 
     @Override
     public void execute(CoreSession session) {
-
         ModelImporter importer = new ModelImporter(session);
-        try {
-            int nbImportedDocs = importer.importModels();
-            log.info("Template sample import done : " + nbImportedDocs + " documents imported");
-        } catch (Exception e) {
-            log.error("Error during template samples import", e);
-        }
+        int nbImportedDocs = importer.importModels();
+        log.info("Template sample import done : " + nbImportedDocs + " documents imported");
     }
 
 }

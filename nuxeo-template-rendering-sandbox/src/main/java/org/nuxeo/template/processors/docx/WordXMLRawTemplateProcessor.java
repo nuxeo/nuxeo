@@ -19,8 +19,10 @@
 package org.nuxeo.template.processors.docx;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +31,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.tree.DefaultElement;
 import org.nuxeo.common.utils.FileUtils;
@@ -38,6 +41,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
@@ -58,7 +62,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
     @Override
     @SuppressWarnings("rawtypes")
-    public Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws IOException {
 
         File workingDir = getWorkingDir();
 
@@ -74,7 +78,12 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
         String xmlContent = FileUtils.readFile(xmlCustomFile);
 
-        Document xmlDoc = DocumentHelper.parseText(xmlContent);
+        Document xmlDoc;
+        try {
+            xmlDoc = DocumentHelper.parseText(xmlContent);
+        } catch (DocumentException e) {
+            throw new IOException(e);
+        }
 
         List nodes = xmlDoc.getRootElement().elements();
 
@@ -132,12 +141,17 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
     @Override
     @SuppressWarnings("rawtypes")
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException {
         List<TemplateInput> params = new ArrayList<>();
 
         String xmlContent = readPropertyFile(blob.getStream());
 
-        Document xmlDoc = DocumentHelper.parseText(xmlContent);
+        Document xmlDoc;
+        try {
+            xmlDoc = DocumentHelper.parseText(xmlContent);
+        } catch (DocumentException e) {
+            throw new IOException(e);
+        }
 
         List nodes = xmlDoc.getRootElement().elements();
 
@@ -173,7 +187,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
         return null;
     }
 
-    public String readPropertyFile(InputStream in) throws Exception {
+    public String readPropertyFile(InputStream in) throws IOException {
         ZipInputStream zIn = new ZipInputStream(in);
         ZipEntry zipEntry = zIn.getNextEntry();
         String xmlContent = null;
@@ -196,8 +210,7 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
 
     @Override
     @SuppressWarnings("rawtypes")
-    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName)
-            throws Exception {
+    public DocumentModel updateDocumentFromBlob(TemplateBasedDocument templateDocument, String templateName) throws IOException {
 
         Blob blob = templateDocument.getTemplateBlob(templateName);
 
@@ -207,7 +220,12 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
             return templateDocument.getAdaptedDoc();
         }
 
-        Document xmlDoc = DocumentHelper.parseText(xmlContent);
+        Document xmlDoc;
+        try {
+            xmlDoc = DocumentHelper.parseText(xmlContent);
+        } catch (DocumentException e) {
+            throw new IOException(e);
+        }
 
         List nodes = xmlDoc.getRootElement().elements();
 
@@ -229,7 +247,11 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     } else if (InputType.BooleanValue.equals(param.getType())) {
                         adaptedDoc.setPropertyValue(param.getSource(), new Boolean(xmlValue));
                     } else if (Date.class.getSimpleName().equals(param.getType())) {
-                        adaptedDoc.setPropertyValue(param.getSource(), wordXMLDateFormat.parse(xmlValue));
+                        try {
+                            adaptedDoc.setPropertyValue(param.getSource(), wordXMLDateFormat.parse(xmlValue));
+                        } catch (PropertyException | ParseException e) {
+                            throw new IOException(e);
+                        }
                     }
                 } else {
                     if (InputType.StringValue.equals(param.getType())) {
@@ -237,7 +259,11 @@ public class WordXMLRawTemplateProcessor extends AbstractTemplateProcessor imple
                     } else if (InputType.BooleanValue.equals(param.getType())) {
                         param.setBooleanValue(new Boolean(xmlValue));
                     } else if (InputType.DateValue.equals(param.getType())) {
-                        param.setDateValue(wordXMLDateFormat.parse(xmlValue));
+                        try {
+                            param.setDateValue(wordXMLDateFormat.parse(xmlValue));
+                        } catch (ParseException e) {
+                            throw new IOException(e);
+                        }
                     }
                 }
             }

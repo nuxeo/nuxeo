@@ -1,5 +1,6 @@
 package org.nuxeo.template.processors;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +21,8 @@ import org.nuxeo.template.api.ContentInputType;
 import org.nuxeo.template.api.InputType;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.adapters.TemplateBasedDocument;
+
+import freemarker.template.TemplateModelException;
 
 public abstract class AbstractBindingResolver implements InputBindingResolver {
 
@@ -165,7 +168,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                         context.put(param.getName(), param.getDateValue());
                     }
                 }
-            } catch (Exception e) {
+            } catch (TemplateModelException | IOException e) {
                 log.warn("Unable to handle binding for param " + param.getName(), e);
             }
         }

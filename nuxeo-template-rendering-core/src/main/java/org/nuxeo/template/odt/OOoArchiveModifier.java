@@ -35,12 +35,12 @@ import org.nuxeo.ecm.core.api.Blob;
 
 /**
  * Helper used to modify a ODT/Zip archive for addition Pictures (and potentially fragments)
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class OOoArchiveModifier {
 
-    public File updateArchive(File workingDir, File oooFile, List<Blob> blobs) throws Exception {
+    public File updateArchive(File workingDir, File oooFile, List<Blob> blobs) throws IOException {
         if (blobs == null || blobs.size() == 0) {
             return oooFile;
         }
@@ -103,7 +103,7 @@ public class OOoArchiveModifier {
 
     }
 
-    protected void mkOOoZip(File directory, File outFile) throws Exception {
+    protected void mkOOoZip(File directory, File outFile) throws IOException {
 
         ZipOutputStream zipOutputStream = new ZipOutputStream(new FileOutputStream(outFile));
 
@@ -119,8 +119,7 @@ public class OOoArchiveModifier {
         zipOutputStream.close();
     }
 
-    protected void writeOOoEntry(ZipOutputStream zipOutputStream, String entryName, File fileEntry, int zipMethod)
-            throws Exception {
+    protected void writeOOoEntry(ZipOutputStream zipOutputStream, String entryName, File fileEntry, int zipMethod) throws IOException {
 
         if (fileEntry.isDirectory()) {
             entryName = entryName + "/";

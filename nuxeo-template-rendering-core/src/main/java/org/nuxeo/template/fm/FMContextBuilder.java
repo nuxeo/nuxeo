@@ -5,10 +5,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.rendering.fm.adapters.DocumentObjectWrapper;
 import org.nuxeo.template.api.context.DocumentWrapper;
 import org.nuxeo.template.context.AbstractContextBuilder;
+
+import freemarker.template.TemplateModelException;
 
 public class FMContextBuilder extends AbstractContextBuilder {
 
@@ -21,12 +24,20 @@ public class FMContextBuilder extends AbstractContextBuilder {
 
         nuxeoWrapper = new DocumentWrapper() {
             @Override
-            public Object wrap(DocumentModel doc) throws Exception {
-                return fmWrapper.wrap(doc);
+            public Object wrap(DocumentModel doc) {
+                try {
+                    return fmWrapper.wrap(doc);
+                } catch (TemplateModelException e) {
+                    throw new NuxeoException(e);
+                }
             }
 
-            public Object wrap(List<LogEntry> auditEntries) throws Exception {
-                return fmWrapper.wrap(auditEntries);
+            public Object wrap(List<LogEntry> auditEntries) {
+                try {
+                    return fmWrapper.wrap(auditEntries);
+                } catch (TemplateModelException e) {
+                    throw new NuxeoException(e);
+                }
             }
         };
     }

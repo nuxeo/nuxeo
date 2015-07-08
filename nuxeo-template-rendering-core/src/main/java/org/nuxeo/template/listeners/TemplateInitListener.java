@@ -28,7 +28,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -75,20 +74,12 @@ public class TemplateInitListener implements EventListener {
                 TemplateSourceDocument templateDoc = targetDoc.getAdapter(TemplateSourceDocument.class);
                 if (templateDoc != null) {
                     // init types bindings
-                    try {
-                        templateDoc.initTypesBindings();
-                    } catch (Exception e) {
-                        log.error("Error during type binding automatic initialization", e);
-                    }
+                    templateDoc.initTypesBindings();
 
                     // init template source
                     List<TemplateInput> params = templateDoc.getParams();
                     if (params == null || params.size() == 0 || isBlobDirty(targetDoc)) {
-                        try {
-                            templateDoc.initTemplate(false);
-                        } catch (Exception e) {
-                            log.error("Error during parameter automatic initialization", e);
-                        }
+                        templateDoc.initTemplate(false);
                     }
                 } else {
                     TemplateBasedDocument tmplBased = targetDoc.getAdapter(TemplateBasedDocument.class);

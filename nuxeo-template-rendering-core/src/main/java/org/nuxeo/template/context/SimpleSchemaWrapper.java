@@ -16,21 +16,16 @@ public class SimpleSchemaWrapper {
     }
 
     public Object get(String name) {
-        try {
-            if (doc.isPrefetched(schemaName, name)) {
-                // simple value already available, don't load DocumentPart
-                return doc.getProperty(schemaName, name);
-            } else {
-                // use normal Property lookup in Part
-                return wrap(doc.getPart(schemaName).get(name));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (doc.isPrefetched(schemaName, name)) {
+            // simple value already available, don't load DocumentPart
+            return doc.getProperty(schemaName, name);
+        } else {
+            // use normal Property lookup in Part
+            return wrap(doc.getPart(schemaName).get(name));
         }
     }
 
-    protected Object wrap(Property prop) throws Exception {
+    protected Object wrap(Property prop) {
         if (prop == null || prop.getValue() == null) {
             return null;
         }

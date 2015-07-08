@@ -19,8 +19,7 @@ public abstract class AbstractContextBuilder {
     public static final String[] RESERVED_VAR_NAMES = { "doc", "document", "blobHolder", "username", "principal",
             "templateName" };
 
-    public Map<String, Object> build(DocumentModel doc, DocumentWrapper nuxeoWrapper, String templateName)
-            throws Exception {
+    public Map<String, Object> build(DocumentModel doc, DocumentWrapper nuxeoWrapper, String templateName) {
 
         Map<String, Object> ctx = new HashMap<String, Object>();
 
@@ -46,7 +45,7 @@ public abstract class AbstractContextBuilder {
         return ctx;
     }
 
-    public Map<String, Object> build(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
+    public Map<String, Object> build(TemplateBasedDocument templateBasedDocument, String templateName) {
 
         DocumentModel doc = templateBasedDocument.getAdaptedDoc();
 
@@ -57,7 +56,7 @@ public abstract class AbstractContextBuilder {
 
     protected abstract DocumentWrapper getWrapper();
 
-    public Map<String, Object> build(DocumentModel doc, String templateName) throws Exception {
+    public Map<String, Object> build(DocumentModel doc, String templateName) {
 
         return build(doc, getWrapper(), templateName);
     }

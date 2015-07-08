@@ -1,5 +1,7 @@
 package org.nuxeo.template.xdocreport.jaxrs;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
@@ -11,7 +13,7 @@ import fr.opensagres.xdocreport.remoting.resources.domain.LargeBinaryData;
  */
 public class BinaryDataWrapper {
 
-    public static LargeBinaryData wrap(Blob blob) throws Exception {
+    public static LargeBinaryData wrap(Blob blob) throws IOException {
 
         LargeBinaryData data = new LargeBinaryData();
         data.setContent(blob.getStream());
@@ -23,14 +25,14 @@ public class BinaryDataWrapper {
         return data;
     }
 
-    public static LargeBinaryData wrap(TemplateSourceDocument template) throws Exception {
+    public static LargeBinaryData wrap(TemplateSourceDocument template) throws IOException {
         Blob blob = template.getTemplateBlob();
         LargeBinaryData data = wrap(blob);
         data.setResourceId(template.getAdaptedDoc().getId());
         return data;
     }
 
-    public static LargeBinaryData wrapXml(String xml, String fileName) throws Exception {
+    public static LargeBinaryData wrapXml(String xml, String fileName) throws IOException {
         Blob blob = Blobs.createBlob(xml, "text/xml", null, fileName);
         return wrap(blob);
     }

@@ -1,6 +1,5 @@
 package org.nuxeo.template.xdocreport.jaxrs;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.template.api.adapters.TemplateSourceDocument;
 
 import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
@@ -14,35 +13,30 @@ public class ResourceWrapper {
     public static Resource wrap(TemplateSourceDocument srcDocument) {
         Resource rs = new Resource();
         rs.setType(ResourceType.TEMPLATE);
-        try {
-            rs.setName(srcDocument.getName());
-            rs.setId(srcDocument.getId());
 
-            Resource fileResource = new NonRecursiveResource();
-            fileResource.setName(srcDocument.getFileName());
-            fileResource.setId(srcDocument.getId());
-            fileResource.setType(ResourceType.DOCUMENT);
+        rs.setName(srcDocument.getName());
+        rs.setId(srcDocument.getId());
 
-            Resource METAResource = new NonRecursiveResource();
-            METAResource.setName("META-INF");
-            METAResource.setId(srcDocument.getId() + "/META-INF");
-            METAResource.setType(ResourceType.CATEGORY);
+        Resource fileResource = new NonRecursiveResource();
+        fileResource.setName(srcDocument.getFileName());
+        fileResource.setId(srcDocument.getId());
+        fileResource.setType(ResourceType.DOCUMENT);
 
-            Resource fieldResource = new NonRecursiveResource();
-            fieldResource.setName(srcDocument.getName() + ".fields.xml");
-            fieldResource.setId(srcDocument.getId() + ".fields.xml");
-            fieldResource.setType(ResourceType.DOCUMENT);
+        Resource METAResource = new NonRecursiveResource();
+        METAResource.setName("META-INF");
+        METAResource.setId(srcDocument.getId() + "/META-INF");
+        METAResource.setType(ResourceType.CATEGORY);
 
-            METAResource.getChildren().add(fieldResource);
+        Resource fieldResource = new NonRecursiveResource();
+        fieldResource.setName(srcDocument.getName() + ".fields.xml");
+        fieldResource.setId(srcDocument.getId() + ".fields.xml");
+        fieldResource.setType(ResourceType.DOCUMENT);
 
-            rs.getChildren().add(fileResource);
-            rs.getChildren().add(METAResource);
+        METAResource.getChildren().add(fieldResource);
 
-        } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        // rs.getChildren().addAll(new ArrayList<Resource>());
+        rs.getChildren().add(fileResource);
+        rs.getChildren().add(METAResource);
+
         return rs;
     }
 }

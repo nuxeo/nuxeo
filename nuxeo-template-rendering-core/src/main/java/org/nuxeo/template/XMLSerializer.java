@@ -18,6 +18,7 @@
 
 package org.nuxeo.template;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.DocumentFactory;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -39,7 +41,7 @@ import org.nuxeo.template.api.TemplateInput;
 /**
  * {@link TemplateInput} parameters are stored in the {@link DocumentModel} as a single String Property via XML
  * Serialization. This class contains the Serialization/Deserialization logic.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class XMLSerializer {
@@ -99,7 +101,7 @@ public class XMLSerializer {
         return root.asXML();
     }
 
-    public static List<TemplateInput> readFromXml(String xml) throws Exception {
+    public static List<TemplateInput> readFromXml(String xml) throws DocumentException {
 
         List<TemplateInput> result = new ArrayList<TemplateInput>();
 
@@ -125,7 +127,11 @@ public class XMLSerializer {
             if (InputType.StringValue.equals(type)) {
                 param.setStringValue(strValue);
             } else if (InputType.DateValue.equals(type)) {
-                param.setDateValue(dateFormat.parse(strValue));
+                try {
+                    param.setDateValue(dateFormat.parse(strValue));
+                } catch (ParseException e) {
+                    throw new DocumentException(e);
+                }
             } else if (InputType.BooleanValue.equals(type)) {
                 param.setBooleanValue(new Boolean(strValue));
             } else {

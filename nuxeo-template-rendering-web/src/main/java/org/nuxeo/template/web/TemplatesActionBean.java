@@ -12,8 +12,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.webapp.contentbrowser.DocumentActions;
@@ -51,7 +51,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
 
     protected boolean checkedInVersion = false;
 
-    public String createTemplate() throws Exception {
+    public String createTemplate() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
         TemplateSourceDocument sourceTemplate = changeableDocument.getAdapter(TemplateSourceDocument.class);
         if (sourceTemplate != null && sourceTemplate.getTemplateBlob() != null) {
@@ -61,7 +61,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
                     templateInputs = sourceTemplate.getParams();
                     return "editTemplateRelatedData";
                 }
-            } catch (Exception e) {
+            } catch (PropertyException e) {
                 log.error("Error during parameter automatic initialization", e);
             }
         }
@@ -76,7 +76,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         this.templateInputs = templateInputs;
     }
 
-    public String saveDocument() throws Exception {
+    public String saveDocument() {
         DocumentModel changeableDocument = navigationContext.getChangeableDocument();
 
         for (TemplateInput ti : templateInputs) {
@@ -99,7 +99,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         showParamEditor = false;
     }
 
-    public List<TemplateInput> getTemplateEditableInputs() throws Exception {
+    public List<TemplateInput> getTemplateEditableInputs() {
         if (templateEditableInputs == null) {
             DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
@@ -115,7 +115,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         this.templateEditableInputs = templateEditableInputs;
     }
 
-    public String saveTemplateInputs() throws Exception {
+    public String saveTemplateInputs() {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
@@ -126,7 +126,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(currentDocument);
     }
 
-    public void cancelTemplateInputsEdit() throws Exception {
+    public void cancelTemplateInputsEdit() {
         reset();
     }
 
@@ -141,7 +141,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         this.newInput = newInput;
     }
 
-    public String addTemplateInput() throws Exception {
+    public String addTemplateInput() {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         showParamEditor = true;
@@ -157,7 +157,7 @@ public class TemplatesActionBean extends BaseTemplateAction {
         return navigationContext.navigateToDocument(currentDocument);
     }
 
-    public String removeTemplateInput(String name) throws Exception {
+    public String removeTemplateInput(String name) {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
 
         showParamEditor = true;

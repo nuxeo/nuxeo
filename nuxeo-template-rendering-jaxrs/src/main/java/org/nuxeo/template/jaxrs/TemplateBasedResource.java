@@ -34,7 +34,7 @@ public class TemplateBasedResource extends DefaultObject {
         }
     }
 
-    protected TemplateBasedDocument resolve() throws Exception {
+    protected TemplateBasedDocument resolve() {
         if (uuid != null) {
             IdRef idRef = new IdRef(uuid);
             DocumentModel doc = getContext().getCoreSession().getDocument(idRef);
@@ -45,7 +45,7 @@ public class TemplateBasedResource extends DefaultObject {
     }
 
     @GET
-    public Object get() throws Exception {
+    public Object get() {
         TemplateBasedDocument tmpl = resolve();
         if (tmpl == null) {
             return "";
@@ -58,7 +58,7 @@ public class TemplateBasedResource extends DefaultObject {
 
     @GET
     @Path("templates")
-    public String getAssociatedTemplates() throws Exception {
+    public String getAssociatedTemplates() {
 
         IdRef idRef = new IdRef(uuid);
         DocumentModel doc = getContext().getCoreSession().getDocument(idRef);
@@ -70,7 +70,7 @@ public class TemplateBasedResource extends DefaultObject {
     }
 
     @Path("template/{name}")
-    public Object getAssociatedTemplate(@PathParam(value = "name") String name) throws Exception {
+    public Object getAssociatedTemplate(@PathParam(value = "name") String name) {
 
         IdRef idRef = new IdRef(uuid);
         DocumentModel doc = getContext().getCoreSession().getDocument(idRef);
@@ -90,7 +90,7 @@ public class TemplateBasedResource extends DefaultObject {
     @Path("resource/{templateName}/{resourceName}")
     @Produces("*/*")
     public Blob getResource(@PathParam(value = "templateName") String templateName,
-            @PathParam(value = "resourceName") String resourceName) throws Exception {
+            @PathParam(value = "resourceName") String resourceName) {
 
         TemplateBasedDocument tmpl = resolve();
 

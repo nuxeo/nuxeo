@@ -53,7 +53,7 @@ public class TemplateProcessorDescriptor implements Serializable {
         if (processor == null) {
             try {
                 processor = (TemplateProcessor) className.newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to instanciate Processor", e);
             }
         }

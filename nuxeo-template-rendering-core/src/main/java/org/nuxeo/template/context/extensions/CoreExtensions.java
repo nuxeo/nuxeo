@@ -18,7 +18,7 @@ public class CoreExtensions {
         this.nuxeoWrapper = nuxeoWrapper;
     }
 
-    public List<Object> getChildren() throws Exception {
+    public List<Object> getChildren() {
         List<DocumentModel> children = doc.getCoreSession().getChildren(doc.getRef());
         List<Object> docs = new ArrayList<Object>();
         for (DocumentModel child : children) {
@@ -27,7 +27,7 @@ public class CoreExtensions {
         return docs;
     }
 
-    public Object getParent() throws Exception {
+    public Object getParent() {
         DocumentRef ref = doc.getParentRef();
         return nuxeoWrapper.wrap(doc.getCoreSession().getDocument(ref));
     }

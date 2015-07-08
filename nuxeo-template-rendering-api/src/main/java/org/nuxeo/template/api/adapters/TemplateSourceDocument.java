@@ -21,7 +21,6 @@ package org.nuxeo.template.api.adapters;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.template.api.TemplateInput;
@@ -29,7 +28,7 @@ import org.nuxeo.template.api.TemplateProcessor;
 
 /**
  * It is mainly the source used by {@link TemplateBasedDocument} to handle the rendering.
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public interface TemplateSourceDocument {
@@ -38,7 +37,7 @@ public interface TemplateSourceDocument {
 
     /**
      * Return the String representation of the parameters of the template
-     * 
+     *
      * @return
      * @throws PropertyException
      */
@@ -46,16 +45,15 @@ public interface TemplateSourceDocument {
 
     /**
      * Add or update a {@link TemplateInput} to the list of template parameters.
-     * 
+     *
      * @param input
      * @return
-     * @throws Exception
      */
-    public List<TemplateInput> addInput(TemplateInput input) throws Exception;
+    public List<TemplateInput> addInput(TemplateInput input);
 
     /**
      * Return the template Type (i.e. the associated {@link TemplateProcessor} name.
-     * 
+     *
      * @return {@link TemplateProcessor} name if any, null otherwise
      */
     public String getTemplateType();
@@ -66,22 +64,19 @@ public interface TemplateSourceDocument {
      * <li>finds associated TemplateProcessor</li>
      * <li>extract Template parameters</li>
      * </ul>
-     * 
+     *
      * @param save flag to indicate if target DocumentModel must be saved or not
-     * @throws Exception
      */
-    public void initTemplate(boolean save) throws Exception;
+    public void initTemplate(boolean save);
 
     /**
      * Initialize the Types2Template binding
-     * 
-     * @throws Exception
      */
-    public void initTypesBindings() throws Exception;
+    public void initTypesBindings();
 
     /**
      * Retrieve the Blob holding the template file
-     * 
+     *
      * @return
      * @throws PropertyException
      */
@@ -89,7 +84,7 @@ public interface TemplateSourceDocument {
 
     /**
      * Retrieve the parameters associated to the Template file
-     * 
+     *
      * @return
      * @throws PropertyException
      */
@@ -97,66 +92,65 @@ public interface TemplateSourceDocument {
 
     /**
      * Save parameters changes
-     * 
+     *
      * @param params the updated list of parameters
      * @param save flag to indicate if target DocumentModel must be saved or not
      * @return the updated DocumentModel
-     * @throws Exception
      */
-    public DocumentModel saveParams(List<TemplateInput> params, boolean save) throws Exception;
+    public DocumentModel saveParams(List<TemplateInput> params, boolean save);
 
     /**
      * Return the underlying adapted {@link DocumentModel}s
-     * 
+     *
      * @return
      */
     public DocumentModel getAdaptedDoc();
 
     /**
      * Save changes in the underlying {@link DocumentModel}
-     * 
+     *
      * @return
      */
     public DocumentModel save();
 
     /**
      * Return flag to indicate if Documents associated to this template can override parametes value
-     * 
+     *
      * @return
      */
     public boolean allowInstanceOverride();
 
     /**
      * Indicate of the associated Template has editable parameters or not
-     * 
+     *
      * @return
      */
     public boolean hasEditableParams();
 
     /**
      * Get List of Document Types than can be associated to this Template.
-     * 
+     *
      * @return List of Document Types or an empty List
      */
     public List<String> getApplicableTypes();
 
     /**
      * Get List of Document Types that must be automatically bound to this template at creation time
-     * 
+     *
      * @return List of Document Types or an empty List
      */
     public List<String> getForcedTypes();
 
     /**
      * Get the list of {@link TemplateBasedDocument}s associated to this template
-     * 
+     *
      * @return
      */
     public List<TemplateBasedDocument> getTemplateBasedDocuments();
 
     /**
      * Remove Type mapping for this template
-     * 
+     *
      * @param type
      * @param save
      */
@@ -164,7 +158,7 @@ public interface TemplateSourceDocument {
 
     /**
      * Update the Type mapping for this template
-     * 
+     *
      * @param forcedTypes
      * @param save
      */
@@ -173,7 +167,7 @@ public interface TemplateSourceDocument {
     /**
      * Sets the expected output mime-type. If the expected mime-type is different from the output of the rendering,
      * converters will be applied.
-     * 
+     *
      * @param mimetype
      * @param save
      */
@@ -181,7 +175,7 @@ public interface TemplateSourceDocument {
 
     /**
      * Return the expected mime-type of the resulting rendering
-     * 
+     *
      * @return
      */
     public String getOutputFormat();
@@ -189,56 +183,56 @@ public interface TemplateSourceDocument {
     /**
      * Indicate if the template can be used as main blob in the {@link TemplateBasedDocument} (i.e. if the template is
      * editable by the end user)
-     * 
+     *
      * @return
      */
     public boolean useAsMainContent();
 
     /**
      * Shortcut to access the underlying {@link DocumentModel} name
-     * 
+     *
      * @return
      */
     public String getName();
 
     /**
      * Shortcut to access the underlying {@link Blob} filename
-     * 
+     *
      * @return name
      */
     public String getFileName();
 
     /**
      * Shortcut to access the underlying {@link DocumentModel} title
-     * 
+     *
      * @return template filename
      */
     public String getTitle();
 
     /**
      * Shortcut to access the underlying {@link DocumentModel} versionLabel
-     * 
+     *
      * @return versionLabel
      */
     public String getVersionLabel();
 
     /**
      * Shortcut to access the underlying {@link DocumentModel} uuid
-     * 
+     *
      * @return UUID
      */
     public String getId();
 
     /**
      * Return label key used for template
-     * 
+     *
      * @return
      */
     public String getLabel();
 
     /**
      * Associate Template to a Rendition
-     * 
+     *
      * @param renditionName
      * @param save
      */
@@ -246,18 +240,17 @@ public interface TemplateSourceDocument {
 
     /**
      * Get the associated Rendition if any
-     * 
+     *
      * @return Rendition name or null
      */
     public String getTargetRenditionName();
 
     /**
      * Write accessor to the {@link Blob} used to store the template
-     * 
+     *
      * @param blob
      * @param save
-     * @throws Exception
      */
-    public void setTemplateBlob(Blob blob, boolean save) throws Exception;
+    public void setTemplateBlob(Blob blob, boolean save);
 
 }

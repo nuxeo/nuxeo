@@ -26,7 +26,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -68,7 +67,7 @@ public class DeckJSPDFConverter implements Converter {
                 throw res.getError();
             }
             return new SimpleCachableBlobHolder(pdfOutput);
-        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
+        } catch (CommandNotAvailable | IOException | CommandException e) {
             throw new ConversionException("PDF conversion failed", e);
         } finally {
             org.apache.commons.io.FileUtils.deleteQuietly(jsFile);

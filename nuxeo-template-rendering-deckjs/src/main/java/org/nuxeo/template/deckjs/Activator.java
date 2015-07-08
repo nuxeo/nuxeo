@@ -28,7 +28,7 @@ public class Activator extends TemplateBundleActivator {
     protected static TemplateBundleActivator instance;
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         instance = this;
         super.start(context);
     }

@@ -18,6 +18,7 @@
 
 package org.nuxeo.template.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -25,27 +26,25 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 
 /**
  * Interface used to drive rendition of the {@link TemplateBasedDocument}
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public interface TemplateProcessor {
 
     /**
      * Perform rendering of the named template against the {@link TemplateBasedDocument}
-     * 
+     *
      * @param templateDocument
      * @param templateName
      * @return
-     * @throws Exception
      */
-    public Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws Exception;
+    public Blob renderTemplate(TemplateBasedDocument templateDocument, String templateName) throws IOException;
 
     /**
      * Extract parameters from the Template file.
-     * 
+     *
      * @param blob
      * @return List of parameters for this template
-     * @throws Exception
      */
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception;
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException;
 }

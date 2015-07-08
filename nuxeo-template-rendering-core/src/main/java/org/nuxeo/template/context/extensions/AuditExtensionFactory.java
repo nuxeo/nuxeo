@@ -25,36 +25,26 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
 
     @Override
     public Object getExtension(DocumentModel currentDocument, DocumentWrapper wrapper, Map<String, Object> ctx) {
-
-        try {
-            // add audit context info
-            DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class);
-            List<LogEntry> auditEntries = null;
-            if (historyReader != null) {
-                auditEntries = historyReader.getDocumentHistory(currentDocument, 0, 1000);
+        // add audit context info
+        DocumentHistoryReader historyReader = Framework.getLocalService(DocumentHistoryReader.class);
+        List<LogEntry> auditEntries = null;
+        if (historyReader != null) {
+            auditEntries = historyReader.getDocumentHistory(currentDocument, 0, 1000);
+        } else {
+            if (Framework.isTestModeSet() && testAuditEntries != null) {
+                auditEntries = testAuditEntries;
             } else {
-                if (Framework.isTestModeSet() && testAuditEntries != null) {
-                    auditEntries = testAuditEntries;
-                } else {
-                    auditEntries = new ArrayList<LogEntry>();
-                    log.warn("Can not add Audit info to rendering context");
-                }
+                auditEntries = new ArrayList<LogEntry>();
+                log.warn("Can not add Audit info to rendering context");
             }
-            if (auditEntries != null) {
-                try {
-                    auditEntries = preprocessAuditEntries(auditEntries, currentDocument.getCoreSession(), "en");
-                } catch (Throwable e) {
-                    log.warn("Unable to preprocess Audit entries : " + e.getMessage());
-                }
-                ctx.put("auditEntries", wrapper.wrap(auditEntries));
-            }
-        } catch (Exception e) {
-            log.error("Error during Audit context extension", e);
+        }
+        if (auditEntries != null) {
             try {
-                ctx.put("auditEntries", wrapper.wrap(new ArrayList<LogEntry>()));
-            } catch (Exception e1) {
-                log.error("Unable to fill context with mock AuditEntries", e1);
+                auditEntries = preprocessAuditEntries(auditEntries, currentDocument.getCoreSession(), "en");
+            } catch (Throwable e) {
+                log.warn("Unable to preprocess Audit entries : " + e.getMessage());
             }
+            ctx.put("auditEntries", wrapper.wrap(auditEntries));
         }
         return null;
     }

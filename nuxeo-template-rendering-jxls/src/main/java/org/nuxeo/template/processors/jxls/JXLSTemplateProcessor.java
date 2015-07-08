@@ -1,16 +1,20 @@
 package org.nuxeo.template.processors.jxls;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.jxls.exception.ParsePropertyException;
 import net.sf.jxls.transformer.XLSTransformer;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.api.TemplateInput;
 import org.nuxeo.template.api.TemplateProcessor;
@@ -30,7 +34,7 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
     protected SimpleContextBuilder contextBuilder = new SimpleContextBuilder();
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws IOException {
 
         Blob sourceTemplateBlob = getSourceTemplateBlob(templateBasedDocument, templateName);
         List<TemplateInput> params = templateBasedDocument.getParams(templateName);
@@ -53,7 +57,11 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
 
         XLSTransformer transformer = new XLSTransformer();
         configureTransformer(transformer);
-        transformer.transformXLS(input.getAbsolutePath(), ctx, generated.getAbsolutePath());
+        try {
+            transformer.transformXLS(input.getAbsolutePath(), ctx, generated.getAbsolutePath());
+        } catch (InvalidFormatException | ParsePropertyException e) {
+            throw new NuxeoException(e);
+        }
 
         input.delete();
 
@@ -79,7 +87,7 @@ public class JXLSTemplateProcessor extends AbstractTemplateProcessor {
     }
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) {
         return new ArrayList<TemplateInput>();
     }
 

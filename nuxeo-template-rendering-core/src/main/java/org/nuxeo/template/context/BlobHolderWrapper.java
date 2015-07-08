@@ -5,14 +5,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Class helper used to expose Document as a {@link BlobHolder} in FreeMarker context
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class BlobHolderWrapper {
@@ -36,24 +35,14 @@ public class BlobHolderWrapper {
         if (bh == null) {
             return null;
         }
-        try {
-            return bh.getBlob();
-        } catch (ClientException e) {
-            log.error("Unable to retrieve Blob");
-            return null;
-        }
+        return bh.getBlob();
     }
 
     public List<Blob> getBlobs() {
         if (bh == null) {
             return null;
         }
-        try {
-            return bh.getBlobs();
-        } catch (ClientException e) {
-            log.error("Unable to retrieve Blobs");
-            return null;
-        }
+        return bh.getBlobs();
     }
 
     public Blob getBlob(String name) {

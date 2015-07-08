@@ -20,6 +20,7 @@ package org.nuxeo.template.processors.jod;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,11 +31,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import net.sf.jooreports.templates.DocumentTemplate;
+import net.sf.jooreports.templates.DocumentTemplateException;
 import net.sf.jooreports.templates.DocumentTemplateFactory;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
@@ -52,6 +55,8 @@ import org.nuxeo.template.fm.FreeMarkerVariableExtractor;
 import org.nuxeo.template.odt.OOoArchiveModifier;
 import org.nuxeo.template.processors.AbstractTemplateProcessor;
 
+import freemarker.template.TemplateModelException;
+
 /**
  * {@link TemplateProcessor} for ODT based templates. Using JODReports but also custom ODT hacks. May be migrated to
  * pure ODT + Custom Freemarker soon.
@@ -65,7 +70,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
     protected FMContextBuilder fmContextBuilder = new FMContextBuilder();
 
     @Override
-    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws Exception {
+    public List<TemplateInput> getInitialParametersDefinition(Blob blob) throws IOException {
 
         List<TemplateInput> params = new ArrayList<TemplateInput>();
         String xmlContent = readXMLContent(blob);
@@ -84,7 +89,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
     }
 
     @Override
-    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws Exception {
+    public Blob renderTemplate(TemplateBasedDocument templateBasedDocument, String templateName) throws IOException {
 
         OOoArchiveModifier modifier = new OOoArchiveModifier();
 
@@ -128,7 +133,11 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
                                 blobsToInsert.add((Blob) value);
                             }
                         } else {
-                            context.put(param.getName(), nuxeoWrapper.wrap(property));
+                            try {
+                                context.put(param.getName(), nuxeoWrapper.wrap(property));
+                            } catch (TemplateModelException e) {
+                                throw new NuxeoException(e);
+                            }
                         }
                     } else {
                         // no available value, try to find a default one ...
@@ -165,7 +174,11 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         File generated = new File(workingDir, "JODReportresult");
         generated.createNewFile();
 
-        template.createDocument(context, new FileOutputStream(generated));
+        try {
+            template.createDocument(context, new FileOutputStream(generated));
+        } catch (DocumentTemplateException e) {
+            throw new NuxeoException(e);
+        }
 
         generated = modifier.updateArchive(workingDir, generated, blobsToInsert);
 
@@ -183,7 +196,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
         return newBlob;
     }
 
-    public String readXMLContent(Blob blob) throws Exception {
+    public String readXMLContent(Blob blob) throws IOException {
         ZipInputStream zIn = new ZipInputStream(blob.getStream());
         ZipEntry zipEntry = zIn.getNextEntry();
         String xmlContent = null;

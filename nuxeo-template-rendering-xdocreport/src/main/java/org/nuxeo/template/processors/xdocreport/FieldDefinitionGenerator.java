@@ -1,8 +1,10 @@
 package org.nuxeo.template.processors.xdocreport;
 
+import java.io.IOException;
 import java.io.StringWriter;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -18,18 +20,18 @@ import fr.opensagres.xdocreport.template.formatter.FieldsMetadata;
  */
 public class FieldDefinitionGenerator {
 
-    public static String generate(String type) throws Exception {
+    public static String generate(String type) {
         SchemaManager sm = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = sm.getDocumentType(type);
 
         return generate(docType.getSchemaNames());
     }
 
-    public static String generate(DocumentModel doc) throws Exception {
+    public static String generate(DocumentModel doc) {
         return generate(doc.getSchemas());
     }
 
-    protected static String generate(String[] schemaNames) throws Exception {
+    protected static String generate(String[] schemaNames) {
 
         FieldsMetadata fieldsMetadata = new FieldsMetadata(TemplateEngineKind.Freemarker.name());
 
@@ -102,7 +104,11 @@ public class FieldDefinitionGenerator {
 
         StringWriter writer = new StringWriter();
 
-        fieldsMetadata.saveXML(writer, true);
+        try {
+            fieldsMetadata.saveXML(writer, true);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
+        }
 
         return writer.getBuffer().toString();
     }

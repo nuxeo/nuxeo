@@ -41,11 +41,11 @@ import org.dom4j.ProcessingInstruction;
 import org.dom4j.Text;
 import org.dom4j.Visitor;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
@@ -174,7 +174,7 @@ public class ModelImporter {
 
     }
 
-    public int importModels() throws Exception {
+    public int importModels() {
 
         if (isImportAlreadyDone()) {
             return 0;
@@ -198,7 +198,11 @@ public class ModelImporter {
             if (modelRoots != null && modelRoots.length > 0) {
                 for (File modelRoot : modelRoots) {
                     log.info("Importing template from " + modelRoot.getAbsolutePath());
-                    nbImportedDocs += importModelAndExamples(modelRoot);
+                    try {
+                        nbImportedDocs += importModelAndExamples(modelRoot);
+                    } catch (IOException e) {
+                        throw new NuxeoException("Failed to import from template: " + modelRoot.getAbsolutePath(), e);
+                    }
                 }
                 markImportDone();
             }
@@ -207,7 +211,7 @@ public class ModelImporter {
         return nbImportedDocs;
     }
 
-    public int importModelAndExamples(File root) throws Exception {
+    public int importModelAndExamples(File root) throws IOException {
 
         int nbImportedDocs = 0;
         final Map<String, File> roots = new HashMap<String, File>();
@@ -250,7 +254,7 @@ public class ModelImporter {
 
     }
 
-    protected DocumentRef importModel(String modelName, File source, DocumentModel root) throws Exception {
+    protected DocumentRef importModel(String modelName, File source, DocumentModel root) throws IOException {
 
         // import
         DocumentReader reader = new XMLModelReader(source, modelName);
@@ -267,7 +271,7 @@ public class ModelImporter {
         return ref;
     }
 
-    protected int importSamples(File root, DocumentRef modelRef, DocumentModel rootDoc) throws Exception {
+    protected int importSamples(File root, DocumentRef modelRef, DocumentModel rootDoc) throws IOException {
 
         int nbImportedDocs = 0;
         for (File exampleDir : root.listFiles()) {

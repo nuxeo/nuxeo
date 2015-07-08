@@ -1,5 +1,6 @@
 package org.nuxeo.template.processors.xdocreport;
 
+import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -16,7 +17,7 @@ public class ZipXmlHelper {
 
     public static final String DOCX_MAIN_FILE = "word/document.xml";
 
-    public static String readXMLContent(Blob blob, String filename) throws Exception {
+    public static String readXMLContent(Blob blob, String filename) throws IOException {
         ZipInputStream zIn = new ZipInputStream(blob.getStream());
         ZipEntry zipEntry = zIn.getNextEntry();
         String xmlContent = null;

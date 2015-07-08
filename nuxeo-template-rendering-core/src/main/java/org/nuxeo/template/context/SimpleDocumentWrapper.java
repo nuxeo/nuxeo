@@ -13,18 +13,14 @@ public class SimpleDocumentWrapper {
     }
 
     public Object get(String key) {
-        try {
-            Object value = DefaultDocumentView.DEFAULT.get(doc, key);
-            if (value != DefaultDocumentView.UNKNOWN) {
-                return wrap(value);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        Object value = DefaultDocumentView.DEFAULT.get(doc, key);
+        if (value != DefaultDocumentView.UNKNOWN) {
+            return wrap(value);
         }
         return null;
     }
 
-    protected Object wrap(Object obj) throws Exception {
+    protected Object wrap(Object obj) {
         if (obj instanceof SchemaTemplate.DocumentSchema) {
             return new SimpleSchemaWrapper((SchemaTemplate.DocumentSchema) obj);
         }

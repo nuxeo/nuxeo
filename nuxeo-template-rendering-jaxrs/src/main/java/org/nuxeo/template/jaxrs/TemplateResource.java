@@ -36,7 +36,7 @@ public class TemplateResource extends DefaultObject {
         this.uuid = value;
     }
 
-    protected TemplateSourceDocument resolve() throws Exception {
+    protected TemplateSourceDocument resolve() {
         if (uuid != null) {
             IdRef idRef = new IdRef(uuid);
             DocumentModel doc = getContext().getCoreSession().getDocument(idRef);
@@ -47,7 +47,7 @@ public class TemplateResource extends DefaultObject {
     }
 
     @GET
-    public Object get() throws Exception {
+    public Object get() {
         TemplateSourceDocument source = resolve();
         if (source == null) {
             return getList();
@@ -58,7 +58,7 @@ public class TemplateResource extends DefaultObject {
         }
     }
 
-    protected String getList() throws Exception {
+    protected String getList() {
 
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         List<TemplateSourceDocument> sources = tps.getAvailableTemplates(getContext().getCoreSession(), null);
@@ -74,12 +74,12 @@ public class TemplateResource extends DefaultObject {
     @GET
     @Path("resource/{resourceName}")
     @Produces("*/*")
-    public Blob getResource(@PathParam(value = "resourceName") String resourceName) throws Exception {
+    public Blob getResource(@PathParam(value = "resourceName") String resourceName) {
         TemplateSourceDocument tmpl = resolve();
         return getResource(tmpl, resourceName);
     }
 
-    static Blob getResource(TemplateSourceDocument tmpl, String resourceName) throws Exception {
+    static Blob getResource(TemplateSourceDocument tmpl, String resourceName) {
 
         BlobHolder bh = tmpl.getAdaptedDoc().getAdapter(BlobHolder.class);
         if (bh != null) {

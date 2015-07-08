@@ -17,19 +17,22 @@
  */
 package org.nuxeo.template.adapters.doc;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dom4j.DocumentException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.blob.ConvertBlob;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.template.XMLSerializer;
@@ -65,7 +68,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
 
         TemplateSourceDocument source = template.getAdapter(TemplateSourceDocument.class);
         if (source == null) {
-            throw new ClientException("Can not bind to an non template document");
+            throw new NuxeoException("Can not bind to an non template document");
         }
         String tid = source.getId();
         String templateName = source.getName();
@@ -77,11 +80,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
             tb.setTemplateId(tid);
             tb.setName(templateName);
             bindings.add(tb);
-            try {
-                initializeFromTemplate(templateName, false);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            initializeFromTemplate(templateName, false);
             bindings.save(adaptedDoc);
             if (save) {
                 doSave();
@@ -102,11 +101,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return adaptedDoc;
     }
 
-    /*
-     * public TemplateSourceDocument getSourceTemplate() throws Exception { return
-     * getSourceTemplate(TemplateBindings.DEFAULT_BINDING); }
-     */
-    public TemplateSourceDocument getSourceTemplate(String templateName) throws Exception {
+    public TemplateSourceDocument getSourceTemplate(String templateName) {
         DocumentModel template = getSourceTemplateDoc(templateName);
         if (template != null) {
             return template.getAdapter(TemplateSourceDocument.class);
@@ -114,13 +109,8 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return null;
     }
 
-    /*
-     * public DocumentModel getSourceTemplateDoc() throws Exception { return
-     * getSourceTemplateDoc(TemplateBindings.DEFAULT_BINDING); }
-     */
-
     @Override
-    public DocumentRef getSourceTemplateDocRef(String templateName) throws Exception {
+    public DocumentRef getSourceTemplateDocRef(String templateName) {
         TemplateBinding binding = null;
         if (templateName == null) {
             binding = bindings.get();
@@ -133,7 +123,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return new IdRef(binding.getTemplateId());
     }
 
-    public DocumentModel getSourceTemplateDoc(String templateName) throws Exception {
+    public DocumentModel getSourceTemplateDoc(String templateName) {
         TemplateBinding binding = null;
         if (templateName == null) {
             binding = bindings.get();
@@ -151,42 +141,30 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
     }
 
     public List<TemplateSourceDocument> getSourceTemplates() {
-
         List<TemplateSourceDocument> result = new ArrayList<TemplateSourceDocument>();
-
         for (TemplateBinding binding : bindings) {
-            try {
-                result.add(getSourceTemplate(binding.getName()));
-            } catch (Exception e) {
-                log.error("Unable to fetch source template for binding " + binding.getName());
-            }
+            result.add(getSourceTemplate(binding.getName()));
         }
         return result;
     }
 
     public String getTemplateType(String templateName) {
-        TemplateSourceDocument source = null;
-        try {
-            source = getSourceTemplate(templateName);
-        } catch (Exception e) {
-            log.error("Unable to find source template for name " + templateName);
-            return null;
-        }
+        TemplateSourceDocument source = getSourceTemplate(templateName);
         if (source != null) {
             return source.getTemplateType();
         }
         return null;
     }
 
-    public DocumentModel initializeFromTemplate(boolean save) throws Exception {
+    public DocumentModel initializeFromTemplate(boolean save) {
         return initializeFromTemplate(TemplateBindings.DEFAULT_BINDING, save);
     }
 
-    public DocumentModel initializeFromTemplate(String templateName, boolean save) throws Exception {
+    public DocumentModel initializeFromTemplate(String templateName, boolean save) {
 
         TemplateSourceDocument tmpl = getSourceTemplate(templateName);
         if (tmpl == null) {
-            throw new ClientException("No associated template for name " + templateName);
+            throw new NuxeoException("No associated template for name " + templateName);
         }
 
         // copy Params but set as readonly all params set in template
@@ -225,28 +203,37 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         adaptedDoc.getAdapter(BlobHolder.class).setBlob(blob);
     }
 
-    public Blob renderWithTemplate(String templateName) throws Exception {
+    public Blob renderWithTemplate(String templateName) {
         TemplateProcessor processor = getTemplateProcessor(templateName);
         if (processor != null) {
-            Blob blob = processor.renderTemplate(this, templateName);
+            Blob blob;
+            try {
+                blob = processor.renderTemplate(this, templateName);
+            } catch (IOException e) {
+                throw new NuxeoException("Failed to render template: " + templateName, e);
+            }
             String format = getSourceTemplate(templateName).getOutputFormat();
             if (blob != null && format != null && !format.isEmpty()) {
-                return convertBlob(templateName, blob, format);
+                try {
+                    return convertBlob(templateName, blob, format);
+                } catch (OperationException e) {
+                    throw new NuxeoException(e);
+                }
             } else {
                 return blob;
             }
         } else {
             String templateType = getTemplateType(templateName);
             if (templateType == null) {
-                throw new ClientException(
+                throw new NuxeoException(
                         "Template type is null : if you don't set it explicitly, your template file should have an extension or a mimetype so that it can be automatically determined");
             } else {
-                throw new ClientException("No template processor found for template type=" + templateType);
+                throw new NuxeoException("No template processor found for template type=" + templateType);
             }
         }
     }
 
-    private Blob convertBlob(String templateName, Blob blob, String outputFormat) throws Exception {
+    private Blob convertBlob(String templateName, Blob blob, String outputFormat) throws OperationException {
         OutputFormatDescriptor outFormat = getOutputFormatDescriptor(outputFormat);
         String chainId = outFormat.getChainId();
         String mimeType = outFormat.getMimeType();
@@ -269,7 +256,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         }
     }
 
-    protected OperationContext initOperationContext(Blob blob, String templateName) throws Exception {
+    protected OperationContext initOperationContext(Blob blob, String templateName) {
         OperationContext ctx = new OperationContext();
         ctx.put("templateName", templateName);
         ctx.setInput(blob);
@@ -278,7 +265,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return ctx;
     }
 
-    public Blob renderAndStoreAsAttachment(String templateName, boolean save) throws Exception {
+    public Blob renderAndStoreAsAttachment(String templateName, boolean save) {
         Blob blob = renderWithTemplate(templateName);
         setBlob(blob);
         if (save) {
@@ -295,7 +282,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return false;
     }
 
-    public Blob getTemplateBlob(String templateName) throws Exception {
+    public Blob getTemplateBlob(String templateName) {
         TemplateSourceDocument source = getSourceTemplate(templateName);
         if (source != null) {
             if (source.useAsMainContent()) {
@@ -331,7 +318,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
             String xml = binding.getData();
             try {
                 return XMLSerializer.readFromXml(xml);
-            } catch (Exception e) {
+            } catch (DocumentException e) {
                 log.error("Unable to parse parameters", e);
                 return new ArrayList<TemplateInput>();
             }
@@ -339,7 +326,7 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
         return new ArrayList<TemplateInput>();
     }
 
-    public DocumentModel saveParams(String templateName, List<TemplateInput> params, boolean save) throws Exception {
+    public DocumentModel saveParams(String templateName, List<TemplateInput> params, boolean save) {
         TemplateBinding binding = bindings.get(templateName);
         if (binding != null) {
             binding.setData(params);
@@ -371,14 +358,10 @@ public class TemplateBasedDocumentAdapterImpl extends AbstractTemplateDocument i
     }
 
     public String getTemplateNameForRendition(String renditionName) {
-        try {
-            for (TemplateBinding binding : bindings) {
-                if (renditionName.equals(getSourceTemplate(binding.getName()).getTargetRenditionName())) {
-                    return binding.getName();
-                }
+        for (TemplateBinding binding : bindings) {
+            if (renditionName.equals(getSourceTemplate(binding.getName()).getTargetRenditionName())) {
+                return binding.getName();
             }
-        } catch (Exception e) {
-            log.error("Unable to resolve rendition binding", e);
         }
         return null;
     }

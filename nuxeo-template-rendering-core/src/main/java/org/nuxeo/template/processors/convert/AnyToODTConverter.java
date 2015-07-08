@@ -34,7 +34,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Converter used to bridge MarkDown and OpenOffice conversions
- * 
+ *
  * @author Tiry (tdelprat@nuxeo.com)
  */
 public class AnyToODTConverter implements ExternalConverter {
@@ -61,13 +61,7 @@ public class AnyToODTConverter implements ExternalConverter {
 
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob sourceBlob;
-
-        try {
-            sourceBlob = blobHolder.getBlob();
-        } catch (Exception e) {
-            throw new ConversionException("Can not fetch blob", e);
-        }
+        Blob sourceBlob = blobHolder.getBlob();
 
         List<String> subConverters = getConverterChain(sourceBlob.getMimeType());
 

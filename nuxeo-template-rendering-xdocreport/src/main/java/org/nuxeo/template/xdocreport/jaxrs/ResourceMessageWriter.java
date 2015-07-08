@@ -30,14 +30,7 @@ public class ResourceMessageWriter implements MessageBodyWriter<Resource> {
     @Override
     public void writeTo(Resource res, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders, OutputStream out) throws IOException, WebApplicationException {
-
-        try {
-            JSONHelper.writeResource(res, out);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
+        JSONHelper.writeResource(res, out);
     }
 
 }

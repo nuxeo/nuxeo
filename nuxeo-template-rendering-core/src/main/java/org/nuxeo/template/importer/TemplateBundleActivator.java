@@ -19,6 +19,7 @@
 package org.nuxeo.template.importer;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
@@ -27,13 +28,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator expand the sample documents in the data directory.
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @author <a href="mailto:ldoguin@nuxeo.com">Laurent Doguin</a>
  */
@@ -60,13 +62,13 @@ public class TemplateBundleActivator implements BundleActivator {
     }
 
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         this.context = context;
         expandResources();
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
         this.context = null;
     }
 
@@ -83,7 +85,7 @@ public class TemplateBundleActivator implements BundleActivator {
         return path;
     }
 
-    public void expandResources() throws Exception {
+    public void expandResources() {
         log.info("Deploying templates for bundle " + context.getBundle().getSymbolicName());
 
         URL sampleRootURL = getResource(getTemplateResourcesRootPath());
@@ -101,17 +103,21 @@ public class TemplateBundleActivator implements BundleActivator {
         Enumeration urls = findEntries(getTemplateResourcesRootPath());
         while (urls.hasMoreElements()) {
             URL resourceURL = (URL) urls.nextElement();
-            InputStream is = resourceURL.openStream();
-            String filePath = resourceURL.getFile();
-            filePath = filePath.split("/" + getTemplateResourcesRootPath() + "/")[1];
-            filePath = "/" + filePath;
-            File f = new File(dataDir, filePath);
-            File parent = f.getParentFile();
-            if (!parent.exists()) {
-                parent.mkdirs();
+            try {
+                InputStream is = resourceURL.openStream();
+                String filePath = resourceURL.getFile();
+                filePath = filePath.split("/" + getTemplateResourcesRootPath() + "/")[1];
+                filePath = "/" + filePath;
+                File f = new File(dataDir, filePath);
+                File parent = f.getParentFile();
+                if (!parent.exists()) {
+                    parent.mkdirs();
+                }
+                FileUtils.copyToFile(is, f);
+                is.close();
+            } catch (IOException e) {
+                throw new NuxeoException("Failed for template: " + resourceURL, e);
             }
-            FileUtils.copyToFile(is, f);
-            is.close();
         }
     }
 }

@@ -33,7 +33,7 @@ public class ResourceService extends AbstractResourceService {
     @Context
     protected HttpServletRequest request;
 
-    public String getRoot() throws Exception {
+    public String getRoot() {
         CoreSession session = getCoreSession();
         TemplateProcessorService tps = Framework.getLocalService(TemplateProcessorService.class);
         List<TemplateSourceDocument> templates = tps.getAvailableTemplates(session, null);

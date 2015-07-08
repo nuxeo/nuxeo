@@ -50,11 +50,8 @@ public abstract class AbstractTemplateProcessor implements TemplateProcessor {
         return workingDir;
     }
 
-    protected Blob getSourceTemplateBlob(TemplateBasedDocument templateBasedDocument, String templateName)
-            throws Exception {
-        Blob sourceTemplateBlob = templateBasedDocument.getTemplateBlob(templateName);
-
-        return sourceTemplateBlob;
+    protected Blob getSourceTemplateBlob(TemplateBasedDocument templateBasedDocument, String templateName) {
+        return templateBasedDocument.getTemplateBlob(templateName);
     }
 
 }

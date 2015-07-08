@@ -1,5 +1,6 @@
 package org.nuxeo.template.xdocreport.jaxrs;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import org.codehaus.jackson.JsonGenerator;
@@ -12,7 +13,7 @@ import fr.opensagres.xdocreport.remoting.resources.domain.Resource;
  */
 public class JSONHelper {
 
-    public static void writeResource(Resource resource, OutputStream out) throws Exception {
+    public static void writeResource(Resource resource, OutputStream out) throws IOException {
         String prefix = "{ \"resource\" : { \"name\" : \"resources\", \"type\" : \"CATEGORY\", \"children\" : ";
         String suffix = " }}";
         out.write(prefix.getBytes());

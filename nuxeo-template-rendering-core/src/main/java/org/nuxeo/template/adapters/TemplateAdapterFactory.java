@@ -20,7 +20,6 @@ package org.nuxeo.template.adapters;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 import org.nuxeo.template.adapters.doc.TemplateBasedDocumentAdapterImpl;
@@ -57,12 +56,7 @@ public class TemplateAdapterFactory implements DocumentAdapterFactory {
 
         if (adapterClass.getSimpleName().equals(TemplateBasedDocument.class.getSimpleName())) {
             if (doc.hasFacet(TemplateBasedDocumentAdapterImpl.TEMPLATEBASED_FACET)) {
-                try {
-                    return new TemplateBasedDocumentAdapterImpl(doc);
-                } catch (ClientException e) {
-                    log.error("Unable to create TemplateBasedDocumentAdapterImpl", e);
-                    return null;
-                }
+                return new TemplateBasedDocumentAdapterImpl(doc);
             } else {
                 return null;
             }

@@ -6,6 +6,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
+import org.nuxeo.ecm.platform.preview.api.PreviewException;
 import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
@@ -26,7 +27,7 @@ public class HtmlRenditionProvider implements RenditionProvider {
         try {
             HtmlPreviewAdapter preview = doc.getAdapter(HtmlPreviewAdapter.class);
             return preview.getFilePreviewBlobs();
-        } catch (Exception e) {
+        } catch (PreviewException e) {
             throw new RenditionException("Unable to compute Html Preview", e);
         }
     }

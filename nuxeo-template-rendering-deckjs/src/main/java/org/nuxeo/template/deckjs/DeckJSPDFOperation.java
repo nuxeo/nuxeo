@@ -48,7 +48,7 @@ public class DeckJSPDFOperation {
     ConversionService conversionService;
 
     @OperationMethod
-    public Blob run(Blob blob) throws Exception {
+    public Blob run(Blob blob) throws IOException {
         DocumentModel templateSourceDocument = (DocumentModel) ctx.get("templateSourceDocument");
         DocumentModel templateBasedDocument = (DocumentModel) ctx.get("templateBasedDocument");
         String templateName = (String) ctx.get("templateName");
