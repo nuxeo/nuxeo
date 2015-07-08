@@ -460,9 +460,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             // UserWorkspacesRoot is the max size set on every user workspace
             if (qap != null && !"UserWorkspacesRoot".equals(parent.getType()) && qap.getMaxQuota() > 0) {
                 Long newTotalSize = new Long(qap.getTotalSize() + addition);
+                String cacheKey = getCacheEntry(parent.getId());
                 try {
                     if (cache != null) {
-                        String cacheKey = getCacheEntry(parent.getId());
                         Long oldTotalSize = (Long) cache.get(cacheKey);
                         if (oldTotalSize == null) {
                             newTotalSize = new Long(qap.getTotalSize() + addition);
@@ -484,6 +484,13 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                 }
                 if (newTotalSize > qap.getMaxQuota()) {
                     log.info("Raising Quota Exception on " + doc.getPathAsString());
+                    if (cache != null) {
+                        try {
+                            cache.invalidate(cacheKey);
+                        } catch (IOException e) {
+                            log.error(e.getMessage() + ": unable to invalidate cache " + QUOTA_MAXSIZE_CACHE_NAME + " key " + cacheKey);
+                       }
+                    }
                     throw new QuotaExceededException(parent, doc, qap.getMaxQuota());
                 }
             }

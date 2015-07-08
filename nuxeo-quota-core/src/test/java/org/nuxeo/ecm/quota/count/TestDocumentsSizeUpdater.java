@@ -781,6 +781,28 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(firstSubFolderExistingFilesNbr, children.size());
             }
         });
+        // make sure cache key has been invalidated
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                DocumentModel doc = session.createDocumentModel("File");
+                doc.setPropertyValue("file:content", (Serializable) getFakeBlob(50));
+                doc.setPropertyValue("dc:title", "Other file");
+                doc.setPathInfo(getFirstSubFolder().getPathAsString(), "otherfile");
+                boolean quotaExceeded = false;
+                try {
+                    doc = session.createDocument(doc);
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("2. raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
+                        quotaExceeded = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                assertFalse(quotaExceeded);
+                eventService.waitForAsyncCompletion();
+            }
+        });
     }
 
     @Test
