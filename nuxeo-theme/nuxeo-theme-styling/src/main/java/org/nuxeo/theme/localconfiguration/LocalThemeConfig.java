@@ -58,7 +58,7 @@ public interface LocalThemeConfig extends LocalConfiguration<LocalThemeConfig> {
     String getMode();
 
     /**
-     * Returns the page path used in the {@code LocalTheme} negociation scheme
+     * Returns the page path used in the {@code LocalTheme} negotiation scheme
      */
     @Deprecated
     String computePagePath();

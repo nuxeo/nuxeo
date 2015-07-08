@@ -16,9 +16,6 @@
 
 package org.nuxeo.ecm.localconf;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,8 +38,10 @@ import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.component.SelectItemComparator;
-import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.core.schema.FacetNames.FOLDERISH;
 
 @Name("contentViewConfigurationActions")
 @Scope(CONVERSATION)
@@ -63,7 +62,7 @@ public class ContentViewConfigurationActions implements Serializable {
     protected ContentViewService contentViewService;
 
     @In(create = true)
-    protected ResourcesAccessor resourcesAccessor;
+    protected Map<String, String> messages;
 
     protected SchemaManager getSchemaManager() {
         if (schemaManager == null) {
@@ -88,7 +87,6 @@ public class ContentViewConfigurationActions implements Serializable {
                 continue;
             }
             SelectItem item;
-            Map<String, String> messages = resourcesAccessor.getMessages();
             if (messages.containsKey(typeName)) {
                 item = new SelectItem(typeName, messages.get(typeName));
             } else {
@@ -110,7 +108,7 @@ public class ContentViewConfigurationActions implements Serializable {
                 item = new SelectItem(cvName);
             } else {
                 if (contentViewHeader.isTranslateTitle()) {
-                    title = resourcesAccessor.getMessages().get(title);
+                    title = messages.get(title);
                 }
                 item = new SelectItem(cvName, title);
             }

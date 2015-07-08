@@ -19,6 +19,7 @@ package org.nuxeo.theme.styling.service.descriptors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -353,6 +354,21 @@ public class Page {
             clone.setResourceBundles(new ArrayList<String>(bundles));
         }
         return clone;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Page)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        Page p = (Page) obj;
+        return new EqualsBuilder().append(name, p.name).append(charset, p.charset).append(favicons, p.favicons).append(
+                defaultFlavor, p.defaultFlavor).append(appendStyles, p.appendStyles).append(styles, p.styles).append(
+                appendFlavors, p.appendFlavors).append(flavors, p.flavors).append(appendResources, p.appendResources).append(
+                resources, p.resources).append(bundles, p.bundles).isEquals();
     }
 
 }

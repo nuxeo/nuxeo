@@ -66,8 +66,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ RuntimeFeature.class })
-@Deploy({ "org.nuxeo.theme.core", "org.nuxeo.theme.fragments",
-        "org.nuxeo.theme.styling", "org.nuxeo.web.resources.core" })
+@Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.web.resources.core" })
 @LocalDeploy({ "org.nuxeo.theme.styling:webresources-test-config.xml",
         "org.nuxeo.theme.styling:theme-styling-test-config.xml" })
 public class TestFlavorResourceProcessor {
@@ -129,8 +128,8 @@ public class TestFlavorResourceProcessor {
         when(mockRequest.getQueryString()).thenReturn("uri?flavor=" + flavor);
         final Reader reader = new InputStreamReader(getTestFile("themes/css/nuxeo_dm_default.css"));
         final StringWriter writer = new StringWriter();
-        victim.process(Resource.create(org.nuxeo.ecm.web.resources.api.Resource.PREFIX + "nuxeo_dm_default.css", ResourceType.CSS), reader,
-                writer);
+        victim.process(Resource.create(org.nuxeo.ecm.web.resources.api.Resource.PREFIX + "nuxeo_dm_default.css",
+                ResourceType.CSS), reader, writer);
         WroTestUtils.compare(getTestFile(filePath), new ByteArrayInputStream(writer.toString().getBytes()));
     }
 

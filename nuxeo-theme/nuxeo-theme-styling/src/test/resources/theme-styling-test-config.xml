@@ -71,8 +71,8 @@
       </palettePreview>
     </flavor>
 
-    <!-- register it before and to check registration order has no impact
-      on final result -->
+    <!-- register it before and to check registration order has no impact on final 
+      result -->
     <flavor name="subDark" extends="dark">
       <label>SubDark flavor</label>
       <presetsList>
@@ -99,7 +99,7 @@
 
   </extension>
 
-  <!-- Register style resources (contain indirect references to flavor names, i.e.
+  <!-- Register style resources (contain indirect references to flavor names, i.e. 
     "__FLAVOR__") -->
   <extension target="org.nuxeo.theme.styling.service" point="styles">
     <style name="nuxeo_dm_default">
@@ -131,6 +131,18 @@
         <resource>jsf.js</resource>
       </resources>
     </resourceBundle>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.theme.styling.service" point="negotiations">
+
+    <negotiation target="testNegotiation">
+      <negotiator class="org.nuxeo.theme.styling.tests.MockNegotiator"
+        order="100">
+        <property name="foo">bar</property>
+      </negotiator>
+    </negotiation>
 
   </extension>
 

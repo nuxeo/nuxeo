@@ -44,6 +44,11 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     @Override
+    public synchronized void removeContribution(Page contrib) {
+        removeContribution(contrib, true);
+    }
+
+    @Override
     public void contributionRemoved(String id, Page origContrib) {
         pageResources.remove(id);
     }
@@ -62,7 +67,6 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     public Page getPage(String id) {
-        // TODO: merge with potential configurations applying to all pages
         return pageResources.get(id);
     }
 

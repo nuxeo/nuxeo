@@ -27,6 +27,10 @@
       <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.theme</groupId>
+      <artifactId>nuxeo-theme-styling</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.sun.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>

@@ -14,13 +14,12 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.ecm.webapp.webcontainer;
+package org.nuxeo.ecm.web.resources.jsf.negotiators;
 
 import javax.faces.context.FacesContext;
 
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.theme.negotiation.Negotiator;
-import org.nuxeo.theme.negotiation.Scheme;
+import org.nuxeo.theme.styling.negotiation.AbstractNegotiator;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 
@@ -31,13 +30,17 @@ import org.nuxeo.theme.styling.service.descriptors.Flavor;
  * @see Flavor
  * @since 5.5
  */
-public class DefaultThemeFlavor implements Scheme {
+public class DefaultPageFlavor extends AbstractNegotiator {
 
     @Override
-    public String getOutcome(Object context) {
-        FacesContext faces = (FacesContext) context;
-        String theme = (String) faces.getExternalContext().getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.theme.name());
+    public String getResult(String target, Object context) {
+        FacesContext faces = null;
+        if (context instanceof FacesContext) {
+            faces = (FacesContext) context;
+        } else {
+            return null;
+        }
+        String theme = (String) faces.getExternalContext().getRequestMap().get(getProperty("negotiatedPageVariable"));
         if (theme != null) {
             ThemeStylingService service = Framework.getService(ThemeStylingService.class);
             return service.getDefaultFlavorName(theme);

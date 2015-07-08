@@ -39,15 +39,19 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
+import org.nuxeo.theme.styling.negotiation.Negotiator;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.NegotiatorDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.Page;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.palettes.PaletteParseException;
 import org.nuxeo.theme.styling.service.palettes.PaletteParser;
 import org.nuxeo.theme.styling.service.registries.FlavorRegistry;
+import org.nuxeo.theme.styling.service.registries.NegotiationRegistry;
 import org.nuxeo.theme.styling.service.registries.PageRegistry;
 import org.nuxeo.theme.styling.service.registries.StyleRegistry;
 
@@ -68,6 +72,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     protected StyleRegistry styleReg;
 
+    protected NegotiationRegistry negReg;
+
     // Runtime Component API
 
     @Override
@@ -76,6 +82,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         pageReg = new PageRegistry();
         flavorReg = new FlavorRegistry();
         styleReg = new StyleRegistry();
+        negReg = new NegotiationRegistry();
     }
 
     @Override
@@ -121,6 +128,11 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             }
             registerResource(resource, contributor.getContext());
             log.info(String.format("Done registering resource '%s'", resource.getName()));
+        } else if (contribution instanceof NegotiationDescriptor) {
+            NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
+            log.info(String.format("Register negotiation for '%s'", neg.getTarget()));
+            negReg.addContribution(neg);
+            log.info(String.format("Done registering negotiation for '%s'", neg.getTarget()));
         } else {
             log.error(String.format(
                     "Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
@@ -146,6 +158,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 wrm.unregisterResourceBundle(page.getComputedResourceBundle());
             }
             pageReg.removeContribution(page);
+        } else if (contribution instanceof NegotiationDescriptor) {
+            NegotiationDescriptor neg = (NegotiationDescriptor) contribution;
+            negReg.removeContribution(neg);
         } else {
             log.error(String.format(
                     "Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
@@ -469,6 +484,29 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             }
         }
         return page;
+    }
+
+    @Override
+    public String negotiate(String target, Object context) {
+        String res = null;
+        NegotiationDescriptor negd = negReg.getNegotiation(target);
+        if (negd != null) {
+            List<NegotiatorDescriptor> nds = negd.getNegotiators();
+            for (NegotiatorDescriptor nd : nds) {
+                Class<Negotiator> ndc = nd.getNegotiatorClass();
+                try {
+                    Negotiator neg = ndc.newInstance();
+                    neg.setProperties(nd.getProperties());
+                    res = neg.getResult(target, context);
+                    if (res != null) {
+                        break;
+                    }
+                } catch (IllegalAccessException | InstantiationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return res;
     }
 
 }

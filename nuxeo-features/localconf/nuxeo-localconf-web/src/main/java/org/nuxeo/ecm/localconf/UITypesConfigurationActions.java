@@ -16,10 +16,6 @@
 
 package org.nuxeo.ecm.localconf;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
-import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_DEFAULT_NEEDED_SCHEMA;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +39,10 @@ import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfiguration;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_CONFIGURATION_FACET;
+import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurationConstants.UI_TYPES_DEFAULT_NEEDED_SCHEMA;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
