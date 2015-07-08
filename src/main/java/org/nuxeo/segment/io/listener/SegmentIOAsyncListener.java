@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -66,12 +65,7 @@ public class SegmentIOAsyncListener implements PostCommitEventListener {
                 if (princ instanceof NuxeoPrincipal) {
                     principal = (NuxeoPrincipal) princ;
                 } else {
-                    try {
-                        principal = Framework.getLocalService(UserManager.class).getPrincipal(princ.getName());
-                    } catch (ClientException e) {
-                        log.error("Unable to resolve principal for name " + princ.getName());
-                        continue;
-                    }
+                    principal = Framework.getService(UserManager.class).getPrincipal(princ.getName());
                 }
 
                 ctx.put("event", event);

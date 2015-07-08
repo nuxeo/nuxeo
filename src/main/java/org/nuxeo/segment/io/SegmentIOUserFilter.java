@@ -7,7 +7,6 @@ import java.util.List;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -42,11 +41,7 @@ public class SegmentIOUserFilter {
             if (um==null && Framework.isTestModeSet()) {
                 return "Guest";
             }
-            try {
-                anonymousUserId = um.getAnonymousUserId();
-            } catch (ClientException e) {
-                anonymousUserId = "Guest";
-            }
+            anonymousUserId = um.getAnonymousUserId();
         }
         return anonymousUserId;
     }

@@ -171,7 +171,7 @@ public class SegmentIOComponent extends DefaultComponent implements SegmentIO {
                 Field field = client.getClass().getDeclaredField("flusher");
                 field.setAccessible(true);
                 flusher = (Flusher) field.get(client);
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 log.error("Unable to access SegmentIO Flusher via reflection",
                         e);
             }
