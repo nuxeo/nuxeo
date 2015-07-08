@@ -14,7 +14,7 @@
  * Contributors:
  *     Anahide Tchertchian
  */
-package org.nuxeo.theme.jsf.facelets.vendor;
+package org.nuxeo.ecm.platform.ui.web.facelets.vendor;
 
 import javax.faces.view.facelets.Facelet;
 import javax.faces.view.facelets.FaceletCache;

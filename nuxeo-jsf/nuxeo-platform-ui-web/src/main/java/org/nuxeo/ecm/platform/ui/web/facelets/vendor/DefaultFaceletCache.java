@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.nuxeo.theme.jsf.facelets.vendor;
+package org.nuxeo.ecm.platform.ui.web.facelets.vendor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -59,6 +59,7 @@ import org.nuxeo.ecm.platform.ui.web.application.NuxeoUnknownResource;
 import com.sun.faces.util.ConcurrentCache;
 import com.sun.faces.util.ExpiringConcurrentCache;
 import com.sun.faces.util.FacesLogger;
+import com.sun.faces.util.Util;
 
 /**
  * Default FaceletCache implementation.
@@ -74,6 +75,7 @@ import com.sun.faces.util.FacesLogger;
  */
 final class DefaultFaceletCache extends FaceletCache<Facelet> {
 
+    @SuppressWarnings("unused")
     private final static Logger LOGGER = FacesLogger.FACELETS_FACTORY.getLogger();
 
     /**
@@ -165,7 +167,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
         boolean errorShouldBeCaught = origError != null;
         if (errorShouldBeCaught) {
             String errorMessage = origError.getMessage();
-            if (errorMessage != null && errorMessage.contains(Util.LAST_MODIFIED_ERROR)) {
+            if (errorMessage != null && errorMessage.contains("Error Checking Last Modified for ")) {
                 errorShouldBeCaught = false;
             }
             Throwable t = origError.getCause();
