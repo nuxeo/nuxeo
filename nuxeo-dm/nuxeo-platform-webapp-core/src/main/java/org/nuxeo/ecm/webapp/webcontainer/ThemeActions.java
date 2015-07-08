@@ -50,4 +50,9 @@ public interface ThemeActions extends Serializable {
      */
     String getCurrentFlavor();
 
+    /**
+     * @since 7.4
+     */
+    String getCurrentPage();
+
 }

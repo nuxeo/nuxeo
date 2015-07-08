@@ -16,6 +16,7 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -71,6 +72,18 @@ public class IconDescriptor {
         clone.value = value;
         clone.sizes = sizes;
         return clone;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IconDescriptor)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        IconDescriptor b = (IconDescriptor) obj;
+        return new EqualsBuilder().append(name, b.name).append(value, b.value).append(sizes, b.sizes).isEquals();
     }
 
 }

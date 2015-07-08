@@ -341,4 +341,11 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("shortcut icon", page.getFavicons().get(1).getName());
         assertEquals("/nuxeo/icons/favicon.ico", page.getFavicons().get(1).getValue());
     }
+
+    @Test
+    public void testNegotiator() throws Exception {
+        assertNull(service.negotiate("foo", null));
+        assertEquals("bar", service.negotiate("testNegotiation", null));
+    }
+
 }

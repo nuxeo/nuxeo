@@ -17,24 +17,16 @@
 
 package org.nuxeo.ecm.webapp.webcontainer;
 
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.theme.ApplicationType;
-import org.nuxeo.theme.Manager;
-import org.nuxeo.theme.NegotiationDef;
-import org.nuxeo.theme.negotiation.Negotiator;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
 import org.nuxeo.theme.styling.service.descriptors.Logo;
-import org.nuxeo.theme.types.TypeFamily;
-import org.nuxeo.theme.types.TypeRegistry;
 
 @Name("themeActions")
 @Scope(ScopeType.PAGE)
@@ -42,34 +34,50 @@ public class ThemeActionsBean implements ThemeActions {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(ThemeActionsBean.class);
+    protected String defaultPage;
+
+    protected String currentPage;
+
+    protected String currentFlavor;
+
+    protected Logo currentLogo;
+
+    @In(create = true, required = false)
+    protected transient ThemeStylingService themeStylingService;
 
     @Override
     public String getDefaultTheme() {
-        FacesContext faces = FacesContext.getCurrentInstance();
-        return getDefaultTheme(faces.getExternalContext());
-    }
-
-    protected String getDefaultTheme(ExternalContext ec) {
-        // get the negotiation strategy
-        TypeRegistry typeRegistry = Manager.getTypeRegistry();
-        ApplicationType app = (ApplicationType) typeRegistry.lookup(TypeFamily.APPLICATION, ec.getRequestContextPath());
-        NegotiationDef negotiation = app.getNegotiation();
-        return negotiation.getDefaultTheme();
+        if (defaultPage == null) {
+            defaultPage = themeStylingService.negotiate("jsfDefaultPage", FacesContext.getCurrentInstance());
+        }
+        return defaultPage;
     }
 
     @Override
     public Logo getLogo() {
-        String flavor = getCurrentFlavor();
-        return getLogo(flavor);
+        if (currentLogo != null) {
+            String flavor = getCurrentFlavor();
+            currentLogo = getLogo(flavor);
+        }
+        return currentLogo;
     }
 
     public String getCurrentFlavor() {
-        FacesContext faces = FacesContext.getCurrentInstance();
-        final ExternalContext ec = faces.getExternalContext();
-        String flavor = (String) ec.getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.collection.name());
-        return flavor;
+        if (currentFlavor == null) {
+            currentFlavor = themeStylingService.negotiate("jsfFlavor", FacesContext.getCurrentInstance());
+        }
+        return currentFlavor;
+    }
+
+    public String getCurrentPage() {
+        if (currentPage == null) {
+            currentPage = themeStylingService.negotiate("jsfPage", FacesContext.getCurrentInstance());
+            // put it to request for flavor later negotiation
+            FacesContext faces = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) faces.getExternalContext().getRequest();
+            request.setAttribute("jsfPage", currentPage);
+        }
+        return currentPage;
     }
 
     @Override
@@ -77,11 +85,7 @@ public class ThemeActionsBean implements ThemeActions {
         if (flavorName == null) {
             return null;
         }
-        ThemeStylingService service = getStylingService();
-        if (service == null) {
-            return null;
-        }
-        return service.getLogo(flavorName);
+        return themeStylingService.getLogo(flavorName);
     }
 
     @Override
@@ -89,20 +93,7 @@ public class ThemeActionsBean implements ThemeActions {
         if (flavorName == null) {
             return null;
         }
-        ThemeStylingService service = getStylingService();
-        if (service == null) {
-            return null;
-        }
-        return service.getFlavor(flavorName);
-    }
-
-    protected ThemeStylingService getStylingService() {
-        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-        if (service == null) {
-            log.error("Missing ThemeStylingService");
-            return null;
-        }
-        return service;
+        return themeStylingService.getFlavor(flavorName);
     }
 
 }

@@ -16,35 +16,21 @@
 
 package org.nuxeo.ecm.localconf;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.faces.component.UIComponent;
-import javax.faces.component.ValueHolder;
-import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionEvent;
-import javax.faces.model.SelectItem;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.theme.Manager;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
 import org.nuxeo.theme.localconfiguration.LocalThemeHelper;
-import org.nuxeo.theme.perspectives.PerspectiveManager;
-import org.nuxeo.theme.perspectives.PerspectiveType;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.Flavor;
-import org.nuxeo.theme.themes.ThemeManager;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
 
 @Name("themeConfigurationActions")
 @Scope(CONVERSATION)
@@ -53,103 +39,35 @@ public class ThemeConfigurationActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(ThemeConfigurationActions.class);
-
     @In(create = true)
     protected transient NavigationContext navigationContext;
 
+    @In(create = true, required = false)
+    protected transient ThemeStylingService themeStylingService;
+
     protected String theme;
-
-    /**
-     * @deprecated since 5.5: local theme configuration now only handles flavors.
-     */
-    @Deprecated
-    public List<SelectItem> getAvailableThemes() {
-        List<SelectItem> themes = new ArrayList<SelectItem>();
-        for (String theme : ThemeManager.getThemeNames("jsf-facelets")) {
-            themes.add(new SelectItem(theme, theme));
-        }
-        return themes;
-    }
-
-    /**
-     * @deprecated since 5.5: local theme configuration now only handles flavors.
-     */
-    @Deprecated
-    public List<SelectItem> getAvailablePages() {
-        List<SelectItem> pages = new ArrayList<SelectItem>();
-        if (theme != null && !theme.equals("")) {
-            for (String pageName : Manager.getThemeManager().getPageNames(theme)) {
-                pages.add(new SelectItem(pageName, pageName));
-            }
-        }
-        return pages;
-    }
-
-    /**
-     * @deprecated since 5.5: local theme configuration now only handles flavors.
-     */
-    @Deprecated
-    public List<SelectItem> getAvailablePerspectives() {
-        List<SelectItem> selectItemList = new ArrayList<SelectItem>();
-        for (PerspectiveType perspectiveType : PerspectiveManager.listPerspectives()) {
-            selectItemList.add(new SelectItem(perspectiveType.name, perspectiveType.title));
-        }
-        return selectItemList;
-    }
-
-    /**
-     * @deprecated since 5.5: local theme configuration now only handles flavors.
-     */
-    @Deprecated
-    public void themeChange(ActionEvent event) {
-        UIComponent select = event.getComponent().getParent();
-        if (select instanceof ValueHolder) {
-            theme = (String) ((ValueHolder) select).getValue();
-        } else {
-            log.error("Bad component returned " + select);
-            throw new AbortProcessingException("Bad component returned " + select);
-        }
-    }
 
     /**
      * Returns the layout to use for local configuration, to handle migration to a flavor model
      *
      * @since 5.5
-     * @return
      */
     public String getConfigurationLayout() {
-        Boolean useOldThemeConf = Boolean.valueOf(Framework.getProperty(LocalThemeConfig.OLD_THEME_CONFIGURATION_PROPERTY));
-        if (Boolean.TRUE.equals(useOldThemeConf)) {
-            return "old_theme_configuration";
-        }
         return "theme_configuration";
     }
 
     public List<Flavor> getAvailableFlavors(String themePage) {
-        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-        if (service == null) {
-            return null;
-        }
-        return service.getFlavors(themePage);
+        return themeStylingService.getFlavors(themePage);
     }
 
     public String getDefaultFlavorName(String themePage) {
-        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-        if (service == null) {
-            return null;
-        }
-        return service.getDefaultFlavorName(themePage);
+        return themeStylingService.getDefaultFlavorName(themePage);
     }
 
     public Flavor getDefaultFlavor(String themePage) {
-        ThemeStylingService service = Framework.getService(ThemeStylingService.class);
-        if (service == null) {
-            return null;
-        }
-        String flavorName = service.getDefaultFlavorName(themePage);
+        String flavorName = themeStylingService.getDefaultFlavorName(themePage);
         if (flavorName != null) {
-            return service.getFlavor(flavorName);
+            return themeStylingService.getFlavor(flavorName);
         }
         return null;
     }

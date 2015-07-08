@@ -94,4 +94,14 @@ public interface ThemeStylingService {
      */
     Page getPage(String name);
 
+    /**
+     * Returns the negotiated String value for given target variable.
+     * <p>
+     * Context can be dependent on the target variable, depending on how this method is called/used and corresponding
+     * negotiator implementations.
+     *
+     * @since 7.4
+     */
+    String negotiate(String target, Object context);
+
 }

@@ -27,8 +27,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
 import org.nuxeo.theme.localconfiguration.LocalThemeHelper;
-import org.nuxeo.theme.negotiation.Negotiator;
-import org.nuxeo.theme.negotiation.Scheme;
+import org.nuxeo.theme.styling.negotiation.AbstractNegotiator;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 
 /**
@@ -36,11 +35,12 @@ import org.nuxeo.theme.styling.service.ThemeStylingService;
  *
  * @since 5.5
  */
-public class LocalThemeFlavor implements Scheme {
+public class LocalThemeFlavor extends AbstractNegotiator {
 
     private static final Log log = LogFactory.getLog(LocalThemeFlavor.class);
 
-    public String getOutcome(Object context) {
+    @Override
+    public String getResult(String target, Object context) {
         Boolean useOldThemeConf = Boolean.valueOf(Framework.getProperty(LocalThemeConfig.OLD_THEME_CONFIGURATION_PROPERTY));
         if (Boolean.TRUE.equals(useOldThemeConf)) {
             return null;
@@ -65,9 +65,13 @@ public class LocalThemeFlavor implements Scheme {
         }
 
         // Check that the theme page accepts this flavor
-        FacesContext faces = (FacesContext) context;
-        String theme = (String) faces.getExternalContext().getRequestMap().get(
-                Negotiator.NEGOTIATION_RESULT_PREFIX + Negotiator.NEGOTIATION_OBJECT.theme.name());
+        FacesContext faces = null;
+        if (context instanceof FacesContext) {
+            faces = (FacesContext) context;
+        } else {
+            return null;
+        }
+        String theme = (String) faces.getExternalContext().getRequestMap().get(getProperty("negotiatedPageVariable"));
         if (theme != null) {
             ThemeStylingService service = Framework.getService(ThemeStylingService.class);
             if (service == null) {

@@ -26,4 +26,8 @@
     <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
   </extension-point>
 
+  <extension-point name="negotiations">
+    <object class="org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor" />
+  </extension-point>
+
 </component>
