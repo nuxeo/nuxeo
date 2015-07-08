@@ -362,13 +362,14 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     public void deleteComment(DocumentModel docModel, DocumentModel comment) {
+        NuxeoPrincipal author = comment.getCoreSession() != null ? (NuxeoPrincipal) comment.getCoreSession().getPrincipal()
+                : getAuthor(comment);
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef ref = comment.getRef();
             if (!session.exists(ref)) {
                 throw new ClientException("Comment Document does not exist: " + comment.getId());
             }
 
-            NuxeoPrincipal author = getAuthor(comment);
             session.removeDocument(ref);
 
             notifyEvent(session, docModel, CommentEvents.COMMENT_REMOVED, null, comment, author);
