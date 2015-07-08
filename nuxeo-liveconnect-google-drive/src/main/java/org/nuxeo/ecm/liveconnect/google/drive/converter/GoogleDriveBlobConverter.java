@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -51,12 +50,7 @@ public class GoogleDriveBlobConverter implements Converter {
 
         Blob srcBlob, dstBlob;
 
-        try {
-            srcBlob = blobHolder.getBlob();
-        } catch (ClientException e) {
-            throw new ConversionException("Unable to fetch Blob", e);
-        }
-
+        srcBlob = blobHolder.getBlob();
         if (srcBlob == null) {
             return null;
         }

@@ -20,7 +20,6 @@ package org.nuxeo.ecm.liveconnect.update.listener;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.event.Event;
