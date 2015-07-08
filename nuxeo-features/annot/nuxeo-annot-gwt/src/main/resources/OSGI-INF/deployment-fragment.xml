@@ -62,15 +62,6 @@
     </servlet-mapping>
   </extension>
 
-  <extension target="faces-config#COMPONENT">
-    <component>
-      <component-type>nxthemes.head</component-type>
-      <component-class>
-        org.nuxeo.ecm.platform.annotations.jsf.component.UIHeadForGWT
-      </component-class>
-    </component>
-  </extension>
-
   <install>
     <!--  unzip the war template -->
     <unzip from="${bundle.fileName}" to="/" prefix="web">
