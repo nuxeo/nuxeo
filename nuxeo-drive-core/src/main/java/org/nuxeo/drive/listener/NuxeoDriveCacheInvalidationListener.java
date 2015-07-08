@@ -18,7 +18,6 @@ package org.nuxeo.drive.listener;
 
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.Event;

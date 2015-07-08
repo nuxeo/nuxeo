@@ -30,7 +30,6 @@ import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.CollectionSyncRootFolderItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -313,7 +312,7 @@ public abstract class AbstractDocumentBackedFileSystemItem extends AbstractFileS
         // fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = id.split(FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
-            throw new ClientException(
+            throw new IllegalArgumentException(
                     String.format(
                             "FileSystemItem id %s is not valid. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                             id));

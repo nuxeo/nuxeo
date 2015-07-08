@@ -38,7 +38,6 @@ import org.nuxeo.drive.adapter.RootlessItemException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -165,11 +164,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public List<FileSystemItem> getChildren(String id, Principal principal) {
         FileSystemItem fileSystemItem = getFileSystemItemById(id, principal);
         if (fileSystemItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot get the children of file system item with id %s because it doesn't exist.", id));
         }
         if (!(fileSystemItem instanceof FolderItem)) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot get the children of file system item with id %s because it is not a folder.", id));
         }
         FolderItem folderItem = (FolderItem) fileSystemItem;
@@ -194,11 +193,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FolderItem createFolder(String parentId, String name, Principal principal) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot create a folder in file system item with id %s because it doesn't exist.", parentId));
         }
         if (!(parentFsItem instanceof FolderItem)) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot create a folder in file system item with id %s because it is not a folder but is: %s",
                     parentId, parentFsItem));
         }
@@ -210,11 +209,11 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileItem createFile(String parentId, Blob blob, Principal principal) {
         FileSystemItem parentFsItem = getFileSystemItemById(parentId, principal);
         if (parentFsItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot create a file in file system item with id %s because it doesn't exist.", parentId));
         }
         if (!(parentFsItem instanceof FolderItem)) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot create a file in file system item with id %s because it is not a folder but is: %s",
                     parentId, parentFsItem));
         }
@@ -250,7 +249,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileSystemItem rename(String id, String name, Principal principal) {
         FileSystemItem fsItem = getFileSystemItemById(id, principal);
         if (fsItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot rename file system item with id %s because it doesn't exist.", id));
         }
         fsItem.rename(name);
@@ -261,16 +260,16 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileSystemItem move(String srcId, String destId, Principal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot move file system item with id %s because it doesn't exist.", srcId));
         }
         FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
         if (destFsItem == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot move a file system item to file system item with id %s because it doesn't exist.", destId));
         }
         if (!(destFsItem instanceof FolderItem)) {
-            throw new ClientException(
+            throw new NuxeoException(
                     String.format(
                             "Cannot move a file system item to file system item with id %s because it is not a folder.",
                             destId));
@@ -285,10 +284,10 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     protected FileItem updateFile(FileSystemItem fsItem, Blob blob) {
         if (fsItem == null) {
-            throw new ClientException("Cannot update the content of file system item because it doesn't exist.");
+            throw new NuxeoException("Cannot update the content of file system item because it doesn't exist.");
         }
         if (!(fsItem instanceof FileItem)) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot update the content of file system item with id %s because it is not a file.",
                     fsItem.getId()));
         }
@@ -299,7 +298,7 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
 
     protected void delete(FileSystemItem fsItem) {
         if (fsItem == null) {
-            throw new ClientException("Cannot delete file system item because it doesn't exist.");
+            throw new NuxeoException("Cannot delete file system item because it doesn't exist.");
         }
         fsItem.delete();
     }

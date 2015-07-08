@@ -25,7 +25,6 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.NuxeoDriveManagerImpl;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Base implementation of a virtual {@link FolderItem}.

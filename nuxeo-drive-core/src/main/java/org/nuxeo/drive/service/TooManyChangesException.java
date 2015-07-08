@@ -16,16 +16,16 @@
  */
 package org.nuxeo.drive.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Exception thrown by {@link FileSystemChangeFinder} when too many document changes are found in the audit logs.
  *
  * @author Antoine Taillefer
  */
-public class TooManyChangesException extends ClientException {
+public class TooManyChangesException extends NuxeoException {
 
-    private static final long serialVersionUID = 3125077418830178767L;
+    private static final long serialVersionUID = 1L;
 
     public TooManyChangesException(String message) {
         super(message);

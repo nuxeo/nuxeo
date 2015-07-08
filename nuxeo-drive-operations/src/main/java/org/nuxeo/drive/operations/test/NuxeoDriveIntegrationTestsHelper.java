@@ -21,11 +21,11 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -95,7 +95,7 @@ public final class NuxeoDriveIntegrationTestsHelper {
         String query = "SELECT * FROM Document where ecm:primaryType = 'Domain'";
         DocumentModelList results = session.query(query);
         if (results.isEmpty()) {
-            throw new ClientException(String.format("Found no domains in repository %s", session.getRepositoryName()));
+            throw new NuxeoException(String.format("Found no domains in repository %s", session.getRepositoryName()));
         }
         if (results.size() > 1) {
             if (log.isDebugEnabled()) {

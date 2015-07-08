@@ -28,10 +28,10 @@ import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractFileSystemItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
@@ -125,7 +125,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
             UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             if (userWorkspace == null) {
-                throw new ClientException(
+                throw new NuxeoException(
                         String.format("No personal workspace found for user %s.", principal.getName()));
             }
             return (FolderItem) getFileSystemItem(userWorkspace);

@@ -33,7 +33,6 @@ import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;

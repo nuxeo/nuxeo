@@ -44,13 +44,13 @@ import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceHelper;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -177,12 +177,12 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
         if (bh == null) {
-            throw new ClientException(String.format("Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
+            throw new NuxeoException(String.format("Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
                     currentDocument.getPathAsString(), currentDocument.getId()));
         }
         Blob blob = bh.getBlob();
         if (blob == null) {
-            throw new ClientException(String.format("Document %s (%s) has no blob, cannot get Drive Edit URL.",
+            throw new NuxeoException(String.format("Document %s (%s) has no blob, cannot get Drive Edit URL.",
                     currentDocument.getPathAsString(), currentDocument.getId()));
         }
         String fileName = blob.getFilename();

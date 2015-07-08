@@ -21,7 +21,6 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

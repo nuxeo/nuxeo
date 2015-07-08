@@ -21,7 +21,6 @@ import java.security.Principal;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Dummy implementation of a {@link VirtualFolderItemFactory} for test purpose.

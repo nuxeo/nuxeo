@@ -24,7 +24,6 @@ import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.AbstractVirtualFolderItem;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * User workspace and permission based implementation of the top level {@link FolderItem}.

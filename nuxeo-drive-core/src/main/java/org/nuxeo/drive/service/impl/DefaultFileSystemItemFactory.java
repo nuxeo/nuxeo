@@ -32,7 +32,6 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;

@@ -22,7 +22,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Helper for {@link FileSystemItem} manipulation.
@@ -42,7 +42,6 @@ public final class FileSystemItemHelper {
      * supported.
      *
      * @throws UnsupportedOperationException if the digest algorithm is not supported
-     * @throws ClientException if the digest computation fails with an {@link IOException}
      */
     public static String getDigest(Blob blob, String digestAlgorithm) {
         String digest = blob.getDigest();
@@ -51,8 +50,8 @@ public final class FileSystemItemHelper {
                 try {
                     digest = DigestUtils.md5Hex(blob.getStream());
                 } catch (IOException e) {
-                    throw new ClientException(String.format("Error while computing digest for blob %s.",
-                            blob.getFilename()), e);
+                    throw new NuxeoException(
+                            String.format("Error while computing digest for blob %s.", blob.getFilename()), e);
                 }
             } else {
                 throw new UnsupportedOperationException(String.format("Unsupported digest algorithm %s.",

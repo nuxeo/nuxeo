@@ -48,7 +48,6 @@ import org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -382,7 +381,7 @@ public class TestDefaultFileSystemItemFactory {
         try {
             defaultFileSystemItemFactory.exists("badId", principal);
             fail("Should not be able to check existence for bad id.");
-        } catch (ClientException e) {
+        } catch (IllegalArgumentException e) {
             assertEquals(
                     "FileSystemItem id badId cannot be handled by factory named defaultFileSystemItemFactory. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                     e.getMessage());

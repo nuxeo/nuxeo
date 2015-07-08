@@ -23,7 +23,6 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 

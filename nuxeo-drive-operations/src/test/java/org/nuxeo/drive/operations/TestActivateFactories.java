@@ -30,7 +30,6 @@ import org.nuxeo.drive.operations.test.NuxeoDriveSetActiveFactories;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;

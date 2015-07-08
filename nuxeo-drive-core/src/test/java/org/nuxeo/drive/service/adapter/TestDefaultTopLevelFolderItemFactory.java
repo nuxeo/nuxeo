@@ -41,7 +41,6 @@ import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.impl.DefaultTopLevelFolderItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;

@@ -16,12 +16,12 @@
  */
 package org.nuxeo.drive.adapter;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Exception raised when recursive factory calls failed to find the ancestry to a the top level folder.
  */
-public class RootlessItemException extends ClientException {
+public class RootlessItemException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,11 +31,6 @@ public class RootlessItemException extends ClientException {
     public RootlessItemException(String message) {
         super(message);
     }
-
-    public RootlessItemException(String message, ClientException cause) {
-        super(message, cause);
-    }
-
     public RootlessItemException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -44,7 +39,4 @@ public class RootlessItemException extends ClientException {
         super(cause);
     }
 
-    public RootlessItemException(ClientException cause) {
-        super(cause);
-    }
 }

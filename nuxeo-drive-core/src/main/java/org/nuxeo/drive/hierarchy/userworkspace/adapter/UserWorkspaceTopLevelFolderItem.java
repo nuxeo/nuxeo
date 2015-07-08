@@ -26,7 +26,6 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VirtualFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

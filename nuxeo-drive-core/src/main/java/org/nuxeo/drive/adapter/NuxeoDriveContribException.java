@@ -17,13 +17,13 @@
 package org.nuxeo.drive.adapter;
 
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Exception raised when no contributions to the {@link FileSystemItemAdapterService} are found or the component is not
  * ready, ie. application has not started yet.
  */
-public class NuxeoDriveContribException extends ClientException {
+public class NuxeoDriveContribException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
@@ -34,19 +34,11 @@ public class NuxeoDriveContribException extends ClientException {
         super(message);
     }
 
-    public NuxeoDriveContribException(String message, ClientException cause) {
-        super(message, cause);
-    }
-
     public NuxeoDriveContribException(String message, Throwable cause) {
         super(message, cause);
     }
 
     public NuxeoDriveContribException(Throwable cause) {
-        super(cause);
-    }
-
-    public NuxeoDriveContribException(ClientException cause) {
         super(cause);
     }
 

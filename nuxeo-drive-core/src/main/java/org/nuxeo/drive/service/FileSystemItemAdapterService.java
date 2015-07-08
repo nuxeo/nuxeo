@@ -21,7 +21,6 @@ import java.util.Set;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -111,7 +110,6 @@ public interface FileSystemItemAdapterService {
     /**
      * Gets the {@link FileSystemItemFactory} that can handle the the given {@link FileSystemItem} id.
      *
-     * @throws ClientException if no {@link FileSystemItemFactory} can handle the given {@link FileSystemItem} id
      * @see FileSystemItemFactory#canHandleFileSystemItemId(String)
      */
     FileSystemItemFactory getFileSystemItemFactoryForId(String id);

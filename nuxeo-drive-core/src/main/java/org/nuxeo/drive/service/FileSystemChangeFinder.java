@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IdRef;
 
@@ -55,7 +54,6 @@ public interface FileSystemChangeFinder extends Serializable {
      * @param limit the maximum number of changes to fetch
      * @return the list of document changes
      * @throws TooManyChangesException if the number of changes found has exceeded the limit
-     * @throws ClientException if the access to the repository fails for another reason.
      */
     List<FileSystemItemChange> getFileSystemChanges(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, long lastSuccessfulSyncDate, long syncDate, int limit)
@@ -79,7 +77,6 @@ public interface FileSystemChangeFinder extends Serializable {
      * @param limit the maximum number of changes to fetch
      * @return the list of document changes
      * @throws TooManyChangesException if the number of changes found has exceeded the limit
-     * @throws ClientException if the access to the repository fails for another reason.
      */
     List<FileSystemItemChange> getFileSystemChangesIntegerBounds(CoreSession session, Set<IdRef> lastActiveRootRefs,
             SynchronizationRoots activeRoots, Set<String> collectionSyncRootMemberIds, long lowerBound,

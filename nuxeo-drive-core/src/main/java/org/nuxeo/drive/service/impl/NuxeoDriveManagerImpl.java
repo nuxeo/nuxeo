@@ -46,13 +46,13 @@ import org.nuxeo.drive.service.SynchronizationRoots;
 import org.nuxeo.drive.service.TooManyChangesException;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -501,7 +501,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
             {
         // Cannot update a proxy or a version
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
-            throw new ClientException(String.format("Document '%s' (%s) is not a suitable synchronization root"
+            throw new NuxeoException(String.format("Document '%s' (%s) is not a suitable synchronization root"
                     + " as it is either a readonly proxy or an archived version.", newRootContainer.getTitle(),
                     newRootContainer.getRef()));
         }

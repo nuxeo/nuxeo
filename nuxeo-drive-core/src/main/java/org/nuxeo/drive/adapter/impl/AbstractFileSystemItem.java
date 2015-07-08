@@ -23,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 

@@ -19,7 +19,6 @@ package org.nuxeo.drive.adapter;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.nuxeo.drive.adapter.impl.DocumentBackedFileItem;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

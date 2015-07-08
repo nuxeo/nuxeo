@@ -21,7 +21,6 @@ import java.security.Principal;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.adapter.impl.DefaultTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Default implementation of a {@link TopLevelFolderItemFactory}.

@@ -29,7 +29,6 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.hierarchy.permission.adapter.PermissionTopLevelFolderItem;
 import org.nuxeo.drive.service.TopLevelFolderItemFactory;
 import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * User workspace and permission based implementation of the {@link TopLevelFolderItemFactory}.

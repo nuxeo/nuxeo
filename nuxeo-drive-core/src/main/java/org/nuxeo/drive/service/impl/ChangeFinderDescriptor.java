@@ -25,7 +25,6 @@ import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.drive.service.FileSystemChangeFinder;
 import org.nuxeo.drive.service.NuxeoDriveManager;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * XMap descriptor for contributions to the {@code changeFinder} extension point of the {@link NuxeoDriveManager}.

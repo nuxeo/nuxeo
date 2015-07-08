@@ -26,8 +26,8 @@ import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.impl.AbstractSyncRootFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,7 +46,7 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
     public void handleParameters(Map<String, String> parameters) {
         String syncRootParentFactoryParam = parameters.get(SYNC_ROOT_PARENT_FACTORY_PARAM);
         if (StringUtils.isEmpty(syncRootParentFactoryParam)) {
-            throw new ClientException(
+            throw new NuxeoException(
                     String.format(
                             "Factory %s has no %s parameter, please provide it in the factory contribution to set the name of the factory for the parent folder of the synchronization roots.",
                             getName(), SYNC_ROOT_PARENT_FACTORY_PARAM));
@@ -67,7 +67,7 @@ public class UserWorkspaceSyncRootFactory extends AbstractSyncRootFolderItemFact
         FolderItem parent = getFileSystemAdapterService().getVirtualFolderItemFactory(syncRootParentFactoryName).getVirtualFolderItem(
                 principal);
         if (parent == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot find the parent of document %s: virtual folder from factory %s.", doc.getId(),
                     syncRootParentFactoryName));
         }

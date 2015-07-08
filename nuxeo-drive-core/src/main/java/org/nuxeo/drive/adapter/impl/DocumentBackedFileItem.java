@@ -23,10 +23,10 @@ import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
@@ -171,7 +171,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     protected BlobHolder getBlobHolder(DocumentModel doc) {
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh == null) {
-            throw new ClientException(
+            throw new NuxeoException(
                     String.format(
                             "Document %s is not a BlobHolder, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.",
                             doc.getId()));
@@ -182,7 +182,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     protected Blob getBlob(BlobHolder blobHolder) {
         Blob blob = blobHolder.getBlob();
         if (blob == null) {
-            throw new ClientException(
+            throw new NuxeoException(
                     "Document has no blob, it is not adaptable as a FileItem and therefore it cannot not be part of the items to synchronize.");
         }
         return blob;

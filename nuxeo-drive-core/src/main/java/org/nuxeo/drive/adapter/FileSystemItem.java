@@ -21,7 +21,6 @@ import java.util.Calendar;
 
 import org.nuxeo.drive.adapter.impl.AbstractDocumentBackedFileSystemItem;
 import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Representation of a file system item, typically a file or a folder.

@@ -40,11 +40,11 @@ import org.nuxeo.drive.adapter.impl.DefaultSyncRootFolderItem;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.NuxeoDriveManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
@@ -367,7 +367,7 @@ public class TestFileSystemItemManagerService {
             fileSystemItemManagerService.createFolder(DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId(),
                     "A new folder", principal);
             fail("Folder creation in a non folder item should fail.");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             assertEquals(String.format(
                     "Cannot create a folder in file system item with id %s because it is not a folder but is: "
                             + "DocumentBackedFileItem(id=\"%s\", name=\"Joe.odt\")", DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX
@@ -520,7 +520,7 @@ public class TestFileSystemItemManagerService {
         try {
             fileSystemItemManagerService.move(srcFsItemId, destFsItemId, principal);
             fail("Move to a non folder item should fail.");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             assertEquals(String.format(
                     "Cannot move a file system item to file system item with id %s because it is not a folder.",
                     DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX + file.getId()), e.getMessage());

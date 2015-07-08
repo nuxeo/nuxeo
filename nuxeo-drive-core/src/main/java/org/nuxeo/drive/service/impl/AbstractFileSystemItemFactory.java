@@ -27,11 +27,11 @@ import org.nuxeo.drive.adapter.impl.AbstractFileSystemItem;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -119,7 +119,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     public boolean canHandleFileSystemItemId(String id) {
         try {
             parseFileSystemId(id);
-        } catch (ClientException e) {
+        } catch (IllegalArgumentException e) {
             log.trace(e.getMessage());
             return false;
         }
@@ -173,7 +173,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             FileSystemItem parentItem = Framework.getService(FileSystemItemAdapterService.class).getFileSystemItemFactoryForId(
                     parentId).getFileSystemItemById(parentId, principal);
             if (!(parentItem instanceof FolderItem)) {
-                throw new ClientException(String.format("FileSystemItem with id %s should be a FolderItem", parentId));
+                throw new NuxeoException(String.format("FileSystemItem with id %s should be a FolderItem", parentId));
             }
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc, (FolderItem) parentItem);
@@ -224,7 +224,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         // fileSystemItemFactoryName#repositoryName#docId
         String[] idFragments = id.split(AbstractFileSystemItem.FILE_SYSTEM_ITEM_ID_SEPARATOR);
         if (idFragments.length != 3) {
-            throw new ClientException(
+            throw new IllegalArgumentException(
                     String.format(
                             "FileSystemItem id %s cannot be handled by factory named %s. Should match the 'fileSystemItemFactoryName#repositoryName#docId' pattern.",
                             id, name));
@@ -233,7 +233,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         // Check if factory name matches
         String factoryName = idFragments[0];
         if (!name.equals(factoryName)) {
-            throw new ClientException(String.format(
+            throw new IllegalArgumentException(String.format(
                     "Factoy name [%s] parsed from id %s does not match the actual factory name [%s].", factoryName, id,
                     name));
         }

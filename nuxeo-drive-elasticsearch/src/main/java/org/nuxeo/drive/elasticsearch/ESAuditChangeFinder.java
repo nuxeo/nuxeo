@@ -17,6 +17,7 @@
  */
 package org.nuxeo.drive.elasticsearch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -102,7 +103,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         for (SearchHit hit : searchResponse.getHits()) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
         }
@@ -229,7 +230,7 @@ public class ESAuditChangeFinder extends AuditChangeFinder {
         for (SearchHit hit : hits) {
             try {
                 entries.add(AuditEntryJSONReader.read(hit.getSourceAsString()));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.error("Error while reading Audit Entry from ES", e);
             }
         }

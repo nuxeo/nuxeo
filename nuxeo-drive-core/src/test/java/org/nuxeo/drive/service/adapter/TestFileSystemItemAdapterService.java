@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
+import org.nuxeo.drive.adapter.NuxeoDriveContribException;
 import org.nuxeo.drive.service.FileSystemItemAdapterService;
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -49,7 +50,6 @@ import org.nuxeo.drive.service.impl.FileSystemItemAdapterServiceImpl;
 import org.nuxeo.drive.service.impl.FileSystemItemFactoryDescriptor;
 import org.nuxeo.drive.service.impl.FileSystemItemFactoryWrapper;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -342,7 +342,7 @@ public class TestFileSystemItemAdapterService {
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found FileSystemItem id.");
-        } catch (ClientException e) {
+        } catch (NuxeoDriveContribException e) {
             assertEquals(
                     "No fileSystemItemFactory found for FileSystemItem with id dummyDocTypeFactory#test#someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());
@@ -353,7 +353,7 @@ public class TestFileSystemItemAdapterService {
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found for FileSystemItem id.");
-        } catch (ClientException e) {
+        } catch (NuxeoDriveContribException e) {
             assertEquals(
                     "No fileSystemItemFactory found for FileSystemItem with id nonParsableId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());
@@ -364,7 +364,7 @@ public class TestFileSystemItemAdapterService {
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found for FileSystemItem id.");
-        } catch (ClientException e) {
+        } catch (NuxeoDriveContribException e) {
             assertEquals(
                     "No fileSystemItemFactory found for FileSystemItem with id nonExistentFactoryName#test#someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());
@@ -384,7 +384,7 @@ public class TestFileSystemItemAdapterService {
         try {
             fileSystemItemAdapterService.getVirtualFolderItemFactory("nonExistentFactory");
             fail("No VirtualFolderItemFactory should be found for factory name.");
-        } catch (ClientException e) {
+        } catch (NuxeoDriveContribException e) {
             assertEquals(
                     "No factory named nonExistentFactory. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\">.",
                     e.getMessage());
@@ -392,7 +392,7 @@ public class TestFileSystemItemAdapterService {
         try {
             fileSystemItemAdapterService.getVirtualFolderItemFactory("defaultFileSystemItemFactory");
             fail("No VirtualFolderItemFactory should be found for factory name.");
-        } catch (ClientException e) {
+        } catch (NuxeoDriveContribException e) {
             assertEquals(
                     "Factory class org.nuxeo.drive.service.impl.DefaultFileSystemItemFactory for factory defaultFileSystemItemFactory is not a VirtualFolderItemFactory.",
                     e.getMessage());
@@ -573,7 +573,7 @@ public class TestFileSystemItemAdapterService {
         try {
             fileSystemItemAdapterService.getFileSystemItemFactoryForId(fsItemId);
             fail("No fileSystemItemFactory should be found for FileSystemItem id.");
-        } catch (ClientException e) {
+        } catch (NuxeoDriveContribException e) {
             assertEquals(
                     "No fileSystemItemFactory found for FileSystemItem with id defaultFileSystemItemFactory#test#someId. Please check the contributions to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"fileSystemItemFactory\"> and make sure there is at least one defining a FileSystemItemFactory class for which the #canHandleFileSystemItemId(String id) method returns true.",
                     e.getMessage());

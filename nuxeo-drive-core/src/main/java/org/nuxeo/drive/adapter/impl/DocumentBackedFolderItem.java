@@ -29,10 +29,10 @@ import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -147,15 +147,18 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel folder = getFileManager().createFolder(session, name, docPath);
             if (folder == null) {
-                throw new ClientException(
+                throw new NuxeoException(
                         String.format(
                                 "Cannot create folder named '%s' as a child of doc %s. Probably because of the allowed sub-types for this doc type, please check them.",
                                 name, docPath));
             }
             return (FolderItem) getFileSystemItemAdapterService().getFileSystemItem(folder, this);
-        } catch (ClientException | IOException e) {
-            throw new ClientException(String.format("Error while trying to create folder %s as a child of doc %s",
-                    name, docPath), e);
+        } catch (NuxeoException e) {
+            e.addInfo(String.format("Error while trying to create folder %s as a child of doc %s", name, docPath));
+            throw e;
+        } catch (IOException e) {
+            throw new NuxeoException(
+                    String.format("Error while trying to create folder %s as a child of doc %s", name, docPath), e);
         }
     }
 
@@ -166,15 +169,18 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             // TODO: manage conflict (overwrite should not necessarily be true)
             DocumentModel file = getFileManager().createDocumentFromBlob(session, blob, docPath, true, fileName);
             if (file == null) {
-                throw new ClientException(
+                throw new NuxeoException(
                         String.format(
                                 "Cannot create file '%s' as a child of doc %s. Probably because there are no file importers registered, please check the contributions to the <extension target=\"org.nuxeo.ecm.platform.filemanager.service.FileManagerService\" point=\"plugins\"> extension point.",
                                 fileName, docPath));
             }
             return (FileItem) getFileSystemItemAdapterService().getFileSystemItem(file, this);
-        } catch (ClientException | IOException e) {
-            throw new ClientException(String.format("Error while trying to create file %s as a child of doc %s",
-                    fileName, docPath), e);
+        } catch (NuxeoException e) {
+            e.addInfo(String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath));
+            throw e;
+        } catch (IOException e) {
+            throw new NuxeoException(
+                    String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath), e);
         }
     }
 

@@ -23,7 +23,7 @@ import org.nuxeo.drive.hierarchy.userworkspace.adapter.UserWorkspaceSyncRootPare
 import org.nuxeo.drive.service.FileSystemItemFactory;
 import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.drive.service.impl.AbstractVirtualFolderItemFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -39,7 +39,7 @@ public class UserWorkspaceSyncRootParentFactory extends AbstractVirtualFolderIte
         FileSystemItemManager fileSystemItemManager = Framework.getLocalService(FileSystemItemManager.class);
         FolderItem topLevelFolder = fileSystemItemManager.getTopLevelFolder(principal);
         if (topLevelFolder == null) {
-            throw new ClientException(
+            throw new NuxeoException(
                     "Found no top level folder item. Please check your contribution to the following extension point: <extension target=\"org.nuxeo.drive.service.FileSystemItemAdapterService\" point=\"topLevelFolderItemFactory\">.");
         }
         return new UserWorkspaceSyncRootParentFolderItem(getName(), principal, topLevelFolder.getId(),
