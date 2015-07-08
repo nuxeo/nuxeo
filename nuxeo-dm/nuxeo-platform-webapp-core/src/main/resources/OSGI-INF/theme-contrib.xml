@@ -141,6 +141,23 @@
       <require>widget-utils.js</require>
     </resource>
 
+    <resource name="prototype.js">
+      <uri>/scripts/prototype.js</uri>
+    </resource>
+    <resource name="effects.js">
+      <uri>/scripts/scriptaculous/effects.js</uri>
+      <require>prototype.js</require>
+    </resource>
+    <resource name="dragdrop.js">
+      <uri>/scripts/scriptaculous/dragdrop.js</uri>
+      <require>effects.js</require>
+      <require>prototype.js</require>
+    </resource>
+    <!-- Seam 1.0.1.GA -->
+    <resource name="seam-remote.js">
+      <path>nxthemes/html/scripts/seam-remote.js</path>
+    </resource>
+
     <resource name="static-styles.css">
       <uri>/css/static-styles.css</uri>
     </resource>
