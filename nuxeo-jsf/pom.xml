@@ -21,7 +21,6 @@
     <module>nuxeo-platform-forms-layout-io</module>
     <module>nuxeo-platform-actions-jsf</module>
     <module>nuxeo-platform-webapp-base</module>
-    <module>nuxeo-theme-jsf</module>
     <module>nuxeo-platform-contentview-jsf</module>
     <module>nuxeo-platform-seam-debug</module>
     <module>nuxeo-web-resources-jsf</module>

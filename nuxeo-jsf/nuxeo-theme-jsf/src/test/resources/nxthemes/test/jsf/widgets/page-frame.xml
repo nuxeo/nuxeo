@@ -1,7 +1,0 @@
-<body xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:nxthemes="http://nuxeo.org/nxthemes">
-  <f:view>
-    <nxthemes:accesskeys />
-    [nxthemes markup]
-  </f:view>
-</body>

@@ -725,21 +725,6 @@
       <!-- Nuxeo Theme -->
       <dependency>
         <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-core</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-fragments</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
-        <artifactId>nuxeo-theme-html</artifactId>
-        <version>${nuxeo.theme.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.theme</groupId>
         <artifactId>nuxeo-theme-styling</artifactId>
         <version>${nuxeo.theme.version}</version>
       </dependency>
@@ -821,11 +806,6 @@
         <artifactId>nuxeo-platform-webapp-base</artifactId>
         <version>${nuxeo.jsf.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-theme-jsf</artifactId>
-        <version>${nuxeo.jsf.version}</version>
-      </dependency>
 
       <!-- Nuxeo DM -->
       <dependency>
@@ -850,11 +830,6 @@
       </dependency>
 
       <!-- Nuxeo WebEngine -->
-      <dependency>
-        <groupId>org.nuxeo.ecm.webengine</groupId>
-        <artifactId>nuxeo-theme-webengine</artifactId>
-        <version>${nuxeo.webengine.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.webengine</groupId>
         <artifactId>nuxeo-webengine-core</artifactId>
@@ -1347,11 +1322,6 @@
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
-        <version>${nuxeo.features.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-theme-bank</artifactId>
         <version>${nuxeo.features.version}</version>
       </dependency>
       <dependency>
