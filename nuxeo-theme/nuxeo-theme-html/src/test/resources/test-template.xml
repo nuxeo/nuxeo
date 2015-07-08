@@ -1,6 +1,0 @@
-<div>
-#{nxthemesInfo.element.uid}
-#{nxthemesInfo.format.properties.charset}
-#{ (nxthemesInfo.test) ? "on" : "off"}
-[nxthemes markup]
-</div>

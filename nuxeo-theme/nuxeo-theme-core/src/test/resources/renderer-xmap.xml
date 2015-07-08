@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-
-<renderer element="theme">
-  <filter>widget</filter>
-  <filter>style</filter>
-</renderer>
-
