@@ -4,8 +4,8 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_UPDATED;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -49,7 +49,7 @@ public class SnapshotableListener implements EventListener {
         VersioningOption option;
         try {
             option = VersioningOption.valueOf(versioningOption);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             log.error(String.format("Unknown versioning option value '%s': %s", versioningOption, e.getMessage()));
             log.debug(e, e);
             return;
@@ -61,7 +61,7 @@ public class SnapshotableListener implements EventListener {
         try {
             Snapshotable snapshotable = doc.getAdapter(Snapshotable.class);
             snapshotable.createSnapshot(option);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             event.markRollBack(e.getMessage(), e);
             throw e;
         }

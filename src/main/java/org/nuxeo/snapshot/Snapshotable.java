@@ -1,6 +1,5 @@
 package org.nuxeo.snapshot;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 
 public interface Snapshotable {

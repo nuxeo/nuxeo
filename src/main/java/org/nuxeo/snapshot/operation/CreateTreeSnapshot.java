@@ -4,8 +4,8 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.snapshot.Snapshotable;
 
@@ -23,7 +23,7 @@ public class CreateTreeSnapshot {
     public DocumentModel run(DocumentModel doc) {
         Snapshotable adapter = doc.getAdapter(Snapshotable.class);
         if (adapter == null) {
-            throw new ClientException("Unable to get Snapshotable adapter with document: " + doc.getPathAsString());
+            throw new NuxeoException("Unable to get Snapshotable adapter with document: " + doc.getPathAsString());
         }
         return adapter.createSnapshot(VersioningOption.valueOf(versioningOption)).getDocument();
     }

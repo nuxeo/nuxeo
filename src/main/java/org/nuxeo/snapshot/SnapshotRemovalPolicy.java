@@ -30,8 +30,6 @@ public class SnapshotRemovalPolicy implements OrphanVersionRemovalFilter {
                 return false;
             }
             return true;
-        } catch (Exception e) {
-            return false;
         } finally {
             if (result != null) {
                 result.close();

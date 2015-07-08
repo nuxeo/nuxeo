@@ -9,12 +9,12 @@ import java.util.List;
 
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -49,7 +49,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     protected DocumentRef createLeafVersion(DocumentModel targetDoc, VersioningOption option) {
         if (targetDoc.isFolder() && !targetDoc.hasSchema(SCHEMA)) {
-            throw new ClientException("Can not version a folder that has not snapshot schema");
+            throw new NuxeoException("Can not version a folder that has not snapshot schema");
         }
         if (targetDoc.isVersion()) {
             return targetDoc.getRef();
@@ -89,13 +89,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     protected DocumentModel createLeafVersionAndFetch(VersioningOption option) {
         DocumentRef versionRef = createLeafVersion(doc, option);
-
         DocumentModel version = doc.getCoreSession().getDocument(versionRef);
-
-        if (version.isFolder() && !version.hasSchema(SCHEMA)) {
-            throw new ClientException("Error while creating version");
-        }
-
         return version;
     }
 
@@ -118,10 +112,6 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             doc.addFacet(FacetNames.VERSIONABLE);
         }
 
-        if (!doc.hasSchema(SCHEMA)) {
-            throw new ClientException("snapshot schema not added !");
-        }
-
         DocumentModelList children = doc.getCoreSession().getChildren(doc.getRef());
 
         String[] vuuids = new String[children.size()];
@@ -130,12 +120,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
             DocumentModel child = children.get(i);
             if (!child.isFolder()) {
                 DocumentRef leafRef = createLeafVersion(child, option);
-                if (leafRef != null) {
-                    vuuids[i] = leafRef.toString();
-                } else {
-                    throw new ClientException("Unable to create leaf version for " + child.getPathAsString() + " (V:"
-                            + child.isVersion() + ",P:" + child.isProxy() + ")");
-                }
+                vuuids[i] = leafRef.toString();
             } else {
                 SnapshotableAdapter adapter = new SnapshotableAdapter(child);
                 Snapshot snap = adapter.createSnapshot(option);
@@ -167,7 +152,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
 
     protected List<DocumentModel> getChildren(DocumentModel target) {
         if (!target.isVersion()) {
-            throw new ClientException("Not a version:");
+            throw new NuxeoException("Not a version:");
         }
 
         if (!target.isFolder()) {
@@ -175,7 +160,7 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
         }
 
         if (target.isFolder() && !target.hasSchema(SCHEMA)) {
-            throw new ClientException("Folderish children should have the snapshot schema");
+            throw new NuxeoException("Folderish children should have the snapshot schema");
         }
 
         try {
@@ -231,17 +216,13 @@ public class SnapshotableAdapter implements Snapshot, Serializable {
     }
 
     protected void dump(int level, StringBuffer sb) {
-        try {
-            for (Snapshot snap : getChildrenSnapshots()) {
-                sb.append(new String(new char[level]).replace('\0', ' '));
-                sb.append(snap.getDocument().getName() + " -- " + snap.getDocument().getVersionLabel());
-                sb.append("\n");
-                if (snap.getDocument().isFolder()) {
-                    ((SnapshotableAdapter) snap).dump(level + 1, sb);
-                }
+        for (Snapshot snap : getChildrenSnapshots()) {
+            sb.append(new String(new char[level]).replace('\0', ' '));
+            sb.append(snap.getDocument().getName() + " -- " + snap.getDocument().getVersionLabel());
+            sb.append("\n");
+            if (snap.getDocument().isFolder()) {
+                ((SnapshotableAdapter) snap).dump(level + 1, sb);
             }
-        } catch (Exception e) {
-            sb.append(doc.getId() + ":" + doc.getPathAsString() + ":ERR:" + e.toString() + "\n");
         }
     }
 
