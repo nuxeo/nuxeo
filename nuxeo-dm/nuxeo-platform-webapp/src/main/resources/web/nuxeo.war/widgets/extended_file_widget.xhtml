@@ -24,11 +24,14 @@
              cache="true">
     <nxh:graphicImage value="#{nxd:fileIconPath(blob)}"
                       rendered="#{! empty nxd:fileIconPath(blob)}" />
-    <nxh:outputLink value="#{fileUrl}">
-      <h:outputText value="#{filename}"/>
-    </nxh:outputLink>
     <c:if test="#{blobLength >= 0}">
+      <nxh:outputLink value="#{fileUrl}">
+        <h:outputText value="#{filename}"/>
+      </nxh:outputLink>
       <h:outputText styleClass="detail" value="#{nxu:printFileSize(blobLength)}"/>
+    </c:if>
+    <c:if test="#{blobLength lt 0}">
+      <h:outputText value="#{filename}"/>
     </c:if>
 
     <div class="actionsColumn">
