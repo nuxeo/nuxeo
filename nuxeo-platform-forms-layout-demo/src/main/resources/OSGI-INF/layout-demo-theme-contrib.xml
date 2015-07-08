@@ -1,38 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.forms.layoutDemo.theme.contrib">
 
-  <require>org.nuxeo.theme.core</require>
-  <require>org.nuxeo.theme.fragments</require>
-  <require>org.nuxeo.theme.html</require>
-  <require>org.nuxeo.theme.jsf</require>
-
-  <!-- redefine the theme negotiator to use a given theme in layoutDemo application -->
-  <require>org.nuxeo.theme.nuxeo.default</require>
-
-  <!-- themes -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
-
-    <theme>
-      <src>themes/layout-demo.xml</src>
-    </theme>
-
-  </extension>
-
-  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
-
-    <view name="Nuxeo layoutDemo header" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>layoutDemo/header.xhtml</template>
-      <resource>screen.css</resource>
-    </view>
-
-    <view name="Nuxeo layoutDemo footer" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>layoutDemo/footer.xhtml</template>
-    </view>
-
-  </extension>
-
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
     <resource name="layoutDemo.css">
@@ -96,21 +64,6 @@
         <bundle>nuxeo_base</bundle>
       </resources>
     </themePage>
-
-  </extension>
-
-  <extension target="org.nuxeo.theme.services.ThemeService" point="negotiations">
-
-    <negotiation object="theme" strategy="nuxeo5">
-      <scheme>org.nuxeo.theme.jsf.negotiation.theme.RequestParameter</scheme>
-      <scheme>org.nuxeo.theme.jsf.negotiation.theme.CookieValue</scheme>
-      <scheme>org.nuxeo.theme.jsf.negotiation.theme.ViewId</scheme>
-      <!-- local theme (specific to nuxeo5) -->
-      <scheme>org.nuxeo.ecm.localconf.LocalTheme</scheme>
-      <!-- popup theme (specific to layoutDemo) -->
-      <scheme>org.nuxeo.ecm.platform.forms.layout.demo.jsf.LayoutDemoTheme
-      </scheme>
-    </negotiation>
 
   </extension>
 

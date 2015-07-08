@@ -16,8 +16,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.demo.jsf;
 
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,13 +28,14 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.LayoutDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.demo.service.LayoutDemoManager;
 import org.nuxeo.ecm.platform.forms.layout.io.JSONLayoutExporter;
+
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Seam component handling preview.
@@ -88,8 +87,7 @@ public class LayoutPreviewActions {
         return JSONLayoutExporter.encode(json);
     }
 
-    public LayoutDefinition getDecodedLayoutDefinition(String jsonEncodedLayoutDef)
-            throws UnsupportedEncodingException {
+    public LayoutDefinition getDecodedLayoutDefinition(String jsonEncodedLayoutDef) throws UnsupportedEncodingException {
         if (StringUtils.isBlank(jsonEncodedLayoutDef)) {
             return null;
         }
