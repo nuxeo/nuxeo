@@ -21,6 +21,11 @@
     <encoding>UTF-8</encoding>
     <gatling.version>2.1.6</gatling.version>
     <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
+    <!-- URL of the last archived artifacts of the nuxeo-drive marketplace
+      package on Jenkins -->
+    <nuxeo.drive.mp.url>
+      http://qa.nuxeo.org/jenkins/job/addons_nuxeo-drive-master-marketplace/lastSuccessfulBuild/artifact/marketplace/target/
+    </nuxeo.drive.mp.url>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -63,6 +68,14 @@
       <groupId>org.scala-lang</groupId>
       <artifactId>scala-library</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-tomcat</artifactId>
+      <classifier>nuxeo-cap</classifier>
+      <version>${version}</version>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
   <build>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
@@ -76,6 +89,20 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <!-- we don't build any jar -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>never</phase>
+            <configuration>
+              <finalName>unwanted</finalName>
+              <classifier>unwanted</classifier>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
@@ -88,7 +115,7 @@
         </executions>
       </plugin>
       <plugin>
-        <!-- Run all [matching] tests] on mvn test -->
+        <!-- Run all [matching] tests] on mvn integration-test -->
         <groupId>io.gatling</groupId>
         <artifactId>gatling-maven-plugin</artifactId>
         <version>${gatling.version}</version>
@@ -100,7 +127,7 @@
         <executions>
           <execution>
             <id>setup</id>
-            <phase>test</phase>
+            <phase>integration-test</phase>
             <goals>
               <goal>execute</goal>
             </goals>
@@ -110,7 +137,7 @@
           </execution>
           <execution>
             <id>bench</id>
-            <phase>test</phase>
+            <phase>integration-test</phase>
             <goals>
               <goal>execute</goal>
             </goals>
@@ -124,12 +151,62 @@
           </execution>
           <execution>
             <id>cleanup</id>
-            <phase>test</phase>
+            <phase>integration-test</phase>
             <goals>
               <goal>execute</goal>
             </goals>
             <configuration>
               <simulationClass>org.nuxeo.drive.bench.CleanupSimulation</simulationClass>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFile>${basedir}/itests.xml</buildFile>
+        </configuration>
+        <executions>
+          <execution>
+            <id>start-nuxeo</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <!-- Goal mapped on package phase by default -->
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>fetch-nuxeo-drive-mp</target>
+                <target>prepare-environment</target>
+                <target>start</target>
+              </targets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>stop-nuxeo</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <!-- Goal mapped on package phase by default -->
+              <goal>build</goal>
+            </goals>
+            <configuration>
+              <targets>
+                <target>stop</target>
+                <target>cleanup-environment</target>
+              </targets>
             </configuration>
           </execution>
         </executions>

@@ -65,7 +65,7 @@ This simulation remove all documents, users and group from the Nuxeo instance, a
 
 ## Run all simulations
 
-    mvn test
+    mvn integration-test
 
 This will run simulations: Setup, DriveBench and Cleanup
 
@@ -73,7 +73,7 @@ Default options: see below
 
 ## Run Setup simulation 
 
-    mvn test -Dgatling.simulationClass=org.nuxeo.drive.bench.SetupSimulation
+    mvn gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.SetupSimulation
 
 Default options:
 
