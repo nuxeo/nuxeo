@@ -8,9 +8,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.annotations.In;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -76,7 +76,7 @@ public class BaseTemplateAction implements Serializable {
     public DocumentModel resolveTemplateById(String uuid) {
         try {
             return documentManager.getDocument(new IdRef(uuid));
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             return null;
         }
     }
