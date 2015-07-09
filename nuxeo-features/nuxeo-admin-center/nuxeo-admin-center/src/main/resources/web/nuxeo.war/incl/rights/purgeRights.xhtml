@@ -1,0 +1,51 @@
+<div xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:nxl="http://nuxeo.org/nxforms/layout"
+  xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:c="http://java.sun.com/jstl/core">
+
+  <nxu:set var="contentViewName" value="RIGHTS_PURGE">
+    <c:if test="#{adminRightsActions.canStartPurge()}">
+    <nxu:set var="contentView"
+      value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
+      cache="true">
+
+      <c:if test="#{!contentView.searchDocumentModel.dirty}">
+        <h:form>
+          <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
+            value="#{contentView.searchDocumentModel}" />
+
+          <h:commandButton value="#{messages['command.rights.purge']}"
+            action="#{contentViewActions.refreshAndRewind(contentViewName)}"
+            styleClass="button">
+          </h:commandButton>
+        </h:form>
+      </c:if>
+
+      <c:if test="#{contentView.searchDocumentModel.dirty}">
+        <ui:decorate template="/incl/content_view.xhtml">
+          <ui:define name="content_view_title" />
+          <ui:define name="content_view_syndication_buttons" />
+        </ui:decorate>
+        <h:form>
+          <h:commandButton value="#{messages['command.cancel']}"
+            action="#{adminRightsActions.cancelPurge()}"
+            styleClass="button">
+          </h:commandButton>
+
+          <h:commandButton value="#{messages['command.rights.purge']}"
+            action="#{adminRightsActions.doPurge()}"
+            styleClass="button">
+          </h:commandButton>
+        </h:form>
+      </c:if>
+
+    </nxu:set>
+    </c:if>
+
+    <c:if test="#{!adminRightsActions.canStartPurge()}">
+      <div class="processMessage running">#{messages['label.rights.purge.in.progress']}</div>
+    </c:if>
+  </nxu:set>
+
+</div>

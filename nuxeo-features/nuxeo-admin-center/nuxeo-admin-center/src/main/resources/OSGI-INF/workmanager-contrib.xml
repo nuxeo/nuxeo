@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.admin.workmanager" version="1.0">
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="rightsPurge">
+      <maxThreads>1</maxThreads>
+      <category>rightsPurge</category>
+    </queue>
+  </extension>
+
+</component>

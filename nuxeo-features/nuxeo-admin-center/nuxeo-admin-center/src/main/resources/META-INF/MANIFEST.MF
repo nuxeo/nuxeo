@@ -11,6 +11,8 @@ Nuxeo-Component: OSGI-INF/core-types-contrib.xml,
  OSGI-INF/layout-contrib.xml,
  OSGI-INF/content-view-contrib.xml,
  OSGI-INF/urlservice-contrib.xml,
- OSGI-INF/action-widgets-contrib.xml
+ OSGI-INF/action-widgets-contrib.xml,
+ OSGI-INF/pageproviders-contrib.xml,
+ OSGI-INF/workmanager-contrib.xml
 Export-Package: i18n
 Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;headless=true

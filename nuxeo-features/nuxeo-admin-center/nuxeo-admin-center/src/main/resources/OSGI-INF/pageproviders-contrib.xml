@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.nuxeo.admin.pageproviders">
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <genericPageProvider name="rights_purge" class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <whereClause docType="RightsSearch">
+        <fixedPart
+          statement="SELECT dc:title, ecm:uuid, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document">
+          ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:isCheckedInVersion = 0
+          AND SORTED_COLUMN IS NOT NULL
+        </fixedPart>
+        <predicate parameter="ecm:acl/*1/principal" operator="IN">
+          <field schema="rights_search" name="ace_username" />
+        </predicate>
+        <predicate parameter="ecm:path" operator="STARTSWITH">
+          <field schema="rights_search" name="ecm_path" />
+        </predicate>
+      </whereClause>
+      <pageSize>20</pageSize>
+      <sort column="dc:title" ascending="true" />
+    </genericPageProvider>
+
+  </extension>
+
+</component>

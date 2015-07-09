@@ -63,9 +63,7 @@
 
     <contentView name="RIGHTS_SEARCH">
 
-      <title>label.contentview.document.history</title>
-      <translateTitle>true</translateTitle>
-      <showTitle>true</showTitle>
+      <showTitle>false</showTitle>
 
       <genericPageProvider class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
         <property name="coreSession">#{documentManager}</property>
@@ -74,7 +72,6 @@
           <fixedPart statement="SELECT dc:title, ecm:acl/*1/creator, ecm:acl/*1/permission, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document">
             ecm:mixinType != 'HiddenInNavigation'
             AND ecm:isCheckedInVersion = 0
-            AND ecm:currentLifeCycleState != 'deleted'
             AND SORTED_COLUMN IS NOT NULL
           </fixedPart>
           <predicate parameter="ecm:acl/*1/principal" operator="IN">
@@ -100,10 +97,40 @@
           </predicate>
         </whereClause>
         <pageSize>20</pageSize>
+        <sort column="dc:title" ascending="true" />
       </genericPageProvider>
 
       <searchLayout name="rights_search_filter" filterDisplayType="default" filterUnfolded="true" />
       <showFilterForm>true</showFilterForm>
+
+      <showPageSizeSelector>true</showPageSizeSelector>
+      <useGlobalPageSize>true</useGlobalPageSize>
+      <refresh>
+        <event>documentChanged</event>
+        <event>documentCreated</event>
+      </refresh>
+      <cacheSize>10</cacheSize>
+      <cacheKey>#{org.jboss.seam.core.manager.currentConversationId}</cacheKey>
+
+      <resultLayouts>
+        <layout name="rights_search_listing" title="document_listing"
+          translateTitle="true" iconPath="/icons/document_listing_icon.png"
+          showCSVExport="true" showSpreadsheet="true" showEditColumns="true" />
+      </resultLayouts>
+
+    </contentView>
+
+    <contentView name="RIGHTS_PURGE">
+
+      <showTitle>false</showTitle>
+
+      <pageProvider name="rights_purge">
+        <property name="maxResults">DEFAULT_NAVIGATION_RESULTS</property>
+        <property name="coreSession">#{documentManager}</property>
+      </pageProvider>
+
+      <searchLayout name="rights_purge_filter" filterDisplayType="default" filterUnfolded="true" />
+      <showFilterForm>false</showFilterForm>
 
       <showPageSizeSelector>true</showPageSizeSelector>
       <useGlobalPageSize>true</useGlobalPageSize>

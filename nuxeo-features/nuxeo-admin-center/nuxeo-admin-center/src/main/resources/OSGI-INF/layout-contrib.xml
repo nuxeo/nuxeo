@@ -1718,6 +1718,46 @@
       </widget>
     </layout>
 
+    <layout name="rights_purge_filter">
+      <templates>
+        <template mode="any">
+          /layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>username</widget>
+        </row>
+        <row>
+          <widget>path</widget>
+        </row>
+      </rows>
+      <widget name="username" type="multipleUsersSuggestion">
+        <labels>
+          <label mode="any">label.rights.search.username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ace_username</field>
+        </fields>
+        <properties mode="any">
+          <property name="userSuggestionSearchType">USER_TYPE</property>
+        </properties>
+      </widget>
+      <widget name="path" type="select_path_tree">
+        <labels>
+          <label mode="any">label.rights.search.path</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ecm_path</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="showAllDomains">true</property>
+        </properties>
+      </widget>
+    </layout>
+
     <layout name="rights_search_listing">
       <templates>
         <template mode="any">/layouts/layout_listing_ajax_template.xhtml

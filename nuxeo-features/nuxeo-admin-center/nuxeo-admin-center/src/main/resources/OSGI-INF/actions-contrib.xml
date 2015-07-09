@@ -167,6 +167,13 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
+    <action id="PurgeRights" link="/incl/rights/purgeRights.xhtml" label="tab.rights.purge"
+      type="admin_rest_document_link"
+      order="50">
+      <category>Rights_sub_tab</category>
+      <filter-id>only_for_manager</filter-id>
+    </action>
+
     <!-- Users and Groups management -->
     <action id="UsersGroupsManager" link="/view_admin-fragment.xhtml"
       type="admin_rest_document_link"
