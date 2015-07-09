@@ -8,5 +8,14 @@
     </module>
   </extension>
 
+  <extension target="faces-config#COMPONENT">
+    <component>
+      <component-type>nuxeo.web.theme.disabled</component-type>
+      <component-class>
+        org.nuxeo.ecm.platform.ui.web.compat.tomahawk.DisabledTomahawkComponent
+      </component-class>
+    </component>
+  </extension>
+
 </fragment>
 
