@@ -30,9 +30,9 @@ import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -140,7 +140,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocumentById(docId, session);
             return isFileSystemItem(doc);
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("No doc related to id %s, returning false.", id));
             }
@@ -156,7 +156,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
         try (CoreSession session = CoreInstance.openCoreSession(repositoryName, principal)) {
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc);
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("No doc related to id %s, returning null.", id));
             }
@@ -177,7 +177,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             }
             DocumentModel doc = getDocumentById(docId, session);
             return getFileSystemItem(doc, (FolderItem) parentItem);
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("No doc related to id %s, returning null.", id));
             }

@@ -43,11 +43,11 @@ import org.nuxeo.ecm.automation.client.model.Blob;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -167,16 +167,14 @@ public class TestIntegrationTestOperations {
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-joe"));
             fail("User workspace should not exist.");
-        } catch (NoSuchDocumentException e) {
-            assertEquals("No such document: " + userWorkspaceParentPath + "/nuxeoDriveTestUser-joe",
-                    e.getMessage());
+        } catch (DocumentNotFoundException e) {
+            assertEquals(userWorkspaceParentPath + "/nuxeoDriveTestUser-joe", e.getMessage());
         }
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-jack"));
             fail("User workspace should not exist.");
-        } catch (NoSuchDocumentException e) {
-            assertEquals("No such document: " + userWorkspaceParentPath + "/nuxeoDriveTestUser-jack",
-                    e.getMessage());
+        } catch (DocumentNotFoundException e) {
+            assertEquals(userWorkspaceParentPath + "/nuxeoDriveTestUser-jack", e.getMessage());
         }
 
         // Check test users
@@ -239,9 +237,8 @@ public class TestIntegrationTestOperations {
         try {
             session.getDocument(new PathRef(userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah"));
             fail("User workspace should not exist.");
-        } catch (NoSuchDocumentException e) {
-            assertEquals("No such document: " + userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah",
-                    e.getMessage());
+        } catch (DocumentNotFoundException e) {
+            assertEquals(userWorkspaceParentPath + "/nuxeoDriveTestUser-sarah", e.getMessage());
         }
         assertFalse(session.exists(testWorkspaceRef));
     }
