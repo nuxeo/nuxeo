@@ -29,6 +29,7 @@ import java.util.Map;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -251,8 +252,8 @@ public class DeputyManagementStorageService implements DeputyManager {
 
             dirSession.createEntry(entry);
 
-        } catch (Throwable e) {
-            System.out.println(e);
+        } catch (DirectoryException e) {
+            throw new NuxeoException(e);
         } finally {
             releasePersistenceService();
         }
