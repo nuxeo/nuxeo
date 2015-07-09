@@ -108,7 +108,7 @@ public class CreateRoutingTask {
     protected Properties mappingProperties;
 
     @OperationMethod(collector = DocumentModelCollector.class)
-    public DocumentModel createTask(DocumentModel document) throws Exception {
+    public DocumentModel createTask(DocumentModel document) throws OperationException {
         Principal pal = coreSession.getPrincipal();
         if (!(pal instanceof NuxeoPrincipal)) {
             throw new OperationException("Principal is not an instance of NuxeoPrincipal");

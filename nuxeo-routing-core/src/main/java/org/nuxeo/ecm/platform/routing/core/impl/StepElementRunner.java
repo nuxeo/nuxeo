@@ -20,9 +20,10 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -58,10 +59,8 @@ public class StepElementRunner implements ElementRunner {
         try {
             String chainId = getDocumentRoutingService().getOperationChainId(element.getDocument().getType());
             getAutomationService().run(context, chainId);
-        } catch (InvalidChainException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (OperationException e) {
+            throw new NuxeoException(e);
         }
     }
 
@@ -77,19 +76,11 @@ public class StepElementRunner implements ElementRunner {
     }
 
     public AutomationService getAutomationService() {
-        try {
-            return Framework.getService(AutomationService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(AutomationService.class);
     }
 
     public DocumentRoutingService getDocumentRoutingService() {
-        try {
-            return Framework.getService(DocumentRoutingService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(DocumentRoutingService.class);
     }
 
     @Override
@@ -109,8 +100,8 @@ public class StepElementRunner implements ElementRunner {
         }
         try {
             getAutomationService().run(context, operationChainId);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (OperationException e) {
+            throw new NuxeoException(e);
         }
         EventFirer.fireEvent(session, element, null, DocumentRoutingConstants.Events.afterUndoingStep.name());
     }

@@ -44,8 +44,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RoutingTaskSecurityUpdaterListener implements EventListener {
 
-    private DocumentRoutingService routingService;
-
     @Override
     public void handleEvent(Event event) {
         EventContext eventCtx = event.getContext();
@@ -96,15 +94,7 @@ public class RoutingTaskSecurityUpdaterListener implements EventListener {
     }
 
     protected DocumentRoutingService getDocumentRoutingService() {
-        try {
-            if (routingService == null) {
-                routingService = Framework.getService(DocumentRoutingService.class);
-            }
-            return routingService;
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(DocumentRoutingService.class);
     }
+
 }

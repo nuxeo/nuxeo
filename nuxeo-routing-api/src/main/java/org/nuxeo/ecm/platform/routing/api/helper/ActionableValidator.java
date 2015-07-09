@@ -21,9 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.InvalidChainException;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.ActionableObject;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.runtime.api.Framework;
@@ -73,21 +74,13 @@ public class ActionableValidator {
         context.putAll(additionalProperties);
         try {
             automationService.run(context, chainId);
-        } catch (InvalidChainException e) {
-            throw new RuntimeException(e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (OperationException e) {
+            throw new NuxeoException(e);
         }
     }
 
-    /**
-     * @return
-     */
     protected AutomationService getAutomationService() {
-        try {
-            return Framework.getService(AutomationService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(AutomationService.class);
     }
+
 }

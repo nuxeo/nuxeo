@@ -50,10 +50,7 @@ public class AuditEventFirer {
     }
 
     static protected EventProducer getEventProducer() {
-        try {
-            return Framework.getService(EventProducer.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(EventProducer.class);
     }
+
 }

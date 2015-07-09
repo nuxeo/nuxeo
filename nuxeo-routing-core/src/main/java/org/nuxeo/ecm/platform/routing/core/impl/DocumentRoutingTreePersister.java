@@ -152,11 +152,7 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
     }
 
     protected UserManager getUserManager() {
-        try {
-            return Framework.getService(UserManager.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(UserManager.class);
     }
 
     protected DocumentModel getDocumentRoutesStructure(String type, CoreSession session) {
@@ -177,12 +173,8 @@ public class DocumentRoutingTreePersister implements DocumentRoutingPersister {
 
     @Override
     public DocumentModel getParentFolderForNewModel(CoreSession session, DocumentModel instance) {
-        try {
-            UserWorkspaceService service = Framework.getService(UserWorkspaceService.class);
-            return service.getCurrentUserPersonalWorkspace(session, instance);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        UserWorkspaceService service = Framework.getService(UserWorkspaceService.class);
+        return service.getCurrentUserPersonalWorkspace(session, instance);
     }
 
     @Override

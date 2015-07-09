@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.runtime.api.Framework;
@@ -147,7 +148,7 @@ public class BulkRestartWorkflow {
                         TransactionHelper.startTransaction();
                         session = CoreInstance.openCoreSession(null);
                     }
-                } catch (Exception e) {
+                } catch (NuxeoException e) {
                     Throwable t = unwrapException(e);
                     log.error(t.getClass().getSimpleName() + ": " + t.getMessage());
                     log.error("Workflow with the docId '" + routeId + "' cannot be canceled. " + routesRestartedCount

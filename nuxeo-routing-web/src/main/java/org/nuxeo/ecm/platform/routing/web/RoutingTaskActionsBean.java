@@ -370,19 +370,12 @@ public class RoutingTaskActionsBean implements Serializable {
         if (layoutName == null || layoutName.isEmpty()) {
             return true;
         }
-        try {
-            // explore the layout and find out if it contains only empty
-            // widgets
-            WebLayoutManager lm = Framework.getService(WebLayoutManager.class);
-            LayoutDefinition layout = lm.getLayoutDefinition(layoutName);
-            if (layout == null || layout.isEmpty()) {
-                return true;
-            }
-        } catch (Exception e) {
-            log.error(e, e);
+        // explore the layout and find out if it contains only empty widgets
+        WebLayoutManager lm = Framework.getService(WebLayoutManager.class);
+        LayoutDefinition layout = lm.getLayoutDefinition(layoutName);
+        if (layout == null || layout.isEmpty()) {
             return true;
         }
-
         return false;
     }
 

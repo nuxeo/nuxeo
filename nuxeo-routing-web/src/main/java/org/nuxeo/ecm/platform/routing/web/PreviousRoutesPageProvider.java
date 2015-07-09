@@ -85,12 +85,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
     @SuppressWarnings("unchecked")
     @Override
     public List<LogEntry> getCurrentPage() {
-        AuditReader reader;
-        try {
-            reader = Framework.getService(AuditReader.class);
-        } catch (Exception e) {
-            return null;
-        }
+        AuditReader reader = Framework.getService(AuditReader.class);
 
         buildAuditQuery(true);
         // TODO: Follow https://jira.nuxeo.com/browse/NXP-17236, native query should use JSON in case of Elasticsearch
@@ -339,19 +334,12 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> i
     @Override
     public long getResultsCount() {
         buildAuditQuery(false);
-
-        AuditReader reader;
-        try {
-            reader = Framework.getService(AuditReader.class);
-        } catch (Exception e) {
-            return 0;
-        }
-
+        AuditReader reader = Framework.getService(AuditReader.class);
         // TODO: Follow https://jira.nuxeo.com/browse/NXP-17236, native query should use JSON in case of Elasticsearch
         // audit backend, yet currently there doesn't seem to be any way to do such a count in this case
         List<Long> res = (List<Long>) reader.nativeQuery("select count(log.id) " + auditQuery, auditQueryParams, 1, 20);
         resultsCount = res.get(0).longValue();
-
         return resultsCount;
     }
+
 }

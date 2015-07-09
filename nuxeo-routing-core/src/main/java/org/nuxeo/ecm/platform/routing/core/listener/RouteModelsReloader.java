@@ -53,9 +53,6 @@ public class RouteModelsReloader implements EventListener {
         }
         try {
             RepositoryManager rm = Framework.getService(RepositoryManager.class);
-            if (rm == null) {
-                throw new NuxeoException("Can not acces the RepositoryManager");
-            }
             // Transaction management
             final boolean txStarted = !TransactionHelper.isTransactionActive() && TransactionHelper.startTransaction();
             boolean txSucceed = false;
@@ -77,7 +74,7 @@ public class RouteModelsReloader implements EventListener {
                     TransactionHelper.commitOrRollbackTransaction();
                 }
             }
-        } catch (Exception e) {
+        } catch (NuxeoException e) {
             log.error("Error while reloading the route models", e);
         }
     }

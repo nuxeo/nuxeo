@@ -61,7 +61,7 @@ public class RemoveRoutingTask {
     protected TaskService taskService;
 
     @OperationMethod
-    public void removeTasks() throws Exception {
+    public void removeTasks() {
         List<Task> tasks = fetchTasks();
         for (Task task : tasks) {
             taskService.deleteTask(coreSession, task.getId());

@@ -54,7 +54,7 @@ public class GetGraphOperation {
     protected CoreSession session;
 
     @OperationMethod
-    public Blob run() throws Exception {
+    public Blob run() {
         Locale locale = language != null && !language.isEmpty() ? new Locale(language) : Locale.ENGLISH;
         JsonGraphRoute unrestrictedRunner = new JsonGraphRoute(session, routeDocId, locale);
         String json = unrestrictedRunner.getJSON();

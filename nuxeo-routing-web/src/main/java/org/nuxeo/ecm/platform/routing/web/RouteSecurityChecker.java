@@ -69,10 +69,7 @@ public class RouteSecurityChecker implements Serializable {
     }
 
     public DocumentRoutingService getDocumentRoutingService() {
-        try {
-            return Framework.getService(DocumentRoutingService.class);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return Framework.getService(DocumentRoutingService.class);
     }
+
 }

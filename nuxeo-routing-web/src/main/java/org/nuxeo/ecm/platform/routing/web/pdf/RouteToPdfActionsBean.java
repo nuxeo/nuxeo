@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.routing.web.pdf;
 
 import static org.jboss.seam.ScopeType.EVENT;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import javax.faces.context.FacesContext;
@@ -48,7 +49,7 @@ public class RouteToPdfActionsBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public void doRenderView(String view_name) throws Exception {
+    public void doRenderView(String view_name) throws IOException {
         String base = BaseURL.getBaseURL(getHttpServletRequest());
         String url = base + view_name + "?conversationId=" + Conversation.instance().getId();
         /**
