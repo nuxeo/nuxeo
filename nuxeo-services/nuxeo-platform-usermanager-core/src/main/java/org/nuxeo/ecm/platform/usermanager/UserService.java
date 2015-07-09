@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.Authenticator;
@@ -103,7 +104,8 @@ public class UserService extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (Authenticator.class == adapter || UserManager.class == adapter) {
+        if (Authenticator.class == adapter || UserManager.class == adapter)
+                || AdministratorGroupsProvider.class == adapter) {
             return adapter.cast(getUserManager());
         }
         return null;
@@ -126,15 +128,13 @@ public class UserService extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         descriptors.add((UserManagerDescriptor) contribution);
         recomputeUserManager(true);
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         descriptors.remove(contribution);
         // recomputeUserManager(true);
     }

@@ -15,7 +15,9 @@
 package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An ACL (Access Control List) is a list of ACEs (Access Control Entry).
@@ -60,6 +62,36 @@ public interface ACL extends List<ACE>, Serializable, Cloneable {
      * @param aces the ACE array
      */
     void setACEs(ACE[] aces);
+
+    /**
+     * Add an ACE.
+     *
+     * @since 7.4
+     */
+    boolean add(String username, String permission, boolean blockInheritance, String creator, Calendar begin,
+            Calendar end, Map<String, Serializable> contextData);
+
+    /**
+     * Update an ACE identified by its {@code id}.
+     *
+     * @since 7.4
+     */
+    boolean update(String id, String username, String permission, boolean blockInheritance, String creator,
+            Calendar begin, Calendar end, Map<String, Serializable> contextData);
+
+    /**
+     * Remove an ACE identified by its {@code id}.
+     *
+     * @since 7.4
+     */
+    boolean removeById(String id);
+
+    /**
+     * Remove all ACEs for {@username}.
+     *
+     * @since 7.4
+     */
+    boolean removeByUsername(String username);
 
     /**
      * Returns a recursive copy of the ACL sharing no mutable substructure with the original.

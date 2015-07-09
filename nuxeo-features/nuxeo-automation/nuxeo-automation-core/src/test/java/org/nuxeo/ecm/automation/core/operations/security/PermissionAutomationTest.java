@@ -31,7 +31,6 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.AddPermission;
-import org.nuxeo.ecm.automation.core.operations.document.DocumentPermissionHelper;
 import org.nuxeo.ecm.automation.core.operations.document.UpdatePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -89,7 +88,7 @@ public class PermissionAutomationTest {
         assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
 
         // Tear down
-        DocumentPermissionHelper.removePermission(src.getACP(), ACL.LOCAL_ACL, "members");
+        src.getACP().removeACEById(ACL.LOCAL_ACL, "members");
     }
 
     @Test
@@ -114,6 +113,6 @@ public class PermissionAutomationTest {
         assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
 
         // Tear down
-        DocumentPermissionHelper.removePermission(src.getACP(), ACL.LOCAL_ACL, "members");
+        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "members");
     }
 }

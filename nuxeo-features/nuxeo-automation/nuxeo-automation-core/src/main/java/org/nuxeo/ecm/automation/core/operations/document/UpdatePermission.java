@@ -58,7 +58,7 @@ public class UpdatePermission {
     @Param(name = "permission", description = "ACE permission.")
     String permission;
 
-    @Param(name = "acl", required = false, values = {ACL.LOCAL_ACL}, description = "ACL name.")
+    @Param(name = "acl", required = false, values = { ACL.LOCAL_ACL }, description = "ACL name.")
     String aclName = ACL.LOCAL_ACL;
 
     @Param(name = "begin", required = false, description = "ACE begin date.")
@@ -99,9 +99,9 @@ public class UpdatePermission {
             contextData.put(COMMENT_KEY, comment);
         }
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
-        boolean permissionChanged = DocumentPermissionHelper.updatePermission(acp, aclName, id, user, permission,
-                blockInheritance, session.getPrincipal()
-                        .getName(), begin, end, contextData);
+        String creator = session.getPrincipal().getName();
+        boolean permissionChanged = acp.updateACE(aclName, id, user, permission, blockInheritance, creator, begin, end,
+                contextData);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }

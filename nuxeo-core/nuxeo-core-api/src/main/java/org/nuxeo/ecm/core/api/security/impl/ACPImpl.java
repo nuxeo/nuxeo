@@ -14,7 +14,9 @@ package org.nuxeo.ecm.core.api.security.impl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -324,4 +326,74 @@ public class ACPImpl implements ACP {
         return copy;
     }
 
+    @Override
+    public boolean addACE(String aclName, String username, String permission, boolean blockInheritance, String creator,
+            Calendar begin, Calendar end, Map<String, Serializable> contextData) {
+        if (aclName == null) {
+            throw new NullPointerException("'aclName' cannot be null");
+        }
+
+        ACL acl = getOrCreateACL(aclName);
+        boolean aclChanged = acl.add(username, permission, blockInheritance, creator, begin, end, contextData);
+        if (aclChanged) {
+            addACL(acl);
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean updateACE(String aclName, String id, String username, String permission, boolean blockInheritance,
+            String creator, Calendar begin, Calendar end, Map<String, Serializable> contextData) {
+        if (aclName == null) {
+            throw new NullPointerException("'aclName' cannot be null");
+        }
+
+        ACL acl = getOrCreateACL(aclName);
+        boolean aclChanged = acl.update(id, username, permission, blockInheritance, creator, begin, end, contextData);
+        if (aclChanged) {
+            addACL(acl);
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean removeACEById(String aclName, String id) {
+        if (aclName == null) {
+            throw new NullPointerException("'aclName' cannot be null");
+        }
+
+        ACL acl = getOrCreateACL(aclName);
+        boolean aclChanged = acl.removeById(id);
+        if (aclChanged) {
+            addACL(acl);
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean removeACEsByUsername(String aclName, String username) {
+        if (aclName == null) {
+            throw new NullPointerException("'aclName' cannot be null");
+        }
+
+        ACL acl = getOrCreateACL(aclName);
+        boolean aclChanged = acl.removeByUsername(username);
+        if (aclChanged) {
+            addACL(acl);
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean removeACEsByUsername(String username) {
+        boolean changed = false;
+        for (ACL acl : acls) {
+            boolean aclChanged = acl.removeByUsername(username);
+            if (aclChanged) {
+                addACL(acl);
+                changed = true;
+            }
+        }
+        return changed;
+    }
 }

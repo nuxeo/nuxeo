@@ -76,10 +76,10 @@ public class RemovePermission {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         boolean permissionChanged = false;
         if (user != null) {
-            permissionChanged = DocumentPermissionHelper.removePermission(acp, aclName, user);
+            permissionChanged = acp.removeACEsByUsername(aclName, user);
 
         } else if (id != null) {
-            permissionChanged = DocumentPermissionHelper.removePermissionById(acp, aclName, id);
+            permissionChanged = acp.removeACEById(aclName, id);
         }
 
         if (permissionChanged) {

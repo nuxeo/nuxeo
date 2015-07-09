@@ -19,27 +19,49 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.nuxeo.ecm.core.api.security.Access.GRANT;
 import static org.nuxeo.ecm.core.api.security.Access.UNKNOWN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYONE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ_WRITE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.RESTRICTED_READ;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class, MockitoFeature.class })
 public class TestACP {
 
+    @Mock
+    @RuntimeService
+    protected AdministratorGroupsProvider administratorGroupsProvider;
+
     private ACP acp;
+
+    @Before
+    public void doBefore() throws Exception {
+        when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
+                Collections.singletonList("administrators"));
+    }
 
     @Before
     public void setUp() {
@@ -163,6 +185,201 @@ public class TestACP {
         // permissions
         acp.addACL(new ACLImpl(ACL.LOCAL_ACL));
         assertFalse(acp.getAccess("john", "Sing").toBoolean());
+    }
+
+    @Test
+    public void itCanAddExistingPermission() throws Exception {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+        // When i set Permission to a user
+        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, false, "john", null, null, null);
+
+        // Then he still have access and local ACL have an entry
+        assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
+
+        assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+        assertEquals(new ACE("john", READ_WRITE, true, "john", null, null), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
+
+    }
+
+    @Test
+    public void itCanAddPermission() throws Exception {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+
+        // Make a first call to fill cache
+        assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
+
+        // When i set Permission to a user
+        acp.addACE(ACL.LOCAL_ACL, "john", "comment", false, "john", null, null, null);
+
+        // Then he still have access and local ACL have an entry
+        assertEquals(Access.GRANT, acp.getAccess("john", "comment"));
+
+        assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+        assertEquals(new ACE("john", "comment", true, "john", null, null), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
+
+    }
+
+    @Test
+    public void itShouldNotAddPermissionTwice() throws Exception {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+        // When i set Permission to a user
+        boolean hasChanged = acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, false, null, null, null, null);
+        assertTrue(hasChanged);
+        // When i call the operation another time
+        hasChanged = acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, false, null, null, null, null);
+        // Then nothing should change
+        assertFalse(hasChanged);
+        assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+    }
+
+    @Test
+    public void itCanBlockInheritance() throws Exception {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+
+        // When i add the permission to a user with blocking inheritance
+        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, "john", null, null, null);
+
+        // Then he still have access and local ACL have an entry
+        assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
+
+        // Other user don't have access anymor
+        assertEquals(Access.DENY, acp.getAccess("jack", READ_WRITE));
+
+        // Administrators still have access
+        assertEquals(Access.GRANT, acp.getAccess("administrators", READ_WRITE));
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void blockingInheritanceNeedsACurrentPrincipal() throws Exception {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+
+        // When i add the permission to a user with blocking inheritance
+        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, null, null, null, null);
+
+    }
+
+    @Test
+    public void itShouldAddInheritanceEvenIfItAlreadyHasPermission() throws Exception {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("john", READ_WRITE, true));
+
+        // When i add the permission to a user with blocking inheritance
+        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, "john", null, null, null);
+
+        // Then he still have access and local ACL have an entry
+        assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
+
+    }
+
+    @Test
+    public void itCanRemovePermissionsToAUser() throws Exception {
+        // Given an ACP
+        ACP acp = new ACPImpl();
+        String jack = "jack";
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("john", READ_WRITE, true));
+        acl.add(new ACE(jack, READ_WRITE, true));
+        acl.add(new ACE(jack, "comment", true));
+        acl.add(new ACE("jerry", READ_WRITE, true));
+
+        assertEquals(Access.GRANT, acp.getAccess("jack", READ_WRITE));
+        assertEquals(4, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+
+        // When i call the removePermission operation
+        boolean hasChanged = acp.removeACEsByUsername(ACL.LOCAL_ACL, jack);
+
+        // Then the user doesn't have any permission anymore
+        assertTrue(hasChanged);
+        assertEquals(Access.UNKNOWN, acp.getAccess("jack", READ_WRITE));
+        assertEquals(Access.UNKNOWN, acp.getAccess("jack", "comment"));
+        assertEquals(2, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+    }
+
+    @Test
+    public void itDoesNotChangeSecurityWhenRemovingNonExistentUser() throws Exception {
+        // Given an ACP
+        ACP acp = new ACPImpl();
+
+        assertEquals(Access.UNKNOWN, acp.getAccess("jack", READ_WRITE));
+
+        // When i call the removePermission operation
+        boolean hasChanged = acp.removeACEsByUsername(ACL.LOCAL_ACL, "jack");
+
+        // Then the user doesn't have any permission anymore
+        assertFalse(hasChanged);
+        assertEquals(Access.UNKNOWN, acp.getAccess("jack", READ_WRITE));
+
+    }
+
+    @Test
+    public void itCanRemovePermissionGivenItsId() throws Exception {
+        // Given an ACP
+        ACP acp = new ACPImpl();
+        String jack = "jack";
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl.add(new ACE("john", READ_WRITE, true));
+        acl.add(new ACE(jack, READ_WRITE, true));
+        acl.add(new ACE(jack, "comment", true));
+        ACE ace = new ACE("jerry", READ_WRITE, true);
+        acl.add(ace);
+
+        assertEquals(Access.GRANT, acp.getAccess("jack", READ_WRITE));
+        assertEquals(Access.GRANT, acp.getAccess("jerry", READ_WRITE));
+        assertEquals(4, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+
+        // When i call the removePermission operation
+        boolean hasChanged = acp.removeACEById(ACL.LOCAL_ACL, ace.getId());
+
+        // Then the user doesn't have any permission anymore
+        assertTrue(hasChanged);
+        assertEquals(Access.GRANT, acp.getAccess("jack", READ_WRITE));
+        assertEquals(Access.GRANT, acp.getAccess("jack", "comment"));
+        assertEquals(Access.UNKNOWN, acp.getAccess("jerry", READ_WRITE));
+        assertEquals(3, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
+    }
+
+    @Test
+    public void testMultipleNewPermissionsWithBlockInheritance() {
+        // Given an ACP
+        ACP acp = getInheritedReadWriteACP();
+
+        // Make a first call to fill cache
+        assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
+
+        // When i set Permission to a user with inheritance block
+        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, "john", null, null, null);
+
+        // only john have Permission
+        assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
+        assertEquals(Access.DENY, acp.getAccess("jack", "ReadWrite"));
+        assertEquals(Access.DENY, acp.getAccess("jerry", "ReadWrite"));
+
+        acp.addACE(ACL.LOCAL_ACL, "jack", READ_WRITE, false, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, "jerry", READ_WRITE, false, "john", null, null, null);
+
+        // Check jack and jerry have permission, even with inheritance block
+        assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
+        assertEquals(Access.GRANT, acp.getAccess("jack", "ReadWrite"));
+        assertEquals(Access.GRANT, acp.getAccess("jerry", "ReadWrite"));
+
+    }
+
+    private ACP getInheritedReadWriteACP() {
+        ACP acp = new ACPImpl();
+        ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
+        acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
+
+        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ_WRITE, true));
+        return acp;
+
     }
 
 }

@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.cache.Cache;
@@ -69,7 +70,7 @@ import org.nuxeo.runtime.services.event.EventService;
 /**
  * Standard implementation of the Nuxeo UserManager.
  */
-public class UserManagerImpl implements UserManager, MultiTenantUserManager {
+public class UserManagerImpl implements UserManager, MultiTenantUserManager, AdministratorGroupsProvider {
 
     private static final long serialVersionUID = 1L;
 
@@ -479,8 +480,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         return makePrincipal(userEntry, false, null);
     }
 
-    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups)
-            {
+    protected NuxeoPrincipal makePrincipal(DocumentModel userEntry, boolean anonymous, List<String> groups) {
         boolean admin = false;
         String username = userEntry.getId();
 
@@ -865,8 +865,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext)
-            {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext) {
         return searchGroups(filter, fulltext, null);
     }
 
@@ -947,8 +946,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern)
-            {
+    public List<NuxeoPrincipal> searchByMap(Map<String, Serializable> filter, Set<String> pattern) {
         try (Session userDir = dirService.open(userDirectoryName)) {
             removeVirtualFilters(filter);
 
@@ -1073,8 +1071,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
-            {
+    public DocumentModelList searchUsers(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context) {
         throw new UnsupportedOperationException();
     }
 
@@ -1084,8 +1081,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context)
-            {
+    public DocumentModelList searchGroups(Map<String, Serializable> filter, Set<String> fulltext, DocumentModel context) {
         filter = filter != null ? cloneMap(filter) : new HashMap<String, Serializable>();
         HashSet<String> fulltextClone = fulltext != null ? cloneSet(fulltext) : new HashSet<String>();
         multiTenantManagement.queryTransformer(this, filter, fulltextClone, context);
@@ -1097,8 +1093,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel createGroup(DocumentModel groupModel, DocumentModel context) throws
-            GroupAlreadyExistsException {
+    public DocumentModel createGroup(DocumentModel groupModel, DocumentModel context)
+            throws GroupAlreadyExistsException {
         groupModel = multiTenantManagement.groupTransformer(this, groupModel, context);
 
         // be sure the name does not contains trailing spaces
@@ -1225,8 +1221,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     }
 
     @Override
-    public DocumentModel createUser(DocumentModel userModel, DocumentModel context) throws
-            UserAlreadyExistsException {
+    public DocumentModel createUser(DocumentModel userModel, DocumentModel context) throws UserAlreadyExistsException {
         // be sure UserId does not contains any trailing spaces
         checkUserId(userModel);
 

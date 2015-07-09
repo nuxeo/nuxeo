@@ -97,9 +97,9 @@ public class AddPermission {
             contextData.put(COMMENT_KEY, comment);
         }
 
-        boolean permissionChanged = DocumentPermissionHelper.addPermission(acp, aclName, user, permission,
-                blockInheritance, session.getPrincipal()
-                                         .getName(), begin, end, contextData);
+        String creator = session.getPrincipal().getName();
+        boolean permissionChanged = acp.addACE(aclName, user, permission, blockInheritance, creator, begin, end,
+                contextData);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
