@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.suggestbox.service.registries;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.platform.suggestbox.service.ComponentInitializationException;
 import org.nuxeo.ecm.platform.suggestbox.service.descriptors.SuggesterDescriptor;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
@@ -59,9 +61,8 @@ public class SuggesterRegistry extends ContributionFragmentRegistry<SuggesterDes
     public void merge(SuggesterDescriptor src, SuggesterDescriptor dst) {
         try {
             dst.mergeFrom(src);
-        } catch (Exception e) {
-            // it should be possible to throw a non runtime exception here
-            throw new RuntimeException(e);
+        } catch (ComponentInitializationException e) {
+            throw new NuxeoException(e);
         }
     }
 

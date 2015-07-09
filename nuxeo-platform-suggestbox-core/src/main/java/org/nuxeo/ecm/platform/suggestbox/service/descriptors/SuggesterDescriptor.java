@@ -75,7 +75,7 @@ public class SuggesterDescriptor implements Cloneable {
             // by the user: fail early.
             try {
                 suggester = (Suggester) runtimeContext.loadClass(className).newInstance();
-            } catch (Exception e) {
+            } catch (ReflectiveOperationException e) {
                 throw new ComponentInitializationException(String.format(
                         "Failed to initialize suggester '%s' with class '%s'", name, className), e);
             }

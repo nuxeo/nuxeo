@@ -135,11 +135,7 @@ public class DateMatcher {
                 month = second;
                 day = first;
             }
-            Calendar dateToInstance = null;
-            try {
-                dateToInstance = dateToInstance(year, month, day);
-            } catch (Exception e) {
-            }
+            Calendar dateToInstance = dateToInstance(year, month, day);
             return new DateMatcher(true, true, true, dateToInstance);
         }
         matcher = parsingDate(YEAR_MONTHS_DAY_MATCHER, input);
@@ -159,11 +155,7 @@ public class DateMatcher {
                 month = second;
                 day = first;
             }
-            Calendar dateToInstance = null;
-            try {
-                dateToInstance = dateToInstance(year, month, day);
-            } catch (Exception e) {
-            }
+            Calendar dateToInstance = dateToInstance(year, month, day);
             return new DateMatcher(true, true, true, dateToInstance);
         }
 
@@ -175,7 +167,7 @@ public class DateMatcher {
             Chronology chrono = GregorianChronology.getInstance();
             DateTime dt = new DateTime(year, month, day, 12, 0, 0, 0, chrono);
             return dt.toGregorianCalendar();
-        } catch (IllegalFieldValueException e) {
+        } catch (IllegalArgumentException e) {
             return null;
         }
     }
