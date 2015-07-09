@@ -30,6 +30,7 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.platform.shibboleth.ShibbolethGroupHelper;
@@ -80,7 +81,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
         } catch (GroupAlreadyExistsException e) {
             String message = resourcesAccessor.getMessages().get("error.groupManager.groupAlreadyExists");
             facesMessages.addToControl("groupName", StatusMessage.Severity.ERROR, message);
-        } catch (InvalidPropertyValueException e) {
+        } catch (PropertyException e) {
             String message = resourcesAccessor.getMessages().get("error.shibboleth.groupManager.wrongEl");
             facesMessages.addToControl("expressionLanguage", StatusMessage.Severity.ERROR, message);
         }
@@ -121,7 +122,7 @@ public class ShibbolethGroupManagerActionsBean extends AbstractUserGroupManageme
             ShibbolethGroupHelper.updateGroup(selectedGroup);
             detailsMode = DETAILS_VIEW_MODE;
             fireSeamEvent(EVENT_SHIBB_GROUP_LISTING);
-        } catch (InvalidPropertyValueException e) {
+        } catch (PropertyException e) {
             String message = resourcesAccessor.getMessages().get("error.shibboleth.groupManager.wrongEl");
             facesMessages.addToControl("expressionLanguage", StatusMessage.Severity.ERROR, message);
         }
