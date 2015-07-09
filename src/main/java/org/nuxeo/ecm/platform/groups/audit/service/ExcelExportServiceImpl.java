@@ -16,13 +16,16 @@
 package org.nuxeo.ecm.platform.groups.audit.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.jxls.exception.ParsePropertyException;
 import net.sf.jxls.transformer.XLSTransformer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -67,7 +70,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExp
             ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
             transformer.transformXLS(descriptor.getTemplate().getAbsolutePath(),
                     descriptor.getFactory().getDataToInject(), resultReport.getAbsolutePath());
-        } catch (Exception e) {
+        } catch (IOException | ParsePropertyException | InvalidFormatException e) {
             log.error("Unable to create excel report result file:", e);
         }
         return resultReport;
@@ -85,7 +88,7 @@ public class ExcelExportServiceImpl extends DefaultComponent implements ExcelExp
             resultReport.createNewFile();
             ExcelExportServiceDescriptor descriptor = exportExcelRegistry.get(exportName);
             transformer.transformXLS(descriptor.getTemplate().getAbsolutePath(), data, resultReport.getAbsolutePath());
-        } catch (Exception e) {
+        } catch (IOException | ParsePropertyException | InvalidFormatException e) {
             log.error("Unable to create excel report result file:", e);
         }
         return resultReport;

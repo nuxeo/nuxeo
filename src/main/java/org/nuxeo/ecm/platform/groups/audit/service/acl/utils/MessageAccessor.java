@@ -1,6 +1,7 @@
 package org.nuxeo.ecm.platform.groups.audit.service.acl.utils;
 
 import java.util.Locale;
+import java.util.MissingResourceException;
 
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -19,7 +20,7 @@ public class MessageAccessor {
 
         try {
             return I18NUtils.getMessageString("messages", key, null, locale);
-        } catch (Exception e) {
+        } catch (MissingResourceException e) {
             return key;
         }
     }

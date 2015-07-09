@@ -22,10 +22,11 @@ import java.net.URL;
 import org.apache.commons.io.FileUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * XMap descriptor for contributed export service factory (and template).
- * 
+ *
  * @since 5.7
  */
 @XObject("ExcelExport")
@@ -60,9 +61,13 @@ public class ExcelExportServiceDescriptor implements Serializable {
         }
     }
 
-    public ExcelExportFactory getFactory() throws InstantiationException, IllegalAccessException {
+    public ExcelExportFactory getFactory() {
         if (factoryClass != null) {
-            return (ExcelExportFactory) factoryClass.newInstance();
+            try {
+                return (ExcelExportFactory) factoryClass.newInstance();
+            } catch (ReflectiveOperationException e) {
+                throw new NuxeoException(e);
+            }
         }
         return null;
     }

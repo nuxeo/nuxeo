@@ -78,7 +78,7 @@ public class ExcelExportRightsActionBean implements Serializable {
     public String doGet() {
         try {
             buildAndSendByMail();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR, "doGet error: " + e.getMessage());
         }

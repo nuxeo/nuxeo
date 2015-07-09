@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.groups.audit.seam;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -83,7 +84,7 @@ public class ExportGroupManagementActions implements Serializable {
             in.close();
             os.close();
             context.responseComplete();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failure : " + e.getMessage());
         }
         return null;
@@ -106,7 +107,7 @@ public class ExportGroupManagementActions implements Serializable {
             in.close();
             os.close();
             context.responseComplete();
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failure : " + e.getMessage());
         }
         return null;

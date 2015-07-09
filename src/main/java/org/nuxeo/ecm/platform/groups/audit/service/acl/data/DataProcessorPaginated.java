@@ -70,37 +70,32 @@ public class DataProcessorPaginated extends DataProcessor {
 
         // process children documents
         status = ProcessorStatus.SUCCESS;
-        try {
-            // iterate over pages
-            overPages: do {
-                log.debug("will get page " + p);
-                final List<DocumentModel> page = pages.getCurrentPage();
-                log.debug("page retrieved with query: " + pages.getCurrentQuery());
-                log.debug("page size: " + page.size());
+        // iterate over pages
+        overPages: do {
+            log.debug("will get page " + p);
+            final List<DocumentModel> page = pages.getCurrentPage();
+            log.debug("page retrieved with query: " + pages.getCurrentQuery());
+            log.debug("page size: " + page.size());
 
-                // iterate over current page content
-                for (DocumentModel m : page) {
-                    processDocument(m);
-                    t.toc(); // update elapsed time
+            // iterate over current page content
+            for (DocumentModel m : page) {
+                processDocument(m);
+                t.toc(); // update elapsed time
 
-                    // verify exit conditions
-                    if (getNumberOfDocuments() == MAX_DOCUMENTS) {
-                        // log.debug("will interrupt doc)
-                        status = ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS;
-                        break overPages;
-                    }
-                    if (maxProcessTime != UNBOUNDED_PROCESS_TIME && t.toc() >= maxProcessTime) {
-                        status = ProcessorStatus.ERROR_TOO_LONG_PROCESS;
-                        break overPages;
-                    }
+                // verify exit conditions
+                if (getNumberOfDocuments() == MAX_DOCUMENTS) {
+                    // log.debug("will interrupt doc)
+                    status = ProcessorStatus.ERROR_TOO_MANY_DOCUMENTS;
+                    break overPages;
                 }
-                pages.nextPage();
-                log.debug("done page " + (p++));
-            } while (pages.isNextPageAvailable());
-        } catch (Exception e) {
-            status = ProcessorStatus.ERROR;
-            information = e.getMessage();
-        }
+                if (maxProcessTime != UNBOUNDED_PROCESS_TIME && t.toc() >= maxProcessTime) {
+                    status = ProcessorStatus.ERROR_TOO_LONG_PROCESS;
+                    break overPages;
+                }
+            }
+            pages.nextPage();
+            log.debug("done page " + (p++));
+        } while (pages.isNextPageAvailable());
     }
 
     protected int p = 0;

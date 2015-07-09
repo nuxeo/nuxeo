@@ -51,7 +51,7 @@ public class AclAuditWork extends AbstractWork {
         String v = Framework.getProperty(PROPERTY_ACL_AUDIT_TIMEOUT, UNDEFINED_TIMEOUT + "");
         try {
             return Integer.parseInt(v);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return UNDEFINED_TIMEOUT;
         }
     }
