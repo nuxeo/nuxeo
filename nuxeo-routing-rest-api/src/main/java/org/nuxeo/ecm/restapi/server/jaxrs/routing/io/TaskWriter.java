@@ -29,9 +29,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.plexus.util.StringUtils;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
