@@ -1,0 +1,25 @@
+<ui:fragment template="basic_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+
+  <header class="nxHeader" style="">
+    <div style="width:20%; float:left;">
+      <ui:include src="/incl/logo_DM_galaxy.xhtml" />
+    </div>
+    <div class="content" style="width:70%; float:right;">
+      <ui:include src="/incl/nuxeo_header.xhtml" />
+    </div>
+    <div class="includes displayNone">
+      <ui:include src="/incl/includes.xhtml" />
+    </div>
+  </header>
+  <section class="nxMainContainer">
+    <ui:insert name="main content" />
+  </section>
+  <footer class="nxFooter">
+    <div class="content">
+      <ui:include src="/incl/nuxeo_footer.xhtml" />
+    </div>
+  </footer>
+
+</ui:fragment>
