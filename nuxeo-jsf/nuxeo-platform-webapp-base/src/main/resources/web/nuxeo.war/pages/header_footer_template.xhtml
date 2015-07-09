@@ -2,7 +2,7 @@
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <header class="nxHeader" style="">
+  <header class="nxHeader">
     <div style="width:20%; float:left;">
       <ui:include src="/incl/logo_DM_galaxy.xhtml" />
     </div>
@@ -11,6 +11,7 @@
     </div>
     <div class="includes displayNone">
       <ui:include src="/incl/includes.xhtml" />
+      <ui:insert name="page body includes" />
     </div>
   </header>
   <section class="nxMainContainer">
