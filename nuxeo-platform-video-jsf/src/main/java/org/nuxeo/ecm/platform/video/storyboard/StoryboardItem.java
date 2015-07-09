@@ -19,7 +19,7 @@ package org.nuxeo.ecm.platform.video.storyboard;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
