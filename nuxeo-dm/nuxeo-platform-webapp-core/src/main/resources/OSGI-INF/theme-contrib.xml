@@ -1,112 +1,7 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.theme.nuxeo.default">
+<component name="org.nuxeo.ecm.webapp.pageStyling">
 
-  <require>org.nuxeo.theme.core</require>
-  <require>org.nuxeo.theme.fragments</require>
-  <require>org.nuxeo.theme.html</require>
-  <require>org.nuxeo.theme.jsf</require>
-
-  <!-- perspectives -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="perspectives">
-
-    <perspective name="multiple_domains">
-      <title>Perspective for multiple domains</title>
-    </perspective>
-
-  </extension>
-
-  <!-- themes -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
-
-    <theme>
-      <src>themes/document-management.xml</src>
-    </theme>
-
-  </extension>
-
-  <!-- views -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
-
-    <view name="Nuxeo DM logo (Galaxy Theme)" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/logo_DM_galaxy.xhtml</template>
-    </view>
-
-    <view name="nuxeo5 includes" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/includes.xhtml</template>
-      <!-- future bundle: nuxeo_includes -->
-      <resource>dragdrop.js</resource>
-      <resource>seam-remote.js</resource>
-      <resource>foldable-box.js</resource>
-      <resource>window.js</resource>
-      <resource>window_effects.js</resource>
-      <resource>waitdlg.js</resource>
-      <!-- include JS used for D&D and tableSelection -->
-      <resource>utils.js</resource>
-      <!-- include JS for contextual menu -->
-      <resource>jquery.fancybox.js</resource>
-      <resource>jquery.fancybox.style.css</resource>
-      <resource>jquery.tools.cookie.js</resource>
-      <resource>fancybox-popup-utils.js</resource>
-      <resource>contextmenu.js</resource>
-      <resource>jquery.tools.focusfirst.js</resource>
-      <resource>jquery.hotkeys.js</resource>
-      <resource>sarissa-ie-workaround.js</resource>
-      <resource>static-styles.css</resource>
-      <resource>hideableAdminMessage.js</resource>
-      <resource>accessKey.js</resource>
-      <resource>jquery.nuxeo.doubleclickshield.js</resource>
-      <resource>jquery.ambiance.js</resource>
-      <resource>jquery.ambiance.css</resource>
-      <resource>jquery.nuxeo.dropdown.js</resource>
-      <resource>jquery.tipsy.js</resource>
-      <resource>tipsy.css</resource>
-      <resource>jquery.magnific-popup.js</resource>
-      <resource>magnific-popup.css</resource>
-      <resource>nuxeo-lightbox.js</resource>
-      <resource>jquery.nuxeo.cv-lightbox.js</resource>
-      <resource>nuxeo-documents-import.js</resource>
-      <resource>fixmultipartajax.js</resource>
-      <resource>nuxeo.js</resource>
-    </view>
-
-    <view name="Nuxeo header" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/nuxeo_header.xhtml</template>
-      <resource>screen.css</resource>
-    </view>
-
-    <view name="nuxeo5 breadcrumbs" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/breadcrumb.xhtml</template>
-    </view>
-
-    <view name="nuxeo import" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/import.xhtml</template>
-    </view>
-
-    <view name="nuxeo5 tree explorer" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/multi_tree_explorer.xhtml</template>
-    </view>
-
-    <view name="nuxeo5 clip board" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/user_clipboard.xhtml</template>
-      <resource>dragdrop.js</resource>
-    </view>
-
-    <view name="Nuxeo footer" template-engine="jsf-facelets">
-      <format-type>widget</format-type>
-      <template>incl/nuxeo_footer.xhtml</template>
-    </view>
-
-  </extension>
-
-  <!-- resources -->
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
     <!-- JSF resources -->
@@ -535,16 +430,18 @@
         <resource>foldable_boxes.css</resource>
         <resource>tabs_content.css</resource>
         <resource>helpers.css</resource>
-        <!-- TODO: check if these are generic enough -->
         <resource>tables.css</resource>
         <resource>richfaces_components.css</resource>
         <resource>popups.css</resource>
+        <resource>breadcrumb.css</resource>
+        <resource>drag_and_drop.css</resource>
       </resources>
     </resourceBundle>
 
     <!-- resources for all pages including nuxeo header and footer -->
     <resourceBundle name="nuxeo_header_footer">
       <resources>
+        <resource>screen.css</resource>
         <resource>header.css</resource>
         <resource>footer.css</resource>
       </resources>
@@ -553,13 +450,6 @@
     <resourceBundle name="nuxeo_dm">
       <resources>
         <resource>nuxeo_dm_specific.css</resource>
-      </resources>
-    </resourceBundle>
-
-    <resourceBundle name="nuxeo_dm_default">
-      <resources>
-        <resource>breadcrumb.css</resource>
-        <resource>drag_and_drop.css</resource>
       </resources>
     </resourceBundle>
 
@@ -691,50 +581,6 @@
       </palettePreview>
     </flavor>
 
-  </extension>
-
-  <!-- application settings -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
-
-    <application root="${org.nuxeo.ecm.contextPath}"
-      template-engine="jsf-facelets">
-
-      <negotiation>
-        <strategy>nuxeo5</strategy>
-        <default-engine>default</default-engine>
-        <default-theme>galaxy/default</default-theme>
-        <default-perspective>default</default-perspective>
-        <!-- TODO default collection/flavor... -->
-      </negotiation>
-
-      <!-- Cache control for theme resources (/nxthemes-lib/) -->
-      <resource-caching>
-        <lifetime>36000</lifetime>
-      </resource-caching>
-
-      <!-- Cache control for theme styles (/nxthemes-css/) -->
-      <style-caching>
-        <lifetime>900</lifetime>
-      </style-caching>
-
-      <view id="/create_relation_search_document_popup.xhtml">
-        <theme>galaxy/popup</theme>
-      </view>
-      <view id="/dndFormCollector.xhtml">
-        <theme>galaxy/popup</theme>
-      </view>
-      <view id="/editor_link_search_document.xhtml">
-        <theme>galaxy/popup</theme>
-      </view>
-      <view id="/editor_image_upload.xhtml">
-        <theme>galaxy/popup</theme>
-      </view>
-
-      <view id="/info_view.xhtml">
-        <theme>galaxy/popup</theme>
-      </view>
-
-    </application>
   </extension>
 
   <extension target="org.nuxeo.theme.styling.service" point="negotiations">
