@@ -22,10 +22,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 
@@ -373,11 +374,11 @@ public interface Document {
     /**
      * Gets a child document given its name.
      * <p>
-     * Throws {@link NoSuchDocumentException} if the document could not be found.
+     * Throws {@link DocumentNotFoundException} if the document could not be found.
      *
      * @param name the name of the child to retrieve
      * @return the child if exists
-     * @throws NoSuchDocumentException if the child does not exist
+     * @throws DocumentNotFoundException if the child does not exist
      */
     Document getChild(String name);
 

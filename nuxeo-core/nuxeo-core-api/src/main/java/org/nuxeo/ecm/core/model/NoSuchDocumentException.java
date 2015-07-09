@@ -10,35 +10,35 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.api.model;
+package org.nuxeo.ecm.core.model;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Deprecated and never thrown, kept for compatibility so that old code catching this still works.
  * <p>
- * Use {@link org.nuxeo.ecm.core.api.PropertyException} instead.
+ * Use {@link org.nuxeo.ecm.core.api.DocumentNotFoundException} instead.
  *
- * @deprecated since 7.4, use org.nuxeo.ecm.core.api.PropertyException instead
+ * @deprecated since 7.4, use org.nuxeo.ecm.core.api.DocumentNotFoundException instead
  */
 @Deprecated
-public class PropertyException extends ClientException {
+public class NoSuchDocumentException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
-    public PropertyException() {
+    public NoSuchDocumentException() {
         super();
     }
 
-    public PropertyException(String message) {
+    public NoSuchDocumentException(String message) {
         super(message);
     }
 
-    public PropertyException(String message, Throwable cause) {
+    public NoSuchDocumentException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PropertyException(Throwable cause) {
+    public NoSuchDocumentException(Throwable cause) {
         super(cause);
     }
 

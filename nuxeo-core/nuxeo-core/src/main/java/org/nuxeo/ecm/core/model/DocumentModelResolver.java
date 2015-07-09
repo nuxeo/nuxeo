@@ -29,6 +29,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.local.LocalException;
@@ -177,7 +178,7 @@ public class DocumentModelResolver implements ObjectResolver {
                         case PATH_REF:
                             return session.getDocument(new PathRef(ref.ref));
                         }
-                    } catch (NoSuchDocumentException e) {
+                    } catch (DocumentNotFoundException e) {
                         return null;
                     }
                 } catch (LocalException le) { // no such repo

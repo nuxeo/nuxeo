@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 
 /**
  * @since 5.5

@@ -18,8 +18,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.api.model.PropertyRuntimeException;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -66,11 +64,7 @@ public class DirtyPropertyIterator implements Iterator<Property> {
         if (property == null) {
             throw new IllegalStateException("Cannot call remove on a non initialized iterator");
         }
-        try {
-            property.remove();
-        } catch (PropertyException e) {
-            throw new PropertyRuntimeException("Failed to remove property", e);
-        }
+        property.remove();
     }
 
 }

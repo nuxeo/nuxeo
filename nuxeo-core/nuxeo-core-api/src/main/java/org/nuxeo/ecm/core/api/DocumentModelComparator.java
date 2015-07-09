@@ -19,8 +19,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.nuxeo.ecm.core.api.model.PropertyException;
-
 /**
  * DocumentModel comparator. Uses ordering independent of case or accent. If two values are integers/longs, numbering
  * comparison is used.

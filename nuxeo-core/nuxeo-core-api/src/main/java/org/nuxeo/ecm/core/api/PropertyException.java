@@ -10,30 +10,30 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.api.model;
-
-import org.nuxeo.ecm.core.api.PropertyException;
+package org.nuxeo.ecm.core.api;
 
 /**
- * Exception thrown when attempting to write to a read-only property.
+ * Base exception thrown when there is a problem accessing a property.
  */
-public class ReadOnlyPropertyException extends PropertyException {
+//inherits from a deprecated base PropertyException so that old code catching the old one still works
+@SuppressWarnings("deprecation")
+public class PropertyException extends org.nuxeo.ecm.core.api.model.PropertyException {
 
     private static final long serialVersionUID = 1L;
 
-    public ReadOnlyPropertyException() {
+    public PropertyException() {
         super();
     }
 
-    public ReadOnlyPropertyException(String message) {
+    public PropertyException(String message) {
         super(message);
     }
 
-    public ReadOnlyPropertyException(String message, Throwable cause) {
+    public PropertyException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ReadOnlyPropertyException(Throwable cause) {
+    public PropertyException(Throwable cause) {
         super(cause);
     }
 

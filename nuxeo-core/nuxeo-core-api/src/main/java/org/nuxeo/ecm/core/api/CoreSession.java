@@ -221,7 +221,7 @@ public interface CoreSession extends AutoCloseable {
      * @param parent the reference to the parent document
      * @param name the name of the child document to retrieve
      * @return the named child if exists, raises a ClientException otherwise
-     * @throws NoSuchDocumentException if there is no child with the given name
+     * @throws DocumentNotFoundException if there is no child with the given name
      */
     DocumentModel getChild(DocumentRef parent, String name);
 
@@ -1087,8 +1087,9 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document reference
      * @param transition the name of the transition to follow
      * @return a boolean representing the status if the operation
+     * @throws LifeCycleException if the transition cannot be followed
      */
-    boolean followTransition(DocumentRef docRef, String transition);
+    boolean followTransition(DocumentRef docRef, String transition) throws LifeCycleException;
 
     /**
      * Follows a given life cycle transition.
@@ -1098,8 +1099,9 @@ public interface CoreSession extends AutoCloseable {
      * @param doc the document model
      * @param transition the name of the transition to follow
      * @return a boolean representing the status if the operation
+     * @throws LifeCycleException if the transition cannot be followed
      */
-    boolean followTransition(DocumentModel doc, String transition);
+    boolean followTransition(DocumentModel doc, String transition) throws LifeCycleException;
 
     /**
      * Gets the allowed state transitions for this document.

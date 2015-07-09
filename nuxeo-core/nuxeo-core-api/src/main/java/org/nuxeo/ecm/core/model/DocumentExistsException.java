@@ -7,32 +7,37 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id$
+ *     Bogdan Stefanescu
  */
-
 package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * Deprecated and never thrown, kept for compatibility so that old code catching this still works.
+ * <p>
+ * Use {@link org.nuxeo.ecm.core.api.DocumentExistsException} instead.
+ *
+ * @deprecated since 7.4, use org.nuxeo.ecm.core.api.DocumentExistsException instead
  */
+@Deprecated
 public class DocumentExistsException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
     public DocumentExistsException() {
-        super("The document already exists");
     }
 
-    public DocumentExistsException(String path) {
-        super("The document at '" + path + "' already exists");
+    public DocumentExistsException(String message) {
+        super(message);
     }
 
-    public DocumentExistsException(String path, Throwable cause) {
-        super("The document at '" + path + "' already exists", cause);
+    public DocumentExistsException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DocumentExistsException(Throwable cause) {
+        super(cause);
     }
 
 }

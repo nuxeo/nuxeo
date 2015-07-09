@@ -10,30 +10,30 @@
  *     Bogdan Stefanescu
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.api.model;
-
-import org.nuxeo.ecm.core.api.PropertyException;
+package org.nuxeo.ecm.core.api;
 
 /**
- * Exception thrown when attempting to write to a read-only property.
+ * Exception thrown when a document is not found.
  */
-public class ReadOnlyPropertyException extends PropertyException {
+//inherits from a deprecated base NoSuchDocumentException so that old code catching the old one still works
+@SuppressWarnings("deprecation")
+public class DocumentNotFoundException extends org.nuxeo.ecm.core.model.NoSuchDocumentException {
 
     private static final long serialVersionUID = 1L;
 
-    public ReadOnlyPropertyException() {
+    public DocumentNotFoundException() {
         super();
     }
 
-    public ReadOnlyPropertyException(String message) {
+    public DocumentNotFoundException(String message) {
         super(message);
     }
 
-    public ReadOnlyPropertyException(String message, Throwable cause) {
+    public DocumentNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ReadOnlyPropertyException(Throwable cause) {
+    public DocumentNotFoundException(Throwable cause) {
         super(cause);
     }
 

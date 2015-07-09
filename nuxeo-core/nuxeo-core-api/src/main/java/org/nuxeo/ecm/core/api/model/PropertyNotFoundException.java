@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -12,6 +12,8 @@
  */
 package org.nuxeo.ecm.core.api.model;
 
+import org.nuxeo.ecm.core.api.PropertyException;
+
 /**
  * Exception indicating a property not found.
  */
@@ -22,31 +24,22 @@ public class PropertyNotFoundException extends PropertyException {
     protected final String detail;
 
     public PropertyNotFoundException(String path) {
-        this(path, null);
+        super(path);
+        detail = null;
     }
 
     public PropertyNotFoundException(String path, String detail) {
         super(path);
+        addInfo(detail);
         this.detail = detail;
     }
 
     public String getPath() {
-        return super.getMessage();
+        return getOriginalMessage();
     }
 
     public String getDetail() {
         return detail;
-    }
-
-    @Override
-    public String getMessage() {
-        StringBuilder buf = new StringBuilder("Property not found: ");
-        buf.append(getPath());
-        if (detail != null) {
-            buf.append(". ");
-            buf.append(detail);
-        }
-        return buf.toString();
     }
 
 }

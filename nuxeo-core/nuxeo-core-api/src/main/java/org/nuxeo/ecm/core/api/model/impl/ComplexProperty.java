@@ -22,10 +22,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;

@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.rendering.api.DefaultDocumentView;
 
 import freemarker.core.CollectionAndSequence;

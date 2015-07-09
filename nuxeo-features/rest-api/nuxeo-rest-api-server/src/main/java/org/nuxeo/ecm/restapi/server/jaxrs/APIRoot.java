@@ -25,7 +25,7 @@ import javax.ws.rs.WebApplicationException;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 public class APIRoot extends ModuleRoot {
 
     @Path("/")
-    public Object doGetRepository(@PathParam("repo") String repositoryParam) throws NoSuchDocumentException {
+    public Object doGetRepository(@PathParam("repo") String repositoryParam) throws DocumentNotFoundException {
         if (StringUtils.isNotBlank(repositoryParam)) {
             String repoName = repositoryParam.substring("repo/".length() + 1);
             try {

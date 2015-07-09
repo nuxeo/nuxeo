@@ -19,12 +19,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
@@ -56,7 +56,7 @@ public class SQLDocumentProxy implements SQLDocument {
     protected String getSchema(String xpath) {
         int p = xpath.indexOf(':');
         if (p == -1) {
-            throw new PropertyNotFoundException("Schema not specified: " + xpath);
+            throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
         String prefix = xpath.substring(0, p);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -64,7 +64,7 @@ public class SQLDocumentProxy implements SQLDocument {
         if (schema == null) {
             schema = schemaManager.getSchema(prefix);
             if (schema == null) {
-                throw new PropertyNotFoundException("No schema for prefix: " + xpath);
+                throw new PropertyNotFoundException(xpath, "No schema for prefix");
             }
         }
         return schema.getName();
@@ -240,22 +240,22 @@ public class SQLDocumentProxy implements SQLDocument {
      */
 
     @Override
-    public String getLifeCyclePolicy() throws LifeCycleException {
+    public String getLifeCyclePolicy() {
         return target.getLifeCyclePolicy();
     }
 
     @Override
-    public void setLifeCyclePolicy(String policy) throws LifeCycleException {
+    public void setLifeCyclePolicy(String policy) {
         target.setLifeCyclePolicy(policy);
     }
 
     @Override
-    public String getLifeCycleState() throws LifeCycleException {
+    public String getLifeCycleState() {
         return target.getLifeCycleState();
     }
 
     @Override
-    public void setCurrentLifeCycleState(String state) throws LifeCycleException {
+    public void setCurrentLifeCycleState(String state) {
         target.setCurrentLifeCycleState(state);
     }
 
@@ -265,7 +265,7 @@ public class SQLDocumentProxy implements SQLDocument {
     }
 
     @Override
-    public Collection<String> getAllowedStateTransitions() throws LifeCycleException {
+    public Collection<String> getAllowedStateTransitions() {
         return target.getAllowedStateTransitions();
     }
 

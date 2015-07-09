@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -41,7 +42,6 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.usermanager.UserAdapter;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
@@ -285,7 +285,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
                 DocumentModel root;
                 try {
                     root = doCreateUserWorkspacesRoot(session, rootRef);
-                } catch (NoSuchDocumentException e) {
+                } catch (DocumentNotFoundException e) {
                     // domain may have been removed !
                     targetDomainName = null;
                     rootRef = new PathRef(computePathUserWorkspaceRoot(session, userName, null));

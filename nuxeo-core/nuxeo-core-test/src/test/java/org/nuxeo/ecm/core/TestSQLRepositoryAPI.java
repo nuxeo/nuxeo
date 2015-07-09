@@ -56,6 +56,7 @@ import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -84,7 +85,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -3640,13 +3640,13 @@ public class TestSQLRepositoryAPI {
         try {
             session.getDocument(docRef);
             fail("shouldn't be able to get doc with obsolete type");
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("Unknown document type: MyDocType"));
         }
         try {
             session.getChild(rootRef, "doc");
             fail("shouldn't be able to get doc with obsolete type");
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             assertTrue(e.getMessage(), e.getMessage().contains("Unknown document type: MyDocType"));
         }
     }

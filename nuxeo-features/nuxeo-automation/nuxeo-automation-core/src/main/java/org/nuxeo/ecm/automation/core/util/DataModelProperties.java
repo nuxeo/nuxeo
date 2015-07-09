@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DataModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Initialize a {@code Properties} object from one or more {@link DataModel}s.

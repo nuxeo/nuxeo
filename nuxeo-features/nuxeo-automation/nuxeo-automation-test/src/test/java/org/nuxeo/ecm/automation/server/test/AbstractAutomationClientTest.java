@@ -70,6 +70,7 @@ import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOpe
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.runtime.api.Framework;
 
 
@@ -133,7 +134,7 @@ public abstract class AbstractAutomationClientTest {
             }
             Map<String, JsonNode> otherNodes = ((RemoteThrowable) remoteCause).getOtherNodes();
             String className = otherNodes.get("className").getTextValue();
-            assertThat(className, is("org.nuxeo.ecm.core.model.NoSuchDocumentException"));
+            assertThat(className, is(DocumentNotFoundException.class.getName()));
             Boolean rollback = otherNodes.get("rollback").getBooleanValue();
             assertThat(rollback, is(Boolean.TRUE));
         }

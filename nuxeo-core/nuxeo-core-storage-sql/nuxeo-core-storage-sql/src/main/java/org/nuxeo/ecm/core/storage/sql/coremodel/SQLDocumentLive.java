@@ -23,19 +23,19 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -291,7 +291,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             propertyName = systemPropNameMap.get(name);
         }
         if (propertyName == null) {
-            throw new PropertyNotFoundException("Unknown system property: " + name);
+            throw new PropertyNotFoundException(name, "Unknown system property");
         }
         setPropertyValue(propertyName, value);
     }
@@ -301,7 +301,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     public <T extends Serializable> T getSystemProp(String name, Class<T> type) {
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
-            throw new PropertyNotFoundException("Unknown system property: " + name);
+            throw new PropertyNotFoundException(name, "Unknown system property");
         }
         Serializable value = getPropertyValue(propertyName);
         if (value == null) {
@@ -564,7 +564,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
     public void orderBefore(String src, String dest) {
         SQLDocument srcDoc = (SQLDocument) getChild(src);
         if (srcDoc == null) {
-            throw new NoSuchDocumentException("Document " + this + " has no child: " + src);
+            throw new DocumentNotFoundException("Document " + this + " has no child: " + src);
         }
         SQLDocument destDoc;
         if (dest == null) {
@@ -572,7 +572,7 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
         } else {
             destDoc = (SQLDocument) getChild(dest);
             if (destDoc == null) {
-                throw new NoSuchDocumentException("Document " + this + " has no child: " + dest);
+                throw new DocumentNotFoundException("Document " + this + " has no child: " + dest);
             }
         }
         session.orderBefore(getNode(), srcDoc.getNode(), destDoc == null ? null : destDoc.getNode());

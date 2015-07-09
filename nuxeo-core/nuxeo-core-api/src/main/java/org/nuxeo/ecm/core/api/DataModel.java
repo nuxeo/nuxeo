@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 
 /**

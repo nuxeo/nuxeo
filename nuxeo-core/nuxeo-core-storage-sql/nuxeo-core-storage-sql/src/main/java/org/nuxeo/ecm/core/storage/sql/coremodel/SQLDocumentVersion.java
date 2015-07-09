@@ -15,8 +15,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Node;
@@ -42,7 +42,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
         super(node, type, session, readonly);
         Serializable versionSeriesId = getPropertyValue(Model.VERSION_VERSIONABLE_PROP);
         if (versionSeriesId == null) {
-            throw new NoSuchDocumentException("Version was removed: " + node.getId());
+            throw new DocumentNotFoundException("Version was removed: " + node.getId());
         }
         versionableNode = session.getNodeById(versionSeriesId);
     }
@@ -147,7 +147,7 @@ public class SQLDocumentVersion extends SQLDocumentLive {
 
     @Override
     public Document getChild(String name) {
-        throw new NoSuchDocumentException(name);
+        throw new DocumentNotFoundException(name);
     }
 
     @Override

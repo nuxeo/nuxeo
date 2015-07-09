@@ -14,6 +14,7 @@
 
 package org.nuxeo.ecm.core.api.model;
 
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
 

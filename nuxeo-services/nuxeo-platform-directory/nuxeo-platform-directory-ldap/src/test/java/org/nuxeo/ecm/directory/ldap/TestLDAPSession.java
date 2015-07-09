@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -98,7 +99,7 @@ public class TestLDAPSession extends LDAPDirectoryTestCase {
             try {
                 entry2.getProperty(USER_SCHEMANAME, "userPassword");
                 fail();
-            } catch (ClientException ce) {
+            } catch (PropertyNotFoundException ce) {
                 // expected
             }
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(USER_SCHEMANAME, "employeeType"));

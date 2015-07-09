@@ -23,8 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
@@ -154,7 +154,7 @@ public class WebException extends WebApplicationException {
             return new WebSecurityException(message, exception);
         } else if (exception instanceof WebException) {
             return (WebException) exception;
-        } else if (exception instanceof NoSuchDocumentException) {
+        } else if (exception instanceof DocumentNotFoundException) {
             return new WebResourceNotFoundException(message, exception);
         } else if (exception instanceof ClientException) {
             return new WebDocumentException(message, exception);
@@ -188,7 +188,7 @@ public class WebException extends WebApplicationException {
         if ((cause instanceof DocumentSecurityException) || (cause instanceof SecurityException)
                 || "javax.ejb.EJBAccessException".equals(cause.getClass().getName())) {
             return HttpServletResponse.SC_FORBIDDEN;
-        } else if (cause instanceof NoSuchDocumentException || cause instanceof WebResourceNotFoundException) {
+        } else if (cause instanceof DocumentNotFoundException || cause instanceof WebResourceNotFoundException) {
             return HttpServletResponse.SC_NOT_FOUND;
         } else if (cause instanceof InvalidOperationException) {
             return HttpServletResponse.SC_BAD_REQUEST;
@@ -204,9 +204,9 @@ public class WebException extends WebApplicationException {
             return getStatus(parent, depth - 1);
         }
         if (cause.getMessage() != null
-                && cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
-            log.warn("Badly wrapped exception: found a NoSuchDocumentException"
-                    + " message but no NoSuchDocumentException", cause);
+                && cause.getMessage().contains(DocumentNotFoundException.class.getName())) {
+            log.warn("Badly wrapped exception: found a DocumentNotFoundException"
+                    + " message but no DocumentNotFoundException", cause);
             return HttpServletResponse.SC_NOT_FOUND;
         }
         return HttpServletResponse.SC_INTERNAL_SERVER_ERROR;

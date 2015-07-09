@@ -20,9 +20,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.model.InvalidPropertyValueException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
-import org.nuxeo.ecm.core.api.model.PropertyRuntimeException;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
 import org.nuxeo.ecm.core.schema.types.Field;
 
@@ -67,18 +67,18 @@ public class BinaryProperty extends ScalarProperty {
         if (InputStream.class.isAssignableFrom(toType)) {
             return (T) value;
         }
-        if (toType == String.class) {
+        if (toType == String.class && value instanceof InputStream) {
             try {
                 return (T) FileUtils.read((InputStream) value);
             } catch (IOException e) {
-                throw new PropertyRuntimeException("Failed to read given input stream", e);
+                throw new InvalidPropertyValueException("Failed to read given input stream", e);
             }
         }
-        if (toType == byte[].class) {
+        if (toType == byte[].class && value instanceof InputStream) {
             try {
                 return (T) FileUtils.readBytes((InputStream) value);
             } catch (IOException e) {
-                throw new PropertyRuntimeException("Failed to read given input stream", e);
+                throw new InvalidPropertyValueException("Failed to read given input stream", e);
             }
         }
         throw new PropertyConversionException(value.getClass(), toType);

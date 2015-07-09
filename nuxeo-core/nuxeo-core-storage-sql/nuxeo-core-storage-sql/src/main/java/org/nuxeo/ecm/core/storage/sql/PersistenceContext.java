@@ -32,6 +32,7 @@ import org.apache.commons.collections.map.ReferenceMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
+import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.storage.sql.Fragment.State;
@@ -1267,7 +1268,7 @@ public class PersistenceContext {
         Serializable pid = parentId;
         do {
             if (pid.equals(id)) {
-                throw new NuxeoException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
+                throw new DocumentExistsException("Cannot " + op + " a node under itself: " + parentId + " is under " + id);
             }
             SimpleFragment p = getHier(pid, false);
             if (p == null) {
@@ -1282,7 +1283,7 @@ public class PersistenceContext {
     protected void checkFreeName(Serializable parentId, String name, boolean complexProp) {
         Fragment fragment = getChildHierByName(parentId, name, complexProp);
         if (fragment != null) {
-            throw new NuxeoException("Destination name already exists: " + name);
+            throw new DocumentExistsException("Destination name already exists: " + name);
         }
     }
 

@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.ReferenceMap;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.storage.StateAccessor;
 

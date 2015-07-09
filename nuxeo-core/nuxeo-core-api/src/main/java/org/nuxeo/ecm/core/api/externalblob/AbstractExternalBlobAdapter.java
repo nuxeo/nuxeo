@@ -14,7 +14,7 @@ package org.nuxeo.ecm.core.api.externalblob;
 import java.util.Collections;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Abstract class for external blob adapters.

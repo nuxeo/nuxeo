@@ -19,8 +19,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleState;
 import org.nuxeo.ecm.core.lifecycle.extensions.LifeCycleDescriptor;

@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -175,7 +175,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Document getDocumentByUUID(String uuid) throws NoSuchDocumentException {
+    public Document getDocumentByUUID(String uuid) throws DocumentNotFoundException {
         /*
          * Document ids coming from higher level have been turned into strings (by {@link SQLDocument#getUUID}) but the
          * backend may actually expect them to be Longs (for database-generated integer ids).
@@ -183,20 +183,20 @@ public class SQLSession implements Session {
         Document doc = getDocumentById(idFromString(uuid));
         if (doc == null) {
             // required by callers such as AbstractSession.exists
-            throw new NoSuchDocumentException(uuid);
+            throw new DocumentNotFoundException(uuid);
         }
         return doc;
     }
 
     @Override
-    public Document resolvePath(String path) throws NoSuchDocumentException {
+    public Document resolvePath(String path) throws DocumentNotFoundException {
         if (path.endsWith("/") && path.length() > 1) {
             path = path.substring(0, path.length() - 1);
         }
         Node node = session.getNodeByPath(path, session.getRootNode());
         Document doc = newDocument(node);
         if (doc == null) {
-            throw new NoSuchDocumentException(path);
+            throw new DocumentNotFoundException(path);
         }
         return doc;
     }
@@ -483,7 +483,7 @@ public class SQLSession implements Session {
         if (node.isProxy()) {
             Serializable targetId = node.getSimpleProperty(Model.PROXY_TARGET_PROP).getValue();
             if (targetId == null) {
-                throw new NoSuchDocumentException("Proxy has null target");
+                throw new DocumentNotFoundException("Proxy has null target");
             }
             targetNode = session.getNodeById(targetId);
             typeName = targetNode.getPrimaryType();
@@ -491,7 +491,7 @@ public class SQLSession implements Session {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
-            throw new NoSuchDocumentException("Unknown document type: " + typeName);
+            throw new DocumentNotFoundException("Unknown document type: " + typeName);
         }
 
         if (node.isProxy()) {
@@ -526,7 +526,7 @@ public class SQLSession implements Session {
             Document doc;
             try {
                 doc = newDocument(eachNode);
-            } catch (NoSuchDocumentException e) {
+            } catch (DocumentNotFoundException e) {
                 // unknown type in db, ignore
                 continue;
             }
@@ -543,11 +543,11 @@ public class SQLSession implements Session {
         return session.getPath(node);
     }
 
-    protected Document getChild(Node node, String name) throws NoSuchDocumentException {
+    protected Document getChild(Node node, String name) throws DocumentNotFoundException {
         Node childNode = session.getChildNode(node, name, false);
         Document doc = newDocument(childNode);
         if (doc == null) {
-            throw new NoSuchDocumentException(name);
+            throw new DocumentNotFoundException(name);
         }
         return doc;
     }
@@ -576,7 +576,7 @@ public class SQLSession implements Session {
         for (Node n : nodes) {
             try {
                 children.add(newDocument(n));
-            } catch (NoSuchDocumentException e) {
+            } catch (DocumentNotFoundException e) {
                 // ignore error retrieving one of the children
                 continue;
             }

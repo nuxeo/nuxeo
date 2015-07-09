@@ -20,8 +20,8 @@ package org.nuxeo.ecm.platform.comment.impl;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.Sorter;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class CommentSorter implements Sorter {
 

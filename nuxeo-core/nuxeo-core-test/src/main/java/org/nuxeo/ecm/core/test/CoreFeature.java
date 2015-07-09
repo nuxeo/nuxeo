@@ -19,11 +19,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.test.annotations.BackendType;
@@ -193,7 +193,7 @@ public class CoreFeature extends SimpleFeature {
                 if (rootDocumentId != uuid) {
                     try {
                         session.removeDocument(new IdRef(uuid));
-                    } catch (NoSuchDocumentException e) {
+                    } catch (DocumentNotFoundException e) {
                         // could have unknown type in db, ignore
                     }
                 }

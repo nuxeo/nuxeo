@@ -23,7 +23,6 @@ import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyVisitor;
 import org.nuxeo.ecm.core.api.model.resolver.PropertyObjectResolver;
 import org.nuxeo.ecm.core.api.security.ACP;

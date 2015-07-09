@@ -22,7 +22,7 @@ import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.JsonFactoryManager;
@@ -75,11 +75,11 @@ public class ExceptionRestTest extends BaseTest {
 
         // Then i get an exception and parse it to check json payload
         assertEquals("exception", node.get("entity-type").getTextValue());
-        assertEquals(NoSuchDocumentException.class.getCanonicalName(), node.get("code").getTextValue());
+        assertEquals(DocumentNotFoundException.class.getCanonicalName(), node.get("code").getTextValue());
         assertEquals(404, node.get("status").getIntValue());
-        assertEquals("No such document: /wrongID", node.get("message").getTextValue());
+        assertEquals("/wrongID", node.get("message").getTextValue());
         assertNotNull(node.get("stacktrace").getTextValue());
-        assertEquals(NoSuchDocumentException.class.getCanonicalName(),
+        assertEquals(DocumentNotFoundException.class.getCanonicalName(),
                 node.get("exception").get("className").getTextValue());
     }
 }

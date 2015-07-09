@@ -74,10 +74,8 @@ import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryException;
@@ -796,7 +794,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         try {
             Document doc = resolveReference(docRef);
             return hasPermission(doc, BROWSE);
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             return false;
         }
     }
@@ -1495,7 +1493,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         checkPermission(doc, READ_VERSION);
         Document headDocument = doc.getSourceDocument();
         if (headDocument == null) {
-            throw new NoSuchDocumentException("Source document has been deleted");
+            throw new DocumentNotFoundException("Source document has been deleted");
         }
         return readModel(headDocument);
     }

@@ -21,9 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.AbstractProperty;
 import org.nuxeo.ecm.core.api.model.impl.DocumentPartImpl;

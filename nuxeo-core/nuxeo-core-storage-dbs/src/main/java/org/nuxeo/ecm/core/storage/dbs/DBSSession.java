@@ -82,9 +82,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentExistsException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -98,8 +100,6 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.DocumentExistsException;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -231,7 +231,7 @@ public class DBSSession implements Session {
             }
             docState = transaction.getChildState(parentId, name);
             if (docState == null) {
-                throw new NoSuchDocumentException(path);
+                throw new DocumentNotFoundException(path);
             }
             parentId = docState.getId();
         }
@@ -293,7 +293,7 @@ public class DBSSession implements Session {
         for (DBSDocumentState docState : docStates) {
             try {
                 children.add(getDocument(docState));
-            } catch (NoSuchDocumentException e) {
+            } catch (DocumentNotFoundException e) {
                 // ignore error retrieving one of the children
                 // (Unknown document type)
                 continue;
@@ -330,7 +330,7 @@ public class DBSSession implements Session {
             return doc;
         }
         // exception required by API
-        throw new NoSuchDocumentException(id);
+        throw new DocumentNotFoundException(id);
     }
 
     @Override
@@ -371,7 +371,7 @@ public class DBSSession implements Session {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType type = schemaManager.getDocumentType(typeName);
         if (type == null) {
-            throw new NoSuchDocumentException("Unknown document type: " + typeName);
+            throw new DocumentNotFoundException("Unknown document type: " + typeName);
         }
 
         if (isVersion) {
@@ -974,7 +974,7 @@ public class DBSSession implements Session {
             }
             State targetState = transaction.getStateForRead(targetId);
             if (targetState == null) {
-                throw new NoSuchDocumentException("Cannot import proxy " + id + " with missing target " + targetId);
+                throw new DocumentNotFoundException("Cannot import proxy " + id + " with missing target " + targetId);
             }
             String versionSeriesId = (String) properties.get(CoreSession.IMPORT_PROXY_VERSIONABLE_ID);
             docState = addProxyState(id, parentId, name, pos, targetId, versionSeriesId);

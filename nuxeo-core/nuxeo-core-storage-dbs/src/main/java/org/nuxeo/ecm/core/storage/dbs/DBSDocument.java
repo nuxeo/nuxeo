@@ -34,20 +34,20 @@ import java.util.function.Consumer;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.ReadOnlyPropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ComplexProperty;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
-import org.nuxeo.ecm.core.lifecycle.LifeCycleException;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -341,7 +341,7 @@ public class DBSDocument extends BaseDocument<State> {
     public void orderBefore(String src, String dest) {
         Document srcDoc = getChild(src);
         if (srcDoc == null) {
-            throw new NoSuchDocumentException("Document " + this + " has no child: " + src);
+            throw new DocumentNotFoundException("Document " + this + " has no child: " + src);
         }
         Document destDoc;
         if (dest == null) {
@@ -349,7 +349,7 @@ public class DBSDocument extends BaseDocument<State> {
         } else {
             destDoc = getChild(dest);
             if (destDoc == null) {
-                throw new NoSuchDocumentException("Document " + this + " has no child: " + dest);
+                throw new DocumentNotFoundException("Document " + this + " has no child: " + dest);
             }
         }
         session.orderBefore(id, srcDoc.getUUID(), destDoc == null ? null : destDoc.getUUID());
@@ -719,7 +719,7 @@ public class DBSDocument extends BaseDocument<State> {
 
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
-            throw new PropertyNotFoundException("Unknown system property: " + name);
+            throw new PropertyNotFoundException(name, "Unknown system property");
         }
         setPropertyValue(propertyName, value);
     }
@@ -729,7 +729,7 @@ public class DBSDocument extends BaseDocument<State> {
     public <T extends Serializable> T getSystemProp(String name, Class<T> type) {
         String propertyName = systemPropNameMap.get(name);
         if (propertyName == null) {
-            throw new PropertyNotFoundException("Unknown system property: " + name);
+            throw new PropertyNotFoundException(name, "Unknown system property: ");
         }
         Serializable value = getPropertyValue(propertyName);
         if (value == null) {
@@ -769,7 +769,7 @@ public class DBSDocument extends BaseDocument<State> {
     protected String getSchema(String xpath) {
         int p = xpath.indexOf(':');
         if (p == -1) {
-            throw new PropertyNotFoundException("Schema not specified: " + xpath);
+            throw new PropertyNotFoundException(xpath, "Schema not specified");
         }
         String prefix = xpath.substring(0, p);
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
@@ -777,7 +777,7 @@ public class DBSDocument extends BaseDocument<State> {
         if (schema == null) {
             schema = schemaManager.getSchema(prefix);
             if (schema == null) {
-                throw new PropertyNotFoundException("No schema for prefix: " + xpath);
+                throw new PropertyNotFoundException(xpath, "No schema for prefix");
             }
         }
         return schema.getName();

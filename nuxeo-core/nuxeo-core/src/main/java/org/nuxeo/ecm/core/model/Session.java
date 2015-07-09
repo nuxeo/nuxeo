@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -87,18 +88,18 @@ public interface Session {
      *
      * @param path
      * @return
-     * @throws NoSuchDocumentException if the document doesn't exist
+     * @throws DocumentNotFoundException if the document doesn't exist
      */
-    Document resolvePath(String path) throws NoSuchDocumentException;
+    Document resolvePath(String path) throws DocumentNotFoundException;
 
     /**
      * Gets a document given its ID.
      *
      * @param uuid the document id
      * @return the document
-     * @throws NoSuchDocumentException if the document doesn't exist
+     * @throws DocumentNotFoundException if the document doesn't exist
      */
-    Document getDocumentByUUID(String uuid) throws NoSuchDocumentException;
+    Document getDocumentByUUID(String uuid) throws DocumentNotFoundException;
 
     /**
      * Gets the root document in this repository.

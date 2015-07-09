@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.core.storage;
 
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Basic interface to get/put simple values or arrays from a state object.

@@ -18,10 +18,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyAccessException;
 import org.nuxeo.ecm.core.api.model.PropertyConversionException;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.model.impl.MapProperty;
 import org.nuxeo.ecm.core.api.model.impl.ScalarProperty;
@@ -148,10 +148,10 @@ public class BlobProperty extends MapProperty {
 
     protected void setMap(Object object, Map<String, Object> value) throws PropertyException {
         if (object == null) {
-            throw new PropertyAccessException("Trying to access a member of a null object");
+            throw new NuxeoException("Trying to access a member of a null object");
         }
         if (!(object instanceof Blob)) {
-            throw new PropertyAccessException("Not a Blob: " + object);
+            throw new NuxeoException("Not a Blob: " + object);
         }
         Blob blob = (Blob) object;
         for (Entry<String, Object> entry : value.entrySet()) {
@@ -177,10 +177,10 @@ public class BlobProperty extends MapProperty {
 
     protected Object getMemberValue(Object object, String name) throws PropertyException {
         if (object == null) {
-            throw new PropertyAccessException("Trying to access a member of a null object: " + name);
+            throw new NuxeoException("Trying to access a member of a null object: " + name);
         }
         if (!(object instanceof Blob)) {
-            throw new PropertyAccessException("Not a Blob: " + object);
+            throw new NuxeoException("Not a Blob: " + object);
         }
         Blob blob = (Blob) object;
         if (NAME.equals(name)) {
@@ -200,10 +200,10 @@ public class BlobProperty extends MapProperty {
 
     protected void setMemberValue(Object object, String name, Object value) throws PropertyException {
         if (object == null) {
-            throw new PropertyAccessException("Trying to access a member of a null object: " + name);
+            throw new NuxeoException("Trying to access a member of a null object: " + name);
         }
         if (!(object instanceof Blob)) {
-            throw new PropertyAccessException("Not a Blob: " + object);
+            throw new NuxeoException("Not a Blob: " + object);
         }
         Blob blob = (Blob) object;
         setMemberValue(blob, name, value);

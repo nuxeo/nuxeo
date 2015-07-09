@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Interface to implement when defining a way to get a {@link Blob} that is not stored at the usual place handled by the

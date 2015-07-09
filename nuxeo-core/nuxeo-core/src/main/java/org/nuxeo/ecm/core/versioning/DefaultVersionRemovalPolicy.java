@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -27,7 +28,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.runtime.api.Framework;
 
@@ -56,7 +56,7 @@ public class DefaultVersionRemovalPolicy implements VersionRemovalPolicy {
                     // get live doc from version
                     try {
                         source = source.getSourceDocument();
-                    } catch (NoSuchDocumentException e) {
+                    } catch (DocumentNotFoundException e) {
                         // live already removed
                         source = null;
                     }

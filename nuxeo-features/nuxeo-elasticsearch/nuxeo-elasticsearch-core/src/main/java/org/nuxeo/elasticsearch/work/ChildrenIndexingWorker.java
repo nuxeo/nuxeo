@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -81,7 +81,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
         DocumentModel doc;
         try {
             doc = cmd.getTargetDocument();
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             doc = null;
         }
         if (doc == null) {

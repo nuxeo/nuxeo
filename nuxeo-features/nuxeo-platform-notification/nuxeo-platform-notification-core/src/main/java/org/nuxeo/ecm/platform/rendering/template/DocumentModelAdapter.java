@@ -29,8 +29,8 @@ import java.util.Map.Entry;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 import freemarker.template.AdapterTemplateModel;
 import freemarker.template.ObjectWrapper;

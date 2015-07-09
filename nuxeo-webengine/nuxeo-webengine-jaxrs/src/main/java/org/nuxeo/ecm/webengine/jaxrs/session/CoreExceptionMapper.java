@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
@@ -21,6 +21,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
 /**
@@ -40,7 +41,7 @@ public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
         } else if (t instanceof ClientException) {
             Throwable cause = t.getCause();
             if (cause != null && cause.getMessage() != null) {
-                if (cause.getMessage().contains("org.nuxeo.ecm.core.model.NoSuchDocumentException")) {
+                if (cause.getMessage().contains(DocumentNotFoundException.class.getName())) {
                     return getResponse(cause, 401);
                 }
             }

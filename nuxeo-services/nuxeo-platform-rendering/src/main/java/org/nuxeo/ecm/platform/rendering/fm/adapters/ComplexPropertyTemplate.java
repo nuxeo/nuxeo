@@ -17,8 +17,8 @@ package org.nuxeo.ecm.platform.rendering.fm.adapters;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 import freemarker.core.CollectionAndSequence;
 import freemarker.template.AdapterTemplateModel;

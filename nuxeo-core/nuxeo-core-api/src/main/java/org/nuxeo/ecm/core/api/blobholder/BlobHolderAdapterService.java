@@ -17,8 +17,8 @@ import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.externalblob.ExternalBlobAdapter;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 /**
  * Service interface for creating the right {@link BlobHolder} adapter depending on the {@link DocumentModel} type.

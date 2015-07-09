@@ -49,7 +49,7 @@ import javax.faces.event.PhaseId;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.platform.el.FieldAdapterManager;
 import org.nuxeo.ecm.platform.ui.web.component.ResettableComponent;

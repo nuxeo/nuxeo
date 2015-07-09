@@ -51,7 +51,7 @@ public class TestLifeCycleService extends NXRuntimeTestCase {
      * Tests the life cycles registration.
      */
     @Test
-    public void testLifeCycleRegistration() throws LifeCycleException {
+    public void testLifeCycleRegistration() throws Exception {
         Collection<LifeCycle> lcs = lifeCycleService.getLifeCycles();
         assertEquals(1, lcs.size());
 

@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.directory.Session;
 
 /**
@@ -103,7 +104,7 @@ public class TestLDAPSessionWithUpperId extends LDAPDirectoryTestCase {
             try {
                 entry2.getProperty(USER_SCHEMANAME, "userPassword");
                 fail();
-            } catch (ClientException ce) {
+            } catch (PropertyNotFoundException ce) {
                 // expected
             }
             assertEquals(Arrays.asList("Boss"), entry2.getProperty(USER_SCHEMANAME, "employeeType"));
