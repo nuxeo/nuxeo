@@ -16,13 +16,6 @@
  */
 package org.nuxeo.ecm.web.resources.wro;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,6 +36,7 @@ import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroCacheKeyFactory;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroManagerFactory;
 import org.nuxeo.ecm.web.resources.wro.factory.NuxeoWroModelFactory;
+import org.nuxeo.ecm.web.resources.wro.processor.CssUrlRewritingProcessor;
 import org.nuxeo.ecm.web.resources.wro.provider.NuxeoUriLocator;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,8 +54,14 @@ import ro.isdc.wro.model.resource.locator.factory.UriLocatorFactory;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
 import ro.isdc.wro.model.resource.processor.impl.css.CssMinProcessor;
-import ro.isdc.wro.model.resource.processor.impl.css.CssUrlRewritingProcessor;
 import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * @since 7.3
