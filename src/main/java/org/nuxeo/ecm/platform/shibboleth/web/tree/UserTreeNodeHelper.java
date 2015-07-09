@@ -19,8 +19,6 @@ package org.nuxeo.ecm.platform.shibboleth.web.tree;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.shibboleth.web.service.ShibbolethGroupsService;
 import org.nuxeo.runtime.api.Framework;
@@ -32,10 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  * @see org.nuxeo.ecm.platform.shibboleth.web.tree.UserTreeNode
  */
 public class UserTreeNodeHelper {
-
-    private static final Log log = LogFactory.getLog(UserTreeNodeHelper.class);
-
-    protected static ShibbolethGroupsService service;
 
     /**
      * Build UserTreeNode Tree by parsing the name of all docs passed by argument. It uses Shibboleth Service parse char
@@ -115,7 +109,7 @@ public class UserTreeNodeHelper {
 
     /**
      * Search a Node where param name is equals to the nodeId
-     * 
+     *
      * @return null if not found
      */
     protected static UserTreeNode searchNode(List<UserTreeNode> from, String name) {
@@ -147,13 +141,7 @@ public class UserTreeNodeHelper {
     }
 
     protected static ShibbolethGroupsService getService() {
-        if (service == null) {
-            try {
-                service = Framework.getService(ShibbolethGroupsService.class);
-            } catch (Exception e) {
-                log.error("Can't initialize ShibbolethGroupsService", e);
-            }
-        }
-        return service;
+        return Framework.getService(ShibbolethGroupsService.class);
     }
+
 }
