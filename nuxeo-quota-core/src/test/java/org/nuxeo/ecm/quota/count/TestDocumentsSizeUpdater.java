@@ -679,6 +679,61 @@ public class TestDocumentsSizeUpdater {
     }
 
     @Test
+    public void testQuotaExceededAfterDelete() throws Exception {
+        addContent();
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                assertQuota(getFirstFile(), 100L, 100L);
+                // now add quota limit
+                QuotaAware qa = getWorkspace().getAdapter(QuotaAware.class);
+                assertNotNull(qa);
+                assertEquals(300L, qa.getTotalSize());
+                assertEquals(-1L, qa.getMaxQuota());
+                // set the quota to 300
+                qa.setMaxQuota(300L, true);
+                assertTrue(qa.totalSizeCacheExists());
+            }
+        });
+        // TODO
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                session.removeChildren(firstFolderRef);
+                dump();
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                boolean quotaExceeded = false;
+                try {
+                    DocumentModel doc = session.createDocumentModel("File");
+                    doc.setPropertyValue("file:content", (Serializable) getFakeBlob(299));
+                    doc.setPropertyValue("dc:title", "Other file");
+                    doc.setPathInfo(getWorkspace().getPathAsString(), "otherfile");
+                    doc = session.createDocument(doc);
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
+                        quotaExceeded = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                assertFalse(quotaExceeded);
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+            }
+        });
+    }
+
+    @Test
     public void testQuotaExceededMassCopy() throws Exception {
         addContent();
         isr.run(new RunnableWithException() {
