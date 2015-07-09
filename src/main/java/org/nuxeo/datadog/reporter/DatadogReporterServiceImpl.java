@@ -80,6 +80,7 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
         HttpTransport httpTransport = new HttpTransport.Builder().withApiKey(conf.getApiKey()).build();
         reporter = DatadogReporter.forRegistry(metrics)//
         .withHost(conf.getHost())//
+        .withTags(conf.getTags())
         .withTransport(httpTransport)//
         .withExpansions(expansions)//
         .withMetricNameFormatter(new DefaultMetricNameFormatter())//

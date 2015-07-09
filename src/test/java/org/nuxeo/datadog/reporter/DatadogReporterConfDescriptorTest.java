@@ -44,6 +44,7 @@ public class DatadogReporterConfDescriptorTest {
 
         //Then the host is computed from url
         assertThat(conf.getHost()).isEqualTo("nuxeohost.com");
+
     }
 
     @Test

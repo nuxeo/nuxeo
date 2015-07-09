@@ -17,6 +17,7 @@
         <!-- Host to use. If not set, is computed from nuxeo.url -->
         <host>myhost.com</host>
         <pollInterval>10</pollInterval>
+        <tags>myfirsttag,mysecondtag</tags>
       </configuration>
 
     </documentation>

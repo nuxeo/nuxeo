@@ -18,9 +18,15 @@ package org.nuxeo.datadog.reporter;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.assertj.core.util.Lists;
+import org.nuxeo.common.xmap.Name;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.api.Framework;
 
@@ -35,6 +41,9 @@ public class DatadogReporterConfDescriptor {
 
     @XNode("host")
     String host;
+
+    @XNode("tags")
+    String tags;
 
     public long getPollInterval() {
         return pollInterval;
@@ -70,6 +79,19 @@ public class DatadogReporterConfDescriptor {
 
         } catch (URISyntaxException e) {
             return "";
+        }
+    }
+
+    public List<String> getTags() {
+        if(StringUtils.isBlank(tags)) {
+            return Lists.emptyList();
+        } else {
+            List<String> result = new ArrayList<>();
+
+            for(String tag : Arrays.asList(tags.split(","))){
+                result.add(tag.trim());
+            }
+            return result;
         }
     }
 }
