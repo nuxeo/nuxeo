@@ -1,0 +1,18 @@
+<ui:composition template="basic_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:ui="http://java.sun.com/jsf/facelets">
+  <ui:param name="pageName" value="galaxy/popup" />
+  <ui:param name="pageFlavor" value="#{themeActions.currentFlavor}" />
+
+  <ui:define name="basic body">
+
+    <div class="includes displayNone">
+      <ui:include src="/incl/includes.xhtml" />
+    </div>
+    <section class="nxMainContainer">
+      <ui:insert name="body" />
+    </section>
+
+  </ui:define>
+
+</ui:composition>
