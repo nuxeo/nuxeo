@@ -692,8 +692,29 @@ public class TestDocumentsSizeUpdater {
                 assertEquals(300L, qa.getTotalSize());
                 assertEquals(-1L, qa.getMaxQuota());
                 // set the quota to 300
-                qa.setMaxQuota(300L, true);
+                qa.setMaxQuota(500L, true);
                 assertTrue(qa.totalSizeCacheExists());
+            }
+        });
+        isr.run(new RunnableWithException() {
+            @Override
+            public void run() throws Exception {
+                dump();
+                boolean quotaExceeded = false;
+                try {
+
+                    DocumentModel doc = session.copy(firstFileRef, firstSubFolderRef, "newCopy");
+                    doc.setPropertyValue("file:content", (Serializable) getFakeBlob(100));
+                    doc = session.createDocument(doc);
+                    session.save();
+                } catch (Exception e) {
+                    if (QuotaExceededException.isQuotaExceededException(e)) {
+                        System.out.println("raised expected Exception " + QuotaExceededException.unwrap(e).getMessage());
+                        quotaExceeded = true;
+                    }
+                    TransactionHelper.setTransactionRollbackOnly();
+                }
+                assertFalse(quotaExceeded);
             }
         });
         // TODO
