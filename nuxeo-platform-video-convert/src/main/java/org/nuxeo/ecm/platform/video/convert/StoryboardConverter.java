@@ -73,12 +73,6 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
 
     @Override
     public void init(ConverterDescriptor descriptor) {
-        try {
-            cleService = Framework.getService(CommandLineExecutorService.class);
-        } catch (Exception e) {
-            log.error(e, e);
-            return;
-        }
         commonParams = descriptor.getParameters();
         if (!commonParams.containsKey(WIDTH_PARAM)) {
             commonParams.put(WIDTH_PARAM, "100");
@@ -131,6 +125,7 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
                 params.addNamedParameter(WIDTH_PARAM, commonParams.get(WIDTH_PARAM));
                 params.addNamedParameter(HEIGHT_PARAM, commonParams.get(HEIGHT_PARAM));
+                CommandLineExecutorService cleService = Framework.getService(CommandLineExecutorService.class);
                 ExecResult result = cleService.execCommand(FFMPEG_SCREENSHOT_RESIZE_COMMAND, params);
                 if (!result.isSuccessful()) {
                     throw result.getError();

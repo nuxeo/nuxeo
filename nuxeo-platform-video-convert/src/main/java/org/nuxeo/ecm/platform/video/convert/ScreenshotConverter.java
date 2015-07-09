@@ -55,11 +55,6 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
 
     @Override
     public void init(ConverterDescriptor descriptor) {
-        try {
-            cleService = Framework.getService(CommandLineExecutorService.class);
-        } catch (Exception e) {
-            log.error(e, e);
-        }
     }
 
     @Override
@@ -81,6 +76,7 @@ public class ScreenshotConverter extends BaseVideoConverter implements Converter
             }
             long positionParam = Math.round(position);
             params.addNamedParameter(POSITION_PARAMETER, String.valueOf(positionParam));
+            CommandLineExecutorService cleService = Framework.getService(CommandLineExecutorService.class);
             ExecResult res = cleService.execCommand(FFMPEG_SCREENSHOT_COMMAND, params);
             if (!res.isSuccessful()) {
                 throw res.getError();

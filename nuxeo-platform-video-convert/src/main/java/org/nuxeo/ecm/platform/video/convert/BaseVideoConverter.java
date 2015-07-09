@@ -33,8 +33,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorServic
  */
 public abstract class BaseVideoConverter {
 
-    protected CommandLineExecutorService cleService;
-
     protected static final Pattern DURATION_PATTERN = Pattern.compile("Duration: (\\d\\d):(\\d\\d):(\\d\\d)\\.(\\d+)");
 
     /**

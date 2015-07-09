@@ -72,35 +72,36 @@ public abstract class BaseVideoConversionConverter extends CommandLineBasedConve
             throw new ConversionException("Unable to create tmp dir for transformer output: " + outDir);
         }
 
+        File outFile;
         try {
-            File outFile = File.createTempFile("videoConversion", getVideoExtension(), outDir);
-            // delete the file as we need only the path for ffmpeg
-            outFile.delete();
-            Framework.trackFile(outFile, this);
-            cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
-            String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
-            cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
-
-            VideoInfo videoInfo = (VideoInfo) parameters.get("videoInfo");
-            if (videoInfo == null) {
-                return cmdStringParams;
-            }
-
-            long width = videoInfo.getWidth();
-            long height = videoInfo.getHeight();
-            long newHeight = (Long) parameters.get("height");
-
-            long newWidth = width * newHeight / height;
-            if (newWidth % 2 != 0) {
-                newWidth += 1;
-            }
-
-            cmdStringParams.put("width", String.valueOf(newWidth));
-            cmdStringParams.put("height", String.valueOf(newHeight));
-            return cmdStringParams;
-        } catch (Exception e) {
+            outFile = File.createTempFile("videoConversion", getVideoExtension(), outDir);
+        } catch (IOException e) {
             throw new ConversionException("Unable to get Blob for holder", e);
         }
+        // delete the file as we need only the path for ffmpeg
+        outFile.delete();
+        Framework.trackFile(outFile, this);
+        cmdStringParams.put(OUTPUT_FILE_PATH_PARAMETER, outFile.getAbsolutePath());
+        String baseName = FilenameUtils.getBaseName(blobHolder.getBlob().getFilename());
+        cmdStringParams.put(OUTPUT_FILE_NAME_PARAMETER, baseName + getVideoExtension());
+
+        VideoInfo videoInfo = (VideoInfo) parameters.get("videoInfo");
+        if (videoInfo == null) {
+            return cmdStringParams;
+        }
+
+        long width = videoInfo.getWidth();
+        long height = videoInfo.getHeight();
+        long newHeight = (Long) parameters.get("height");
+
+        long newWidth = width * newHeight / height;
+        if (newWidth % 2 != 0) {
+            newWidth += 1;
+        }
+
+        cmdStringParams.put("width", String.valueOf(newWidth));
+        cmdStringParams.put("height", String.valueOf(newHeight));
+        return cmdStringParams;
     }
 
     @Override

@@ -157,7 +157,7 @@ public class VideoHelper {
             try {
                 picture.fillPictureViews(result.getBlob(), result.getBlob().getFilename(), docModel.getTitle(),
                         new ArrayList<Map<String, Object>>(templates));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 log.warn("failed to video compute previews for " + docModel.getTitle() + ": " + e.getMessage());
             }
         }

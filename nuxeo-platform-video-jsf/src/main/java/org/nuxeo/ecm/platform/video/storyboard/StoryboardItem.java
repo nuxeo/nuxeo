@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.video.storyboard;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
@@ -45,12 +46,12 @@ public class StoryboardItem {
         blobPropertyName = propertyPath + "/content";
         filename = String.format("storyboard-%03d.jpeg", position);
         try {
-            Double tc = doc.getProperty(propertyPath + "/timecode").getValue(Double.class);
+            Double tc = (Double) doc.getPropertyValue(propertyPath + "/timecode");
             if (tc != null) {
                 timecode = String.format("%f", Math.floor(tc));
             }
             // TODO: read filename from blob too
-        } catch (Exception e) {
+        } catch (PropertyException e) {
             log.warn(e);
         }
     }
