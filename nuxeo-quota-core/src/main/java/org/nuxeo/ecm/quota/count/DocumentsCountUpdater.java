@@ -31,12 +31,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
 import org.nuxeo.ecm.quota.size.QuotaExceededException;
@@ -262,7 +262,7 @@ public class DocumentsCountUpdater extends AbstractQuotaStatsUpdater {
             DocumentModel folder;
             try {
                 folder = session.getDocument(new IdRef(folderId));
-            } catch (NoSuchDocumentException e) {
+            } catch (DocumentNotFoundException e) {
                 log.warn(e);
                 log.debug(e, e);
                 continue;
