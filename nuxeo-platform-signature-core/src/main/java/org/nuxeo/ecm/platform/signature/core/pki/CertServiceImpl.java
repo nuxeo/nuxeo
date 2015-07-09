@@ -286,8 +286,6 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
             throw new CertException(e);
         } catch (java.security.SignatureException e) {
             throw new CertException(e);
-        } catch (Exception e) {
-            throw new CertException(e);
         }
         return csr;
     }
@@ -351,13 +349,7 @@ public class CertServiceImpl extends DefaultComponent implements CertService {
 
     protected RootService getRootService() throws CertException {
         if (rootService == null) {
-            try {
-                rootService = Framework.getService(RootService.class);
-            } catch (Exception e) {
-                String message = "RootService not found";
-                LOG.error(message + " " + e);
-                throw new CertException(message);
-            }
+            rootService = Framework.getService(RootService.class);
         }
         return rootService;
     }

@@ -56,7 +56,7 @@ public class UserInfo {
         this.userFields = userDNFields;
         try {
             x500Principal = new X500Principal(getDN(userDNFields));
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new CertException("User data might have an incorrect format" + e);
         }
     }
@@ -77,7 +77,7 @@ public class UserInfo {
 
     /**
      * Returns a formatted DN string
-     * 
+     *
      * @param userFields
      * @return
      */

@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -193,12 +194,9 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
                 keystoreIS = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                         getRootKeystoreFilePath());
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             // try local path
             throw new CertException("Certificate not found at" + rootKeystoreFile.getAbsolutePath());
-        } catch (Exception e) {
-            // try local path
-            throw new CertException("Root certificate problem: " + rootKeystoreFile.getAbsolutePath());
         }
         return keystoreIS;
     }
@@ -211,7 +209,7 @@ public class RootServiceImpl extends DefaultComponent implements RootService {
         try {
             certificate = getCertificate(getRootKeyStore(), getRootCertificateAlias());
             return certificate.getEncoded();
-        } catch (Exception e) {
+        } catch (CertificateEncodingException e) {
             throw new CertException(e);
         }
     }

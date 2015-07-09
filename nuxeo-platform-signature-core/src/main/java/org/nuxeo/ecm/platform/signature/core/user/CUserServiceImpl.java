@@ -188,13 +188,7 @@ public class CUserServiceImpl extends DefaultComponent implements CUserService {
     }
 
     protected static DirectoryService getDirectoryService() {
-        DirectoryService service = null;
-        try {
-            service = Framework.getService(DirectoryService.class);
-        } catch (Exception e) {
-            LOG.error(e);
-        }
-        return service;
+        return Framework.getService(DirectoryService.class);
     }
 
     @Override
