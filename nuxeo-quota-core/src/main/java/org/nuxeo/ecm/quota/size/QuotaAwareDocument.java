@@ -20,6 +20,9 @@ package org.nuxeo.ecm.quota.size;
 import static org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener.DISABLE_DUBLINCORE_LISTENER;
 import static org.nuxeo.ecm.platform.ec.notification.NotificationConstants.DISABLE_NOTIFICATION_SERVICE;
 
+import java.io.IOException;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
@@ -27,6 +30,8 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.DeltaLong;
+import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.quota.QuotaStatsService;
@@ -238,5 +243,51 @@ public class QuotaAwareDocument implements QuotaAware {
         if (save) {
             save(true);
         }
+    }
+
+    @Override
+    public void invalidateTotalSizeCache() throws IOException {
+        CacheService cs = Framework.getService(CacheService.class);
+        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
+        if (cache != null) {
+            log.trace("Using cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+            cache.invalidate(getCacheEntry(doc.getId()));
+        }
+    }
+
+    @Override
+    public Long getTotalSizeCache() throws IOException {
+        CacheService cs = Framework.getService(CacheService.class);
+        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
+        if (cache != null) {
+            log.trace("Using cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+            return (Long) cache.get(getCacheEntry(doc.getId()));
+        } else {
+            log.warn("Unable to retrieve cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+            return null;
+        }
+    }
+
+    @Override
+    public void putTotalSizeCache(long size) throws IOException {
+        CacheService cs = Framework.getService(CacheService.class);
+        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
+        if (cache != null) {
+            log.trace("Using cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+            cache.put(getCacheEntry(doc.getId()), size);
+        } else {
+            log.warn("Unable to retrieve cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+        }
+    }
+
+    @Override
+    public boolean totalSizeCacheExists() {
+        CacheService cs = Framework.getService(CacheService.class);
+        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
+        return (cache != null);
+    }
+    
+    protected String getCacheEntry(String... params) {
+        return StringUtils.join(params, '-');
     }
 }

@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.collections.ScopeType;
@@ -54,8 +53,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.model.Property;
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -76,8 +73,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 5.6
  */
 public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
-
-    public static final String QUOTA_MAXSIZE_CACHE_NAME = "quota-totalsize-cache";
 
     public static final String DISABLE_QUOTA_CHECK_LISTENER = "disableQuotaListener";
 
@@ -447,11 +442,6 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
         if (!parents.contains(parentDoc)) {
             parents.add(parentDoc);
         }
-        CacheService cs = Framework.getService(CacheService.class);
-        Cache cache = cs.getCache(QUOTA_MAXSIZE_CACHE_NAME);
-        if (cache != null) {
-            log.debug("Using cache " + QUOTA_MAXSIZE_CACHE_NAME);
-        }
         for (DocumentModel parent : parents) {
             log.debug("processing " + parent.getId() + " " + parent.getPathAsString());
             QuotaAware qap = parent.getAdapter(QuotaAware.class);
@@ -460,45 +450,38 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
             // UserWorkspacesRoot is the max size set on every user workspace
             if (qap != null && !"UserWorkspacesRoot".equals(parent.getType()) && qap.getMaxQuota() > 0) {
                 Long newTotalSize = new Long(qap.getTotalSize() + addition);
-                String cacheKey = getCacheEntry(parent.getId());
                 try {
-                    if (cache != null) {
-                        Long oldTotalSize = (Long) cache.get(cacheKey);
+                    if (qap.totalSizeCacheExists()) {
+                        Long oldTotalSize = qap.getTotalSizeCache();
                         if (oldTotalSize == null) {
                             newTotalSize = new Long(qap.getTotalSize() + addition);
-                            log.debug("to create cache entry to create: " + cacheKey + " total: " + newTotalSize);
+                            log.debug("to create cache entry to create: " + qap.getDoc().getId() + " total: " + newTotalSize);
                         } else {
                             newTotalSize = new Long(oldTotalSize + addition);
-                            log.debug("cache entry to update: " + cacheKey + " total: " + newTotalSize);
+                            log.debug("cache entry to update: " + qap.getDoc().getId() + " total: " + newTotalSize);
                         }
                         if (newTotalSize <= qap.getMaxQuota()) {
-                            cache.put(cacheKey, newTotalSize);
+                            qap.putTotalSizeCache(newTotalSize);
                             log.debug("cache vs. DB: " + newTotalSize + " # " + (qap.getTotalSize() + addition));
                         } else {
                             log.debug("cache entry not stored");
                         }
                     }
                 } catch (IOException e) {
-                    log.error(e.getMessage() + ": unable to use cache " + QUOTA_MAXSIZE_CACHE_NAME + ", fallback to basic mechanism");
+                    log.error(e.getMessage() + ": unable to use cache " + QuotaAware.QUOTA_TOTALSIZE_CACHE_NAME + ", fallback to basic mechanism");
                     newTotalSize = new Long(qap.getTotalSize() + addition);
                 }
                 if (newTotalSize > qap.getMaxQuota()) {
                     log.info("Raising Quota Exception on " + doc.getPathAsString());
-                    if (cache != null) {
-                        try {
-                            cache.invalidate(cacheKey);
-                        } catch (IOException e) {
-                            log.error(e.getMessage() + ": unable to invalidate cache " + QUOTA_MAXSIZE_CACHE_NAME + " key " + cacheKey);
-                       }
+                    try {
+                        qap.invalidateTotalSizeCache();
+                    } catch (IOException e) {
+                        log.error(e.getMessage() + ": unable to invalidate cache " + QuotaAware.QUOTA_TOTALSIZE_CACHE_NAME + " for " + qap.getDoc().getId());
                     }
                     throw new QuotaExceededException(parent, doc, qap.getMaxQuota());
                 }
             }
         }
-    }
-
-    protected String getCacheEntry(String... params) {
-         return StringUtils.join(params, '-');
     }
 
     protected BlobSizeInfo computeSizeImpact(DocumentModel doc, boolean onlyIfBlobHasChanged) throws ClientException {

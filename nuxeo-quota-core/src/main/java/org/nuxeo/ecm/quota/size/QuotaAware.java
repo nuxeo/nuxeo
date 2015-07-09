@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.quota.size;
 
+import java.io.IOException;
+
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -28,6 +30,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  */
 public interface QuotaAware {
 
+    public static final String QUOTA_TOTALSIZE_CACHE_NAME = "quota-totalsize-cache";
+    
     long getInnerSize();
 
     long getTotalSize();
@@ -64,4 +68,36 @@ public interface QuotaAware {
     QuotaInfo getQuotaInfo();
 
     void resetInfos(boolean save) throws ClientException;
+
+    /**
+     * Invalidates "total size" key-value in cache if exists.
+     * 
+     * @throws IOException when unable to invalidate key-value
+     * @since 6.0-HF16, 7.4
+     */
+    void invalidateTotalSizeCache() throws IOException;
+    
+    /**
+     * Returns value of "total size" cache of document OR <code>null</code> if cache does not exist or key does not exist in cache.
+     * 
+     * @return <code>Long</code> object or <code>null</code>
+     * @since 6.0-HF16, 7.4
+     */
+    Long getTotalSizeCache() throws IOException;
+    
+    /**
+     * Stores "total size" value in cache if it exists.
+     * 
+     * @param size
+     * @throws IOException if unable to store value
+     * @since 6.0-HF16, 7.4
+     */
+    void putTotalSizeCache(long size) throws IOException;
+    
+    /**
+     * @return <code>true</code> if "total size" cache exists otherwise <code>false</code>.
+     * 
+     * @since 6.0-HF16, 7.4
+     */
+    boolean totalSizeCacheExists();
 }

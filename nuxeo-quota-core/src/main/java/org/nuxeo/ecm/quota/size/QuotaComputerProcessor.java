@@ -28,6 +28,7 @@ import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_MOVED;
 import static org.nuxeo.ecm.quota.size.QuotaAwareDocument.DOCUMENTS_SIZE_STATISTICS_FACET;
 import static org.nuxeo.ecm.quota.size.SizeUpdateEventContext.DOCUMENT_UPDATE_INITIAL_STATISTICS;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -305,6 +306,11 @@ public class QuotaComputerProcessor implements PostCommitEventListener {
             }
             if (toSave) {
                 quotaDoc.save(true);
+            }
+            try {
+                quotaDoc.invalidateTotalSizeCache();
+            } catch (IOException e) {
+                log.error(e.getMessage() + ": unable to invalidate cache " + QuotaAware.QUOTA_TOTALSIZE_CACHE_NAME + " for " + quotaDoc.getDoc().getId());
             }
             if (log.isDebugEnabled()) {
                 log.debug("   ==> " + parent.getPathAsString() + " (" + quotaDoc.getQuotaInfo() + ")");
