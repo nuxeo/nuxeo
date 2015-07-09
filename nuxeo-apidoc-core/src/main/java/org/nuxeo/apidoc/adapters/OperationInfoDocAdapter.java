@@ -28,7 +28,7 @@ import org.nuxeo.ecm.automation.OperationDocumentation.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Adapter from a Nuxeo document to the {@link OperationInfo} interface.

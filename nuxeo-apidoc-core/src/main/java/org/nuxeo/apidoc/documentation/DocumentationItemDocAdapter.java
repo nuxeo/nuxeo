@@ -29,7 +29,7 @@ import org.nuxeo.apidoc.api.AbstractDocumentationItem;
 import org.nuxeo.apidoc.api.DocumentationItem;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 public class DocumentationItemDocAdapter extends AbstractDocumentationItem implements DocumentationItem {
 
