@@ -20,8 +20,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 
@@ -43,7 +43,7 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
             try {
                 DocumentModel doc = session.getDocument(new IdRef(attachDocumentID));
                 AuditEventFirer.fireEvent(session, this, null, "auditLogRoute", doc);
-            } catch (NoSuchDocumentException e) {
+            } catch (DocumentNotFoundException e) {
                 log.error(String.format("Unable to fetch document with id '%s': %s", attachDocumentID, e.getMessage()));
                 log.debug(e, e);
             }

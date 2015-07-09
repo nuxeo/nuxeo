@@ -19,7 +19,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStepsContainer;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;

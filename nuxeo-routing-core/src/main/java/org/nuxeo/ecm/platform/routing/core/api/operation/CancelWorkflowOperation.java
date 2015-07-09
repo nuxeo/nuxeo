@@ -25,8 +25,8 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.core.api.DocumentRoutingEngineService;
 
@@ -57,7 +57,7 @@ public class CancelWorkflowOperation {
         DocumentModel workflowInstance;
         try {
             workflowInstance = session.getDocument(new IdRef(id));
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             e.addInfo("Cannot get workflow instance with id: " + id);
             throw e;
         }

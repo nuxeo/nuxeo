@@ -40,15 +40,16 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -57,7 +58,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryInitializationHandler;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -808,7 +808,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         DocumentModel routeDoc;
         try {
             routeDoc = session.getDocument(new IdRef(routeInstanceId));
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             throw new DocumentRouteException("No workflow with the id:" + routeInstanceId);
         }
         DocumentRoute route = routeDoc.getAdapter(DocumentRoute.class);
@@ -985,7 +985,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             if (delete) {
                 session.removeDocument(new IdRef(task.getId()));
             }
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             throw new DocumentRouteException("Cannot finish task", e);
         }
     }
