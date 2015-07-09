@@ -72,7 +72,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     @Override
     public String getDownloadUrl(String repositoryName, String docId, String xpath, String filename) {
         StringBuilder sb = new StringBuilder();
-        sb.append("/");
         sb.append(NXBIGFILE);
         sb.append("/");
         sb.append(repositoryName);
