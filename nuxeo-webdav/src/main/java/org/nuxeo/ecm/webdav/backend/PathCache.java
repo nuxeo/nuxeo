@@ -22,8 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 
 public class PathCache {
 
@@ -67,7 +67,7 @@ public class PathCache {
         DocumentModel model = null;
         try {
             model = session.getDocument(new IdRef(uuid));
-        } catch (NoSuchDocumentException e) {
+        } catch (DocumentNotFoundException e) {
             // do nothing
         }
         if (model == null) {
