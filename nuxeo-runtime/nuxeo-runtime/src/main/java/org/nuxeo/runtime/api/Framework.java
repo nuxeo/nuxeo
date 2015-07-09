@@ -472,9 +472,11 @@ public final class Framework {
     public static void handleDevError(Throwable t) {
         if (isBooleanPropertyTrue(NUXEO_STRICT_RUNTIME_SYSTEM_PROP)) {
             System.err.println("Fatal error caught in strict " + "runtime mode => exiting.");
-            t.printStackTrace();
+            if (t != null) {
+                t.printStackTrace();
+            }
             System.exit(1);
-        } else {
+        } else if (t != null) {
             log.error(t, t);
         }
     }

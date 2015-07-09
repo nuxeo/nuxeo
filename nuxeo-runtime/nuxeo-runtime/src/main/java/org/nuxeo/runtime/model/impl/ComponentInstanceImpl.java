@@ -193,28 +193,30 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 ri.manager.registerExtension(extension);
                 return;
             }
+            // this extension is for us - register it
+            // activate the implementation instance
+            if (instance instanceof Component) {
+                ((Component) instance).registerExtension(extension);
+            } else {
+                // try by reflection
+                try {
+                    Method meth = instance.getClass().getDeclaredMethod("registerExtension", Extension.class);
+                    meth.setAccessible(true);
+                    meth.invoke(instance, extension);
+                } catch (ReflectiveOperationException e) {
+                    System.err.println("error registering " + extension.getComponent().getName());
+                    // no such method
+                    Exception ee = ExceptionUtils.unwrapInvoke(e);
+                    Framework.handleDevError(ee);
+                }
+            }
         } else {
-            log.error("Warning: target extension point '" + extension.getExtensionPoint() + "' of '"
+            String message = "Warning: target extension point '" + extension.getExtensionPoint() + "' of '"
                     + extension.getTargetComponent().getName() + "' is unknown. Check your extension in component "
-                    + extension.getComponent().getName());
+                    + extension.getComponent().getName();
+            log.error(message);
             // fatal error if development mode - exit
             Framework.handleDevError(null);
-        }
-        // this extension is for us - register it
-        // activate the implementation instance
-        if (instance instanceof Component) {
-            ((Component) instance).registerExtension(extension);
-        } else {
-            // try by reflection
-            try {
-                Method meth = instance.getClass().getDeclaredMethod("registerExtension", Extension.class);
-                meth.setAccessible(true);
-                meth.invoke(instance, extension);
-            } catch (ReflectiveOperationException e) {
-                // no such method
-                Exception ee = ExceptionUtils.unwrapInvoke(e);
-                Framework.handleDevError(ee);
-            }
         }
     }
 
