@@ -1,7 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 1
-Bundle-Name: NXThemes Styling
+Bundle-Name: NXThemes Migration
 Bundle-SymbolicName: org.nuxeo.theme.migration;singleton:=true
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
+Nuxeo-Component: OSGI-INF/theme-compat-framework.xml,
+  OSGI-INF/theme-compat-core.xml,
+  OSGI-INF/theme-compat-fragments.xml,
+  OSGI-INF/theme-compat-html.xml,
+  OSGI-INF/theme-compat-jsf.xml
