@@ -4,22 +4,13 @@
   <ui:param name="pageName" value="#{themeActions.currentPage}" />
   <ui:param name="pageFlavor" value="#{themeActions.currentFlavor}" />
 
-  <ui:define name="body">
+  <ui:define name="basic body">
 
-    <header class="nxHeader">
-      <ui:include src="/incl/logo_DM_galaxy.xhtml" />
-      <div class="content">
-        <ui:include src="/incl/nuxeo_header.xhtml" />
-      </div>
-    </header>
-    <section class="nxMainContainer">
-      <ui:insert name="nuxeo body" />
-    </section>
-    <footer class="nxFooter">
-      <div class="content">
-        <ui:include src="/incl/nuxeo_footer.xhtml" />
-      </div>
-    </footer>
+    <ui:decorate template="/pages/header_footer_template.xhtml">
+      <ui:define name="main content">
+        <ui:insert name="body" />
+      </ui:define>
+    </ui:decorate>
 
   </ui:define>
 
