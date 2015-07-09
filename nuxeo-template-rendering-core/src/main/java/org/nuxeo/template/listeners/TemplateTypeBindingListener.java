@@ -57,16 +57,11 @@ public class TemplateTypeBindingListener implements PostCommitFilteringEventList
                                     + targetDoc.getPathAsString());
                             continue;
                         }
-                        try {
-                            TemplateSourceDocument tmpl = targetDoc.getAdapter(TemplateSourceDocument.class);
-                            if (tmpl != null) {
-                                tps.registerTypeMapping(targetDoc);
-                                // be sure to trigger invalidations in unit
-                                // tests
-                                targetDoc.getCoreSession().save();
-                            }
-                        } catch (Throwable e) {
-                            log.warn("Unable to get adapter to check type binding", e);
+                        TemplateSourceDocument tmpl = targetDoc.getAdapter(TemplateSourceDocument.class);
+                        if (tmpl != null) {
+                            tps.registerTypeMapping(targetDoc);
+                            // be sure to trigger invalidations in unit tests
+                            targetDoc.getCoreSession().save();
                         }
                     }
                 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,7 +42,7 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
         if (auditEntries != null) {
             try {
                 auditEntries = preprocessAuditEntries(auditEntries, currentDocument.getCoreSession(), "en");
-            } catch (Throwable e) {
+            } catch (MissingResourceException e) {
                 log.warn("Unable to preprocess Audit entries : " + e.getMessage());
             }
             ctx.put("auditEntries", wrapper.wrap(auditEntries));
@@ -49,7 +50,8 @@ public class AuditExtensionFactory implements ContextExtensionFactory {
         return null;
     }
 
-    protected List<LogEntry> preprocessAuditEntries(List<LogEntry> auditEntries, CoreSession session, String lang) {
+    protected List<LogEntry> preprocessAuditEntries(List<LogEntry> auditEntries, CoreSession session, String lang)
+            throws MissingResourceException {
         CommentProcessorHelper helper = new CommentProcessorHelper(session);
         for (LogEntry entry : auditEntries) {
             String comment = helper.getLogComment(entry);

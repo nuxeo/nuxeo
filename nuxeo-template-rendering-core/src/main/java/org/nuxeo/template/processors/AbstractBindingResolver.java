@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -101,7 +102,7 @@ public abstract class AbstractBindingResolver implements InputBindingResolver {
                     Property property = null;
                     try {
                         property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
-                    } catch (Throwable e) {
+                    } catch (PropertyException e) {
                         log.warn("Unable to ready property " + param.getSource(), e);
                     }
 

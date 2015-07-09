@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DateType;
@@ -117,7 +118,7 @@ public class JODReportTemplateProcessor extends AbstractTemplateProcessor implem
                 Property property = null;
                 try {
                     property = templateBasedDocument.getAdaptedDoc().getProperty(param.getSource());
-                } catch (Throwable e) {
+                } catch (PropertyException e) {
                     log.warn("Unable to ready property " + param.getSource(), e);
                 }
                 if (property != null) {
