@@ -9,14 +9,9 @@
   default file contains 500 users.
 - Increase vcs and db pool size to 60 in `nuxeo.conf`: `nuxeo.*.max-pool-size`
 
-# Scenario
+# Simulations
 
-## Setup
-
-    mvn -o test
-    ...
-    Choose simulation: org.nuxeo.drive.bench.SetupSimulation
-
+## Setup Simulation
 
 This simulation initialize the environnement and need to be run first, it is idempotent.
 
@@ -26,58 +21,90 @@ This simulation initialize the environnement and need to be run first, it is ide
 - create all users in this group
 - create a folder for each user in the bench workspace
 - synchronize the common and user folder for each user
-- save user information (user, token, deviceId) in redis
+- save user information (user, token, deviceId) into redis
 
 
-## DriveBench
-
-    mvn -o test -DrampUp=10 -Dduration=120
-    ...
-    Choose simulation: org.nuxeo.drive.bench.DriveBenchSimulation
-
+## DriveBench Simulation
 
 This simulation run a mix of different scenarios:
 
-- Polling: simulate 100 drive client polling for update
-- Server feeder: simulate 10 writers creating/updating documents in Nuxeo
-- TODO: Client feeder: simulate n writers creating/updating documents from drive
 
-
-### Polling
+### Polling scenario
 
 Simulate the nuxeo drive poll behavor:
 
-- peek a random user in redis
+- peek a random drive client from redis
 - loop: poll for update every 30s
   - TODO: if there is some changes download
 
-default number of concurrent users: 100, can be tuned with `-Dusers`
-default pause between poll 30, can be tuned with `-DpollInterval`
 
-### Server feeder
+### Server feeder scenario
 
 Simulate document creation on the server side:
 
-- peek a random user
+- peek a random Nuxeo user
 - create a file in the common folder
 - create a file in the user folder
-- loop: update both file content
+- loop 2 times
+   - update both file content
 - delete both file
 
-default thinktime is 5s between operation, can be tuned with `-DfeederInterval`
-default number of concurrent users: 10, can be tuned with `-Dwriters`
 
-### TODO Client feeder
+### TODO Client feeder scenario
 
 Simulate document creation on the Nuxeo Drive side
 
-- using a random user upload a new document in its folder
+- using a random drive client from redis
+- upload a new document in its folder
 
-## Cleanup
+## Cleanup simulation
 
-    mvn -o test
-    ...
-    Choose simulation: org.nuxeo.drive.bench.CleanupSimulation
+This simulation remove all documents, users and group from the Nuxeo instance, also delete the data in redis.
 
+# Launching
 
-This simulation remove all documents, users and group from Nuxeo and delete the data in redis.
+## Run all simulations
+
+    mvn test
+
+This will run simulations: Setup, DriveBench and Cleanup
+
+Default options: see below
+
+## Run Setup simulation 
+
+    mvn test -Dgatling.simulationClass=org.nuxeo.drive.bench.SetupSimulation
+
+Default options:
+
+    # Target URL
+    -Durl=http://localhost:8080/nuxeo
+
+## Run DriveBench simulation
+
+    mvn gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.DriveBenchSimulation
+
+Default options:
+
+    # Target URL
+    -Durl=http://localhost:8080/nuxeo
+    # Duration of the bench
+    -Dduration=60
+    # Concurrent drive clients
+    -Dusers=100
+    # Concurrent writer using Nuxeo
+    -Dwriters=10
+    # Sleep time during drive poll
+    -DpollInterval=30
+    # Sleep time between document creation
+    -DfeederInterval=10
+
+## Run Cleanup simulation
+
+    mvn gatling:execute -Dgatling.simulationClass=org.nuxeo.drive.bench.CleanupSimulation
+
+Default options:
+
+    # Target URL
+    -Durl=http://localhost:8080/nuxeo
+

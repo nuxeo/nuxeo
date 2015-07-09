@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.nuxeo.ecm</groupId>
@@ -16,10 +17,10 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <scala.version>2.11.5</scala.version>
+    <scala.version>2.11.7</scala.version>
     <encoding>UTF-8</encoding>
     <gatling.version>2.1.6</gatling.version>
-    <scala-maven-plugin.version>3.2.0</scala-maven-plugin.version>
+    <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -83,16 +84,6 @@
             <goals>
               <goal>testCompile</goal>
             </goals>
-            <configuration>
-              <args>
-                <arg>-target:jvm-1.7</arg>
-                <arg>-deprecation</arg>
-                <arg>-feature</arg>
-                <arg>-unchecked</arg>
-                <arg>-language:implicitConversions</arg>
-                <arg>-language:postfixOps</arg>
-              </args>
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -102,19 +93,43 @@
         <artifactId>gatling-maven-plugin</artifactId>
         <version>${gatling.version}</version>
         <configuration>
-         <simulationClass>DriveBench</simulationClass>
+          <dataFolder>src/test/resources/data</dataFolder>
+          <resultsFolder>target/gatling/results</resultsFolder>
+          <simulationsFolder>src/test/scala</simulationsFolder>
         </configuration>
         <executions>
           <execution>
+            <id>setup</id>
             <phase>test</phase>
             <goals>
               <goal>execute</goal>
             </goals>
             <configuration>
+              <simulationClass>org.nuxeo.drive.bench.SetupSimulation</simulationClass>
+            </configuration>
+          </execution>
+          <execution>
+            <id>bench</id>
+            <phase>test</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <simulationClass>org.nuxeo.drive.bench.DriveBenchSimulation</simulationClass>
               <jvmArgs>
-              <jvmArg>-Xms4g</jvmArg>
-              <jvmArg>-Xmx4g</jvmArg>
+                <jvmArg>-Xms1g</jvmArg>
+                <jvmArg>-Xmx2g</jvmArg>
               </jvmArgs>
+            </configuration>
+          </execution>
+          <execution>
+            <id>cleanup</id>
+            <phase>test</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <simulationClass>org.nuxeo.drive.bench.CleanupSimulation</simulationClass>
             </configuration>
           </execution>
         </executions>
