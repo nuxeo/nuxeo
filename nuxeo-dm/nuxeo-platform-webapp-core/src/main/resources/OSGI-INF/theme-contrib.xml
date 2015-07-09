@@ -50,7 +50,7 @@
     </resource>
     <!-- Seam 1.0.1.GA -->
     <resource name="seam-remote.js">
-      <path>nxthemes/html/scripts/seam-remote.js</path>
+      <uri>/scripts/seam-remote.js</uri>
     </resource>
 
     <resource name="static-styles.css">
