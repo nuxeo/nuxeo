@@ -31,10 +31,10 @@ import org.openqa.selenium.support.FindBy;
  */
 public class SearchResultsSubPage extends AbstractPage {
 
-    private static final String SEARCH_RESULTS_XPATH = "div[contains(@class,'bubbleBox')]";
+    private static final String SEARCH_RESULTS_XPATH = "//div[contains(@class,'bubbleBox')]";
 
-    @FindBy(xpath = "//div[@id='nxw_searchContentView']/div/div/div/div/form")
     @Required
+    @FindBy(xpath = "//div[@id='nxw_searchContentView']//div[contains(@id, 'nxw_searchContentView_resultsPanel')]/form")
     protected WebElement resultForm;
 
     @Required
