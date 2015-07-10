@@ -1,72 +1,37 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.user.center.theme">
 
-  <require>org.nuxeo.theme.core</require>
-  <require>org.nuxeo.theme.fragments</require>
-  <require>org.nuxeo.theme.html</require>
-  <require>org.nuxeo.theme.jsf</require>
-
-  <!-- themes -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
-
-    <theme>
-      <src>themes/user-center.xml</src>
-    </theme>
-
-  </extension>
-
-  <!-- Register mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
-    <themePage name="userCenter/default">
+    <themePage name="userCenter/default" charset="utf-8">
+      <favorites>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
+      </favorites>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>header</style>
-        <style>body</style>
-        <style>footer</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>tables</style>
-        <style>forms</style>
-        <style>popups</style>
-        <style>messages_and_tooltips</style>
-        <style>foldable_boxes</style>
-        <style>richfaces_components</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-        <style>nuxeo_usercenter_specific</style>
-      </styles>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_header_footer</bundle>
+        <resource>nuxeo_usercenter_specific.css</resource>
+      </resources>
     </themePage>
 
   </extension>
 
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-    <style name="nuxeo_usercenter_specific">
-      <src>themes/css/nuxeo_usercenter_specific.css</src>
-    </style>
-  </extension>
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <!-- application settings -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
-
-    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
-
-      <view id="/view_home.xhtml">
-        <theme>userCenter/default</theme>
-      </view>
-      <view id="/home_view_documents.xhtml">
-        <theme>userCenter/default</theme>
-      </view>
-
-    </application>
+    <resource name="nuxeo_usercenter_specific.css">
+      <path>themes/css/nuxeo_usercenter_specific.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
 
   </extension>
-
 
 </component>
