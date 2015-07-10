@@ -1,8 +1,7 @@
 <ui:composition template="basic_page.xhtml"
   xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets">
-  <ui:param name="pageName" value="#{themeActions.currentPage}" />
-  <ui:param name="pageFlavor" value="#{themeActions.currentFlavor}" />
+  <ui:param name="pageFlavor" value="#{themeActions.getCurrentFlavor(pageName)}" />
 
   <ui:define name="basic body">
 
