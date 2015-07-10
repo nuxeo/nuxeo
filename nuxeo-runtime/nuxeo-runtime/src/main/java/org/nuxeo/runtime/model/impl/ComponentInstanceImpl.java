@@ -197,8 +197,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
             // activate the implementation instance
             if (instance instanceof Component) {
                 ((Component) instance).registerExtension(extension);
-            } else {
-                // try by reflection
+            } else if (instance != this) {
+                // try by reflection, avoiding stack overflow
                 try {
                     Method meth = instance.getClass().getDeclaredMethod("registerExtension", Extension.class);
                     meth.setAccessible(true);
@@ -226,8 +226,8 @@ public class ComponentInstanceImpl implements ComponentInstance {
         // activate the implementation instance
         if (instance instanceof Component) {
             ((Component) instance).unregisterExtension(extension);
-        } else {
-            // try by reflection
+        } else if (instance != this) {
+            // try by reflection, avoiding stack overflow
             try {
                 Method meth = instance.getClass().getDeclaredMethod("unregisterExtension", Extension.class);
                 meth.setAccessible(true);
