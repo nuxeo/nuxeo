@@ -1,4 +1,90 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.theme.services.ThemeService">
-  <!--TODO -->
+  <documentation>Compat registration of theme service</documentation>
+
+  <require>org.nuxeo.ecm.platform.WebResources</require>
+
+  <implementation class="org.nuxeo.theme.migration.service.ThemeMigrationService" />
+
+  <extension-point name="registries">
+    <object class="org.nuxeo.theme.migration.service.descriptors.RegistryType" />
+  </extension-point>
+
+  <extension-point name="elements">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ElementType" />
+  </extension-point>
+
+  <extension-point name="fragments">
+    <object class="org.nuxeo.theme.migration.service.descriptors.FragmentType" />
+  </extension-point>
+
+  <extension-point name="models">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ModelType" />
+  </extension-point>
+
+  <extension-point name="formats">
+    <object class="org.nuxeo.theme.migration.service.descriptors.FormatType" />
+  </extension-point>
+
+  <extension-point name="format-filters">
+    <object class="org.nuxeo.theme.migration.service.descriptors.FormatFilterType" />
+  </extension-point>
+
+  <extension-point name="standalone-filters">
+    <object class="org.nuxeo.theme.migration.service.descriptors.StandaloneFilterType" />
+  </extension-point>
+
+  <extension-point name="resources">
+    <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
+    <object class="org.nuxeo.theme.migration.service.descriptors.BankImport" />
+  </extension-point>
+
+  <extension-point name="views">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ViewType" />
+  </extension-point>
+
+  <extension-point name="engines">
+    <object class="org.nuxeo.theme.migration.service.descriptors.EngineType" />
+  </extension-point>
+
+  <extension-point name="template-engines">
+    <object class="org.nuxeo.theme.migration.service.descriptors.TemplateEngineType" />
+  </extension-point>
+
+  <extension-point name="negotiations">
+    <object class="org.nuxeo.theme.migration.service.descriptors.NegotiationType" />
+  </extension-point>
+
+  <extension-point name="themes">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ThemeDescriptor" />
+  </extension-point>
+
+  <extension-point name="themesets">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ThemeSet" />
+  </extension-point>
+
+  <extension-point name="perspectives">
+    <object class="org.nuxeo.theme.migration.service.descriptors.PerspectiveType" />
+  </extension-point>
+
+  <extension-point name="applications">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ApplicationType" />
+  </extension-point>
+
+  <extension-point name="shortcuts">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ShortcutType" />
+  </extension-point>
+
+  <extension-point name="presets">
+    <object class="org.nuxeo.theme.migration.service.descriptors.PaletteType" />
+  </extension-point>
+
+  <extension-point name="vocabularies">
+    <object class="org.nuxeo.theme.migration.service.descriptors.VocabularyType" />
+  </extension-point>
+
+  <extension-point name="banks">
+    <object class="org.nuxeo.theme.migration.service.descriptors.ResourceBank" />
+  </extension-point>
+
 </component>

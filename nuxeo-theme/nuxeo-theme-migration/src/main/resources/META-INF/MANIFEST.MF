@@ -9,4 +9,5 @@ Nuxeo-Component: OSGI-INF/theme-compat-framework.xml,
   OSGI-INF/theme-compat-core.xml,
   OSGI-INF/theme-compat-fragments.xml,
   OSGI-INF/theme-compat-html.xml,
-  OSGI-INF/theme-compat-jsf.xml
+  OSGI-INF/theme-compat-jsf.xml,
+  OSGI-INF/theme-compat-webapp-core-default.xml

@@ -97,9 +97,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             log.info(String.format("Register style '%s'", style.getName()));
             String message = String.format("Style '%s' should now be contributed to extension "
                     + "point '%s': a compatibility registration was performed but it may not be "
-                    + "accurate. Also, the 'flavor' processor should be used with this resource.", style.getName(),
+                    + "accurate. Note that the 'flavor' processor should be used with this resource.", style.getName(),
                     WR_EX);
             DeprecationLogger.log(message, "7.4");
+            if (Framework.isDevModeSet()) {
+                Framework.getRuntime().getWarnings().add(message);
+            }
             ResourceDescriptor resource = getResourceFromStyle(style);
             registerResource(resource, contributor.getContext());
             log.info(String.format("Done registering style '%s'", style.getName()));
@@ -120,6 +123,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                     + "point '%s': a compatibility registration was performed but it may not be accurate.",
                     resource.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
+            if (Framework.isDevModeSet()) {
+                Framework.getRuntime().getWarnings().add(message);
+            }
             // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
             // directly to the WRM endpoint
             String path = resource.getPath();
