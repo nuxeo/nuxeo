@@ -10,11 +10,9 @@
     <resource name="jquery.dnd-file-upload.js">
       <uri>/scripts/dnd/jquery.dnd-file-upload.js</uri>
     </resource>
-    <resource name="automation.js">
-      <uri>/scripts/automation.js</uri>
-    </resource>
     <resource name="nxdropzone.js">
       <uri>/scripts/dnd/nxdropzone.js</uri>
+      <require>automation.js</require>
     </resource>
     <resource name="nxdropout.js">
       <uri>/scripts/dnd/nxdropout.js</uri>
@@ -32,7 +30,6 @@
       <resources>
         <resource>jquery.client.js</resource>
         <resource>jquery.dnd-file-upload.js</resource>
-        <resource>automation.js</resource>
         <resource>nxdropzone.js</resource>
         <resource>nxdropout.js</resource>
         <resource>nxinternaldnd.js</resource>

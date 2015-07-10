@@ -228,6 +228,12 @@
       <uri>/incl/seam_remoting.xhtml</uri>
       <require>seam-remote.js</require>
     </resource>
+    <resource name="nuxeo_javascript_context.xhtml" type="xhtmlfirst">
+      <uri>/incl/nuxeo_javascript_context.xhtml</uri>
+    </resource>
+    <resource name="automation.js">
+      <uri>/scripts/automation.js</uri>
+    </resource>
     <!-- end of "static" resources declaration -->
 
     <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
@@ -406,6 +412,8 @@
         <resource>doubleClick_shield.xhtml</resource>
         <resource>layout_dev_init.xhtml</resource>
         <resource>seam_remoting.xhtml</resource>
+        <resource>automation.js</resource>
+        <resource>nuxeo_javascript_context.xhtml</resource>
       </resources>
     </resourceBundle>
 

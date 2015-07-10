@@ -4,14 +4,9 @@
 
 <h:outputScript src="/seam/resource/remoting/interface.js?#{SeamRemotingBeanNames}" />
 <h:outputScript>
-  var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
-  var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
-  var currentDocumentPath = '#{nxu:javaScriptEscape(currentDocument.pathAsString)}';
-  var currentDocumentId = '#{currentDocument.id}';
   // set the conversation id before doing any call
   Seam.Remoting.getContext().setConversationId(currentConversationId);
   Seam.Remoting.contextPath = '#{contextPath}';
-  var nxContextPath = '#{contextPath}';
   Seam.Remoting.resourcePath = '#{contextPath}/seam/resource/remoting';
 </h:outputScript>
 

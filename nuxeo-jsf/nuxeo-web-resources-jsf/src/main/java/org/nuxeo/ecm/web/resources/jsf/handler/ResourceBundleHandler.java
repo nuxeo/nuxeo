@@ -85,19 +85,14 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
                 new StylesheetResourceHandler(config).apply(ctx, parent);
             }
         }
+        // then include xhtmlfirst templates
+        List<Resource> xhtmlrf = wrm.getResources(new ResourceContextImpl(), bundleName, ResourceType.xhtmlfirst.name());
+        includeXHTML(ctx, parent, xhtmlrf, leaf);
         // then let other resources (css, js, html) be processed by the component at render time
         super.apply(ctx, parent);
         // then include xhtml templates
         List<Resource> xhtmlr = wrm.getResources(new ResourceContextImpl(), bundleName, ResourceType.xhtml.name());
-        if (xhtmlr != null && !xhtmlr.isEmpty()) {
-            for (Resource resource : xhtmlr) {
-                ComponentConfig tagConfig = getComponentConfig();
-                TagAttributeImpl srcAttr = getTagAttribute("src", resource.getURI());
-                TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { srcAttr });
-                TagConfig config = TagConfigFactory.createTagConfig(tagConfig, tagConfig.getTagId(), attributes, leaf);
-                new IncludeHandler(config).apply(ctx, parent);
-            }
-        }
+        includeXHTML(ctx, parent, xhtmlr, leaf);
     }
 
     protected ComponentConfig getJSFResourceComponentConfig(Resource resource, String rendererType, String target,
@@ -126,6 +121,19 @@ public class ResourceBundleHandler extends ScriptResourceHandler {
 
     protected TagAttributeImpl getTagAttribute(String name, String value) {
         return new TagAttributeImpl(getComponentConfig().getTag().getLocation(), "", name, name, value);
+    }
+
+    protected void includeXHTML(FaceletContext ctx, UIComponent parent, List<Resource> xhtmlResources,
+            FaceletHandler leaf) throws IOException {
+        if (xhtmlResources != null && !xhtmlResources.isEmpty()) {
+            for (Resource resource : xhtmlResources) {
+                ComponentConfig tagConfig = getComponentConfig();
+                TagAttributeImpl srcAttr = getTagAttribute("src", resource.getURI());
+                TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { srcAttr });
+                TagConfig config = TagConfigFactory.createTagConfig(tagConfig, tagConfig.getTagId(), attributes, leaf);
+                new IncludeHandler(config).apply(ctx, parent);
+            }
+        }
     }
 
 }
