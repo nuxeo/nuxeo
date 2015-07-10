@@ -2,73 +2,36 @@
 
 <component name="org.nuxeo.ecm.admin.center.theme">
 
-  <require>org.nuxeo.theme.core</require>
-  <require>org.nuxeo.theme.fragments</require>
-  <require>org.nuxeo.theme.html</require>
-  <require>org.nuxeo.theme.jsf</require>
-
-  <!--  themes -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="themes">
-
-    <theme>
-      <src>themes/admin-center.xml</src>
-    </theme>
-
-  </extension>
-
-  <!-- application settings -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="applications">
-
-    <application root="${org.nuxeo.ecm.contextPath}" template-engine="jsf-facelets">
-
-      <view id="/view_admin.xhtml">
-        <theme>admin/default</theme>
-      </view>
-
-      <view id="/connect_confirm_download.xhtml">
-        <theme>admin/default</theme>
-      </view>
-
-    </application>
-
-  </extension>
-
-  <!-- mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
-    <themePage name="admin/default">
+    <page name="admin/default" charset="utf-8">
+      <favorites>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
+      </favorites>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
         <flavor>rainbow</flavor>
       </flavors>
-      <styles>
-        <style>basics</style>
-        <style>buttons_and_actions</style>
-        <style>header</style>
-        <style>body</style>
-        <style>footer</style>
-        <style>grids_and_widgets</style>
-        <style>navigation</style>
-        <style>tables</style>
-        <style>forms</style>
-        <style>popups</style>
-        <style>messages_and_tooltips</style>
-        <style>foldable_boxes</style>
-        <style>richfaces_components</style>
-        <style>tabs_content</style>
-        <style>helpers</style>
-        <style>nuxeo_admincenter_specific</style>
-      </styles>
-    </themePage>
+      <resources>
+        <bundle>nuxeo_includes</bundle>
+        <bundle>nuxeo_base</bundle>
+        <bundle>nuxeo_header_footer</bundle>
+        <resource>nuxeo_admincenter_specific.css</resource>
+      </resources>
+    </page>
 
   </extension>
 
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <style name="nuxeo_admincenter_specific">
-      <src>themes/css/nuxeo_admincenter_specific.css</src>
-    </style>
+    <resource name="nuxeo_admincenter_specific.css">
+      <path>themes/css/nuxeo_admincenter_specific.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
 
   </extension>
 
