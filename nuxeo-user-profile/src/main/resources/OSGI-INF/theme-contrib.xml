@@ -4,30 +4,26 @@
   <require>org.nuxeo.ecm.user.center.theme</require>
   <require>org.nuxeo.ecm.admin.center.theme</require>
 
-  <!-- mapping between theme pages and resources -->
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="userCenter/default">
-      <styles append="true">
-        <style>user_profile</style>
-      </styles>
+      <resources append="true">
+        <resource>user_profile.css</resource>
+      </resources>
     </themePage>
-    
     <themePage name="admin/default">
-      <styles append="true">
-        <style>user_profile</style>
-      </styles>
+      <resources append="true">
+        <resource>user_profile.css</resource>
+      </resources>
     </themePage>
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-  <!-- CSS path declaration -->
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
-
-    <style name="user_profile">
-      <src>themes/css/user_profile.css</src>
-    </style>
+    <resource name="user_profile.css">
+      <path>themes/css/user_profile.css</path>
+    </resource>
 
   </extension>
 
