@@ -24,7 +24,7 @@ import javax.faces.context.FacesContext;
 
 import org.nuxeo.theme.styling.negotiation.AbstractNegotiator;
 
-public final class RequestParameter extends AbstractNegotiator {
+public final class RequestAttribute extends AbstractNegotiator {
 
     @Override
     public String getResult(String target, Object context) {
@@ -34,8 +34,8 @@ public final class RequestParameter extends AbstractNegotiator {
         } else {
             return null;
         }
-        final Map<String, String> parameters = faces.getExternalContext().getRequestParameterMap();
-        return parameters.get(getProperty("param"));
+        final Map<String, Object> parameters = faces.getExternalContext().getRequestMap();
+        return (String) parameters.get(getProperty("param"));
     }
 
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.ecm.webapp.pageStyling">
+<component name="org.nuxeo.theme.nuxeo.webapp">
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
@@ -597,6 +597,10 @@
         order="10">
         <property name="param">page</property>
       </negotiator>
+      <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.RequestAttribute"
+        order="10">
+        <property name="param">page</property>
+      </negotiator>
       <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.DefaultPage"
         order="100">
         <property name="jsfPage">galaxy/default</property>
@@ -606,6 +610,10 @@
     <negotiation target="jsfFlavor">
       <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.RequestParameter"
         order="10">
+        <property name="param">flavor</property>
+      </negotiator>
+      <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.RequestAttribute"
+        order="20">
         <property name="param">flavor</property>
       </negotiator>
       <negotiator class="org.nuxeo.ecm.localconf.LocalThemeFlavor"
