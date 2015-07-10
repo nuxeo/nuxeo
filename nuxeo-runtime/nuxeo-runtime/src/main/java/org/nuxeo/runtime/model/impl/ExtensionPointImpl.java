@@ -87,7 +87,12 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
             if (xmap == null) {
                 xmap = new XMap();
                 for (Class contrib : contributions) {
-                    xmap.register(contrib);
+                    if (contrib != null) {
+                        xmap.register(contrib);
+                    } else {
+                        throw new RuntimeException("Unknown implementation class when contributing to "
+                                + owner.getComponent().getName());
+                    }
                 }
             }
             contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
