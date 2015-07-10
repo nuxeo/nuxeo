@@ -43,9 +43,7 @@ public class ThemeMigrationService extends DefaultComponent {
                         + "point '%s': a compatibility registration was performed but it may not be " + "accurate.",
                         r.getName(), WR_XP);
                 DeprecationLogger.log(message, "7.4");
-                if (Framework.isDevModeSet()) {
-                    Framework.getRuntime().getWarnings().add(message);
-                }
+                Framework.getRuntime().getWarnings().add(message);
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
                 wrm.registerResource(r);
             } else {
