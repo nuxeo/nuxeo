@@ -17,8 +17,8 @@ import java.io.IOException;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * {@link BlobHolder} implemention based on a {@link DocumentModel} and a Xpath pointing to a String fields. (Typical
@@ -72,7 +72,7 @@ public class DocumentStringBlobHolder extends DocumentBlobHolder {
             try {
                 string = blob.getString();
             } catch (IOException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
             // strip '\0 chars from text
             if (string.indexOf('\0') >= 0) {

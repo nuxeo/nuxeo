@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Dummy implementation of the {@link ScanService} interface.
@@ -38,7 +38,7 @@ public class DummyVirusScanner implements ScanService {
         if (blob != null) {
             doneFiles.add(blob.getFilename());
             if (blob.getFilename().contains("doFail")) {
-                throw new ClientException("Virus Scanner not available");
+                throw new NuxeoException("Virus Scanner not available");
             }
             return new ScanResult(false, "No virus found in " + blob.getFilename());
         } else {

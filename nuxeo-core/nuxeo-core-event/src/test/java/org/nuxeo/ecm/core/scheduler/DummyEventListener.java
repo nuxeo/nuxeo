@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.scheduler;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 

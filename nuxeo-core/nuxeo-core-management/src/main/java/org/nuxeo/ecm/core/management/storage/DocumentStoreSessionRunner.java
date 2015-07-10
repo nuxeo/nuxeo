@@ -13,8 +13,8 @@
  */
 package org.nuxeo.ecm.core.management.storage;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.management.api.StorageError;
 import org.nuxeo.runtime.api.Framework;
@@ -55,7 +55,7 @@ public abstract class DocumentStoreSessionRunner extends UnrestrictedSessionRunn
         try {
             Thread.currentThread().setContextClassLoader(bundleCL);
             runUnrestricted();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw new StorageError("Storage error :  " + errorMessage(), e);
         } finally {
             Thread.currentThread().setContextClassLoader(jarCL);

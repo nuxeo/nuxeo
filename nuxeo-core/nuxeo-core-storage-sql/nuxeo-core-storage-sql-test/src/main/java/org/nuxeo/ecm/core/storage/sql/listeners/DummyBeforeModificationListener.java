@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.storage.sql.listeners;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;

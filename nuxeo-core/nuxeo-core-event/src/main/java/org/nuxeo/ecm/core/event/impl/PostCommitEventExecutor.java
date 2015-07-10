@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventStats;
 import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
@@ -245,10 +244,6 @@ public class PostCommitEventExecutor {
                     } else {
                         ok = true;
                     }
-                } catch (ClientException e) {
-                    log.error("Events postcommit execution encountered exception for listener: " + listener.getName(),
-                            e);
-                    // don't rethrow, but rollback (ok=false) and continue loop
                 } catch (RuntimeException e) {
                     log.error("Events postcommit execution encountered exception for listener: " + listener.getName(),
                             e);
@@ -336,11 +331,6 @@ public class PostCommitEventExecutor {
                                     + listener.getName() + ", will rollback and abort bulk processing");
                             interrupt = true;
                         }
-                    } catch (ClientException e) {
-                        log.error(
-                                "Events postcommit bulk execution encountered exception for listener: "
-                                        + listener.getName(), e);
-                        return Boolean.FALSE; // report error
                     } catch (RuntimeException e) {
                         log.error(
                                 "Events postcommit bulk execution encountered exception for listener: "

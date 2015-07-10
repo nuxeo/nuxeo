@@ -33,9 +33,9 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.geronimo.connector.outbound.AbstractConnectionManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.management.jtajca.CoreSessionMonitor;
 import org.nuxeo.ecm.core.management.jtajca.Defaults;
 import org.nuxeo.ecm.core.management.jtajca.ConnectionPoolMonitor;
@@ -121,7 +121,7 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
         try {
             installPoolMonitors();
-        } catch (ClientException | LoginException cause) {
+        } catch (LoginException cause) {
             log.warn("Cannot install storage monitors", cause);
         }
 
@@ -129,12 +129,12 @@ public class DefaultMonitorComponent extends DefaultComponent {
 
     protected void installPoolMonitors() throws LoginException {
         NuxeoContainer.addListener(cmUpdater);
-        ClientException errors = new ClientException("Cannot install pool monitors");
+        NuxeoException errors = new NuxeoException("Cannot install pool monitors");
         LoginContext loginContext = Framework.login();
         try {
             for (String name : Framework.getLocalService(RepositoryService.class).getRepositoryNames()) {
                 try (CoreSession session = CoreInstance.openCoreSession(name)) {;
-                } catch (ClientException cause) {
+                } catch (NuxeoException cause) {
                     errors.addSuppressed(cause);
                 }
             }

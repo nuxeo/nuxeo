@@ -101,8 +101,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.SQLQueryParser;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
@@ -1329,8 +1329,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws QueryException {
+    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         // query
         PartialList<String> pl = doQuery(query, queryType, queryFilter, (int) countUpTo);
 
@@ -1347,8 +1346,7 @@ public class DBSSession implements Session {
         return new DocumentModelListImpl(list, pl.totalSize);
     }
 
-    protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo)
-            throws QueryException {
+    protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo, true);
         List<String> ids = new ArrayList<String>(pl.list.size());
         for (Map<String, Serializable> map : pl.list) {
@@ -1359,19 +1357,19 @@ public class DBSSession implements Session {
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, int countUpTo) throws QueryException {
+            QueryFilter queryFilter, int countUpTo) {
         return doQueryAndFetch(query, queryType, queryFilter, countUpTo, false);
     }
 
     protected PartialList<Map<String, Serializable>> doQueryAndFetch(String query, String queryType,
-            QueryFilter queryFilter, int countUpTo, boolean onlyId) throws QueryException {
+            QueryFilter queryFilter, int countUpTo, boolean onlyId) {
         if ("NXTAG".equals(queryType)) {
             // for now don't try to implement tags
             // and return an empty list
             return new PartialList<Map<String, Serializable>>(Collections.<Map<String, Serializable>> emptyList(), 0);
         }
         if (!NXQL.NXQL.equals(queryType)) {
-            throw new QueryException("No QueryMaker accepts query type: " + queryType);
+            throw new QueryParseException("No QueryMaker accepts query type: " + queryType);
         }
         // transform the query according to the transformers defined by the
         // security policies
@@ -1539,8 +1537,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params)
-            throws QueryException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params) {
         int countUpTo = -1;
         PartialList<Map<String, Serializable>> pl = doQueryAndFetch(query, queryType, queryFilter, countUpTo);
         return new DBSQueryResult(pl);

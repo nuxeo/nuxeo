@@ -34,7 +34,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.codehaus.jackson.JsonNode;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;

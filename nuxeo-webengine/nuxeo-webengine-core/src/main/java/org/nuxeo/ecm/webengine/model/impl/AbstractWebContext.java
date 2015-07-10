@@ -787,7 +787,7 @@ public abstract class AbstractWebContext implements WebContext {
         if (rm.getRepository(repoName) != null) {
             this.repoName = repoName;
         } else {
-            throw new ClientException("Repository " + repoName + " not found");
+            throw new IllegalArgumentException("Repository " + repoName + " not found");
         }
 
     }

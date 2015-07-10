@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -79,16 +78,8 @@ public class PermissionFilter implements Filter {
 
     protected boolean hasPermission(CoreSession session, DocumentModel doc, Set<String> permissions, boolean required) {
         for (String permission : permissions) {
-            try {
-                if ((required && !session.hasPermission(doc.getRef(), permission))
-                        || (!required && session.hasPermission(doc.getRef(), permission))) {
-                    return false;
-                }
-            } catch (ClientException e) {
-                String message = String.format("Unable to check '%s' permission for document '%s': %s", permission,
-                        doc.getPathAsString(), e.getMessage());
-                log.warn(message);
-                log.debug(message, e);
+            if ((required && !session.hasPermission(doc.getRef(), permission))
+                    || (!required && session.hasPermission(doc.getRef(), permission))) {
                 return false;
             }
         }

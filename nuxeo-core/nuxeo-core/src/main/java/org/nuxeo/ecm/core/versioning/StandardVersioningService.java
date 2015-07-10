@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -71,9 +70,6 @@ public class StandardVersioningService implements ExtendableVersioningService {
                 label += "+";
             }
         } catch (PropertyNotFoundException e) {
-            label = "";
-        } catch (ClientException e) {
-            log.debug("No version label", e);
             label = "";
         }
         return label;
@@ -173,12 +169,7 @@ public class StandardVersioningService implements ExtendableVersioningService {
     @Override
     public List<VersioningOption> getSaveOptions(DocumentModel docModel) {
         boolean versionable = docModel.isVersionable();
-        String lifecycleState;
-        try {
-            lifecycleState = docModel.getCoreSession().getCurrentLifeCycleState(docModel.getRef());
-        } catch (ClientException e) {
-            lifecycleState = null;
-        }
+        String lifecycleState = docModel.getCoreSession().getCurrentLifeCycleState(docModel.getRef());
         String type = docModel.getType();
         return getSaveOptions(versionable, lifecycleState, type);
     }

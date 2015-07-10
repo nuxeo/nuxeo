@@ -12,7 +12,6 @@
 package org.nuxeo.ecm.core.api.pathsegment;
 
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
 

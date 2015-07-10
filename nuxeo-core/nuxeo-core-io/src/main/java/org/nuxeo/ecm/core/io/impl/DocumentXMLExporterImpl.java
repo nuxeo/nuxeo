@@ -21,9 +21,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
@@ -76,7 +76,7 @@ public class DocumentXMLExporterImpl implements DocumentXMLExporter {
         try {
             pipe.run();
         } catch (IOException e) {
-            throw new ClientException("Error while trying to export the document to XML.", e);
+            throw new NuxeoException("Error while trying to export the document to XML.", e);
         } finally {
             if (documentReader != null) {
                 documentReader.close();

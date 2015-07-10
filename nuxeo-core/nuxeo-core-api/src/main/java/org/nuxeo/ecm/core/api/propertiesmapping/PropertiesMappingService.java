@@ -18,7 +18,6 @@ package org.nuxeo.ecm.core.api.propertiesmapping;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -45,7 +44,6 @@ public interface PropertiesMappingService {
      * @param sourceDoc
      * @param targetDoc
      * @param mappingName
-     * @throws ClientException if trying to map incompatible types
      */
     void mapProperties(CoreSession session, DocumentModel sourceDoc, DocumentModel targetDoc, String mappingName);
 

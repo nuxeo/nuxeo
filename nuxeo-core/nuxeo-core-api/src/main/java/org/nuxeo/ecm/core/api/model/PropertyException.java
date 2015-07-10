@@ -12,7 +12,7 @@
  */
 package org.nuxeo.ecm.core.api.model;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Deprecated and never thrown, kept for compatibility so that old code catching this still works.
@@ -22,7 +22,7 @@ import org.nuxeo.ecm.core.api.ClientException;
  * @deprecated since 7.4, use org.nuxeo.ecm.core.api.PropertyException instead
  */
 @Deprecated
-public class PropertyException extends ClientException {
+public class PropertyException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

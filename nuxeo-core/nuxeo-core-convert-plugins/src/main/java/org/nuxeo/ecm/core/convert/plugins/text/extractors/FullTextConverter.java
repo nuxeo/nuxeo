@@ -23,7 +23,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -48,12 +47,7 @@ public class FullTextConverter implements Converter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        String srcMT;
-        try {
-            srcMT = blobHolder.getBlob().getMimeType();
-        } catch (ClientException e) {
-            throw new ConversionException("Unable to get source MimeType", e);
-        }
+        String srcMT = blobHolder.getBlob().getMimeType();
 
         if (TEXT_PLAIN_MT.equals(srcMT)) {
             // no need to convert !

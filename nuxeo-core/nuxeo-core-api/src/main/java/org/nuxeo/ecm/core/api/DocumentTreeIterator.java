@@ -115,11 +115,7 @@ public class DocumentTreeIterator implements Iterator<DocumentModel> {
         if (doc.isFolder()) {
             // TODO: load children after the document was traversed
             // update the sequence queue with children from this folder
-            try {
-                queue.add(session.getChildrenIterator(doc.getRef(), null, null, null));
-            } catch (ClientException e) {
-                log.error(e);
-            }
+            queue.add(session.getChildrenIterator(doc.getRef(), null, null, null));
         }
         return doc;
     }

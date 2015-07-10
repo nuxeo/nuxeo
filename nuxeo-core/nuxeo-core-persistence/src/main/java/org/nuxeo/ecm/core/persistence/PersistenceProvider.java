@@ -23,7 +23,6 @@ import javax.persistence.TransactionRequiredException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author "Stephane Lacoin (aka matic) <slacoin@nuxeo.org>"

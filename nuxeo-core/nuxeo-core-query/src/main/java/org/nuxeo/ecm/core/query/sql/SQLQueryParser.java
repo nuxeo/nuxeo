@@ -45,14 +45,9 @@ public final class SQLQueryParser {
     }
 
     public static SQLQuery parse(String string) throws QueryParseException {
-        try {
-            SQLQuery query = parse(new StringReader(string));
-            query.setQueryString(string);
-            return query;
-        } catch (QueryParseException e) {
-            e.addInfo("In query: " + string);
-            throw e;
-        }
+        SQLQuery query = parse(new StringReader(string));
+        query.setQueryString(string);
+        return query;
     }
 
     /**

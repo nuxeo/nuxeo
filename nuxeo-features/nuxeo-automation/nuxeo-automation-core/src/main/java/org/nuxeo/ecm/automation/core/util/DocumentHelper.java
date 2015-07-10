@@ -106,7 +106,7 @@ public class DocumentHelper {
     }
 
     public static void setProperties(CoreSession session, DocumentModel doc, Properties properties)
-            throws IOException {
+            throws IOException, PropertyException {
         if (properties instanceof DataModelProperties) {
             DataModelProperties dataModelProperties = (DataModelProperties) properties;
             for (Map.Entry<String, Serializable> entry : dataModelProperties.getMap().entrySet()) {

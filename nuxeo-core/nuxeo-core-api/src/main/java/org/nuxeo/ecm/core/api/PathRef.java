@@ -49,8 +49,8 @@ public class PathRef implements DocumentRef {
     public static void checkName(String name) {
         // checks the name does not contains slash
         if (name != null && name.indexOf('/') >= 0) {
-            throw new ClientException(String.format(
-                    "Invalid name '%s'. A DocumentModel's name cannot contain slash character. "
+            throw new IllegalArgumentException(
+                    String.format("Invalid name '%s'. A DocumentModel's name cannot contain slash character. "
                             + "Use the parentPath to specificy the document's path.", name));
         }
     }

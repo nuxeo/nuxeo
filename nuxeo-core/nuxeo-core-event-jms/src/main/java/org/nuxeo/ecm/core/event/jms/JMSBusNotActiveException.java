@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.event.jms;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
-public class JMSBusNotActiveException extends ClientException {
+public class JMSBusNotActiveException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

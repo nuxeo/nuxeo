@@ -38,7 +38,6 @@ import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
@@ -46,6 +45,7 @@ import org.nuxeo.ecm.core.api.DataModelMap;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -372,7 +372,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
         if (sid != null) {
             // detached docs need a tmp session anyway
             if (useStrictSessionManagement()) {
-                throw new ClientException("Document " + id + " is bound to a closed CoreSession, can not reconnect");
+                throw new NuxeoException("Document " + id + " is bound to a closed CoreSession, can not reconnect");
             }
         }
         return CoreInstance.openCoreSession(repositoryName);
@@ -429,7 +429,7 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public void attach(String sid) {
         if (this.sid != null) {
-            throw new ClientException("Cannot attach a document that is already attached");
+            throw new NuxeoException("Cannot attach a document that is already attached");
         }
         this.sid = sid;
     }
@@ -1291,12 +1291,8 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
     @Override
     public String toString() {
         String title = id;
-        try {
-            if (getDataModels().containsKey("dublincore")) {
-                title = getTitle();
-            }
-        } catch (ClientException e) {
-            title = "(ERROR: " + e + ')';
+        if (getDataModels().containsKey("dublincore")) {
+            title = getTitle();
         }
         return getClass().getSimpleName() + '(' + id + ", path=" + path + ", title=" + title + ')';
     }
@@ -1585,11 +1581,11 @@ public class DocumentModelImpl implements DocumentModel, Cloneable {
             return null;
         }
         try {
-            Calendar modified = (Calendar) getProperty("dublincore", "modified");
+            Calendar modified = (Calendar) getPropertyValue("dc:modified");
             if (modified != null) {
-                return new Long(modified.getTimeInMillis()).toString();
+                return String.valueOf(modified.getTimeInMillis());
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Error while retrieving dc:modified", e);
         }
         return null;

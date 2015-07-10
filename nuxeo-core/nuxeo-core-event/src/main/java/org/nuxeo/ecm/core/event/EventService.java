@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.event;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.impl.EventListenerDescriptor;
 
 /**

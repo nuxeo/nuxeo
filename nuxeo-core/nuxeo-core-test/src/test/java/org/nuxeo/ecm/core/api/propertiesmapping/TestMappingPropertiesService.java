@@ -18,6 +18,8 @@ package org.nuxeo.ecm.core.api.propertiesmapping;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,9 +32,10 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -85,23 +88,20 @@ public class TestMappingPropertiesService {
         assertEquals("testAuthor", cmnts.get(0).get("author"));
 
         // test mapping on a invalid xpath
-        Exception e = null;
         try {
             mappingService.mapProperties(session, doc1, doc2, "testMappingInvalidXpath");
-        } catch (ClientException e1) {
-            e = e1;
+            fail();
+        } catch (PropertyNotFoundException e) {
+            // ok
         }
-        assertNotNull(e);
 
         // test mapping wrong types
-        e = null;
         try {
             mappingService.mapProperties(session, doc1, doc2, "testMappingWrongTypes");
-
-        } catch (ClientException e1) {
-            e = e1;
+            fail();
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Invalid mapping"));
         }
-        assertNotNull(e);
     }
 
     protected DocumentModel createDocument(String parentPath, String id, String type) {

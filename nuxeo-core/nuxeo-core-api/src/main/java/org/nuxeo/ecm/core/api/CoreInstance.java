@@ -238,8 +238,8 @@ public class CoreInstance {
                 if (Framework.isTestModeSet()) {
                     return new SystemPrincipal(null);
                 } else {
-                    throw new ClientException("Cannot create a CoreSession outside a security context, "
-                            + " login() missing.");
+                    throw new NuxeoException(
+                            "Cannot create a CoreSession outside a security context, " + " login() missing.");
                 }
             }
         }
@@ -278,7 +278,7 @@ public class CoreInstance {
     }
 
     public void cleanupThisThread() {
-        ClientException errors = new ClientException("disconnecting from storage for you");
+        NuxeoException errors = new NuxeoException("disconnecting from storage for you");
         for (RegistrationInfo each : CoreInstance.getInstance().getRegistrationInfosLive(true)) {
             each.session.destroy();
             errors.addSuppressed(each);

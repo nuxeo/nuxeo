@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.runtime.test.runner.Features;
@@ -48,7 +49,7 @@ public class TestFulltextSearchDisabled extends TestFulltextEnabled {
         Assert.assertEquals(1, esRet.totalSize());
 
         // fulltext search with VCS is not allowed
-        exception.expect(ClientException.class);
+        exception.expect(QueryParseException.class);
         DocumentModelList coreRet = session.query(nxql);
         Assert.assertEquals(0, coreRet.totalSize());
     }

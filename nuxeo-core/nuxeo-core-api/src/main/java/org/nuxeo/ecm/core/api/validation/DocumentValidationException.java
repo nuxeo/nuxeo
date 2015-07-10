@@ -17,14 +17,14 @@
 
 package org.nuxeo.ecm.core.api.validation;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Exception thrown when some process failed due to {@link ConstraintViolation}.
  *
  * @since 7.1
  */
-public class DocumentValidationException extends ClientException {
+public class DocumentValidationException extends NuxeoException {
 
     private static final String MESSAGE_SINGLE = "Constraint violation thrown: '%s'";
 

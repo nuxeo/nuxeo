@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.api.tree;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 
@@ -44,11 +43,7 @@ public class DefaultDocumentTreeFilter implements DocumentTreeFilter {
             return false;
         }
         // exclude deleted documents from tree
-        try {
-            if (LifeCycleConstants.DELETED_STATE.equals(document.getCurrentLifeCycleState())) {
-                return false;
-            }
-        } catch (ClientException e) {
+        if (LifeCycleConstants.DELETED_STATE.equals(document.getCurrentLifeCycleState())) {
             return false;
         }
         // XXX AT: this could have not been copied from FacetFilter if fields

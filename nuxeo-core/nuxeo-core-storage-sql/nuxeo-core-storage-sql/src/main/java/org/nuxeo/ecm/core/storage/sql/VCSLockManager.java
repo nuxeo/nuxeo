@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
@@ -193,7 +194,7 @@ public class VCSLockManager extends AbstractLockManager {
                 throw exception;
             }
         }
-        NuxeoException exception = new NuxeoException("Failed to lock " + id + ", too much concurrency (tried "
+        LockException exception = new LockException("Failed to lock " + id + ", too much concurrency (tried "
                 + LOCK_RETRIES + " times)");
         for (Throwable t : suppressed) {
             exception.addSuppressed(t);

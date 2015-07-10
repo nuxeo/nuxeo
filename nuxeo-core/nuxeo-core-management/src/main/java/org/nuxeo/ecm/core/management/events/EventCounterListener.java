@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.management.events;
 import java.util.Arrays;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.EventBundle;

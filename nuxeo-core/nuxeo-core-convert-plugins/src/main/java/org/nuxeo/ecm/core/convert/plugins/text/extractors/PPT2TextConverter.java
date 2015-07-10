@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.poi.hslf.extractor.PowerPointExtractor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -66,7 +65,7 @@ public class PPT2TextConverter implements Converter {
             }
             blob.setMimeType("text/plain");
             return new SimpleCachableBlobHolder(blob);
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             throw new ConversionException("Error during PPT2Text conversion", e);
         } finally {
             if (extractor != null) {

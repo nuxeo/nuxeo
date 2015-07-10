@@ -21,18 +21,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.IODocumentManager;
-import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
-import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentTreeReader;
 import org.nuxeo.ecm.core.io.impl.plugins.DocumentsListReader;
@@ -49,8 +47,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     private static final long serialVersionUID = -3131999198524020179L;
 
     @Override
-    public DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root)
-            throws ImportDocumentException {
+    public DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root) {
         DocumentReader reader = null;
         DocumentModelWriter writer = null;
         try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
@@ -63,8 +60,8 @@ public class IODocumentManagerImpl implements IODocumentManager {
             DocumentTranslationMap map = pipe.run();
             coreSession.save();
             return map;
-        } catch (ClientException | IOException e) {
-            throw new ImportDocumentException(e);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         } finally {
             if (reader != null) {
                 reader.close();
@@ -76,8 +73,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     @Override
-    public DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter)
-            throws ImportDocumentException {
+    public DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter) {
 
         DocumentReader reader = null;
 
@@ -93,7 +89,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
             return map;
         } catch (IOException e) {
-            throw new ImportDocumentException(e);
+            throw new NuxeoException(e);
         } finally {
             if (reader != null) {
                 reader.close();
@@ -104,7 +100,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
     @Override
     public DocumentTranslationMap exportDocuments(OutputStream out, String repo, Collection<DocumentRef> sources,
-            boolean recurse, String format) throws ExportDocumentException {
+            boolean recurse, String format) {
         DocumentReader reader = null;
         DocumentWriter writer = null;
         try (CoreSession coreSession = CoreInstance.openCoreSessionSystem(repo)) {
@@ -129,8 +125,8 @@ public class IODocumentManagerImpl implements IODocumentManager {
                 }
                 return DocumentTranslationMapImpl.merge(maps);
             }
-        } catch (ClientException | IOException e) {
-            throw new ExportDocumentException(e);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         } finally {
             if (reader != null) {
                 reader.close();
@@ -142,8 +138,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     @Override
-    public DocumentTranslationMap exportDocuments(OutputStream out, DocumentReader customDocReader, String format)
-            throws ExportDocumentException {
+    public DocumentTranslationMap exportDocuments(OutputStream out, DocumentReader customDocReader, String format) {
 
         DocumentWriter writer = null;
 
@@ -161,8 +156,8 @@ public class IODocumentManagerImpl implements IODocumentManager {
             }
 
             return DocumentTranslationMapImpl.merge(maps);
-        } catch (ClientException | IOException e) {
-            throw new ExportDocumentException(e);
+        } catch (IOException e) {
+            throw new NuxeoException(e);
         } finally {
             // reader will be closed by caller
             if (writer != null) {
@@ -172,8 +167,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
     }
 
     @Override
-    public DocumentTranslationMap importDocuments(DocumentReader customDocReader, DocumentWriter customDocWriter)
-            throws ImportDocumentException {
+    public DocumentTranslationMap importDocuments(DocumentReader customDocReader, DocumentWriter customDocWriter) {
 
         try {
             DocumentPipe pipe = new DocumentPipeImpl(10);
@@ -187,7 +181,7 @@ public class IODocumentManagerImpl implements IODocumentManager {
 
             return map;
         } catch (IOException e) {
-            throw new ImportDocumentException(e);
+            throw new NuxeoException(e);
         }
     }
 

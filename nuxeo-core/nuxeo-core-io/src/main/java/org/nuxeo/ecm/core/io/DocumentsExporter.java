@@ -17,9 +17,6 @@ package org.nuxeo.ecm.core.io;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
-
 /**
  * Simple interface useful to wrap a sequence of calls for performing an export. This could be handy to quickly define
  * an exporter and sent it as parameter so the method will be callback.
@@ -28,6 +25,6 @@ import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
  */
 public interface DocumentsExporter {
 
-    DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException, IOException;
+    DocumentTranslationMap exportDocs(OutputStream out) throws IOException;
 
 }

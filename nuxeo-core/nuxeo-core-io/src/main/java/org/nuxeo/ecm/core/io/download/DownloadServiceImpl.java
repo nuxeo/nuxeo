@@ -34,7 +34,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -220,9 +219,6 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             try {
                 blob = (Blob) doc.getPropertyValue(xpath);
             } catch (PropertyNotFoundException e) {
-                log.debug(e.getMessage());
-                return null;
-            } catch (ClientException e) {
                 log.debug(e.getMessage());
                 return null;
             }

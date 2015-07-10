@@ -22,7 +22,6 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
 /**
@@ -52,14 +51,12 @@ public interface Session {
      *
      * @since 5.9.4
      */
-    DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws QueryException;
+    DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
 
     /**
      * Does a query and fetch the individual results as maps.
      */
-    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params)
-            throws QueryException;
+    IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params);
 
     /**
      * Saves this session.

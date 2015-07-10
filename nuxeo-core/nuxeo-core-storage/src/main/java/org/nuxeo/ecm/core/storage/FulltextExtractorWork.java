@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -178,7 +177,7 @@ public abstract class FulltextExtractorWork extends AbstractWork {
                     string = string.replace("\0", " ");
                 }
                 strings.add(string);
-            } catch (ClientException | IOException e) {
+            } catch (ConversionException | IOException e) {
                 String msg = "Could not extract fulltext of file '" + blob.getFilename() + "' for document: " + docId
                         + ": " + e;
                 log.warn(msg);

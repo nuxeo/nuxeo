@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.propertiesmapping.PropertiesMappingContributionRegistry;
@@ -66,24 +66,19 @@ public class PropertiesMappingComponent extends DefaultComponent implements Prop
             {
         Map<String, String> properties = getMapping(mapping);
         for (String keyProp : properties.keySet()) {
-            try {
-                // verify that mapping can be done
-                Property sourceProperty = sourceDoc.getProperty(keyProp);
-                Property targetProperty = targetDoc.getProperty(properties.get(keyProp));
+            // verify that mapping can be done
+            Property sourceProperty = sourceDoc.getProperty(keyProp);
+            Property targetProperty = targetDoc.getProperty(properties.get(keyProp));
 
-                Type sourceType = sourceProperty.getType();
-                Type targetType = targetProperty.getType();
+            Type sourceType = sourceProperty.getType();
+            Type targetType = targetProperty.getType();
 
-                if (!compatibleTypes(targetType, sourceType)) {
-                    throw new ClientException(String.format("Invliad mapping.Can not map %s on type %s ", sourceType,
-                            targetType));
-                }
-
-                targetDoc.setPropertyValue(targetProperty.getPath(), sourceProperty.getValue());
-            } catch (PropertyNotFoundException e) {
-                // if invalid xpath
-                throw new ClientException(e);
+            if (!compatibleTypes(targetType, sourceType)) {
+                throw new NuxeoException(
+                        String.format("Invalid mapping. Cannot map %s on type %s ", sourceType, targetType));
             }
+
+            targetDoc.setPropertyValue(targetProperty.getPath(), sourceProperty.getValue());
         }
         session.saveDocument(targetDoc);
     }

@@ -32,7 +32,6 @@ import org.nuxeo.common.collections.PrimitiveArrays;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -234,17 +233,13 @@ public class ExportedDocumentImpl implements ExportedDocument {
     }
 
     protected void readLifeCycleInfo(Element element, DocumentModel doc) {
-        try {
-            String lifeCycleState = doc.getCurrentLifeCycleState();
-            if (lifeCycleState != null && lifeCycleState.length() > 0) {
-                element.addElement(ExportConstants.LIFECYCLE_STATE_TAG).addText(lifeCycleState);
-            }
-            String lifeCyclePolicy = doc.getLifeCyclePolicy();
-            if (lifeCyclePolicy != null && lifeCyclePolicy.length() > 0) {
-                element.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(lifeCyclePolicy);
-            }
-        } catch (ClientException e) {
-            log.error(e, e);
+        String lifeCycleState = doc.getCurrentLifeCycleState();
+        if (lifeCycleState != null && lifeCycleState.length() > 0) {
+            element.addElement(ExportConstants.LIFECYCLE_STATE_TAG).addText(lifeCycleState);
+        }
+        String lifeCyclePolicy = doc.getLifeCyclePolicy();
+        if (lifeCyclePolicy != null && lifeCyclePolicy.length() > 0) {
+            element.addElement(ExportConstants.LIFECYCLE_POLICY_TAG).addText(lifeCyclePolicy);
         }
     }
 

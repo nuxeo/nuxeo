@@ -43,7 +43,8 @@ public final class I18NUtils {
         return loader;
     }
 
-    public static String getMessageString(String bundleName, String key, Object[] params, Locale locale) {
+    public static String getMessageString(String bundleName, String key, Object[] params, Locale locale)
+            throws MissingResourceException {
 
         String text;
 

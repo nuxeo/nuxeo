@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -94,27 +93,18 @@ public class VirusScanSyncListener implements EventListener {
     }
 
     protected List<String> getBlobsXPath(DocumentModel doc, boolean onlyChangedBlob) {
-
         List<String> propertiesPath = new ArrayList<String>();
         BlobsExtractor extractor = new BlobsExtractor();
-
-        try {
-            List<Property> blobProperties = extractor.getBlobsProperties(doc);
-
-            for (Property prop : blobProperties) {
-                if (onlyChangedBlob) {
-                    if (prop.isDirty()) {
-                        propertiesPath.add(prop.getPath());
-                    }
-                } else {
+        List<Property> blobProperties = extractor.getBlobsProperties(doc);
+        for (Property prop : blobProperties) {
+            if (onlyChangedBlob) {
+                if (prop.isDirty()) {
                     propertiesPath.add(prop.getPath());
                 }
+            } else {
+                propertiesPath.add(prop.getPath());
             }
-        } catch (Exception e) {
-            log.error("Error when scanning blobs from Document", e);
-            throw new ClientException(e);
         }
-
         return propertiesPath;
     }
 

@@ -15,7 +15,7 @@ package org.nuxeo.ecm.core.api;
 /**
  * Deprecated and unused in Nuxeo, see NXP-17449.
  *
- * @deprecated since 7.4
+ * @deprecated since 7.4, use org.nuxeo.ecm.core.api.NuxeoException instead
  */
 @Deprecated
 public class ClientRuntimeException extends NuxeoException {

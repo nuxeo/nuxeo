@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.io;
 import java.io.InputStream;
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.xml.sax.InputSource;
@@ -38,7 +37,6 @@ public interface DocumentXMLExporter extends Serializable {
      * @param doc the document
      * @param session the core session
      * @return the input stream
-     * @throws ClientException if an error occurs while exporting the document to XML
      */
     InputStream exportXML(DocumentModel doc, CoreSession session);
 
@@ -48,7 +46,6 @@ public interface DocumentXMLExporter extends Serializable {
      * @param doc the document
      * @param session the core session
      * @return the input source
-     * @throws ClientException if an error occurs while exporting the document to XML
      */
     InputSource exportXMLAsInputSource(DocumentModel doc, CoreSession session);
 
@@ -58,7 +55,6 @@ public interface DocumentXMLExporter extends Serializable {
      * @param doc the document
      * @param session the core session
      * @return the byte array
-     * @throws ClientException if an error occurs while exporting the document to XML
      */
     byte[] exportXMLAsByteArray(DocumentModel doc, CoreSession session);
 }

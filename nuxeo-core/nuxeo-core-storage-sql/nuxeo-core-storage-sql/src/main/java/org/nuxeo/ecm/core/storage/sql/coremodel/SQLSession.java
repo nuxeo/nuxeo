@@ -54,9 +54,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -377,61 +375,56 @@ public class SQLSession implements Session {
             + "\\s+DESC\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
-    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo)
-            throws QueryException {
-        try {
-            // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
-            // do it in SQL (and has to do limit/offset as well)
-            Boolean orderByPath;
-            Matcher matcher = ORDER_BY_PATH_ASC.matcher(query);
+    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
+        // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
+        // do it in SQL (and has to do limit/offset as well)
+        Boolean orderByPath;
+        Matcher matcher = ORDER_BY_PATH_ASC.matcher(query);
+        if (matcher.matches()) {
+            orderByPath = Boolean.TRUE; // ASC
+        } else {
+            matcher = ORDER_BY_PATH_DESC.matcher(query);
             if (matcher.matches()) {
-                orderByPath = Boolean.TRUE; // ASC
+                orderByPath = Boolean.FALSE; // DESC
             } else {
-                matcher = ORDER_BY_PATH_DESC.matcher(query);
-                if (matcher.matches()) {
-                    orderByPath = Boolean.FALSE; // DESC
-                } else {
-                    orderByPath = null;
-                }
+                orderByPath = null;
             }
-            long limit = 0;
-            long offset = 0;
-            if (orderByPath != null) {
-                query = matcher.group(1);
-                limit = queryFilter.getLimit();
-                offset = queryFilter.getOffset();
-                queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
-            }
-            PartialList<Serializable> pl = session.query(query, queryType, queryFilter, countUpTo);
-            List<Serializable> ids = pl.list;
-
-            // get Documents in bulk
-            List<Document> docs = getDocumentsById(ids);
-
-            // build DocumentModels from Documents
-            String[] schemas = { "common" };
-            List<DocumentModel> list = new ArrayList<DocumentModel>(ids.size());
-            for (Document doc : docs) {
-                list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
-            }
-
-            // order / limit
-            if (orderByPath != null) {
-                Collections.sort(list, new PathComparator(orderByPath.booleanValue()));
-            }
-            if (limit != 0) {
-                // do limit/offset by hand
-                int size = list.size();
-                list.subList(0, (int) (offset > size ? size : offset)).clear();
-                size = list.size();
-                if (limit < size) {
-                    list.subList((int) limit, size).clear();
-                }
-            }
-            return new DocumentModelListImpl(list, pl.totalSize);
-        } catch (QueryParseException e) {
-            throw new QueryException(e.getMessage() + ": " + query, e);
         }
+        long limit = 0;
+        long offset = 0;
+        if (orderByPath != null) {
+            query = matcher.group(1);
+            limit = queryFilter.getLimit();
+            offset = queryFilter.getOffset();
+            queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
+        }
+        PartialList<Serializable> pl = session.query(query, queryType, queryFilter, countUpTo);
+        List<Serializable> ids = pl.list;
+
+        // get Documents in bulk
+        List<Document> docs = getDocumentsById(ids);
+
+        // build DocumentModels from Documents
+        String[] schemas = { "common" };
+        List<DocumentModel> list = new ArrayList<DocumentModel>(ids.size());
+        for (Document doc : docs) {
+            list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
+        }
+
+        // order / limit
+        if (orderByPath != null) {
+            Collections.sort(list, new PathComparator(orderByPath.booleanValue()));
+        }
+        if (limit != 0) {
+            // do limit/offset by hand
+            int size = list.size();
+            list.subList(0, (int) (offset > size ? size : offset)).clear();
+            size = list.size();
+            if (limit < size) {
+                list.subList((int) limit, size).clear();
+            }
+        }
+        return new DocumentModelListImpl(list, pl.totalSize);
     }
 
     public static class PathComparator implements Comparator<DocumentModel> {
@@ -458,8 +451,7 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params)
-            throws QueryException {
+    public IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params) {
         return session.queryAndFetch(query, queryType, queryFilter, params);
     }
 

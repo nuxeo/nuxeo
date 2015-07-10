@@ -18,10 +18,10 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.ExportedDocument;
@@ -53,7 +53,6 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
         super(session, parentPath, saveInterval);
     }
 
-    @SuppressWarnings({ "ThrowableInstanceNeverThrown" })
     @Override
     public DocumentTranslationMap write(ExportedDocument xdoc) throws IOException {
         if (xdoc.getDocument() == null) {
@@ -66,23 +65,16 @@ public class DocumentModelUpdater extends AbstractDocumentModelWriter {
         String id = xdoc.getId();
         try {
             doc = session.getDocument(new IdRef(id));
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             log.error("Cannot update document. No such document: " + id);
             return null;
         }
 
-        try {
-            doc = updateDocument(xdoc, doc);
-            DocumentLocation source = xdoc.getSourceLocation();
-            DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
-            map.put(source.getDocRef(), doc.getRef());
-            return map;
-        } catch (ClientException e) {
-            IOException ioe = new IOException("Failed to import document in repository: " + e.getMessage());
-            ioe.setStackTrace(e.getStackTrace());
-            log.error(e);
-            return null;
-        }
+        doc = updateDocument(xdoc, doc);
+        DocumentLocation source = xdoc.getSourceLocation();
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
+        map.put(source.getDocRef(), doc.getRef());
+        return map;
     }
 
 }

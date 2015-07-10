@@ -589,7 +589,7 @@ public class TestDefaultPageProviders {
 
         assertEquals(-1, pp.getResultsCount());
         assertNotNull(pp.getError());
-        assertEquals("In query: SELECT dc:title FROM Document WHERE ecm:parentId = ORDER BY dc:title, "
+        assertEquals("Failed to execute query: NXQL: SELECT dc:title FROM Document WHERE ecm:parentId = ORDER BY dc:title, "
                 + "Syntax error: Invalid token <ORDER BY> at offset 51", pp.getErrorMessage());
     }
 

@@ -19,7 +19,6 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,31 +65,15 @@ public class DocumentModelWriter extends AbstractDocumentModelWriter {
         // }
         path = root.append(path); // compute target path
 
-        try {
-            return doWrite(xdoc, path);
-        } catch (ClientException e) {
-            IOException ioe = new IOException("Failed to import document in repository: " + e.getMessage());
-            ioe.setStackTrace(e.getStackTrace());
-            log.error(e, e);
-            return null;
-        }
+        return doWrite(xdoc, path);
     }
 
     private DocumentTranslationMap doWrite(ExportedDocument xdoc, Path targetPath) {
 
         DocumentModel previousDoc = null;
-        /*
-         * NXP-1688 Rux: if the document doesn't exist, the thrown ClientException is wrapped. Instead, an explicit
-         * query about the existence should do the job.
-         */
         PathRef pathRef = new PathRef(targetPath.toString());
-        try {
-            if (session.exists(pathRef)) {
-                previousDoc = session.getDocument(pathRef);
-            }
-        } catch (ClientException ce) {
-            // don't care, document considered inexistent
-            previousDoc = null;
+        if (session.exists(pathRef)) {
+            previousDoc = session.getDocument(pathRef);
         }
 
         DocumentModel doc;

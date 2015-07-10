@@ -115,7 +115,7 @@ public abstract class UnrestrictedSessionRunner {
             try {
                 loginContext = Framework.loginAs(originatingUsername);
             } catch (LoginException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
             try {
                 CoreSession baseSession = session;
@@ -159,7 +159,7 @@ public abstract class UnrestrictedSessionRunner {
                         loginContext.logout();
                     }
                 } catch (LoginException e) {
-                    throw new ClientException(e);
+                    throw new NuxeoException(e);
                 }
             }
         } finally {

@@ -78,7 +78,6 @@ import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.PathComparator;
 import org.nuxeo.ecm.core.model.Session;
-import org.nuxeo.ecm.core.query.QueryException;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -235,13 +234,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         ctx.setProperty(CoreEventConstants.SESSION_ID, getSessionId());
         // Document life cycle
         if (source != null && withLifeCycle) {
-            String currentLifeCycleState = null;
-            try {
-                currentLifeCycleState = source.getCurrentLifeCycleState();
-            } catch (ClientException err) {
-                // FIXME no lifecycle -- this shouldn't generated an
-                // exception (and ClientException logs the spurious error)
-            }
+            String currentLifeCycleState = source.getCurrentLifeCycleState();
             ctx.setProperty(CoreEventConstants.DOC_LIFE_CYCLE, currentLifeCycleState);
         }
         if (comment != null) {
@@ -317,11 +310,11 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected Document resolveReference(DocumentRef docRef) {
         if (docRef == null) {
-            throw new NuxeoException("Invalid reference (null)");
+            throw new IllegalArgumentException("null docRref");
         }
         Object ref = docRef.reference();
         if (ref == null) {
-            throw new NuxeoException("Invalid reference (null)");
+            throw new IllegalArgumentException("null reference");
         }
         int type = docRef.type();
         switch (type) {
@@ -588,7 +581,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = schemaManager.getDocumentType(typeName);
         if (docType == null) {
-            throw new ClientException(typeName + " is not a registered core type");
+            throw new IllegalArgumentException(typeName + " is not a registered core type");
         }
         DocumentModel docModel = DocumentModelFactory.createDocumentModel(getSessionId(), docType);
         if (options == null) {
@@ -633,11 +626,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         String typeName = docModel.getType();
         DocumentRef parentRef = docModel.getParentRef();
         if (typeName == null) {
-            throw new ClientException(String.format("cannot create document '%s' with undefined type name",
-                    docModel.getTitle()));
+            throw new NullPointerException("null typeName");
         }
         if (parentRef == null && !isAdministrator()) {
-            throw new ClientException("Only Administrators can create placeless documents");
+            throw new NuxeoException("Only Administrators can create placeless documents");
         }
         String childName = docModel.getName();
         Map<String, Serializable> options = getContextMapEventInfo(docModel);
@@ -671,16 +663,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
 
         // init document life cycle
-        LifeCycleService service = NXCore.getLifeCycleService();
-        if (service != null) {
-            try {
-                service.initialize(doc, initialLifecycleState);
-            } catch (LifeCycleException e) {
-                throw new ClientException("Failed to initialize document lifecycle", e);
-            }
-        } else {
-            log.debug("No lifecycle service registered");
-        }
+        NXCore.getLifeCycleService().initialize(doc, initialLifecycleState);
 
         // init document with data from doc model
         docModel = writeModel(doc, docModel);
@@ -865,7 +848,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public List<DocumentRef> getChildrenRefs(DocumentRef parentRef, String perm) {
         if (perm != null) {
             // XXX TODO
-            throw new ClientException("perm != null not implemented");
+            throw new NullPointerException("perm != null not implemented");
         }
         Document parent = resolveReference(parentRef);
         checkPermission(parent, READ_CHILDREN);
@@ -1172,8 +1155,9 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 docs.setTotalSize(n);
             }
             return docs;
-        } catch (ClientException | QueryException e) {
-            throw new ClientException("Failed to execute query: " + tryToExtractMeaningfulErrMsg(e), e);
+        } catch (QueryParseException e) {
+            e.addInfo("Failed to execute query: " + query);
+            throw e;
         }
     }
 
@@ -1200,20 +1184,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions, null, transformers, 0, 0);
             IterableQueryResult result = getSession().queryAndFetch(query, queryType, queryFilter, params);
             return result;
-        } catch (ClientException | QueryException e) {
-            throw new ClientException("Failed to execute query: " + queryType + ": " + query + ": "
-                    + tryToExtractMeaningfulErrMsg(e), e);
+        } catch (QueryParseException e) {
+            e.addInfo("Failed to execute query: " + queryType + ": " + query);
+            throw e;
         }
-    }
-
-    private String tryToExtractMeaningfulErrMsg(Throwable t) {
-        if (t instanceof QueryParseException) {
-            return t.getMessage();
-        }
-        if (t.getCause() != null) {
-            return tryToExtractMeaningfulErrMsg(t.getCause());
-        }
-        return t.getMessage();
     }
 
     @Override
@@ -1373,7 +1347,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel saveDocument(DocumentModel docModel) {
         if (docModel.getRef() == null) {
-            throw new ClientException(String.format(
+            throw new IllegalArgumentException(String.format(
                     "cannot save document '%s' with null reference: " + "document has probably not yet been created "
                             + "in the repository with " + "'CoreSession.createDocument(docModel)'",
                     docModel.getTitle()));
@@ -2089,7 +2063,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Lock setLock(DocumentRef docRef) {
+    public Lock setLock(DocumentRef docRef) throws LockException {
         Document doc = resolveReference(docRef);
         // TODO: add a new permission named LOCK and use it instead of
         // WRITE_PROPERTIES
@@ -2097,7 +2071,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         Lock lock = new Lock(getPrincipal().getName(), new GregorianCalendar());
         Lock oldLock = doc.setLock(lock);
         if (oldLock != null) {
-            throw new ClientException("Document already locked by " + oldLock.getOwner() + ": " + docRef);
+            throw new LockException("Document already locked by " + oldLock.getOwner() + ": " + docRef);
         }
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -2114,7 +2088,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public Lock removeLock(DocumentRef docRef) {
+    public Lock removeLock(DocumentRef docRef) throws LockException {
         Document doc = resolveReference(docRef);
         String owner;
         if (hasPermission(docRef, UNLOCK)) {
@@ -2130,7 +2104,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         }
         if (lock.getFailed()) {
             // lock removal failed due to owner check
-            throw new ClientException("Document already locked by " + lock.getOwner() + ": " + docRef);
+            throw new LockException("Document already locked by " + lock.getOwner() + ": " + docRef);
         }
         DocumentModel docModel = readModel(doc);
         Map<String, Serializable> options = new HashMap<String, Serializable>();
@@ -2159,8 +2133,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public void applyDefaultPermissions(String userOrGroupName) {
-        if (null == userOrGroupName) {
-            throw new ClientException("Null parameters received.");
+        if (userOrGroupName == null) {
+            throw new NullPointerException("null userOrGroupName");
         }
         if (!isAdministrator()) {
             throw new DocumentSecurityException("You need to be an Administrator to do this.");
@@ -2260,7 +2234,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     @Override
     public DocumentModel getSuperSpace(DocumentModel doc) {
         if (doc == null) {
-            throw new ClientException("getSuperSpace: document is null");
+            throw new IllegalArgumentException("null document");
         }
         if (doc.hasFacet(FacetNames.SUPER_SPACE)) {
             return doc;
@@ -2332,12 +2306,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas)
-            {
+    public DocumentModelRefresh refreshDocument(DocumentRef ref, int refreshFlags, String[] schemas) {
         Document doc = resolveReference(ref);
-        if (doc == null) {
-            throw new ClientException("No Such Document: " + ref);
-        }
 
         // permission checks
         if ((refreshFlags & (DocumentModel.REFRESH_PREFETCH | DocumentModel.REFRESH_STATE

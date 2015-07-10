@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.test.annotations;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**

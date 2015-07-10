@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.core.management.test.statuses;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.management.api.AdministrativeStatusManager;

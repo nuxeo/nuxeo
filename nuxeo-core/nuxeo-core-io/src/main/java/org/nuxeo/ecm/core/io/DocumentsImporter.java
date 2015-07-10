@@ -17,9 +17,6 @@ package org.nuxeo.ecm.core.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
-
 /**
  * Simple interface useful to wrap a sequence of calls for performing an import. This could be handy to quickly define
  * an importer and sent it as parameter so the method will be callback.
@@ -28,6 +25,6 @@ import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
  */
 public interface DocumentsImporter {
 
-    DocumentTranslationMap importDocs(InputStream sourceInputStream) throws ImportDocumentException,
-            IOException;
+    DocumentTranslationMap importDocs(InputStream sourceInputStream) throws IOException;
+
 }

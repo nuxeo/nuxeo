@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentTreeIterator;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentReaderFactory;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
@@ -54,8 +55,6 @@ import org.nuxeo.ecm.core.io.DocumentWriterFactory;
 import org.nuxeo.ecm.core.io.DocumentsExporter;
 import org.nuxeo.ecm.core.io.DocumentsImporter;
 import org.nuxeo.ecm.core.io.IODocumentManager;
-import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
-import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
 import org.nuxeo.ecm.core.io.impl.IODocumentManagerImpl;
 import org.nuxeo.ecm.platform.io.api.IOManager;
@@ -99,13 +98,11 @@ public class IOManagerImpl implements IOManager {
     }
 
     public void exportDocumentsAndResources(OutputStream out, String repo, final String format,
-            Collection<String> ioAdapters, final DocumentReader customDocReader) throws ExportDocumentException,
-            IOException {
+            Collection<String> ioAdapters, final DocumentReader customDocReader) throws IOException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
-            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException,
-                    IOException {
+            public DocumentTranslationMap exportDocs(OutputStream out) throws IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 DocumentTranslationMap map = docManager.exportDocuments(out, customDocReader, format);
                 return map;
@@ -117,13 +114,11 @@ public class IOManagerImpl implements IOManager {
 
     @Override
     public void exportDocumentsAndResources(OutputStream out, final String repo, final Collection<DocumentRef> sources,
-            final boolean recurse, final String format, final Collection<String> ioAdapters) throws IOException,
-            ExportDocumentException {
+            final boolean recurse, final String format, final Collection<String> ioAdapters) throws IOException {
 
         DocumentsExporter docsExporter = new DocumentsExporter() {
             @Override
-            public DocumentTranslationMap exportDocs(OutputStream out) throws ExportDocumentException,
-                    IOException {
+            public DocumentTranslationMap exportDocs(OutputStream out) throws IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 DocumentTranslationMap map = docManager.exportDocuments(out, repo, sources, recurse, format);
                 return map;
@@ -134,7 +129,7 @@ public class IOManagerImpl implements IOManager {
     }
 
     void exportDocumentsAndResources(OutputStream out, String repo, DocumentsExporter docsExporter,
-            Collection<String> ioAdapters) throws IOException, ExportDocumentException {
+            Collection<String> ioAdapters) throws IOException {
 
         List<String> doneAdapters = new ArrayList<String>();
 
@@ -187,13 +182,12 @@ public class IOManagerImpl implements IOManager {
 
     @Override
     public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root)
-            throws IOException, ImportDocumentException {
+            throws IOException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
-            public DocumentTranslationMap importDocs(InputStream sourceStream) throws ImportDocumentException,
-                    IOException {
+            public DocumentTranslationMap importDocs(InputStream sourceStream) throws IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 return docManager.importDocuments(sourceStream, repo, root);
             }
@@ -204,13 +198,12 @@ public class IOManagerImpl implements IOManager {
     }
 
     public void importDocumentsAndResources(InputStream in, final String repo, final DocumentRef root,
-            final DocumentWriter customDocWriter) throws IOException, ImportDocumentException {
+            final DocumentWriter customDocWriter) throws IOException {
 
         DocumentsImporter docsImporter = new DocumentsImporter() {
 
             @Override
-            public DocumentTranslationMap importDocs(InputStream sourceStream) throws ImportDocumentException,
-                    IOException {
+            public DocumentTranslationMap importDocs(InputStream sourceStream) throws IOException {
                 IODocumentManager docManager = new IODocumentManagerImpl();
                 return docManager.importDocuments(sourceStream, customDocWriter);
             }
@@ -220,8 +213,7 @@ public class IOManagerImpl implements IOManager {
         importDocumentsAndResources(docsImporter, in, repo);
     }
 
-    void importDocumentsAndResources(DocumentsImporter docsImporter, InputStream in, String repo) throws IOException,
-            ImportDocumentException {
+    void importDocumentsAndResources(DocumentsImporter docsImporter, InputStream in, String repo) throws IOException {
 
         ZipInputStream zip = new ZipInputStream(in);
 
@@ -230,7 +222,7 @@ public class IOManagerImpl implements IOManager {
         String docZipFilename = DOCUMENTS_ADAPTER_NAME + ".zip";
         if (zentry == null || !docZipFilename.equals(zentry.getName())) {
             zip.close();
-            throw new ImportDocumentException("Invalid archive");
+            throw new NuxeoException("Invalid archive");
         }
 
         // fill in a new stream

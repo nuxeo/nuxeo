@@ -18,7 +18,7 @@ package org.nuxeo.ecm.core.api;
  *
  * @since 5.8
  */
-public class ConcurrentUpdateException extends ClientException {
+public class ConcurrentUpdateException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

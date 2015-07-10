@@ -1,7 +1,6 @@
 package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;

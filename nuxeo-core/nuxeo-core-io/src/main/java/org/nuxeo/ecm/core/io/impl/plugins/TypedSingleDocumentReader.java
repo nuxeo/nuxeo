@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.io.impl.plugins;
 
 import java.io.IOException;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;

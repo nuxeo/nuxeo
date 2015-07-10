@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.event;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.osgi.framework.BundleEvent;
 
 /**

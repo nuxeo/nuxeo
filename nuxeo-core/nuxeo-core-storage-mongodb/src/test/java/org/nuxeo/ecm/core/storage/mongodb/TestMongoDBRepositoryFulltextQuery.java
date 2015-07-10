@@ -35,13 +35,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
 /**
@@ -329,7 +329,7 @@ public class TestMongoDBRepositoryFulltextQuery extends MongoDBRepositoryTestCas
             query = "SELECT ecm:fulltextScore FROM File";
             res = session.queryAndFetch(query, "NXQL");
             fail("query should fail");
-        } catch (ClientException e) {
+        } catch (QueryParseException e) {
             assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
         }
         // cannot order by score if there's no search
@@ -337,7 +337,7 @@ public class TestMongoDBRepositoryFulltextQuery extends MongoDBRepositoryTestCas
             query = "SELECT ecm:uuid FROM File ORDER BY ecm:fulltextScore DESC";
             res = session.queryAndFetch(query, "NXQL");
             fail("query should fail");
-        } catch (Exception e) {
+        } catch (QueryParseException e) {
             assertTrue(e.toString(), e.getMessage().contains("ecm:fulltextScore cannot be used without ecm:fulltext"));
         }
     }

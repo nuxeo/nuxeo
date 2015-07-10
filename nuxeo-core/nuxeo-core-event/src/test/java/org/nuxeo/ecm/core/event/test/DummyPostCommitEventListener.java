@@ -18,8 +18,8 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
@@ -41,7 +41,7 @@ public class DummyPostCommitEventListener implements PostCommitEventListener {
         properties = events.peek().getContext().getProperties();
 
         if (properties.get("throw") != null) {
-            throw new ClientException("testing error case");
+            throw new NuxeoException("testing error case");
         }
         if (properties.get("sleep") != null) {
             try {

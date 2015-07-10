@@ -28,10 +28,10 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.event.DeletedDocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -83,12 +83,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                 log.error("Cannot log in", e);
                 return null;
             }
-            try {
-                reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
-            } catch (ClientException e) {
-                log.error("Error while openning core session on repo " + repoName, e);
-                return null;
-            }
+            reconnectedCoreSession = CoreInstance.openCoreSessionSystem(repoName);
         } else {
             // Sanity Check
             if (!reconnectedCoreSession.getRepositoryName().equals(repoName)) {
@@ -122,7 +117,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                                     // probably deleted doc
                                     newArg = new DeletedDocumentModel(oldDoc);
                                 }
-                            } catch (ClientException e) {
+                            } catch (DocumentNotFoundException e) {
                                 log.error("Can not refetch Doc with ref " + ref.toString(), e);
                             }
                         }
@@ -154,7 +149,7 @@ public class ReconnectedEventBundleImpl implements ReconnectedEventBundle {
                                         + "cannot refetch missing document: " + oldRef + " ("
                                         + oldDoc.getPathAsString() + ")");
                             }
-                        } catch (ClientException e) {
+                        } catch (DocumentNotFoundException e) {
                             log.error("Can not refetch Doc with ref " + oldRef, e);
                         }
                     }

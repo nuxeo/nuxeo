@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.api.localconfiguration;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**

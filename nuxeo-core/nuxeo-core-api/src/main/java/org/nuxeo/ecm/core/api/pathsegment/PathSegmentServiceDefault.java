@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.api.pathsegment;
 import java.util.regex.Pattern;
 
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
 

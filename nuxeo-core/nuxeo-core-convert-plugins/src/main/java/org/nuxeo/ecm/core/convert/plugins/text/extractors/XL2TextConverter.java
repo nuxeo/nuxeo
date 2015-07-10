@@ -32,7 +32,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Row;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -71,7 +70,7 @@ public class XL2TextConverter implements Converter {
                 }
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             throw new ConversionException("Error during XL2Text conversion", e);
         } finally {
             if (stream != null) {

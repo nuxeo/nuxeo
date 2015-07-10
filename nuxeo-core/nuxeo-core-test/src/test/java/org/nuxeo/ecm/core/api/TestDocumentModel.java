@@ -83,8 +83,8 @@ public class TestDocumentModel {
         try {
             doc.attach("fakesid");
             fail("Should not allow attach");
-        } catch (ClientException e) {
-            // ok
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Cannot attach a document that is already attached"));
         }
     }
 
@@ -122,19 +122,19 @@ public class TestDocumentModel {
         assertNotNull(doc.getLockInfo());
     }
 
-    @Test(expected = ClientException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void forbidSlashOnCreate() throws Exception {
         session.createDocumentModel("/", "doc/doc", "File");
     }
 
-    @Test(expected = ClientException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void forbidSlashOnMove() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);
         session.move(doc.getRef(), new PathRef("/"), "toto/tata");
     }
 
-    @Test(expected = ClientException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void forbidSlashOnCopy() throws Exception {
         DocumentModel doc = session.createDocumentModel("/", "doc", "File");
         doc = session.createDocument(doc);

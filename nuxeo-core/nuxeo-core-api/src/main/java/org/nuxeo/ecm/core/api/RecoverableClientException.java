@@ -7,19 +7,16 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
+ *     Thierry Delprat
  */
-
 package org.nuxeo.ecm.core.api;
 
 /**
  * Exception that can be handled at UI level to display a dedicated user message
  *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.6
  */
-public class RecoverableClientException extends ClientException {
+public class RecoverableClientException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
@@ -45,6 +42,7 @@ public class RecoverableClientException extends ClientException {
         this.params = params;
     }
 
+    @Override
     public String getLocalizedMessage() {
         return localizedMessage;
     }

@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -62,12 +61,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
         }
         CoreSession session = docs.get(0).getCoreSession();
         for (DocumentModel doc : docs) {
-            try {
-                if (session.hasPermission(doc.getParentRef(), SecurityConstants.REMOVE_CHILDREN)) {
-                    return true;
-                }
-            } catch (ClientException e) {
-                log.error("Cannot check delete permission", e);
+            if (session.hasPermission(doc.getParentRef(), SecurityConstants.REMOVE_CHILDREN)) {
+                return true;
             }
         }
         return false;
@@ -154,13 +149,8 @@ public class TrashServiceImpl extends DefaultComponent implements TrashService {
     }
 
     protected static String getDocumentLocker(DocumentModel doc) {
-        try {
-            Lock lock = doc.getLockInfo();
-            return lock == null ? null : lock.getOwner();
-        } catch (ClientException e) {
-            log.error(e, e);
-            return null;
-        }
+        Lock lock = doc.getLockInfo();
+        return lock == null ? null : lock.getOwner();
     }
 
     /**

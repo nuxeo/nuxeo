@@ -200,7 +200,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: In query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
                 getErrorMessage(node));
     }
 
@@ -230,7 +230,7 @@ public class DocumentListTest extends BaseTest {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         JsonNode node = mapper.readTree(response.getEntityInputStream());
         assertEquals(
-                "Failed to execute query: In query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo, Lexical Error: Illegal character <:> at offset 38",
                 getErrorMessage(node));
     }
 

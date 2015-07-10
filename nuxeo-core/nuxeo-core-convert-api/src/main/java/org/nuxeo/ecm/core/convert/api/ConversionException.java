@@ -12,19 +12,19 @@
  */
 package org.nuxeo.ecm.core.convert.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Base exception raised by the {@link ConversionService}.
  *
  * @author tiry
  */
-public class ConversionException extends ClientException {
+public class ConversionException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
-    public ConversionException(String message, Exception e) {
-        super(message, e);
+    public ConversionException() {
+        super();
     }
 
     public ConversionException(String message) {
@@ -33,6 +33,10 @@ public class ConversionException extends ClientException {
 
     public ConversionException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    public ConversionException(Throwable cause) {
+        super(cause);
     }
 
 }

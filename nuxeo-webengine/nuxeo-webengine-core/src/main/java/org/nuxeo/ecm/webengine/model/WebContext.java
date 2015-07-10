@@ -451,7 +451,7 @@ public interface WebContext extends Adaptable {
      * Sets the repository name that will be used by {@link #getCoreSession()}.
      *
      * @param repoName
-     * @throws ClientException if the repository is not found.
+     * @throws IllegalArgumentException if the repository is not found.
      * @since 5.7.3
      */
     void setRepositoryName(String repoName);

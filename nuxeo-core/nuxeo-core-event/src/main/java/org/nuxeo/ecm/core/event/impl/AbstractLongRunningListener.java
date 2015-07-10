@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -64,9 +63,6 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
             ReconnectedEventBundleImpl preProcessBunle = new ReconnectedEventBundleImpl(events);
             try {
                 doContinue = handleEventPreprocessing(preProcessBunle, data);
-            } catch (ClientException e) {
-                log.error("Long Running listener canceled after failed execution of preprocessing", e);
-                throw e;
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
                 preProcessBunle.disconnect();
@@ -79,9 +75,6 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
             // a new CoreSession will be open by ReconnectedEventBundleImpl
             try {
                 doContinue = handleEventLongRunning(((ReconnectedEventBundleImpl) events).getEventNames(), data);
-            } catch (ClientException e) {
-                log.error("Long Running listener canceled after failed execution of main run", e);
-                throw e;
             } finally {
                 ((ReconnectedEventBundleImpl) events).disconnect();
             }
@@ -96,9 +89,6 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
             try {
                 TransactionHelper.startTransaction();
                 handleEventPostprocessing(postProcessEventBundle, data);
-            } catch (ClientException e) {
-                log.error("Long Running listener canceled after failed execution of main run", e);
-                throw e;
             } finally {
                 TransactionHelper.commitOrRollbackTransaction();
                 postProcessEventBundle.disconnect();
@@ -114,7 +104,6 @@ public abstract class AbstractLongRunningListener implements PostCommitFiltering
      * @param events {@link EventBundle} received
      * @param data an empty map to store data to share data between steps.
      * @return true of processing should continue, false otherwise
-     * @throws ClientExceptions
      */
     protected abstract boolean handleEventPreprocessing(EventBundle events, Map<String, Object> data);
 

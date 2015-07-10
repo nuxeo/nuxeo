@@ -31,10 +31,10 @@ import org.nuxeo.common.utils.Base64;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -105,11 +105,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
     @Override
     public void close() {
         if (unsavedDocuments > 0) {
-            try {
-                session.save();
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            session.save();
         }
         session = null;
         root = null;
@@ -245,7 +241,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             String schemaName = element.attributeValue(ExportConstants.NAME_ATTR);
             Schema schema = schemaMgr.getSchema(schemaName);
             if (schema == null) {
-                throw new ClientException("Schema not found: " + schemaName);
+                throw new NuxeoException("Schema not found: " + schemaName);
             }
             loadSchema(xdoc, schema, docModel, element);
         }
@@ -262,7 +258,7 @@ public abstract class AbstractDocumentModelWriter extends AbstractDocumentWriter
             String name = element.getName();
             Field field = schema.getField(name);
             if (field == null) {
-                throw new ClientException("Invalid input document. No such property was found " + name + " in schema "
+                throw new NuxeoException("Invalid input document. No such property was found " + name + " in schema "
                         + schemaName);
             }
             Object value = getElementData(xdoc, element, field.getType());

@@ -16,7 +16,6 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -27,13 +26,8 @@ public class IdentityConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
-        try {
-            Blob inputBlob = blobHolder.getBlob();
-            return new SimpleCachableBlobHolder(inputBlob);
-        } catch (ClientException e) {
-            throw new ConversionException("Error while getting input blob", e);
-        }
+        Blob inputBlob = blobHolder.getBlob();
+        return new SimpleCachableBlobHolder(inputBlob);
     }
 
     @Override

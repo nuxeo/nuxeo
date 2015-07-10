@@ -21,7 +21,6 @@ import javax.transaction.Transaction;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.local.LocalException;
@@ -139,16 +138,12 @@ public class RepositoryService extends DefaultComponent {
     }
 
     protected void initializeRepository(final RepositoryInitializationHandler handler, String name) {
-        try {
-            new UnrestrictedSessionRunner(name) {
-                @Override
-                public void run() {
-                    handler.initializeRepository(session);
-                }
-            }.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException("Failed to initialize repository '" + name + "': " + e.getMessage(), e);
-        }
+        new UnrestrictedSessionRunner(name) {
+            @Override
+            public void run() {
+                handler.initializeRepository(session);
+            }
+        }.runUnrestricted();
     }
 
     /**

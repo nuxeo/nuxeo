@@ -22,7 +22,7 @@ import java.util.List;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Base class for {@link BlobHolder} implementers
@@ -83,7 +83,7 @@ public abstract class AbstractBlobHolder implements BlobHolder {
         try (InputStream in = getBlob().getStream()) {
             return DigestUtils.md5Hex(in);
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
     }
 

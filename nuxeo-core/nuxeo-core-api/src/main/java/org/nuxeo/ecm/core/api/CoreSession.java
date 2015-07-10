@@ -199,15 +199,18 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param docRef the document reference
      * @return the document
+     * @throws DocumentNotFoundException if the document cannot be found
      */
-    DocumentModel getDocument(DocumentRef docRef);
+    DocumentModel getDocument(DocumentRef docRef) throws DocumentNotFoundException;
 
     /**
      * Gets a list of documents given their references.
      * <p>
      * Documents that are not accessible are skipped.
+     *
+     * @throws DocumentNotFoundException if a document cannot be found
      */
-    DocumentModelList getDocuments(DocumentRef[] docRefs);
+    DocumentModelList getDocuments(DocumentRef[] docRefs) throws DocumentNotFoundException;
 
     /**
      * Gets a child document given its name and the parent reference.
@@ -220,7 +223,7 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param parent the reference to the parent document
      * @param name the name of the child document to retrieve
-     * @return the named child if exists, raises a ClientException otherwise
+     * @return the named child if exists
      * @throws DocumentNotFoundException if there is no child with the given name
      */
     DocumentModel getChild(DocumentRef parent, String name);
@@ -1167,11 +1170,11 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param doc the document reference
      * @param key the lock key
-     * @throws ClientException if a lock is already set or other exception occurred
+     * @throws LockException if the document is already locked
      * @deprecated since 5.4.2, use {@link #setLock(DocumentRef)} instead
      */
     @Deprecated
-    void setLock(DocumentRef doc, String key);
+    void setLock(DocumentRef doc, String key) throws LockException;
 
     /**
      * Removes the lock if one exists.
@@ -1193,10 +1196,10 @@ public interface CoreSession extends AutoCloseable {
      *
      * @param doc the document reference
      * @return the lock info that was set
-     * @throws ClientException if a lock was already set
+     * @throws LockException if the document is already locked
      * @since 5.4.2
      */
-    Lock setLock(DocumentRef docRef);
+    Lock setLock(DocumentRef docRef) throws LockException;
 
     /**
      * Gets the lock info on the given document.
@@ -1223,8 +1226,9 @@ public interface CoreSession extends AutoCloseable {
      * @param docRef the document to unlock
      * @return the removed lock info, or {@code null} if there was no lock
      * @since 5.4.2
+     * @throws LockException if the document is locked by someone else
      */
-    Lock removeLock(DocumentRef docRef);
+    Lock removeLock(DocumentRef docRef) throws LockException;
 
     /**
      * Applies default Read permissions on root JCR Document for the given user or group name. It can only be called by

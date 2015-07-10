@@ -23,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -239,19 +238,12 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
     @Override
     public BlobHolder convertToMimeType(String destinationMimeType, BlobHolder blobHolder,
             Map<String, Serializable> parameters) throws ConversionException {
-
-        String srcMt;
-        try {
-            srcMt = blobHolder.getBlob().getMimeType();
-        } catch (ClientException e) {
-            throw new ConversionException("error while trying to determine converter name", e);
-        }
+        String srcMt = blobHolder.getBlob().getMimeType();
         String converterName = translationHelper.getConverterName(srcMt, destinationMimeType);
         if (converterName == null) {
-            throw new ConversionException("Cannot find converter from type " + srcMt + " to type "
-                    + destinationMimeType);
+            throw new ConversionException(
+                    "Cannot find converter from type " + srcMt + " to type " + destinationMimeType);
         }
-
         return convert(converterName, blobHolder, parameters);
     }
 

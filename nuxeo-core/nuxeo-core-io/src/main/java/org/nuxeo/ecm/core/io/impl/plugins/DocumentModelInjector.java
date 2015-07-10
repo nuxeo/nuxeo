@@ -16,10 +16,7 @@ package org.nuxeo.ecm.core.io.impl.plugins;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -33,10 +30,7 @@ import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
  */
 // TODO: improve it ->
 // modify core session to add a batch create method and use it
-@SuppressWarnings({ "ThrowableInstanceNeverThrown" })
 public class DocumentModelInjector extends AbstractDocumentModelWriter {
-
-    private static final Log log = LogFactory.getLog(DocumentModelInjector.class);
 
     /**
      * @param session the session to the repository where to write
@@ -60,18 +54,11 @@ public class DocumentModelInjector extends AbstractDocumentModelWriter {
         }
         path = root.append(path); // compute target path
 
-        try {
-            DocumentModel doc = createDocument(xdoc, path);
-            DocumentLocation source = xdoc.getSourceLocation();
-            DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
-            map.put(source.getDocRef(), doc.getRef());
-            return map;
-        } catch (ClientException e) {
-            IOException ioe = new IOException("Failed to import document in repository: " + e.getMessage());
-            ioe.setStackTrace(e.getStackTrace());
-            log.error(e, e);
-            return null;
-        }
+        DocumentModel doc = createDocument(xdoc, path);
+        DocumentLocation source = xdoc.getSourceLocation();
+        DocumentTranslationMap map = new DocumentTranslationMapImpl(source.getServerName(), doc.getRepositoryName());
+        map.put(source.getDocRef(), doc.getRef());
+        return map;
     }
 
 }

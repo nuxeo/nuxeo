@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.management.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -13,8 +13,13 @@
 package org.nuxeo.ecm.core.api;
 
 /**
- * Exception thrown by the Nuxeo Core.
+ * Deprecated and never thrown, kept for compatibility.
+ * <p>
+ * Use {@link org.nuxeo.ecm.core.api.NuxeoException} instead.
+ *
+ * @deprecated since 7.4, use org.nuxeo.ecm.core.api.NuxeoException instead
  */
+@Deprecated
 public class ClientException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
@@ -26,10 +31,6 @@ public class ClientException extends NuxeoException {
         super(message);
     }
 
-    public ClientException(String message, ClientException cause) {
-        super(message, cause);
-    }
-
     public ClientException(String message, Throwable cause) {
         super(message, cause);
     }
@@ -38,13 +39,8 @@ public class ClientException extends NuxeoException {
         super(cause);
     }
 
-    public ClientException(ClientException cause) {
-        super(cause);
-    }
-
     public static ClientException wrap(Throwable exception) {
         ClientException clientException;
-
         if (null == exception) {
             clientException = new ClientException("Root exception was null. Please check your code.");
         } else {

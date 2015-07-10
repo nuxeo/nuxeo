@@ -20,9 +20,9 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolderAdapterComponent;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -103,7 +103,7 @@ public class ThumbnailServiceImpl extends DefaultComponent implements ThumbnailS
             }
         }
         if (defaultFactory == null) {
-            throw new ClientException("Please contribute a default thumbnail factory");
+            throw new NuxeoException("Please contribute a default thumbnail factory");
         }
         return defaultFactory;
     }

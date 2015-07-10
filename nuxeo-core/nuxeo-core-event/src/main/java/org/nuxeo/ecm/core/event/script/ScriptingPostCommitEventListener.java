@@ -15,7 +15,7 @@ import javax.script.Bindings;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 
@@ -37,7 +37,7 @@ public class ScriptingPostCommitEventListener implements PostCommitEventListener
         try {
             script.run(bindings);
         } catch (ScriptException e) {
-            throw ClientException.wrap(e);
+            throw new NuxeoException("Failed to run script: " + script.getLocation(), e);
         }
     }
 

@@ -17,7 +17,6 @@ package org.nuxeo.ecm.core.api.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
 
@@ -69,25 +68,18 @@ public class LifeCycleFilter implements Filter {
 
     @Override
     public boolean accept(DocumentModel docModel) {
-        try {
-            String lifeCycleState = docModel.getCurrentLifeCycleState();
-
-            if (excluded != null) {
-                if (excluded.contains(lifeCycleState)) {
-                    return false;
-                }
+        String lifeCycleState = docModel.getCurrentLifeCycleState();
+        if (excluded != null) {
+            if (excluded.contains(lifeCycleState)) {
+                return false;
             }
-
-            if (accepted != null) {
-                if (!accepted.contains(lifeCycleState)) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (ClientException e) {
-            // refuse the document if the lifecycle state cannot be retrieved
-            return false;
         }
+        if (accepted != null) {
+            if (!accepted.contains(lifeCycleState)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

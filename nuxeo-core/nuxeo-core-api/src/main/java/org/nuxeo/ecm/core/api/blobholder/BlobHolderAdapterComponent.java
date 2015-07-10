@@ -20,7 +20,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
@@ -132,23 +131,19 @@ public class BlobHolderAdapterComponent extends DefaultComponent implements Blob
         if (doc.hasSchema("file")) {
             return new DocumentBlobHolder(doc, "file:content", "file:filename");
         } else if (doc.hasSchema("note")) {
+            String mt = null;
             try {
-                String mt = null;
-                try {
-                    mt = (String) doc.getPropertyValue("note:mime_type");
-                    if (mt == null) {
-                        String note = (String) doc.getPropertyValue("note:note");
-                        if (note != null && !"".equals(note)) {
-                            mt = "text/plain"; // BBB
-                        }
+                mt = (String) doc.getPropertyValue("note:mime_type");
+                if (mt == null) {
+                    String note = (String) doc.getPropertyValue("note:note");
+                    if (note != null && !"".equals(note)) {
+                        mt = "text/plain"; // BBB
                     }
-                } catch (PropertyException e) {
-                    // mt = null;
                 }
-                return new DocumentStringBlobHolder(doc, "note:note", mt);
-            } catch (ClientException e) {
-                log.error(e, e);
+            } catch (PropertyException e) {
+                // mt = null;
             }
+            return new DocumentStringBlobHolder(doc, "note:note", mt);
         }
         return null;
     }

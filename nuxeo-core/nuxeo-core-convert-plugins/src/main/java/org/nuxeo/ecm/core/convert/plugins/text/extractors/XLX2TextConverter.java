@@ -35,7 +35,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -80,7 +79,7 @@ public class XLX2TextConverter extends BaseOfficeXMLTextConverter implements Con
                 }
             }
             return new SimpleCachableBlobHolder(Blobs.createBlob(sb.toString()));
-        } catch (ClientException | IOException | OpenXML4JException e) {
+        } catch (IOException | OpenXML4JException e) {
             throw new ConversionException("Error during XLX2Text conversion", e);
         } finally {
             if (stream != null) {

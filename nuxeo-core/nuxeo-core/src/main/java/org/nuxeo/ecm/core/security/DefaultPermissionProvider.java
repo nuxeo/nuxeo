@@ -26,7 +26,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.UserVisiblePermission;
 
@@ -68,7 +67,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
             defaultVisibility = mergedPermissionsVisibility.get("");
         }
         if (defaultVisibility == null) {
-            throw new ClientException("no permission visibility configuration registered");
+            throw new NuxeoException("no permission visibility configuration registered");
         }
         return defaultVisibility.getSortedUIPermissionDescriptor();
     }
@@ -118,7 +117,7 @@ public class DefaultPermissionProvider implements PermissionProviderLocal {
         }
         MergedPermissionDescriptor mpd = mergedPermissions.get(perm);
         if (mpd == null) {
-            throw new ClientException(perm + " is not a registered permission");
+            throw new NuxeoException(perm + " is not a registered permission");
         }
         return mpd;
     }

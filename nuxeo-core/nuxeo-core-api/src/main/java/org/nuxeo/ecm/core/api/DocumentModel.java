@@ -340,29 +340,29 @@ public interface DocumentModel extends Serializable {
      * This is a wrapper for {@link CoreSession#setLock(DocumentRef, String)}.
      *
      * @param key the key to use when locking
-     * @throws ClientException if the document is already locked or other error occurs
+     * @throws LockException if the document is already locked
      * @deprecated since 5.4.2, use {@link #setLock} instead
      */
     @Deprecated
-    void setLock(String key);
+    void setLock(String key) throws LockException;
 
     /**
      * Unlocks the given document.
      *
-     * @throws ClientException if the document is already locked or other error occurs
+     * @throws LockException if the document is locked by someone else
      * @deprecated since 5.4.2, use {@link #removeLock} instead
      */
     @Deprecated
-    void unlock();
+    void unlock() throws LockException;
 
     /**
      * Sets a lock on the document.
      *
      * @return the lock info that was set
-     * @throws ClientException if a lock was already set
+     * @throws LockException if the document is already locked
      * @since 5.4.2
      */
-    Lock setLock();
+    Lock setLock() throws LockException;
 
     /**
      * Gets the lock info on the document.
@@ -386,9 +386,10 @@ public interface DocumentModel extends Serializable {
      * Returns the previous lock info.
      *
      * @return the removed lock info, or {@code null} if there was no lock
+     * @throws LockException if the document is locked by someone else
      * @since 5.4.2
      */
-    Lock removeLock();
+    Lock removeLock() throws LockException;
 
     /**
      * Tests if the document is checked out.

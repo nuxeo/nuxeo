@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;

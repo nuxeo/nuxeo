@@ -40,7 +40,6 @@ import org.apache.pdfbox.util.PDFTextStripper;
 import org.apache.pdfbox.util.operator.OperatorProcessor;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -148,7 +147,7 @@ public class PDF2TextConverter implements Converter {
             } else {
                 return new SimpleCachableBlobHolder(Blobs.createBlob(""));
             }
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             throw new ConversionException("Error during text extraction with PDFBox", e);
         } finally {
             if (document != null) {

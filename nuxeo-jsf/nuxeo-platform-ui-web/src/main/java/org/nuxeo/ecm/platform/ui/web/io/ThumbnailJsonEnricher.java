@@ -26,6 +26,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.context.RenderingContext.SessionWrapper;
@@ -93,7 +94,8 @@ public class ThumbnailJsonEnricher extends AbstractJsonEnricher<DocumentModel> {
                 } else {
                     jg.writeNullField(THUMBNAIL_URL_LABEL);
                 }
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
+                // no default thumbnail factory
                 jg.writeNullField(THUMBNAIL_URL_LABEL);
             }
         } else {

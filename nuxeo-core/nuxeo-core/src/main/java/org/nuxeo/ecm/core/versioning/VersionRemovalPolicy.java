@@ -12,7 +12,6 @@
 
 package org.nuxeo.ecm.core.versioning;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;

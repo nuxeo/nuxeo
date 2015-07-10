@@ -16,7 +16,6 @@ package org.nuxeo.ecm.core.api.security;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Provider for existing permission and permission groups.
@@ -55,14 +54,12 @@ public interface PermissionProvider {
     /**
      * @param perm the name of a registered compound permission
      * @return the list of permission names of sub-permissions of 'perm'
-     * @throws ClientException if 'perm' is not a registered permission
      */
     String[] getSubPermissions(String perm);
 
     /**
      * @param perm the name of a registered permission
      * @return the list of alias permissions to 'perm'
-     * @throws ClientException if 'perm' is not a registered permission
      */
     String[] getAliasPermissions(String perm);
 

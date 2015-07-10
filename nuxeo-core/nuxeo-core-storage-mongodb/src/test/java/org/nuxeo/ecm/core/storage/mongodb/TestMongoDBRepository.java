@@ -43,12 +43,12 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -2491,11 +2491,11 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
         DocumentModel docModel = session.createDocumentModel("File");
         assertEquals("File", docModel.getType());
 
-        // bad type should fail with ClientException
+        // bad type should fail
         try {
             session.createDocumentModel("NotAValidTypeName");
             fail();
-        } catch (ClientException e) {
+        } catch (IllegalArgumentException e) {
         }
 
         // same as previously with path info
@@ -2513,7 +2513,7 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
 
     @SuppressWarnings({ "unchecked" })
     @Test
-    public void testCopyContent() {
+    public void testCopyContent() throws Exception {
         DocumentModel root = session.getRootDocument();
         DocumentModel doc = new DocumentModelImpl(root.getPathAsString(), "original", "File");
         doc.setProperty("dublincore", "title", "t");
@@ -2551,12 +2551,7 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
         assertNotNull(bb);
         assertEquals("text/test", bb.getMimeType());
         assertEquals("UTF-8", bb.getEncoding());
-        String content;
-        try {
-            content = bb.getString();
-        } catch (IOException e) {
-            throw new ClientException(e);
-        }
+        String content = bb.getString();
         assertEquals("myfile", content);
     }
 
@@ -3326,14 +3321,14 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
         try {
             session.getDocument(docRef);
             fail("shouldn't be able to get doc with obsolete type");
-        } catch (ClientException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("Failed to get document"));
+        } catch (DocumentNotFoundException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Unknown document type: MyDocType"));
         }
         try {
             session.getChild(rootRef, "doc");
             fail("shouldn't be able to get doc with obsolete type");
-        } catch (ClientException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains("Failed to get child doc"));
+        } catch (DocumentNotFoundException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Unknown document type: MyDocType"));
         }
     }
 

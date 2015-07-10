@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.event;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * An event listener receives notifications from core components.

@@ -16,12 +16,12 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -204,7 +204,7 @@ public class CoreFeature extends SimpleFeature {
             if (!session.query("SELECT * FROM Document, Relation").isEmpty()) {
                 log.error("Fail to cleanupSession, repository will not be empty for the next test.");
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("Unable to reset repository", e);
         } finally {
             CoreScope.INSTANCE.exit();

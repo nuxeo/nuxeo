@@ -21,7 +21,6 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -58,7 +57,7 @@ public class EventJob implements Job {
         Thread.currentThread().setContextClassLoader(nuxeoCL);
         try {
             execute(dataMap);
-        } catch (LoginException | ClientException e) {
+        } catch (LoginException e) {
             String eventId = dataMap.getString("eventId");
             log.error("Error while processing scheduled event id: " + eventId, e);
         } finally {

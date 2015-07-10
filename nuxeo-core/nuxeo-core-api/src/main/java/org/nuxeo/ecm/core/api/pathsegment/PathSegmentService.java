@@ -11,7 +11,6 @@
  */
 package org.nuxeo.ecm.core.api.pathsegment;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

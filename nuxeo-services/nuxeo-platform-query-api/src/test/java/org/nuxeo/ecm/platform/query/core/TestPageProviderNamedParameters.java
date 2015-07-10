@@ -137,7 +137,7 @@ public class TestPageProviderNamedParameters {
         assertNotNull(p);
         assertEquals(0, p.size());
         assertEquals(
-                "Failed to execute query: In query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
                 pp.getErrorMessage());
     }
 
@@ -170,7 +170,7 @@ public class TestPageProviderNamedParameters {
         assertNotNull(p);
         assertEquals(0, p.size());
         assertEquals(
-                "Failed to execute query: In query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
+                "Failed to execute query: SELECT * FROM Document where dc:title=:foo ORDER BY dc:title, Lexical Error: Illegal character <:> at offset 38",
                 pp.getErrorMessage());
     }
 

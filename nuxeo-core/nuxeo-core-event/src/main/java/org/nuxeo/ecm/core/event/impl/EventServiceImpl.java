@@ -30,7 +30,7 @@ import javax.transaction.SystemException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
@@ -466,7 +466,7 @@ public class EventServiceImpl implements EventService, EventServiceAdmin, Synchr
         for (EventBundle bundle : b.byRepository.values()) {
             try {
                 fireEventBundle(bundle);
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 log.error("Error while processing " + bundle, e);
             }
         }

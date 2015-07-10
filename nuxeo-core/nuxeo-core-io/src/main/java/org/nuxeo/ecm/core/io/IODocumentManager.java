@@ -20,10 +20,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
-import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 
 /**
  * Defines functional interface that deals directly with documents import using provided DocumentReader or InputStream
@@ -33,25 +30,21 @@ import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
  */
 public interface IODocumentManager extends Serializable {
 
-    DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root)
-            throws ImportDocumentException, IOException;
+    DocumentTranslationMap importDocuments(InputStream in, String repo, DocumentRef root) throws IOException;
 
-    DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter)
-            throws ImportDocumentException;
+    DocumentTranslationMap importDocuments(InputStream in, DocumentWriter customDocWriter);
 
     /**
      * @param customDocReader reader from the input stream
      * @param customDocWriter
      */
-    DocumentTranslationMap importDocuments(DocumentReader customDocReader, DocumentWriter customDocWriter)
-            throws ImportDocumentException;
+    DocumentTranslationMap importDocuments(DocumentReader customDocReader, DocumentWriter customDocWriter);
 
     DocumentTranslationMap exportDocuments(OutputStream out, String repo, Collection<DocumentRef> sources,
-            boolean recurse, String format) throws ExportDocumentException;
+            boolean recurse, String format);
 
     /**
      * Used in pair with importDocuments(... customDocWriter)
      */
-    DocumentTranslationMap exportDocuments(OutputStream out, DocumentReader customDocReader, String format)
-            throws ExportDocumentException;
+    DocumentTranslationMap exportDocuments(OutputStream out, DocumentReader customDocReader, String format);
 }

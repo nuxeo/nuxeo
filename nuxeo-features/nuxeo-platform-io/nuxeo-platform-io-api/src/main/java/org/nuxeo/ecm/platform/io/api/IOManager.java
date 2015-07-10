@@ -26,11 +26,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.io.exceptions.ExportDocumentException;
-import org.nuxeo.ecm.core.io.exceptions.ImportDocumentException;
 
 /**
  * Service handling complex import/export of documents and associated resources.
@@ -64,8 +61,7 @@ public interface IOManager extends Serializable {
      * @param repo the repository name.
      * @param root Optional location of document that must be taken as root of the import (can be null).
      */
-    void importDocumentsAndResources(InputStream in, String repo, DocumentRef root) throws IOException,
-            ImportDocumentException;
+    void importDocumentsAndResources(InputStream in, String repo, DocumentRef root) throws IOException;
 
     /**
      * Export documents and resources.
@@ -78,7 +74,7 @@ public interface IOManager extends Serializable {
      * @param ioAdapters list of adapters to use for additional resources.
      */
     void exportDocumentsAndResources(OutputStream out, String repo, Collection<DocumentRef> sources, boolean recurse,
-            String format, Collection<String> ioAdapters) throws IOException, ExportDocumentException;
+            String format, Collection<String> ioAdapters) throws IOException;
 
     /**
      * Copy documents and resources to another location (on a same machine).

@@ -7,7 +7,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;

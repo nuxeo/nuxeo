@@ -48,7 +48,7 @@ public class APIRoot extends ModuleRoot {
             String repoName = repositoryParam.substring("repo/".length() + 1);
             try {
                 ctx.setRepositoryName(repoName);
-            } catch (final ClientException e) {
+            } catch (IllegalArgumentException e) {
                 throw new WebResourceNotFoundException(e.getMessage());
             }
 

@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -468,7 +469,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         for (Entry<String, Serializable> prop : user.getProperties().entrySet()) {
             try {
                 userEntry.setProperty(userSchemaName, prop.getKey(), prop.getValue());
-            } catch (ClientException ce) {
+            } catch (PropertyNotFoundException ce) {
                 log.error(
                         "Property: " + prop.getKey() + " does not exists. Check your " + "UserService configuration.",
                         ce);

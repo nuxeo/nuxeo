@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -282,15 +281,11 @@ public interface PageProvider<T> extends Serializable {
 
     /**
      * Sets the current entry.
-     *
-     * @throws ClientException if entry is not found within current page.
      */
     void setCurrentEntry(T entry);
 
     /**
      * Sets the current entry index.
-     *
-     * @throws ClientException if index is not found within current page.
      */
     void setCurrentEntryIndex(long index);
 

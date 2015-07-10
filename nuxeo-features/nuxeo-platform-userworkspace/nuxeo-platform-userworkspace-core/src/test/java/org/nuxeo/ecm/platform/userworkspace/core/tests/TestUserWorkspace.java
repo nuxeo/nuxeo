@@ -27,6 +27,7 @@ import static org.junit.Assert.*;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -222,7 +223,7 @@ public class TestUserWorkspace extends SQLRepositoryTestCase {
             // Assert that it throw a ClientException
             service.getCurrentUserPersonalWorkspace("user1", context);
             assertTrue("user2 is not allow to read user1 workspace", false);
-        } catch (ClientException e) {
+        } catch (DocumentSecurityException e) {
             // Nothing to do
         }
 

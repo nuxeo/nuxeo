@@ -19,7 +19,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.NXCore;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -88,16 +87,11 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
             if (!Boolean.TRUE.equals(event.getContext().getProperties().get(CoreEventConstants.RESET_LIFECYCLE))) {
                 return;
             }
-            try {
-                DocumentModelList docs = new DocumentModelListImpl();
-                docs.add(doc);
-                if (session.exists(doc.getRef())) {
-                    reinitDocumentsLifeCyle(session, docs);
-                    session.save();
-                }
-            } catch (ClientException e) {
-                log.error("Unable to get children", e);
-                return;
+            DocumentModelList docs = new DocumentModelListImpl();
+            docs.add(doc);
+            if (session.exists(doc.getRef())) {
+                reinitDocumentsLifeCyle(session, docs);
+                session.save();
             }
         } else {
             if (LifeCycleConstants.TRANSITION_EVENT.equals(event.getName())) {
@@ -116,14 +110,9 @@ public class BulkLifeCycleChangeListener implements PostCommitEventListener {
                 transition = LifeCycleConstants.UNDELETE_TRANSITION;
                 targetState = ""; // unused
             }
-            try {
-                DocumentModelList docs = session.getChildren(doc.getRef());
-                changeDocumentsState(session, docs, transition, targetState);
-                session.save();
-            } catch (ClientException e) {
-                log.error("Unable to get children", e);
-                return;
-            }
+            DocumentModelList docs = session.getChildren(doc.getRef());
+            changeDocumentsState(session, docs, transition, targetState);
+            session.save();
         }
     }
 

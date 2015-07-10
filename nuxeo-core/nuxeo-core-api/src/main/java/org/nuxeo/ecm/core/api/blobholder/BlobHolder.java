@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Interface for an object that holds a {@link Blob}.

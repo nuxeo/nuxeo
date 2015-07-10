@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 
 public class BlobHolderDummyImpl extends AbstractBlobHolder {
 

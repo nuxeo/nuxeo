@@ -18,7 +18,6 @@ import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
@@ -72,14 +71,10 @@ public class DocumentModelChildrenIterator implements DocumentModelIterator {
             }
             String id = it.next();
             DocumentModel doc;
-            try {
-                doc = session.getDocument(new IdRef(id));
-                if (accept(doc)) {
-                    next = doc;
-                    return true;
-                }
-            } catch (ClientException e) {
-                log.error("Error retrieving next element", e);
+            doc = session.getDocument(new IdRef(id));
+            if (accept(doc)) {
+                next = doc;
+                return true;
             }
             // continue
         }

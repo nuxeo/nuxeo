@@ -15,7 +15,7 @@ import javax.script.Bindings;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventListener;
 
@@ -38,7 +38,7 @@ public class ScriptingEventListener implements EventListener {
         try {
             script.run(bindings);
         } catch (ScriptException e) {
-            throw ClientException.wrap(e);
+            throw new NuxeoException("Failed to run script: " + script.getLocation(), e);
         }
     }
 

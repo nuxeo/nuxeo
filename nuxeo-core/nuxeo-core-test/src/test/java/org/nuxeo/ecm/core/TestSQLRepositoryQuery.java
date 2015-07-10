@@ -44,7 +44,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -63,6 +62,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.test.CoreFeature;
@@ -1096,7 +1096,7 @@ public class TestSQLRepositoryQuery {
             sql = "SELECT * FROM File WHERE DATE(dc:title) = DATE '2012-01-01'";
             session.query(sql);
             fail("Should fail due to invalid cast");
-        } catch (ClientException e) {
+        } catch (QueryParseException e) {
             String m = e.getMessage();
             assertTrue(m, m.contains("Cannot cast to DATE"));
         }
@@ -1105,7 +1105,7 @@ public class TestSQLRepositoryQuery {
             sql = "SELECT * FROM File WHERE DATE(dc:created) = TIMESTAMP '2012-01-01 00:00:00'";
             session.query(sql);
             fail("Should fail due to invalid cast");
-        } catch (ClientException e) {
+        } catch (QueryParseException e) {
             String m = e.getMessage();
             assertTrue(m, m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
         }
@@ -1114,7 +1114,7 @@ public class TestSQLRepositoryQuery {
             sql = "SELECT * FROM File WHERE DATE(dc:created) BETWEEN TIMESTAMP '2012-01-01 00:00:00' AND DATE '2012-02-02'";
             session.query(sql);
             fail("Should fail due to invalid cast");
-        } catch (ClientException e) {
+        } catch (QueryParseException e) {
             String m = e.getMessage();
             assertTrue(m, m.contains("DATE() cast must be used with DATE literal, not TIMESTAMP"));
         }

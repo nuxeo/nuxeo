@@ -17,14 +17,14 @@
 
 package org.nuxeo.ecm.core.io.registry;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * {@link ClientException} thrown by the {@link MarshallerRegistry} and all {@link Marshaller}s.
+ * Exception thrown by the {@link MarshallerRegistry} and all {@link Marshaller}s.
  *
  * @since 7.2
  */
-public class MarshallingException extends ClientException {
+public class MarshallingException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 
@@ -32,20 +32,12 @@ public class MarshallingException extends ClientException {
         super();
     }
 
-    public MarshallingException(ClientException cause) {
-        super(cause);
-    }
-
-    public MarshallingException(String message, ClientException cause) {
-        super(message, cause);
+    public MarshallingException(String message) {
+        super(message);
     }
 
     public MarshallingException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    public MarshallingException(String message) {
-        super(message);
     }
 
     public MarshallingException(Throwable cause) {
