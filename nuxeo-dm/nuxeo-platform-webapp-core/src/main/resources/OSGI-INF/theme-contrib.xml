@@ -208,18 +208,9 @@
     <resource name="default-contextmenu-actions.js" type="js">
       <uri>/scripts/default-contextmenu-actions.js</uri>
     </resource>
-    <resource name="tinymce.js" type="js">
-      <uri>/tinymce/tinymce.js</uri>
-      <require>jquery.js</require>
-    </resource>
-    <resource name="tinymce_init.js" type="js">
-      <uri>/tinymce/tinymce_init.js</uri>
-      <require>tinymce.js</require>
-      <require>jquery.js</require>
-    </resource>
     <resource name="tinymce.xhtml" type="xhtml">
       <uri>/incl/tinymce.xhtml</uri>
-      <require>tinymce_init.js</require>
+      <require>jquery.js</require>
     </resource>
     <resource name="konami.xhtml" type="xhtml">
       <uri>/incl/konami.xhtml</uri>
