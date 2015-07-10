@@ -47,41 +47,41 @@ public class HTTPHelper implements ContextHelper {
 
     private static final Integer TIMEOUT = 1000 * 60 * 5; // 5min
 
-    public static Blob call(String username, String password, String requestType, String path) throws IOException {
+    public Blob call(String username, String password, String requestType, String path) throws IOException {
         return call(username, password, requestType, path, null, null, null, null);
     }
 
-    public static Blob call(String username, String password, String requestType, String path,
+    public Blob call(String username, String password, String requestType, String path,
             Map<String, String> headers) throws IOException {
         return call(username, password, requestType, path, null, null, null, headers);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, MultiPart mp)
+    public Blob call(String username, String password, String requestType, String path, MultiPart mp)
             throws IOException {
         return call(username, password, requestType, path, null, null, mp, null);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, MultiPart mp,
+    public Blob call(String username, String password, String requestType, String path, MultiPart mp,
             Map<String, String> headers) throws IOException {
         return call(username, password, requestType, path, null, null, mp, headers);
     }
 
-    public static Blob call(String username, String password, String requestType, String path,
+    public Blob call(String username, String password, String requestType, String path,
             MultivaluedMap<String, String> queryParams) throws IOException {
         return call(username, password, requestType, path, null, queryParams, null, null);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, Object data)
+    public Blob call(String username, String password, String requestType, String path, Object data)
             throws IOException {
         return call(username, password, requestType, path, data, null, null, null);
     }
 
-    public static Blob call(String username, String password, String requestType, String path, Object data,
+    public Blob call(String username, String password, String requestType, String path, Object data,
             Map<String, String> headers) throws IOException {
         return call(username, password, requestType, path, data, null, null, headers);
     }
 
-    public static Blob call(String username, String password, String requestType, String url, Object data,
+    public Blob call(String username, String password, String requestType, String url, Object data,
             MultivaluedMap<String, String> queryParams, MultiPart mp, Map<String, String> headers) throws IOException {
         ClientConfig config = new DefaultClientConfig();
         config.getClasses().add(MultiPartWriter.class);
