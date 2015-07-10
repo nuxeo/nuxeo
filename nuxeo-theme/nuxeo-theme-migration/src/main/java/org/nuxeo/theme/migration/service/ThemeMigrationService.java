@@ -39,11 +39,17 @@ public class ThemeMigrationService extends DefaultComponent {
         if ("resources".equals(extensionPoint)) {
             if (contribution instanceof ResourceDescriptor) {
                 ResourceDescriptor r = (ResourceDescriptor) contribution;
-                String message = String.format("Resource '%s' should now be contributed to extension "
+                String message = String.format("Resource '%s' on component %s should now be contributed to extension "
                         + "point '%s': a compatibility registration was performed but it may not be " + "accurate.",
-                        r.getName(), WR_XP);
+                        r.getName(), contributor.getName(), WR_XP);
                 DeprecationLogger.log(message, "7.4");
                 Framework.getRuntime().getWarnings().add(message);
+                // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
+                // directly to the WRM endpoint
+                String path = r.getPath();
+                if (path != null && !path.startsWith("/")) {
+                    r.setUri("/" + path);
+                }
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
                 wrm.registerResource(r);
             } else {

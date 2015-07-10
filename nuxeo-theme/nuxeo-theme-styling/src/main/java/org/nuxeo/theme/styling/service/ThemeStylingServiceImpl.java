@@ -95,10 +95,10 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
             log.info(String.format("Register style '%s'", style.getName()));
-            String message = String.format("Style '%s' should now be contributed to extension "
+            String message = String.format("Style '%s' on component %s should now be contributed to extension "
                     + "point '%s': a compatibility registration was performed but it may not be "
                     + "accurate. Note that the 'flavor' processor should be used with this resource.", style.getName(),
-                    WR_EX);
+                    contributor.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
             Framework.getRuntime().getWarnings().add(message);
             ResourceDescriptor resource = getResourceFromStyle(style);
@@ -117,9 +117,9 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof ResourceDescriptor) {
             ResourceDescriptor resource = (ResourceDescriptor) contribution;
             log.info(String.format("Register resource '%s'", resource.getName()));
-            String message = String.format("Resource '%s' should now be contributed to extension "
+            String message = String.format("Resource '%s' on component %s should now be contributed to extension "
                     + "point '%s': a compatibility registration was performed but it may not be accurate.",
-                    resource.getName(), WR_EX);
+                    resource.getName(), contributor.getName(), WR_EX);
             DeprecationLogger.log(message, "7.4");
             Framework.getRuntime().getWarnings().add(message);
             // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it

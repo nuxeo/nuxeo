@@ -47,6 +47,7 @@ public class NuxeoWroServletContextListener extends WroServletContextListener {
     @Override
     protected WroConfiguration newConfiguration() {
         WroConfiguration conf = new WroConfiguration();
+        conf.setIgnoreMissingResources(false);
         if (Framework.isDevModeSet()) {
             if (log.isDebugEnabled()) {
                 log.debug("Set wro debug configuration");
@@ -55,7 +56,8 @@ public class NuxeoWroServletContextListener extends WroServletContextListener {
             conf.setMinimizeEnabled(false);
             conf.setCacheUpdatePeriod(2);
             conf.setModelUpdatePeriod(2);
-            conf.setIgnoreMissingResources(false);
+        } else {
+            conf.setDebug(false);
         }
         return conf;
     }
