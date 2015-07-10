@@ -1,16 +1,21 @@
 <?xml version="1.0"?>
 
 <component name="org.nuxeo.ecm.user.center.oauth.themes">
-  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
-    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
-      <format-type>widget</format-type>
-      <resource>popup-utils.js</resource>
-    </view>
+
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
+
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>popup-utils.js</resource>
+      </resources>
+    </bundle>
   </extension>
 
-  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
     <resource name="popup-utils.js">
-      <path>scripts/popup-utils.js</path>
+      <uri>/scripts/popup-utils.js</uri>
     </resource>
   </extension>
+
 </component>
