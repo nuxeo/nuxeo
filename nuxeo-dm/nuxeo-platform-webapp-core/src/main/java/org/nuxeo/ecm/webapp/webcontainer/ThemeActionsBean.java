@@ -64,20 +64,38 @@ public class ThemeActionsBean implements ThemeActions {
 
     public String getCurrentFlavor() {
         if (currentFlavor == null) {
+            // put current page name to request for flavor negotiation
+            FacesContext faces = FacesContext.getCurrentInstance();
+            HttpServletRequest request = (HttpServletRequest) faces.getExternalContext().getRequest();
+            request.setAttribute("jsfPage", getCurrentPage());
             currentFlavor = themeStylingService.negotiate("jsfFlavor", FacesContext.getCurrentInstance());
         }
         return currentFlavor;
     }
 
+    @Override
+    public String getCurrentFlavor(String pageName) {
+        if (currentPage == null || !currentPage.equals(pageName)) {
+            setCurrentPage(pageName);
+            // reset current flavor to resolve it again
+            currentFlavor = null;
+        }
+        return getCurrentFlavor();
+    }
+
     public String getCurrentPage() {
         if (currentPage == null) {
             currentPage = themeStylingService.negotiate("jsfPage", FacesContext.getCurrentInstance());
-            // put it to request for flavor later negotiation
-            FacesContext faces = FacesContext.getCurrentInstance();
-            HttpServletRequest request = (HttpServletRequest) faces.getExternalContext().getRequest();
-            request.setAttribute("jsfPage", currentPage);
+            if (currentPage == null) {
+                // BBB
+                currentPage = getDefaultTheme();
+            }
         }
         return currentPage;
+    }
+
+    public void setCurrentPage(String pageName) {
+        currentPage = pageName;
     }
 
     @Override
