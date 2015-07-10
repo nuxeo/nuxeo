@@ -147,9 +147,7 @@ public class ComponentManagerImpl implements ComponentManager {
         }
         for (ComponentName n : ri.getAliases()) {
             if (reg.contains(n)) {
-                String msg = "Duplicate component name: " + n + " (alias for " + name + ")";
-                log.error(msg);
-                Framework.getRuntime().getWarnings().add(msg);
+                handleError("Duplicate component name: " + n + " (alias for " + name + ")", null);
                 return;
             }
         }
@@ -165,10 +163,7 @@ public class ComponentManagerImpl implements ComponentManager {
         } catch (RuntimeException e) {
             // don't raise this exception,
             // we want to isolate component errors from other components
-            String msg = "Failed to register component: " + name;
-            log.error(msg, e);
-            msg += " (" + e.toString() + ')';
-            Framework.getRuntime().getWarnings().add(msg);
+            handleError("Failed to register component: " + name + " (" + e.toString() + ')', e);
             return;
         }
     }
@@ -302,8 +297,12 @@ public class ComponentManagerImpl implements ComponentManager {
     public static void loadContributions(RegistrationInfoImpl ri, Extension xt) {
         ExtensionPointImpl xp = ri.getExtensionPoint(xt.getExtensionPoint());
         if (xp != null && xp.contributions != null) {
-            Object[] contribs = xp.loadContributions(ri, xt);
-            xt.setContributions(contribs);
+            try {
+                Object[] contribs = xp.loadContributions(ri, xt);
+                xt.setContributions(contribs);
+            } catch (RuntimeException e) {
+                handleError("Failed to load contributions for component " + xt.getComponent().getName(), e);
+            }
         }
     }
 
@@ -331,6 +330,11 @@ public class ComponentManagerImpl implements ComponentManager {
     @Override
     public synchronized String[] getServices() {
         return services.keySet().toArray(new String[services.size()]);
+    }
+
+    protected static void handleError(String message, Exception e) {
+        log.error(message, e);
+        Framework.getRuntime().getWarnings().add(message);
     }
 
 }

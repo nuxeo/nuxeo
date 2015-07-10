@@ -130,9 +130,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
         } catch (SecurityException | IllegalAccessException | InvocationTargetException e) {
-            Exception ee = ExceptionUtils.unwrapInvoke(e);
-            log.error("Failed to activate component: " + getName(), ee);
-            Framework.handleDevError(ee);
+            handleError("Failed to activate component: " + getName(), e);
         }
     }
 
@@ -153,9 +151,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the activate method is not mandatory
         } catch (SecurityException | IllegalAccessException | InvocationTargetException e) {
-            Exception ee = ExceptionUtils.unwrapInvoke(e);
-            log.error("Failed to deactivate component: " + getName(), ee);
-            Framework.handleDevError(ee);
+            handleError("Failed to deactivate component: " + getName(), e);
         }
     }
 
@@ -173,9 +169,7 @@ public class ComponentInstanceImpl implements ComponentInstance {
         } catch (NoSuchMethodException e) {
             // ignore this exception since the reload method is not mandatory
         } catch (ReflectiveOperationException e) {
-            Exception ee = ExceptionUtils.unwrapInvoke(e);
-            log.error("Failed to reload component: " + getName(), ee);
-            Framework.handleDevError(ee);
+            handleError("Failed to reload component: " + getName(), e);
         }
     }
 
@@ -204,19 +198,14 @@ public class ComponentInstanceImpl implements ComponentInstance {
                     meth.setAccessible(true);
                     meth.invoke(instance, extension);
                 } catch (ReflectiveOperationException e) {
-                    System.err.println("error registering " + extension.getComponent().getName());
-                    // no such method
-                    Exception ee = ExceptionUtils.unwrapInvoke(e);
-                    Framework.handleDevError(ee);
+                    handleError("Error registering " + extension.getComponent().getName(), e);
                 }
             }
         } else {
             String message = "Warning: target extension point '" + extension.getExtensionPoint() + "' of '"
                     + extension.getTargetComponent().getName() + "' is unknown. Check your extension in component "
                     + extension.getComponent().getName();
-            log.error(message);
-            // fatal error if development mode - exit
-            Framework.handleDevError(null);
+            handleError(message, null);
         }
     }
 
@@ -233,11 +222,19 @@ public class ComponentInstanceImpl implements ComponentInstance {
                 meth.setAccessible(true);
                 meth.invoke(instance, extension);
             } catch (ReflectiveOperationException e) {
-                // no such method
-                Exception ee = ExceptionUtils.unwrapInvoke(e);
-                Framework.handleDevError(ee);
+                handleError("Error unregistering " + extension.getComponent().getName(), e);
             }
         }
+    }
+
+    protected void handleError(String message, Exception e) {
+        Exception ee = e;
+        if (e != null) {
+            ee = ExceptionUtils.unwrapInvoke(e);
+        }
+        log.error(message, ee);
+        Framework.getRuntime().getWarnings().add(message);
+        Framework.handleDevError(ee);
     }
 
     @Override
