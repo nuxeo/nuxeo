@@ -389,6 +389,7 @@
         <resource>contextmenu.js</resource>
         <resource>jquery.tools.focusfirst.js</resource>
         <resource>jquery.hotkeys.js</resource>
+        <resource>jquery.ui.sortable.js</resource>
         <resource>sarissa-ie-workaround.js</resource>
         <resource>static-styles.css</resource>
         <resource>hideableAdminMessage.js</resource>
