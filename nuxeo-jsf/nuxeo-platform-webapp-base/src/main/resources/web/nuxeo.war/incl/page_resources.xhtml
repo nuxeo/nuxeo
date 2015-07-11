@@ -2,14 +2,19 @@
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:c="http://java.sun.com/jstl/core"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
   xmlns:nxr="http://nuxeo.org/nxweb/resources">
 
-  <c:if test="#{page != null}">
-    <c:forEach var="bundle" items="#{page.resourceBundles}">
-      <nxr:resourceBundle name="#{bundle}" target="#{target}">
+  <nxu:set var="page" value="#{themeStylingService.getPage(pageName)}">
+    <c:if test="#{page != null}">
+      <nxr:bundle items="#{page.resourceBundles}"
+        target="#{pageTarget}"
+        target_js="#{pageJsTarget}"
+        target_css="#{pageCssTarget}"
+        target_html="#{pageHtmlTarget}">
         <f:param name="flavor" value="#{empty pageFlavor? 'default': pageFlavor}" />
-      </nxr:resourceBundle>
-    </c:forEach>
-  </c:if>
+      </nxr:bundle>
+    </c:if>
+  </nxu:set>
 
 </ui:composition>

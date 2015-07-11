@@ -1,11 +1,12 @@
 <ui:composition
   xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:c="http://java.sun.com/jstl/core">
 
   <ui:include src="/incl/dnd/dnd-ui.xhtml" />
 
-  <script>
+  <h:outputScript target="#{pageJsTarget}">
     jQuery(document).ready(function(){
       // init Browser DnD import
       jQuery(".dropzone").nxDropZone({
@@ -18,6 +19,6 @@
         extendedModeTimeout : #{frameworkPropertyActions.getProperty("org.nuxeo.dnd.extendedmode.timeout","2000")}
       });
     });
-  </script>
+  </h:outputScript>
 
 </ui:composition>

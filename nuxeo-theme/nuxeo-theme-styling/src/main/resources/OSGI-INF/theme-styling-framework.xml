@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 
+<!-- FIXME: document -->
 <component name="org.nuxeo.theme.styling.service">
 
   <require>org.nuxeo.ecm.platform.WebResources</require>

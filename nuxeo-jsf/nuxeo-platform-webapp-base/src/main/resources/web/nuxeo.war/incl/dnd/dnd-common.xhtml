@@ -5,9 +5,9 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:nxr="http://nuxeo.org/nxweb/resources">
 
-  <nxr:resourceBundle name="dnd_common" />
+  <nxr:bundle name="dnd_common" target_js="#{pageJsTarget}" />
 
-  <h:outputScript>
+  <h:outputScript target="#{pageJsTarget}">
     var baseURL='#{baseURL}';
     function getBaseURL() {
       return baseURL;

@@ -38,7 +38,7 @@
         render="#{contentIdToBeReRendered}"
         oncomplete="nuxeo.infoView.openLastInfoView();" />
 
-      <script>
+      <h:outputScript target="#{pageJsTarget}">
         jQuery.extend(true, jQuery.magnificPopup.defaults, {
           tClose: "#{messages['label.slideshow.close']}",
           tLoading: "#{messages['label.slideshow.loading']}",
@@ -150,7 +150,7 @@
           });
 
         });
-      </script>
+      </h:outputScript>
 
     </nxu:set>
 

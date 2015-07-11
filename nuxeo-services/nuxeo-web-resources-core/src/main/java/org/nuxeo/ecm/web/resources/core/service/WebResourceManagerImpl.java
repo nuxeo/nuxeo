@@ -102,9 +102,8 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
             processors.removeContribution(p);
             log.info(String.format("Done removing processor '%s'", p.getName()));
         } else {
-            log.error(String.format(
-                    "Unknown contribution to the theme " + "styling service, extension point '%s': '%s",
-                    extensionPoint, contribution));
+            log.error(String.format("Unknown contribution to the service, extension point '%s': '%s", extensionPoint,
+                    contribution));
         }
     }
 
@@ -187,18 +186,20 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
                 log.error(String.format("Could not resolve resource '%s' on bundle '%s'", rn, bundleName));
                 continue;
             }
-            if (!ResourceType.matches(type, r)) {
-                continue;
+            // resolve sub resources of given type before filtering
+            Map<String, Resource> subRes = getSubResources(graph, r, type);
+            if (ResourceType.matches(type, r) || !subRes.isEmpty()) {
+                graph.addVertex(rn);
+                all.put(rn, r);
+                all.putAll(subRes);
             }
-            graph.addVertex(rn);
-            all.put(rn, r);
-            all.putAll(getSubResources(graph, r, type));
         }
 
         for (Object rn : TopologicalSorter.sort(graph)) {
             Resource r = all.get(rn);
-            r.getProcessors();
-            res.add(r);
+            if (ResourceType.matches(type, r)) {
+                res.add(r);
+            }
         }
 
         return res;

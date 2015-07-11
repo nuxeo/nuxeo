@@ -3,8 +3,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core"
   test="#{frameworkPropertyActions.getProperty('disableKonamiCode') != 'true'}">
-  <h:outputScript src="/scripts/jquery/jquery.konami.js" />
-  <h:outputScript target="head">
+  <h:outputScript src="/scripts/jquery/jquery.konami.js" target="#{pageJsTarget}" />
+  <h:outputScript target="#{pageJsTarget}">
     jQuery(document).ready(function() {
       jQuery(window).konami('#{contextPath}/img/konamikat.gif');
     });

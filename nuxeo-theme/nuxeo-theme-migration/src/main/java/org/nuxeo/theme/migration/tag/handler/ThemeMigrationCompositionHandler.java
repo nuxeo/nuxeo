@@ -56,15 +56,15 @@ public class ThemeMigrationCompositionHandler extends TagHandlerImpl {
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
         DeprecationLogger.log(String.format(
                 "Tag nxthemes:composition is deprecated, will use a composition of template at %s for %s", TEMPLATE,
-                config.getTag().getLocation()), "7.4");
+                tag.getLocation()), "7.4");
         TagAttributeImpl tAttr = getTagAttribute("template", TEMPLATE);
         TagAttributesImpl attributes = new TagAttributesImpl(new TagAttribute[] { tAttr });
-        TagConfig cconfig = TagConfigFactory.createTagConfig(config, config.getTagId(), attributes, nextHandler);
+        TagConfig cconfig = TagConfigFactory.createTagConfig(config, tagId, attributes, nextHandler);
         new CompositionHandler(cconfig).apply(ctx, parent);
     }
 
     protected TagAttributeImpl getTagAttribute(String name, String value) {
-        return new TagAttributeImpl(config.getTag().getLocation(), "", name, name, value);
+        return new TagAttributeImpl(tag.getLocation(), "", name, name, value);
     }
 
 }

@@ -24,6 +24,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.web.resources.api.Resource;
 import org.nuxeo.ecm.web.resources.api.ResourceContextImpl;
 import org.nuxeo.ecm.web.resources.api.ResourceType;
@@ -39,23 +42,33 @@ public class ResourceBundleRenderer extends AbstractResourceRenderer {
 
     public static final String RENDERER_TYPE = "org.nuxeo.ecm.web.resources.jsf.ResourceBundle";
 
+    private static final Log log = LogFactory.getLog(ResourceBundleRenderer.class);
+
     @Override
     public void encodeEnd(FacesContext context, UIComponent component) throws IOException {
         Map<String, Object> attributes = component.getAttributes();
         String name = (String) attributes.get("name");
+        String type = (String) attributes.get("type");
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        List<Resource> cssr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.css.name());
-        if (cssr != null && !cssr.isEmpty()) {
-            encodeEnd(context, component, ResourceType.css, ENDPOINT_PATH + name + ".css");
+        if (StringUtils.isBlank(type)) {
+            log.error(String.format("Cannot encode bundle with empty type at %s", component.getClientId()));
+            return;
         }
-        List<Resource> jsr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.js.name());
-        if (jsr != null && !jsr.isEmpty()) {
-            encodeEnd(context, component, ResourceType.js, ENDPOINT_PATH + name + ".js");
+        if (!ResourceType.css.equals(type) && !ResourceType.js.equals(type) && !ResourceType.html.equals(type)) {
+            log.error(String.format("Unsupported type '%s' to encode bundle '%s' at %s", type, name,
+                    component.getClientId()));
+            return;
         }
-        List<Resource> htmlr = wrm.getResources(new ResourceContextImpl(), name, ResourceType.html.name());
-        if (htmlr != null && !htmlr.isEmpty()) {
-            for (Resource rhtml : htmlr) {
-                encodeEnd(context, component, ResourceType.html, COMPONENTS_PATH + rhtml.getPath());
+        List<Resource> rs = wrm.getResources(new ResourceContextImpl(), name, type);
+        if (rs != null && !rs.isEmpty()) {
+            if (ResourceType.css.equals(type)) {
+                encodeEnd(context, component, ResourceType.css, ENDPOINT_PATH + name + ".css");
+            } else if (ResourceType.js.equals(type)) {
+                encodeEnd(context, component, ResourceType.js, ENDPOINT_PATH + name + ".js");
+            } else if (ResourceType.html.equals(type)) {
+                for (Resource r : rs) {
+                    encodeEnd(context, component, ResourceType.html, COMPONENTS_PATH + r.getPath());
+                }
             }
         }
         super.encodeEnd(context, component);

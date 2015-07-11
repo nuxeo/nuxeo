@@ -28,6 +28,7 @@ import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.theme.styling.service.descriptors.IconDescriptor;
 
 /**
  * Component rendering a favicon link.
@@ -42,12 +43,20 @@ public class UIFavicon extends UIComponentBase {
     protected static Map<String, String> iconsMime = new HashMap<>();
 
     public static enum PropertyKeys {
-        name, src, mimetype, sizes
+        value, name, src, mimetype, sizes
     }
 
     @Override
     public String getFamily() {
         return UIOutput.COMPONENT_FAMILY;
+    }
+
+    public IconDescriptor getValue() {
+        return (IconDescriptor) getStateHelper().eval(PropertyKeys.value);
+    }
+
+    public void setValue(IconDescriptor value) {
+        getStateHelper().put(PropertyKeys.value, value);
     }
 
     public String getName() {
@@ -96,18 +105,31 @@ public class UIFavicon extends UIComponentBase {
             return;
         }
 
-        ResponseWriter writer = context.getResponseWriter();
-        String src = getSrc();
-        String mt = getMimetype();
+        String src;
+        String mt = null;
+        String name;
+        String sizes;
+        IconDescriptor icon = getValue();
+        if (icon != null) {
+            src = icon.getValue();
+            name = icon.getName();
+            sizes = icon.getSizes();
+        } else {
+            src = getSrc();
+            mt = getMimetype();
+            name = getName();
+            sizes = getSizes();
+        }
         if (StringUtils.isBlank(mt)) {
             mt = getMimetype(src);
         }
+
+        ResponseWriter writer = context.getResponseWriter();
         writer.startElement("link", this);
-        writer.writeAttribute("rel", getName(), "rel");
+        writer.writeAttribute("rel", name, "rel");
         writer.writeAttribute("type", mt, "rel");
         String encodedSrc = context.getApplication().getViewHandler().getResourceURL(context, src);
         writer.writeURIAttribute("href", encodedSrc, "href");
-        String sizes = getSizes();
         if (StringUtils.isBlank(sizes)) {
             writer.writeAttribute("sizes", sizes, "sizes");
         }
