@@ -2,7 +2,7 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:ui="http://java.sun.com/jsf/facelets">
 
-  <h:outputScript>
+  <h:outputScript target="#{pageJsTarget}">
     var currentConversationId = '#{nxu:javaScriptEscape(nxu:htmlEscape(org.jboss.seam.core.manager.currentConversationId))}';
     var currentDocURL = '#{currentServerLocation.name}/#{currentDocument.id}';
     var currentDocumentPath = '#{nxu:javaScriptEscape(currentDocument.pathAsString)}';

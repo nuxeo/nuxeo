@@ -1,6 +1,7 @@
 <h:outputScript
   xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:h="http://java.sun.com/jsf/html">
+  xmlns:h="http://java.sun.com/jsf/html"
+  target="#{pageJsTarget}">
   function confirmDeleteDocuments() {
     return confirm("#{messages['label.documents.confirmDeleteDocuments']}");
   }

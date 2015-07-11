@@ -29,13 +29,14 @@ public enum ResourceType {
         return "." + name();
     }
 
-    public static final ResourceType parse(String type) {
-        for (ResourceType item : values()) {
-            if (item.name().equals(type)) {
-                return item;
-            }
+    /**
+     * @since 7.4
+     */
+    public final boolean equals(String type) {
+        if (name().equalsIgnoreCase(type)) {
+            return true;
         }
-        return ResourceType.unknown;
+        return false;
     }
 
     public final boolean matches(Resource r) {
@@ -49,6 +50,15 @@ public enum ResourceType {
             return true;
         }
         return false;
+    }
+
+    public static final ResourceType parse(String type) {
+        for (ResourceType item : values()) {
+            if (item.name().equals(type)) {
+                return item;
+            }
+        }
+        return ResourceType.unknown;
     }
 
     public static final boolean matches(String type, Resource r) {

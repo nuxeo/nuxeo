@@ -101,9 +101,9 @@
     <ui:include src="/incl/popupMenu.xhtml">
       <ui:param name="popupMenuId" value="#{formId}" />
     </ui:include>
-    <script>
+    <h:outputScript target="#{pageJsTarget}">
       setupContextMenu("table td div div.popupTarget", "#{formId}_popupMenu");
-    </script>
+    </h:outputScript>
 
   </nxu:set>
   </nxu:set>

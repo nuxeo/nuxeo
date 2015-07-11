@@ -29,10 +29,7 @@
     <tag-name>insert</tag-name>
     <component>
       <component-type>javax.faces.Output</component-type>
-      <renderer-type>org.nuxeo.ecm.web.resources.jsf.ResourceBundle</renderer-type>
-      <handler-class>
-        org.nuxeo.ecm.web.resources.jsf.handler.ResourceBundleHandler
-      </handler-class>
+      <renderer-type>org.nuxeo.ecm.web.resources.jsf.ResourceInsert</renderer-type>
     </component>
   </tag>
 

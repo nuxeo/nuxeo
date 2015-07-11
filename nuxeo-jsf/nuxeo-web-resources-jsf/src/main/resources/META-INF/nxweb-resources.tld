@@ -13,6 +13,7 @@
 
 <taglib>
 
+  <!-- FIXME: update -->
   <tlib-version>1.0</tlib-version>
   <jsp-version>1.2</jsp-version>
   <short-name>nxr</short-name>
