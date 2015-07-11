@@ -41,12 +41,14 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleException;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -193,7 +195,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document != null) {
             try {
                 iconPath = (String) document.getProperty("common", "icon");
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 iconPath = null;
             }
             if (iconPath == null || iconPath.length() == 0 || document.getType().equals("Workspace")) {
@@ -211,7 +213,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document != null) {
             try {
                 iconPath = (String) document.getProperty("common", "icon-expanded");
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 iconPath = null;
             }
             if (iconPath == null || iconPath.length() == 0) {
@@ -274,7 +276,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document != null) {
             try {
                 title = (String) document.getProperty("dublincore", "title");
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 title = null;
             }
             if (title == null || title.length() == 0) {
@@ -307,7 +309,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (StringUtils.isNotBlank(documentId)) {
             try {
                 return coreSession.getDocument(new IdRef(documentId)).getTitle();
-            } catch (ClientException e) {
+            } catch (DocumentNotFoundException e) {
                 log.info(String.format("Could not find document with id %s", documentId));
                 return documentId;
             }
@@ -509,13 +511,13 @@ public final class DocumentModelFunctions implements LiveEditConstants {
                 if (blob != null) {
                     blobLength = blob.getLength();
                 }
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 // no prop by that name with that type
             }
-            if (filename != null && filePropertyName != null) {
+            if (filename == null && filePropertyName != null) {
                 try {
                     filename = (String) document.getPropertyValue(filePropertyName);
-                } catch (ClientException e) {
+                } catch (PropertyException e) {
                     // no prop by that name with that type
                 }
             }
@@ -717,7 +719,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         try {
             sb.append(URLEncoder.encode(value, URL_ENCODE_CHARSET));
         } catch (UnsupportedEncodingException e) {
-            throw new ClientException(String.format("could not encode URL parameter: %s=%s", name, value), e);
+            throw new NuxeoException(String.format("could not encode URL parameter: %s=%s", name, value), e);
         }
     }
 
@@ -726,7 +728,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * Blob holder
      *
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String liveEditUrl(DocumentModel doc) {
         return liveEditUrl(doc, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
@@ -736,7 +737,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * Build the nxedit URL for the "edit existing document" use case
      *
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String liveEditUrl(DocumentModel doc, String schemaName, String blobFieldName,
             String filenameFieldName) {
@@ -763,7 +763,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * Build the nxedit URL for the "edit existing document" use case
      *
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String complexLiveEditUrl(DocumentModel doc, String listPropertyName, int index,
             String blobPropertyName, String filenamePropertyName) {
@@ -785,7 +784,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param mimetype the mime type of the newly created document
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String liveCreateUrl(String mimetype) {
         return liveCreateUrl(mimetype, DEFAULT_DOCTYPE, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_FILENAME_FIELD);
@@ -800,7 +798,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param blobFieldName the field name of the blob to hold the new attachment
      * @param filenameFieldName the field name of the filename of the new attachment
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String liveCreateUrl(String mimetype, String docType, String schemaName, String blobFieldName,
             String filenameFieldName) {
@@ -820,7 +817,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      *
      * @param template the document holding the blob to be used as template
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String liveCreateFromTemplateUrl(DocumentModel template) {
         return liveCreateFromTemplateUrl(template, DEFAULT_SCHEMA, DEFAULT_BLOB_FIELD, DEFAULT_DOCTYPE, DEFAULT_SCHEMA,
@@ -838,7 +834,6 @@ public final class DocumentModelFunctions implements LiveEditConstants {
      * @param blobFieldName the field name of the new blob to be saved as attachment
      * @param filenameFieldName the field name of the filename of the attachment
      * @return the encoded URL string
-     * @throws ClientException if the URL encoding fails
      */
     public static String liveCreateFromTemplateUrl(DocumentModel template, String templateSchemaName,
             String templateBlobFieldName, String docType, String schemaName, String blobFieldName,
@@ -918,7 +913,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
             DocumentModel documentModel = directory.getEntry(id);
             String schemaName = documentModel.getSchemas()[0];
             return (String) documentModel.getProperty(schemaName, "label");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return "";
         }
     }
