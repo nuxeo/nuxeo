@@ -18,10 +18,13 @@ package org.nuxeo.theme.styling.service.descriptors;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.web.resources.core.ResourceDescriptor;
 
 /**
  * @since 5.5
+ * @deprecated since 7.4: use the {@link ResourceDescriptor} with flavor endpoint instead.
  */
+@Deprecated
 @XObject("style")
 public class SimpleStyle {
 

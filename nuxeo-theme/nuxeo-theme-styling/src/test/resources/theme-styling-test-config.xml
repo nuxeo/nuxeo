@@ -124,13 +124,13 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
 
-    <resourceBundle name="nuxeo_includes">
+    <bundle name="nuxeo_includes">
       <resources>
         <resource>jsf.js</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
   </extension>
 

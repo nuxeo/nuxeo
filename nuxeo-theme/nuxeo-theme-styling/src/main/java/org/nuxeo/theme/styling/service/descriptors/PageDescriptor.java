@@ -33,7 +33,7 @@ import org.nuxeo.ecm.web.resources.core.ResourceBundleDescriptor;
  * @since 7.4
  */
 @XObject("page")
-public class Page {
+public class PageDescriptor {
 
     public static final String RESOURCE_BUNDLE_PREFIX = "pageResourceBundle_";
 
@@ -245,7 +245,7 @@ public class Page {
         this.favicons = favicons;
     }
 
-    public void merge(Page src) {
+    public void merge(PageDescriptor src) {
         String newFlavor = src.getDefaultFlavor();
         if (newFlavor != null) {
             setDefaultFlavor(newFlavor);
@@ -323,8 +323,8 @@ public class Page {
     }
 
     @Override
-    public Page clone() {
-        Page clone = new Page();
+    public PageDescriptor clone() {
+        PageDescriptor clone = new PageDescriptor();
         clone.setName(getName());
         clone.setCharset(getCharset());
         List<IconDescriptor> favicons = getFavicons();
@@ -358,13 +358,13 @@ public class Page {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Page)) {
+        if (!(obj instanceof PageDescriptor)) {
             return false;
         }
         if (obj == this) {
             return true;
         }
-        Page p = (Page) obj;
+        PageDescriptor p = (PageDescriptor) obj;
         return new EqualsBuilder().append(name, p.name).append(charset, p.charset).append(favicons, p.favicons).append(
                 defaultFlavor, p.defaultFlavor).append(appendStyles, p.appendStyles).append(styles, p.styles).append(
                 appendFlavors, p.appendFlavors).append(flavors, p.flavors).append(appendResources, p.appendResources).append(

@@ -21,13 +21,13 @@ import javax.faces.context.FacesContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.theme.styling.negotiation.AbstractNegotiator;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
 
 /**
  * Negotiator that returns the default flavor configured for negotiated theme page.
  *
  * @see ThemeStylingService
- * @see Flavor
+ * @see FlavorDescriptor
  * @since 5.5
  */
 public class DefaultPageFlavor extends AbstractNegotiator {

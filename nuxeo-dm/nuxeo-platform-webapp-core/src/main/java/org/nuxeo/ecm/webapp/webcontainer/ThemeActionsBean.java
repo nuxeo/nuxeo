@@ -25,8 +25,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
-import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 
 @Name("themeActions")
 @Scope(ScopeType.PAGE)
@@ -40,7 +40,7 @@ public class ThemeActionsBean implements ThemeActions {
 
     protected String currentFlavor;
 
-    protected Logo currentLogo;
+    protected LogoDescriptor currentLogo;
 
     @In(create = true, required = false)
     protected transient ThemeStylingService themeStylingService;
@@ -54,7 +54,7 @@ public class ThemeActionsBean implements ThemeActions {
     }
 
     @Override
-    public Logo getLogo() {
+    public LogoDescriptor getLogo() {
         if (currentLogo != null) {
             String flavor = getCurrentFlavor();
             currentLogo = getLogo(flavor);
@@ -99,7 +99,7 @@ public class ThemeActionsBean implements ThemeActions {
     }
 
     @Override
-    public Logo getLogo(String flavorName) {
+    public LogoDescriptor getLogo(String flavorName) {
         if (flavorName == null) {
             return null;
         }
@@ -107,7 +107,7 @@ public class ThemeActionsBean implements ThemeActions {
     }
 
     @Override
-    public Flavor getFlavor(String flavorName) {
+    public FlavorDescriptor getFlavor(String flavorName) {
         if (flavorName == null) {
             return null;
         }

@@ -28,7 +28,7 @@ import org.nuxeo.ecm.web.resources.api.ResourceBundle;
 /**
  * @since 7.3
  */
-@XObject("resourceBundle")
+@XObject("bundle")
 public class ResourceBundleDescriptor implements ResourceBundle {
 
     private static final long serialVersionUID = 1L;

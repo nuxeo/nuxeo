@@ -19,8 +19,8 @@ package org.nuxeo.ecm.webapp.webcontainer;
 
 import java.io.Serializable;
 
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
-import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 
 public interface ThemeActions extends Serializable {
 
@@ -34,19 +34,19 @@ public interface ThemeActions extends Serializable {
      *
      * @since 5.5.
      */
-    Logo getLogo();
+    LogoDescriptor getLogo();
 
     /**
      * Returns the logo configured for given flavor.
      *
      * @since 5.5.
      */
-    Logo getLogo(String flavorName);
+    LogoDescriptor getLogo(String flavorName);
 
     /**
      * Returns flavor with given name.
      */
-    Flavor getFlavor(String flavorName);
+    FlavorDescriptor getFlavor(String flavorName);
 
     /**
      * Returns current negotiated flavor.

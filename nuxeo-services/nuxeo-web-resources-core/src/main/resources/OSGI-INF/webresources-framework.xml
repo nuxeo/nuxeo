@@ -2,8 +2,10 @@
 
 <component name="org.nuxeo.ecm.platform.WebResources">
   <documentation>
-    The WebResourceManager service provides extension points for pluggable
-    resources, resource bundles and resource processors.
+    The WebResourceManager service provides extension points for
+    pluggable resources, resource bundles and resource processors.
+
+    @since 7.3
   </documentation>
 
   <service>
@@ -101,7 +103,7 @@
     <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
   </extension-point>
 
-  <extension-point name="resourceBundles">
+  <extension-point name="bundles">
     <documentation>
 
       The resourceBundles extension point allows to group resources by name.
@@ -109,24 +111,24 @@
       Example:
 
       <code>
-        <resourceBundle name="myapp">
+        <bundle name="myapp">
           <resources>
             <resource>jquery.js</resource>
             <resource>foldable-box.js</resource>
             <resource>foldable-box.css</resource>
           </resources>
-        </resourceBundle>
+        </bundle>
       </code>
 
       Bundles support override and merging logics: another module can contribute
       to the same bundle:
 
       <code>
-        <resourceBundle name="myapp">
+        <bundle name="myapp">
           <resources append="true">
             <resource>my.css</resource>
           </resources>
-        </resourceBundle>
+        </bundle>
       </code>
 
       If the attribute append is not set, or set to false, resources will be overridden.

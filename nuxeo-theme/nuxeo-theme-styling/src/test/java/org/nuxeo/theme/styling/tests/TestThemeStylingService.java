@@ -26,9 +26,9 @@ import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
-import org.nuxeo.theme.styling.service.descriptors.Logo;
-import org.nuxeo.theme.styling.service.descriptors.Page;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 
 import static org.junit.Assert.assertEquals;
@@ -72,7 +72,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("dark", flavorNames.get(1));
         assertEquals("subDark", flavorNames.get(2));
         assertEquals("addon_flavor", flavorNames.get(3));
-        List<Flavor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
+        List<FlavorDescriptor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
         assertNotNull(flavors);
         assertEquals(4, flavors.size());
         assertEquals("default", flavors.get(0).getName());
@@ -94,11 +94,11 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("dark", flavors.get(1).getName());
         assertEquals("addon_flavor", flavors.get(2).getName());
 
-        Flavor flavor = service.getFlavor("*");
+        FlavorDescriptor flavor = service.getFlavor("*");
         assertNull(flavor);
 
         PalettePreview pp;
-        Logo logo = service.getLogo("*");
+        LogoDescriptor logo = service.getLogo("*");
         assertNull(logo);
 
         flavor = service.getFlavor("default");
@@ -152,7 +152,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals(42, presets.size());
 
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        ResourceBundle bundle = wrm.getResourceBundle(Page.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
+        ResourceBundle bundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
         assertNotNull(bundle);
         assertEquals(2, bundle.getResources().size());
         assertEquals("nuxeo_dm_default.css", bundle.getResources().get(0));
@@ -172,7 +172,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("default", service.getDefaultFlavorName(PRINT_PAGE_NAME));
 
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        ResourceBundle bundle = wrm.getResourceBundle(Page.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
+        ResourceBundle bundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
         assertNotNull(bundle);
         assertEquals(4, bundle.getResources().size());
         assertEquals("nuxeo_dm_default.css", bundle.getResources().get(0));
@@ -180,7 +180,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("nuxeo_dm_default2.css", bundle.getResources().get(2));
         assertEquals("jquery.fancybox.style.css", bundle.getResources().get(3));
 
-        ResourceBundle globalBundle = wrm.getResourceBundle(Page.RESOURCE_BUNDLE_PREFIX + "*");
+        ResourceBundle globalBundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "*");
         assertNotNull(globalBundle);
         assertEquals(2, globalBundle.getResources().size());
         assertEquals("addon_style.css", globalBundle.getResources().get(0));
@@ -207,7 +207,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("dark", flavorNames.get(0));
         assertEquals("addon_flavor", flavorNames.get(1));
 
-        List<Flavor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
+        List<FlavorDescriptor> flavors = service.getFlavors(DEFAULT_PAGE_NAME);
         assertNotNull(flavors);
         assertEquals(2, flavors.size());
         assertEquals("dark", flavors.get(0).getName());
@@ -232,10 +232,10 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("addon_flavor", flavors.get(3).getName());
         // non existing flavors are omitted
 
-        Flavor flavor = service.getFlavor("*");
+        FlavorDescriptor flavor = service.getFlavor("*");
         assertNull(flavor);
 
-        Logo logo = service.getLogo("*");
+        LogoDescriptor logo = service.getLogo("*");
         assertNull(logo);
 
         flavor = service.getFlavor("default");
@@ -294,18 +294,18 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertNull(service.getFlavors(PRINT_PAGE_NAME));
 
         // check page is null
-        Page page = service.getPage(DEFAULT_PAGE_NAME);
+        PageDescriptor page = service.getPage(DEFAULT_PAGE_NAME);
         assertNull(page);
 
         // check resources are not registered on resource manager anymore
         WebResourceManager wrm = Framework.getService(WebResourceManager.class);
-        ResourceBundle bundle = wrm.getResourceBundle(Page.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
+        ResourceBundle bundle = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "testStyling_default");
         assertNull(bundle);
         ResourceBundle includes = wrm.getResourceBundle("nuxeo_includes");
         assertNull(includes);
 
         // check global resources from addon are still there
-        ResourceBundle global = wrm.getResourceBundle(Page.RESOURCE_BUNDLE_PREFIX + "*");
+        ResourceBundle global = wrm.getResourceBundle(PageDescriptor.RESOURCE_BUNDLE_PREFIX + "*");
         assertNotNull(global);
         assertEquals(2, global.getResources().size());
         assertEquals("addon_style.css", global.getResources().get(0));
@@ -319,7 +319,7 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
 
     @Test
     public void testPageRegistration() throws Exception {
-        Page page = service.getPage("testStyling/default");
+        PageDescriptor page = service.getPage("testStyling/default");
         assertNotNull(page);
         assertEquals("testStyling/default", page.getName());
         assertEquals("default", page.getDefaultFlavor());

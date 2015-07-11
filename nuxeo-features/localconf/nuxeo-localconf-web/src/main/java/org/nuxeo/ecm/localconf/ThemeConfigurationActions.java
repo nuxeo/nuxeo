@@ -28,7 +28,7 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.theme.localconfiguration.LocalThemeConfig;
 import org.nuxeo.theme.localconfiguration.LocalThemeHelper;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
 
 import static org.jboss.seam.ScopeType.CONVERSATION;
 
@@ -56,7 +56,7 @@ public class ThemeConfigurationActions implements Serializable {
         return "theme_configuration";
     }
 
-    public List<Flavor> getAvailableFlavors(String themePage) {
+    public List<FlavorDescriptor> getAvailableFlavors(String themePage) {
         return themeStylingService.getFlavors(themePage);
     }
 
@@ -64,7 +64,7 @@ public class ThemeConfigurationActions implements Serializable {
         return themeStylingService.getDefaultFlavorName(themePage);
     }
 
-    public Flavor getDefaultFlavor(String themePage) {
+    public FlavorDescriptor getDefaultFlavor(String themePage) {
         String flavorName = themeStylingService.getDefaultFlavorName(themePage);
         if (flavorName != null) {
             return themeStylingService.getFlavor(flavorName);

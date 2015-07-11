@@ -20,16 +20,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.web.resources.api.service.WebResourceManager;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
-import org.nuxeo.theme.styling.service.descriptors.Logo;
-import org.nuxeo.theme.styling.service.descriptors.Page;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 
 /**
  * Service handling the mapping between a page and its resources and flavors.
  * <p>
  * Registers some contributions to the {@link WebResourceManager} for compatibility.
  *
- * @see Flavor
+ * @see FlavorDescriptor
  * @since 5.5
  */
 public interface ThemeStylingService {
@@ -57,7 +57,7 @@ public interface ThemeStylingService {
     /**
      * Returns the flavors for a given theme page
      */
-    List<Flavor> getFlavors(String themePage);
+    List<FlavorDescriptor> getFlavors(String themePage);
 
     /**
      * Returns the flavor for given name, or null if not found.
@@ -67,7 +67,7 @@ public interface ThemeStylingService {
      *
      * @param flavorName
      */
-    Flavor getFlavor(String flavorName);
+    FlavorDescriptor getFlavor(String flavorName);
 
     /**
      * Returns the map of variable replacements for given flavor.
@@ -83,7 +83,7 @@ public interface ThemeStylingService {
      *
      * @param flavor
      */
-    Logo getLogo(String flavor);
+    LogoDescriptor getLogo(String flavor);
 
     /**
      * Returns the page for given name.
@@ -92,7 +92,7 @@ public interface ThemeStylingService {
      *
      * @since 7.4
      */
-    Page getPage(String name);
+    PageDescriptor getPage(String name);
 
     /**
      * Returns the negotiated String value for given target variable.

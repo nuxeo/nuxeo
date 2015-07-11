@@ -3,12 +3,12 @@
 
   <require>org.nuxeo.theme.nuxeo.webapp</require>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
-    <resourceBundle name="nuxeo_includes">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
       <resources append="true">
         <resource>tags2Formatter.js</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">

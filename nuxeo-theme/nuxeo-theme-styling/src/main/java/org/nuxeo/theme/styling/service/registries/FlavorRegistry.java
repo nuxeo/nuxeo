@@ -23,34 +23,34 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
 
 /**
- * Registry for theme flavors, handling merge of registered {@link Flavor} elements.
+ * Registry for theme flavors, handling merge of registered {@link FlavorDescriptor} elements.
  *
  * @since 5.5
  */
-public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
+public class FlavorRegistry extends ContributionFragmentRegistry<FlavorDescriptor> {
 
-    protected Map<String, Flavor> themePageFlavors = new HashMap<String, Flavor>();
+    protected Map<String, FlavorDescriptor> themePageFlavors = new HashMap<String, FlavorDescriptor>();
 
     @Override
-    public String getContributionId(Flavor contrib) {
+    public String getContributionId(FlavorDescriptor contrib) {
         return contrib.getName();
     }
 
     @Override
-    public void contributionUpdated(String id, Flavor contrib, Flavor newOrigContrib) {
+    public void contributionUpdated(String id, FlavorDescriptor contrib, FlavorDescriptor newOrigContrib) {
         themePageFlavors.put(id, contrib);
     }
 
     @Override
-    public void contributionRemoved(String id, Flavor origContrib) {
+    public void contributionRemoved(String id, FlavorDescriptor origContrib) {
         themePageFlavors.remove(id);
     }
 
     @Override
-    public Flavor clone(Flavor orig) {
+    public FlavorDescriptor clone(FlavorDescriptor orig) {
         if (orig == null) {
             return null;
         }
@@ -58,17 +58,17 @@ public class FlavorRegistry extends ContributionFragmentRegistry<Flavor> {
     }
 
     @Override
-    public void merge(Flavor src, Flavor dst) {
+    public void merge(FlavorDescriptor src, FlavorDescriptor dst) {
         dst.merge(src);
     }
 
-    public Flavor getFlavor(String id) {
+    public FlavorDescriptor getFlavor(String id) {
         return themePageFlavors.get(id);
     }
 
-    public List<Flavor> getFlavorsExtending(String flavor) {
-        List<Flavor> res = new ArrayList<Flavor>();
-        for (Flavor f : themePageFlavors.values()) {
+    public List<FlavorDescriptor> getFlavorsExtending(String flavor) {
+        List<FlavorDescriptor> res = new ArrayList<FlavorDescriptor>();
+        for (FlavorDescriptor f : themePageFlavors.values()) {
             if (f != null) {
                 String extendsFlavor = f.getExtendsFlavor();
                 if (!StringUtils.isBlank(extendsFlavor) && extendsFlavor.equals(flavor)) {
