@@ -38,21 +38,21 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
 
-    <resourceBundle name="myapp">
+    <bundle name="myapp">
       <resources>
         <resource>jquery.js</resource>
         <resource>foldable-box.js</resource>
         <resource>foldable-box.css</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
-    <resourceBundle name="cycles">
+    <bundle name="cycles">
       <resources>
         <resource>cycle1.js</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
   </extension>
 

@@ -50,7 +50,7 @@ public class WebResourceManagerImpl extends DefaultComponent implements WebResou
 
     protected ResourceRegistry resources;
 
-    protected static final String RESOURCE_BUNDLES_ENDPOINT = "resourceBundles";
+    protected static final String RESOURCE_BUNDLES_ENDPOINT = "bundles";
 
     protected ResourceBundleRegistry resourceBundles;
 

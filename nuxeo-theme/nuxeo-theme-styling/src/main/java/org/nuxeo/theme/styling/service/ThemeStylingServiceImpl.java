@@ -40,12 +40,12 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.styling.negotiation.Negotiator;
-import org.nuxeo.theme.styling.service.descriptors.Flavor;
+import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
-import org.nuxeo.theme.styling.service.descriptors.Logo;
+import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.NegotiatorDescriptor;
-import org.nuxeo.theme.styling.service.descriptors.Page;
+import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
 import org.nuxeo.theme.styling.service.descriptors.SimpleStyle;
 import org.nuxeo.theme.styling.service.palettes.PaletteParseException;
@@ -87,8 +87,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof Flavor) {
-            Flavor flavor = (Flavor) contribution;
+        if (contribution instanceof FlavorDescriptor) {
+            FlavorDescriptor flavor = (FlavorDescriptor) contribution;
             log.info(String.format("Register flavor '%s'", flavor.getName()));
             registerFlavor(flavor, contributor.getContext());
             log.info(String.format("Done registering flavor '%s'", flavor.getName()));
@@ -104,8 +104,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
             ResourceDescriptor resource = getResourceFromStyle(style);
             registerResource(resource, contributor.getContext());
             log.info(String.format("Done registering style '%s'", style.getName()));
-        } else if (contribution instanceof Page) {
-            Page page = (Page) contribution;
+        } else if (contribution instanceof PageDescriptor) {
+            PageDescriptor page = (PageDescriptor) contribution;
             log.info(String.format("Register page '%s'", page.getName()));
             if (page.hasResources()) {
                 // automatically register a bundle for page resources
@@ -144,8 +144,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (contribution instanceof Flavor) {
-            Flavor flavor = (Flavor) contribution;
+        if (contribution instanceof FlavorDescriptor) {
+            FlavorDescriptor flavor = (FlavorDescriptor) contribution;
             flavorReg.removeContribution(flavor);
         } else if (contribution instanceof Resource) {
             Resource resource = (Resource) contribution;
@@ -153,8 +153,8 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         } else if (contribution instanceof SimpleStyle) {
             SimpleStyle style = (SimpleStyle) contribution;
             unregisterResource(getResourceFromStyle(style));
-        } else if (contribution instanceof Page) {
-            Page page = (Page) contribution;
+        } else if (contribution instanceof PageDescriptor) {
+            PageDescriptor page = (PageDescriptor) contribution;
             if (page.hasResources() && !Framework.getRuntime().isShuttingDown()) {
                 WebResourceManager wrm = Framework.getService(WebResourceManager.class);
                 wrm.unregisterResourceBundle(page.getComputedResourceBundle());
@@ -170,7 +170,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         }
     }
 
-    protected void registerFlavor(Flavor flavor, RuntimeContext extensionContext) {
+    protected void registerFlavor(FlavorDescriptor flavor, RuntimeContext extensionContext) {
         // set flavor presets files content
         List<FlavorPresets> presets = flavor.getPresets();
         if (presets != null) {
@@ -193,7 +193,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         flavorReg.addContribution(flavor);
     }
 
-    protected List<FlavorPresets> computePresets(Flavor flavor, List<String> flavors) {
+    protected List<FlavorPresets> computePresets(FlavorDescriptor flavor, List<String> flavors) {
         List<FlavorPresets> presets = new ArrayList<FlavorPresets>();
         if (flavor != null) {
             List<FlavorPresets> localPresets = flavor.getPresets();
@@ -209,7 +209,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 } else {
                     // retrieve the extended presets
                     flavors.add(flavor.getName());
-                    Flavor extendedFlavor = getFlavor(extendsFlavorName);
+                    FlavorDescriptor extendedFlavor = getFlavor(extendsFlavorName);
                     if (extendedFlavor != null) {
                         List<FlavorPresets> parentPresets = computePresets(extendedFlavor, flavors);
                         if (parentPresets != null) {
@@ -270,7 +270,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     @Override
     public String getDefaultFlavorName(String themePageName) {
         if (pageReg != null) {
-            Page themePage = pageReg.getPage(themePageName);
+            PageDescriptor themePage = pageReg.getPage(themePageName);
             if (themePage != null) {
                 return themePage.getDefaultFlavor();
             }
@@ -279,10 +279,10 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     }
 
     @Override
-    public Flavor getFlavor(String flavorName) {
+    public FlavorDescriptor getFlavor(String flavorName) {
         if (flavorReg != null) {
-            Flavor flavor = flavorReg.getFlavor(flavorName);
-            Flavor clone = null;
+            FlavorDescriptor flavor = flavorReg.getFlavor(flavorName);
+            FlavorDescriptor clone = null;
             if (flavor != null) {
                 if (flavor.getLogo() == null) {
                     // resolve and attach the computed logo from extended
@@ -306,17 +306,17 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     }
 
     @Override
-    public Logo getLogo(String flavorName) {
-        Flavor flavor = getFlavor(flavorName);
+    public LogoDescriptor getLogo(String flavorName) {
+        FlavorDescriptor flavor = getFlavor(flavorName);
         if (flavor != null) {
             return flavor.getLogo();
         }
         return null;
     }
 
-    protected Logo computeLogo(Flavor flavor, List<String> flavors) {
+    protected LogoDescriptor computeLogo(FlavorDescriptor flavor, List<String> flavors) {
         if (flavor != null) {
-            Logo localLogo = flavor.getLogo();
+            LogoDescriptor localLogo = flavor.getLogo();
             if (localLogo == null) {
                 String extendsFlavorName = flavor.getExtendsFlavor();
                 if (!StringUtils.isBlank(extendsFlavorName)) {
@@ -327,7 +327,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                     } else {
                         // retrieved the extended logo
                         flavors.add(flavor.getName());
-                        Flavor extendedFlavor = getFlavor(extendsFlavorName);
+                        FlavorDescriptor extendedFlavor = getFlavor(extendsFlavorName);
                         if (extendedFlavor != null) {
                             localLogo = computeLogo(extendedFlavor, flavors);
                         } else {
@@ -341,7 +341,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         return null;
     }
 
-    protected PalettePreview computePalettePreview(Flavor flavor, List<String> flavors) {
+    protected PalettePreview computePalettePreview(FlavorDescriptor flavor, List<String> flavors) {
         if (flavor != null) {
             PalettePreview localPalette = flavor.getPalettePreview();
             if (localPalette == null) {
@@ -354,7 +354,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                     } else {
                         // retrieved the extended colors
                         flavors.add(flavor.getName());
-                        Flavor extendedFlavor = getFlavor(extendsFlavorName);
+                        FlavorDescriptor extendedFlavor = getFlavor(extendsFlavorName);
                         if (extendedFlavor != null) {
                             localPalette = computePalettePreview(extendedFlavor, flavors);
                         } else {
@@ -371,7 +371,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     @Override
     public List<String> getFlavorNames(String themePageName) {
         if (pageReg != null) {
-            Page themePage = pageReg.getPage(themePageName);
+            PageDescriptor themePage = pageReg.getPage(themePageName);
             if (themePage != null) {
                 List<String> flavors = new ArrayList<String>();
                 List<String> localFlavors = themePage.getFlavors();
@@ -379,7 +379,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                     flavors.addAll(localFlavors);
                 }
                 // add flavors from theme for all pages
-                Page forAllPage = pageReg.getConfigurationApplyingToAll();
+                PageDescriptor forAllPage = pageReg.getConfigurationApplyingToAll();
                 if (forAllPage != null) {
                     localFlavors = forAllPage.getFlavors();
                     if (localFlavors != null) {
@@ -400,12 +400,12 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     }
 
     @Override
-    public List<Flavor> getFlavors(String themePageName) {
+    public List<FlavorDescriptor> getFlavors(String themePageName) {
         List<String> flavorNames = getFlavorNames(themePageName);
         if (flavorNames != null) {
-            List<Flavor> flavors = new ArrayList<Flavor>();
+            List<FlavorDescriptor> flavors = new ArrayList<FlavorDescriptor>();
             for (String flavorName : flavorNames) {
-                Flavor flavor = getFlavor(flavorName);
+                FlavorDescriptor flavor = getFlavor(flavorName);
                 if (flavor != null) {
                     flavors.add(flavor);
                 }
@@ -415,7 +415,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
         return null;
     }
 
-    protected Map<String, Map<String, String>> getPresetsByCat(Flavor flavor) {
+    protected Map<String, Map<String, String>> getPresetsByCat(FlavorDescriptor flavor) {
         String flavorName = flavor.getName();
         List<FlavorPresets> presets = computePresets(flavor, new ArrayList<String>());
         Map<String, Map<String, String>> presetsByCat = new HashMap<String, Map<String, String>>();
@@ -456,7 +456,7 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     @Override
     public Map<String, String> getPresetVariables(String flavorName) {
         Map<String, String> res = new HashMap<String, String>();
-        Flavor flavor = getFlavor(flavorName);
+        FlavorDescriptor flavor = getFlavor(flavorName);
         if (flavor == null) {
             return res;
         }
@@ -472,13 +472,13 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     }
 
     @Override
-    public Page getPage(String name) {
-        Page page = pageReg.getPage(name);
+    public PageDescriptor getPage(String name) {
+        PageDescriptor page = pageReg.getPage(name);
         if (page != null) {
             // merge with global resources
-            Page globalPage = pageReg.getPage("*");
+            PageDescriptor globalPage = pageReg.getPage("*");
             if (globalPage != null) {
-                Page clone = globalPage.clone();
+                PageDescriptor clone = globalPage.clone();
                 clone.setAppendFlavors(true);
                 clone.setAppendResources(true);
                 clone.setAppendStyles(true);

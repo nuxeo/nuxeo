@@ -36,7 +36,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("flavor")
-public class Flavor implements Serializable {
+public class FlavorDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,7 +52,7 @@ public class Flavor implements Serializable {
     String extendsFlavor;
 
     @XNode("logo")
-    Logo logo;
+    LogoDescriptor logo;
 
     @XNode("palettePreview")
     PalettePreview palettePreview;
@@ -99,11 +99,11 @@ public class Flavor implements Serializable {
         this.presets = presets;
     }
 
-    public Logo getLogo() {
+    public LogoDescriptor getLogo() {
         return logo;
     }
 
-    public void setLogo(Logo logo) {
+    public void setLogo(LogoDescriptor logo) {
         this.logo = logo;
     }
 
@@ -119,7 +119,7 @@ public class Flavor implements Serializable {
         this.palettePreview = palettePreview;
     }
 
-    public void merge(Flavor src) {
+    public void merge(FlavorDescriptor src) {
         String newExtend = src.getExtendsFlavor();
         if (newExtend != null) {
             setExtendsFlavor(newExtend);
@@ -128,9 +128,9 @@ public class Flavor implements Serializable {
         if (newLabel != null) {
             setLabel(newLabel);
         }
-        Logo logo = src.getLogo();
+        LogoDescriptor logo = src.getLogo();
         if (logo != null) {
-            Logo newLogo = getLogo();
+            LogoDescriptor newLogo = getLogo();
             if (newLogo == null) {
                 newLogo = logo.clone();
             } else {
@@ -172,11 +172,11 @@ public class Flavor implements Serializable {
     }
 
     @Override
-    public Flavor clone() {
-        Flavor clone = new Flavor();
+    public FlavorDescriptor clone() {
+        FlavorDescriptor clone = new FlavorDescriptor();
         clone.setName(getName());
         clone.setLabel(getLabel());
-        Logo logo = getLogo();
+        LogoDescriptor logo = getLogo();
         if (logo != null) {
             clone.setLogo(logo.clone());
         }

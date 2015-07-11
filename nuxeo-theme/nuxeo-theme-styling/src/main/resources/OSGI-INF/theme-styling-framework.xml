@@ -11,7 +11,7 @@
 
   <extension-point name="pages">
     <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
-    <object class="org.nuxeo.theme.styling.service.descriptors.Page" />
+    <object class="org.nuxeo.theme.styling.service.descriptors.PageDescriptor" />
   </extension-point>
 
   <extension-point name="styles">
@@ -19,7 +19,7 @@
   </extension-point>
 
   <extension-point name="flavors">
-    <object class="org.nuxeo.theme.styling.service.descriptors.Flavor" />
+    <object class="org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor" />
   </extension-point>
 
   <extension-point name="resources">

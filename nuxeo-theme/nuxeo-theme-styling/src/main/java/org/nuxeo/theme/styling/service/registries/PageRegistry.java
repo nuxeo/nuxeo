@@ -22,39 +22,39 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
-import org.nuxeo.theme.styling.service.descriptors.Page;
+import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 
 /**
- * Registry for theme page resources, handling merge of registered {@link Page} elements.
+ * Registry for theme page resources, handling merge of registered {@link PageDescriptor} elements.
  *
  * @since 5.5
  */
-public class PageRegistry extends ContributionFragmentRegistry<Page> {
+public class PageRegistry extends ContributionFragmentRegistry<PageDescriptor> {
 
-    protected Map<String, Page> pageResources = new HashMap<String, Page>();
+    protected Map<String, PageDescriptor> pageResources = new HashMap<String, PageDescriptor>();
 
     @Override
-    public String getContributionId(Page contrib) {
+    public String getContributionId(PageDescriptor contrib) {
         return contrib.getName();
     }
 
     @Override
-    public void contributionUpdated(String id, Page contrib, Page newOrigContrib) {
+    public void contributionUpdated(String id, PageDescriptor contrib, PageDescriptor newOrigContrib) {
         pageResources.put(id, contrib);
     }
 
     @Override
-    public synchronized void removeContribution(Page contrib) {
+    public synchronized void removeContribution(PageDescriptor contrib) {
         removeContribution(contrib, true);
     }
 
     @Override
-    public void contributionRemoved(String id, Page origContrib) {
+    public void contributionRemoved(String id, PageDescriptor origContrib) {
         pageResources.remove(id);
     }
 
     @Override
-    public Page clone(Page orig) {
+    public PageDescriptor clone(PageDescriptor orig) {
         if (orig == null) {
             return null;
         }
@@ -62,11 +62,11 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
     }
 
     @Override
-    public void merge(Page src, Page dst) {
+    public void merge(PageDescriptor src, PageDescriptor dst) {
         dst.merge(src);
     }
 
-    public Page getPage(String id) {
+    public PageDescriptor getPage(String id) {
         return pageResources.get(id);
     }
 
@@ -74,13 +74,13 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
      * @deprecated since 7.4: use {@link #getPage(String)} instead.
      */
     @Deprecated
-    public Page getThemePage(String id) {
+    public PageDescriptor getThemePage(String id) {
         return getPage(id);
     }
 
-    public List<Page> getPages() {
-        List<Page> res = new ArrayList<Page>();
-        for (Page page : pageResources.values()) {
+    public List<PageDescriptor> getPages() {
+        List<PageDescriptor> res = new ArrayList<PageDescriptor>();
+        for (PageDescriptor page : pageResources.values()) {
             if (page != null) {
                 res.add(page);
             }
@@ -92,18 +92,18 @@ public class PageRegistry extends ContributionFragmentRegistry<Page> {
      * @deprecated since 7.4: use {@link #getPages()} instead.
      */
     @Deprecated
-    public List<Page> getThemePages() {
+    public List<PageDescriptor> getThemePages() {
         return getPages();
     }
 
-    public Page getConfigurationApplyingToAll() {
+    public PageDescriptor getConfigurationApplyingToAll() {
         return pageResources.get("*");
     }
 
     /**
      * @deprecated since 7.4: use {@link #getConfigurationApplyingToAll()} instead.
      */
-    public Page getConfigurationApplyingToAllThemes() {
+    public PageDescriptor getConfigurationApplyingToAllThemes() {
         return getConfigurationApplyingToAll();
     }
 

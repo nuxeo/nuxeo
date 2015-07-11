@@ -25,7 +25,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
  * @since 5.5
  */
 @XObject("logo")
-public class Logo implements Serializable {
+public class LogoDescriptor implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -84,8 +84,8 @@ public class Logo implements Serializable {
         this.title = title;
     }
 
-    public Logo clone() {
-        Logo cLogo = new Logo();
+    public LogoDescriptor clone() {
+        LogoDescriptor cLogo = new LogoDescriptor();
         cLogo.setHeight(getHeight());
         cLogo.setWidth(getWidth());
         cLogo.setTitle(getTitle());

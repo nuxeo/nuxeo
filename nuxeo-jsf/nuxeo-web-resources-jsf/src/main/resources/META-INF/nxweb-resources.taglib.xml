@@ -19,7 +19,14 @@
   </tag>
 
   <tag>
-    <tag-name>resourceBundle</tag-name>
+    <tag-name>bundle</tag-name>
+    <handler-class>
+      org.nuxeo.ecm.web.resources.jsf.handler.ResourceBundleHandler
+    </handler-class>
+  </tag>
+
+  <tag>
+    <tag-name>insert</tag-name>
     <component>
       <component-type>javax.faces.Output</component-type>
       <renderer-type>org.nuxeo.ecm.web.resources.jsf.ResourceBundle</renderer-type>

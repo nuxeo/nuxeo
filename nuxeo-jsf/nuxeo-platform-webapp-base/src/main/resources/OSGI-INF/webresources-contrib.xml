@@ -23,10 +23,10 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
 
     <!-- main bundle with all basic includes -->
-    <resourceBundle name="dnd_common">
+    <bundle name="dnd_common">
       <resources>
         <resource>jquery.client.js</resource>
         <resource>jquery.dnd-file-upload.js</resource>
@@ -34,7 +34,7 @@
         <resource>nxdropout.js</resource>
         <resource>nxinternaldnd.js</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
   </extension>
 

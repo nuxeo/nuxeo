@@ -358,10 +358,10 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
 
     <!-- main bundle with all basic includes -->
-    <resourceBundle name="nuxeo_includes">
+    <bundle name="nuxeo_includes">
       <resources>
         <resource>jsf.js</resource>
         <resource>fixjsfviewstate.js</resource>
@@ -415,10 +415,10 @@
         <resource>automation.js</resource>
         <resource>nuxeo_javascript_context.xhtml</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
     <!-- styling common to all basic pages -->
-    <resourceBundle name="nuxeo_base">
+    <bundle name="nuxeo_base">
       <resources>
         <resource>basics.css</resource>
         <resource>buttons_and_actions.css</resource>
@@ -436,22 +436,22 @@
         <resource>breadcrumb.css</resource>
         <resource>drag_and_drop.css</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
     <!-- resources for all pages including nuxeo header and footer -->
-    <resourceBundle name="nuxeo_header_footer">
+    <bundle name="nuxeo_header_footer">
       <resources>
         <resource>screen.css</resource>
         <resource>header.css</resource>
         <resource>footer.css</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
-    <resourceBundle name="nuxeo_dm">
+    <bundle name="nuxeo_dm">
       <resources>
         <resource>nuxeo_dm_specific.css</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
   </extension>
 

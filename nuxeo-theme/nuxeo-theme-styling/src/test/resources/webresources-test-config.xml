@@ -13,13 +13,13 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
 
-    <resourceBundle name="myapp">
+    <bundle name="myapp">
       <resources>
         <resource>nuxeo_dm_default.css</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
   </extension>
 
