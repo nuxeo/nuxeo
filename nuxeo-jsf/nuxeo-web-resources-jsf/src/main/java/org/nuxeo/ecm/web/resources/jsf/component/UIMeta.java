@@ -25,6 +25,9 @@ import javax.faces.context.ResponseWriter;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sun.faces.config.FaceletsConfiguration;
+import com.sun.faces.config.WebConfiguration;
+
 /**
  * Component rendering a "meta" HTML tag.
  *
@@ -91,15 +94,21 @@ public class UIMeta extends UIComponentBase {
 
         ResponseWriter writer = context.getResponseWriter();
         writer.startElement("meta", this);
-        writer.writeAttribute("charset", getCharset(), "charset");
-        // charset, content, httpequiv, name, scheme
-        String content = getContent();
-        if (!StringUtils.isBlank(content)) {
-            writer.writeAttribute("content", content, "content");
-        }
-        String httpEquiv = getHttpequiv();
-        if (!StringUtils.isBlank(httpEquiv)) {
-            writer.writeAttribute("http-equiv", httpEquiv, "http-equiv");
+        WebConfiguration webConfig = WebConfiguration.getInstance(context.getExternalContext());
+        FaceletsConfiguration faceletsConfig = webConfig.getFaceletsConfiguration();
+        if (faceletsConfig.isOutputHtml5Doctype(context.getViewRoot().getViewId())) {
+            writer.writeAttribute("charset", getCharset(), "charset");
+            String httpEquiv = getHttpequiv();
+            if (!StringUtils.isBlank(httpEquiv)) {
+                writer.writeAttribute("http-equiv", httpEquiv, "http-equiv");
+            }
+            String content = getContent();
+            if (!StringUtils.isBlank(content)) {
+                writer.writeAttribute("content", content, "content");
+            }
+        } else {
+            writer.writeAttribute("http-equiv", "Content-Type", "http-equiv");
+            writer.writeAttribute("content", String.format("text/html;charset=%s", getCharset()), "content");
         }
         String name = getName();
         if (!StringUtils.isBlank(name)) {
