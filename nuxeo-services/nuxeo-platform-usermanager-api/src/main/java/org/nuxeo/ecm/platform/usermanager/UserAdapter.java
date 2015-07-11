@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.usermanager;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Interface to expose user model fields

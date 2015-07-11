@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -84,10 +83,6 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
                 error = slee;
                 errorMessage = SEARCH_OVERFLOW_ERROR_MESSAGE;
                 log.warn(slee.getMessage(), slee);
-            } catch (ClientException e) {
-                error = e;
-                errorMessage = e.getMessage();
-                log.warn(e.getMessage(), e);
             }
 
             if (!hasError()) {
@@ -186,13 +181,8 @@ public abstract class AbstractUsersPageProvider<T> extends AbstractPageProvider<
 
     public Collection<String> getCatalogLetters() {
         if (userCatalog == null) {
-            try {
-                UserManager userManager = Framework.getLocalService(UserManager.class);
-                updateUserCatalog(userManager);
-            } catch (ClientException e) {
-                log.error("Unable to update user catalog", e);
-                return Collections.emptyList();
-            }
+            UserManager userManager = Framework.getService(UserManager.class);
+            updateUserCatalog(userManager);
         }
         List<String> list = new ArrayList<String>(userCatalog.keySet());
         Collections.sort(list);

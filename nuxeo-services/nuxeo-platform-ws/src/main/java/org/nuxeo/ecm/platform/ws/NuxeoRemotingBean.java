@@ -37,13 +37,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -152,7 +153,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
         CoreSession docMgr = rs.getDocumentManager();
         DocumentModel doc = docMgr.getDocument(new IdRef(uuid));
         if (doc == null) {
-            throw new ClientException("No such document: " + uuid);
+            throw new DocumentNotFoundException("No such document: " + uuid);
         }
         return docMgr.hasPermission(doc.getRef(), permission);
     }
@@ -349,7 +350,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
                         byte[] bytes = ((Blob) value).getByteArray();
                         strValue = Base64.encodeBase64String(bytes);
                     } catch (IOException e) {
-                        throw new ClientException("Failed to get blob property value", e);
+                        throw new NuxeoException("Failed to get blob property value", e);
                     }
                 } else if (value instanceof Calendar) {
                     strValue = ((Calendar) value).getTime().toString();
@@ -421,7 +422,7 @@ public class NuxeoRemotingBean extends AbstractNuxeoWebService implements NuxeoR
                 // }
                 blobs.add(db);
             } catch (IOException e) {
-                throw new ClientException("Failed to get document blob", e);
+                throw new NuxeoException("Failed to get document blob", e);
             }
         }
     }

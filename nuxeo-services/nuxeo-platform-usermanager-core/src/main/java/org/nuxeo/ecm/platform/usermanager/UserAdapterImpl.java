@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DataModelImpl;
@@ -48,15 +47,7 @@ public class UserAdapterImpl implements UserAdapter {
         } else {
             userConfig = UserConfig.DEFAULT;
         }
-        try {
-            dataModel = doc.getDataModel(userConfig.schemaName);
-        } catch (ClientException e) {
-            log.error(
-                    "Unable to get data model for schema " + userConfig.schemaName + ". Building an empty data model",
-                    e);
-            // empty data model to avoid error
-            dataModel = new DataModelImpl(userConfig.schemaName);
-        }
+        dataModel = doc.getDataModel(userConfig.schemaName);
     }
 
     @Override

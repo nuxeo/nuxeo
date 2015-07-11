@@ -69,7 +69,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SimplePrincipal;
 import org.nuxeo.ecm.core.api.local.ClientLoginModule;
@@ -193,11 +192,7 @@ public class NuxeoAuthenticationFilter implements Filter {
             props.put("comment", comment);
 
             EventContext ctx = new UnboundEventContext(principal, props);
-            try {
-                evtProducer.fireEvent(ctx.newEvent(eventId));
-            } catch (ClientException e) {
-                log.error("Unable to send authentication event", e);
-            }
+            evtProducer.fireEvent(ctx.newEvent(eventId));
             return true;
         } finally {
             if (loginContext != null) {
@@ -631,14 +626,7 @@ public class NuxeoAuthenticationFilter implements Filter {
 
     private String getAnonymousId() throws ServletException {
         if (anonymous == null) {
-            UserManager um = Framework.getService(UserManager.class);
-            try {
-                anonymous = um.getAnonymousUserId();
-            } catch (ClientException e) {
-                log.error("Can't find anonymous User id", e);
-                anonymous = "";
-                throw new ServletException("Can't find anonymous user id");
-            }
+            anonymous = Framework.getService(UserManager.class).getAnonymousUserId();
         }
         return anonymous;
     }

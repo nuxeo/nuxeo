@@ -22,7 +22,6 @@ import static org.nuxeo.ecm.platform.types.localconfiguration.UITypesConfigurati
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;

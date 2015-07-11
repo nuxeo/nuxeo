@@ -21,8 +21,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -59,7 +59,7 @@ public class WritePolicyEntryAdaptor implements EntryAdaptor {
             } else {
                 BaseSession.setReadOnlyEntry(entry);
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             throw new DirectoryException(
                     String.format(
                             "The field '%s' of entry '%s' could not be adapt and map on directory '%s', check that the field exist in the schema",

@@ -23,9 +23,9 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.ws.DocumentLoader;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
@@ -98,7 +98,7 @@ public class DocumentSchemaLoader implements DocumentLoader {
                         byte[] bytes = ((Blob) value).getByteArray();
                         strValue = Base64.encodeBase64String(bytes);
                     } catch (IOException e) {
-                        throw new ClientException("Failed to get blob property value", e);
+                        throw new NuxeoException("Failed to get blob property value", e);
                     }
                 } else if (value instanceof Calendar) {
                     strValue = ((Calendar) value).getTime().toString();

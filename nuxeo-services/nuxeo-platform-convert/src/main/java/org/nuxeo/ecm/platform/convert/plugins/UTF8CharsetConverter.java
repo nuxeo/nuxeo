@@ -28,7 +28,6 @@ import org.apache.commons.io.input.ReaderInputStream;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -50,14 +49,8 @@ public class UTF8CharsetConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        Blob originalBlob;
-        String path;
-        try {
-            originalBlob = blobHolder.getBlob();
-            path = blobHolder.getFilePath();
-        } catch (ClientException e) {
-            throw new ConversionException("Cannot fetch content of blob", e);
-        }
+        Blob originalBlob = blobHolder.getBlob();
+        String path = blobHolder.getFilePath();
         Blob transcodedBlob;
         try {
             transcodedBlob = convert(originalBlob);

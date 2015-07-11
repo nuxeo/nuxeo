@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @since 5.7.3

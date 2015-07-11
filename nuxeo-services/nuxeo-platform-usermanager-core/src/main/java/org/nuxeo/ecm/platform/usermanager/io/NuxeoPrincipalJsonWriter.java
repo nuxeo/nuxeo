@@ -27,7 +27,6 @@ import java.io.OutputStream;
 import javax.inject.Inject;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;

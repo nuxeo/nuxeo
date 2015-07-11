@@ -29,7 +29,6 @@ import java.util.Map;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -67,11 +66,7 @@ public class PDF2ImageConverter extends CommandLineBasedConverter {
             throws ConversionException {
 
         Map<String, Blob> cmdBlobParams = new HashMap<String, Blob>();
-        try {
-            cmdBlobParams.put("sourceFilePath", blobHolder.getBlob());
-        } catch (ClientException e) {
-            throw new ConversionException("Unable to get Blob for holder", e);
-        }
+        cmdBlobParams.put("sourceFilePath", blobHolder.getBlob());
         return cmdBlobParams;
     }
 

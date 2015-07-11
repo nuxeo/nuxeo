@@ -29,8 +29,9 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -112,27 +113,25 @@ public class NXQLQueryBuilder {
         List<String> elements = new ArrayList<String>();
         PredicateDefinition[] predicates = whereClause.getPredicates();
         if (predicates != null) {
-            try {
-                Escaper escaper = null;
-                Class<? extends Escaper> escaperClass = whereClause.getEscaperClass();
-                if (escaperClass != null) {
+            Escaper escaper = null;
+            Class<? extends Escaper> escaperClass = whereClause.getEscaperClass();
+            if (escaperClass != null) {
+                try {
                     escaper = escaperClass.newInstance();
+                } catch (ReflectiveOperationException e) {
+                    throw new NuxeoException(e);
                 }
-                for (PredicateDefinition predicate : predicates) {
-                    String predicateString = getQueryElement(model, predicate, escaper);
-                    if (predicateString == null) {
-                        continue;
-                    }
+            }
+            for (PredicateDefinition predicate : predicates) {
+                String predicateString = getQueryElement(model, predicate, escaper);
+                if (predicateString == null) {
+                    continue;
+                }
 
-                    predicateString = predicateString.trim();
-                    if (!predicateString.equals("")) {
-                        elements.add(predicateString);
-                    }
+                predicateString = predicateString.trim();
+                if (!predicateString.equals("")) {
+                    elements.add(predicateString);
                 }
-            } catch (IllegalAccessException e) {
-                throw new ClientException(e);
-            } catch (InstantiationException e) {
-                throw new ClientException(e);
             }
         }
         // add fixed part if applicable
@@ -315,21 +314,21 @@ public class NXQLQueryBuilder {
         if (PredicateDefinition.SUB_CLAUSE_PREDICATE.equals(type)) {
             return subClauseQueryElement(model, predicateDescriptor);
         }
-        throw new ClientException("Unknown predicate type: " + type);
+        throw new NuxeoException("Unknown predicate type: " + type);
     }
 
     protected static String subClauseQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor)
             {
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (values == null || values.length != 1) {
-            throw new ClientException("subClause predicate needs exactly one field");
+            throw new NuxeoException("subClause predicate needs exactly one field");
         }
         PredicateFieldDefinition fieldDescriptor = values[0];
         if (!getFieldType(model, fieldDescriptor).equals("string")) {
             if (fieldDescriptor.getXpath() != null) {
-                throw new ClientException(String.format("type of field %s is not string", fieldDescriptor.getXpath()));
+                throw new NuxeoException(String.format("type of field %s is not string", fieldDescriptor.getXpath()));
             } else {
-                throw new ClientException(String.format("type of field %s.%s is not string",
+                throw new NuxeoException(String.format("type of field %s.%s is not string",
                         fieldDescriptor.getSchema(), fieldDescriptor.getName()));
             }
         }
@@ -470,7 +469,7 @@ public class NXQLQueryBuilder {
                 return parameter + " IS NOT NULL";
             }
         } else {
-            throw new ClientException("Unsupported operator: " + operator);
+            throw new NuxeoException("Unsupported operator: " + operator);
         }
     }
 
@@ -576,7 +575,7 @@ public class NXQLQueryBuilder {
                 if (schema != null) {
                     Schema schemaObj = typeManager.getSchema(schema);
                     if (schemaObj == null) {
-                        throw new ClientException("failed to obtain schema: " + schema);
+                        throw new NuxeoException("failed to obtain schema: " + schema);
                     }
                     field = schemaObj.getField(name);
                 } else {
@@ -585,12 +584,12 @@ public class NXQLQueryBuilder {
                 }
             }
             if (field == null) {
-                throw new ClientException("failed to obtain field: " + schema + ":" + name);
+                throw new NuxeoException("failed to obtain field: " + schema + ":" + name);
             }
             return field.getType().getName();
-        } catch (ClientException e) {
-            throw new ClientException(
-                    "failed to get field type for " + (xpath != null ? xpath : (schema + ":" + name)), e);
+        } catch (PropertyException e) {
+            e.addInfo("failed to get field type for " + (xpath != null ? xpath : (schema + ":" + name)));
+            throw e;
         }
     }
 
@@ -618,7 +617,7 @@ public class NXQLQueryBuilder {
                     return params.get(name);
                 }
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return null;
         }
         return null;

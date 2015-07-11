@@ -12,8 +12,8 @@
 
 package org.nuxeo.ecm.platform.rendering.fm.adapters;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 import freemarker.template.TemplateHashModel;
 import freemarker.template.TemplateModel;
@@ -55,7 +55,7 @@ public class SchemaTemplate extends PropertyWrapper implements TemplateHashModel
                 // use normal Property lookup in Part
                 return wrap(doc.getPart(schemaName).get(name));
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             throw new TemplateModelException(e);
         }
     }

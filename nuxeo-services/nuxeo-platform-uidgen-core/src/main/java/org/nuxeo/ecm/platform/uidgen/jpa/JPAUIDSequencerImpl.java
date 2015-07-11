@@ -26,7 +26,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
@@ -146,7 +146,7 @@ public class JPAUIDSequencerImpl implements UIDSequencer {
             future.get();
         } catch (InterruptedException | ExecutionException e) {  // deals with interrupt below
             ExceptionUtils.checkInterrupt(e);
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
 
         return runner.getResult();

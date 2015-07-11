@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -142,11 +141,7 @@ public class FileManagerService extends DefaultComponent implements FileManager 
             return blob;
         }
         String filename = FileManagerUtils.fetchFileName(fullname);
-        try {
-            blob = getMimeService().updateMimetype(blob, filename);
-        } catch (MimetypeDetectionException e) {
-            throw new ClientException(e);
-        }
+        blob = getMimeService().updateMimetype(blob, filename);
         return blob;
     }
 

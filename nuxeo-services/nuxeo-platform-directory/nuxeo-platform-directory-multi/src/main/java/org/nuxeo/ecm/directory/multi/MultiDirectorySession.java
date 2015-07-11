@@ -32,7 +32,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -385,20 +384,15 @@ public class MultiDirectorySession extends BaseSession {
                     // set readonly to false if at least one source is writable
                     isReadOnlyEntry = false;
                 }
-                try {
-                    if (entry == null && isOptional && !dirInfo.getSession().isReadOnly()) {
-                        // set readonly to false if null entry is from optional
-                        // and writable directory
-                        isReadOnlyEntry = false;
-                    }
-                } catch (ClientException ce) {
-                    log.error("Cannot get readonly value from directory " + dirInfo.dirName, ce);
+                if (entry == null && isOptional && !dirInfo.getSession().isReadOnly()) {
+                    // set readonly to false if null entry is from optional and writable directory
+                    isReadOnlyEntry = false;
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
                         try {
                             map.put(e.getValue(), entry.getProperty(dirInfo.dirSchemaName, e.getKey()));
-                        } catch (ClientException e1) {
+                        } catch (PropertyException e1) {
                             throw new DirectoryException(e1);
                         }
                     } else {
@@ -586,13 +580,7 @@ public class MultiDirectorySession extends BaseSession {
     @Override
     public void deleteEntry(String id, Map<String, String> map) throws DirectoryException {
         log.warn("Calling deleteEntry extended on multi directory");
-        try {
-            deleteEntry(id);
-        } catch (DirectoryException e) {
-            throw e;
-        } catch (ClientException e) {
-            throw new DirectoryException(e);
-        }
+        deleteEntry(id);
     }
 
     private static void updateSubDirectoryEntry(SubDirectoryInfo dirInfo, Map<String, Object> fieldMap, String id,

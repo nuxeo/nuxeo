@@ -25,9 +25,9 @@ import javax.jws.WebParam;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
@@ -77,7 +77,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             sid = _connect(username, password, repositoryName);
             loginContext.logout();
         } catch (LoginException e) {
-            throw new ClientException(e.getMessage(), e);
+            throw new NuxeoException(e.getMessage(), e);
         }
         return sid;
     }
@@ -89,11 +89,6 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
             {
         return connectOnRepository(username, password, null);
     }
-
-    /*
-     * @PermitAll @WebMethod public String connect(String username, String password, String repository) throws
-     * ClientException { return _connect(username, password, repository); }
-     */
 
     /**
      * Internal connect method shared in between above connect() methods.
@@ -129,7 +124,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
         try {
             Framework.login(username, password);
         } catch (LoginException e) {
-            throw new ClientException("Login failed for " + username, e);
+            throw new NuxeoException("Login failed for " + username, e);
         }
     }
 
@@ -142,7 +137,7 @@ public abstract class AbstractNuxeoWebService implements BaseNuxeoWebService {
     protected WSRemotingSession initSession(String sid) {
         WSRemotingSession rs = getSessionsManager().getSession(sid);
         if (rs == null) {
-            throw new ClientException("Invalid session id: " + sid);
+            throw new NuxeoException("Invalid session id: " + sid);
         }
         login(rs.getUsername(), rs.getPassword());
         return rs;

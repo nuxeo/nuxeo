@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -43,13 +42,9 @@ public class NuxeoGroupsPageProvider extends AbstractGroupsPageProvider<NuxeoGro
         List<NuxeoGroup> nuxeoGroups = new ArrayList<>(groups.size());
         UserManager userManager = Framework.getLocalService(UserManager.class);
         for (DocumentModel group : groups) {
-            try {
-                NuxeoGroup nuxeoGroup = userManager.getGroup(group.getProperty(userManager.getGroupIdField()).getValue(
-                        String.class));
-                nuxeoGroups.add(nuxeoGroup);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            NuxeoGroup nuxeoGroup = userManager.getGroup(
+                    group.getProperty(userManager.getGroupIdField()).getValue(String.class));
+            nuxeoGroups.add(nuxeoGroup);
         }
         return nuxeoGroups;
     }

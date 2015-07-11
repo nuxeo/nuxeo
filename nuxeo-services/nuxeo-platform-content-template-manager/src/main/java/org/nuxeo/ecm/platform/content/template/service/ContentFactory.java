@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.content.template.service;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface ContentFactory {

@@ -19,7 +19,6 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -113,7 +112,8 @@ public class MimetypeIconUpdater implements EventListener {
                             doc.getProperty(MAIN_BLOB_FIELD).getValue(Blob.class));
                 }
             } catch (PropertyException e) {
-                throw new ClientException("Error in MimetypeIconUpdater listener", e);
+                e.addInfo("Error in MimetypeIconUpdater listener");
+                throw e;
             }
         }
     }

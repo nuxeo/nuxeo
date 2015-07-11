@@ -49,7 +49,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -111,14 +110,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
     }
 
     protected boolean userAlreadyExists(UserRegistrationInfo userRegistrationInfo) {
-        try {
-            DocumentModel user = Framework.getLocalService(UserManager.class).getUserModel(
-                    userRegistrationInfo.getLogin());
-            return user != null;
-        } catch (ClientException e) {
-            log.debug(e, e);
-            return false;
-        }
+        DocumentModel user = Framework.getLocalService(UserManager.class).getUserModel(userRegistrationInfo.getLogin());
+        return user != null;
     }
 
     protected String getJavaMailJndiName() {
@@ -419,9 +412,6 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         } catch (UserRegistrationException ue) {
             log.warn("Error during event processing", ue);
             throw ue;
-        } catch (ClientException e) {
-            log.error("Error while sending event", e);
-            return null;
         }
 
     }
@@ -464,7 +454,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         try {
             rh.getRenderingEngine().render(emailTemplatePath, input, writer);
         } catch (RenderingException e) {
-            throw new ClientException("Error during rendering email", e);
+            throw new NuxeoException("Error during rendering email", e);
         }
 
         // render custom email subject
@@ -476,7 +466,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             try {
                 generateMail(emailAdress, copyTo, emailTitle, body);
             } catch (NamingException | MessagingException e) {
-                throw new ClientException("Error while sending mail : ", e);
+                throw new NuxeoException("Error while sending mail: ", e);
             }
         } else {
             testRendering = body;
@@ -492,7 +482,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             templ.process(input, out);
             out.flush();
         } catch (IOException | TemplateException e) {
-            throw new ClientException("Error while rendering email subject: ", e);
+            throw new NuxeoException("Error while rendering email subject: ", e);
         }
         return out.toString();
     }
@@ -653,7 +643,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         try {
             rh.getRenderingEngine().render(configuration.getSuccessEmailTemplate(), input, writer);
         } catch (RenderingException e) {
-            throw new ClientException("Error during rendering email", e);
+            throw new NuxeoException("Error during rendering email", e);
         }
 
         String emailAdress = ((NuxeoPrincipalImpl) registrationInfo.get("registeredUser")).getEmail();
@@ -663,7 +653,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             try {
                 generateMail(emailAdress, null, title, body);
             } catch (NamingException | MessagingException e) {
-                throw new ClientException("Error while sending mail : ", e);
+                throw new NuxeoException("Error while sending mail : ", e);
             }
         } else {
             testRendering = body;
@@ -756,7 +746,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
             }
 
             if (!configurations.containsKey(configurationName)) {
-                throw new ClientException("Configuration " + configurationName + " is not registered");
+                throw new NuxeoException("Configuration " + configurationName + " is not registered");
             }
             return configurations.get(configurationName);
         } catch (NuxeoException e) {
@@ -806,7 +796,7 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
         for (DocumentModel registration : registrationDocs) {
             UserRegistrationConfiguration configuration = getConfiguration(registration);
             if (!registration.hasSchema(configuration.getUserInfoSchemaName())) {
-                throw new ClientException("Registration document do not contains needed schema");
+                throw new NuxeoException("Registration document do not contains needed schema");
             }
 
             session.removeDocument(registration.getRef());

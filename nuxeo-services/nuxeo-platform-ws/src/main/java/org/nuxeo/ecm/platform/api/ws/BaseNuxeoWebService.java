@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.api.ws;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Base Nuxeo web service interface.

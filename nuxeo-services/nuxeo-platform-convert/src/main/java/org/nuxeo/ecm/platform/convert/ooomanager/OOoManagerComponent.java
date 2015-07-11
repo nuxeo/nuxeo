@@ -34,7 +34,6 @@ import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.OfficeTask;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -222,21 +221,8 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
     }
 
     public Throwable unwrapException(Throwable t) {
-        Throwable cause = null;
-
-        if (t instanceof ServletException) {
-            cause = ((ServletException) t).getRootCause();
-        } else if (t instanceof ClientException) {
-            cause = t.getCause();
-        } else if (t instanceof Exception) {
-            cause = t.getCause();
-        }
-
-        if (cause == null) {
-            return t;
-        } else {
-            return unwrapException(cause);
-        }
+        Throwable cause = t.getCause();
+        return cause == null ? t : unwrapException(cause);
     }
 
     @Override

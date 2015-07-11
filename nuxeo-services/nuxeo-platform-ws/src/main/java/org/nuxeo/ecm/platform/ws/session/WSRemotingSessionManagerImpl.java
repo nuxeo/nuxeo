@@ -26,9 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.api.ws.DocumentLoader;
 import org.nuxeo.ecm.platform.api.ws.DocumentLoaderDescriptor;
 import org.nuxeo.ecm.platform.api.ws.DocumentProperty;
@@ -68,11 +68,11 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements WS
 
     public WSRemotingSession getSession(String sid) {
         if (sid == null) {
-            throw new ClientException("Invalid value for sid... null value");
+            throw new NuxeoException("Invalid value for sid... null value");
         }
         WSRemotingSession session = sessions.get(sid);
         if (session == null) {
-            throw new ClientException("Cannot find session for sid=" + sid);
+            throw new NuxeoException("Cannot find session for sid=" + sid);
         }
         log.debug("Found session for username=" + session.getUsername());
         log.debug("Forwarding the session now...");
@@ -80,7 +80,6 @@ public class WSRemotingSessionManagerImpl extends DefaultComponent implements WS
     }
 
     public void delSession(String sid) {
-        // Throw a ClientException if session not found.
         WSRemotingSession session = getSession(sid);
         sessions.remove(sid);
         log.debug("Removing session for username=" + session.getUsername());

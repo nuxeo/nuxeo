@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,66 +12,32 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- * $Id$
+ *     George Lefter
  */
-
 package org.nuxeo.ecm.directory;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
- * An exception thrown when a communication error occurs during an operation on an NXDirectory.
- *
- * @author glefter@nuxeo.com
+ * Exception thrown when dealing with a Directory.
  */
-public class DirectoryException extends ClientException {
+public class DirectoryException extends NuxeoException {
 
-    private static final long serialVersionUID = -2358123805931727792L;
+    private static final long serialVersionUID = 1L;
 
     public DirectoryException() {
     }
 
-    public DirectoryException(String message, Throwable th) {
-        super(message, th);
+    public DirectoryException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public DirectoryException(String message) {
         super(message);
     }
 
-    public DirectoryException(Throwable th) {
-        super(th);
-    }
-
-    /**
-     * Wraps the received exception into a {@link ClientException}.
-     */
-    public static DirectoryException wrap(Throwable exception) {
-        DirectoryException clientException;
-
-        if (null == exception) {
-            clientException = new DirectoryException("Root exception was null. Pls check your code.");
-        } else {
-            if (exception instanceof DirectoryException) {
-                clientException = (DirectoryException) exception;
-            } else {
-                if (exception instanceof Error) {
-                    clientException = new DirectoryException(
-                            "An ERROR type of exception occurred. This will most likely kill your session/application",
-                            exception);
-                } else {
-                    if (exception instanceof RuntimeException) {
-                        clientException = new DirectoryException("Runtime exception was raised. Wrapping now...",
-                                exception);
-                    } else {
-                        clientException = new DirectoryException(
-                                "Unwrapped application exception was raised. Wrapping now...", exception);
-                    }
-                }
-            }
-        }
-        return clientException;
+    public DirectoryException(Throwable cause) {
+        super(cause);
     }
 
 }

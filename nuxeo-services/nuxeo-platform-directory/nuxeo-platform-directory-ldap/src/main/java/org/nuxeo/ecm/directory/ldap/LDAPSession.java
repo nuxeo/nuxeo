@@ -56,7 +56,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -659,7 +658,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
             Object obj;
             try {
                 obj = docModel.getProperty(schemaName, columnNameinDocModel);
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
             String propValue;
@@ -892,11 +891,7 @@ public class LDAPSession extends BaseSession implements EntrySource {
                             LDAPTreeReference ldapReference = (LDAPTreeReference) reference;
                             referencedIds = ldapReference.getTargetIdsForSource(entryId);
                         } else {
-                            try {
-                                referencedIds = reference.getTargetIdsForSource(entryId);
-                            } catch (ClientException e) {
-                                throw new DirectoryException(e);
-                            }
+                            referencedIds = reference.getTargetIdsForSource(entryId);
                         }
                         referencedIds = new ArrayList<>(referencedIds);
                         Collections.sort(referencedIds);

@@ -39,7 +39,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -443,7 +442,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                     List<String> targetIds = en.getValue();
                     try {
                         entry.setProperty(schemaName, fieldName, targetIds);
-                    } catch (ClientException e) {
+                    } catch (PropertyException e) {
                         throw new DirectoryException(e);
                     }
                 }
@@ -655,19 +654,15 @@ public class SQLSession extends BaseSession implements EntrySource {
             // can only delete entry from the current tenant
             String tenantId = getCurrentTenantId();
             if (!StringUtils.isBlank(tenantId)) {
-                try {
-                    DocumentModel entry = getEntry(entryId);
-                    DataModel dataModel = entry.getDataModel(schemaName);
-                    String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
-                    if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'",
-                                    entryId, tenantId));
-                        }
-                        return false;
+                DocumentModel entry = getEntry(entryId);
+                DataModel dataModel = entry.getDataModel(schemaName);
+                String entryTenantId = (String) dataModel.getValue(TENANT_ID_FIELD);
+                if (StringUtils.isBlank(entryTenantId) || !entryTenantId.equals(tenantId)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Trying to delete entry '%s' not part of current tenant '%s'", entryId,
+                                tenantId));
                     }
-                } catch (ClientException e) {
-                    throw new DirectoryException(e);
+                    return false;
                 }
             }
         }
@@ -792,7 +787,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 if (null == column) {
                     // this might happen if we have a case like a chain
                     // selection and a directory without parent column
-                    throw new ClientException("cannot find column '" + columnName + "' for table: " + table);
+                    throw new DirectoryException("cannot find column '" + columnName + "' for table: " + table);
                 }
                 String leftSide = column.getQuotedName();
                 String rightSide = "?";

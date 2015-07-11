@@ -31,6 +31,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewHeader;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
@@ -345,8 +346,7 @@ public class TestContentViewService extends NXRuntimeTestCase {
         try {
             cv.getPageProvider(null, null, -1L, -1L);
             fail("Should have triggered an exception");
-        } catch (Exception e) {
-            assertTrue(e instanceof ClientException);
+        } catch (NuxeoException e) {
             assertEquals("Could not resolve page provider with name 'foo'", e.getMessage());
         }
     }

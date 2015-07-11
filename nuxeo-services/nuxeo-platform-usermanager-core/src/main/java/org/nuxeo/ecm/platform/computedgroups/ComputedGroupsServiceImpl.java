@@ -29,7 +29,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -103,28 +102,19 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> computeGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
-
         List<String> userGroups = new ArrayList<String>();
-        try {
-            for (String computerName : computerNames) {
-                userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(nuxeoPrincipal));
-            }
-        } catch (ClientException e) {
-            log.error("Error while getting virtual groups for user " + nuxeoPrincipal.getName(), e);
+        for (String computerName : computerNames) {
+            userGroups.addAll(computers.get(computerName).getComputer().getGroupsForUser(nuxeoPrincipal));
         }
         return userGroups;
     }
 
     @Override
     public void updateGroupsForUser(NuxeoPrincipalImpl nuxeoPrincipal) {
-        try {
-            List<String> computedGroups = computeGroupsForUser(nuxeoPrincipal);
-            Set<String> virtualGroups = new HashSet<String>(nuxeoPrincipal.getVirtualGroups());
-            virtualGroups.addAll(computedGroups);
-            nuxeoPrincipal.setVirtualGroups(new ArrayList<String>(virtualGroups));
-        } catch (ClientException e) {
-            log.error("Error while updating the virtual groups for user " + nuxeoPrincipal.getName(), e);
-        }
+        List<String> computedGroups = computeGroupsForUser(nuxeoPrincipal);
+        Set<String> virtualGroups = new HashSet<String>(nuxeoPrincipal.getVirtualGroups());
+        virtualGroups.addAll(computedGroups);
+        nuxeoPrincipal.setVirtualGroups(new ArrayList<String>(virtualGroups));
     }
 
     @Override
@@ -134,100 +124,72 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public NuxeoGroup getComputedGroup(String groupName) {
-        try {
-            for (String name : computerNames) {
-                GroupComputer computer = computers.get(name).getComputer();
-                if (computer.hasGroup(groupName)) {
-                    if (computer instanceof GroupComputerLabelled) {
-                        String groupLabel = ((GroupComputerLabelled) computer).getLabel(groupName);
-                        return new NuxeoComputedGroup(groupName, groupLabel);
-                    }
-                    return new NuxeoComputedGroup(groupName);
+        for (String name : computerNames) {
+            GroupComputer computer = computers.get(name).getComputer();
+            if (computer.hasGroup(groupName)) {
+                if (computer instanceof GroupComputerLabelled) {
+                    String groupLabel = ((GroupComputerLabelled) computer).getLabel(groupName);
+                    return new NuxeoComputedGroup(groupName, groupLabel);
                 }
+                return new NuxeoComputedGroup(groupName);
             }
-        } catch (ClientException e) {
-            log.error("Error while getting virtual group " + groupName, e);
         }
         return null;
     }
 
     @Override
     public List<String> computeGroupIds() {
-
         List<String> groupIds = new ArrayList<String>();
-        try {
-            for (String name : computerNames) {
-                GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundGroupIds = desc.getComputer().getAllGroupIds();
-                if (foundGroupIds != null) {
-                    groupIds.addAll(foundGroupIds);
-                }
+        for (String name : computerNames) {
+            GroupComputerDescriptor desc = computers.get(name);
+            List<String> foundGroupIds = desc.getComputer().getAllGroupIds();
+            if (foundGroupIds != null) {
+                groupIds.addAll(foundGroupIds);
             }
-        } catch (ClientException e) {
-            log.error("Error while listing virtual groups ids ", e);
-            return new ArrayList<String>();
         }
         return groupIds;
     }
 
     @Override
     public List<String> getComputedGroupMembers(String groupName) {
-        try {
-            List<String> members = new ArrayList<String>();
-
-            for (String name : computerNames) {
-                GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundMembers = desc.getComputer().getGroupMembers(groupName);
-                if (foundMembers != null) {
-                    members.addAll(foundMembers);
-                }
+        List<String> members = new ArrayList<String>();
+        for (String name : computerNames) {
+            GroupComputerDescriptor desc = computers.get(name);
+            List<String> foundMembers = desc.getComputer().getGroupMembers(groupName);
+            if (foundMembers != null) {
+                members.addAll(foundMembers);
             }
-            return members;
-        } catch (ClientException e) {
-            log.error("Error while getting members of virtual group " + groupName, e);
-            return new ArrayList<String>();
         }
+        return members;
     }
 
     @Override
     public List<String> getComputedGroupParent(String groupName) {
-        try {
-            List<String> parents = new ArrayList<String>();
-
-            for (String name : computerNames) {
-                GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundParents = desc.getComputer().getParentsGroupNames(groupName);
-                if (foundParents != null) {
-                    parents.addAll(foundParents);
-                }
+        List<String> parents = new ArrayList<String>();
+        for (String name : computerNames) {
+            GroupComputerDescriptor desc = computers.get(name);
+            List<String> foundParents = desc.getComputer().getParentsGroupNames(groupName);
+            if (foundParents != null) {
+                parents.addAll(foundParents);
             }
-            return parents;
-        } catch (ClientException e) {
-            log.error("Error while getting parent of virtual group " + groupName, e);
         }
-        return null;
+        return parents;
     }
 
     @Override
     public List<String> getComputedGroupSubGroups(String groupName) {
-        try {
-            List<String> subGroups = new ArrayList<String>();
-            for (String name : computerNames) {
-                GroupComputerDescriptor desc = computers.get(name);
-                List<String> foundSubGroups = desc.getComputer().getSubGroupsNames(groupName);
-                if (foundSubGroups != null) {
-                    subGroups.addAll(foundSubGroups);
-                }
+        List<String> subGroups = new ArrayList<String>();
+        for (String name : computerNames) {
+            GroupComputerDescriptor desc = computers.get(name);
+            List<String> foundSubGroups = desc.getComputer().getSubGroupsNames(groupName);
+            if (foundSubGroups != null) {
+                subGroups.addAll(foundSubGroups);
             }
-            return subGroups;
-        } catch (ClientException e) {
-            log.error("Error while getting subgroups of virtual group " + groupName, e);
         }
-        return null;
+        return subGroups;
     }
 
     public List<GroupComputerDescriptor> getComputerDescriptors() {
-
         List<GroupComputerDescriptor> result = new ArrayList<GroupComputerDescriptor>();
         for (String name : computerNames) {
             result.add(computers.get(name));
@@ -242,17 +204,12 @@ public class ComputedGroupsServiceImpl extends DefaultComponent implements Compu
 
     @Override
     public List<String> searchComputedGroups(Map<String, Serializable> filter, Set<String> fulltext) {
-
         List<String> foundGroups = new ArrayList<String>();
-        try {
-            for (String name : computerNames) {
-                GroupComputerDescriptor desc = computers.get(name);
-                foundGroups.addAll(desc.getComputer().searchGroups(filter, fulltext));
-            }
-            Collections.sort(foundGroups);
-        } catch (ClientException e) {
-            log.error("Error while searching computed groups", e);
+        for (String name : computerNames) {
+            GroupComputerDescriptor desc = computers.get(name);
+            foundGroups.addAll(desc.getComputer().searchGroups(filter, fulltext));
         }
+        Collections.sort(foundGroups);
         return foundGroups;
     }
 

@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.management.statuses;
 
 import java.util.Calendar;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.management.api.Probe;
 import org.nuxeo.ecm.core.management.api.ProbeStatus;
@@ -51,11 +50,7 @@ public class PopulateRepositoryProbe implements Probe {
     @Override
     public ProbeStatus run() {
         Runner runner = new Runner();
-        try {
-            runner.runUnrestricted();
-        } catch (ClientException e) {
-            return ProbeStatus.newError(e);
-        }
+        runner.runUnrestricted();
         return ProbeStatus.newSuccess(runner.info);
     }
 

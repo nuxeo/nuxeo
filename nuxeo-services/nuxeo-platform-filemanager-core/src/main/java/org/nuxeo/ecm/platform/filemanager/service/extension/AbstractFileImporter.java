@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -324,7 +324,7 @@ public abstract class AbstractFileImporter implements FileImporter {
         }
 
         if (!typeService.isAllowedSubType(typeName, container.getType(), container)) {
-            throw new ClientException(String.format("Cannot create document of type %s in container with type %s",
+            throw new NuxeoException(String.format("Cannot create document of type %s in container with type %s",
                     typeName, containerType.getId()));
         }
     }

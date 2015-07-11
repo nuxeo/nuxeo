@@ -39,12 +39,13 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -264,12 +265,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
 
     protected void setGroupDirectoryName(String groupDirectoryName) {
         this.groupDirectoryName = groupDirectoryName;
-        try {
-            groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
-            groupIdField = dirService.getDirectoryIdField(groupDirectoryName);
-        } catch (ClientException e) {
-            throw new RuntimeException("Unkown group directory " + groupDirectoryName, e);
-        }
+        groupSchemaName = dirService.getDirectorySchema(groupDirectoryName);
+        groupIdField = dirService.getDirectoryIdField(groupDirectoryName);
     }
 
     @Override
@@ -537,7 +534,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
                 }
             }
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
         return principal;
     }
@@ -578,7 +575,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         List<String> list;
         try {
             list = (List<String>) groupEntry.getProperty(groupSchemaName, groupMembersField);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             list = null;
         }
         if (list != null) {
@@ -586,7 +583,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
         try {
             list = (List<String>) groupEntry.getProperty(groupSchemaName, groupSubGroupsField);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             list = null;
         }
         if (list != null) {
@@ -594,7 +591,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
         }
         try {
             list = (List<String>) groupEntry.getProperty(groupSchemaName, groupParentGroupsField);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             list = null;
         }
         if (list != null) {
@@ -605,7 +602,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             if (label != null) {
                 group.setLabel(label);
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             // Nothing to do.
         }
         return group;
@@ -735,7 +732,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             try {
                 principalCache.invalidate(userName);
             } catch (IOException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
         }
     }
@@ -753,7 +750,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
             try {
                 principalCache.invalidateAll();
             } catch (IOException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
         }
     }
@@ -789,7 +786,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     protected String getGroupId(DocumentModel groupModel) {
         Object groupIdValue = groupModel.getProperty(groupSchemaName, groupIdField);
         if (groupIdValue != null && !(groupIdValue instanceof String)) {
-            throw new ClientException("Invalid group id " + groupIdValue);
+            throw new NuxeoException("Invalid group id " + groupIdValue);
         }
         return (String) groupIdValue;
     }
@@ -804,7 +801,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager {
     protected String getUserId(DocumentModel userModel) {
         Object userIdValue = userModel.getProperty(userSchemaName, userIdField);
         if (userIdValue != null && !(userIdValue instanceof String)) {
-            throw new ClientException("Invalid user id " + userIdValue);
+            throw new NuxeoException("Invalid user id " + userIdValue);
         }
         return (String) userIdValue;
     }

@@ -40,7 +40,6 @@ import org.artofsolving.jodconverter.document.DocumentFormat;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
@@ -173,14 +172,8 @@ public class JODBasedConverter implements ExternalConverter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
         blobHolder = new UTF8CharsetConverter().convert(blobHolder, parameters);
-        Blob inputBlob;
-        String blobPath;
-        try {
-            inputBlob = blobHolder.getBlob();
-            blobPath = blobHolder.getFilePath();
-        } catch (ClientException e) {
-            throw new ConversionException("Error while getting Blob", e);
-        }
+        Blob inputBlob = blobHolder.getBlob();
+        String blobPath = blobHolder.getFilePath();
         if (inputBlob == null) {
             return null;
         }

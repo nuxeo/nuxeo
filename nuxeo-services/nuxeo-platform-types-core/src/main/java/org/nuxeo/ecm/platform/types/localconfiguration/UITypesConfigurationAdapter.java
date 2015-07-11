@@ -32,9 +32,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 import org.nuxeo.ecm.platform.types.SubType;
 
@@ -76,7 +76,7 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
         String[] types;
         try {
             types = (String[]) doc.getPropertyValue(property);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return Collections.emptyList();
         }
         if (types == null) {
@@ -89,7 +89,7 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
         try {
             Boolean value = (Boolean) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DENY_ALL_TYPES_PROPERTY);
             return Boolean.TRUE.equals(value);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return false;
         }
     }
@@ -98,7 +98,7 @@ public class UITypesConfigurationAdapter extends AbstractLocalConfiguration<UITy
         String value = UI_TYPES_DEFAULT_TYPE;
         try {
             value = (String) doc.getPropertyValue(UI_TYPES_CONFIGURATION_DEFAULT_TYPE);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.debug("can't get default type for:" + doc.getPathAsString(), e);
         }
         return value;

@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -46,13 +45,9 @@ public class NuxeoPrincipalsPageProvider extends AbstractUsersPageProvider<Nuxeo
             pagePrincipals = new ArrayList<>();
             UserManager userManager = Framework.getLocalService(UserManager.class);
             for (DocumentModel user : users) {
-                try {
-                    NuxeoPrincipal principal = userManager.getPrincipal(user.getProperty(userManager.getUserIdField()).getValue(
-                            String.class));
-                    pagePrincipals.add(principal);
-                } catch (ClientException e) {
-                    log.error(e, e);
-                }
+                NuxeoPrincipal principal = userManager.getPrincipal(
+                        user.getProperty(userManager.getUserIdField()).getValue(String.class));
+                pagePrincipals.add(principal);
             }
         }
 

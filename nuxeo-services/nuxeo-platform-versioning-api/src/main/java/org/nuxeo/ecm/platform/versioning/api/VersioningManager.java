@@ -18,7 +18,6 @@
 
 package org.nuxeo.ecm.platform.versioning.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

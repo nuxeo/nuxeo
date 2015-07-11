@@ -48,8 +48,8 @@ import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.directory.AbstractReference;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
@@ -620,7 +620,7 @@ public class LDAPReference extends AbstractReference {
         try (Session session = getSourceDirectory().getSession()) {
             try {
                 return (List<String>) session.getEntry(sourceId).getProperty(schemaName, fieldName);
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
         }

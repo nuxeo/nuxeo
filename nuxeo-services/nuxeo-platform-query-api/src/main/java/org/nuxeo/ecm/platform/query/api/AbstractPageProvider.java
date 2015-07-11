@@ -28,8 +28,8 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -603,11 +603,11 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     public void setCurrentEntry(T entry) {
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
-            throw new ClientException(String.format("Entry '%s' not found in current page", entry));
+            throw new NuxeoException(String.format("Entry '%s' not found in current page", entry));
         }
         int i = currentPage.indexOf(entry);
         if (i == -1) {
-            throw new ClientException(String.format("Entry '%s' not found in current page", entry));
+            throw new NuxeoException(String.format("Entry '%s' not found in current page", entry));
         }
         currentEntryIndex = i;
     }
@@ -617,10 +617,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         int intIndex = new Long(index).intValue();
         List<T> currentPage = getCurrentPage();
         if (currentPage == null || currentPage.isEmpty()) {
-            throw new ClientException(String.format("Index %s not found in current page", new Integer(intIndex)));
+            throw new NuxeoException(String.format("Index %s not found in current page", new Integer(intIndex)));
         }
         if (index >= currentPage.size()) {
-            throw new ClientException(String.format("Index %s not found in current page", new Integer(intIndex)));
+            throw new NuxeoException(String.format("Index %s not found in current page", new Integer(intIndex)));
         }
         currentEntryIndex = intIndex;
     }

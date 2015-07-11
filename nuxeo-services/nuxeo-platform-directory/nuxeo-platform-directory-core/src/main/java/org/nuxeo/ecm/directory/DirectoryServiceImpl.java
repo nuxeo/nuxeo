@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -59,11 +58,7 @@ public class DirectoryServiceImpl extends DefaultComponent implements DirectoryS
         // open all directories at application startup, so that
         // their tables are created (outside a transaction) if needed
         for (Directory dir : getDirectories()) {
-            try {
-                dir.getName(); // enough to create tables for SQL directories
-            } catch (ClientException e) {
-                log.error(e.getMessage(), e);
-            }
+            dir.getName(); // enough to create tables for SQL directories
         }
     }
 

@@ -17,8 +17,8 @@ package org.nuxeo.ecm.user.invite;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,7 +53,7 @@ public class RegistrationRules {
     public boolean allowUserCreation() {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_ALLOW_USER_CREATION);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Unable to fetch AllowUserCreation flag using default value: " + e.getMessage());
             return true;
         }
@@ -62,7 +62,7 @@ public class RegistrationRules {
     public boolean allowDirectValidationForExistingUser() {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_ALLOW_DIRECT_VALIDATION);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Unable to fetch AllowDirectValidation flag using default value: " + e.getMessage());
             return false;
         }
@@ -71,7 +71,7 @@ public class RegistrationRules {
     public boolean isForcingRight() {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_FORCE_RIGHT);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Unable to fetch ForceRight flag using default value: " + e.getMessage());
             return false;
         }
@@ -80,7 +80,7 @@ public class RegistrationRules {
     public boolean isDisplayLocalTab() {
         try {
             return (Boolean) requestContainer.getPropertyValue(FIELD_DISPLAY_LOCAL_TAB);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Unable to fetch display local tab flag using default value: " + e.getMessage());
             return true;
         }

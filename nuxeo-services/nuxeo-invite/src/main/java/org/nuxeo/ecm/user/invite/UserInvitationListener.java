@@ -18,8 +18,8 @@ package org.nuxeo.ecm.user.invite;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -53,9 +53,10 @@ public class UserInvitationListener implements EventListener {
 
             }
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             event.markRollBack();
-            throw new ClientException("Unable to complete registration", e);
+            e.addInfo("Unable to complete registration");
+            throw e;
         }
     }
 

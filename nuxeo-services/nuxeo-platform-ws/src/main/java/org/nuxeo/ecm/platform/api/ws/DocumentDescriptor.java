@@ -21,8 +21,8 @@ package org.nuxeo.ecm.platform.api.ws;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * Web service base document descriptor.
@@ -60,7 +60,7 @@ public class DocumentDescriptor implements Serializable {
     public DocumentDescriptor(DocumentModel doc) {
         try {
             title = (String) doc.getProperty("dublincore", "title");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             title = null;
         }
         if (title == null) {

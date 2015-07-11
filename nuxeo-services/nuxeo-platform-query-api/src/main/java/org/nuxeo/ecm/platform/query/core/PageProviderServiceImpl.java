@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderClassReplacerDefinition;
@@ -124,7 +124,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             Class<PageProvider<?>> klass = ((GenericPageProviderDescriptor) desc).getPageProviderClass();
             ret = newPageProviderInstance(name, klass);
         } else {
-            throw new ClientException(String.format("Invalid page provider definition with name '%s'", name));
+            throw new NuxeoException(String.format("Invalid page provider definition with name '%s'", name));
         }
         ret.setName(name);
         ret.setDefinition(desc);
@@ -146,14 +146,14 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             {
         PageProvider<?> ret;
         if (klass == null) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot find class for page provider definition with name '%s': check" + " ERROR logs at startup",
                     name));
         }
         try {
             ret = klass.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ClientException(String.format(
+            throw new NuxeoException(String.format(
                     "Cannot create an instance of class %s for page provider definition" + " with name '%s'",
                     klass.getName(), name), e);
         }
@@ -174,7 +174,7 @@ public class PageProviderServiceImpl extends DefaultComponent implements PagePro
             {
         PageProviderDefinition desc = providerReg.getPageProvider(name);
         if (desc == null) {
-            throw new ClientException(String.format("Could not resolve page provider with name '%s'", name));
+            throw new NuxeoException(String.format("Could not resolve page provider with name '%s'", name));
         }
         return getPageProvider(name, desc, searchDocument, sortInfos, pageSize, currentPage, properties, parameters);
     }

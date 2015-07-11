@@ -30,7 +30,7 @@ import org.nuxeo.common.utils.Path;
 import org.nuxeo.common.utils.ZipUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -82,7 +82,7 @@ public class ZipCachableBlobHolder extends SimpleCachableBlobHolder {
             try {
                 load(key);
             } catch (IOException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
         }
         return blobs;

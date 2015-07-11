@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 
 /**
@@ -43,7 +43,7 @@ public class UserMetadataGroupComputer extends AbstractGroupComputer {
         this.groupPattern = groupPattern;
 
         if (xpath == null || xpath.isEmpty() || groupPattern == null || groupPattern.isEmpty()) {
-            throw new ClientException("Bad configuration");
+            throw new NuxeoException("Bad configuration");
         }
 
     }

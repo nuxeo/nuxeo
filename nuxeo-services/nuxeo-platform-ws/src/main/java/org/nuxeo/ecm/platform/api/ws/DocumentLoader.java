@@ -18,7 +18,6 @@ package org.nuxeo.ecm.platform.api.ws;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.api.ws.session.WSRemotingSession;
 

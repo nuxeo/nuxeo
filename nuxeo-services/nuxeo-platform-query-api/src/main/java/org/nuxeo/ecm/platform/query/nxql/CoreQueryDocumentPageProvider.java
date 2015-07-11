@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -206,7 +205,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                         }
                     }
                 }
-            } catch (ClientException | QueryParseException e) {
+            } catch (NuxeoException e) {
                 error = e;
                 errorMessage = e.getMessage();
                 log.warn(e.getMessage(), e);
@@ -228,7 +227,7 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
         } else {
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new ClientException(String.format(
+                throw new NuxeoException(String.format(
                         "Cannot build query of provider '%s': " + "no search document model is set", getName()));
             }
             newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(), sortArray);

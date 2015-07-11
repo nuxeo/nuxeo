@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.web.common.locale;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 

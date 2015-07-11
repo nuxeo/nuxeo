@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.api.ws.session;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -63,7 +62,6 @@ public interface WSRemotingSessionManager {
      *
      * @param sid the Nuxeo Core session id.
      * @return a <code>WSRemotingSession</code> instance.
-     * @throws ClientException if the session does not exist anymore.
      */
     WSRemotingSession getSession(String sid);
 

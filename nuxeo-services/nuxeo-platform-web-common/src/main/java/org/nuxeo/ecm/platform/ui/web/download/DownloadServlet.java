@@ -35,12 +35,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -153,7 +153,7 @@ public class DownloadServlet extends HttpServlet {
                     downloadService.downloadBlob(req, resp, doc, xpath, null, filename, "download");
                 }
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             if (tx) {
                 TransactionHelper.setTransactionRollbackOnly();
             }

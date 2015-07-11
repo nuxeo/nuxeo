@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
 
@@ -80,7 +79,6 @@ public interface PageProviderService extends Serializable {
      * @param properties the provider properties
      * @param parameters the provider parameters.
      * @return the page provider instance.
-     * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String name, PageProviderDefinition desc, DocumentModel searchDocument,
@@ -97,7 +95,6 @@ public interface PageProviderService extends Serializable {
      * @param properties the provider properties
      * @param parameters the provider parameters.
      * @return the page provider instance.
-     * @throws ClientException if the page provider instantiation fails.
      * @since 5.4
      */
     PageProvider<?> getPageProvider(String name, List<SortInfo> sortInfos, Long pageSize, Long currentPage,
@@ -107,7 +104,6 @@ public interface PageProviderService extends Serializable {
      * Returns an instance of page provider with given name.
      *
      * @see #getPageProvider(String, PageProviderDefinition, DocumentModel, List, Long, Long, Map, Object...)
-     * @throws ClientException if the page provider instantiation fails.
      * @since 5.7
      */
     PageProvider<?> getPageProvider(String name, DocumentModel searchDocument, List<SortInfo> sortInfos, Long pageSize,

@@ -31,7 +31,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -79,11 +78,7 @@ public class CommandLineConverter extends CommandLineBasedConverter {
     protected Map<String, Blob> getCmdBlobParameters(BlobHolder blobHolder, Map<String, Serializable> parameters)
             throws ConversionException {
         Map<String, Blob> cmdBlobParams = new HashMap<>();
-        try {
-            cmdBlobParams.put(SOURCE_FILE_PATH_KEY, blobHolder.getBlob());
-        } catch (ClientException e) {
-            throw new ConversionException("Unable to get Blob for holder", e);
-        }
+        cmdBlobParams.put(SOURCE_FILE_PATH_KEY, blobHolder.getBlob());
         return cmdBlobParams;
     }
 

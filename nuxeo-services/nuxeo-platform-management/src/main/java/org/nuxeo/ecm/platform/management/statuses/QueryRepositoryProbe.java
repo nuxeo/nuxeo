@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.management.statuses;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -46,11 +45,7 @@ public class QueryRepositoryProbe implements org.nuxeo.ecm.core.management.api.P
     public ProbeStatus run() {
         RepositoryManager mgr = Framework.getLocalService(RepositoryManager.class);
         Runner runner = new Runner(mgr.getDefaultRepositoryName());
-        try {
-            runner.runUnrestricted();
-        } catch (ClientException e) {
-            return ProbeStatus.newError(e);
-        }
+        runner.runUnrestricted();
         return ProbeStatus.newSuccess(runner.info);
     }
 

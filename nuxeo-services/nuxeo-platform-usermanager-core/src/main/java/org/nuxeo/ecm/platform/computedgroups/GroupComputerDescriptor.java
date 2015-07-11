@@ -20,19 +20,15 @@ package org.nuxeo.ecm.platform.computedgroups;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author Thierry Delprat
  */
 @XObject("groupComputer")
 public class GroupComputerDescriptor implements Serializable {
-
-    protected static Log log = LogFactory.getLog(GroupComputerDescriptor.class);
 
     private static final long serialVersionUID = 1L;
 
@@ -64,8 +60,7 @@ public class GroupComputerDescriptor implements Serializable {
                 try {
                     groupComputer = computerClass.newInstance();
                 } catch (ReflectiveOperationException e) {
-                    log.error("Enable to instanciate GroupComputer", e);
-                    throw new ClientException("Enable to instanciate GroupComputer", e);
+                    throw new NuxeoException(e);
                 }
             } else {
                 groupComputer = null;

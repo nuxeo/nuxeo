@@ -16,9 +16,9 @@
 
 package org.nuxeo.ecm.user.invite;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
-public class UserRegistrationException extends ClientException {
+public class UserRegistrationException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

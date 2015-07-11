@@ -24,8 +24,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.localconfiguration.LocalConfigurationService;
 import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
 import org.nuxeo.runtime.api.Framework;
@@ -54,7 +54,7 @@ public class DefaultUserMultiTenantManagement implements UserMultiTenantManageme
             DocumentModel context) {
         String groupId = um.getGroupIdField();
         if (filter == null || fulltext == null) {
-            throw new ClientException("Filter and Fulltext must be not null, please check");
+            throw new NuxeoException("Filter and Fulltext must be not null");
         }
 
         if (getDirectorySuffix(context) == null) {

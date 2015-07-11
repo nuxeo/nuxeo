@@ -37,7 +37,6 @@ import javax.security.auth.login.LoginException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SystemPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -274,7 +273,7 @@ public class NuxeoLoginModule extends NuxeoAbstractServerLoginModule {
             String principalId = String.valueOf(random.nextLong());
             principal.setPrincipalId(principalId);
             return principal;
-        } catch (ClientException | LoginException e) {
+        } catch (LoginException e) {
             log.error("createIdentity failed", e);
             LoginException le = new LoginException("createIdentity failed for user " + username);
             le.initCause(e);

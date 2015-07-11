@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.Authenticator;
@@ -85,19 +85,17 @@ public class UserService extends DefaultComponent {
         Class<?> klass = merged.userManagerClass;
         if (userManager == null) {
             if (descriptors.isEmpty()) {
-                throw new ClientException("No contributions registered for the userManager");
+                throw new NuxeoException("No contributions registered for the userManager");
             }
             if (klass == null) {
-                throw new ClientException("No class specified for the userManager");
+                throw new NuxeoException("No class specified for the userManager");
             }
         }
         if (klass != null) {
             try {
                 userManager = (UserManager) klass.newInstance();
-            } catch (InstantiationException e) {
-                throw new ClientException("Failed to instantiate class " + klass, e);
-            } catch (IllegalAccessException e) {
-                throw new ClientException("Failed to instantiate class " + klass, e);
+            } catch (ReflectiveOperationException e) {
+                throw new NuxeoException(e);
             }
         }
         userManager.setConfiguration(merged);
@@ -106,11 +104,7 @@ public class UserService extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (Authenticator.class == adapter || UserManager.class == adapter) {
-            try {
-                return adapter.cast(getUserManager());
-            } catch (ClientException e) {
-                log.error("Error fetching UserManager: " + e.getMessage(), e);
-            }
+            return adapter.cast(getUserManager());
         }
         return null;
     }

@@ -20,9 +20,9 @@ import static org.nuxeo.ecm.directory.localconfiguration.DirectoryConfigurationC
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
@@ -47,7 +47,7 @@ public class DirectoryConfigurationAdapter extends AbstractLocalConfiguration<Di
             if (lcDirectorySuffix != null) {
                 lcDirectorySuffix = lcDirectorySuffix.trim();
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.error("Failed to get DirectoryConfiguration", e);
         }
     }

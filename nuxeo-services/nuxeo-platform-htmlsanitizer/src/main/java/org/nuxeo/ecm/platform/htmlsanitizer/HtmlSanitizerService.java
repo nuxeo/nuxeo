@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.htmlsanitizer;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

@@ -27,8 +27,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagementMock;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
@@ -42,7 +42,7 @@ import org.nuxeo.runtime.api.Framework;
  * Configuration management for group is a bit different than other ones. Other Directory can be segregate per
  * directory. Groups must be defined into the same directory. The segregation is managed by the suffix added to the
  * groupname.
- * 
+ *
  * @author bjalon
  */
 public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagement extends UserManagerTestCase {
@@ -78,22 +78,22 @@ public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagemen
         try {
             umtm.queryTransformer(userManager, null, null, null);
             fail();
-        } catch (ClientException e) {
-
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Filter and Fulltext must be not null"));
         }
 
         try {
             umtm.queryTransformer(userManager, filter, null, null);
             fail();
-        } catch (ClientException e) {
-
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Filter and Fulltext must be not null"));
         }
 
         try {
             umtm.queryTransformer(userManager, null, fulltext, null);
             fail();
-        } catch (ClientException e) {
-
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Filter and Fulltext must be not null"));
         }
     }
 

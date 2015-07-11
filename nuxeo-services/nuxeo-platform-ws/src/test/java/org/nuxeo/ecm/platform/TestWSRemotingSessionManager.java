@@ -31,9 +31,9 @@ import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -68,7 +68,7 @@ public class TestWSRemotingSessionManager {
         boolean raises = false;
         try {
             service.getSession(null);
-        } catch (ClientException ce) {
+        } catch (NuxeoException ce) {
             raises = true;
         }
         assertTrue(raises);
@@ -79,7 +79,7 @@ public class TestWSRemotingSessionManager {
         boolean raises = false;
         try {
             service.getSession("fake");
-        } catch (ClientException ce) {
+        } catch (NuxeoException ce) {
             raises = true;
         }
         assertTrue(raises);
@@ -105,7 +105,7 @@ public class TestWSRemotingSessionManager {
         boolean raises = false;
         try {
             service.getSession("sid0");
-        } catch (ClientException ce) {
+        } catch (NuxeoException ce) {
             raises = true;
         }
         assertTrue(raises);

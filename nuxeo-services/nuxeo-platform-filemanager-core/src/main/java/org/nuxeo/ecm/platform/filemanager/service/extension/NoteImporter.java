@@ -31,8 +31,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Imports the string content of a blob as text for the content of the "note" field of a new Note document.
@@ -78,7 +78,7 @@ public class NoteImporter extends AbstractFileImporter {
         try {
             string = getString(content);
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
         doc.setProperty(NOTE_SCHEMA, NOTE_FIELD, string);
         doc.setProperty(NOTE_SCHEMA, MT_FIELD, content.getMimeType());

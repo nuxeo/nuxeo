@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.content.template.factories;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;

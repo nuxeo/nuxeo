@@ -24,8 +24,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -51,7 +51,7 @@ public class DocumentMetadataGroupComputer extends AbstractGroupComputer {
         this.xpath = xpath;
         this.groupPattern = groupPattern;
         if (whereClause == null || whereClause.isEmpty() || groupPattern == null || groupPattern.isEmpty()) {
-            throw new ClientException("Bad Contribution Document Metadata Computer Group Configuration");
+            throw new NuxeoException("Bad Contribution Document Metadata Computer Group Configuration");
         }
     }
 

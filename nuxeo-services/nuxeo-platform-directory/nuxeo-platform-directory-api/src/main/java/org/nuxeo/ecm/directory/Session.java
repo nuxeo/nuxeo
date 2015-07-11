@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
@@ -288,7 +287,7 @@ public interface Session extends AutoCloseable {
      * @param entry the document model representing the entry to create
      * @return The new entry created in the directory
      * @throws UnsupportedOperationException if the directory does not allow the creation of new entries
-     * @throws ClientException if a communication exception occurs or if an entry with the same id already exists.
+     * @throws DirectoryException if a communication exception occurs or if an entry with the same id already exists.
      */
     DocumentModel createEntry(DocumentModel entry);
 

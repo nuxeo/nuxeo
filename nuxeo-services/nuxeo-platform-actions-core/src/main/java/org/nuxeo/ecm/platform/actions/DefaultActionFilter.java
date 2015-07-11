@@ -29,7 +29,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -240,15 +239,11 @@ public class DefaultActionFilter implements ActionFilter, Cloneable {
             return false;
         }
         for (String permission : permissions) {
-            try {
-                if (docMgr.hasPermission(doc.getRef(), permission)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("#checkPermissions: return true for permission '%s'", permission));
-                    }
-                    return true;
+            if (docMgr.hasPermission(doc.getRef(), permission)) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("#checkPermissions: return true for permission '%s'", permission));
                 }
-            } catch (ClientException e) {
-                log.error(e, e);
+                return true;
             }
         }
         if (log.isDebugEnabled()) {

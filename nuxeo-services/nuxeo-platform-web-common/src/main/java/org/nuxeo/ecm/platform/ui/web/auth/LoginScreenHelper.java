@@ -17,7 +17,7 @@
 
 package org.nuxeo.ecm.platform.ui.web.auth;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginScreenConfig;
 import org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService;
@@ -25,7 +25,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple helper class for easy access form the login.jsp page
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 5.7
  */
@@ -44,7 +44,7 @@ public class LoginScreenHelper {
         if (config != null) {
             config.registerLoginProvider(name, iconUrl, link, label, description, computer);
         } else {
-            throw new ClientException("There is no available LoginScreen config");
+            throw new NuxeoException("There is no available LoginScreen config");
         }
     }
 

@@ -37,7 +37,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
@@ -618,13 +618,12 @@ public class TestUserManager extends UserManagerTestCase {
         assertNull(userManager.getPrincipal("test_u1"));
 
         // try to delete the principal twice
-        boolean gotException = false;
         try {
             userManager.deleteUser(user);
-        } catch (ClientException e) {
-            gotException = true;
+            fail();
+        } catch (DirectoryException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("User does not exist: test_u1"));
         }
-        assertTrue(gotException);
     }
 
     @Test
@@ -637,13 +636,12 @@ public class TestUserManager extends UserManagerTestCase {
         assertNull(userManager.getGroup("test_g1"));
 
         // try to delete the group twice
-        boolean gotException = false;
         try {
             userManager.deleteGroup(group);
-        } catch (ClientException e) {
-            gotException = true;
+            fail();
+        } catch (DirectoryException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Group does not exist: test_g1"));
         }
-        assertTrue(gotException);
     }
 
     @Test

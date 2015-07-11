@@ -20,11 +20,11 @@ package org.nuxeo.ecm.core.search.api.client.search.results.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.search.api.client.SearchException;
 import org.nuxeo.ecm.core.search.api.client.search.results.ResultItem;
@@ -161,7 +161,7 @@ public class ResultSetImpl extends ArrayList<ResultItem> implements ResultSet {
                 }
                 return new ResultSetImpl(query, session, offset, range, resultItems, (int) list.totalSize(),
                         list.size());
-            } catch (ClientException e) {
+            } catch (QueryParseException e) {
                 throw new SearchException("QueryException for: " + query, e);
             }
         }

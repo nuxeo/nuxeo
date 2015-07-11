@@ -19,13 +19,13 @@
 
 package org.nuxeo.ecm.platform.usermanager.exceptions;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:glefter@nuxeo.com">George Lefter</a>
  */
-public class GroupAlreadyExistsException extends ClientException {
+public class GroupAlreadyExistsException extends NuxeoException {
 
-    private static final long serialVersionUID = 3952017108368593837L;
+    private static final long serialVersionUID = 1L;
 
 }

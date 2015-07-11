@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.api.ws;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Nuxeo EP remoting API.
@@ -72,24 +71,6 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      */
     String getRelativePathAsString(String sessionId, String uuid);
 
-    /**
-     * Lists all document uuids.
-     * <p>
-     * This method supports pagination.
-     * <p>
-     * (uuid, version) pairs are always returned.
-     *
-     * @param from pagination start
-     * @param to pagination stop
-     * @param currentVersionOnly do we want only the current version ?
-     * @param whereClause NXQL where clause :XXX: has to be defined.
-     * @return a map from uuid to version labels. If no versions for the givne uuid we need to add a default label for
-     *         current version
-     */
-    // public Map<String, String> listAllDocumentUUIDsAndVersions(String sid,
-    // int from,
-    // int to, boolean currentVersionOnly, String whereClause)
-    // throws ClientException;
     /**
      * Gets the versions of the given document.
      *
@@ -217,7 +198,6 @@ public interface NuxeoRemoting extends BaseNuxeoWebService {
      *
      * @param sid the session id
      * @param parentGroup the parent group
-     * @throws ClientException if any error occurs
      */
     String[] getUsers(String sid, String parentGroup);
 

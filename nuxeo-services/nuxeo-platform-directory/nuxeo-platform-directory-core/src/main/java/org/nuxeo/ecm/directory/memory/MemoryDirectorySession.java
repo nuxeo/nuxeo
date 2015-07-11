@@ -29,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -125,12 +124,7 @@ public class MemoryDirectorySession extends BaseSession {
 
     public void updateEntry(DocumentModel docModel) throws DirectoryException {
         String id = docModel.getId();
-        DataModel dataModel;
-        try {
-            dataModel = docModel.getDataModel(directory.schemaName);
-        } catch (ClientException e) {
-            throw new DirectoryException(e);
-        }
+        DataModel dataModel = docModel.getDataModel(directory.schemaName);
 
         Map<String, Object> map = data.get(id);
         if (map == null) {
@@ -260,7 +254,7 @@ public class MemoryDirectorySession extends BaseSession {
             Object value;
             try {
                 value = doc.getProperty(directory.schemaName, columnName);
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
             if (value != null) {

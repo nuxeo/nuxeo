@@ -24,12 +24,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -170,7 +168,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                     }
                 }
 
-            } catch (ClientException | QueryParseException e) {
+            } catch (NuxeoException e) {
                 errorMessage = e.getMessage();
                 error = e;
                 log.warn(e.getMessage(), e);

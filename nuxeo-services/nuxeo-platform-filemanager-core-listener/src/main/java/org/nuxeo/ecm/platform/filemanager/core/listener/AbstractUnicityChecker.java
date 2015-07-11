@@ -29,7 +29,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,14 +52,7 @@ public abstract class AbstractUnicityChecker {
 
     protected void doUnicityCheck(DocumentModel doc2Check, CoreSession session, Event event) {
 
-        List<String> xpathFields;
-
-        try {
-            xpathFields = getFileManagerService().getFields();
-        } catch (ClientException e) {
-            log.error("Error while getting xpaths config from FileManager", e);
-            return;
-        }
+        List<String> xpathFields = getFileManagerService().getFields();
 
         if (xpathFields == null || xpathFields.isEmpty()) {
             unicityCheckEnabled = false;
@@ -73,9 +65,6 @@ public abstract class AbstractUnicityChecker {
             try {
                 blob = (Blob) doc2Check.getPropertyValue(field);
             } catch (PropertyNotFoundException pnfe) {
-                continue;
-            } catch (ClientException e) {
-                log.error("Error while getting property", e);
                 continue;
             }
             if (blob == null) {
@@ -90,13 +79,8 @@ public abstract class AbstractUnicityChecker {
             }
 
             List<DocumentLocation> existingDocuments = null;
-            try {
-                existingDocuments = fileManager.findExistingDocumentWithFile(session, doc2Check.getPathAsString(),
-                        digest, session.getPrincipal());
-            } catch (ClientException e) {
-                log.error("Error in FileManager unicity check execution", e);
-                continue;
-            }
+            existingDocuments = fileManager.findExistingDocumentWithFile(session, doc2Check.getPathAsString(), digest,
+                    session.getPrincipal());
 
             if (!existingDocuments.isEmpty()) {
                 Iterator<DocumentLocation> existingDocumentsIterator = existingDocuments.iterator();
@@ -127,21 +111,12 @@ public abstract class AbstractUnicityChecker {
 
         Event event = ctx.newEvent(DUPLICATED_FILE);
         EventProducer producer = Framework.getService(EventProducer.class);
-        try {
-            producer.fireEvent(event);
-        } catch (ClientException e) {
-            log.error("Error while sending duplication message", e);
-        }
+        producer.fireEvent(event);
     }
 
     protected boolean isUnicityCheckEnabled() {
         if (unicityCheckEnabled == null) {
-            try {
-                unicityCheckEnabled = getFileManagerService().isUnicityEnabled();
-            } catch (ClientException e) {
-                log.error("Unable to get FileManagerService", e);
-                unicityCheckEnabled = false;
-            }
+            unicityCheckEnabled = getFileManagerService().isUnicityEnabled();
         }
         return unicityCheckEnabled;
     }
@@ -149,10 +124,6 @@ public abstract class AbstractUnicityChecker {
     private FileManager getFileManagerService() {
         if (fileManager == null) {
             fileManager = Framework.getRuntime().getService(FileManager.class);
-        }
-        if (fileManager == null) {
-            log.error("Unable to get FileManager runtime service");
-            throw new ClientException("Unable to get FileManager runtime service");
         }
         return fileManager;
     }
