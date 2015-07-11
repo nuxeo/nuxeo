@@ -27,9 +27,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -54,7 +55,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
             if (doc.hasFacet(ThumbnailConstants.THUMBNAIL_FACET)) {
                 thumbnailBlob = (Blob) doc.getPropertyValue(ThumbnailConstants.THUMBNAIL_PROPERTY_NAME);
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Could not fetch the thumbnail blob", e);
         }
         if (thumbnailBlob == null) {
@@ -86,7 +87,7 @@ public class ThumbnailDocumentFactory implements ThumbnailFactory {
                     thumbnailBlob = bh.getBlob();
                 }
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.warn("Cannot compute document thumbnail", e);
         }
         return thumbnailBlob;
