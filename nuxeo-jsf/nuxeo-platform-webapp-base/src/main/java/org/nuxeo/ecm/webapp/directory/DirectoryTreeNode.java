@@ -35,9 +35,10 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -180,12 +181,7 @@ public class DirectoryTreeNode {
         if (isLastLevel()) {
             return 0;
         }
-        try {
-            return getChildrenEntries().size();
-        } catch (ClientException e) {
-            log.error(e);
-            return 0;
-        }
+        return getChildrenEntries().size();
     }
 
     public List<DirectoryTreeNode> getChildren() {
@@ -197,32 +193,27 @@ public class DirectoryTreeNode {
         if (isLastLevel()) {
             return children;
         }
-        try {
-            String schema = getDirectorySchema();
-            DocumentModelList results = getChildrenEntries();
-            FacesContext context = FacesContext.getCurrentInstance();
-            for (DocumentModel result : results) {
-                String childIdendifier = result.getId();
-                String childDescription = translate(context, (String) result.getProperty(schema, LABEL_FIELD_ID));
-                String childPath;
-                if ("".equals(path)) {
-                    childPath = childIdendifier;
-                } else {
-                    childPath = path + '/' + childIdendifier;
-                }
-                children.add(new DirectoryTreeNode(level + 1, config, childIdendifier, childDescription, childPath,
-                        getDirectoryService()));
+        String schema = getDirectorySchema();
+        DocumentModelList results = getChildrenEntries();
+        FacesContext context = FacesContext.getCurrentInstance();
+        for (DocumentModel result : results) {
+            String childIdendifier = result.getId();
+            String childDescription = translate(context, (String) result.getProperty(schema, LABEL_FIELD_ID));
+            String childPath;
+            if ("".equals(path)) {
+                childPath = childIdendifier;
+            } else {
+                childPath = path + '/' + childIdendifier;
             }
-
-            // sort children
-            Comparator<? super DirectoryTreeNode> cmp = new FieldComparator();
-            Collections.sort(children, cmp);
-
-            return children;
-        } catch (ClientException e) {
-            log.error(e);
-            return children;
+            children.add(new DirectoryTreeNode(level + 1, config, childIdendifier, childDescription, childPath,
+                    getDirectoryService()));
         }
+
+        // sort children
+        Comparator<? super DirectoryTreeNode> cmp = new FieldComparator();
+        Collections.sort(children, cmp);
+
+        return children;
     }
 
     private class FieldComparator implements Comparator<DirectoryTreeNode> {
@@ -319,7 +310,7 @@ public class DirectoryTreeNode {
     protected String getDirectoryName() {
         String name = config.getDirectories()[level];
         if (name == null) {
-            throw new ClientException("could not find directory name for level=" + level);
+            throw new NuxeoException("could not find directory name for level=" + level);
         }
         return name;
     }
@@ -340,7 +331,7 @@ public class DirectoryTreeNode {
         ContentViewActions cva = (ContentViewActions) seamContextHelper.get("contentViewActions");
         contentView = cva.getContentView(config.getContentView());
         if (contentView == null) {
-            throw new ClientException("no content view registered as " + config.getContentView());
+            throw new NuxeoException("no content view registered as " + config.getContentView());
         }
     }
 
@@ -385,7 +376,7 @@ public class DirectoryTreeNode {
                         // take first schema: directory entries only have one
                         final String schemaName = docMod.getSchemas()[0];
                         property = (String) docMod.getProperty(schemaName, LABEL_FIELD_ID);
-                    } catch (ClientException e) {
+                    } catch (PropertyException e) {
                         throw new DirectoryException(e);
                     }
                     myPath = myPath + property + '/';

@@ -33,10 +33,10 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
@@ -83,7 +83,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
                 handleError(res, "you must specify a valid document IdRef");
                 return;
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -124,7 +124,7 @@ public class DownloadFileRestlet extends BaseNuxeoRestlet implements LiveEditCon
             response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
             // TODO: add mimetype here too
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
         }
     }

@@ -32,9 +32,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 
 /**
  * An entry present in a Summary. Each entry has a parent, except for the root entry whose parent is null.
@@ -103,7 +103,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         uuid = doc.getRef().toString();
         try {
             title = (String) doc.getProperty("dublincore", "title");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             title = null;
         }
         documentRef = doc.getRef();
@@ -111,19 +111,19 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         Object major;
         try {
             major = doc.getProperty("uid", "major_version");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             major = null;
         }
         Object minor;
         try {
             minor = doc.getProperty("uid", "minor_version");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             minor = null;
         }
         Object date;
         try {
             date = doc.getProperty("dublincore", "modified");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             date = null;
         }
 
@@ -136,7 +136,7 @@ public class SummaryEntry implements Comparable<SummaryEntry>, Serializable {
         }
         try {
             filename = (String) doc.getProperty("file", "filename");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             filename = null;
         }
     }

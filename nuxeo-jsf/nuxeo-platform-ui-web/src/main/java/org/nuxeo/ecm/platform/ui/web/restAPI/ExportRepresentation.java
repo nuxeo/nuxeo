@@ -24,7 +24,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -92,14 +91,10 @@ public abstract class ExportRepresentation extends OutputRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         CoreSession session;
-        try {
-            if (isUnrestricted) {
-                session = CoreInstance.openCoreSessionSystem(repositoryName);
-            } else {
-                session = CoreInstance.openCoreSession(repositoryName);
-            }
-        } catch (ClientException e) {
-            throw new IOException(e);
+        if (isUnrestricted) {
+            session = CoreInstance.openCoreSessionSystem(repositoryName);
+        } else {
+            session = CoreInstance.openCoreSession(repositoryName);
         }
         try {
             DocumentReader documentReader = null;
@@ -112,9 +107,6 @@ public abstract class ExportRepresentation extends OutputRepresentation {
                 pipe.setReader(documentReader);
                 pipe.setWriter(documentWriter);
                 pipe.run();
-            } catch (ClientException e) {
-                log.error("Error during export", e);
-                throw new IOException("Error during export", e);
             } finally {
                 if (documentReader != null) {
                     documentReader.close();

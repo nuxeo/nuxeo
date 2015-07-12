@@ -34,11 +34,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentView;
 import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
@@ -198,7 +198,7 @@ public class DocumentListingActionsBean implements Serializable {
                 try {
                     documents = (List<DocumentModel>) items;
                 } catch (ClassCastException e) {
-                    throw new ClientException(e);
+                    throw new NuxeoException(e);
                 }
             }
         }
@@ -220,8 +220,6 @@ public class DocumentListingActionsBean implements Serializable {
     /**
      * Handle complete table selection event after having ensured that the navigation context stills points to
      * currentDocumentRef to protect against browsers' back button errors
-     *
-     * @throws ClientException if currentDocRef is not a valid document
      */
     public void checkCurrentDocAndProcessSelectPage(String contentViewName, String listName, Boolean selection,
             String currentDocRef) {
@@ -260,8 +258,6 @@ public class DocumentListingActionsBean implements Serializable {
     /**
      * Handle row selection event after having ensured that the navigation context stills points to currentDocumentRef
      * to protect against browsers' back button errors
-     *
-     * @throws ClientException if currentDocRef is not a valid document
      */
     public void checkCurrentDocAndProcessSelectRow(String docRef, String providerName, String listName,
             Boolean selection, String requestedCurrentDocRef) {
@@ -283,7 +279,6 @@ public class DocumentListingActionsBean implements Serializable {
      *
      * @param versionModelSelection the version model selection
      * @param requestedCurrentDocRef the requested current doc ref
-     * @throws ClientException if currentDocRef is not a valid document
      * @since 5.6
      */
     public void checkCurrentDocAndProcessVersionSelectRow(PageSelection<VersionModel> versionModelSelection,
@@ -311,13 +306,13 @@ public class DocumentListingActionsBean implements Serializable {
 
         DocumentModel currentDocument = navigationContext.getCurrentDocument();
         if (currentDocument == null) {
-            throw new ClientException("Cannot process version select row since current document is null.");
+            throw new NuxeoException("Cannot process version select row since current document is null.");
         }
 
         DocumentModel version = documentManager.getDocumentWithVersion(currentDocument.getRef(),
                 versionModelSelection.getData());
         if (version == null) {
-            throw new ClientException("Cannot process version select row since selected version document is null.");
+            throw new NuxeoException("Cannot process version select row since selected version document is null.");
         }
 
         if (Boolean.TRUE.equals(versionModelSelection.isSelected())) {

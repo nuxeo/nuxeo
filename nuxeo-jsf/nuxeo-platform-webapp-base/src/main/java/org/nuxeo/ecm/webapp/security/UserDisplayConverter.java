@@ -21,7 +21,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions;
@@ -92,17 +91,12 @@ public class UserDisplayConverter implements Converter {
                     null);
 
             if (schema != null) {
-                try {
-                    DocumentModel doc = DirectoryFunctions.getDirectoryEntry(directory, username);
-                    if (doc != null) {
-                        String firstNameValue = firstName != null ? (String) doc.getProperty(schema, firstName) : null;
-                        String lastNameValue = lastName != null ? (String) doc.getProperty(schema, lastName) : null;
-                        String emailValue = email != null ? (String) doc.getProperty(schema, email) : null;
-                        return Functions.userDisplayNameAndEmail(username, firstNameValue, lastNameValue, emailValue);
-
-                    }
-                } catch (ClientException e) {
-                    throw new RuntimeException(e);
+                DocumentModel doc = DirectoryFunctions.getDirectoryEntry(directory, username);
+                if (doc != null) {
+                    String firstNameValue = firstName != null ? (String) doc.getProperty(schema, firstName) : null;
+                    String lastNameValue = lastName != null ? (String) doc.getProperty(schema, lastName) : null;
+                    String emailValue = email != null ? (String) doc.getProperty(schema, email) : null;
+                    return Functions.userDisplayNameAndEmail(username, firstNameValue, lastNameValue, emailValue);
                 }
             } else {
                 // XXX will return cached entry

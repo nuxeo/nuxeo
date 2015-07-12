@@ -30,7 +30,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.Component;
 import org.jboss.seam.ScopeType;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -161,48 +160,44 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
 
     @SuppressWarnings("unchecked")
     public void fetchChildren() {
-        try {
-            children = new LinkedHashMap<Object, DocumentTreeNodeImpl>();
-            if (leafFilter != null && leafFilter.accept(document)) {
-                // filter says this is a leaf, don't look at children
-                return;
+        children = new LinkedHashMap<Object, DocumentTreeNodeImpl>();
+        if (leafFilter != null && leafFilter.accept(document)) {
+            // filter says this is a leaf, don't look at children
+            return;
+        }
+        CoreSession session = getCoreSession();
+        if (session == null) {
+            log.error("Cannot retrieve CoreSession for " + document);
+            return;
+        }
+        List<DocumentModel> documents;
+        boolean isOrderable = document.hasFacet(FacetNames.ORDERABLE);
+        if (pageProviderName == null) {
+            // get the children using the core
+            Sorter sorterToUse = isOrderable ? null : sorter;
+            documents = session.getChildren(document.getRef(), null, SecurityConstants.READ, filter, sorterToUse);
+        } else {
+            // use page providers
+            PageProviderService ppService = Framework.getService(PageProviderService.class);
+            List<SortInfo> sortInfos = null;
+            Map<String, Serializable> props = new HashMap<String, Serializable>();
+            props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+            if (isOrderable) {
+                // override sort infos to get default sort
+                sortInfos = new ArrayList<SortInfo>();
+                sortInfos.add(new SortInfo("ecm:pos", true));
             }
-            CoreSession session = getCoreSession();
-            if (session == null) {
-                log.error("Cannot retrieve CoreSession for " + document);
-                return;
-            }
-            List<DocumentModel> documents;
-            boolean isOrderable = document.hasFacet(FacetNames.ORDERABLE);
-            if (pageProviderName == null) {
-                // get the children using the core
-                Sorter sorterToUse = isOrderable ? null : sorter;
-                documents = session.getChildren(document.getRef(), null, SecurityConstants.READ, filter, sorterToUse);
-            } else {
-                // use page providers
-                PageProviderService ppService = Framework.getService(PageProviderService.class);
-                List<SortInfo> sortInfos = null;
-                Map<String, Serializable> props = new HashMap<String, Serializable>();
-                props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
-                if (isOrderable) {
-                    // override sort infos to get default sort
-                    sortInfos = new ArrayList<SortInfo>();
-                    sortInfos.add(new SortInfo("ecm:pos", true));
-                }
-                PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
-                        pageProviderName, sortInfos, null, null, props, new Object[] { getId() });
-                documents = pp.getCurrentPage();
-                documents = filterAndSort(documents, !isOrderable);
-            }
-            // build the children nodes
-            for (DocumentModel child : documents) {
-                String identifier = child.getId();
-                DocumentTreeNodeImpl childNode;
-                childNode = new DocumentTreeNodeImpl(child, filter, leafFilter, sorter, pageProviderName);
-                children.put(identifier, childNode);
-            }
-        } catch (ClientException e) {
-            log.error(e);
+            PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(pageProviderName,
+                    sortInfos, null, null, props, new Object[] { getId() });
+            documents = pp.getCurrentPage();
+            documents = filterAndSort(documents, !isOrderable);
+        }
+        // build the children nodes
+        for (DocumentModel child : documents) {
+            String identifier = child.getId();
+            DocumentTreeNodeImpl childNode;
+            childNode = new DocumentTreeNodeImpl(child, filter, leafFilter, sorter, pageProviderName);
+            children.put(identifier, childNode);
         }
     }
 

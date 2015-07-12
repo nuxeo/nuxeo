@@ -15,9 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.WebApplicationException;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -57,14 +55,6 @@ public abstract class CoreSessionProvider<REF extends SessionRef> {
     }
 
     protected CoreSession createSession(HttpServletRequest request, String repoName) {
-        try {
-            return _createSession(request, repoName);
-        } catch (ClientException e) {
-            throw new WebApplicationException(e, 500);
-        }
-    }
-
-    protected CoreSession _createSession(HttpServletRequest request, String repoName) {
         if (request.getUserPrincipal() == null) {
             throw new java.lang.IllegalStateException("Not authenticated user is trying to get a core session");
         }

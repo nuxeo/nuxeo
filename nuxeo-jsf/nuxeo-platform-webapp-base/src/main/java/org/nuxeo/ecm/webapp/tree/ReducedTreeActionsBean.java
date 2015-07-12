@@ -27,7 +27,6 @@ import java.util.List;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Manages the tree for reduced utilization, like for popup. Performs additional work when a node is selected such as

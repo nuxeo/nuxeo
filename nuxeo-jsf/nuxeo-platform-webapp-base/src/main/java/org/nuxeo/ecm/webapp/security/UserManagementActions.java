@@ -44,7 +44,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -326,15 +325,9 @@ public class UserManagementActions extends AbstractUserGroupManagement implement
         if (groups == null || groups.isEmpty()) {
             return;
         }
-
-        try {
-            if (!isAllowedToAdminGroups(groups)) {
-                throwValidationException(context, "label.userManager.invalidGroupSelected");
-            }
-        } catch (ClientException e) {
-            throwValidationException(context, "label.userManager.unableToValidateGroups", e.getMessage());
+        if (!isAllowedToAdminGroups(groups)) {
+            throwValidationException(context, "label.userManager.invalidGroupSelected");
         }
-
     }
 
     /**

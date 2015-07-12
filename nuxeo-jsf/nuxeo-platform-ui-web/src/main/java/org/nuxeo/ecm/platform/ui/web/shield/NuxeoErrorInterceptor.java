@@ -39,8 +39,8 @@ import org.jboss.seam.contexts.FacesLifecycle;
 import org.jboss.seam.faces.Redirect;
 import org.jboss.seam.transaction.Transaction;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 
@@ -96,7 +96,7 @@ public class NuxeoErrorInterceptor implements Serializable {
                 }
             }
 
-            ClientException cException = new ClientException(t);
+            NuxeoException cException = new NuxeoException(t);
             // redirect is not allowed during render response phase => throw
             // the error without redirecting
             if (FacesLifecycle.getPhaseId() == PhaseId.RENDER_RESPONSE) {

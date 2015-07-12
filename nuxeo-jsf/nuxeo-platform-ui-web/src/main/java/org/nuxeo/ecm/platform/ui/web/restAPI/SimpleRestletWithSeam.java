@@ -26,10 +26,10 @@ import static org.jboss.seam.ScopeType.EVENT;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 import org.restlet.Restlet;
@@ -64,8 +64,7 @@ public class SimpleRestletWithSeam extends Restlet implements Serializable {
             DocumentModel dm = documentManager.getDocument(new IdRef(docid));
             String title = (String) dm.getProperty("dublincore", "title");
             res.setEntity("doc =>" + title, MediaType.TEXT_PLAIN);
-        } catch (ClientException e) {
-            // TODO Auto-generated catch block
+        } catch (NuxeoException e) {
             res.setEntity(e.getMessage(), MediaType.TEXT_PLAIN);
         }
     }

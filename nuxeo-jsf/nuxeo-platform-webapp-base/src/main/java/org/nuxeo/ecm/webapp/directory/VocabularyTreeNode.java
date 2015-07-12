@@ -32,9 +32,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -119,44 +119,39 @@ public class VocabularyTreeNode {
             return children;
         }
         children = new ArrayList<VocabularyTreeNode>();
-        try {
-            String schemaName = getDirectorySchema();
-            DocumentModelList results = getChildrenEntries();
-            Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
-            for (DocumentModel result : results) {
-                if (result == null) {
-                    continue;
-                }
-                String childIdendifier = result.getId();
-                String childLabel = computeLabel(locale, result, schemaName);
-                String childPath;
-                if ("".equals(path)) {
-                    childPath = childIdendifier;
-                } else {
-                    childPath = path + keySeparator + childIdendifier;
-                }
-                Comparable orderingValue = null;
-                if (!StringUtils.isBlank(orderingField)) {
-                    orderingValue = (Comparable) result.getProperty(schemaName, orderingField);
-                }
-                children.add(new VocabularyTreeNode(level + 1, childIdendifier, childLabel, childPath, vocabularyName,
-                        getDirectoryService(), displayObsoleteEntries, keySeparator, orderingField, orderingValue));
+        String schemaName = getDirectorySchema();
+        DocumentModelList results = getChildrenEntries();
+        Locale locale = FacesContext.getCurrentInstance().getViewRoot().getLocale();
+        for (DocumentModel result : results) {
+            if (result == null) {
+                continue;
             }
-
-            // sort children
-            Comparator<? super VocabularyTreeNode> cmp;
-            if (StringUtils.isBlank(orderingField) || "label".equals(orderingField)) {
-                cmp = new LabelComparator(); // sort alphabetically
+            String childIdendifier = result.getId();
+            String childLabel = computeLabel(locale, result, schemaName);
+            String childPath;
+            if ("".equals(path)) {
+                childPath = childIdendifier;
             } else {
-                cmp = new OrderingComparator();
+                childPath = path + keySeparator + childIdendifier;
             }
-            Collections.sort(children, cmp);
-
-            return children;
-        } catch (ClientException e) {
-            log.error(e);
-            return children;
+            Comparable orderingValue = null;
+            if (!StringUtils.isBlank(orderingField)) {
+                orderingValue = (Comparable) result.getProperty(schemaName, orderingField);
+            }
+            children.add(new VocabularyTreeNode(level + 1, childIdendifier, childLabel, childPath, vocabularyName,
+                    getDirectoryService(), displayObsoleteEntries, keySeparator, orderingField, orderingValue));
         }
+
+        // sort children
+        Comparator<? super VocabularyTreeNode> cmp;
+        if (StringUtils.isBlank(orderingField) || "label".equals(orderingField)) {
+            cmp = new LabelComparator(); // sort alphabetically
+        } else {
+            cmp = new OrderingComparator();
+        }
+        Collections.sort(children, cmp);
+
+        return children;
     }
 
     public static String computeLabel(Locale locale, DocumentModel entry, String schemaName) {
@@ -167,20 +162,20 @@ public class VocabularyTreeNode {
         String label = null;
         try {
             label = (String) entry.getProperty(schemaName, fieldName);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
         }
         if (label == null) {
             fieldName = LABEL_FIELD_PREFIX + locale.getLanguage();
             try {
                 label = (String) entry.getProperty(schemaName, fieldName);
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
             }
         }
         if (label == null) {
             fieldName = LABEL_FIELD_PREFIX + DEFAULT_LANGUAGE;
             try {
                 label = (String) entry.getProperty(schemaName, fieldName);
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
             }
         }
         return label;

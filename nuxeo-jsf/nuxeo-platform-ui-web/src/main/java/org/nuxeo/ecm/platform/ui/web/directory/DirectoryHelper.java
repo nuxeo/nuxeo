@@ -34,9 +34,9 @@ import javax.faces.context.FacesContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -111,7 +111,7 @@ public final class DirectoryHelper {
         try (Session session = getService().open(directoryName)) {
             String schema = getService().getDirectorySchema(directoryName);
             if (session == null) {
-                throw new ClientException("could not open session on directory: " + directoryName);
+                throw new NuxeoException("could not open session on directory: " + directoryName);
             }
 
             // adding sorting support
@@ -211,9 +211,6 @@ public final class DirectoryHelper {
 
     private static DocumentModel getEntryThrows(String directoryName, String entryId) {
         DirectoryService dirService = getDirectoryService();
-        if (dirService == null) {
-            throw new ClientException("Could not lookup DirectoryService");
-        }
         try (Session session = dirService.open(directoryName)) {
             return session.getEntry(entryId);
         }
@@ -231,7 +228,7 @@ public final class DirectoryHelper {
     public static DocumentModel getEntry(String directoryName, String entryId) {
         try {
             return getEntryThrows(directoryName, entryId);
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error(String.format("Error retrieving the entry (dirname=%s, entryId=%s)", directoryName, entryId), e);
             return null;
         }

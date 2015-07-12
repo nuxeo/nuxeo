@@ -20,7 +20,6 @@ package org.nuxeo.ecm.webapp.tree;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Local interface for the Seam component that manages the tree.

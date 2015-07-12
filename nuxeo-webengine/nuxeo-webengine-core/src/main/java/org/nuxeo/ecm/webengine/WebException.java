@@ -22,12 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.poi.openxml4j.exceptions.InvalidOperationException;
 import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.webengine.model.ModuleResource;
 import org.nuxeo.ecm.webengine.model.WebContext;
-import org.nuxeo.ecm.webengine.model.exceptions.WebDocumentException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 
@@ -156,8 +154,6 @@ public class WebException extends WebApplicationException {
             return (WebException) exception;
         } else if (exception instanceof DocumentNotFoundException) {
             return new WebResourceNotFoundException(message, exception);
-        } else if (exception instanceof ClientException) {
-            return new WebDocumentException(message, exception);
         } else {
             return new WebException(message, exception);
         }

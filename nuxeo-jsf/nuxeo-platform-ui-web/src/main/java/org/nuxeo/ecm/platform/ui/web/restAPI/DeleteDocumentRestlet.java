@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
 import org.restlet.data.CharacterSet;
@@ -71,7 +71,7 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements 
             targetDocRef = new PathRef(path);
             try {
                 targetDocument = session.getDocument(targetDocRef);
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(result, res, "Unable to get document " + path);
                 return;
             }
@@ -92,7 +92,7 @@ public class DeleteDocumentRestlet extends BaseStatelessNuxeoRestlet implements 
             docElement.addElement(docRefTag).setText("Document " + docId + " deleted");
             res.setEntity(result.asXML(), MediaType.TEXT_XML);
             res.getEntity().setCharacterSet(CharacterSet.UTF_8);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error(e.getMessage(), e);
             handleError(res, e);
         }

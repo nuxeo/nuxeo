@@ -31,8 +31,8 @@ import javax.faces.context.FacesContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
@@ -104,9 +104,6 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         String[] refQueryParams = null;
         if (refDesc != null && refDesc.isEnabled()) {
             PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
-            if (ppService == null) {
-                throw new ClientException("Page provider service cannot be resolved");
-            }
             PageProviderDefinition def = ppService.getPageProviderDefinition(refDesc.getName());
             if (def == null) {
                 log.error("Could not resolve page provider with name " + refDesc.getName());
@@ -208,9 +205,6 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
             return null;
         }
         PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
-        if (ppService == null) {
-            throw new ClientException("Page provider service is null");
-        }
         String ppName = contentViewDesc.getPageProviderName();
         PageProvider<?> provider = ppService.getPageProvider(ppName, searchDocument, sortInfos, pageSize, currentPage,
                 resolvePageProviderProperties(contentViewDesc.getPageProviderProperties()), parameters);
@@ -263,9 +257,6 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
             return;
         }
         PageProviderService ppService = Framework.getLocalService(PageProviderService.class);
-        if (ppService == null) {
-            throw new ClientException("PageProviderService is not available");
-        }
         String name = desc.getName();
         PageProviderDefinition coreDef = getPageProviderDefWithName(name, desc.getCoreQueryPageProvider());
         PageProviderDefinition genDef = getPageProviderDefWithName(name, desc.getGenericPageProvider());
@@ -327,7 +318,7 @@ public class ContentViewServiceImpl extends DefaultComponent implements ContentV
         if (cv != null) {
             restoreContentViewState(cv, contentViewState);
         } else {
-            throw new ClientException(String.format("Unknown content view with name '%s'", name));
+            throw new NuxeoException(String.format("Unknown content view with name '%s'", name));
         }
         return cv;
     }

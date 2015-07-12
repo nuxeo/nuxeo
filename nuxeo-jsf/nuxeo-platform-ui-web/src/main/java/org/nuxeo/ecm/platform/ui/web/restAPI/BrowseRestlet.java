@@ -23,10 +23,10 @@ import java.io.Serializable;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.runtime.api.Framework;
 import org.restlet.data.CharacterSet;
@@ -85,7 +85,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                     handleError(res, "Unable to init repository");
                     return;
                 }
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(res, e);
                 return;
             }
@@ -93,7 +93,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
             Element current = result.createElement("document");
             try {
                 current.setAttribute("title", dm.getTitle());
-            } catch (DOMException | ClientException e) {
+            } catch (DOMException | NuxeoException e) {
                 handleError(res, e);
             }
             current.setAttribute("type", dm.getType());
@@ -113,7 +113,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                 DocumentModelList children;
                 try {
                     children = session.getChildren(dm.getRef());
-                } catch (ClientException e) {
+                } catch (NuxeoException e) {
                     handleError(result, res, e);
                     return;
                 }
@@ -124,7 +124,7 @@ public class BrowseRestlet extends BaseStatelessNuxeoRestlet implements Serializ
                         el.setAttribute("title", child.getTitle());
                     } catch (DOMException e) {
                         handleError(res, e);
-                    } catch (ClientException e) {
+                    } catch (NuxeoException e) {
                         handleError(res, e);
                     }
                     el.setAttribute("type", child.getType());

@@ -16,9 +16,9 @@
 
 package org.nuxeo.theme.localconfiguration;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
@@ -51,7 +51,7 @@ public class LocalThemeConfigAdapter extends AbstractLocalConfiguration<LocalThe
             engine = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_ENGINE_PROPERTY);
             mode = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_MODE_PROPERTY);
             flavor = (String) doc.getPropertyValue(LocalThemeConfigConstants.THEME_CONFIGURATION_FLAVOR_PROPERTY);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
         }
     }
 

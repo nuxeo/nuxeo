@@ -19,42 +19,24 @@
 
 package org.nuxeo.ecm.webapp.security;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-
 public class UpdateUserUnrestricted extends UnrestrictedSessionRunner {
 
-	public static final Log log = LogFactory
-			.getLog(UpdateUserUnrestricted.class);
+    private DocumentModel updatedUser;
 
+    public UpdateUserUnrestricted(String defaultRepositoryName, DocumentModel userDoc) {
+        super(defaultRepositoryName);
+        this.updatedUser = userDoc;
+    }
 
-	private DocumentModel updatedUser;
+    @Override
+    public void run() {
+        UserManager userManager = Framework.getService(UserManager.class);
+        userManager.updateUser(updatedUser);
+    }
 
-	public UpdateUserUnrestricted(String defaultRepositoryName, DocumentModel userDoc) {
-		super(defaultRepositoryName);
-		this.updatedUser = userDoc;
-	}
-
-
-
-	@Override
-	public void run() {
-
-		UserManager userManager = null;
-		try {
-			userManager = Framework.getService(UserManager.class);
-		} catch (Exception e) {
-			log.error("Could not find UserManager service.", e);
-			throw new ClientException(e.getLocalizedMessage(),e);
-		}
-
-		userManager.updateUser(updatedUser);
-
-	}
 }

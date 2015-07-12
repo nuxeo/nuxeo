@@ -20,7 +20,6 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 
@@ -31,20 +30,15 @@ public class CoreExceptionMapper implements ExceptionMapper<Throwable> {
 
     protected static final Log log = LogFactory.getLog(CoreExceptionMapper.class);
 
+    @Override
     public Response toResponse(Throwable t) {
         log.error("Exception in JAX-RS processing", t);
         if (t instanceof WebApplicationException) {
             return ((WebApplicationException) t).getResponse();
-        } else if (t instanceof DocumentSecurityException
-                || "javax.ejb.EJBAccessException".equals(t.getClass().getName())) {
+        } else if (t instanceof DocumentSecurityException) {
             return getResponse(t, 401);
-        } else if (t instanceof ClientException) {
-            Throwable cause = t.getCause();
-            if (cause != null && cause.getMessage() != null) {
-                if (cause.getMessage().contains(DocumentNotFoundException.class.getName())) {
-                    return getResponse(cause, 401);
-                }
-            }
+        } else if (t instanceof DocumentNotFoundException) {
+            return getResponse(t, 404);
         }
         return getResponse(t, 500);
     }

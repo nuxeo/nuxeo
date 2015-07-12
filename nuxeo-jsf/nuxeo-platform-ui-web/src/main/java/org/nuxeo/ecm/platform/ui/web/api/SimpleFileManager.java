@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.ui.web.api;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface SimpleFileManager {

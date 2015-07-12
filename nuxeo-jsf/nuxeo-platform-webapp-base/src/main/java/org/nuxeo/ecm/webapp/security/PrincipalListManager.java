@@ -38,11 +38,11 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -180,10 +180,6 @@ public class PrincipalListManager implements Serializable {
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
             return new DocumentModelListImpl();
-        } catch (ClientException e) {
-            // XXX: this exception should not be catched
-            log.error("error searching for principals: " + e.getMessage());
-            return new DocumentModelListImpl();
         }
 
         if (result.size() > MAX_SEARCH_RESULTS) {
@@ -203,9 +199,6 @@ public class PrincipalListManager implements Serializable {
             result = userManager.searchGroups(searchFilter);
         } catch (SizeLimitExceededException e) {
             searchOverflow = true;
-            return new DocumentModelListImpl();
-        } catch (ClientException e) {
-            log.error("error searching for groups: " + e.getMessage());
             return new DocumentModelListImpl();
         }
 
@@ -247,28 +240,22 @@ public class PrincipalListManager implements Serializable {
             if (user == null) {
                 continue;
             }
-
-            try {
-                NuxeoPrincipal principal = userManager.getPrincipal(user.getId());
-                String name = principal.getName();
-                StringBuilder label = new StringBuilder(name).append("  (");
-                if (principal.getFirstName() != null) {
-                    label.append(principal.getFirstName());
-                }
-                if (principal.getLastName() != null) {
-                    label.append(' ').append(principal.getLastName());
-                }
-                label.append(')');
-
-                Map<String, Object> entry = new HashMap<String, Object>();
-                entry.put("label", label.toString());
-                entry.put("id", name);
-                entry.put("icon", "icons/user.png");
-                result.add(entry);
-            } catch (ClientException e) {
-                log.info("Unable to get Principal from " + user.getId());
-                log.debug(e);
+            NuxeoPrincipal principal = userManager.getPrincipal(user.getId());
+            String name = principal.getName();
+            StringBuilder label = new StringBuilder(name).append("  (");
+            if (principal.getFirstName() != null) {
+                label.append(principal.getFirstName());
             }
+            if (principal.getLastName() != null) {
+                label.append(' ').append(principal.getLastName());
+            }
+            label.append(')');
+
+            Map<String, Object> entry = new HashMap<String, Object>();
+            entry.put("label", label.toString());
+            entry.put("id", name);
+            entry.put("icon", "icons/user.png");
+            result.add(entry);
         }
 
         for (DocumentModel group : groups) {
@@ -276,7 +263,7 @@ public class PrincipalListManager implements Serializable {
             try {
                 entry.put("label",
                         group.getProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField()));
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 log.warn("Unable to get group label of " + group.getId());
                 log.debug(e);
                 entry.put("label", group.getId());

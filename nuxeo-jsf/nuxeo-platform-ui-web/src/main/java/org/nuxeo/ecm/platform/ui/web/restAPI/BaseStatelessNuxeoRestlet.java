@@ -21,12 +21,12 @@ package org.nuxeo.ecm.platform.ui.web.restAPI;
 
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -52,7 +52,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
         }
         try {
             session = CoreInstance.openCoreSession(repoId);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(result, res, e);
             return false;
         }
@@ -76,7 +76,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
         try {
             session = CoreInstance.openCoreSession(repoId);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(result, res, e);
             return false;
         }
@@ -85,7 +85,7 @@ public class BaseStatelessNuxeoRestlet extends BaseNuxeoRestlet {
 
         try {
             targetDocument = session.getDocument(targetDocRef);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(result, res, "Unable to open " + repoId + " repository");
             return false;
         }

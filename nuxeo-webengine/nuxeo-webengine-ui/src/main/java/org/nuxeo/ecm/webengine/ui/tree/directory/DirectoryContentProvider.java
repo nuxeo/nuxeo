@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Directory;
@@ -65,16 +64,12 @@ public class DirectoryContentProvider implements ContentProvider {
     }
 
     public Object[] getChildren(Object obj) {
-        try {
-            if (obj == null || obj instanceof DocumentModel) {
-                DocumentModel parent = (DocumentModel) obj;
-                Map<String, Serializable> args = new HashMap<String, Serializable>();
-                createQuery(parent, args);
-                DocumentModelList list = session.query(args);
-                return list.toArray(new DocumentModel[list.size()]);
-            }
-        } catch (ClientException e) {
-            log.error(e, e);
+        if (obj == null || obj instanceof DocumentModel) {
+            DocumentModel parent = (DocumentModel) obj;
+            Map<String, Serializable> args = new HashMap<String, Serializable>();
+            createQuery(parent, args);
+            DocumentModelList list = session.query(args);
+            return list.toArray(new DocumentModel[list.size()]);
         }
         return null;
     }

@@ -30,10 +30,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Base64;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -121,7 +121,7 @@ public class DocumentsListsPersistenceManager {
         try {
             dirSession = directoryService.open(DIR_NAME);
             directorySchema = directoryService.getDirectorySchema(DIR_NAME);
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             dirSession = null;
             log.error("Unable to open directory " + DIR_NAME + " : " + e.getMessage());
             return false;
@@ -167,7 +167,7 @@ public class DocumentsListsPersistenceManager {
         DocumentModel doc = null;
         try {
             doc = session.getDocument(docRef);
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             log.warn("document with ref " + ref + " was not found : " + e.getMessage());
             return null;
         }
@@ -177,153 +177,135 @@ public class DocumentsListsPersistenceManager {
 
     public List<DocumentModel> loadPersistentDocumentsLists(CoreSession currentSession, String userName, String listName) {
         List<DocumentModel> docList = new ArrayList<DocumentModel>();
-
         if (!initPersistentService()) {
             return docList;
         }
-
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        filter.put(DIR_COL_LISTID, listName);
-        filter.put(DIR_COL_USERID, userName);
-
-        DocumentModelList entries = null;
-
         try {
-            entries = dirSession.query(filter);
-        } catch (DirectoryException e) {
-            releasePersistenceService();
-            return docList;
-        } catch (ClientException e) {
-            releasePersistenceService();
-            return docList;
-        }
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put(DIR_COL_LISTID, listName);
+            filter.put(DIR_COL_USERID, userName);
 
-        for (DocumentModel entry : entries) {
-            String ref;
-            long reftype;
-            String repo;
+            DocumentModelList entries;
             try {
-                ref = (String) entry.getProperty(directorySchema, DIR_COL_REF);
-                reftype = (Long) entry.getProperty(directorySchema, DIR_COL_REFTYPE);
-                repo = (String) entry.getProperty(directorySchema, DIR_COL_REPO);
-            } catch (ClientException e1) {
-                releasePersistenceService();
-                throw e1;
+                entries = dirSession.query(filter);
+            } catch (DirectoryException e) {
+                log.error(e, e);
+                return docList;
             }
 
-            DocumentModel doc = getDocModel(currentSession, ref, reftype, repo);
+            for (DocumentModel entry : entries) {
+                String ref = (String) entry.getProperty(directorySchema, DIR_COL_REF);
+                long reftype = (Long) entry.getProperty(directorySchema, DIR_COL_REFTYPE);
+                String repo = (String) entry.getProperty(directorySchema, DIR_COL_REPO);
 
-            if (doc != null) {
-                if (ENABLE_SANITY_CHECK) {
-                    if (docList.contains(doc)) {
-                        log.warn("Document " + doc.getRef().toString() + " is duplicated in persistent list "
-                                + listName);
-                        if (FIX_SANITY_ERROR) {
-                            try {
-                                dirSession.deleteEntry(entry.getId());
-                            } catch (ClientException e) {
-                                log.warn("Sanity fix failed " + e.getMessage());
+                DocumentModel doc = getDocModel(currentSession, ref, reftype, repo);
+
+                if (doc != null) {
+                    if (ENABLE_SANITY_CHECK) {
+                        if (docList.contains(doc)) {
+                            log.warn("Document " + doc.getRef().toString() + " is duplicated in persistent list "
+                                    + listName);
+                            if (FIX_SANITY_ERROR) {
+                                try {
+                                    dirSession.deleteEntry(entry.getId());
+                                } catch (DirectoryException e) {
+                                    log.error("Sanity fix failed", e);
+                                }
                             }
+                        } else {
+                            docList.add(doc);
                         }
                     } else {
                         docList.add(doc);
                     }
                 } else {
-                    docList.add(doc);
-                }
-            } else {
-                // not found => do the remove
-                try {
-                    dirSession.deleteEntry(entry.getId());
-                } catch (ClientException e) {
-                    releasePersistenceService();
-                    log.error("Unable to remove non existing document model entry : ", e);
-                }
-            }
-        }
-
-        releasePersistenceService();
-        return docList;
-    }
-
-    public Boolean addDocumentToPersistentList(String userName, String listName, DocumentModel doc) {
-
-        if (!initPersistentService()) {
-            return false;
-        }
-
-        Map<String, Object> fields = new HashMap<String, Object>();
-        fields.put(DIR_COL_LISTID, listName);
-        fields.put(DIR_COL_USERID, userName);
-        fields.put(DIR_COL_REF, doc.getRef().toString());
-        fields.put(DIR_COL_REFTYPE, (long) doc.getRef().type());
-        fields.put(DIR_COL_REPO, doc.getRepositoryName());
-        String id = getIdForEntry(userName, listName, doc);
-        fields.put("id", id);
-
-        try {
-            if (ENABLE_SANITY_CHECK) {
-                DocumentModel badEntry = dirSession.getEntry(id);
-                if (badEntry != null) {
-                    log.warn("Entry with id " + id + " is already present : please check DB integrity");
-                    if (FIX_SANITY_ERROR) {
-                        dirSession.deleteEntry(id);
+                    // not found => do the remove
+                    try {
+                        dirSession.deleteEntry(entry.getId());
+                    } catch (DirectoryException e) {
+                        log.error("Unable to remove non existing document model entry : " + entry.getId(), e);
                     }
                 }
             }
-            dirSession.createEntry(fields);
-        } catch (ClientException e) {
-            log.error("Unable to create entry : " + e.getMessage());
+            return docList;
+        } finally {
             releasePersistenceService();
-            return false;
         }
-        releasePersistenceService();
-
-        return true;
     }
 
-    public Boolean removeDocumentFromPersistentList(String userName, String listName, DocumentModel doc) {
-
+    public Boolean addDocumentToPersistentList(String userName, String listName, DocumentModel doc) {
         if (!initPersistentService()) {
             return false;
         }
-
-        String entryId = getIdForEntry(userName, listName, doc);
-
         try {
-            dirSession.deleteEntry(entryId);
-        } catch (ClientException e) {
+            Map<String, Object> fields = new HashMap<String, Object>();
+            fields.put(DIR_COL_LISTID, listName);
+            fields.put(DIR_COL_USERID, userName);
+            fields.put(DIR_COL_REF, doc.getRef().toString());
+            fields.put(DIR_COL_REFTYPE, (long) doc.getRef().type());
+            fields.put(DIR_COL_REPO, doc.getRepositoryName());
+            String id = getIdForEntry(userName, listName, doc);
+            fields.put("id", id);
+            try {
+                if (ENABLE_SANITY_CHECK) {
+                    DocumentModel badEntry = dirSession.getEntry(id);
+                    if (badEntry != null) {
+                        log.warn("Entry with id " + id + " is already present : please check DB integrity");
+                        if (FIX_SANITY_ERROR) {
+                            dirSession.deleteEntry(id);
+                        }
+                    }
+                }
+                dirSession.createEntry(fields);
+            } catch (DirectoryException e) {
+                log.error("Unable to create entry", e);
+                return false;
+            }
+            return true;
+        } finally {
             releasePersistenceService();
-            log.error("Unable to delete entry : " + e.getMessage());
+        }
+    }
+
+    public Boolean removeDocumentFromPersistentList(String userName, String listName, DocumentModel doc) {
+        if (!initPersistentService()) {
             return false;
         }
-
-        releasePersistenceService();
-        return true;
+        try {
+            String entryId = getIdForEntry(userName, listName, doc);
+            try {
+                dirSession.deleteEntry(entryId);
+            } catch (DirectoryException e) {
+                log.error("Unable to delete entry", e);
+                return false;
+            }
+            return true;
+        } finally {
+            releasePersistenceService();
+        }
     }
 
     public Boolean clearPersistentList(String userName, String listName) {
         if (!initPersistentService()) {
             return false;
         }
-
-        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-        filter.put(DIR_COL_LISTID, listName);
-        filter.put(DIR_COL_USERID, userName);
-
         try {
-            DocumentModelList entriesToDelete = dirSession.query(filter);
-
-            for (DocumentModel entry : entriesToDelete) {
-                dirSession.deleteEntry(entry.getId());
+            Map<String, Serializable> filter = new HashMap<String, Serializable>();
+            filter.put(DIR_COL_LISTID, listName);
+            filter.put(DIR_COL_USERID, userName);
+            try {
+                DocumentModelList entriesToDelete = dirSession.query(filter);
+                for (DocumentModel entry : entriesToDelete) {
+                    dirSession.deleteEntry(entry.getId());
+                }
+            } catch (DirectoryException e) {
+                log.error("Unable to clear DocumentList", e);
+                return false;
             }
-        } catch (ClientException e) {
-            log.error("Unable to clear DocumentList : " + e.getMessage());
+            return true;
+        } finally {
             releasePersistenceService();
-            return false;
         }
-        releasePersistenceService();
-        return true;
     }
 
 }

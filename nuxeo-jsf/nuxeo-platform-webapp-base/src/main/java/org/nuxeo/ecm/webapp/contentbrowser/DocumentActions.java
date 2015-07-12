@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import java.io.Serializable;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.types.Type;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -103,7 +102,6 @@ public interface DocumentActions extends Serializable {
      * To be used by url pattern descriptors performing a download.
      *
      * @param docView the document view as generated through the url service
-     * @throws ClientException when document is not found or file is not retrieved correctly.
      */
     void download(DocumentView docView);
 

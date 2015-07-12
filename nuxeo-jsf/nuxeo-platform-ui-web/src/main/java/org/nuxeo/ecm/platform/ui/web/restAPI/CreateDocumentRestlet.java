@@ -29,10 +29,10 @@ import org.dom4j.dom.DOMDocumentFactory;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.LiveEditConstants;
@@ -81,7 +81,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditC
                 handleError(res, "you must specify a valid document IdRef for the parent document");
                 return;
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -119,7 +119,7 @@ public class CreateDocumentRestlet extends BaseNuxeoRestlet implements LiveEditC
             Representation rep = new StringRepresentation(resultDocument.asXML(), MediaType.APPLICATION_XML);
             rep.setCharacterSet(CharacterSet.UTF_8);
             res.setEntity(rep);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
         }
     }

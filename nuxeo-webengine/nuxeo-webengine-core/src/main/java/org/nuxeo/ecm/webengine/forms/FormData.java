@@ -40,7 +40,6 @@ import org.apache.commons.fileupload.servlet.ServletRequestContext;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -367,8 +366,6 @@ public class FormData implements FormInstance {
                     p = doc.getProperty(key);
                 } catch (PropertyException e) {
                     continue; // not a valid property
-                } catch (ClientException e) {
-                    throw WebException.wrap(e);
                 }
                 String[] ar = entry.getValue();
                 fillDocumentProperty(p, key, ar);
@@ -386,8 +383,6 @@ public class FormData implements FormInstance {
                     p = doc.getProperty(key);
                 } catch (PropertyException e) {
                     continue; // not a valid property
-                } catch (ClientException e) {
-                    throw WebException.wrap(e);
                 }
                 List<FileItem> list = entry.getValue();
                 if (list.isEmpty()) {

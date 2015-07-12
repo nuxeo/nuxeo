@@ -22,8 +22,8 @@ import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -104,7 +104,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = "document " + docid + " is already locked by " + lock.getOwner();
                     code = SC_ALREADY_LOCKED_KO;
                 }
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(result, res, e);
                 return;
             }
@@ -124,7 +124,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = "document " + docid + " is locked by " + lock.getOwner();
                     code = SC_ALREADY_LOCKED_KO;
                 }
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(result, res, e);
                 return;
             }
@@ -138,7 +138,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                 } else {
                     code = SC_LOCKINFO_LOCKED;
                 }
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(result, res, e);
                 return;
             }
@@ -154,7 +154,7 @@ public class LockingRestlet extends BaseStatelessNuxeoRestlet {
                     response = lock.getOwner() + '/'
                             + ISODateTimeFormat.dateTime().print(new DateTime(lock.getCreated()));
                 }
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(result, res, e);
                 return;
             }

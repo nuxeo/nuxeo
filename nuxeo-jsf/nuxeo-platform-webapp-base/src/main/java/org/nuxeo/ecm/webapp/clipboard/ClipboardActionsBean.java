@@ -46,13 +46,13 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -386,8 +386,8 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     public String moveWorkingList() {
         try {
             moveDocumentList(getCurrentSelectedListName());
-        } catch (ClientException e) {
-            log.info("moveWorkingList failed" + e.getMessage(), e);
+        } catch (NuxeoException e) {
+            log.error("moveWorkingList failed" + e.getMessage(), e);
             facesMessages.add(StatusMessage.Severity.WARN, messages.get("invalid_operation"));
         }
         return null;
@@ -396,8 +396,8 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
     public String pasteWorkingList() {
         try {
             pasteDocumentList(getCurrentSelectedList());
-        } catch (ClientException e) {
-            log.info("pasteWorkingList failed" + e.getMessage(), e);
+        } catch (NuxeoException e) {
+            log.error("pasteWorkingList failed" + e.getMessage(), e);
             facesMessages.add(StatusMessage.Severity.WARN, messages.get("invalid_operation"));
         }
         return null;
@@ -407,8 +407,8 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
         try {
             pasteDocumentList(DocumentsListsManager.CLIPBOARD);
             returnToPreviouslySelectedList();
-        } catch (ClientException e) {
-            log.info("pasteClipboard failed" + e.getMessage(), e);
+        } catch (NuxeoException e) {
+            log.error("pasteClipboard failed" + e.getMessage(), e);
             facesMessages.add(StatusMessage.Severity.WARN, messages.get("invalid_operation"));
 
         }
@@ -900,7 +900,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
                 return "";
             }
         } catch (IOException io) {
-            throw ClientException.wrap(io);
+            throw new NuxeoException(io);
         }
     }
 }

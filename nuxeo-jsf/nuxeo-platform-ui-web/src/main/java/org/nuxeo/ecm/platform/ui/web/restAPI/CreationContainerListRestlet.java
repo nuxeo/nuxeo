@@ -30,7 +30,6 @@ import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.filemanager.api.FileManager;
@@ -72,11 +71,7 @@ public class CreationContainerListRestlet extends BaseNuxeoRestlet implements Li
             Element docElement = containersElement.addElement(documentTag);
             docElement.addElement(docRepositoryTag).setText(parent.getRepositoryName());
             docElement.addElement(docRefTag).setText(parent.getRef().toString());
-            try {
-                docElement.addElement(docTitleTag).setText(parent.getTitle());
-            } catch (ClientException e) {
-                log.error("not setting doc title tag: " + e);
-            }
+            docElement.addElement(docTitleTag).setText(parent.getTitle());
             docElement.addElement(docPathTag).setText(parent.getPathAsString());
         }
         res.setEntity(resultDocument.asXML(), MediaType.TEXT_XML);

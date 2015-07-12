@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -359,17 +358,10 @@ public class ContentViewImpl implements ContentView, PageProviderChangedListener
         // the page provider and this method will be called after so they could
         // be lost.
         if (pageProvider == null || pageProvider.hasChangedParameters(params)) {
-            try {
-                // make the service build the provider
-                ContentViewService service = Framework.getLocalService(ContentViewService.class);
-                if (service == null) {
-                    throw new ClientException("Could not resolve ContentViewService");
-                }
-                pageProvider = service.getPageProvider(getName(), sortInfos, pageSize, currentPage,
-                        finalSearchDocument, params);
-            } catch (ClientException e) {
-                throw e;
-            }
+            // make the service build the provider
+            ContentViewService service = Framework.getLocalService(ContentViewService.class);
+            pageProvider = service.getPageProvider(getName(), sortInfos, pageSize, currentPage, finalSearchDocument,
+                    params);
         } else {
             if (pageSize != null) {
                 pageProvider.setPageSize(pageSize.longValue());

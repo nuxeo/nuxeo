@@ -43,9 +43,9 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.common.utils.UserAgentMatcher;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -401,8 +401,8 @@ public class WebActionsBean implements WebActions, Serializable {
         String viewId = null;
         try {
             viewId = navigationContext.navigateToDocument(document);
-        } catch (ClientException e) {
-
+        } catch (NuxeoException e) {
+            log.error("Failed to navigate to " + document, e);
         }
         // force creation of new actions if needed
         getTabsList();

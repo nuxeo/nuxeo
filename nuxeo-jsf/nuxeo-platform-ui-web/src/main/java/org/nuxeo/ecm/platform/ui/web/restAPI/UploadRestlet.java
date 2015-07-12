@@ -37,10 +37,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
@@ -88,7 +88,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             targetContainer = documentManager.getDocument(new IdRef(docid));
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -112,7 +112,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                     }
                     inputBlob.setFilename(fileName);
                     outcome = FileManageActions.addBinaryFileFromPlugin(inputBlob, fileName, targetContainer);
-                } catch (ClientException | IOException e) {
+                } catch (NuxeoException | IOException e) {
                     outcome = "ERROR : " + e.getMessage();
                 }
                 result.addElement("upload").setText(outcome);
@@ -123,7 +123,7 @@ public class UploadRestlet extends BaseNuxeoRestlet implements Serializable {
                     String outcome;
                     try {
                         outcome = FileManageActions.addBinaryFileFromPlugin(blob, blob.getFilename(), targetContainer);
-                    } catch (ClientException e) {
+                    } catch (NuxeoException e) {
                         log.error("error importing " + blob.getFilename() + ": " + e.getMessage(), e);
                         outcome = "ERROR : " + e.getMessage();
                     }

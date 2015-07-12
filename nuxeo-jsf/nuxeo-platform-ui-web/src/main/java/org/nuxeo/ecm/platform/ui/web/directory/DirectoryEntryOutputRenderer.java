@@ -31,8 +31,8 @@ import javax.faces.render.Renderer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.directory.DirectoryException;
 
 import com.sun.faces.renderkit.Attribute;
@@ -121,7 +121,7 @@ public class DirectoryEntryOutputRenderer extends Renderer {
                 String label;
                 try {
                     label = (String) entry.getProperty(schema, "label");
-                } catch (ClientException e) {
+                } catch (PropertyException e) {
                     label = null;
                 }
                 String display = (String) dirComponent.getAttributes().get("display");

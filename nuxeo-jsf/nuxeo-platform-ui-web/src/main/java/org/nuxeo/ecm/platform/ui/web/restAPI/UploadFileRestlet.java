@@ -32,10 +32,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -91,7 +91,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
             if (docid != null) {
                 dm = documentManager.getDocument(new IdRef(docid));
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -114,7 +114,7 @@ public class UploadFileRestlet extends BaseNuxeoRestlet implements LiveEditConst
             InputStream is = req.getEntity().getStream();
 
             saveFileToDocument(filename, dm, blobPropertyName, filenamePropertyName, is);
-        } catch (ClientException | IOException e) {
+        } catch (NuxeoException | IOException e) {
             handleError(res, e);
         }
     }

@@ -29,10 +29,10 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -128,7 +128,7 @@ public class DocumentSuggestionActions implements Serializable {
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(ppName, null, null,
                 null, props, resolvedParams);
         if (pp == null) {
-            throw new ClientException("Page provider not found: " + ppName);
+            throw new NuxeoException("Page provider not found: " + ppName);
         }
         return pp;
     }

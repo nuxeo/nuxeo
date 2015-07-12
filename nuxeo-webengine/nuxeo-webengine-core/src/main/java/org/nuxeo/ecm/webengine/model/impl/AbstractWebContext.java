@@ -44,7 +44,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -281,13 +280,9 @@ public abstract class AbstractWebContext implements WebContext {
     public Locale getLocale() {
         LocaleProvider localeProvider = Framework.getLocalService(LocaleProvider.class);
         if (localeProvider != null && request.getUserPrincipal() != null) {
-            try {
-                Locale userPrefLocale = localeProvider.getLocale(getCoreSession());
-                if (userPrefLocale != null) {
-                    return userPrefLocale;
-                }
-            } catch (ClientException e1) {
-                log.trace("User has no locale preferences.");
+            Locale userPrefLocale = localeProvider.getLocale(getCoreSession());
+            if (userPrefLocale != null) {
+                return userPrefLocale;
             }
         }
 

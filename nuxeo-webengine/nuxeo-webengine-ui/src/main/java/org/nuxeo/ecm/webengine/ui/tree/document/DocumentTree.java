@@ -57,12 +57,6 @@ public class DocumentTree extends JSonTree {
     @Override
     protected Object getInput(WebContext ctx) {
         return rootDoc;
-        // try {
-        // return ctx.getCoreSession().getRootDocument();
-        //
-        // } catch (ClientException e) {
-        // throw WebException.wrap(e);
-        // }
     }
 
 }

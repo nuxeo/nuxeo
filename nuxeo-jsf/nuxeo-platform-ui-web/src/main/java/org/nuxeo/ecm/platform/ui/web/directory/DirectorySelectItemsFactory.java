@@ -30,7 +30,6 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -130,27 +129,23 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             List<DirectorySelectItem> items = new ArrayList<DirectorySelectItem>();
             try (Session directorySession = DirectorySelectItemFactory.getDirectorySession(getDirectoryName())) {
                 if (directorySession != null) {
-                    try {
-                        Map<String, Serializable> filter = new HashMap<String, Serializable>();
-                        if (!isDisplayObsoleteEntries()) {
-                            filter.put("obsolete", 0);
-                        }
-                        if (getFilter() != null) {
-                            filter.put("parentFilter", getFilter());
-                        }
-                        DocumentModelList entries = directorySession.query(filter);
-                        for (DocumentModel entry : entries) {
-                            if (entry != null) {
-                                List<DocumentModel> entryL = new ArrayList<DocumentModel>();
-                                entryL.add(entry);
-                                DirectorySelectItem res = createSelectItemForEntry(entry, separator, entry);
-                                if (res != null) {
-                                    items.add(res);
-                                }
+                    Map<String, Serializable> filter = new HashMap<String, Serializable>();
+                    if (!isDisplayObsoleteEntries()) {
+                        filter.put("obsolete", 0);
+                    }
+                    if (getFilter() != null) {
+                        filter.put("parentFilter", getFilter());
+                    }
+                    DocumentModelList entries = directorySession.query(filter);
+                    for (DocumentModel entry : entries) {
+                        if (entry != null) {
+                            List<DocumentModel> entryL = new ArrayList<DocumentModel>();
+                            entryL.add(entry);
+                            DirectorySelectItem res = createSelectItemForEntry(entry, separator, entry);
+                            if (res != null) {
+                                items.add(res);
                             }
                         }
-                    } catch (ClientException e) {
-                        log.error(e, e);
                     }
                 } else {
                     log.error("No session provided for directory, returning empty selection");

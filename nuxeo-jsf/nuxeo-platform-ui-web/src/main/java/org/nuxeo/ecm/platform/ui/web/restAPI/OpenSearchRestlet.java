@@ -26,11 +26,11 @@ import org.dom4j.Namespace;
 import org.dom4j.QName;
 import org.dom4j.dom.DOMDocument;
 import org.dom4j.dom.DOMDocumentFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.restlet.data.CharacterSet;
@@ -137,7 +137,7 @@ public class OpenSearchRestlet extends BaseNuxeoRestlet {
             rep.setCharacterSet(CharacterSet.UTF_8);
             res.setEntity(rep);
 
-        } catch (ClientException | IOException e) {
+        } catch (NuxeoException | IOException e) {
             handleError(res, e);
         }
     }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.security.guards;
 
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.webengine.security.Guard;
@@ -46,13 +45,9 @@ public class PermissionGuard implements Guard {
     }
 
     public boolean check(Adaptable context) {
-        try {
-            CoreSession session = context.getAdapter(CoreSession.class);
-            DocumentModel doc = context.getAdapter(DocumentModel.class);
-            return session.hasPermission(doc.getRef(), perm);
-        } catch (ClientException e) {
-            return false;
-        }
+        CoreSession session = context.getAdapter(CoreSession.class);
+        DocumentModel doc = context.getAdapter(DocumentModel.class);
+        return session.hasPermission(doc.getRef(), perm);
     }
 
     @Override

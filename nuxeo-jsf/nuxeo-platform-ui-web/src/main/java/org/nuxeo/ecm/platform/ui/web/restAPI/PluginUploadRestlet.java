@@ -32,10 +32,10 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 import org.nuxeo.ecm.platform.ui.web.util.FileUploadHelper;
@@ -93,7 +93,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
                 currentDocument = documentManager.getDocument(new IdRef(docid));
                 navigationContext.setCurrentDocument(currentDocument);
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -110,7 +110,7 @@ public class PluginUploadRestlet extends BaseNuxeoRestlet implements Serializabl
             Blob blob = blobs.get(0);
             try {
                 returnCode = FileManageActions.addBinaryFileFromPlugin(blob, blob.getFilename(), relativePath);
-            } catch (ClientException e) {
+            } catch (NuxeoException e) {
                 handleError(res, e);
                 return;
             }

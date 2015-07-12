@@ -42,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -244,14 +243,10 @@ public final class Functions {
      * @since 5.5
      */
     public static String groupFullName(String groupId) {
-        try {
-            NuxeoGroup group = getUserManager().getGroup(groupId);
-            String groupLabel = group.getLabel();
-            String groupName = group.getName();
-            return groupDisplayName(groupName, groupLabel);
-        } catch (ClientException e) {
-            return groupId;
-        }
+        NuxeoGroup group = getUserManager().getGroup(groupId);
+        String groupLabel = group.getLabel();
+        String groupName = group.getName();
+        return groupDisplayName(groupName, groupLabel);
     }
 
     // this should be a method of the principal itself

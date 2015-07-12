@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webengine.ui.tree.document;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -54,12 +53,7 @@ public class DocumentContentProvider implements ContentProvider {
 
     public Object[] getElements(Object input) {
         if (input instanceof Repository) {
-            try {
-                return new DocumentModel[] { session.getRootDocument() };
-            } catch (ClientException e) {
-                log.error(e, e);
-                return null;
-            }
+            return new DocumentModel[] { session.getRootDocument() };
         } else { // may be a document
             return getChildren(input);
         }
@@ -67,12 +61,8 @@ public class DocumentContentProvider implements ContentProvider {
 
     public Object[] getChildren(Object obj) {
         if (obj instanceof DocumentModel) {
-            try {
-                DocumentModelList list = session.getChildren(((DocumentModel) obj).getRef());
-                return list.toArray(new DocumentModel[list.size()]);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            DocumentModelList list = session.getChildren(((DocumentModel) obj).getRef());
+            return list.toArray(new DocumentModel[list.size()]);
         }
         return null;
     }
@@ -86,11 +76,7 @@ public class DocumentContentProvider implements ContentProvider {
 
     public String getLabel(Object obj) {
         if (obj instanceof DocumentModel) {
-            try {
-                return ((DocumentModel) obj).getTitle();
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            return ((DocumentModel) obj).getTitle();
         }
         return null;
     }

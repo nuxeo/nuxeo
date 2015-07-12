@@ -43,7 +43,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Filter;
@@ -218,12 +217,8 @@ public class TreeActionsBean implements TreeActions, Serializable {
         if (userWorkspacePath == null || !userWorkspacePath.contains(currentPersonalWorkspacePath)) {
             // navigate to another personal workspace
             reset();
-            try {
-                return documentManager.exists(new PathRef(currentPersonalWorkspacePath)) ? currentPersonalWorkspacePath
-                        : findFarthestContainerPath(currentDocumentPath);
-            } catch (ClientException e) {
-                return currentDocumentPath;
-            }
+            return documentManager.exists(new PathRef(currentPersonalWorkspacePath)) ? currentPersonalWorkspacePath
+                    : findFarthestContainerPath(currentDocumentPath);
         }
         return userWorkspacePath;
     }
