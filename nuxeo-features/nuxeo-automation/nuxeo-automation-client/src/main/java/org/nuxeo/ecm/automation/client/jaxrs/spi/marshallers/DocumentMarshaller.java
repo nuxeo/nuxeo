@@ -107,7 +107,7 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository,
-                versionLabel, isCheckedOut, props, null);
+                versionLabel, isCheckedOut, props, contextParameters);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws IOException {
