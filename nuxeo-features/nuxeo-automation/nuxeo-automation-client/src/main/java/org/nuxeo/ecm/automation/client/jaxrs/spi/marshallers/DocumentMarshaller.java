@@ -11,6 +11,8 @@
  */
 package org.nuxeo.ecm.automation.client.jaxrs.spi.marshallers;
 
+import java.io.IOException;
+
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
@@ -106,7 +108,8 @@ public class DocumentMarshaller implements JsonMarshaller<Document> {
             throw new IllegalArgumentException(
                     "Unexpected end of stream.");
         }
-        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository, versionLabel, isCheckedOut, props, null);
+        return new Document(uid, type, facets, changeToken, path, state, lockOwner, lockCreated, repository,
+                versionLabel, isCheckedOut, props, contextParameters);
     }
 
     protected static void readProperties(JsonParser jp, PropertyMap props) throws Exception {

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -561,7 +560,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         ObjectMapper mapper = new ObjectMapper();
         @SuppressWarnings("unchecked")
         Map<String, Object> mapInput = mapper.convertValue(pojoInput, Map.class);
-        returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID).setInput(mapInput).execute();
+        returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation
+                .ID).setInput(mapInput).execute();
         assertEquals(expectedListObj, returnedListObj);
 
         // It is also possible to serialize an explicitly typed represenation of
@@ -858,7 +858,8 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             assertNotNull(e);
             assertEquals("Exception Message", e.getRemoteCause().getCause().getMessage());
             assertEquals(ExceptionTest.class.getCanonicalName(),
-                    ((RemoteThrowable) e.getRemoteCause()).getOtherNodes().get("className").getTextValue());
+                    ((RemoteThrowable) e.getRemoteCause()).getOtherNodes()
+                            .get("className").getTextValue());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();
@@ -881,6 +882,20 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
                 ("id", "TestContext").set("list", "users").set("item",
                 "document");
         request.execute();
+    }
+
+    /**
+     * @since 7.4
+     */
+    @Test
+    public void shouldReadContentEnricher() throws Exception {
+        Document root = (Document) super.session.newRequest(FetchDocument.ID)
+                                                .setHeader("X-NXContext-Category", "acls")
+                                                .set("value", "/")
+                                                .execute();
+        assertNotNull(root.getContextParameters());
+        assertEquals(1, root.getContextParameters().size());
+        assertEquals("local", ((PropertyList) root.getContextParameters().get("acls")).getMap(0).get("name"));
     }
 
 }
