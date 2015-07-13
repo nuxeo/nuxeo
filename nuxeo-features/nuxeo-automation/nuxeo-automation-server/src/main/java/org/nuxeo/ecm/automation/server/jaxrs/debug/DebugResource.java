@@ -30,10 +30,10 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.OperationChainContribution;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -107,7 +107,7 @@ public class DebugResource extends AbstractResource<ResourceTypeImpl> {
             ctx.setInput(getDocumentRef(input));
             getOperationService().run(ctx, chain);
             return Response.ok("Operation Done.").build();
-        } catch (ClientException | OperationException | IOException e) {
+        } catch (NuxeoException | OperationException | IOException e) {
             log.error(e, e);
             return Response.status(500).build();
         }

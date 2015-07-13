@@ -28,9 +28,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -95,7 +95,7 @@ public class PermissionService extends DefaultAdapter {
             session.setACP(target.getAdapter(DocumentModel.class).getRef(), acp, false);
             session.save();
             return redirect(target.getPath());
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -118,7 +118,7 @@ public class PermissionService extends DefaultAdapter {
             ACLUtils.removePermission(session, target.getAdapter(DocumentModel.class).getRef(), username, permission);
             session.save();
             return redirect(target.getPath());
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -133,7 +133,7 @@ public class PermissionService extends DefaultAdapter {
                 }
             }
             return permissions;
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to get ACLs", e);
         }
     }

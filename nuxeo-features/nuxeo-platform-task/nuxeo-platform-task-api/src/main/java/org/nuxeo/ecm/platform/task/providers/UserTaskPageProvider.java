@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -105,40 +104,28 @@ public class UserTaskPageProvider extends AbstractPageProvider<DashBoardItem> im
         error = null;
         errorMessage = null;
         userTasks = new ArrayList<DashBoardItem>();
-
-        try {
-            CoreSession coreSession = getCoreSession();
-            boolean filterTrashDocs = getFilterDocumentsInTrash();
-            NuxeoPrincipal pal = (NuxeoPrincipal) coreSession.getPrincipal();
-            TaskService taskService = Framework.getService(TaskService.class);
-            List<Task> tasks = taskService.getAllCurrentTaskInstances(coreSession, getSortInfos());
-            if (tasks != null) {
-                for (Task task : tasks) {
-                    try {
-                        if (task.hasEnded() || task.isCancelled()) {
-                            continue;
-                        }
-                        DocumentModel doc = taskService.getTargetDocumentModel(task, coreSession);
-                        if (doc != null) {
-                            if (filterTrashDocs
-                                    && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                                continue;
-                            } else {
-                                userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
-                            }
-                        } else {
-                            log.warn(String.format("User '%s' has a task of type '%s' on a "
-                                    + "missing or deleted document", pal.getName(), task.getName()));
-                        }
-                    } catch (ClientException e) {
-                        log.error(e);
+        CoreSession coreSession = getCoreSession();
+        boolean filterTrashDocs = getFilterDocumentsInTrash();
+        NuxeoPrincipal pal = (NuxeoPrincipal) coreSession.getPrincipal();
+        TaskService taskService = Framework.getService(TaskService.class);
+        List<Task> tasks = taskService.getAllCurrentTaskInstances(coreSession, getSortInfos());
+        if (tasks != null) {
+            for (Task task : tasks) {
+                if (task.hasEnded() || task.isCancelled()) {
+                    continue;
+                }
+                DocumentModel doc = taskService.getTargetDocumentModel(task, coreSession);
+                if (doc != null) {
+                    if (filterTrashDocs && LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                        continue;
+                    } else {
+                        userTasks.add(new DashBoardItemImpl(task, doc, getLocale()));
                     }
+                } else {
+                    log.warn(String.format("User '%s' has a task of type '%s' on a " + "missing or deleted document",
+                            pal.getName(), task.getName()));
                 }
             }
-        } catch (ClientException e) {
-            error = e;
-            errorMessage = e.getMessage();
-            log.warn(e.getMessage(), e);
         }
     }
 

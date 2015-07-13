@@ -19,7 +19,7 @@ package org.nuxeo.ecm.automation.core.operations.services.directory;
 
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
@@ -35,12 +35,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class AbstractDirectoryOperation {
 
-    /**
-     * Throws a {@link ClientException} if the current user on the {@code ctx} cannot manage directories.
-     */
     protected void validateCanManageDirectories(OperationContext ctx) {
         if (!canManageDirectories(ctx)) {
-            throw new ClientException("Unauthorized user");
+            throw new NuxeoException("Unauthorized user");
         }
     }
 

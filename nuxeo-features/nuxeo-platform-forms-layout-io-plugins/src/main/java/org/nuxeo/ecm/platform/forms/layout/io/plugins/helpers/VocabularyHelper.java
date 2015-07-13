@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -81,9 +80,6 @@ public class VocabularyHelper {
                 }
             }
             return result;
-        } catch (ClientException e) {
-            log.error("Error while getting content of directories " + parentDirName + "/" + childDirName, e);
-            return result;
         }
     }
 
@@ -91,26 +87,21 @@ public class VocabularyHelper {
             String directoryName, String lang) {
         List<WidgetSelectOption> res = new ArrayList<WidgetSelectOption>();
         for (DocumentModel entry : entries) {
+            String itemValue = entry.getId();
+            String itemLabel = itemValue;
             try {
-                String itemValue = entry.getId();
-                String itemLabel = itemValue;
-                try {
-                    itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME);
-                    if (lang != null) {
-                        itemLabel = TranslationHelper.getTranslation(itemLabel, lang);
-                    }
-                } catch (PropertyException e) {
-                    if (lang != null) {
-                        // try out l10n vocabulary structure
-                        itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME + "_" + lang);
-                    }
+                itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME);
+                if (lang != null) {
+                    itemLabel = TranslationHelper.getTranslation(itemLabel, lang);
                 }
-                WidgetSelectOption selectOption = new WidgetSelectOptionImpl(itemLabel, itemValue);
-                res.add(selectOption);
-            } catch (ClientException e) {
-                log.error(String.format("Error exporting entry with id '%s' in directory '%s'", entry.getId(),
-                        directoryName), e);
+            } catch (PropertyException e) {
+                if (lang != null) {
+                    // try out l10n vocabulary structure
+                    itemLabel = (String) entry.getProperty(schema, LABEL_PROPERTY_NAME + "_" + lang);
+                }
             }
+            WidgetSelectOption selectOption = new WidgetSelectOptionImpl(itemLabel, itemValue);
+            res.add(selectOption);
         }
         return res;
     }

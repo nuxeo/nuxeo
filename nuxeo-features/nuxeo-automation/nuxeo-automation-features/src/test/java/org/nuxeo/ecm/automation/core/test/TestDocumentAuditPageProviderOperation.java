@@ -15,13 +15,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -49,84 +49,79 @@ public class TestDocumentAuditPageProviderOperation {
 
     private static final int MAX_ENTRIES = 500;
 
+    /**
+     *  wait at least 1s to be sure we have a precise timestamp in all DB backend.
+     */
+    protected static void sleep() {
+        try {
+            Thread.sleep(1100);
+        } catch (InterruptedException e) {
+            ExceptionUtils.checkInterrupt(e);
+        }
+    }
+
     public static class Populate implements RepositoryInit {
 
         @Override
         public void populate(CoreSession session) {
             AuditLogger auditLogger = Framework.getLocalService(AuditLogger.class);
 
-            try {
-                DocumentModel section = session.createDocumentModel("/", "section", "Folder");
-                section = session.createDocument(section);
+            DocumentModel section = session.createDocumentModel("/", "section", "Folder");
+            section = session.createDocument(section);
 
-                DocumentModel doc = session.createDocumentModel("/", "doc", "File");
-                doc.setPropertyValue("dc:title", "TestDoc");
+            DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+            doc.setPropertyValue("dc:title", "TestDoc");
 
-                // create the doc
-                doc = session.createDocument(doc);
+            // create the doc
+            doc = session.createDocument(doc);
 
-                // do some updates
-                for (int i = 0; i < 5; i++) {
-                    doc.setPropertyValue("dc:description", "Update " + i);
-                    doc.getContextData().put("comment", "Update " + i);
-                    doc = session.saveDocument(doc);
-                }
-
-                // wait at least 1s to be sure we have a precise timestamp in
-                // all DB
-                // backend
-                Thread.sleep(1100);
-
-                // create a version
-                doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+            // do some updates
+            for (int i = 0; i < 5; i++) {
+                doc.setPropertyValue("dc:description", "Update " + i);
+                doc.getContextData().put("comment", "Update " + i);
                 doc = session.saveDocument(doc);
-
-                // wait at least 1s to be sure we have a precise timestamp in
-                // all DB
-                // backend
-                Thread.sleep(1100);
-
-                // do some more updates
-                for (int i = 5; i < 10; i++) {
-                    doc.setPropertyValue("dc:description", "Update " + i);
-                    doc.getContextData().put("comment", "Update " + i);
-                    doc = session.saveDocument(doc);
-                }
-
-                // wait at least 1s to be sure we have a precise timestamp in
-                // all DB
-                // backend
-                Thread.sleep(1100);
-
-                DocumentModel proxy = session.publishDocument(doc, section);
-
-                Thread.sleep(1100); // wait at least 1s to be sure we have a
-                                    // precise
-                                    // timestamp in all DB backend
-
-                // do some more updates
-                for (int i = 10; i < 15; i++) {
-                    doc.setPropertyValue("dc:description", "Update " + i);
-                    doc.getContextData().put("comment", "Update " + i);
-                    doc = session.saveDocument(doc);
-                }
-
-                List<LogEntry> newEntries = new ArrayList<LogEntry>();
-
-                LogEntry entry = new LogEntryImpl();
-                entry.setCategory("somecat");
-                entry.setEventId("someEvent");
-                entry.setEventDate(new Date());
-                entry.setPrincipalName("toto");
-
-                newEntries.add(entry);
-                auditLogger.addLogEntries(newEntries);
-
-            } catch (Exception e) {
-                throw ClientException.wrap(e);
             }
 
-        };
+            sleep();
+
+            // create a version
+            doc.putContextData(VersioningService.VERSIONING_OPTION, VersioningOption.MINOR);
+            doc = session.saveDocument(doc);
+
+            sleep();
+
+            // do some more updates
+            for (int i = 5; i < 10; i++) {
+                doc.setPropertyValue("dc:description", "Update " + i);
+                doc.getContextData().put("comment", "Update " + i);
+                doc = session.saveDocument(doc);
+            }
+
+            sleep();
+
+            DocumentModel proxy = session.publishDocument(doc, section);
+
+            sleep();
+
+            // do some more updates
+            for (int i = 10; i < 15; i++) {
+                doc.setPropertyValue("dc:description", "Update " + i);
+                doc.getContextData().put("comment", "Update " + i);
+                doc = session.saveDocument(doc);
+            }
+
+            List<LogEntry> newEntries = new ArrayList<LogEntry>();
+
+            LogEntry entry = new LogEntryImpl();
+            entry.setCategory("somecat");
+            entry.setEventId("someEvent");
+            entry.setEventDate(new Date());
+            entry.setPrincipalName("toto");
+
+            newEntries.add(entry);
+            auditLogger.addLogEntries(newEntries);
+        }
+
     }
 
     protected static final Calendar testDate = Calendar.getInstance();

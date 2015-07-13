@@ -21,22 +21,19 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-import org.nuxeo.ecm.platform.publisher.api.PublisherException;
-import org.nuxeo.ecm.platform.publisher.api.PublishingException;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
 import org.nuxeo.ecm.platform.publisher.task.CoreProxyWithWorkflowFactory;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -51,8 +48,6 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
 
     public static final String RENDITION_NAME_PARAMETER_KEY = "renditionName";
 
-    protected RenditionService renditionService;
-
     @Override
     public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
             {
@@ -61,15 +56,11 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
             if (!StringUtils.isEmpty(renditionName)) {
                 DocumentModel renditionDocument = null;
                 Rendition rendition = null;
-                try {
-                    rendition = getRenditionService().getRendition(doc, renditionName, true);
-                    if (rendition != null) {
-                        renditionDocument = rendition.getHostDocument();
-                    } else {
-                        throw new PublisherException("Unable to render the document");
-                    }
-                } catch (RenditionException e) {
-                    throw new PublisherException(e.getLocalizedMessage(), e);
+                rendition = getRenditionService().getRendition(doc, renditionName, true);
+                if (rendition != null) {
+                    renditionDocument = rendition.getHostDocument();
+                } else {
+                    throw new NuxeoException("Unable to render the document");
                 }
                 PublishedDocument publishedDocument = super.publishDocument(renditionDocument, targetNode, params);
                 DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
@@ -95,34 +86,17 @@ public class RenditionPublicationFactory extends CoreProxyWithWorkflowFactory im
     }
 
     @Override
-    protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) throws PublishingException {
-
+    protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) {
         if (!newProxy.hasFacet(RENDITION_FACET)) {
             super.removeExistingProxiesOnPreviousVersions(newProxy);
             return;
         }
         RenditionsRemover remover = new RenditionsRemover(newProxy);
-        try {
-            remover.runUnrestricted();
-        } catch (ClientException e) {
-            throw new PublishingException("Unable to remove old puiblished renditions", e);
-        }
-
+        remover.runUnrestricted();
     }
 
     protected RenditionService getRenditionService() {
-        if (renditionService == null) {
-            try {
-                renditionService = Framework.getService(RenditionService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to RenditionService. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (renditionService == null) {
-                throw new ClientException("RenditionService service not bound");
-            }
-        }
-        return renditionService;
+        return Framework.getService(RenditionService.class);
     }
 
     public static class RemoveACP extends UnrestrictedSessionRunner {

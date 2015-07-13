@@ -27,10 +27,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -49,79 +48,72 @@ public class AnnotationServiceFacade {
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    public AnnotationServiceFacade() throws AnnotationException {
+    public AnnotationServiceFacade() {
     }
 
-    protected AnnotationsService getService() throws AnnotationException {
+    protected AnnotationsService getService() {
         if (service == null) {
             service = Framework.getService(AnnotationsService.class);
         }
         return service;
     }
 
-    public void query(String uri, OutputStream outputStream, NuxeoPrincipal name) throws AnnotationException {
+    public void query(String uri, OutputStream outputStream, NuxeoPrincipal name) {
         List<Annotation> annotations;
         try {
             annotations = getService().queryAnnotations(new URI(uri), null, name);
         } catch (URISyntaxException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
         List<Statement> statements = new ArrayList<Statement>();
         for (Annotation annotation : annotations) {
             statements.addAll(annotation.getStatements());
         }
-        Graph graph;
-        try {
-            RelationManager service = Framework.getService(RelationManager.class);
-            graph = service.getTransientGraph(TRANSIENT_GRAPH_TYPE);
-        } catch (ClientException e) {
-            throw new AnnotationException(e);
-        }
+        RelationManager service = Framework.getService(RelationManager.class);
+        Graph graph = service.getTransientGraph(TRANSIENT_GRAPH_TYPE);
         graph.add(statements);
         try {
             outputStream.write("<?xml version='1.0'?>\n".getBytes());
         } catch (IOException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
         graph.write(outputStream, null, null);
     }
 
-    public void getAnnotation(String annId, NuxeoPrincipal name, OutputStream os, String baseUrl)
-            throws AnnotationException {
+    public void getAnnotation(String annId, NuxeoPrincipal name, OutputStream os, String baseUrl) {
         Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
         manager.writeAnnotation(os, annotation);
     }
 
-    public void updateAnnotation(InputStream is, NuxeoPrincipal name, OutputStream outputStream, String baseUrl)
-            throws AnnotationException {
+    public void updateAnnotation(InputStream is, NuxeoPrincipal name, OutputStream outputStream, String baseUrl) {
         Annotation annotation = manager.getAnnotation(is);
         annotation = getService().updateAnnotation(annotation, name, baseUrl);
         manager.writeAnnotation(outputStream, annotation);
     }
 
-    public String getAnnotationBody(String id, NuxeoPrincipal name, String baseUrl) throws AnnotationException {
+    public String getAnnotationBody(String id, NuxeoPrincipal name, String baseUrl) {
         Annotation annotation = getService().getAnnotation(id, name, baseUrl);
         return annotation.getBodyAsText();
     }
 
-    public void createAnnotation(InputStream inputStream, NuxeoPrincipal name, OutputStream outputStream, String baseUrl)
-            throws AnnotationException {
+    public void createAnnotation(InputStream inputStream, NuxeoPrincipal name, OutputStream outputStream,
+            String baseUrl) {
         Annotation annotation = manager.getAnnotation(inputStream);
         annotation = getService().addAnnotation(annotation, name, baseUrl);
         manager.writeAnnotation(outputStream, annotation);
     }
 
-    public void delete(String annId, NuxeoPrincipal name, String baseUrl) throws AnnotationException {
+    public void delete(String annId, NuxeoPrincipal name, String baseUrl) {
         Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
         getService().deleteAnnotation(annotation, name);
     }
 
-    public void deleteFor(String uri, String annId, NuxeoPrincipal name, String baseUrl) throws AnnotationException {
+    public void deleteFor(String uri, String annId, NuxeoPrincipal name, String baseUrl) {
         try {
             Annotation annotation = getService().getAnnotation(annId, name, baseUrl);
             getService().deleteAnnotationFor(new URI(uri), annotation, name);
         } catch (URISyntaxException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
     }
 

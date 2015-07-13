@@ -20,7 +20,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.Renderable;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
@@ -29,7 +28,7 @@ import org.nuxeo.runtime.api.Framework;
  * Default implementation for {@link Renderable} interface.
  * <p>
  * This is a simple wrapper around the {@link RenditionService} in the context of a given {@link DocumentModel}
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class RenderableDocument implements Renderable {
@@ -51,7 +50,7 @@ public class RenderableDocument implements Renderable {
     }
 
     @Override
-    public Rendition getRenditionByName(String name) throws RenditionException {
+    public Rendition getRenditionByName(String name) {
         for (RenditionDefinition def : getAvailableRenditionDefinitions()) {
             if (def.getName().equals(name)) {
                 return getRendition(def);
@@ -61,7 +60,7 @@ public class RenderableDocument implements Renderable {
     }
 
     @Override
-    public Rendition getRenditionByKind(String kind) throws RenditionException {
+    public Rendition getRenditionByKind(String kind) {
         for (RenditionDefinition def : getAvailableRenditionDefinitions()) {
             if (def.getKind().equals(kind)) {
                 return getRendition(def);
@@ -70,7 +69,7 @@ public class RenderableDocument implements Renderable {
         return null;
     }
 
-    protected Rendition getRendition(RenditionDefinition def) throws RenditionException {
+    protected Rendition getRendition(RenditionDefinition def) {
         return Framework.getLocalService(RenditionService.class).getRendition(doc, def.getName());
 
     }

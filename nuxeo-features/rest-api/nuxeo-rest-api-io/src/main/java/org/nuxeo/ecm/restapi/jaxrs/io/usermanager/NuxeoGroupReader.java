@@ -35,7 +35,7 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -77,7 +77,7 @@ public class NuxeoGroupReader implements MessageBodyReader<NuxeoGroup> {
         try {
             JsonParser jp = factory.createJsonParser(json);
             return readJson(jp, httpHeaders);
-        } catch (ClientException | IOException e) {
+        } catch (NuxeoException | IOException e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

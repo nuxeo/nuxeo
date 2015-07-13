@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.script.ScriptException;
 
-import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationDocumentation;
@@ -38,6 +37,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @since 7.2
@@ -115,7 +115,7 @@ public class ScriptingOperationTypeImpl extends OperationTypeImpl {
         try {
             impl = new ScriptingOperationImpl(desc.getScript(), ctx, args);
         } catch (ScriptException e) {
-            throw new AutomationScriptingException(e);
+            throw new NuxeoException(e);
         }
         return impl;
     }

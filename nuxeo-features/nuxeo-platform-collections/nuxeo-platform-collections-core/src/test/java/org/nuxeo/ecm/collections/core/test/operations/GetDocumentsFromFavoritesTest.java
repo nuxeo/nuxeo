@@ -30,7 +30,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.collections.api.FavoritesManager;
 import org.nuxeo.ecm.collections.core.automation.GetDocumentsFromFavoritesOperation;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

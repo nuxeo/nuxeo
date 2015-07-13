@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 
@@ -56,11 +56,11 @@ public class BasicPublicationNode implements PublicationNode {
     }
 
     public List<PublishedDocument> getChildrenDocuments() {
-        throw new ClientException("Can not be called on a remote node");
+        throw new NuxeoException("Can not be called on a remote node");
     }
 
     public List<PublicationNode> getChildrenNodes() {
-        throw new ClientException("Can not be called on a remote node");
+        throw new NuxeoException("Can not be called on a remote node");
     }
 
     public String getNodeType() {

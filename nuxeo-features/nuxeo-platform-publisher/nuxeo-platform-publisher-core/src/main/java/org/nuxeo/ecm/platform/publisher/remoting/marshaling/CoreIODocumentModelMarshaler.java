@@ -23,16 +23,15 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.dom4j.DocumentException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
 import org.nuxeo.ecm.core.io.DocumentWriter;
 import org.nuxeo.ecm.core.io.impl.DocumentPipeImpl;
 import org.nuxeo.ecm.core.io.impl.plugins.XMLDocumentWriter;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentModelMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleDocumentReaderWithInLineBlobs;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleShadowDocumentWriter;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.io.SingleXMlDocumentReader;
@@ -47,19 +46,12 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
     protected String originatingServer;
 
     @Override
-    public String marshalDocument(DocumentModel doc) throws PublishingMarshalingException {
+    public String marshalDocument(DocumentModel doc) {
 
         // load the datamodel
         if (originatingServer != null) {
-            /*
-             * String source = doc.getRepositoryName() + "@" + originatingServer + ":" + doc.getRef().toString();
-             */
             String source = new ExtendedDocumentLocation(originatingServer, doc).toString();
-            try {
-                doc.setProperty("dublincore", "source", source);
-            } catch (ClientException e) {
-                throw new PublishingMarshalingException(e);
-            }
+            doc.setProperty("dublincore", "source", source);
         }
 
         CoreSession coreSession = doc.getCoreSession();
@@ -85,7 +77,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             br.close();
             return sb.toString();
         } catch (IOException e) {
-            throw new PublishingMarshalingException("Unable to marshal DocumentModel", e);
+            throw new NuxeoException("Unable to marshal DocumentModel", e);
         } finally {
             if (tmpFile != null) {
                 tmpFile.delete();
@@ -94,7 +86,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
     }
 
     @Override
-    public DocumentModel unMarshalDocument(String data, CoreSession coreSession) throws PublishingMarshalingException {
+    public DocumentModel unMarshalDocument(String data, CoreSession coreSession) {
         try {
             DocumentReader reader = new SingleXMlDocumentReader(data);
             DocumentWriter writer = new SingleShadowDocumentWriter(coreSession, null);
@@ -104,7 +96,7 @@ public class CoreIODocumentModelMarshaler implements DocumentModelMarshaler {
             pipe.run();
             return ((SingleShadowDocumentWriter) writer).getShadowDocument();
         } catch (IOException | DocumentException e) {
-            throw new PublishingMarshalingException("Unable to unmarshal DocumentModel", e);
+            throw new NuxeoException("Unable to unmarshal DocumentModel", e);
         }
     }
 

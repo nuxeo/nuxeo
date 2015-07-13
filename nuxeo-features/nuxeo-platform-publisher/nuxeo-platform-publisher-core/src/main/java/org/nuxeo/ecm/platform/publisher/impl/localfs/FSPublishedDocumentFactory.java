@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.dom4j.DocumentException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -39,7 +39,7 @@ public class FSPublishedDocumentFactory extends AbstractBasePublishedDocumentFac
             pubDoc.persist(targetNode.getPath());
             return pubDoc;
         } catch (DocumentException | IOException e) {
-            throw new ClientException("Error duning FS Publishing", e);
+            throw new NuxeoException("Error duning FS Publishing", e);
         }
     }
 
@@ -49,7 +49,7 @@ public class FSPublishedDocumentFactory extends AbstractBasePublishedDocumentFac
             doc = snapshotDocumentBeforePublish(doc);
             return new FSPublishedDocument("local", doc);
         } catch (DocumentException e) {
-            throw new ClientException("Error while wrapping DocumentModel as FSPublishedDocument", e);
+            throw new NuxeoException("Error while wrapping DocumentModel as FSPublishedDocument", e);
         }
     }
 

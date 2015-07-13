@@ -43,8 +43,8 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -86,7 +86,7 @@ public class DirectoryEntryReader implements MessageBodyReader<DirectoryEntry> {
 
         try {
             return readRequest(content, httpHeaders);
-        } catch (IOException | ClientException e) {
+        } catch (IOException | NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

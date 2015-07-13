@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 
 /**

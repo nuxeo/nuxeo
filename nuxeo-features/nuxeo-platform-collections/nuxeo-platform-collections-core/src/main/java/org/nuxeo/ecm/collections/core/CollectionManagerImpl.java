@@ -38,13 +38,13 @@ import org.nuxeo.ecm.collections.core.worker.RemoveFromCollectionWork;
 import org.nuxeo.ecm.collections.core.worker.RemovedAbstractWork;
 import org.nuxeo.ecm.collections.core.worker.RemovedCollectionMemberWork;
 import org.nuxeo.ecm.collections.core.worker.RemovedCollectionWork;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -425,7 +425,7 @@ public class CollectionManagerImpl extends DefaultComponent implements Collectio
         } else {
             // If the path does not exist, an exception is thrown
             if (!session.exists(new PathRef(path))) {
-                throw new ClientException(String.format("Path \"%s\" specified in parameter not found", path));
+                throw new NuxeoException(String.format("Path \"%s\" specified in parameter not found", path));
             }
             // Create a new collection in the given path
             DocumentModel collectionModel = session.createDocumentModel(path, title,

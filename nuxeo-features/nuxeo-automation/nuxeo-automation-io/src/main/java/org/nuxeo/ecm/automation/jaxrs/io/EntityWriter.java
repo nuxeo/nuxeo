@@ -31,7 +31,7 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import org.codehaus.jackson.JsonEncoding;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebException;
 
 /**
@@ -70,7 +70,7 @@ public abstract class EntityWriter<T> implements MessageBodyWriter<T> {
 
         try {
             writeEntity(factory.createJsonGenerator(entityStream, JsonEncoding.UTF8), entity);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

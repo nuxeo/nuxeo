@@ -30,7 +30,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -111,14 +110,10 @@ public class DirectoryObject extends DefaultObject {
         }
 
         UserManager um = Framework.getLocalService(UserManager.class);
-        try {
-            if (directory.getName().equals(um.getUserDirectoryName())
-                    || directory.getName().equals(um.getGroupDirectoryName())) {
-                throw new WebSecurityException(
-                        "Not allowed to edit user/group directories, please use user/group endpoints");
-            }
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
+        if (directory.getName().equals(um.getUserDirectoryName())
+                || directory.getName().equals(um.getGroupDirectoryName())) {
+            throw new WebSecurityException(
+                    "Not allowed to edit user/group directories, please use user/group endpoints");
         }
     }
 

@@ -45,7 +45,6 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -104,44 +103,24 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
 
     @Override
     public Blob crop(Blob blob, int x, int y, int width, int height) {
-        try {
-            return getLibrarySelectorService().getImageUtils().crop(blob, x, y, width, height);
-        } catch (ClientException e) {
-            log.error(e.getMessage(), e);
-        }
-        return blob;
+        return getLibrarySelectorService().getImageUtils().crop(blob, x, y, width, height);
     }
 
     @Override
     public Blob resize(Blob blob, String finalFormat, int width, int height, int depth) {
-        try {
-            return getLibrarySelectorService().getImageUtils().resize(blob, finalFormat, width, height, depth);
-        } catch (ClientException e) {
-            log.error(e.getMessage(), e);
-        }
-        return blob;
+        return getLibrarySelectorService().getImageUtils().resize(blob, finalFormat, width, height, depth);
     }
 
     @Override
     public Blob rotate(Blob blob, int angle) {
-        try {
-            return getLibrarySelectorService().getImageUtils().rotate(blob, angle);
-        } catch (ClientException e) {
-            log.error(e.getMessage(), e);
-        }
-        return blob;
+        return getLibrarySelectorService().getImageUtils().rotate(blob, angle);
     }
 
     @Override
     public Map<String, Object> getImageMetadata(Blob blob) {
-        try {
-            log.warn("org.nuxeo.ecm.platform.picture.ImagingComponent.getImageMetadata is deprecated. Please use "
-                    + "org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(org.nuxeo.ecm.core.api.Blob)");
-            return Collections.emptyMap();
-        } catch (ClientException e) {
-            log.error(e.getMessage(), e);
-        }
-        return null;
+        log.warn("org.nuxeo.ecm.platform.picture.ImagingComponent.getImageMetadata is deprecated. Please use "
+                + "org.nuxeo.binary.metadata.api.BinaryMetadataService#readMetadata(org.nuxeo.ecm.core.api.Blob)");
+        return Collections.emptyMap();
     }
 
     @Override
@@ -154,7 +133,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             } else {
                 return mimetypeRegistry.getMimetypeFromFile(file);
             }
-        } catch (ClientException | MimetypeNotFoundException | MimetypeDetectionException | IOException e) {
+        } catch (MimetypeNotFoundException | MimetypeDetectionException | IOException e) {
             log.error("Unable to retrieve mime type", e);
         }
         return null;
@@ -170,7 +149,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
             } else {
                 return mimetypeRegistry.getMimetypeFromBlob(blob);
             }
-        } catch (ClientException | MimetypeNotFoundException | MimetypeDetectionException e) {
+        } catch (MimetypeNotFoundException | MimetypeDetectionException e) {
             log.error("Unable to retrieve mime type", e);
         }
         return null;
@@ -182,7 +161,7 @@ public class ImagingComponent extends DefaultComponent implements ImagingService
         }
         if (librarySelector == null) {
             log.error("Unable to get LibrarySelector runtime service");
-            throw new ClientException("Unable to get LibrarySelector runtime service");
+            throw new NuxeoException("Unable to get LibrarySelector runtime service");
         }
         return librarySelector;
     }

@@ -29,13 +29,13 @@ import java.util.Map;
  */
 public interface RemotePublisherMarshaler {
 
-    String marshallParameters(List<Object> params) throws PublishingMarshalingException;
+    String marshallParameters(List<Object> params);
 
-    List<Object> unMarshallParameters(String data) throws PublishingMarshalingException;
+    List<Object> unMarshallParameters(String data);
 
-    String marshallResult(Object result) throws PublishingMarshalingException;
+    String marshallResult(Object result);
 
-    Object unMarshallResult(String data) throws PublishingMarshalingException;
+    Object unMarshallResult(String data);
 
     void setAssociatedCoreSession(CoreSession session);
 

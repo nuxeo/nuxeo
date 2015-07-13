@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -120,8 +119,6 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
             return result.getBlobs();
         } catch (ConversionException e) {
             throw new PreviewException(e.getMessage(), e);
-        } catch (ClientException e) {
-            throw new PreviewException("Unexpected Error", e);
         }
 
     }
@@ -133,12 +130,7 @@ public class ConverterBasedHtmlPreviewAdapter extends AbstractHtmlPreviewAdapter
      * @since 5.7.3
      */
     private Blob getBlob2preview(BlobHolder blobHolder2preview) throws PreviewException {
-        Blob blob2Preview;
-        try {
-            blob2Preview = blobHolder2preview.getBlob();
-        } catch (ClientException e) {
-            throw new PreviewException("Error while getting blob", e);
-        }
+        Blob blob2Preview = blobHolder2preview.getBlob();
         if (blob2Preview == null) {
             throw new NothingToPreviewException("Can not preview a document without blob");
         } else {

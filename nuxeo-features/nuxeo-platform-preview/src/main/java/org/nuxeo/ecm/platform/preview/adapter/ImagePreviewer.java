@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
 
@@ -35,25 +34,16 @@ public class ImagePreviewer extends AbstractPreviewer implements MimeTypePreview
 
     public List<Blob> getPreview(Blob blob, DocumentModel dm) throws PreviewException {
         List<Blob> blobResults = new ArrayList<Blob>();
-
-        try {
-            StringBuffer htmlPage = new StringBuffer();
-
-            htmlPage.append("<html><head><title>");
-            htmlPage.append(getPreviewTitle(dm));
-            htmlPage.append("</title></head><body>");
-            appendPreviewSettings(htmlPage);
-            htmlPage.append("<img src=\"image\">");
-
-            Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", null, "index.html");
-            blob.setFilename("image");
-
-            blobResults.add(mainBlob);
-            blobResults.add(blob);
-        } catch (ClientException e) {
-            throw new PreviewException("Unable to get document property", e);
-        }
-
+        StringBuffer htmlPage = new StringBuffer();
+        htmlPage.append("<html><head><title>");
+        htmlPage.append(getPreviewTitle(dm));
+        htmlPage.append("</title></head><body>");
+        appendPreviewSettings(htmlPage);
+        htmlPage.append("<img src=\"image\">");
+        Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", null, "index.html");
+        blob.setFilename("image");
+        blobResults.add(mainBlob);
+        blobResults.add(blob);
         return blobResults;
     }
 

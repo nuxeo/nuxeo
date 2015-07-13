@@ -37,13 +37,12 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -106,7 +105,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     @Factory(value = "latestLogEntries", scope = EVENT)
-    public List<LogEntry> computeLatestLogEntries() throws AuditException {
+    public List<LogEntry> computeLatestLogEntries() {
         if (latestLogEntries == null) {
             if (logEntries == null) {
                 logEntries = computeLogEntries(navigationContext.getCurrentDocument());
@@ -123,7 +122,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     @Factory(value = "logEntries", scope = EVENT)
-    public List<LogEntry> computeLogEntries() throws AuditException {
+    public List<LogEntry> computeLogEntries() {
         if (logEntries == null) {
             logEntries = computeLogEntries(navigationContext.getCurrentDocument());
         }
@@ -131,7 +130,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     @Factory(value = "logEntriesComments", scope = EVENT)
-    public Map<Long, String> computeLogEntriesComments() throws AuditException {
+    public Map<Long, String> computeLogEntriesComments() {
         if (logEntriesComments == null) {
             computeLogEntries();
             postProcessComments(logEntries);
@@ -140,7 +139,7 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
     }
 
     @Factory(value = "logEntriesLinkedDocs", scope = EVENT)
-    public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() throws AuditException {
+    public Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() {
         if (logEntriesLinkedDocs == null) {
             computeLogEntries();
             postProcessComments(logEntries);
@@ -148,61 +147,54 @@ public class ContentHistoryActionsBean implements ContentHistoryActions {
         return logEntriesLinkedDocs;
     }
 
-    public List<LogEntry> computeLogEntries(DocumentModel document) throws AuditException {
+    public List<LogEntry> computeLogEntries(DocumentModel document) {
         if (document == null) {
             return null;
         } else {
-            try {
-                Logs service = Framework.getLocalService(Logs.class);
-                Logs logsBean = service;
-                /*
-                 * In case the document is a proxy,meaning is the result of a publishing,to have the history of the
-                 * document from which this proxy was created,first we have to get to the version that was created when
-                 * the document was publish,and to which the proxy document indicates,and then from that version we have
-                 * to get to the root document.
-                 */
-                boolean doDefaultSort = comparator == null;
-                if (document.isProxy()) {
-                    // all users should have access to logs
-                    GetVersionInfoForDocumentRunner runner = new GetVersionInfoForDocumentRunner(documentManager,
-                            document);
-                    runner.runUnrestricted();
-                    if (runner.sourceDocForVersionId == null || runner.version == null) {
-                        String message = "An error occurred while grabbing log entries for " + document.getId();
-                        throw new AuditException(message);
-                    }
-
-                    Date versionCreationDate = getCreationDateForVersion(logsBean, runner.version);
-                    // add all the logs from the source document until the
-                    // version was created
-                    addLogEntries(getLogsForDocUntilDate(logsBean, runner.sourceDocForVersionId, versionCreationDate,
-                            doDefaultSort));
-
-                    // !! add the first publishing
-                    // event after the version is created; since the publishing
-                    // event is logged few milliseconds after the version is
-                    // created
-
-                    List<LogEntry> publishingLogs = getLogsForDocUntilDateWithEvent(logsBean,
-                            runner.sourceDocForVersionId, versionCreationDate, DocumentEventTypes.DOCUMENT_PUBLISHED,
-                            doDefaultSort);
-                    if (!publishingLogs.isEmpty()) {
-                        addLogEntry(publishingLogs.get(0));
-                    }
-                    // add logs from the actual version
-                    filterMap = new HashMap<String, FilterMapEntry>();
-                    addLogEntries(logsBean.getLogEntriesFor(runner.version.getId(), filterMap, doDefaultSort));
-
-                } else {
-                    addLogEntries(logsBean.getLogEntriesFor(document.getId(), filterMap, doDefaultSort));
+            Logs service = Framework.getLocalService(Logs.class);
+            Logs logsBean = service;
+            /*
+             * In case the document is a proxy,meaning is the result of a publishing,to have the history of the document
+             * from which this proxy was created,first we have to get to the version that was created when the document
+             * was publish,and to which the proxy document indicates,and then from that version we have to get to the
+             * root document.
+             */
+            boolean doDefaultSort = comparator == null;
+            if (document.isProxy()) {
+                // all users should have access to logs
+                GetVersionInfoForDocumentRunner runner = new GetVersionInfoForDocumentRunner(documentManager, document);
+                runner.runUnrestricted();
+                if (runner.sourceDocForVersionId == null || runner.version == null) {
+                    String message = "An error occurred while grabbing log entries for " + document.getId();
+                    throw new NuxeoException(message);
                 }
 
-                if (log.isDebugEnabled()) {
-                    log.debug("logEntries computed .................!");
+                Date versionCreationDate = getCreationDateForVersion(logsBean, runner.version);
+                // add all the logs from the source document until the
+                // version was created
+                addLogEntries(getLogsForDocUntilDate(logsBean, runner.sourceDocForVersionId, versionCreationDate,
+                        doDefaultSort));
+
+                // !! add the first publishing
+                // event after the version is created; since the publishing
+                // event is logged few milliseconds after the version is
+                // created
+
+                List<LogEntry> publishingLogs = getLogsForDocUntilDateWithEvent(logsBean, runner.sourceDocForVersionId,
+                        versionCreationDate, DocumentEventTypes.DOCUMENT_PUBLISHED, doDefaultSort);
+                if (!publishingLogs.isEmpty()) {
+                    addLogEntry(publishingLogs.get(0));
                 }
-            } catch (ClientException e) {
-                String message = "An error occurred while grabbing log entries for " + document.getId();
-                throw new AuditException(message, e);
+                // add logs from the actual version
+                filterMap = new HashMap<String, FilterMapEntry>();
+                addLogEntries(logsBean.getLogEntriesFor(runner.version.getId(), filterMap, doDefaultSort));
+
+            } else {
+                addLogEntries(logsBean.getLogEntriesFor(document.getId(), filterMap, doDefaultSort));
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("logEntries computed .................!");
             }
             return logEntries;
         }

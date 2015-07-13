@@ -43,10 +43,10 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -242,8 +242,8 @@ public class TagActionsBean implements Serializable {
             for (String id : ids) {
                 try {
                     doc = documentManager.getDocument(new IdRef(id));
-                } catch (ClientException e) {
-                    log.error(e);
+                } catch (DocumentNotFoundException e) {
+                    log.error(e, e);
                 }
                 if (doc != null) {
                     docs.add(doc);

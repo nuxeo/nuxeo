@@ -23,7 +23,6 @@ import java.util.List;
 import org.junit.Test;
 import org.nuxeo.ecm.collections.core.adapter.Collection;
 import org.nuxeo.ecm.collections.core.adapter.CollectionMember;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;

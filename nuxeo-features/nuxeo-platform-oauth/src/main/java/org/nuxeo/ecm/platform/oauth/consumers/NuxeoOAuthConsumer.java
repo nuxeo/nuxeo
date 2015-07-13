@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.oauth.consumers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import net.oauth.OAuth;

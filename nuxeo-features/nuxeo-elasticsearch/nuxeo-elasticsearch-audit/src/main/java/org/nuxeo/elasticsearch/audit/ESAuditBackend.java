@@ -56,8 +56,8 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.common.utils.TextTemplate;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -65,7 +65,6 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
-import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -293,7 +292,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             try {
                 limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
             } catch (AuditQueryException aqe) {
-                throw new AuditRuntimeException("Wrong date range query. Query was " + dateRange, aqe);
+                aqe.addInfo("Wrong date range query. Query was " + dateRange);
+                throw aqe;
             }
         }
         return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
@@ -329,7 +329,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                 }
             }
         } catch (IOException e) {
-            throw new ClientException("Error while indexing Audit entries", e);
+            throw new NuxeoException("Error while indexing Audit entries", e);
         }
 
     }

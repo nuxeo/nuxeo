@@ -19,7 +19,6 @@ package org.nuxeo.ecm.automation.test.service.enrichers;
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.io.services.enricher.AbstractContentEnricher;
 import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
-import org.nuxeo.ecm.core.api.ClientException;
 
 import java.io.IOException;
 import java.util.Map;

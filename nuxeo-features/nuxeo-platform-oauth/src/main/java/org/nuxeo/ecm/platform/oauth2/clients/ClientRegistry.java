@@ -2,7 +2,6 @@ package org.nuxeo.ecm.platform.oauth2.clients;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

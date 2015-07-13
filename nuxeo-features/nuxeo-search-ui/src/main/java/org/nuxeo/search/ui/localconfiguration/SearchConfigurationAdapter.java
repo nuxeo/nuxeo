@@ -24,9 +24,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
@@ -52,7 +52,7 @@ public class SearchConfigurationAdapter extends AbstractLocalConfiguration<Searc
         String[] content;
         try {
             content = (String[]) doc.getPropertyValue(property);
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return Collections.emptyList();
         }
         if (content != null) {

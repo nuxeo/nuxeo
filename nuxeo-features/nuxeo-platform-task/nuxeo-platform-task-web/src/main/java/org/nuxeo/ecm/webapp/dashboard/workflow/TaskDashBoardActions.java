@@ -35,7 +35,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.international.LocaleSelector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -75,19 +74,16 @@ public class TaskDashBoardActions implements Serializable {
             List<Task> tasks = taskService.getCurrentTaskInstances(documentManager);
             if (tasks != null) {
                 for (Task task : tasks) {
-                    try {
-                        if (task.hasEnded() || task.isCancelled()) {
-                            continue;
-                        }
-                        DocumentModel doc = taskService.getTargetDocumentModel(task, documentManager);
-                        if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                            currentUserTasks.add(new DashBoardItemImpl(task, doc, localeSelector.getLocale()));
-                        } else {
-                            log.warn(String.format("User '%s' has a task of type '%s' on a "
-                                    + "missing or deleted document", currentUser.getName(), task.getName()));
-                        }
-                    } catch (ClientException e) {
-                        log.error(e);
+                    if (task.hasEnded() || task.isCancelled()) {
+                        continue;
+                    }
+                    DocumentModel doc = taskService.getTargetDocumentModel(task, documentManager);
+                    if (doc != null && !LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+                        currentUserTasks.add(new DashBoardItemImpl(task, doc, localeSelector.getLocale()));
+                    } else {
+                        log.warn(
+                                String.format("User '%s' has a task of type '%s' on a " + "missing or deleted document",
+                                        currentUser.getName(), task.getName()));
                     }
                 }
             }

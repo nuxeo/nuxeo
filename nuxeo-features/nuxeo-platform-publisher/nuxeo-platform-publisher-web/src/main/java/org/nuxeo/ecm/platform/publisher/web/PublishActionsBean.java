@@ -48,11 +48,11 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -68,7 +68,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.api.PublisherException;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -215,7 +214,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
         PublishedDocument publishedDocument;
         try {
             publishedDocument = tree.publish(currentDocument, publicationNode, publicationParameters);
-        } catch (PublisherException e) {
+        } catch (NuxeoException e) {
             log.error(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR, messages.get(e.getMessage()));
             return null;
@@ -692,11 +691,7 @@ public class PublishActionsBean extends AbstractPublishActions implements Serial
 
         EventProducer evtProducer = Framework.getService(EventProducer.class);
         Event event = ctx.newEvent(eventId);
-        try {
-            evtProducer.fireEvent(event);
-        } catch (ClientException e) {
-            log.error("Error while sending event", e);
-        }
+        evtProducer.fireEvent(event);
     }
 
     public String getDomainName(String treeName) {

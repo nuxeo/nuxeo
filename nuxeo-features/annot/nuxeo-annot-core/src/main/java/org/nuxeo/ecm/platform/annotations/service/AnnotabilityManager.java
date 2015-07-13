@@ -21,13 +21,11 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 import java.net.URI;
 
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
-
 /**
  * @author Alexandre Russel
  */
 public interface AnnotabilityManager {
 
-    boolean isAnnotable(URI uri) throws AnnotationException;
+    boolean isAnnotable(URI uri);
 
 }

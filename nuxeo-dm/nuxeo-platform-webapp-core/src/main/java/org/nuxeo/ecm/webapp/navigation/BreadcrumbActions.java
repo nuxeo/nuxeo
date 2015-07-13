@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.navigation;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.pathelements.PathElement;
 
 /**

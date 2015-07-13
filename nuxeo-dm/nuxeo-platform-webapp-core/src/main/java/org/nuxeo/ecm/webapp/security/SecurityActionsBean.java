@@ -43,7 +43,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.i18n.Labeler;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -225,12 +224,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     @Override
     public String addPermission(String principalName, String permissionName, boolean grant) {
         if (securityData == null) {
-            try {
-                securityData = getSecurityData();
-            } catch (ClientException e) {
-                log.error(e); // TODO raise me instead
-                return null;
-            }
+            securityData = getSecurityData();
         }
 
         String grantPerm = permissionName;
@@ -269,12 +263,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
                 securityData.addModifiablePrivilege(principalName, denyPerm, grant);
             }
         }
-
-        try {
-            reconstructTableModel();
-        } catch (ClientException e) {
-            log.error("Error whil reconstructing security data", e);
-        }
+        reconstructTableModel();
         return null;
     }
 
@@ -330,12 +319,7 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     public String removePermission() {
         securityData.removeModifiablePrivilege(selectedEntry, permissionListManager.getSelectedPermission(),
                 permissionActionListManager.getSelectedGrant().equals("Grant"));
-
-        try {
-            reconstructTableModel();
-        } catch (ClientException e) {
-            log.error("Error whil reconstructing security data", e);
-        }
+        reconstructTableModel();
         return null;
     }
 

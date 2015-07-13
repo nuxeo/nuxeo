@@ -20,7 +20,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.scripting.CoreFunctions;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -172,15 +171,13 @@ public class PlatformFunctions extends CoreFunctions {
      * @param value Value can be instance of java.util.Collection<Object> or an array of Objects or simply a scalar
      *            Object. If Null, the parameter is ignored
      * @return the list that contains the list contain and value (see value description)
-     * @exception ClientException if value if a collection but not contains only A values and type that extends A.
-     * @exception ClientException if list is null
      * @exception xxxxx if in values there is at least one object type not compatible with the collection list
      */
     @SuppressWarnings("unchecked")
     public <T> List<T> concatenateIntoList(List<T> list, Object... values) {
 
         if (list == null) {
-            throw new ClientException("First parameter must not be null");
+            throw new IllegalArgumentException("First parameter must not be null");
         }
 
         for (Object value : values) {

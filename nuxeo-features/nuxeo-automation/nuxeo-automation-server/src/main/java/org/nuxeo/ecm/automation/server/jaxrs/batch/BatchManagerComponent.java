@@ -34,8 +34,8 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.ComplexTypeJSONDecoder;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -135,7 +135,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
         if (blobs == null) {
             String message = String.format("Unable to find batch associated with id '%s'", batchId);
             log.error(message);
-            throw new ClientException(message);
+            throw new NuxeoException(message);
         }
         return execute(new BlobList(blobs), chainOrOperationId, session, contextParams, operationParams);
     }
@@ -148,7 +148,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             String message = String.format(
                     "Unable to find batch associated with id '%s' or file associated with index '%s'", batchId, fileIdx);
             log.error(message);
-            throw new ClientException(message);
+            throw new NuxeoException(message);
         }
         return execute(blob, chainOrOperationId, session, contextParams, operationParams);
     }
@@ -174,7 +174,7 @@ public class BatchManagerComponent extends DefaultComponent implements BatchMana
             return result;
         } catch (OperationException e) {
             log.error("Error while executing automation batch ", e);
-            throw ClientException.wrap(e);
+            throw new NuxeoException(e);
         }
     }
 

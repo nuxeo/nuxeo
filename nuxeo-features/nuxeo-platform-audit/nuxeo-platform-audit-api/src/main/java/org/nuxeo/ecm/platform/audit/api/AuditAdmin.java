@@ -14,7 +14,6 @@
 
 package org.nuxeo.ecm.platform.audit.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Interface for Administration of Audit service.

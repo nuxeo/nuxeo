@@ -17,8 +17,8 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -72,7 +72,7 @@ public class CoreProxyFactory extends AbstractBasePublishedDocumentFactory imple
             SimpleCorePublishedDocument pubProxy = (SimpleCorePublishedDocument) pubDoc;
             return pubProxy.getProxy();
         }
-        throw new ClientException("factory can not unwrap this PublishedDocument");
+        throw new NuxeoException("factory can not unwrap this PublishedDocument");
     }
 
     public PublishedDocument wrapDocumentModel(DocumentModel doc) {

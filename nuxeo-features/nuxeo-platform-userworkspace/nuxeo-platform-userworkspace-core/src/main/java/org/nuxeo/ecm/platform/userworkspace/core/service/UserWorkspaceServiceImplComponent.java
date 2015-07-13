@@ -22,7 +22,7 @@ package org.nuxeo.ecm.platform.userworkspace.core.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.userworkspace.api.UserWorkspaceService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -58,11 +58,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter == UserWorkspaceService.class) {
-            try {
-                return adapter.cast(getUserWorkspaceService());
-            } catch (ClientException e) {
-                log.error("error fetching UserWorkspaceManager: ", e);
-            }
+            return adapter.cast(getUserWorkspaceService());
         }
         return null;
     }
@@ -70,16 +66,13 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     private UserWorkspaceService getUserWorkspaceService() {
         if (userWorkspaceService == null) {
             Class<?> klass = descriptor.getUserWorkspaceClass();
-
             if (klass == null) {
-                throw new ClientException("No class specified for the userWorkspace");
+                throw new NuxeoException("No class specified for the userWorkspace");
             }
             try {
                 userWorkspaceService = (UserWorkspaceService) klass.newInstance();
-            } catch (InstantiationException e) {
-                throw new ClientException("Failed to instantiate class " + klass, e);
-            } catch (IllegalAccessException e) {
-                throw new ClientException("Failed to instantiate class " + klass, e);
+            } catch (ReflectiveOperationException e) {
+                throw new NuxeoException("Failed to instantiate class " + klass, e);
             }
         }
         return userWorkspaceService;

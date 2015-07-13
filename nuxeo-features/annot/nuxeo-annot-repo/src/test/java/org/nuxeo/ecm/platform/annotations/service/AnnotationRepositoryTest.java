@@ -32,7 +32,6 @@ import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,7 +40,6 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.AbstractRepositoryTestCase;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 
@@ -132,7 +130,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         // annotationOnNewVersion(uriMyfileServer1);
     }
 
-    protected void annotationOnNewVersion(String u1) throws AnnotationException, IOException, URISyntaxException {
+    protected void annotationOnNewVersion(String u1) throws IOException, URISyntaxException {
         annotation = service.addAnnotation(getAnnotation(u1, 2), user, SERVER1);
         assertNotNull(annotation);
         List<Annotation> annotations = service.queryAnnotations(new URI(u1), null, user);
@@ -143,7 +141,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     }
 
     protected void newVersionSameAnnotations(CoreSession session, DocumentModel myfile, String uriAnnotatedDoc)
-            throws AnnotationException, URISyntaxException {
+            throws URISyntaxException {
         List<Annotation> annotations = service.queryAnnotations(new URI(uriAnnotatedDoc), null, user);
         log.debug(annotations.size() + " annotations for: " + uriAnnotatedDoc);
         assertEquals(0, annotations.size());
@@ -164,7 +162,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         waitForAsyncExec();
     }
 
-    protected void sameDocumentFrom2Servers(String u1, String u2) throws AnnotationException, URISyntaxException {
+    protected void sameDocumentFrom2Servers(String u1, String u2) throws URISyntaxException {
         List<Annotation> annotations = service.queryAnnotations(new URI(u1), null, user);
         assertEquals(1, annotations.size());
         annotations = service.queryAnnotations(new URI(u2), null, user);

@@ -21,7 +21,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
@@ -46,6 +45,6 @@ public interface RenditionProvider {
      * @param definition the {@link RenditionDefinition} to use
      * @return The list of Blobs
      */
-    List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException;
+    List<Blob> render(DocumentModel doc, RenditionDefinition definition);
 
 }

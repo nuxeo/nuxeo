@@ -28,7 +28,6 @@ import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson.JacksonFactory;
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.BearerToken;
@@ -38,6 +37,8 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
+
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.oauth2.tokens.OAuth2TokenStore;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -102,13 +103,13 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
         // Checking if there was an error such as the user denied access
         String error = getError(request);
         if (error != null) {
-            throw new ClientException("There was an error: \"" + error + "\".");
+            throw new NuxeoException("There was an error: \"" + error + "\".");
         }
 
         // Checking conditions on the "code" URL parameter
         String code = getAuthorizationCode(request);
         if (code == null) {
-            throw new ClientException("There is not code provided as QueryParam.");
+            throw new NuxeoException("There is not code provided as QueryParam.");
         }
 
         try {
@@ -125,7 +126,7 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
 
             return flow.createAndStoreCredential(tokenResponse, userId);
         } catch (IOException e) {
-            throw new ClientException("Failed to retrieve credential", e);
+            throw new NuxeoException("Failed to retrieve credential", e);
         }
     }
 
@@ -138,7 +139,7 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
         try {
             return userId != null ? getAuthorizationCodeFlow().loadCredential(userId) : null;
         } catch (IOException e) {
-            throw new ClientException("Failed to load credential for " + user, e);
+            throw new NuxeoException("Failed to load credential for " + user, e);
         }
     }
 
@@ -202,7 +203,7 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
         String code = request.getParameter(CODE_URL_PARAMETER);
         return StringUtils.isBlank(code) ? null : code;
     }
-    
+
     @Override
     public String getServiceName() {
         return serviceName;

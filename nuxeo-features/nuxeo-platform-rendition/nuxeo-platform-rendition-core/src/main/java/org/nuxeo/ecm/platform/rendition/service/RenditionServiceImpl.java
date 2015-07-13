@@ -26,17 +26,17 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ELActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.DefaultAutomationRenditionProvider;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.impl.LiveRendition;
@@ -140,30 +140,25 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     @Override
-    public DocumentRef storeRendition(DocumentModel source, String renditionDefinitionName) throws RenditionException {
+    public DocumentRef storeRendition(DocumentModel source, String renditionDefinitionName) {
 
         Rendition rendition = getRendition(source, renditionDefinitionName, true);
 
         return rendition.getHostDocument().getRef();
     }
 
-    protected DocumentModel storeRendition(DocumentModel sourceDocument, List<Blob> renderedBlobs, String name)
-            throws RenditionException {
-        try {
-            CoreSession session = sourceDocument.getCoreSession();
-            DocumentRef versionRef = createVersionIfNeeded(sourceDocument, session);
+    protected DocumentModel storeRendition(DocumentModel sourceDocument, List<Blob> renderedBlobs, String name) {
+        CoreSession session = sourceDocument.getCoreSession();
+        DocumentRef versionRef = createVersionIfNeeded(sourceDocument, session);
 
-            DocumentModel version = session.getDocument(versionRef);
-            RenditionCreator rc = new RenditionCreator(session, sourceDocument, version, renderedBlobs.get(0), name);
-            rc.runUnrestricted();
+        DocumentModel version = session.getDocument(versionRef);
+        RenditionCreator rc = new RenditionCreator(session, sourceDocument, version, renderedBlobs.get(0), name);
+        rc.runUnrestricted();
 
-            DocumentModel detachedRendition = rc.getDetachedDendition();
+        DocumentModel detachedRendition = rc.getDetachedDendition();
 
-            detachedRendition.attach(sourceDocument.getSessionId());
-            return detachedRendition;
-        } catch (Exception e) {
-            throw new RenditionException("Unable to store rendition", e);
-        }
+        detachedRendition.attach(sourceDocument.getSessionId());
+        return detachedRendition;
     }
 
     protected DocumentRef createVersionIfNeeded(DocumentModel source, CoreSession session) {
@@ -183,7 +178,7 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
      * @deprecated since 7.2. Not used.
      */
     @Deprecated
-    protected AutomationService getAutomationService() throws RenditionException {
+    protected AutomationService getAutomationService() {
         return Framework.getService(AutomationService.class);
     }
 
@@ -278,42 +273,38 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     @Override
-    public Rendition getRendition(DocumentModel doc, String renditionName) throws RenditionException {
+    public Rendition getRendition(DocumentModel doc, String renditionName) {
         return getRendition(doc, renditionName, false);
     }
 
     @Override
-    public Rendition getRendition(DocumentModel doc, String renditionName, boolean store) throws RenditionException {
+    public Rendition getRendition(DocumentModel doc, String renditionName, boolean store) {
 
         RenditionDefinition renditionDefinition = renditionDefinitionRegistry.getRenditionDefinition(renditionName);
         if (renditionDefinition == null) {
             renditionDefinition = renditionDefinitionProviderRegistry.getRenditionDefinition(renditionName, doc);
             if (renditionDefinition == null) {
                 String message = "The rendition definition '%s' is not registered";
-                throw new RenditionException(String.format(message, renditionName), "label.rendition.not.defined");
+                throw new NuxeoException(String.format(message, renditionName));
             }
         }
 
         if (!renditionDefinition.getProvider().isAvailable(doc, renditionDefinition)) {
-            throw new RenditionException("Rendition " + renditionName + " not available for this doc " + doc.getId());
+            throw new NuxeoException("Rendition " + renditionName + " not available for this doc " + doc.getId());
         }
 
         DocumentModel stored = null;
-        try {
-            if (!doc.isCheckedOut()) {
-                // since stored renditions are done against a version
-                // checkedout Documents can not have a stored rendition
-                RenditionFinder finder = new RenditionFinder(doc, renditionName);
-                finder.runUnrestricted();
-                // retrieve the Detached stored rendition doc
-                stored = finder.getStoredRendition();
-                // re-attach the detached doc
-                if (stored != null) {
-                    stored.attach(doc.getCoreSession().getSessionId());
-                }
+        if (!doc.isCheckedOut()) {
+            // since stored renditions are done against a version
+            // checkedout Documents can not have a stored rendition
+            RenditionFinder finder = new RenditionFinder(doc, renditionName);
+            finder.runUnrestricted();
+            // retrieve the Detached stored rendition doc
+            stored = finder.getStoredRendition();
+            // re-attach the detached doc
+            if (stored != null) {
+                stored.attach(doc.getCoreSession().getSessionId());
             }
-        } catch (ClientException e) {
-            throw new RenditionException("Error while searching for stored rendition", e);
         }
 
         if (stored != null) {
@@ -332,12 +323,12 @@ public class RenditionServiceImpl extends DefaultComponent implements RenditionS
     }
 
     @Override
-    public List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException {
+    public List<Rendition> getAvailableRenditions(DocumentModel doc) {
         return getAvailableRenditions(doc, false);
     }
 
     @Override
-    public List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible) throws RenditionException {
+    public List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible) {
         List<Rendition> renditions = new ArrayList<>();
 
         if (doc.isProxy()) {

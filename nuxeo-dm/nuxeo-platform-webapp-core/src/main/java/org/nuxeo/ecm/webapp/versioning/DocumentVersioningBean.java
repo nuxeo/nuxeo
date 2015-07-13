@@ -46,7 +46,6 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -102,16 +101,12 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     @Override
     public Collection<VersionModel> getItemVersioningHistory(DocumentModel document) {
         List<VersionModel> versions = Collections.emptyList();
-        try {
-            versions = documentManager.getVersionsForDocument(document.getRef());
-            for (VersionModel model : versions) {
-                DocumentModel ver = documentManager.getDocumentWithVersion(document.getRef(), model);
-                if (ver != null) {
-                    model.setDescription(ver.getAdapter(VersioningDocument.class).getVersionLabel());
-                }
+        versions = documentManager.getVersionsForDocument(document.getRef());
+        for (VersionModel model : versions) {
+            DocumentModel ver = documentManager.getDocumentWithVersion(document.getRef(), model);
+            if (ver != null) {
+                model.setDescription(ver.getAdapter(VersioningDocument.class).getVersionLabel());
             }
-        } catch (ClientException e) {
-            log.error("Error retrieving versioning history ", e);
         }
         return versions;
     }
@@ -181,12 +176,7 @@ public class DocumentVersioningBean implements DocumentVersioning, Serializable 
     }
 
     public VersionIncEditOptions getAvailableVersioningOptions(DocumentModel doc) {
-        try {
-            return versioningManager.getVersionIncEditOptions(doc);
-        } catch (ClientException e) {
-            log.error("Error retrieving versioning options ", e);
-            return null;
-        }
+        return versioningManager.getVersionIncEditOptions(doc);
     }
 
     @Override

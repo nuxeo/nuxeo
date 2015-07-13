@@ -27,9 +27,9 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -68,7 +68,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
 
             List<DocumentModel> providers = queryProviders(filter, 1);
             return providers.isEmpty() ? null : buildProvider(providers.get(0));
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Unable to read provider from Directory backend", e);
             return null;
         }
@@ -106,7 +106,7 @@ public class OAuth2ServiceProviderRegistryImpl extends DefaultComponent implemen
             Set<String> fulltext = Collections.emptySet();
             Map<String, String> orderBy = Collections.emptyMap();
             return session.query(filter, fulltext, orderBy, true, limit, 0);
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error while fetching provider directory", e);
         }
         return Collections.emptyList();

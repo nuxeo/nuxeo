@@ -44,10 +44,10 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
@@ -152,7 +152,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
                 throw e; // bubble up, usually until AbstractWork catches it and maybe retries
             } catch (DocumentNotFoundException e) {
                 log.info("Skip indexing command to bulk, doc does not exists anymore: " + cmd);
-            } catch (ClientException | IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 log.error("Skip indexing command to bulk, fail to create request: " + cmd, e);
             }
         }
@@ -210,7 +210,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             request = buildEsIndexingRequest(cmd);
         } catch (DocumentNotFoundException e) {
             request = null;
-        } catch (ClientException | IllegalStateException e) {
+        } catch (IllegalStateException e) {
             log.error("Fail to create request for indexing command: " + cmd, e);
             return;
         }
@@ -294,7 +294,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
     /**
      * Return indexing request or null if the doc does not exists anymore.
      *
-     * @throws ClientException in case of pb to get the document or generate json
      * @throws java.lang.IllegalStateException if the command is not attached to a session
      */
     IndexRequestBuilder buildEsIndexingRequest(IndexingCommand cmd) {
@@ -310,7 +309,7 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
             return esa.getClient().prepareIndex(esa.getIndexNameForRepository(cmd.getRepositoryName()), DOC_TYPE,
                     cmd.getTargetDocumentId()).setSource(builder);
         } catch (IOException e) {
-            throw new ClientException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
+            throw new NuxeoException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         }
     }
 

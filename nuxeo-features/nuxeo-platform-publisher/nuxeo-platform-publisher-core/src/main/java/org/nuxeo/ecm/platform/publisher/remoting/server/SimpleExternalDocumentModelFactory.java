@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.publisher.remoting.server;
 
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
@@ -62,14 +61,6 @@ public class SimpleExternalDocumentModelFactory extends AbstractBasePublishedDoc
             return super.needToVersionDocument(doc);
         }
     }
-
-    /*
-     * public DocumentModel unwrapPublishedDocument(PublishedDocument pubDoc) { if (pubDoc
-     * instanceof SimpleCorePublishedDocument) { SimpleCorePublishedDocument pubProxy = (SimpleCorePublishedDocument)
-     * pubDoc; return pubProxy.getProxy(); } if (pubDoc instanceof ExternalCorePublishedDocument) {
-     * ExternalCorePublishedDocument pubExt = (ExternalCorePublishedDocument) pubDoc; return pubExt.getDocumentModel();
-     * } throw new ClientException( "factory can not unwrap this PublishedDocument"); }
-     */
 
     public PublishedDocument wrapDocumentModel(DocumentModel doc) {
         if (doc.isProxy()) {

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -103,13 +102,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
 
-        Blob sourceBlob;
-
-        try {
-            sourceBlob = blobHolder.getBlob();
-        } catch (ClientException e) {
-            throw new ConversionException("Can not fetch blob", e);
-        }
+        Blob sourceBlob = blobHolder.getBlob();
 
         List<String> subConverters = getConverterChain(sourceBlob.getMimeType());
 
@@ -122,12 +115,7 @@ public class HtmlPreviewConverter implements ExternalConverter {
         for (String converterName : subConverters) {
             result = getConversionService().convert(converterName, result, parameters);
         }
-        Blob blob;
-        try {
-            blob = result.getBlob();
-        } catch (ClientException e) {
-            throw new ConversionException("Cannot fetch html blob", e);
-        }
+        Blob blob = result.getBlob();
         if (blob.getEncoding() == null) {
             blob.setEncoding("UTF-8");
         }

@@ -36,7 +36,6 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -179,11 +178,7 @@ public class CoreGraph implements Graph {
     @Override
     public Long size() {
         SizeFinder sizeFinder = session == null ? new SizeFinder() : new SizeFinder(session);
-        try {
-            sizeFinder.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        sizeFinder.runUnrestricted();
         return Long.valueOf(sizeFinder.size);
     }
 
@@ -225,11 +220,7 @@ public class CoreGraph implements Graph {
     public void add(List<Statement> statements) {
         StatementAdder statementAdder = session == null ? new StatementAdder(statements) : new StatementAdder(
                 statements, session);
-        try {
-            statementAdder.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        statementAdder.runUnrestricted();
     }
 
     protected class StatementAdder extends UnrestrictedSessionRunner {
@@ -348,11 +339,7 @@ public class CoreGraph implements Graph {
     public void remove(List<Statement> statements) {
         StatementRemover statementRemover = session == null ? new StatementRemover(statements) : new StatementRemover(
                 statements, session);
-        try {
-            statementRemover.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        statementRemover.runUnrestricted();
     }
 
     protected class StatementRemover extends UnrestrictedSessionRunner {
@@ -501,11 +488,7 @@ public class CoreGraph implements Graph {
     public List<Statement> getStatements(Statement statement) {
         StatementFinder statementFinder = session == null ? new StatementFinder(statement) : new StatementFinder(
                 statement, session);
-        try {
-            statementFinder.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        statementFinder.runUnrestricted();
         return statementFinder.statements;
     }
 
@@ -556,11 +539,7 @@ public class CoreGraph implements Graph {
         }
         ResourceFinder resourceFinder = session == null ? new ResourceFinder(resource) : new ResourceFinder(resource,
                 session);
-        try {
-            resourceFinder.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        resourceFinder.runUnrestricted();
         return resourceFinder.found;
     }
 

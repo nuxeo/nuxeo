@@ -34,11 +34,11 @@ public interface Annotation {
 
     String getId();
 
-    URI getAnnotates() throws AnnotationException;
+    URI getAnnotates();
 
-    String getContext() throws AnnotationException;
+    String getContext();
 
-    URI getBody() throws AnnotationException;
+    URI getBody();
 
     String getBodyAsText();
 

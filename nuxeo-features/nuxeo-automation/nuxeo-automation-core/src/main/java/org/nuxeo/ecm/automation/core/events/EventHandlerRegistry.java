@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -92,12 +92,8 @@ public class EventHandlerRegistry {
         }
         ctx.put("Event", event);
         for (EventHandler handler : handlers) {
-            try {
-                if (handler.isEnabled(ctx, ectx, true)) {
-                    return true;
-                }
-            } catch (ClientException e) {
-                log.error("Failed to check event " + event.getName() + " using chain: " + handler.getChainId(), e);
+            if (handler.isEnabled(ctx, ectx, true)) {
+                return true;
             }
         }
         return false;
@@ -128,7 +124,7 @@ public class EventHandlerRegistry {
                     // TODO this will save the session at each iteration!
                     svc.run(ctx, handler.getChainId());
                 }
-            } catch (ClientException | OperationException e) {
+            } catch (NuxeoException | OperationException e) {
                 log.error("Failed to handle event " + event.getName() + " using chain: " + handler.getChainId(), e);
             }
         }

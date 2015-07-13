@@ -19,12 +19,11 @@
 
 package org.nuxeo.ecm.platform.annotations.repository;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
@@ -40,7 +39,7 @@ public class DefaultNuxeoUriResolverTest extends AbstractRepositoryTestCase {
     }
 
     @Test
-    public void testGetDocumentRef() throws AnnotationException {
+    public void testGetDocumentRef() {
         assertNotNull(uri);
         resolver = new DefaultNuxeoUriResolver();
         DocumentRef ref = resolver.getDocumentRef(uri);

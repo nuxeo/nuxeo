@@ -25,13 +25,13 @@ import org.dom4j.QName;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentLocationMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentModelMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublicationNodeMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishedDocumentMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 
 import java.util.ArrayList;
@@ -84,7 +84,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
         this.session = session;
     }
 
-    public String marshallParameters(List<Object> params) throws PublishingMarshalingException {
+    public String marshallParameters(List<Object> params) {
 
         if (params == null) {
             return "null";
@@ -99,18 +99,18 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
         return env;
     }
 
-    public String marshallResult(Object result) throws PublishingMarshalingException {
+    public String marshallResult(Object result) {
         String res = buildResultEnvelope();
         String strResult = marshalSingleObject(result);
         res = res.replace(RESULT_PATTERN, strResult);
         return res;
     }
 
-    public List<Object> unMarshallParameters(String data) throws PublishingMarshalingException {
+    public List<Object> unMarshallParameters(String data) {
         return unMarshallParameters(data, session);
     }
 
-    protected List<Object> unMarshallParameters(String data, CoreSession session) throws PublishingMarshalingException {
+    protected List<Object> unMarshallParameters(String data, CoreSession session) {
 
         List<Object> params = new ArrayList<Object>();
 
@@ -132,16 +132,16 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
                 }
             }
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException("Error during unmarshaling of parameters", e);
+            throw new NuxeoException("Error during unmarshaling of parameters", e);
         }
         return params;
     }
 
-    public Object unMarshallResult(String data) throws PublishingMarshalingException {
+    public Object unMarshallResult(String data) {
         return unMarshallResult(data, session);
     }
 
-    protected Object unMarshallResult(String data, CoreSession coreSession) throws PublishingMarshalingException {
+    protected Object unMarshallResult(String data, CoreSession coreSession) {
         Document document;
         try {
             document = DocumentHelper.parseText(data);
@@ -153,7 +153,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
                 return unMarshalSingleObject(((org.dom4j.Element) rootElem.elements().get(0)).asXML(), coreSession);
             }
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException("Error during unmarshaling Result", e);
+            throw new NuxeoException("Error during unmarshaling Result", e);
         }
     }
 
@@ -179,12 +179,12 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
         return rootDoc.asXML();
     }
 
-    protected Object unMarshalSingleObject(String xml, CoreSession coreSession) throws PublishingMarshalingException {
+    protected Object unMarshalSingleObject(String xml, CoreSession coreSession) {
         Document document;
         try {
             document = DocumentHelper.parseText(xml);
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException("Error during unmarshaling", e);
+            throw new NuxeoException("Error during unmarshaling", e);
         }
         org.dom4j.Element rootElem = document.getRootElement();
 
@@ -227,11 +227,11 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
             return map;
         }
 
-        throw new PublishingMarshalingException("Unable to unmarshal data");
+        throw new NuxeoException("Unable to unmarshal data");
 
     }
 
-    protected String marshalSingleObject(Object ob) throws PublishingMarshalingException {
+    protected String marshalSingleObject(Object ob) {
         if (ob == null) {
             return "null";
         } else if (ob instanceof String) {
@@ -271,9 +271,7 @@ public class DefaultMarshaler extends AbstractDefaultXMLMarshaler implements Rem
             sb.append("</map>");
             return sb.toString();
         }
-
-        throw new PublishingMarshalingException("unable to marshal object");
-
+        throw new NuxeoException("unable to marshal object of class " + ob.getClass().getName());
     }
 
     public void setAssociatedCoreSession(CoreSession session) {

@@ -36,10 +36,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -79,12 +79,8 @@ public class AnnotationsActions implements Serializable {
             List<Annotation> annotations = annotationsService.queryAnnotations(new URI(documentUrl), null,
                     (NuxeoPrincipal) currentUser);
             return annotations.size();
-        } catch (AnnotationException e) {
-            log.error("Unable to get annotations graph", e);
-            return 0;
         } catch (URISyntaxException e) {
-            log.error("Unable to get annotations for: " + documentUrl, e);
-            return 0;
+            throw new NuxeoException(e);
         }
     }
 

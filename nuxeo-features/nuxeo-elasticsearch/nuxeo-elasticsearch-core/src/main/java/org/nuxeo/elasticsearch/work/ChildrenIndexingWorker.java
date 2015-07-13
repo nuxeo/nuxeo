@@ -78,12 +78,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
     }
 
     private DocumentModel getDocument(IndexingCommand cmd) {
-        DocumentModel doc;
-        try {
-            doc = cmd.getTargetDocument();
-        } catch (DocumentNotFoundException e) {
-            doc = null;
-        }
+        DocumentModel doc = cmd.getTargetDocument();
         if (doc == null) {
             // doc has been deleted
             return null;

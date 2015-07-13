@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -79,17 +78,13 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
         if (includeBlob) {
             BlobHolder bh = doc.getAdapter(BlobHolder.class);
             if (bh != null) {
-                try {
-                    List<Blob> blobs = bh.getBlobs();
-                    if (blobs != null) {
-                        for (Blob blob : blobs) {
-                            if (blob != null) {
-                                hostTask.getInfo().addBlob(blob.getLength(), doc.getPath());
-                            }
+                List<Blob> blobs = bh.getBlobs();
+                if (blobs != null) {
+                    for (Blob blob : blobs) {
+                        if (blob != null) {
+                            hostTask.getInfo().addBlob(blob.getLength(), doc.getPath());
                         }
                     }
-                } catch (ClientException t) {
-                    log.warn("Unable to find Blob info for doc " + doc.getId(), t);
                 }
             }
         }
@@ -108,13 +103,8 @@ public class StatsTaskRunner extends UnrestrictedSessionRunner {
 
     @Override
     public void run() {
-        try {
-            DocumentModel root = session.getDocument(rootref);
-            recurse(root);
-        } catch (ClientException e) {
-            log.error("Error while running StatsTaskRunner", e);
-            throw new ClientException(e);
-        }
+        DocumentModel root = session.getDocument(rootref);
+        recurse(root);
     }
 
 }

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -132,7 +132,7 @@ public class MagickTiler implements PictureTiler {
             ImageCropperAndResizer.cropAndResize(input.getFilePath(), outputFilePath, cropCoords[2], cropCoords[3],
                     cropCoords[0], cropCoords[1], cropCoords[6], cropCoords[7], mapComponents);
         } catch (CommandNotAvailable | CommandException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
 
         Map<String, String> infoMap = new HashMap<String, String>();

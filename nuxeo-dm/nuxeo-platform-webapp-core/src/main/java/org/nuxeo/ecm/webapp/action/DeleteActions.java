@@ -24,7 +24,6 @@ import java.util.List;
 import javax.annotation.security.PermitAll;
 
 import org.jboss.seam.annotations.Destroy;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface DeleteActions {

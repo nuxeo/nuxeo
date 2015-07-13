@@ -27,8 +27,8 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.runtime.api.Framework;
 
@@ -78,12 +78,11 @@ public class AutomationRenderer {
         return true;
     }
 
-    public static List<Blob> render(DocumentModel doc, RenditionDefinition definition, CoreSession session)
-            throws RenditionException {
+    public static List<Blob> render(DocumentModel doc, RenditionDefinition definition, CoreSession session) {
 
         String chain = definition.getOperationChain();
         if (chain == null) {
-            throw new RenditionException("no operation defined");
+            throw new NuxeoException("no operation defined");
         }
 
         if (session == null) {
@@ -103,12 +102,12 @@ public class AutomationRenderer {
                     }
                 } catch (Exception e) {
                     if (!definition.isEmptyBlobAllowed()) {
-                        throw new RenditionException("No Blob available", e);
+                        throw new NuxeoException("No Blob available", e);
                     }
                 }
             } else {
                 if (!definition.isEmptyBlobAllowed()) {
-                    throw new RenditionException("No Blob available");
+                    throw new NuxeoException("No Blob available");
                 }
             }
 
@@ -118,7 +117,7 @@ public class AutomationRenderer {
             return blobs;
 
         } catch (Exception e) {
-            throw new RenditionException("Exception while running the operation chain: "
+            throw new NuxeoException("Exception while running the operation chain: "
                     + definition.getOperationChain(), e);
         }
     }

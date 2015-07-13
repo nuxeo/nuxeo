@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forum.web.api;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.comment.web.ThreadEntry;
 
@@ -54,8 +53,6 @@ public interface ThreadAction extends Serializable {
 
     /**
      * Adds the thread inside the forum.
-     *
-     * @throws ClientException if the Thread can't be created
      */
     String addThread();
 

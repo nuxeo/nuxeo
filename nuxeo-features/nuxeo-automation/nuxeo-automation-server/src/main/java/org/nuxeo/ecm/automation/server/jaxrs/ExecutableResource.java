@@ -19,8 +19,8 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.OperationNotFoundException;
 import org.nuxeo.ecm.automation.jaxrs.io.operations.ExecutionRequest;
 import org.nuxeo.ecm.automation.server.AutomationServer;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -64,7 +64,7 @@ public abstract class ExecutableResource {
                 return ResponseHelper.getResponse(result, request, customHttpStatus);
             }
             return ResponseHelper.getResponse(result, request);
-        } catch (OperationException | ClientException | SecurityException | MessagingException | IOException cause) {
+        } catch (OperationException | NuxeoException | SecurityException | MessagingException | IOException cause) {
             if (cause instanceof ConflictOperationException) {
                 throw WebException.newException("Failed to invoke operation: " + getId(), cause,
                         HttpServletResponse.SC_CONFLICT);

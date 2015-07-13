@@ -21,7 +21,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 
 /**
  * Service handling Rendition Definitions and actual render based on a Rendition Definition
@@ -63,7 +62,7 @@ public interface RenditionService {
      * @param renditionDefinitionName the rendition definition to use
      * @return the {@code DocumentRef} of the newly created Rendition document.
      */
-    DocumentRef storeRendition(DocumentModel sourceDocument, String renditionDefinitionName) throws RenditionException;
+    DocumentRef storeRendition(DocumentModel sourceDocument, String renditionDefinitionName);
 
     /**
      * Return the {@link Rendition} object for the given {@link DocumentModel} and a rendition definition name.
@@ -73,9 +72,8 @@ public interface RenditionService {
      * @param doc the document to render
      * @param renditionName the name of the rendition definition
      * @return the {@link Rendition} object
-     * @throws RenditionException
      */
-    Rendition getRendition(DocumentModel doc, String renditionName) throws RenditionException;
+    Rendition getRendition(DocumentModel doc, String renditionName);
 
     /**
      * Return the {@link Rendition} object for the given {@link DocumentModel} and a rendition definition name.
@@ -88,9 +86,8 @@ public interface RenditionService {
      * @param renditionName the name of the rendition definition
      * @param store indicates if the rendition must be stored
      * @return the {@link Rendition} object
-     * @throws RenditionException
      */
-    Rendition getRendition(DocumentModel doc, String renditionName, boolean store) throws RenditionException;
+    Rendition getRendition(DocumentModel doc, String renditionName, boolean store);
 
     /**
      * Returns a {@code List} of {@code Rendition} available on the given Document.
@@ -99,7 +96,7 @@ public interface RenditionService {
      * <p>
      * The returned rendition may be live or stored
      */
-    List<Rendition> getAvailableRenditions(DocumentModel doc) throws RenditionException;
+    List<Rendition> getAvailableRenditions(DocumentModel doc);
 
     /**
      * Returns a {@code List} of {@code Rendition} available on the given Document.
@@ -112,6 +109,6 @@ public interface RenditionService {
      *
      * @since 7.2
      */
-    List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible) throws RenditionException;
+    List<Rendition> getAvailableRenditions(DocumentModel doc, boolean onlyVisible);
 
 }

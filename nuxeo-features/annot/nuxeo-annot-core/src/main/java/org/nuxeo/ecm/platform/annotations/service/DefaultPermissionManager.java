@@ -22,14 +22,13 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.net.URI;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
  */
 public class DefaultPermissionManager implements PermissionManager {
 
-    public boolean check(NuxeoPrincipal user, String permission, URI uri) throws AnnotationException {
+    public boolean check(NuxeoPrincipal user, String permission, URI uri) {
         return true;
     }
 

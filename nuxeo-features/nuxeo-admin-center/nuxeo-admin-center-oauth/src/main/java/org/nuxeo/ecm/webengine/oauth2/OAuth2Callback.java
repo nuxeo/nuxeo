@@ -32,7 +32,7 @@ import javax.ws.rs.core.Response;
 import com.google.api.client.auth.oauth2.Credential;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProviderRegistry;
@@ -78,7 +78,7 @@ public class OAuth2Callback extends ModuleRoot {
             public void run() {
                 try {
                     credential = provider.handleAuthorizationCallback(request);
-                } catch (ClientException e) {
+                } catch (NuxeoException e) {
                     log.error("Authorization request failed", e);
                     args.put("error", "Authorization request failed");
                 }

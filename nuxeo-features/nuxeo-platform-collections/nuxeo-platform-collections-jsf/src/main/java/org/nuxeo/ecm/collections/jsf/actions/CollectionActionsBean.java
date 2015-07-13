@@ -38,9 +38,9 @@ import org.jboss.seam.international.Messages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.collections.api.CollectionConstants;
 import org.nuxeo.ecm.collections.api.CollectionManager;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -241,7 +241,7 @@ public class CollectionActionsBean implements Serializable {
             try {
                 final CoreSession session = (CoreSession) Component.getInstance("documentManager", true);
                 selectedCollection = session.getDocument(new IdRef(selectedCollectionUid));
-            } catch (ClientException e) {
+            } catch (DocumentNotFoundException e) {
                 log.error("Cannot fetch collection");
             }
         }

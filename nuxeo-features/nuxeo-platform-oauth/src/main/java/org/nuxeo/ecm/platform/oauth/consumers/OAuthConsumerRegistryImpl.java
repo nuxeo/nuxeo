@@ -26,9 +26,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -51,7 +51,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
         try {
             NuxeoOAuthConsumer consumer = getEntry(consumerKey, keyType);
             return consumer;
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Unable to read consumer " + consumerKey + " from Directory backend", e);
             return null;
         }
@@ -97,7 +97,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 session.deleteEntry(consumerKey);
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Unable to delete consumer " + consumerKey, e);
         }
     }
@@ -114,7 +114,7 @@ public class OAuthConsumerRegistryImpl extends DefaultComponent implements OAuth
                     result.add(NuxeoOAuthConsumer.createFromDirectoryEntry(entry, null));
                 }
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error while fetching consumer directory", e);
         }
         return result;

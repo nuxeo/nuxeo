@@ -18,7 +18,7 @@
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.AbstractPublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -60,7 +60,7 @@ public class FSPublicationNode extends AbstractPublicationNode implements Public
                 try {
                     childrenDocs.add(new FSPublishedDocument(child));
                 } catch (NotFSPublishedDocumentException e) {
-                    throw new ClientException("Error whild creating PublishedDocument from file", e);
+                    throw new NuxeoException("Error whild creating PublishedDocument from file", e);
                 }
             }
         }

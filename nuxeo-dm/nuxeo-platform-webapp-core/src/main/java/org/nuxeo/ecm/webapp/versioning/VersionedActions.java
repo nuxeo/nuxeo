@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.webapp.versioning;
 
 import org.jboss.seam.annotations.Create;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
@@ -56,7 +55,6 @@ public interface VersionedActions {
      * Restores the version which id is returned by {@link #getSelectedVersionId()}.
      *
      * @return the view id
-     * @throws ClientException if cannot fetch the version
      * @since 5.6
      */
     String restoreToVersion();
@@ -114,7 +112,6 @@ public interface VersionedActions {
      * Navigates to the version which id is returned by {@link #getSelectedVersionId()}.
      *
      * @return the view id
-     * @throws ClientException if cannot fetch the version
      * @since 5.6
      */
     String viewArchivedVersion();
@@ -133,7 +130,6 @@ public interface VersionedActions {
      * them.
      *
      * @return true if can remove selected archived versions
-     * @throws ClientException if at least one of the selected versions cannot be retrieved from the repository
      * @since 5.6
      */
     boolean getCanRemoveSelectedArchivedVersions();

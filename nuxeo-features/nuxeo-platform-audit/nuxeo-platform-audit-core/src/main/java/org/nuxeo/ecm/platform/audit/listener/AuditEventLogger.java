@@ -21,12 +21,9 @@ package org.nuxeo.ecm.platform.audit.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
-import org.nuxeo.ecm.core.event.ReconnectedEventBundle;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.runtime.api.Framework;
 
@@ -52,11 +49,7 @@ public class AuditEventLogger implements PostCommitFilteringEventListener {
     public void handleEvent(EventBundle events) {
         AuditLogger logger = Framework.getLocalService(AuditLogger.class);
         if (logger != null) {
-            try {
-                logger.logEvents(events);
-            } catch (AuditException e) {
-                log.error("Unable to persist event bundle into audit log", e);
-            }
+            logger.logEvents(events);
         } else {
             log.error("Can not reach AuditLogger");
         }

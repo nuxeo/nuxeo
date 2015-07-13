@@ -28,10 +28,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -56,7 +56,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
         try {
             NuxeoOAuthServiceProvider provider = getEntry(gadgetUri, serviceName, null);
             return provider;
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Unable to read provider from Directory backend", e);
             return null;
         }
@@ -192,7 +192,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
             try (Session session = ds.open(DIRECTORY_NAME)) {
                 session.deleteEntry(providerId);
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Unable to delete provider " + providerId, e);
         }
     }
@@ -210,7 +210,7 @@ public class OAuthServiceProviderRegistryImpl extends DefaultComponent implement
             for (DocumentModel entry : entries) {
                 result.add(NuxeoOAuthServiceProvider.createFromDirectoryEntry(entry));
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error while fetching provider directory", e);
         }
         return result;

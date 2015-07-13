@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.adapter.PictureTilesAdapter;
 import org.nuxeo.ecm.platform.pictures.tiles.serializer.JSONPictureTilesSerializer;
@@ -110,7 +110,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
                 }
                 updateCache(targetDocument, adapter, xpath);
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
             return;
         }
@@ -123,7 +123,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         PictureTiles tiles = null;
         try {
             tiles = adapter.getTiles(tileWidth, tileHeight, maxTiles);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             handleError(res, e);
         }
 
@@ -179,7 +179,7 @@ public class PictureTilesRestlets extends BaseStatelessNuxeoRestlet {
         final Blob image;
         try {
             image = tiles.getTile(x, y);
-        } catch (ClientException | IOException e) {
+        } catch (NuxeoException | IOException e) {
             handleError(res, e);
             return;
         }

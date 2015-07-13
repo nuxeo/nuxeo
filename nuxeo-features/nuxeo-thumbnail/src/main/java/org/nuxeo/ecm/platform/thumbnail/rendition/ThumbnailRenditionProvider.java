@@ -23,7 +23,6 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailService;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.runtime.api.Framework;
@@ -39,7 +38,7 @@ public class ThumbnailRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         ThumbnailService thumbnailService = Framework.getService(ThumbnailService.class);
         Blob blob = thumbnailService.getThumbnail(doc, doc.getCoreSession());
         if (blob != null) {

@@ -43,7 +43,6 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.nuxeo.ecm.automation.core.operations.business.adapter.BusinessAdapter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -579,44 +578,21 @@ public class ObjectCodecService {
                 jp.setCodec(new ObjectMapper());
             }
             BusinessAdapter fromBa = jp.readValueAs(type);
+            DocumentModel doc = fromBa.getId() != null ? session.getDocument(new IdRef(fromBa.getId()))
+                    : DocumentModelFactory.createDocumentModel(fromBa.getType());
+            BusinessAdapter ba = doc.getAdapter(fromBa.getClass());
 
-            try {
-                DocumentModel doc = fromBa.getId() != null ? session.getDocument(new IdRef(fromBa.getId()))
-                        : DocumentModelFactory.createDocumentModel(fromBa.getType());
-                BusinessAdapter ba = doc.getAdapter(fromBa.getClass());
+            // And finally copy the fields sets from the adapter
+            for (String schema : fromBa.getDocument().getSchemas()) {
+                DataModel dataModel = ba.getDocument().getDataModel(schema);
+                DataModel fromDataModel = fromBa.getDocument().getDataModel(schema);
 
-                // And finally copy the fields sets from the adapter
-                for (String schema : fromBa.getDocument().getSchemas()) {
-                    DataModel dataModel = ba.getDocument().getDataModel(schema);
-                    DataModel fromDataModel = fromBa.getDocument().getDataModel(schema);
-
-                    for (String field : fromDataModel.getDirtyFields()) {
-                        dataModel.setData(field, fromDataModel.getData(field));
-                    }
+                for (String field : fromDataModel.getDirtyFields()) {
+                    dataModel.setData(field, fromDataModel.getData(field));
                 }
-                return ba;
-            } catch (ClientException e) {
-                throw new RuntimeException(e);
             }
-
+            return ba;
         }
     }
-
-    // public static void main(String[] args) throws Exception {
-    // Map<String, Object> map = new LinkedHashMap<String, Object>();
-    // ArrayList<Object> list = new ArrayList<Object>();
-    // list.add("v1");
-    // list.add(2);
-    // list.add(new Date());
-    // map.put("list", list);
-    // map.put("k", "v");
-    // map.put("k2", "v");
-    // map.put("k1", "v");
-    // ObjectCodecService s = new ObjectCodecService();
-    // String json = s.toString(map, true);
-    // System.out.println(json);
-    // System.out.println("================");
-    // System.out.println(s.toString(s.read(json, null), true));
-    // }
 
 }

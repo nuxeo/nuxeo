@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.runtime.api.Framework;

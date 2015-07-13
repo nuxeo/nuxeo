@@ -37,9 +37,9 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.LocaleSelector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
@@ -129,7 +129,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
             navigationContext.setCurrentServerLocation(new RepositoryLocation(repo));
             documentManager = navigationContext.getOrCreateDocumentManager();
             targetDocument = documentManager.getDocument(new IdRef(docid));
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             handleError(res, e);
             return;
         }
@@ -149,13 +149,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
 
         localeSetup(req);
 
-        List<Blob> previewBlobs;
-        try {
-            previewBlobs = initCachedBlob(res, xpath, blobPostProcessing);
-        } catch (ClientException e) {
-            handleError(res, "unable to get preview");
-            return;
-        }
+        List<Blob> previewBlobs = initCachedBlob(res, xpath, blobPostProcessing);
         if (previewBlobs == null || previewBlobs.isEmpty()) {
             // response was already handled by initCachedBlob
             return;
@@ -200,12 +194,7 @@ public class PreviewRestlet extends BaseNuxeoRestlet {
      */
     private void localeSetup(Request req) {
         // Forward locale from HttpRequest to Seam context if not set into DM
-        Locale locale = null;
-        try {
-            locale = Framework.getLocalService(LocaleProvider.class).getLocale(documentManager);
-        } catch (ClientException e) {
-            log.warn("Couldn't get locale from LocaleProvider, trying request locale and default locale", e);
-        }
+        Locale locale = Framework.getService(LocaleProvider.class).getLocale(documentManager);
         if (locale == null) {
             locale = getHttpRequest(req).getLocale();
         }

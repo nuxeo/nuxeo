@@ -28,10 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
@@ -52,7 +52,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         try {
             rootNode = new FSPublicationNode(rootPath, getTreeConfigName(), sid);
         } catch (IllegalArgumentException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -121,7 +121,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
                 }
             }
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         } finally {
             if (reader != null) {
                 try {
@@ -144,7 +144,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
                 writer.newLine();
             }
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         } finally {
             if (writer != null) {
                 try {
@@ -184,7 +184,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
                 writer.newLine();
             }
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         } finally {
             if (reader != null) {
                 try {
@@ -212,7 +212,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         try {
             FileUtils.moveFile(srcFile, destFile);
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -234,7 +234,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
                 }
             }
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         } finally {
             if (reader != null) {
                 try {
@@ -282,7 +282,7 @@ public class LocalFSPublicationTree extends AbstractBasePublicationTree implemen
         for (File child : container.listFiles()) {
             try {
                 unpublish(doc, child);
-            } catch (ClientException | NotFSPublishedDocumentException e) {
+            } catch (NotFSPublishedDocumentException e) {
                 // NOP
             }
         }

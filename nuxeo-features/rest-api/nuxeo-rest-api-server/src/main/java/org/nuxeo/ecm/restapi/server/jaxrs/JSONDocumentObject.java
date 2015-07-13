@@ -33,10 +33,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JSONDocumentModelReader;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.rest.DocumentObject;
@@ -119,7 +119,7 @@ public class JSONDocumentObject extends DocumentObject {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
             return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -129,7 +129,7 @@ public class JSONDocumentObject extends DocumentObject {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
             return (DocumentObject) ctx.newObject("Document", doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * A Content Enricher knows how to enrich to some Json serialization.

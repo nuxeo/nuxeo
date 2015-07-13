@@ -30,11 +30,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.configuration.service.FilterDescriptor;
 import org.nuxeo.ecm.platform.annotations.configuration.service.WebAnnotationConfigurationService;
@@ -122,7 +122,7 @@ public class WebConfigurationServiceImpl extends RemoteServiceServlet implements
         try (CoreSession coreSession = CoreInstance.openCoreSession(docLocation.getServerName())) {
             DocumentModel docModel = coreSession.getDocument(docLocation.getDocRef());
             return webPermission.canAnnotate(docModel);
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             log.error("Unable to get Document: " + docLocation.getDocRef(), e);
         }
         return true; // if any error, default to authorize annotations

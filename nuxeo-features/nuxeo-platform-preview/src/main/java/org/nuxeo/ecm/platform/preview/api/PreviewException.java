@@ -14,14 +14,14 @@
  */
 package org.nuxeo.ecm.platform.preview.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * Preview exception.
  *
  * @author tiry
  */
-public class PreviewException extends ClientException {
+public class PreviewException extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

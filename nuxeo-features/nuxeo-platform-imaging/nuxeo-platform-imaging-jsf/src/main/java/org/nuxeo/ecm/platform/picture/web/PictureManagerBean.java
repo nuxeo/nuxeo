@@ -45,7 +45,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -201,7 +200,7 @@ public class PictureManagerBean implements PictureManager, Serializable {
 
                 documentManager.save();
             }
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             log.error("Picture Creation failed", e);
             documentManager.cancel();
             FacesMessage message = FacesMessages.createFacesMessage(FacesMessage.SEVERITY_ERROR,

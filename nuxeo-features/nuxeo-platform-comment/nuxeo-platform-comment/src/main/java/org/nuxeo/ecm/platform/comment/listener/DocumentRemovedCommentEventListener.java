@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.platform.comment.service.CommentServiceConfig;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -68,7 +68,7 @@ public class DocumentRemovedCommentEventListener extends AbstractCommentListener
                 try {
                     coreSession.removeDocument(docModel.getRef());
                     log.debug("comment removal succeded for id: " + commentId);
-                } catch (ClientException e) {
+                } catch (DocumentNotFoundException e) {
                     log.error("comment removal failed", e);
                 }
             } else {

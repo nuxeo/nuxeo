@@ -25,7 +25,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultPublishedDocumentMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishedDocumentMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
  * Test simple marshaling
@@ -35,7 +34,7 @@ import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.Publishin
 public class TestMarshaling {
 
     @Test
-    public void testPublishedDocMarshaling() throws PublishingMarshalingException {
+    public void testPublishedDocMarshaling() {
         PublishedDocument pubDoc = new BasicPublishedDocument(new IdRef("1"), "demo", "local", "1.0", "path",
                 "parentPath", true);
 

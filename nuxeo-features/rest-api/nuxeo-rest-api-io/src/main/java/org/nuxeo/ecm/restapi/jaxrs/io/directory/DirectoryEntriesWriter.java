@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
 
 /**

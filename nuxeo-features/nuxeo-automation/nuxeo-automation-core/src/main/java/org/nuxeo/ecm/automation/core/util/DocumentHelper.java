@@ -21,9 +21,9 @@ import java.util.Map;
 
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
@@ -314,7 +314,7 @@ public class DocumentHelper {
                 p.setValue(val);
                 return;
             }
-            throw new ClientException("Property type is not supported by this operation");
+            throw new NuxeoException("Property type is not supported by this operation");
         } else {
             p.setValue(((SimpleType) type).getPrimitiveType().decode(value));
         }

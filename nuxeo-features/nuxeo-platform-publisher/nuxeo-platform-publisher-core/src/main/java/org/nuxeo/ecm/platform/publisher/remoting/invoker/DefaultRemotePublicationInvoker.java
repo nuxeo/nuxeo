@@ -24,7 +24,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.nuxeo.common.utils.Base64;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 import org.nuxeo.ecm.platform.publisher.remoting.server.PublicationInvokationHandler;
 import org.nuxeo.ecm.platform.publisher.remoting.server.TestInvokationHandler;
@@ -88,10 +88,10 @@ public class DefaultRemotePublicationInvoker implements RemotePublicationInvoker
                 try {
                     return doHttpCall(methodName, marshaledData);
                 } catch (IOException e) {
-                    throw new ClientException("Error in http communication", e);
+                    throw new NuxeoException("Error in http communication", e);
                 }
             }
-            throw new ClientException("Unhandled protocol for url " + baseURL);
+            throw new NuxeoException("Unhandled protocol for url " + baseURL);
         }
     }
 

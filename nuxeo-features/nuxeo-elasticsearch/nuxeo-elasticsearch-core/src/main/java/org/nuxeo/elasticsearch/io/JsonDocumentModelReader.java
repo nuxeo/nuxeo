@@ -23,11 +23,11 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.common.bytes.BytesArray;
 import org.elasticsearch.search.lookup.SourceLookup;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -114,7 +114,7 @@ public class JsonDocumentModelReader {
                 try {
                     doc.setPropertyValue(prop, value);
                     // doc.setProperty(schema, key, value);
-                } catch (ClientException e) {
+                } catch (PropertyException e) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("fetchDocFromEs can not set property %s to %s", key, value));
                     }

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.forum.web.api;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

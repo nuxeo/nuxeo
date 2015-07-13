@@ -23,13 +23,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublicationTree;
@@ -187,7 +187,7 @@ public class SectionPublicationTree extends AbstractBasePublicationTree implemen
     @Override
     public PublicationNode wrapToPublicationNode(DocumentModel documentModel) {
         if (!isPublicationNode(documentModel)) {
-            throw new ClientException("Document " + documentModel.getPathAsString()
+            throw new NuxeoException("Document " + documentModel.getPathAsString()
                     + " is not a valid publication node.");
         }
         return new CoreFolderPublicationNode(documentModel, getConfigName(), sid, factory);

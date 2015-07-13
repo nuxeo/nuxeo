@@ -36,7 +36,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -123,59 +122,33 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
     @Override
     public boolean getCanDelete(String listName) {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(listName);
-        try {
-            return getTrashService().canDelete(docs, currentUser, false);
-        } catch (ClientException e) {
-            log.error("Cannot check delete permission", e);
-            return false;
-        }
+        return getTrashService().canDelete(docs, currentUser, false);
     }
 
     @Override
     public boolean getCanDeleteSections() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_SECTION_SELECTION);
-        try {
-            return getTrashService().canDelete(docs, currentUser, true);
-        } catch (ClientException e) {
-            log.error("Cannot check delete permission", e);
-            return false;
-        }
+        return getTrashService().canDelete(docs, currentUser, true);
     }
 
     @Override
     public boolean getCanPurge() {
         List<DocumentModel> docs = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
-        try {
-            return getTrashService().canPurgeOrUndelete(docs, currentUser);
-        } catch (ClientException e) {
-            log.error("Cannot check delete permission", e);
-            return false;
-        }
+        return getTrashService().canPurgeOrUndelete(docs, currentUser);
     }
 
     public boolean getCanEmptyTrash() {
         List<DocumentModel> selectedDocuments = documentsListsManager.getWorkingList(CURRENT_DOCUMENT_TRASH_SELECTION);
         if (selectedDocuments.size() == 0) {
             DocumentModelList currentTrashDocuments = trashService.getDocuments(navigationContext.getCurrentDocument());
-            try {
-                return getTrashService().canPurgeOrUndelete(currentTrashDocuments, currentUser);
-
-            } catch (ClientException e) {
-                log.error("Cannot check delete permission", e);
-                return false;
-            }
+            return getTrashService().canPurgeOrUndelete(currentTrashDocuments, currentUser);
         }
         return false;
     }
 
     @Override
     public boolean checkDeletePermOnParents(List<DocumentModel> docs) {
-        try {
-            return getTrashService().checkDeletePermOnParents(docs);
-        } catch (ClientException e) {
-            log.error("Cannot check delete permission", e);
-            return false;
-        }
+        return getTrashService().checkDeletePermOnParents(docs);
     }
 
     @Override
@@ -251,13 +224,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
         if (docs == null) {
             return null;
         }
-        TrashInfo info;
-        try {
-            info = getTrashService().getTrashInfo(docs, currentUser, false, false);
-        } catch (ClientException e) {
-            log.error("Cannot check delete permission", e);
-            return null;
-        }
+        TrashInfo info = getTrashService().getTrashInfo(docs, currentUser, false, false);
 
         DocumentModel targetContext = getTrashService().getAboveDocument(navigationContext.getCurrentDocument(),
                 info.rootPaths);
@@ -353,13 +320,7 @@ public class DeleteActionsBean implements DeleteActions, Serializable {
             log.warn("Null currentDocument in navigationContext");
             return false;
         }
-        try {
-            return getTrashService().canPurgeOrUndelete(Collections.singletonList(doc), currentUser);
-        } catch (ClientException e) {
-            log.error("Cannot check delete permission", e);
-            return false;
-        }
-
+        return getTrashService().canPurgeOrUndelete(Collections.singletonList(doc), currentUser);
     }
 
     public boolean restoreActionDisplay() {

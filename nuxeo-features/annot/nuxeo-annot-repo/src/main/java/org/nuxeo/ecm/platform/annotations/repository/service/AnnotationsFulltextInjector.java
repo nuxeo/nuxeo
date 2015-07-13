@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -81,7 +81,7 @@ public class AnnotationsFulltextInjector {
             try {
                 annotationBody = service.convert("html2text", bh, null).getBlob().getString();
             } catch (IOException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
         }
         @SuppressWarnings("unchecked")

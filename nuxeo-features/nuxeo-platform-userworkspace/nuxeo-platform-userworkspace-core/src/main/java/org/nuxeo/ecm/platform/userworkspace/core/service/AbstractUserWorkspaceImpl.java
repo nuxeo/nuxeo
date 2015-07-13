@@ -28,11 +28,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -70,12 +70,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     protected String getDomainName(CoreSession userCoreSession, DocumentModel currentDocument) {
         if (targetDomainName == null) {
             RootDomainFinder finder = new RootDomainFinder(userCoreSession);
-            try {
-                finder.runUnrestricted();
-            } catch (ClientException e) {
-                log.error("Unable to find root domain for UserWorkspace", e);
-                return null;
-            }
+            finder.runUnrestricted();
             targetDomainName = finder.domaineName;
         }
         return targetDomainName;
@@ -89,7 +84,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
             DocumentModel currentDocument) {
         String domainName = getDomainName(userCoreSession, currentDocument);
         if (domainName == null) {
-            throw new ClientException("Unable to find root domain for UserWorkspace");
+            throw new NuxeoException("Unable to find root domain for UserWorkspace");
         }
         Path path = new Path("/" + domainName);
         path = path.append(UserWorkspaceConstants.USERS_PERSONAL_WORKSPACES_ROOT);
@@ -128,7 +123,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     protected DocumentModel getCurrentUserPersonalWorkspace(Principal principal, String userName,
             CoreSession userCoreSession, DocumentModel context) {
         if (principal == null && StringUtils.isEmpty(userName)) {
-            throw new ClientException("You should pass at least one principal or one username");
+            throw new NuxeoException("You should pass at least one principal or one username");
         }
 
         String usedUsername;
@@ -172,14 +167,9 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
     @Override
     public DocumentModel getUserPersonalWorkspace(String userName, DocumentModel context) {
-        try {
-            UnrestrictedUserWorkspaceFinder finder = new UnrestrictedUserWorkspaceFinder(userName, context);
-            finder.runUnrestricted();
-            return finder.getDetachedUserWorkspace();
-        } catch (ClientException e) {
-            log.warn("Error while trying to get user workspace unrestricted");
-            throw new ClientException(e);
-        }
+        UnrestrictedUserWorkspaceFinder finder = new UnrestrictedUserWorkspaceFinder(userName, context);
+        finder.runUnrestricted();
+        return finder.getDetachedUserWorkspace();
     }
 
     protected String buildUserWorkspaceTitle(Principal principal, String userName) {
@@ -194,13 +184,7 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
 
         // Adapter userModel to get its fields (firstname, lastname)
-        DocumentModel userModel = null;
-        try {
-            userModel = userManager.getUserModel(userName);
-        } catch (ClientException e) {
-            log.error("Unable to fetch user model", e);
-        }
-
+        DocumentModel userModel = userManager.getUserModel(userName);
         if (userModel == null) {
             return userName;
         }
@@ -214,21 +198,17 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
 
         // compute the title
         StringBuilder title = new StringBuilder();
-        try {
-            String firstName = userAdapter.getFirstName();
-            if (firstName != null && firstName.trim().length() > 0) {
-                title.append(firstName);
-            }
+        String firstName = userAdapter.getFirstName();
+        if (firstName != null && firstName.trim().length() > 0) {
+            title.append(firstName);
+        }
 
-            String lastName = userAdapter.getLastName();
-            if (lastName != null && lastName.trim().length() > 0) {
-                if (title.length() > 0) {
-                    title.append(" ");
-                }
-                title.append(lastName);
+        String lastName = userAdapter.getLastName();
+        if (lastName != null && lastName.trim().length() > 0) {
+            if (title.length() > 0) {
+                title.append(" ");
             }
-        } catch (ClientException ce) {
-            log.error("Failed to compute the title for " + userName + "'s workspace", ce);
+            title.append(lastName);
         }
 
         if (title.length() > 0) {

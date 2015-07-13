@@ -40,8 +40,8 @@ import org.nuxeo.ecm.automation.core.mail.Mailer.Message.AS;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
@@ -176,7 +176,7 @@ public class SendMail {
             addMailBoxInfo(msg);
 
             msg.send();
-        } catch (ClientException | TemplateException | RenderingException | OperationException | MessagingException
+        } catch (NuxeoException | TemplateException | RenderingException | OperationException | MessagingException
                 | IOException e) {
             if (rollbackOnError) {
                 throw e;

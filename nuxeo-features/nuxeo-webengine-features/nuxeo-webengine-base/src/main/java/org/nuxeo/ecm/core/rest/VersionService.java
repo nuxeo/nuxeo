@@ -26,8 +26,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebAdapter;
@@ -63,7 +63,7 @@ public class VersionService extends DefaultAdapter {
             if (v != null) {
                 return dobj.newDocument(v);
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
         throw new WebResourceNotFoundException("No version found for "
@@ -81,7 +81,7 @@ public class VersionService extends DefaultAdapter {
                     return dobj.newDocument(dobj.getCoreSession().getDocumentWithVersion(doc.getRef(), v));
                 }
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
         throw new WebResourceNotFoundException("No such version " + label + " for document" + getTarget().getPath());

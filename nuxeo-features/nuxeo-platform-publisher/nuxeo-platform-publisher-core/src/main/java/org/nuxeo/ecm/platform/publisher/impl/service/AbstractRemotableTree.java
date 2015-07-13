@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -109,14 +108,10 @@ public abstract class AbstractRemotableTree implements PublicationTree {
     protected boolean released = false;
 
     public void release() {
-        try {
-            if (!released) {
-                getTreeService().release(getServerTreeSessionId());
-            }
-            released = true;
-        } catch (ClientException e) {
-            log.error("Error during release", e);
+        if (!released) {
+            getTreeService().release(getServerTreeSessionId());
         }
+        released = true;
     }
 
     public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {

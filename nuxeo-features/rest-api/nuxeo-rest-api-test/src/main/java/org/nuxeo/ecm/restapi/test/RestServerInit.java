@@ -27,9 +27,9 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.core.util.DocumentHelper;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -100,7 +100,7 @@ public class RestServerInit implements RepositoryInit {
             Blob fb = Blobs.createBlob(fieldAsJsonFile, "image/jpeg");
             DocumentHelper.addBlob(doc.getProperty("file:content"), fb);
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
         session.saveDocument(doc);
 

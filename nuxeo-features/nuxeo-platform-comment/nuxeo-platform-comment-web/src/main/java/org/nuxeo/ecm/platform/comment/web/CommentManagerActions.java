@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.faces.event.ActionEvent;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 

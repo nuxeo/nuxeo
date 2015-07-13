@@ -26,9 +26,9 @@ import javax.ws.rs.GET;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.util.Paginable;
 import org.nuxeo.ecm.automation.core.util.PaginablePageProvider;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
@@ -94,11 +94,7 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
     @Override
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter.isAssignableFrom(DocumentModelList.class)) {
-            try {
-                return adapter.cast(getPaginableEntries());
-            } catch (ClientException e) {
-                return null;
-            }
+            return adapter.cast(getPaginableEntries());
         }
         return super.getAdapter(adapter);
     }
@@ -118,7 +114,7 @@ public abstract class PaginableAdapter<T> extends DefaultAdapter {
     public Paginable<T> getPaginableEntries() {
         PageProviderDefinition ppDefinition = getPageProviderDefinition();
         if (ppDefinition == null) {
-            throw new ClientException("Page provider given not found");
+            throw new NuxeoException("Page provider given not found");
         }
 
         PageProviderService pps = Framework.getLocalService(PageProviderService.class);

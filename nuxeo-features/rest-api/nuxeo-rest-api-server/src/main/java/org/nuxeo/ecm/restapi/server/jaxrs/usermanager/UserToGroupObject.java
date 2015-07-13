@@ -23,7 +23,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -63,7 +63,7 @@ public class UserToGroupObject extends DefaultObject {
             principal.setGroups(groups);
             um.updateUser(principal.getModel());
             return Response.status(Status.CREATED).entity(um.getPrincipal(principal.getName())).build();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -89,7 +89,7 @@ public class UserToGroupObject extends DefaultObject {
             principal.setGroups(groups);
             um.updateUser(principal.getModel());
             return Response.ok(principal.getName()).build();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

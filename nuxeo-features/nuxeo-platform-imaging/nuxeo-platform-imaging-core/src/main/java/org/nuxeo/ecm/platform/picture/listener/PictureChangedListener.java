@@ -33,7 +33,6 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -113,7 +112,7 @@ public class PictureChangedListener implements EventListener {
 
             PictureResourceAdapter adapter = doc.getAdapter(PictureResourceAdapter.class);
             adapter.preFillPictureViews(blob, pictureConversions, emptyPictureImageInfo);
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             log.error("Error while pre-filling picture views: " + e.getMessage(), e);
         }
     }

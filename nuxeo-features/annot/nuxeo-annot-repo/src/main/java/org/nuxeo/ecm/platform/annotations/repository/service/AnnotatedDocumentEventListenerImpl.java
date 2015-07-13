@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -106,8 +105,6 @@ public class AnnotatedDocumentEventListenerImpl implements AnnotatedDocumentEven
             Event event = ctx.newEvent(eventId);
             Framework.getService(EventProducer.class).fireEvent(event);
             session.save();
-        } catch (ClientException e) {
-            log.error("Unable to send the " + eventId + " event", e);
         }
     }
 

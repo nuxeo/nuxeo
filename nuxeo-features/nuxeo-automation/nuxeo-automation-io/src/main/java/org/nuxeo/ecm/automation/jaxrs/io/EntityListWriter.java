@@ -26,7 +26,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.automation.core.util.Paginable;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Abstract class that knows how to serialize List of nuxeo entities. The implementing classes should only implement

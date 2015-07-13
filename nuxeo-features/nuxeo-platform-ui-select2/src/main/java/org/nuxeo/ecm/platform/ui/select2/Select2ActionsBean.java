@@ -52,7 +52,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.jaxrs.io.JsonHelper;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -424,65 +423,60 @@ public class Select2ActionsBean implements Serializable {
         if (storedReference == null || storedReference.isEmpty()) {
             return null;
         }
-        try {
-            DocumentModel user = null;
-            DocumentModel group = null;
-            Directory userDir = dirService.getDirectory(userManager.getUserDirectoryName());
-            if (prefixed) {
-                if (storedReference.startsWith(NuxeoPrincipal.PREFIX)) {
-                    user = userManager.getUserModel(storedReference.substring(NuxeoPrincipal.PREFIX.length()));
-                } else if (storedReference.startsWith(NuxeoGroup.PREFIX)) {
-                    group = userManager.getGroupModel(storedReference.substring(NuxeoGroup.PREFIX.length()));
-                } else {
-                    log.warn("User reference is prefixed but prefix was not found on reference: " + storedReference);
-                    return createNotFoundEntry(storedReference);
-                }
+        DocumentModel user = null;
+        DocumentModel group = null;
+        Directory userDir = dirService.getDirectory(userManager.getUserDirectoryName());
+        if (prefixed) {
+            if (storedReference.startsWith(NuxeoPrincipal.PREFIX)) {
+                user = userManager.getUserModel(storedReference.substring(NuxeoPrincipal.PREFIX.length()));
+            } else if (storedReference.startsWith(NuxeoGroup.PREFIX)) {
+                group = userManager.getGroupModel(storedReference.substring(NuxeoGroup.PREFIX.length()));
             } else {
-                user = userManager.getUserModel(storedReference);
-                if (user == null) {
-                    group = userManager.getGroupModel(storedReference);
-                }
-            }
-            if (user != null) {
-                Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
-                for (Field field : schema.getFields()) {
-                    QName fieldName = field.getName();
-                    String key = fieldName.getLocalName();
-                    Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
-                    if (key.equals(userDir.getPasswordField())) {
-                        continue;
-                    }
-                    obj.element(key, value);
-                }
-                String userId = user.getId();
-                obj.put(Select2Common.ID, userId);
-                obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
-                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
-                Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField, hideFirstLabel,
-                        hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
-                Select2Common.computeUserGroupIcon(obj, hideIcon);
-            } else if (group != null) {
-                Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
-                for (Field field : schema.getFields()) {
-                    QName fieldName = field.getName();
-                    String key = fieldName.getLocalName();
-                    Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
-                    obj.element(key, value);
-                }
-                // If the group hasn't an label, let's put the groupid
-                String groupId = group.getId();
-                Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
-                obj.put(Select2Common.ID, groupId);
-                obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
-                obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
-                Select2Common.computeUserGroupIcon(obj, hideIcon);
-            } else {
-                log.warn("Could not resolve user or group reference: " + storedReference);
+                log.warn("User reference is prefixed but prefix was not found on reference: " + storedReference);
                 return createNotFoundEntry(storedReference);
             }
-        } catch (ClientException e) {
-            log.error("An error occured while retrieving user or group reference: " + storedReference);
-            return null;
+        } else {
+            user = userManager.getUserModel(storedReference);
+            if (user == null) {
+                group = userManager.getGroupModel(storedReference);
+            }
+        }
+        if (user != null) {
+            Schema schema = schemaManager.getSchema(userManager.getUserSchemaName());
+            for (Field field : schema.getFields()) {
+                QName fieldName = field.getName();
+                String key = fieldName.getLocalName();
+                Serializable value = user.getPropertyValue(fieldName.getPrefixedName());
+                if (key.equals(userDir.getPasswordField())) {
+                    continue;
+                }
+                obj.element(key, value);
+            }
+            String userId = user.getId();
+            obj.put(Select2Common.ID, userId);
+            obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.USER_TYPE);
+            obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoPrincipal.PREFIX + userId);
+            Select2Common.computeUserLabel(obj, firstLabelField, secondLabelField, thirdLabelField, hideFirstLabel,
+                    hideSecondLabel, hideThirdLabel, displayEmailInSuggestion, userId);
+            Select2Common.computeUserGroupIcon(obj, hideIcon);
+        } else if (group != null) {
+            Schema schema = schemaManager.getSchema(userManager.getGroupSchemaName());
+            for (Field field : schema.getFields()) {
+                QName fieldName = field.getName();
+                String key = fieldName.getLocalName();
+                Serializable value = group.getPropertyValue(fieldName.getPrefixedName());
+                obj.element(key, value);
+            }
+            // If the group hasn't an label, let's put the groupid
+            String groupId = group.getId();
+            Select2Common.computeGroupLabel(obj, groupId, userManager.getGroupLabelField(), hideFirstLabel);
+            obj.put(Select2Common.ID, groupId);
+            obj.put(Select2Common.TYPE_KEY_NAME, Select2Common.GROUP_TYPE);
+            obj.put(Select2Common.PREFIXED_ID_KEY_NAME, NuxeoGroup.PREFIX + groupId);
+            Select2Common.computeUserGroupIcon(obj, hideIcon);
+        } else {
+            log.warn("Could not resolve user or group reference: " + storedReference);
+            return createNotFoundEntry(storedReference);
         }
         return obj;
     }
@@ -547,41 +541,36 @@ public class Select2ActionsBean implements Serializable {
         String entryId = storedReference.substring(storedReference.lastIndexOf(keySeparator) + 1,
                 storedReference.length());
 
-        try {
-            DocumentModel result = session.getEntry(entryId);
-            if (result == null) {
-                log.warn("Unable to resolve entry " + storedReference);
-                return createNotFoundEntry(storedReference);
-            }
-
-            JSONObject obj = new JSONObject();
-            for (Field field : schema.getFields()) {
-                QName fieldName = field.getName();
-                String key = fieldName.getLocalName();
-                Serializable value = result.getPropertyValue(fieldName.getPrefixedName());
-                if (label.equals(key)) {
-                    if (localize && !dbl10n) {
-                        value = messages.get(value);
-                    }
-                    obj.element(Select2Common.LABEL, value);
-                    obj.element(Select2Common.ABSOLUTE_LABEL,
-                            getParentAbsoluteLabel(storedReference, keySeparator, session, fieldName, localize, dbl10n));
-                } else {
-                    obj.element(key, value);
-                }
-            }
-
-            // Add a warning message if the entity is obsolete
-            if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
-                obj.element(Select2Common.WARN_MESSAGE_LABEL, messages.get("label.vocabulary.entry.obsolete"));
-            }
-
-            obj.element(Select2Common.COMPUTED_ID, storedReference);
-            return obj;
-        } catch (ClientException e) {
-            log.error("An error occured while resolving directoryEntry", e);
-            return null;
+        DocumentModel result = session.getEntry(entryId);
+        if (result == null) {
+            log.warn("Unable to resolve entry " + storedReference);
+            return createNotFoundEntry(storedReference);
         }
+
+        JSONObject obj = new JSONObject();
+        for (Field field : schema.getFields()) {
+            QName fieldName = field.getName();
+            String key = fieldName.getLocalName();
+            Serializable value = result.getPropertyValue(fieldName.getPrefixedName());
+            if (label.equals(key)) {
+                if (localize && !dbl10n) {
+                    value = messages.get(value);
+                }
+                obj.element(Select2Common.LABEL, value);
+                obj.element(Select2Common.ABSOLUTE_LABEL,
+                        getParentAbsoluteLabel(storedReference, keySeparator, session, fieldName, localize, dbl10n));
+            } else {
+                obj.element(key, value);
+            }
+        }
+
+        // Add a warning message if the entity is obsolete
+        if (obj.containsKey(Select2Common.OBSOLETE_FIELD_ID) && obj.getInt(Select2Common.OBSOLETE_FIELD_ID) > 0) {
+            obj.element(Select2Common.WARN_MESSAGE_LABEL, messages.get("label.vocabulary.entry.obsolete"));
+        }
+
+        obj.element(Select2Common.COMPUTED_ID, storedReference);
+        return obj;
     }
 
     /**
@@ -822,8 +811,6 @@ public class Select2ActionsBean implements Serializable {
                 }
             }
             return doc;
-        } catch (ClientException e) {
-            log.error("Unable to resolve reference", e);
         } catch (InvalidChainException e) {
             log.error("Unable to resolve reference", e);
         } catch (OperationException e) {

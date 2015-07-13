@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import net.sf.json.JSONObject;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.task.Task;

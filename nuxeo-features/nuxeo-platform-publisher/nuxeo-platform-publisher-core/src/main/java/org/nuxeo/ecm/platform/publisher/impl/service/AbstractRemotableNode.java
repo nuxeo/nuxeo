@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
@@ -83,11 +82,7 @@ public abstract class AbstractRemotableNode implements PublicationNode {
     }
 
     public PublicationNode getParent() {
-        try {
-            return switchToClientNode(getPublisher().getParent(switchToServerNode(this)));
-        } catch (ClientException e) {
-            return null;
-        }
+        return switchToClientNode(getPublisher().getParent(switchToServerNode(this)));
     }
 
 }

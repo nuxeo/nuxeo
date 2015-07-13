@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -175,11 +174,7 @@ public class DocumentRelationService implements DocumentRelationManager {
         options.put("comment", comment);
 
         EventProducer evtProducer = Framework.getService(EventProducer.class);
-        try {
-            evtProducer.fireEvent(docCtx.newEvent(eventId));
-        } catch (ClientException e) {
-            log.error("Error while trying to send notification message", e);
-        }
+        evtProducer.fireEvent(docCtx.newEvent(eventId));
     }
 
     @Override

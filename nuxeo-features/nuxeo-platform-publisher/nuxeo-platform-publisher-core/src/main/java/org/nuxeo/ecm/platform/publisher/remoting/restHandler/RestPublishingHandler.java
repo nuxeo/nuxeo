@@ -26,7 +26,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
@@ -35,7 +34,6 @@ import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
 
-//@Consumes("nuxeo/remotepub")
 @Path("remotepublisher")
 @Produces("nuxeo/remotepub;charset=UTF-8")
 public class RestPublishingHandler extends DefaultObject {
@@ -44,31 +42,24 @@ public class RestPublishingHandler extends DefaultObject {
         return Framework.getLocalService(RemotePublicationTreeManager.class);
     }
 
-    // List<PublishedDocument> getChildrenDocuments(PublicationNode node) throws
-    // ClientException;
     @POST
     @Path("getChildrenDocuments")
     public RemotePubResult getChildrenDocuments(RemotePubParam param) {
         return new RemotePubResult(getPublisher().getChildrenDocuments(param.getAsNode()));
     }
 
-    // List<PublicationNode> getChildrenNodes(PublicationNode node) throws
-    // ClientException;
     @POST
     @Path("getChildrenNodes")
     public RemotePubResult getChildrenNodes(RemotePubParam param) {
         return new RemotePubResult(getPublisher().getChildrenNodes(param.getAsNode()));
     }
 
-    // PublicationNode getParent(PublicationNode node);
     @POST
     @Path("getParent")
     public RemotePubResult getParent(RemotePubParam param) {
         return new RemotePubResult(getPublisher().getParent(param.getAsNode()));
     }
 
-    // PublicationNode getNodeByPath(String sid, String path) throws
-    // ClientException;
     @POST
     @Path("getNodeByPath")
     public RemotePubResult getNodeByPath(RemotePubParam param) {
@@ -76,8 +67,6 @@ public class RestPublishingHandler extends DefaultObject {
                 (String) param.getParams().get(1)));
     }
 
-    // List<PublishedDocument> getExistingPublishedDocument(String sid,
-    // DocumentLocation docLoc);
     @POST
     @Path("getExistingPublishedDocument")
     public RemotePubResult getExistingPublishedDocument(RemotePubParam param) {
@@ -85,16 +74,12 @@ public class RestPublishingHandler extends DefaultObject {
                 (DocumentLocation) param.getParams().get(1)));
     }
 
-    // List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node)
-    // throws ClientException;
     @POST
     @Path("getPublishedDocumentInNode")
     public RemotePubResult getPublishedDocumentInNode(RemotePubParam param) {
         return new RemotePubResult(getPublisher().getPublishedDocumentInNode(param.getAsNode()));
     }
 
-    // PublishedDocument publish(DocumentModel doc, PublicationNode targetNode,
-    // Map<String,String> params);
     @POST
     @Path("publish")
     public RemotePubResult publish(RemotePubParam param) {
@@ -109,8 +94,6 @@ public class RestPublishingHandler extends DefaultObject {
         return result;
     }
 
-    // void unpublish(DocumentModel doc, PublicationNode targetNode) throws
-    // ClientException;
     @POST
     @Path("unpublish")
     public void unpublish(RemotePubParam param) {
@@ -129,7 +112,6 @@ public class RestPublishingHandler extends DefaultObject {
                 (Map<String, String>) param.getParams().get(1)));
     }
 
-    // void release(String sid);
     @POST
     @Path("release")
     public Response release(RemotePubParam param) {
@@ -137,7 +119,6 @@ public class RestPublishingHandler extends DefaultObject {
         return Response.ok().build();
     }
 
-    // void release(String sid);
     @GET
     @Path("release/{sid}")
     public Response release(@PathParam("sid") String sid) {

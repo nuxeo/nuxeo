@@ -33,10 +33,10 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
@@ -165,7 +165,7 @@ public class PreviewActionBean implements Serializable {
         try {
             DocumentModel doc = documentManager.getDocument(new IdRef(docId));
             return getPreviewPopupURL(doc, true);
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             log.error(e, e);
             return "";
         }

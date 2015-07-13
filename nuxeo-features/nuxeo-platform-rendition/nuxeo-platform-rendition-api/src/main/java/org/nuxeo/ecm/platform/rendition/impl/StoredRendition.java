@@ -19,16 +19,14 @@ package org.nuxeo.ecm.platform.rendition.impl;
 import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
  * Implementation of the {@link Rendition} interface for rendition that are stored in the Repository
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class StoredRendition extends AbstractRendition implements Rendition {
@@ -46,21 +44,13 @@ public class StoredRendition extends AbstractRendition implements Rendition {
     }
 
     @Override
-    public Blob getBlob() throws RenditionException {
-        try {
-            return stored.getAdapter(BlobHolder.class).getBlob();
-        } catch (ClientException e) {
-            throw new RenditionException("Unable to get Blob from stored rendition", e);
-        }
+    public Blob getBlob() {
+        return stored.getAdapter(BlobHolder.class).getBlob();
     }
 
     @Override
-    public List<Blob> getBlobs() throws RenditionException {
-        try {
-            return stored.getAdapter(BlobHolder.class).getBlobs();
-        } catch (ClientException e) {
-            throw new RenditionException("Unable to get Blobs from stored rendition", e);
-        }
+    public List<Blob> getBlobs() {
+        return stored.getAdapter(BlobHolder.class).getBlobs();
     }
 
     @Override

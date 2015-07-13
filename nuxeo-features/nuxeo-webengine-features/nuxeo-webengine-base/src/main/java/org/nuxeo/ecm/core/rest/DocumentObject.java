@@ -30,11 +30,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.nuxeo.common.utils.URIUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.Resource;
@@ -104,7 +104,7 @@ public class DocumentObject extends DefaultObject {
         try {
             DocumentModelList docs = ctx.getCoreSession().query(query);
             return getView("search").arg("query", query).arg("result", docs);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -115,7 +115,7 @@ public class DocumentObject extends DefaultObject {
             CoreSession session = ctx.getCoreSession();
             session.removeDocument(doc.getRef());
             session.save();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to delete document " + doc.getPathAsString(), e);
         }
         if (prev != null) { // show parent ? TODO: add getView(method) to be able to change the view method
@@ -159,7 +159,7 @@ public class DocumentObject extends DefaultObject {
             PathRef pathRef = new PathRef(doc.getPath().append(path).toString());
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -168,7 +168,7 @@ public class DocumentObject extends DefaultObject {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -188,7 +188,7 @@ public class DocumentObject extends DefaultObject {
     public String getTitle() {
         try {
             return doc.getTitle();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

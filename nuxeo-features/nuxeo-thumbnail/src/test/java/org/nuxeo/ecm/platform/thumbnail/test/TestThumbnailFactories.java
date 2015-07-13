@@ -25,9 +25,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
@@ -83,7 +83,7 @@ public class TestThumbnailFactories {
 
         public Blob getThumbnail(DocumentModel doc, CoreSession session) {
             if (!doc.isFolder()) {
-                throw new ClientException("Document is not folderish");
+                throw new NuxeoException("Document is not folderish");
             }
             return folderishThumbnail;
         }

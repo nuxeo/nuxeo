@@ -46,7 +46,6 @@ import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -110,17 +109,12 @@ public class LockActionsBean implements LockActions {
         } else if (document.isProxy()) {
             canLock = false;
         } else {
-            try {
-                NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                Lock lock = documentManager.getLockInfo(document.getRef());
-                canLock = lock == null
-                        && (userName.isAdministrator() || isManagerOnDocument(document.getRef()) || documentManager.hasPermission(
-                                document.getRef(), WRITE_PROPERTIES)) && !document.isVersion();
-            } catch (ClientException e) {
-                log.debug("evaluation of document lock " + document.getName() + " failed (" + e.getMessage()
-                        + ": returning false");
-                canLock = false;
-            }
+            NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+            Lock lock = documentManager.getLockInfo(document.getRef());
+            canLock = lock == null
+                    && (userName.isAdministrator() || isManagerOnDocument(document.getRef())
+                            || documentManager.hasPermission(document.getRef(), WRITE_PROPERTIES))
+                    && !document.isVersion();
         }
         return canLock;
     }
@@ -153,22 +147,17 @@ public class LockActionsBean implements LockActions {
         if (document == null) {
             canUnlock = false;
         } else {
-            try {
-                NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
-                Map<String, Serializable> lockDetails = getLockDetails(document);
-                if (lockDetails.isEmpty() || document.isProxy()) {
-                    canUnlock = false;
-                } else {
-                    canUnlock = ((userName.isAdministrator() || documentManager.hasPermission(document.getRef(),
-                            EVERYTHING)) ? true
-                            : (userName.getName().equals(lockDetails.get(LOCKER)) && documentManager.hasPermission(
-                                    document.getRef(), WRITE_PROPERTIES)))
-                            && !document.isVersion();
-                }
-            } catch (ClientException e) {
-                log.debug("evaluation of document lock " + document.getName() + " failed (" + e.getMessage()
-                        + ": returning false");
+            NuxeoPrincipal userName = (NuxeoPrincipal) documentManager.getPrincipal();
+            Map<String, Serializable> lockDetails = getLockDetails(document);
+            if (lockDetails.isEmpty() || document.isProxy()) {
                 canUnlock = false;
+            } else {
+                canUnlock = ((userName.isAdministrator()
+                        || documentManager.hasPermission(document.getRef(), EVERYTHING))
+                                ? true
+                                : (userName.getName().equals(lockDetails.get(LOCKER))
+                                        && documentManager.hasPermission(document.getRef(), WRITE_PROPERTIES)))
+                        && !document.isVersion();
             }
         }
         return canUnlock;

@@ -24,7 +24,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 
 /**
@@ -41,7 +40,7 @@ public class AnnotationServiceImplTest extends AbstractAnnotationTest {
     }
 
     @Test
-    public void testAddAnnotation() throws AnnotationException {
+    public void testAddAnnotation() throws Exception {
         assertNotNull(annotation);
 
         Annotation result = service.addAnnotation(annotation, user, "http://myexemple.com/nuxeo/Annotations/");

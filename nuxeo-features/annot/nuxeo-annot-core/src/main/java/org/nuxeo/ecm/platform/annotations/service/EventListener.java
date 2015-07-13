@@ -22,26 +22,25 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.security.Principal;
 
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
  */
 public interface EventListener {
 
-    void beforeAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException;
+    void beforeAnnotationCreated(Principal principal, Annotation annotation);
 
-    void afterAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException;
+    void afterAnnotationCreated(Principal principal, Annotation annotation);
 
-    void beforeAnnotationRead(Principal principal, String annotationId) throws AnnotationException;
+    void beforeAnnotationRead(Principal principal, String annotationId);
 
-    void afterAnnotationRead(Principal principal, Annotation annotation) throws AnnotationException;
+    void afterAnnotationRead(Principal principal, Annotation annotation);
 
-    void beforeAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException;
+    void beforeAnnotationUpdated(Principal principal, Annotation annotation);
 
-    void afterAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException;
+    void afterAnnotationUpdated(Principal principal, Annotation annotation);
 
-    void beforeAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException;
+    void beforeAnnotationDeleted(Principal principal, Annotation annotation);
 
-    void afterAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException;
+    void afterAnnotationDeleted(Principal principal, Annotation annotation);
 }

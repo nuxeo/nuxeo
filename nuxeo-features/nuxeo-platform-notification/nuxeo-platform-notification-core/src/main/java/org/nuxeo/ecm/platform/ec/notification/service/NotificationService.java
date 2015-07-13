@@ -33,7 +33,6 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -360,13 +359,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         ctx.setCategory(DocumentEventCategories.EVENT_CLIENT_NOTIF_CATEGORY);
         ctx.setProperties(options);
         Event event = ctx.newEvent(DocumentEventTypes.SUBSCRIPTION_ASSIGNED);
-
-        try {
-            doFireEvent(event);
-        } catch (NuxeoException e) {
-            e.addInfo("Cannot fire event " + event);
-            throw e;
-        }
+        doFireEvent(event);
     }
 
     @Override
@@ -465,7 +458,7 @@ public class NotificationService extends DefaultComponent implements Notificatio
         try {
             emailHelper.sendmail(infoMap);
         } catch (MessagingException e) {
-            throw new ClientException("Failed to send notification email ", e);
+            throw new NuxeoException("Failed to send notification email ", e);
         }
     }
 

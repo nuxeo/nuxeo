@@ -18,10 +18,10 @@
 package org.nuxeo.ecm.platform.publisher.impl.core;
 
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 
@@ -42,7 +42,7 @@ public class SimpleCorePublishedDocument implements PublishedDocument {
 
     public SimpleCorePublishedDocument(DocumentModel doc) {
         if (!doc.isProxy()) {
-            throw new ClientException("DocumentModel is not a proxy");
+            throw new NuxeoException("DocumentModel is not a proxy");
         }
         this.proxy = doc;
         this.versionLabel = VersioningHelper.getVersionLabelFor(doc);

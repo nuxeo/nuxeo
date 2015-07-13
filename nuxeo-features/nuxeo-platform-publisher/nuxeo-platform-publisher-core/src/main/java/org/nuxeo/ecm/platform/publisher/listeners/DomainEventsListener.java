@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.publisher.listeners;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;

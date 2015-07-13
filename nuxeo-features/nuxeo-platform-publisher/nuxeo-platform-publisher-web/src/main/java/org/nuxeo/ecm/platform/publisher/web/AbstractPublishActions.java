@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.seam.annotations.In;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;

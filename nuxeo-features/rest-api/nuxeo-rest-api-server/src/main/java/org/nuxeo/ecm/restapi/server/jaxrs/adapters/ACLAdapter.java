@@ -18,7 +18,6 @@ package org.nuxeo.ecm.restapi.server.jaxrs.adapters;
 
 import javax.ws.rs.GET;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.webengine.model.WebAdapter;

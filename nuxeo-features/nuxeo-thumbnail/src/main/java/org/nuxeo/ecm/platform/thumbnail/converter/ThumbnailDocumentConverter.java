@@ -19,8 +19,8 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CloseableFile;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -81,7 +81,7 @@ public class ThumbnailDocumentConverter implements Converter {
                 }
             }
             return new SimpleCachableBlobHolder(targetBlob);
-        } catch (CommandNotAvailable | IOException | ClientException | CommandException e) {
+        } catch (CommandNotAvailable | IOException | NuxeoException | CommandException e) {
             throw new ConversionException("Thumbnail conversion failed", e);
         }
     }

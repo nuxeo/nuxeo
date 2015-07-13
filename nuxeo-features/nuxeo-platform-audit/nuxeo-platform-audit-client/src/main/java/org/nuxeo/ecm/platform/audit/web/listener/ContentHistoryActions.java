@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.comment.LinkedDocument;
 
@@ -39,21 +38,21 @@ public interface ContentHistoryActions extends Serializable {
     /**
      * Computes all log entries for current document.
      */
-    List<? extends LogEntry> computeLogEntries() throws AuditException;
+    List<? extends LogEntry> computeLogEntries();
 
     /**
      * Computes all log entries for given document.
      */
-    List<? extends LogEntry> computeLogEntries(DocumentModel document) throws AuditException;
+    List<? extends LogEntry> computeLogEntries(DocumentModel document);
 
     /**
      * Computes latest logs only.
      */
-    List<? extends LogEntry> computeLatestLogEntries() throws AuditException;
+    List<? extends LogEntry> computeLatestLogEntries();
 
-    Map<Long, String> computeLogEntriesComments() throws AuditException;
+    Map<Long, String> computeLogEntriesComments();
 
-    Map<Long, LinkedDocument> computeLogEntrieslinkedDocs() throws AuditException;
+    Map<Long, LinkedDocument> computeLogEntrieslinkedDocs();
 
     /**
      * Returns the log comment.

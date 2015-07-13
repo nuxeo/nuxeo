@@ -23,14 +23,12 @@ import javax.script.ScriptEngineManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
-import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
-import org.nuxeo.automation.scripting.internals.operation
-        .ScriptingOperationDescriptor;
-import org.nuxeo.automation.scripting.internals.operation
-        .ScriptingOperationTypeImpl;
+import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationDescriptor;
+import org.nuxeo.automation.scripting.internals.operation.ScriptingOperationTypeImpl;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.management.metrics.MetricInvocationHandler;
 import org.nuxeo.runtime.model.ComponentContext;
@@ -70,7 +68,7 @@ public class AutomationScriptingComponent extends DefaultComponent {
             try {
                 automationService.putOperation(type, true);
             } catch (OperationException e) {
-                throw new AutomationScriptingException(e);
+                throw new NuxeoException(e);
             }
         } else {
             log.error("Unknown extension point " + extensionPoint);

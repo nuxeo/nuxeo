@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -44,12 +43,11 @@ public class AnnotationQuery {
 
     private final AnnotationManager manager = new AnnotationManager();
 
-    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph) throws AnnotationException {
+    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph) {
         return getAnnotationsForURIs(uris, graph, Collections.<String, String> emptyMap());
     }
 
-    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph, Map<String, String> filters)
-            throws AnnotationException {
+    public List<Annotation> getAnnotationsForURIs(List<URI> uris, Graph graph, Map<String, String> filters) {
         List<Annotation> annotations = new ArrayList<Annotation>();
         final String baseQuery = " SELECT ?s ?p ?o WHERE { ?s ?p ?o . }";
         for (URI uri : uris) {

@@ -31,8 +31,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
@@ -148,25 +149,14 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     protected String getWorkingDirPathForRessource(ImageResource resource) {
-
         String pathForBlob = getWorkingDirPath();
-
-        String digest;
-        try {
-            digest = resource.getHash();
-        } catch (ClientException e) {
-            digest = "tmp" + System.currentTimeMillis();
-        }
-
+        String digest = resource.getHash();
         pathForBlob = pathForBlob + digest + "/";
-
         log.debug("WorkingDirPath for resource=" + pathForBlob);
-
         File wdir = new File(pathForBlob);
         if (!wdir.exists()) {
             wdir.mkdir();
         }
-
         return pathForBlob;
     }
 
@@ -213,7 +203,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                     log.debug("Waiting for tiler sync");
                     Thread.sleep(200);
                 } catch (InterruptedException e) {
-                    throw new ClientException("Error while waiting for another tile processing on the same resource", e);
+                    ExceptionUtils.checkInterrupt(e);
                 }
             }
         }
@@ -270,7 +260,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                     String msg = String.format("Unable to transfer blob to file at '%s', "
                             + "working directory path: '%s'", inputFilePath, wdirPath);
                     log.error(msg, e);
-                    throw new ClientException(msg, e);
+                    throw new NuxeoException(msg, e);
                 }
                 inputFile = new File(inputFilePath);
             } else {
@@ -279,8 +269,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                         log.debug("Waiting concurrent convert / dump");
                         Thread.sleep(200);
                     } catch (InterruptedException e) {
-                        throw new ClientException("Error while waiting for another converting"
-                                + " on the same resource", e);
+                        ExceptionUtils.checkInterrupt(e);
                     }
                 }
 
@@ -289,7 +278,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                 cacheInfo = new PictureTilingCacheInfo(cacheKey, wdirPath, inputFilePath);
                 cache.put(cacheKey, cacheInfo);
             } catch (CommandNotAvailable | CommandException e) {
-                throw new ClientException(e);
+                throw new NuxeoException(e);
             }
 
         }

@@ -39,7 +39,6 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
@@ -276,7 +275,7 @@ public class IOManagerImpl implements IOManager {
         String newRepo = targetLocation.getServerName();
         if (!repo.equals(newRepo)) {
             // TODO: maybe import and export (?), assume copy is recursive.
-            throw new ClientException("Cannot copy to different server");
+            throw new NuxeoException("Cannot copy to different server");
         }
 
         List<DocumentRef> roots = new ArrayList<DocumentRef>();
@@ -328,18 +327,18 @@ public class IOManagerImpl implements IOManager {
             Class<?> clazz = Class.forName(docWriterFactoryName);
             factoryObj = clazz.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ClientException("cannot instantiate factory " + docWriterFactoryName, e);
+            throw new NuxeoException("cannot instantiate factory " + docWriterFactoryName, e);
         }
 
         DocumentWriter customDocWriter;
         if (factoryObj instanceof DocumentWriterFactory) {
             customDocWriter = ((DocumentWriterFactory) factoryObj).createDocWriter(factoryParams);
         } else {
-            throw new ClientException("bad class type: " + factoryObj);
+            throw new NuxeoException("bad class type: " + factoryObj);
         }
 
         if (customDocWriter == null) {
-            throw new ClientException("null DocumentWriter created by " + docWriterFactoryName);
+            throw new NuxeoException("null DocumentWriter created by " + docWriterFactoryName);
         }
 
         return customDocWriter;
@@ -354,18 +353,18 @@ public class IOManagerImpl implements IOManager {
             Class<?> clazz = Class.forName(docReaderFactoryName);
             factoryObj = clazz.newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new ClientException("cannot instantiate factory " + docReaderFactoryName, e);
+            throw new NuxeoException("cannot instantiate factory " + docReaderFactoryName, e);
         }
 
         DocumentReader customDocReader;
         if (factoryObj instanceof DocumentReaderFactory) {
             customDocReader = ((DocumentReaderFactory) factoryObj).createDocReader(factoryParams);
         } else {
-            throw new ClientException("bad class type: " + factoryObj);
+            throw new NuxeoException("bad class type: " + factoryObj);
         }
 
         if (customDocReader == null) {
-            throw new ClientException("null DocumentReader created by " + docReaderFactoryName);
+            throw new NuxeoException("null DocumentReader created by " + docReaderFactoryName);
         }
 
         return customDocReader;

@@ -24,7 +24,6 @@ import java.io.InputStream;
 import javax.faces.event.ActionEvent;
 
 import org.jboss.seam.annotations.remoting.WebRemote;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.ui.web.api.SimpleFileManager;
 
 public interface FileManageActions extends SimpleFileManager {

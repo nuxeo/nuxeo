@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.picture.web;
 
 import javax.faces.event.ActionEvent;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

@@ -25,10 +25,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.localconfiguration.AbstractLocalConfiguration;
 
 /**
@@ -67,7 +67,7 @@ public class SimpleConfigurationAdapter extends AbstractLocalConfiguration<Simpl
                             parameter.get(SIMPLE_CONFIGURATION_PARAMETER_VALUE));
                 }
             }
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             log.warn("Unable to retrieve SimpleConfiguration parameters: " + e);
             log.debug(e, e);
         }

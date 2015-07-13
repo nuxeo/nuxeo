@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.userpreferences;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 public interface UserPreferencesService {

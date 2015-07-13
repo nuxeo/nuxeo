@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.rest;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.webengine.WebException;
@@ -58,7 +58,7 @@ public class DocumentHelper {
             session.saveDocument(newDoc);
             session.save();
             return newDoc;
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to create document: " + name, e);
         }
     }
@@ -71,7 +71,7 @@ public class DocumentHelper {
             doc = ctx.getCoreSession().saveDocument(doc);
             ctx.getCoreSession().save();
             return doc;
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to update document", e);
         }
     }

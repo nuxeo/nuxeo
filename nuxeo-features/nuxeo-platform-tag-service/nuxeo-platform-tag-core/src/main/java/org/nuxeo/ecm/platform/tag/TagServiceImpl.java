@@ -29,12 +29,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
@@ -102,7 +102,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             if (allowEmpty) {
                 return null;
             }
-            throw new ClientException("Invalid empty tag");
+            throw new NuxeoException("Invalid empty tag");
         }
         label = label.toLowerCase(); // lowercase
         label = label.replace(" ", ""); // no spaces
@@ -112,7 +112,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
             label = label.replace("%", ""); // dubious char
         }
         if (label.length() == 0) {
-            throw new ClientException("Invalid empty tag");
+            throw new NuxeoException("Invalid empty tag");
         }
         return label;
     }
@@ -599,7 +599,7 @@ public class TagServiceImpl extends DefaultComponent implements TagService {
         PageProvider<Map<String, Serializable>> pp = (PageProvider<Map<String, Serializable>>) ppService.getPageProvider(
                 pageProviderName, null, null, null, props, params);
         if (pp == null) {
-            throw new ClientException("Page provider not found: " + pageProviderName);
+            throw new NuxeoException("Page provider not found: " + pageProviderName);
         }
         return pp.getCurrentPage();
     }

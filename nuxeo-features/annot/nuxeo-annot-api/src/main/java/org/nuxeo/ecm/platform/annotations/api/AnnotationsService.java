@@ -33,36 +33,35 @@ import org.nuxeo.ecm.platform.relations.api.Graph;
  */
 public interface AnnotationsService {
 
-    Graph getAnnotationGraph() throws AnnotationException;
+    Graph getAnnotationGraph();
 
     /**
      * Finds Annotation ids according to URI and filter.
      */
-    List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user)
-            throws AnnotationException;
+    List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user);
 
     /**
      * Returns an Annotation according to its Id.
      */
-    Annotation getAnnotation(String annotationId, NuxeoPrincipal user, String baseUrl) throws AnnotationException;
+    Annotation getAnnotation(String annotationId, NuxeoPrincipal user, String baseUrl);
 
     /**
      * Adds an annotation to the target URL.
      *
      * @return the Annotation
      */
-    Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) throws AnnotationException;
+    Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl);
 
     /**
      * Updates an annotation.
      */
-    Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) throws AnnotationException;
+    Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl);
 
     /**
      * Deletes an annotation.
      */
-    void deleteAnnotation(Annotation annotation, NuxeoPrincipal user) throws AnnotationException;
+    void deleteAnnotation(Annotation annotation, NuxeoPrincipal user);
 
-    void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) throws AnnotationException;
+    void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user);
 
 }

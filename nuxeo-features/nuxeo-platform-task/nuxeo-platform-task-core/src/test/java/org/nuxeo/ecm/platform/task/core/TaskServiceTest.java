@@ -31,10 +31,10 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -180,7 +180,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         try {
             taskService.acceptTask(session, user4, task, "ok i'm in");
             fail("Should have raised an exception: user4 cannot end the task");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             assertEquals("User with id 'myuser4' cannot end this task", e.getMessage());
         }
 
@@ -291,7 +291,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         try {
             taskService.rejectTask(session, user2, task1, "i don't agree");
             fail("Should have raised an exception: user2 cannot end the task");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             assertEquals("User with id 'myuser2' cannot end this task", e.getMessage());
         }
 
@@ -376,7 +376,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         try {
             taskService.acceptTask(session, user4, task2, "i don't agree");
             fail("Should have raised an exception: user4 cannot end the task");
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             assertEquals("User with id 'myuser4' cannot end this task", e.getMessage());
         }
 

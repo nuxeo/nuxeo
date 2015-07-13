@@ -40,8 +40,8 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
@@ -92,7 +92,7 @@ public class NuxeoPrincipalReader implements MessageBodyReader<NuxeoPrincipal> {
         try {
             JsonParser jp = factory.createJsonParser(content);
             return readJson(jp, httpHeaders);
-        } catch (ClientException | IOException e) {
+        } catch (NuxeoException | IOException e) {
             throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
         }
     }

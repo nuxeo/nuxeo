@@ -14,8 +14,8 @@ package org.nuxeo.ecm.automation.core.impl.adapters;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.DocumentRefList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -33,7 +33,7 @@ public class DocRefListToDocModelList implements TypeAdapter {
             for (DocumentRef ref : list) {
                 result.add(ctx.getCoreSession().getDocument(ref));
             }
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
         }
         return result;

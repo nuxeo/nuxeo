@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -87,22 +86,17 @@ public class RelationHelper {
 
     public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat, String stringObject,
             CoreSession session) {
-        try {
-            Literal literal = new LiteralImpl(stringObject);
-            List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat,
-                    literal);
-            if (stmts != null) {
-                DocumentModelList docs = new DocumentModelListImpl();
-                for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getSubject(), session);
-                    if (d != null) {
-                        docs.add(d);
-                    }
+        Literal literal = new LiteralImpl(stringObject);
+        List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat, literal);
+        if (stmts != null) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            for (Statement stmt : stmts) {
+                DocumentModel d = getDocumentModel(stmt.getSubject(), session);
+                if (d != null) {
+                    docs.add(d);
                 }
-                return docs;
             }
-        } catch (ClientException e) {
-            log.error(e, e);
+            return docs;
         }
         return null;
     }
@@ -113,22 +107,18 @@ public class RelationHelper {
 
     public static DocumentModelList getSubjectDocuments(String graphName, Resource predicat,
             DocumentModel objectDocument) {
-        try {
-            QNameResource docResource = getDocumentResource(objectDocument);
-            List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat,
-                    docResource);
-            if (stmts != null) {
-                DocumentModelList docs = new DocumentModelListImpl();
-                for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getSubject(), objectDocument.getCoreSession());
-                    if (d != null) {
-                        docs.add(d);
-                    }
+        QNameResource docResource = getDocumentResource(objectDocument);
+        List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(null, predicat,
+                docResource);
+        if (stmts != null) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            for (Statement stmt : stmts) {
+                DocumentModel d = getDocumentModel(stmt.getSubject(), objectDocument.getCoreSession());
+                if (d != null) {
+                    docs.add(d);
                 }
-                return docs;
             }
-        } catch (ClientException e) {
-            log.error(e, e);
+            return docs;
         }
         return null;
     }
@@ -139,22 +129,18 @@ public class RelationHelper {
 
     public static DocumentModelList getSubjectDocumentsOut(String graphName, Resource predicat,
             DocumentModel objectDocument) {
-        try {
-            QNameResource docResource = getDocumentResource(objectDocument);
-            List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat,
-                    null);
-            if (stmts != null) {
-                DocumentModelList docs = new DocumentModelListImpl();
-                for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getObject(), objectDocument.getCoreSession());
-                    if (d != null) {
-                        docs.add(d);
-                    }
+        QNameResource docResource = getDocumentResource(objectDocument);
+        List<Statement> stmts = getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat,
+                null);
+        if (stmts != null) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            for (Statement stmt : stmts) {
+                DocumentModel d = getDocumentModel(stmt.getObject(), objectDocument.getCoreSession());
+                if (d != null) {
+                    docs.add(d);
                 }
-                return docs;
             }
-        } catch (ClientException e) {
-            log.error(e, e);
+            return docs;
         }
         return null;
     }
@@ -164,20 +150,16 @@ public class RelationHelper {
     }
 
     public static DocumentModelList getObjectDocuments(String graphName, DocumentModel subjectDoc, Resource predicat) {
-        try {
-            List<Statement> stmts = getStatements(graphName, subjectDoc, predicat);
-            if (stmts != null) {
-                DocumentModelList docs = new DocumentModelListImpl();
-                for (Statement stmt : stmts) {
-                    DocumentModel d = getDocumentModel(stmt.getObject(), subjectDoc.getCoreSession());
-                    if (d != null) {
-                        docs.add(d);
-                    }
+        List<Statement> stmts = getStatements(graphName, subjectDoc, predicat);
+        if (stmts != null) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            for (Statement stmt : stmts) {
+                DocumentModel d = getDocumentModel(stmt.getObject(), subjectDoc.getCoreSession());
+                if (d != null) {
+                    docs.add(d);
                 }
-                return docs;
             }
-        } catch (ClientException e) {
-            log.error(e, e);
+            return docs;
         }
         return null;
     }
@@ -187,13 +169,8 @@ public class RelationHelper {
     }
 
     public static List<Statement> getStatements(String graphName, DocumentModel subjectDoc, Resource predicat) {
-        try {
-            QNameResource docResource = getDocumentResource(subjectDoc);
-            return getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat, null);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
-        return null;
+        QNameResource docResource = getDocumentResource(subjectDoc);
+        return getRelationManager().getGraphByName(graphName).getStatements(docResource, predicat, null);
     }
 
     public static void removeRelation(DocumentModel subjectDoc, Resource predicat, DocumentModel objectDoc) {
@@ -202,14 +179,10 @@ public class RelationHelper {
 
     public static void removeRelation(String graphName, DocumentModel subjectDoc, Resource predicat,
             DocumentModel objectDoc) {
-        try {
-            QNameResource subject = getDocumentResource(subjectDoc);
-            QNameResource object = getDocumentResource(objectDoc);
-            Statement stmt = new StatementImpl(subject, predicat, object);
-            getRelationManager().getGraphByName(graphName).remove(stmt);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
+        QNameResource subject = getDocumentResource(subjectDoc);
+        QNameResource object = getDocumentResource(objectDoc);
+        Statement stmt = new StatementImpl(subject, predicat, object);
+        getRelationManager().getGraphByName(graphName).remove(stmt);
     }
 
 }

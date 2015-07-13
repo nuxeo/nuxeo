@@ -26,18 +26,17 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTreeNotAvailable;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
-import org.nuxeo.ecm.platform.publisher.api.PublisherException;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.descriptors.PublicationTreeConfigDescriptor;
@@ -302,18 +301,13 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
     protected PublicationTree buildTree(String sid, String treeConfigName, CoreSession coreSession,
             Map<String, String> params) throws PublicationTreeNotAvailable {
-        try {
-            PublicationTreeConfigDescriptor config = getPublicationTreeConfigDescriptor(treeConfigName);
-            Map<String, String> allParameters = computeAllParameters(config, params);
-            PublicationTreeDescriptor treeDescriptor = getPublicationTreeDescriptor(config);
-            PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(config, treeDescriptor,
-                    coreSession, allParameters);
-            return getPublicationTree(treeDescriptor, sid, coreSession, allParameters, publishedDocumentFactory,
-                    config.getName(), config.getTitle());
-        } catch (PublisherException e) {
-            log.error("Unable to build PublicationTree", e);
-            return null;
-        }
+        PublicationTreeConfigDescriptor config = getPublicationTreeConfigDescriptor(treeConfigName);
+        Map<String, String> allParameters = computeAllParameters(config, params);
+        PublicationTreeDescriptor treeDescriptor = getPublicationTreeDescriptor(config);
+        PublishedDocumentFactory publishedDocumentFactory = getPublishedDocumentFactory(config, treeDescriptor,
+                coreSession, allParameters);
+        return getPublicationTree(treeDescriptor, sid, coreSession, allParameters, publishedDocumentFactory,
+                config.getName(), config.getTitle());
     }
 
     protected Map<String, String> computeAllParameters(PublicationTreeConfigDescriptor config,
@@ -326,8 +320,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
     }
 
     protected PublishedDocumentFactory getPublishedDocumentFactory(PublicationTreeConfigDescriptor config,
-            PublicationTreeDescriptor treeDescriptor, CoreSession coreSession, Map<String, String> params)
-            throws PublisherException {
+            PublicationTreeDescriptor treeDescriptor, CoreSession coreSession, Map<String, String> params) {
         PublishedDocumentFactoryDescriptor factoryDesc = getPublishedDocumentFactoryDescriptor(config, treeDescriptor);
         ValidatorsRule validatorsRule = getValidatorsRule(factoryDesc);
 
@@ -335,37 +328,31 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         try {
             factory = factoryDesc.getKlass().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new PublisherException("Error while creating factory " + factoryDesc.getName(), e);
+            throw new NuxeoException("Error while creating factory " + factoryDesc.getName(), e);
         }
-
-        try {
-            factory.init(coreSession, validatorsRule, params);
-        } catch (ClientException e) {
-            throw new PublisherException("Error during Factory init", e);
-        }
+        factory.init(coreSession, validatorsRule, params);
         return factory;
     }
 
-    protected ValidatorsRule getValidatorsRule(PublishedDocumentFactoryDescriptor factoryDesc)
-            throws PublisherException {
+    protected ValidatorsRule getValidatorsRule(PublishedDocumentFactoryDescriptor factoryDesc) {
         String validatorsRuleName = factoryDesc.getValidatorsRuleName();
         ValidatorsRule validatorsRule = null;
         if (validatorsRuleName != null) {
             ValidatorsRuleDescriptor validatorsRuleDesc = validatorsRuleDescriptors.get(validatorsRuleName);
             if (validatorsRuleDesc == null) {
-                throw new PublisherException("Unable to find validatorsRule" + validatorsRuleName);
+                throw new NuxeoException("Unable to find validatorsRule" + validatorsRuleName);
             }
             try {
                 validatorsRule = validatorsRuleDesc.getKlass().newInstance();
             } catch (ReflectiveOperationException e) {
-                throw new PublisherException("Error while creating validatorsRule " + validatorsRuleName, e);
+                throw new NuxeoException("Error while creating validatorsRule " + validatorsRuleName, e);
             }
         }
         return validatorsRule;
     }
 
     protected PublishedDocumentFactoryDescriptor getPublishedDocumentFactoryDescriptor(
-            PublicationTreeConfigDescriptor config, PublicationTreeDescriptor treeDescriptor) throws PublisherException {
+            PublicationTreeConfigDescriptor config, PublicationTreeDescriptor treeDescriptor) {
         String factoryName = config.getFactory();
         if (factoryName == null) {
             factoryName = treeDescriptor.getFactory();
@@ -373,43 +360,36 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
 
         PublishedDocumentFactoryDescriptor factoryDesc = factoryDescriptors.get(factoryName);
         if (factoryDesc == null) {
-            throw new PublisherException("Unable to find factory" + factoryName);
+            throw new NuxeoException("Unable to find factory" + factoryName);
         }
         return factoryDesc;
     }
 
-    protected PublicationTreeConfigDescriptor getPublicationTreeConfigDescriptor(String treeConfigName)
-            throws PublisherException {
+    protected PublicationTreeConfigDescriptor getPublicationTreeConfigDescriptor(String treeConfigName) {
         if (!treeConfigDescriptors.containsKey(treeConfigName)) {
-            throw new PublisherException("Unknow treeConfig :" + treeConfigName);
+            throw new NuxeoException("Unknow treeConfig :" + treeConfigName);
         }
         return treeConfigDescriptors.get(treeConfigName);
     }
 
-    protected PublicationTreeDescriptor getPublicationTreeDescriptor(PublicationTreeConfigDescriptor config)
-            throws PublisherException {
+    protected PublicationTreeDescriptor getPublicationTreeDescriptor(PublicationTreeConfigDescriptor config) {
         String treeImplName = config.getTree();
         if (!treeDescriptors.containsKey(treeImplName)) {
-            throw new PublisherException("Unknow treeImplementation :" + treeImplName);
+            throw new NuxeoException("Unknow treeImplementation :" + treeImplName);
         }
         return treeDescriptors.get(treeImplName);
     }
 
     protected PublicationTree getPublicationTree(PublicationTreeDescriptor treeDescriptor, String sid,
             CoreSession coreSession, Map<String, String> parameters, PublishedDocumentFactory factory,
-            String configName, String treeTitle) throws PublisherException, PublicationTreeNotAvailable {
+            String configName, String treeTitle) throws PublicationTreeNotAvailable {
         PublicationTree treeImpl;
         try {
             treeImpl = treeDescriptor.getKlass().newInstance();
         } catch (ReflectiveOperationException e) {
-            throw new PublisherException("Error while creating tree implementation", e);
+            throw new NuxeoException("Error while creating tree implementation", e);
         }
-
-        try {
-            treeImpl.initTree(sid, coreSession, parameters, factory, configName, treeTitle);
-        } catch (ClientException e) {
-            throw new PublicationTreeNotAvailable("Error during tree init", e);
-        }
+        treeImpl.initTree(sid, coreSession, parameters, factory, configName, treeTitle);
         return treeImpl;
     }
 
@@ -426,7 +406,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.publish(doc, targetNode, params);
         } else {
-            throw new ClientException("Calling getChildrenNodes on a closed tree");
+            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
         }
     }
 
@@ -436,7 +416,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             tree.unpublish(doc, targetNode);
         } else {
-            throw new ClientException("Calling getChildrenNodes on a closed tree");
+            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
         }
     }
 
@@ -446,7 +426,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             tree.unpublish(publishedDocument);
         } else {
-            throw new ClientException("Calling getChildrenNodes on a closed tree");
+            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
         }
     }
 
@@ -457,7 +437,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.getPublishedDocumentInNode(tree.getNodeByPath(node.getPath()));
         } else {
-            throw new ClientException("Calling getChildrenDocuments on a closed tree");
+            throw new NuxeoException("Calling getChildrenDocuments on a closed tree");
         }
     }
 
@@ -478,7 +458,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return makeRemotable(tree.getNodeByPath(node.getPath()).getChildrenNodes(), sid);
         } else {
-            throw new ClientException("Calling getChildrenNodes on a closed tree");
+            throw new NuxeoException("Calling getChildrenNodes on a closed tree");
         }
     }
 
@@ -488,16 +468,11 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         PublicationTree tree = liveTrees.get(sid);
         if (tree != null) {
             PublicationNode liveNode;
-            try {
-                liveNode = tree.getNodeByPath(node.getPath()).getParent();
-                if (liveNode == null) {
-                    return null;
-                }
-                return new ProxyNode(liveNode, sid);
-            } catch (ClientException e) {
-                log.error("Error while getting Parent", e);
+            liveNode = tree.getNodeByPath(node.getPath()).getParent();
+            if (liveNode == null) {
                 return null;
             }
+            return new ProxyNode(liveNode, sid);
         } else {
             log.error("Calling getParent on a closed tree");
             return null;
@@ -510,7 +485,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return new ProxyNode(tree.getNodeByPath(path), sid);
         } else {
-            throw new ClientException("Calling getNodeByPath on a closed tree");
+            throw new NuxeoException("Calling getNodeByPath on a closed tree");
         }
     }
 
@@ -521,7 +496,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.getExistingPublishedDocument(docLoc);
         } else {
-            throw new ClientException("Calling getNodeByPath on a closed tree");
+            throw new NuxeoException("Calling getNodeByPath on a closed tree");
         }
     }
 
@@ -532,7 +507,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.getPublishedDocumentInNode(tree.getNodeByPath(node.getPath()));
         } else {
-            throw new ClientException("Calling getPublishedDocumentInNode on a closed tree");
+            throw new NuxeoException("Calling getPublishedDocumentInNode on a closed tree");
         }
     }
 
@@ -542,7 +517,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             tree.setCurrentDocument(currentDocument);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -553,7 +528,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             tree.validatorPublishDocument(publishedDocument, comment);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -564,7 +539,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             tree.validatorRejectPublication(publishedDocument, comment);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -574,7 +549,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.canPublishTo(publicationNode);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -584,7 +559,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.canUnpublish(publishedDocument);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -594,7 +569,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.canManagePublishing(publishedDocument);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -608,9 +583,10 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         PublicationTree tree = null;
         try {
             tree = PublicationRelationHelper.getPublicationTreeUsedForPublishing(doc, coreSession);
-        } catch (ClientException e) {
-            log.debug("Unable to get PublicationTree for " + doc.getPathAsString()
-                    + ". Fallback on first PublicationTree accepting this document.");
+        } catch (NuxeoException e) {
+            // TODO catch proper exception
+            log.error("Unable to get PublicationTree for " + doc.getPathAsString()
+                    + ". Fallback on first PublicationTree accepting this document.", e);
             for (String treeName : treeConfigDescriptors.keySet()) {
                 tree = getPublicationTree(treeName, coreSession, null);
                 if (tree.isPublicationNode(doc)) {
@@ -627,7 +603,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.hasValidationTask(publishedDocument);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -637,7 +613,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.wrapToPublishedDocument(documentModel);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -647,7 +623,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.isPublicationNode(documentModel);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 
@@ -657,7 +633,7 @@ public class PublisherServiceImpl extends DefaultComponent implements PublisherS
         if (tree != null) {
             return tree.wrapToPublicationNode(documentModel);
         } else {
-            throw new ClientException("Calling validatorPublishDocument on a closed tree");
+            throw new NuxeoException("Calling validatorPublishDocument on a closed tree");
         }
     }
 

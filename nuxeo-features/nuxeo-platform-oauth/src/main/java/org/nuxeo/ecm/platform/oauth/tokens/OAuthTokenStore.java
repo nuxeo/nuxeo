@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.oauth.tokens;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Service interface for managing {@link OAuthToken} used both : - in the OAuth the Filter (Server side Tokens) : where

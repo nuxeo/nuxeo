@@ -17,12 +17,12 @@
 
 package org.nuxeo.ecm.platform.publisher.api;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class PublicationTreeNotAvailable extends ClientException {
+public class PublicationTreeNotAvailable extends NuxeoException {
 
     private static final long serialVersionUID = 1L;
 

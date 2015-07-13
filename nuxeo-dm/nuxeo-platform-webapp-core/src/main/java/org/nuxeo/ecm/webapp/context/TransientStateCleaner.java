@@ -31,9 +31,9 @@ import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 
@@ -76,7 +76,7 @@ public class TransientStateCleaner implements Serializable {
                     // force refresh
                     navigationContext.setCurrentDocument(null);
                     navigationContext.setCurrentDocument(currentDocument);
-                } catch (ClientException e) {
+                } catch (DocumentNotFoundException e) {
                     log.error("Error during reset of transient state", e);
                 }
             }

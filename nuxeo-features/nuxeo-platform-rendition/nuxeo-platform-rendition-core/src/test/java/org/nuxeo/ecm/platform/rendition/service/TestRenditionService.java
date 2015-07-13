@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.nuxeo.ecm.platform.rendition.Constants.FILES_FILES_PROPERTY;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_FACET;
 import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PROPERTY;
@@ -37,10 +38,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -51,7 +52,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -296,25 +296,40 @@ public class TestRenditionService {
         assertEquals(version.getRef(), lastVersion.getRef());
     }
 
-    @Test(expected = RenditionException.class)
+    @Test
     public void shouldNotRenderAnEmptyDocument() {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
+        try {
+            renditionService.storeRendition(file, PDF_RENDITION_DEFINITION);
+            fail();
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Rendition pdf not available"));
+        }
     }
 
-    @Test(expected = RenditionException.class)
+    @Test
     public void shouldNotRenderWithAnUndefinedRenditionDefinition() {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.storeRendition(file, "undefinedRenditionDefinition");
+        try {
+            renditionService.storeRendition(file, "undefinedRenditionDefinition");
+            fail();
+        } catch (NuxeoException e) {
+            assertEquals(e.getMessage(), "The rendition definition 'undefinedRenditionDefinition' is not registered");
+        }
     }
 
-    @Test(expected = RenditionException.class)
+    @Test
     public void shouldNotRenderWithAnUndefinedOperationChain() {
         DocumentModel file = session.createDocumentModel("/", "dummy", "File");
         file = session.createDocument(file);
-        renditionService.storeRendition(file, "renditionDefinitionWithUnknownOperationChain");
+        try {
+            renditionService.storeRendition(file, "renditionDefinitionWithUnknownOperationChain");
+            fail();
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(), e.getMessage().startsWith("Rendition renditionDefinitionWithUnknownOperationChain not available"));
+        }
     }
 
     @Test
@@ -358,11 +373,17 @@ public class TestRenditionService {
         assertTrue(renditionFiles.isEmpty());
     }
 
-    @Test(expected = RenditionException.class)
+    @Test
     public void shouldNotRenderADocumentWithoutBlobHolder() {
         DocumentModel folder = session.createDocumentModel("/", "dummy-folder", "Folder");
         folder = session.createDocument(folder);
-        renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);
+        try {
+            renditionService.storeRendition(folder, PDF_RENDITION_DEFINITION);
+            fail();
+        } catch (NuxeoException e) {
+            assertTrue(e.getMessage(),
+                    e.getMessage().startsWith("Rendition pdf not available"));
+        }
     }
 
     @Test

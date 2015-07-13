@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationFeature;
@@ -132,7 +131,7 @@ public abstract class AbstractRepositoryTestCase {
         waitForAsyncExec();
     }
 
-    protected Annotation getAnnotation(String url, int x) throws IOException, AnnotationException {
+    protected Annotation getAnnotation(String url, int x) throws IOException {
 
         InputStream is = getClass().getResourceAsStream("/annotation" + x + ".xml");
         String template = IOUtils.readStringAndClose(new InputStreamReader(is), -1);

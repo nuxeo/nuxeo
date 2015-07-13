@@ -30,9 +30,9 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskService;
@@ -70,11 +70,7 @@ public class GetUserTasks {
         JSONArray rows = new JSONArray();
         for (Task task : tasks) {
             DocumentModel doc = null;
-            try {
-                doc = taskService.getTargetDocumentModel(task, repo);
-            } catch (ClientException e) {
-                log.warn("Cannot get doc for task " + task.getId(), e);
-            }
+            doc = taskService.getTargetDocumentModel(task, repo);
             if (doc == null) {
                 log.warn(String.format("User '%s' has a task of type '%s' on an " + "unexisting or invisible document",
                         principal().getName(), task.getName()));

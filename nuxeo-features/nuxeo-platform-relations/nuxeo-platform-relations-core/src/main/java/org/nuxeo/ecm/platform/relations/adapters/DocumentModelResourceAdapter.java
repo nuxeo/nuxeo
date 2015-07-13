@@ -24,11 +24,11 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
@@ -92,7 +92,7 @@ public class DocumentModelResourceAdapter extends AbstractResourceAdapter implem
                     return null;
                 }
                 object = session.getDocument(ref);
-            } catch (ClientException e) {
+            } catch (DocumentNotFoundException e) {
                 log.warn("Cannot get resource: " + resource, e);
             } finally {
                 if (sessionOpened) {

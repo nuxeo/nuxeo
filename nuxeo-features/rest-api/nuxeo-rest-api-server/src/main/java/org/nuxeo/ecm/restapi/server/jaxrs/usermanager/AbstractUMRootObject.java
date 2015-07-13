@@ -26,7 +26,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.restapi.server.jaxrs.PaginableObject;
@@ -58,7 +58,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
                 throw new WebResourceNotFoundException(getArtifactType() + " does not exist");
             }
             return newObject(getArtifactType(), artifact);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -70,7 +70,7 @@ public abstract class AbstractUMRootObject<T> extends PaginableObject<T> {
             artifact = createArtifact(artifact);
             return Response.status(Status.CREATED).entity(artifact).build();
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

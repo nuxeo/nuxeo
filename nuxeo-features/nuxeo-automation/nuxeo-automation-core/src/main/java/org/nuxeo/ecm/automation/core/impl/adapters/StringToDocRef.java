@@ -15,10 +15,10 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
@@ -42,7 +42,7 @@ public class StringToDocRef implements TypeAdapter {
             return createRef(value);
         } catch (TypeAdaptException e) {
             throw e;
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw new TypeAdaptException(e);
         }
     }

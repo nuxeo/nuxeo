@@ -24,7 +24,6 @@ import java.util.Map;
 
 import javax.servlet.http.Part;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

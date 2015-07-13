@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 
 /**
@@ -50,29 +50,29 @@ public class DefaultUriResolver implements UriResolver {
         }
     }
 
-    public List<URI> getSearchURI(URI uri) throws AnnotationException {
+    public List<URI> getSearchURI(URI uri) {
         return Collections.singletonList(uri);
     }
 
-    public URI translateFromGraphURI(URI uri, String baseUrl) throws AnnotationException {
+    public URI translateFromGraphURI(URI uri, String baseUrl) {
         if (uri.toString().startsWith("urn:annotation:")) {
             String annId = uri.toString().substring(uri.toString().lastIndexOf(":") + 1);
             try {
                 return new URI(baseUrl + annId);
             } catch (URISyntaxException e) {
-                throw new AnnotationException(e);
+                throw new NuxeoException(e);
             }
         }
         return uri;
     }
 
-    public URI translateToGraphURI(URI uri) throws AnnotationException {
+    public URI translateToGraphURI(URI uri) {
         String path = uri.getPath();
         if (uri.toString().contains(NUXEO_ANNOTATIONS)) {
             try {
                 return new URI("urn:annotation:" + path.substring(path.lastIndexOf("/") + 1));
             } catch (URISyntaxException e) {
-                throw new AnnotationException(e);
+                throw new NuxeoException(e);
             }
         } else {
             return uri;

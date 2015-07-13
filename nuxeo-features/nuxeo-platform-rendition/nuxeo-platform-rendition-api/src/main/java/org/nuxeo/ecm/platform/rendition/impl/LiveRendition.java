@@ -20,14 +20,14 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
  * Implementation of the {@link Rendition} interface that is applicable for rendition created on the fly
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public class LiveRendition extends LazyRendition implements Rendition {
@@ -50,11 +50,11 @@ public class LiveRendition extends LazyRendition implements Rendition {
     }
 
     @Override
-    protected List<Blob> computeRenditionBlobs() throws RenditionException {
+    protected List<Blob> computeRenditionBlobs() {
 
         RenditionProvider provider = getDefinition().getProvider();
         if (provider == null) {
-            throw new RenditionException("No Rendition provider defined");
+            throw new NuxeoException("No Rendition provider defined");
         }
 
         return provider.render(getHostDocument(), getDefinition());

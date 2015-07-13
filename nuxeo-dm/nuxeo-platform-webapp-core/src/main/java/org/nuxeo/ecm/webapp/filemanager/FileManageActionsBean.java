@@ -50,11 +50,11 @@ import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.utils.Base64;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -176,7 +176,7 @@ public class FileManageActionsBean implements FileManageActions {
             createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true,
                     blob.getFilename());
         } catch (IOException e) {
-            throw new ClientException("Can not write blob for" + blob.getFilename(), e);
+            throw new NuxeoException("Can not write blob for" + blob.getFilename(), e);
         }
         EventManager.raiseEventsOnDocumentSelected(createdDoc);
         Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
@@ -211,25 +211,15 @@ public class FileManageActionsBean implements FileManageActions {
     @Override
     @Deprecated
     @WebRemote
-    public String addFileFromPlugin(String content, String mimetype, String fullName, String morePath, Boolean UseBase64)
-            {
-        try {
-            byte[] bcontent;
-            if (UseBase64.booleanValue()) {
-                bcontent = Base64.decode(content);
-            } else {
-                bcontent = content.getBytes();
-            }
-            return addBinaryFileFromPlugin(bcontent, mimetype, fullName, morePath);
-        } catch (ClientException e) {
-            throw new RecoverableClientException("Cannot validate, caught client exception",
-                    "message.operation.fails.generic", null, e);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof RecoverableClientException) {
-                throw e;
-            }
-            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
+    public String addFileFromPlugin(String content, String mimetype, String fullName, String morePath,
+            Boolean UseBase64) {
+        byte[] bcontent;
+        if (UseBase64.booleanValue()) {
+            bcontent = Base64.decode(content);
+        } else {
+            bcontent = content.getBytes();
         }
+        return addBinaryFileFromPlugin(bcontent, mimetype, fullName, morePath);
     }
 
     @Override
@@ -253,7 +243,7 @@ public class FileManageActionsBean implements FileManageActions {
         DocumentModel createdDoc;
         try {
             createdDoc = getFileManagerService().createDocumentFromBlob(documentManager, blob, path, true, fullName);
-        } catch (ClientException | IOException t) {
+        } catch (NuxeoException | IOException t) {
             Throwable unwrappedError = ExceptionHelper.unwrapException(t);
             if (ExceptionHelper.isSecurityError(unwrappedError)) {
                 // security check failed
@@ -306,7 +296,7 @@ public class FileManageActionsBean implements FileManageActions {
             DocumentModel createdDoc;
             try {
                 createdDoc = getFileManagerService().createFolder(documentManager, fullName, path);
-            } catch (ClientException | IOException t) {
+            } catch (NuxeoException | IOException t) {
                 Throwable unwrappedError = ExceptionHelper.unwrapException(t);
                 if (ExceptionHelper.isSecurityError(unwrappedError)) {
                     // security check failed
@@ -326,11 +316,10 @@ public class FileManageActionsBean implements FileManageActions {
             EventManager.raiseEventsOnDocumentSelected(createdDoc);
             Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, currentDocument);
             return createdDoc.getName();
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof RecoverableClientException) {
-                throw e;
-            }
-            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
+        } catch (RecoverableClientException e) {
+            throw e;
+        } catch (NuxeoException e) {
+            throw new RecoverableClientException("Cannot validate, caught exception", "error.db.fs", null, e);
         }
     }
 
@@ -451,14 +440,11 @@ public class FileManageActionsBean implements FileManageActions {
                     messages.get(documentManager.getDocument(srcRef).getType()));
 
             return debug;
-        } catch (ClientException e) {
-            throw new RecoverableClientException("Cannot validate, caught client exception",
-                    "message.operation.fails.generic", null, e);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof RecoverableClientException) {
-                throw e;
-            }
-            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
+        } catch (RecoverableClientException e) {
+            throw e;
+        } catch (NuxeoException e) {
+            throw new RecoverableClientException("Cannot validate, caught exception", "message.operation.fails.generic",
+                    null, e);
         }
     }
 
@@ -480,14 +466,11 @@ public class FileManageActionsBean implements FileManageActions {
             docsToAdd.add(srcDoc);
             clipboardActions.putSelectionInWorkList(docsToAdd, Boolean.TRUE);
             return debug;
-        } catch (ClientException e) {
-            throw new RecoverableClientException("Cannot validate, caught client exception",
-                    "message.operation.fails.generic", null, e);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof RecoverableClientException) {
-                throw e;
-            }
-            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
+        } catch (RecoverableClientException e) {
+            throw e;
+        } catch (NuxeoException e) {
+            throw new RecoverableClientException("Cannot validate, caught exception", "message.operation.fails.generic",
+                    null, e);
         }
 
     }
@@ -510,14 +493,11 @@ public class FileManageActionsBean implements FileManageActions {
             pasteDocs.add(srcDoc);
             clipboardActions.pasteDocumentList(pasteDocs);
             return debug;
-        } catch (ClientException e) {
-            throw new RecoverableClientException("Cannot validate, caught client exception",
-                    "message.operation.fails.generic", null, e);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof RecoverableClientException) {
-                throw e;
-            }
-            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
+        } catch (RecoverableClientException e) {
+            throw e;
+        } catch (NuxeoException e) {
+            throw new RecoverableClientException("Cannot validate, caught exception", "message.operation.fails.generic",
+                    null, e);
         }
     }
 
@@ -617,8 +597,9 @@ public class FileManageActionsBean implements FileManageActions {
             files.remove(file);
             current.setPropertyValue(FILES_PROPERTY, files);
             documentActions.updateDocument(current, Boolean.TRUE);
-        } catch (IndexOutOfBoundsException | ClientException e) {
+        } catch (IndexOutOfBoundsException | NuxeoException e) {
             log.error(e, e);
+            throw e;
         }
     }
 
@@ -632,14 +613,11 @@ public class FileManageActionsBean implements FileManageActions {
         }
         try {
             return addFile();
-        } catch (ClientException e) {
-            throw new RecoverableClientException("Cannot validate, caught client exception",
-                    "message.operation.fails.generic", null, e);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof RecoverableClientException) {
-                throw e;
-            }
-            throw new RecoverableClientException("Cannot validate, caught runtime", "error.db.fs", null, e);
+        } catch (RecoverableClientException e) {
+            throw e;
+        } catch (NuxeoException e) {
+            throw new RecoverableClientException("Cannot validate, caught exception", "message.operation.fails.generic",
+                    null, e);
         } finally {
             if (uploadedFile != null && uploadedFile.getFile().exists()) {
                 Framework.trackFile(uploadedFile.getFile(), uploadedFile.getFile());

@@ -26,7 +26,6 @@ import java.util.Calendar;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Blob based implementation of the ImageResource Because ImageResource will be cached this Implementation is not

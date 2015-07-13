@@ -37,10 +37,10 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.ListDiff;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
@@ -173,31 +173,26 @@ public class EditorImageActionsBean extends InputController implements EditorIma
         if (uploadedImage == null) {
             return null;
         }
+        DocumentModel doc = navigationContext.getCurrentDocument();
+        List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty("files", "files");
+        int fileIndex = filesList == null ? 0 : filesList.size();
+        Map<String, Object> props = new HashMap<String, Object>();
+        Blob blob;
         try {
-            final DocumentModel doc = navigationContext.getCurrentDocument();
-
-            final List<Map<String, Object>> filesList = (List<Map<String, Object>>) doc.getProperty("files", "files");
-            final int fileIndex = filesList == null ? 0 : filesList.size();
-
-            final Map<String, Object> props = new HashMap<String, Object>();
-            Blob blob = FileUtils.createBlob(uploadedImage);
-            props.put("filename", blob.getFilename());
-            props.put("file", blob);
-            final ListDiff listDiff = new ListDiff();
-            listDiff.add(props);
-            doc.setProperty("files", "files", listDiff);
-
-            documentManager.saveDocument(doc);
-            documentManager.save();
-
-            imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, blob.getFilename());
-
-            isImageUploaded = true;
-
-            return "editor_image_upload";
+            blob = FileUtils.createBlob(uploadedImage);
         } catch (IOException e) {
-            throw new ClientException(e);
+            throw new NuxeoException(e);
         }
+        props.put("filename", blob.getFilename());
+        props.put("file", blob);
+        ListDiff listDiff = new ListDiff();
+        listDiff.add(props);
+        doc.setProperty("files", "files", listDiff);
+        documentManager.saveDocument(doc);
+        documentManager.save();
+        imageUrl = DocumentModelFunctions.complexFileUrl("downloadFile", doc, fileIndex, blob.getFilename());
+        isImageUploaded = true;
+        return "editor_image_upload";
     }
 
     @Override

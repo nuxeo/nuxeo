@@ -43,8 +43,8 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
-import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.runtime.api.Framework;
 
@@ -198,7 +198,7 @@ public class IOLogEntryBase {
         try {
             newLogEntry = (LogEntry) BeanUtils.cloneBean(logEntry);
         } catch (ReflectiveOperationException e) {
-            throw new AuditRuntimeException("cannot clone bean " + logEntry, e);
+            throw new NuxeoException("cannot clone bean " + logEntry, e);
         }
         newLogEntry.setDocUUID(newRef);
         return newLogEntry;

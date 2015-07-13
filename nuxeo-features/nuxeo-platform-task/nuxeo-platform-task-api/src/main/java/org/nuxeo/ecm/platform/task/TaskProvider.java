@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.task;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -150,7 +149,7 @@ public interface TaskProvider extends Serializable {
      * @param comment string added to the task comments and used as a notification comment
      * @param eventName the core event name to use when notifying
      * @param isValidated boolean marker to state if the task was validated or rejected
-     * @throws ClientException when trying to end a task without being granted the right to do so (see
+     * @throws NuxeoException when trying to end a task without being granted the right to do so (see
      *             {@link #canEndTask(NuxeoPrincipal, Task)}), or when any other error occurs
      * @return the name of the Seam event to raise
      */

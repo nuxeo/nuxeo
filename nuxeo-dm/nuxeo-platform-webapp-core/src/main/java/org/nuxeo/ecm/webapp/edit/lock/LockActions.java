@@ -22,7 +22,6 @@ package org.nuxeo.ecm.webapp.edit.lock;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.actions.Action;
 

@@ -26,7 +26,6 @@ import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Provide Creation Book related actions.

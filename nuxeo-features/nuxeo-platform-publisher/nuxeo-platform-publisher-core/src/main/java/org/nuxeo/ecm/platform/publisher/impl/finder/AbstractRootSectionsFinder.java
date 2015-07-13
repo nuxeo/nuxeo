@@ -8,10 +8,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -195,7 +195,7 @@ public abstract class AbstractRootSectionsFinder extends UnrestrictedSessionRunn
                     try {
                         DocumentModel sectionToAdd = session.getDocument(new IdRef(currentSectionId));
                         selectedSections.add(sectionToAdd);
-                    } catch (ClientException e) {
+                    } catch (DocumentNotFoundException e) {
                         log.warn("Section with ID=" + currentSectionId + " not found for document with ID="
                                 + workspace.getId());
                     }

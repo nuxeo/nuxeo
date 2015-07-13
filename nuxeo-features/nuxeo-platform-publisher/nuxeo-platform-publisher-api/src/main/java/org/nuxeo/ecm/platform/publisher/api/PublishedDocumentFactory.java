@@ -19,10 +19,8 @@ package org.nuxeo.ecm.platform.publisher.api;
 
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 
 /**
@@ -52,23 +50,21 @@ public interface PublishedDocumentFactory {
      *
      * @param dm a Nuxeo Core document model. (the document that just has been published)
      * @return a list of principal names.
-     * @throws org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException
      */
-    String[] getValidatorsFor(DocumentModel dm) throws PublishingValidatorException;
+    String[] getValidatorsFor(DocumentModel dm);
 
     /**
      * Returns the registered section validators rule.
      *
      * @return a validators rule
      */
-    ValidatorsRule getValidatorsRule() throws PublishingValidatorException;
+    ValidatorsRule getValidatorsRule();
 
     /**
      * A validator (the current user) approves the publication.
      *
      * @param publishedDocument the current published document that will be approved
      * @param comment
-     * @throws PublishingException
      */
     void validatorPublishDocument(PublishedDocument publishedDocument, String comment);
 
@@ -77,7 +73,6 @@ public interface PublishedDocumentFactory {
      *
      * @param publishedDocument the currently published document that will be rejected
      * @param comment
-     * @throws PublishingException
      */
     void validatorRejectPublication(PublishedDocument publishedDocument, String comment);
 

@@ -22,13 +22,11 @@ package org.nuxeo.ecm.platform.annotations.http;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
@@ -46,17 +44,13 @@ public class AnnotationsServlet extends HttpServlet {
     private AnnotationServiceFacade facade;
 
     @Override
-    public void init() throws ServletException {
-        try {
-            facade = new AnnotationServiceFacade();
-        } catch (AnnotationException e) {
-            throw new ServletException(e);
-        }
+    public void init() {
+        facade = new AnnotationServiceFacade();
     }
 
     // HTTP Methods
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String w3c_annotates = req.getParameter(W3C_ANNOTATES);
         String annId = null;
         if (req.getPathInfo() != null) {
@@ -66,43 +60,27 @@ public class AnnotationsServlet extends HttpServlet {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
         if (annId != null) {
-            try {
-                facade.getAnnotation(annId, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
-                        req.getRequestURL() + "/");
-            } catch (AnnotationException e) {
-                throw new ServletException(e);
-            }
+            facade.getAnnotation(annId, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
+                    req.getRequestURL() + "/");
         } else if (w3c_annotates != null && !w3c_annotates.isEmpty()) {
-            try {
-                facade.query(w3c_annotates, resp.getOutputStream(), (NuxeoPrincipal) req.getUserPrincipal());
-            } catch (AnnotationException | IOException e) {
-                throw new ServletException(e);
-            }
+            facade.query(w3c_annotates, resp.getOutputStream(), (NuxeoPrincipal) req.getUserPrincipal());
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
 
         String replace_source = req.getParameter(REPLACE_SOURCE);
         if (replace_source != null) {
             InputStream is = req.getInputStream();
-            try {
-                facade.updateAnnotation(is, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
-                        getBaseUrl(req));
-            } catch (AnnotationException e) {
-                throw new ServletException(e);
-            }
+            facade.updateAnnotation(is, (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
+                    getBaseUrl(req));
         } else {
-            try {
-                StringBuffer baseUrl = req.getRequestURL();
-                facade.createAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(),
-                        resp.getOutputStream(), baseUrl.toString());
-            } catch (AnnotationException e) {
-                throw new ServletException(e);
-            }
+            StringBuffer baseUrl = req.getRequestURL();
+            facade.createAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(),
+                    resp.getOutputStream(), baseUrl.toString());
         }
     }
 
@@ -113,28 +91,20 @@ public class AnnotationsServlet extends HttpServlet {
     }
 
     @Override
-    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
         String annId = req.getPathInfo().replaceFirst("/", "");
         String documentUrl = req.getParameter(DOCUMENT_URL);
-        try {
-            facade.deleteFor(documentUrl, annId, (NuxeoPrincipal) req.getUserPrincipal(), getBaseUrl(req) + "/");
-        } catch (AnnotationException e) {
-            throw new ServletException(e);
-        }
+        facade.deleteFor(documentUrl, annId, (NuxeoPrincipal) req.getUserPrincipal(), getBaseUrl(req) + "/");
     }
 
     @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setHeader("Cache-Control", "no-cache");
         resp.setHeader("Pragma", "no-cache");
-        try {
-            facade.updateAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(),
-                    resp.getOutputStream(), req.getRequestURL() + "/");
-        } catch (AnnotationException e) {
-            throw new ServletException(e);
-        }
+        facade.updateAnnotation(req.getInputStream(), (NuxeoPrincipal) req.getUserPrincipal(), resp.getOutputStream(),
+                req.getRequestURL() + "/");
     }
 
 }

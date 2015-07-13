@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;

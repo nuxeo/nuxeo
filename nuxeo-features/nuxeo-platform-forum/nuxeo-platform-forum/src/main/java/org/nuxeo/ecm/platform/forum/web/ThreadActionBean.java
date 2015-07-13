@@ -37,9 +37,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -248,7 +248,7 @@ public class ThreadActionBean implements ThreadAction {
         if (thread.getSessionId() == null) {
             try {
                 thread = documentManager.getDocument(thread.getRef());
-            } catch (ClientException e) {
+            } catch (DocumentNotFoundException e) {
                 log.error("Unable to reconnect doc !,", e);
             }
         }

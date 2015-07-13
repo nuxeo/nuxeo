@@ -18,14 +18,10 @@ package org.nuxeo.ecm.platform.rendition.publisher;
 
 import java.io.Serializable;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -39,38 +35,13 @@ public class RenditionBusinessDelegate implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final Log log = LogFactory.getLog(RenditionBusinessDelegate.class);
-
-    protected RenditionService renditionService;
-
     /**
      * Acquires a new {@link RenditionService} reference. The related service may be deployed on a local or remote
      * AppServer.
-     *
-     * @throws org.nuxeo.ecm.core.api.ClientException
      */
     @Unwrap
     public RenditionService getService() {
-        if (renditionService == null) {
-            try {
-                renditionService = Framework.getService(RenditionService.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to RenditionService. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (renditionService == null) {
-                throw new ClientException("ContentViewService service not bound");
-            }
-        }
-        return renditionService;
-    }
-
-    @Destroy
-    public void destroy() {
-        if (renditionService != null) {
-            renditionService = null;
-        }
-        log.debug("Destroyed the seam component");
+        return Framework.getService(RenditionService.class);
     }
 
 }

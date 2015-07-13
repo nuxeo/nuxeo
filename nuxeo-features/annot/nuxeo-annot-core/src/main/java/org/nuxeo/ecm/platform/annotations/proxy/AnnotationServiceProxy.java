@@ -27,9 +27,9 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
@@ -75,12 +75,11 @@ public class AnnotationServiceProxy implements AnnotationsService {
         listeners = configurationService.getListeners();
     }
 
-    public Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl)
-            throws AnnotationException {
+    public Annotation addAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         checkUrl(annotation);
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
         if (!annotabilityManager.isAnnotable(annotation.getAnnotates())) {
-            throw new AnnotationException("Not annotable uri: " + annotation.getAnnotates());
+            throw new NuxeoException("Not annotable uri: " + annotation.getAnnotates());
         }
         checkPermission(annotation, user, configurationService.getCreateAnnotationPermission());
         for (EventListener listener : listeners) {
@@ -93,19 +92,18 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return annotationManager.translateAnnotationFromRepo(resolver, baseUrl, tmpResult);
     }
 
-    private void checkPermission(Annotation annotation, NuxeoPrincipal user, String permission)
-            throws AnnotationException {
+    private void checkPermission(Annotation annotation, NuxeoPrincipal user, String permission) {
         if (!permissionManager.check(user, permission, annotation.getAnnotates())) {
-            throw new AnnotationException(user + " allowed to query annotation.");
+            throw new NuxeoException(user + " allowed to query annotation.");
         }
     }
 
-    private Annotation getTranslatedAnnotation(Annotation annotation) throws AnnotationException {
+    private Annotation getTranslatedAnnotation(Annotation annotation) {
         Annotation translatedAnnotation = annotationManager.translateAnnotationToRepo(resolver, annotation);
         return translatedAnnotation;
     }
 
-    private void checkUrl(Annotation annotation) throws AnnotationException {
+    private void checkUrl(Annotation annotation) {
         try {
             URI uri = annotation.getAnnotates();
             if (uri.toASCIIString().startsWith("urn:")) {
@@ -113,14 +111,14 @@ public class AnnotationServiceProxy implements AnnotationsService {
             }
             String url = uri.toURL().toString();
             if (!filter.allow(url)) {
-                throw new AnnotationException("Not allowed to annoates: " + url);
+                throw new NuxeoException("Not allowed to annotate: " + url);
             }
         } catch (MalformedURLException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
     }
 
-    public void deleteAnnotation(Annotation annotation, NuxeoPrincipal user) throws AnnotationException {
+    public void deleteAnnotation(Annotation annotation, NuxeoPrincipal user) {
         checkPermission(annotation, user, configurationService.getDeleteAnnotationPermission());
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
         for (EventListener listener : listeners) {
@@ -132,7 +130,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         }
     }
 
-    public void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) throws AnnotationException {
+    public void deleteAnnotationFor(URI uri, Annotation annotation, NuxeoPrincipal user) {
         checkPermission(annotation, user, configurationService.getDeleteAnnotationPermission());
         Annotation translatedAnnotation = getTranslatedAnnotation(annotation);
         for (EventListener listener : listeners) {
@@ -144,8 +142,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         }
     }
 
-    public Annotation getAnnotation(String annotationId, NuxeoPrincipal user, String baseUrl)
-            throws AnnotationException {
+    public Annotation getAnnotation(String annotationId, NuxeoPrincipal user, String baseUrl) {
         for (EventListener listener : listeners) {
             listener.beforeAnnotationRead(user, annotationId);
         }
@@ -157,12 +154,11 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return annotationManager.translateAnnotationFromRepo(resolver, baseUrl, result);
     }
 
-    public Graph getAnnotationGraph() throws AnnotationException {
+    public Graph getAnnotationGraph() {
         return service.getAnnotationGraph();
     }
 
-    public List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user)
-            throws AnnotationException {
+    public List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user) {
         String baseUrl = null;
         if (!uri.toString().startsWith("urn")) {
             baseUrl = resolver.getBaseUrl(uri);
@@ -181,8 +177,7 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return result;
     }
 
-    public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl)
-            throws AnnotationException {
+    public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         checkPermission(annotation, user, configurationService.getUpdateAnnotationPermission());
         for (EventListener listener : listeners) {
             listener.beforeAnnotationUpdated(user, annotation);

@@ -20,7 +20,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.automation.features.PlatformFunctions;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * @author <a href="mailto:bjalon@nuxeo.com">Benjamin JALON</a>

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTiles;
 import org.nuxeo.ecm.platform.pictures.tiles.api.PictureTilesImpl;
@@ -68,7 +68,7 @@ public class GimpTiler extends BasePictureTiler {
             result = exec("python-fu-nx-tiles", inputFilePath, outputDirPath, tileWidth, tileHeight, maxTiles, xCenter,
                     yCenter);
         } catch (IOException e) {
-            throw new ClientException("Error while calling gimp command line", e);
+            throw new NuxeoException("Error while calling gimp command line", e);
         }
 
         result.put(PictureTilesImpl.TILE_INPUT_FILE_KEY, inputFilePath);

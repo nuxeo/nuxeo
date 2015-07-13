@@ -35,7 +35,6 @@ import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.DocumentPipe;
 import org.nuxeo.ecm.core.io.DocumentReader;
@@ -230,7 +229,7 @@ public class ImportExportActionBean implements Serializable {
             response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\";");
             response.setHeader("Content-Type", "application/zip");
             FacesContext.getCurrentInstance().responseComplete();
-        } catch (ClientException | IOException e) {
+        } catch (IOException e) {
             log.error("Error during XML export " + e.getMessage());
         } finally {
             if (reader != null) {

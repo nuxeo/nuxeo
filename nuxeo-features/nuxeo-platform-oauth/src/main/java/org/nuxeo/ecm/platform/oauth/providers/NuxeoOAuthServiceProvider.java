@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.oauth.providers;
 
 import net.oauth.OAuthServiceProvider;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoOAuthServiceProvider extends OAuthServiceProvider {

@@ -35,7 +35,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.mail.utils.MailCoreHelper;
@@ -72,7 +71,7 @@ public class MailActionsBean implements Serializable {
 
         try {
             MailCoreHelper.checkMail(mailFolder, documentManager);
-        } catch (MessagingException | ClientException e) {
+        } catch (MessagingException e) {
             log.debug(e, e);
             facesMessages.add(StatusMessage.Severity.ERROR,
                     resourcesAccessor.getMessages().get("feedback.check.mail.error") + e.getMessage());

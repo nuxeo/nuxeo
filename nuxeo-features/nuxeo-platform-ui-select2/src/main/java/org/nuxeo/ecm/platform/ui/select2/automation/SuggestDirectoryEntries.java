@@ -42,7 +42,6 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PropertyException;
@@ -51,6 +50,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.ui.select2.common.Select2Common;
@@ -241,7 +241,7 @@ public class SuggestDirectoryEntries {
                         filter.put(Select2Common.PARENT_FIELD_ID, getId());
                         try {
                             isLeaf = session.query(filter).isEmpty();
-                        } catch (ClientException ce) {
+                        } catch (DirectoryException ce) {
                             log.error("Could not retrieve children of entry", ce);
                             isLeaf = true;
                         }

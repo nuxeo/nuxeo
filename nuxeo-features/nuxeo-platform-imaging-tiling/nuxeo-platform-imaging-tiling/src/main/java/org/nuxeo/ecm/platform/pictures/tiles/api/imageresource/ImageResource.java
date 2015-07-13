@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * An ImageResource represents way to get a Blob Image. Underlying implementation may be Blob based or DocumentModel

@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.comment.listener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
@@ -55,11 +54,7 @@ public abstract class AbstractCommentListener {
                 CoreSession coreSession = docCtx.getCoreSession();
                 CommentServiceConfig config = CommentServiceHelper.getCommentService().getConfig();
                 RelationManager relationManager = Framework.getService(RelationManager.class);
-                try {
-                    doProcess(coreSession, relationManager, config, doc);
-                } catch (ClientException e) {
-                    log.error("Error during message processing", e);
-                }
+                doProcess(coreSession, relationManager, config, doc);
                 return;
             }
         }

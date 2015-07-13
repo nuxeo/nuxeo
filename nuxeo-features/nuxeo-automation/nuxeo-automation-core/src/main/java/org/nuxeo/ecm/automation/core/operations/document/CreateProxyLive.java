@@ -17,10 +17,10 @@ import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 
 /**
@@ -42,7 +42,7 @@ public class CreateProxyLive {
     public DocumentModel run(DocumentModel input) {
         DocumentRef docRef = new PathRef(path);
         if (!session.exists(docRef)) {
-            throw new ClientException(String.format("Destination \"%s\" specified into operation not found", path));
+            throw new NuxeoException(String.format("Destination \"%s\" specified into operation not found", path));
         }
 
         DocumentModel proxy = session.createProxy(input.getRef(), docRef);

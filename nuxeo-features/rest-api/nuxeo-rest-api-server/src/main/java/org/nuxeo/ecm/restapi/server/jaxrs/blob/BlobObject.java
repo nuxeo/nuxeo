@@ -31,10 +31,10 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.ecm.webengine.WebException;
@@ -84,11 +84,7 @@ public class BlobObject extends DefaultObject {
     @Override
     public <A> A getAdapter(Class<A> adapter) {
         if (adapter.isAssignableFrom(Blob.class)) {
-            try {
-                return adapter.cast(getBlob());
-            } catch (ClientException e) {
-                throw WebException.wrap("Could not find any blob: " + fieldPath, e);
-            }
+            return adapter.cast(getBlob());
         }
         return super.getAdapter(adapter);
     }
@@ -111,15 +107,11 @@ public class BlobObject extends DefaultObject {
 
     @GET
     public Object doGet(@Context Request request) {
-        try {
-            Blob blob = getBlob();
-            if (blob == null) {
-                throw new WebResourceNotFoundException("No attached file at " + fieldPath);
-            }
-            return blob;
-        } catch (ClientException e) {
-            throw WebException.wrap("Failed to get the attached file", e);
+        Blob blob = getBlob();
+        if (blob == null) {
+            throw new WebResourceNotFoundException("No attached file at " + fieldPath);
         }
+        return blob;
     }
 
     /**
@@ -152,17 +144,17 @@ public class BlobObject extends DefaultObject {
 
     @DELETE
     public Response doDelete() {
+        if (bh != null) {
+            throw new IllegalArgumentException("Cannot modify a Blob using a BlobHolder");
+        }
         try {
-            if (bh != null) {
-                throw new IllegalArgumentException("Cannot modify a Blob using a BlobHolder");
-            }
             doc.getProperty(fieldPath).remove();
-            CoreSession session = ctx.getCoreSession();
-            session.saveDocument(doc);
-            session.save();
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             throw WebException.wrap("Failed to delete attached file into property: " + fieldPath, e);
         }
+        CoreSession session = ctx.getCoreSession();
+        session.saveDocument(doc);
+            session.save();
         return Response.noContent().build();
     }
 
@@ -173,22 +165,20 @@ public class BlobObject extends DefaultObject {
         if (blob == null) {
             throw new IllegalArgumentException("Could not find any uploaded file");
         }
-
+        if (bh != null) {
+            throw new IllegalArgumentException("Cannot modify a Blob using a BlobHolder");
+        }
         try {
-            if (bh != null) {
-                throw new IllegalArgumentException("Cannot modify a Blob using a BlobHolder");
-            }
-
             doc.setPropertyValue(fieldPath, (Serializable) blob);
-            // make snapshot
-            doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
-            CoreSession session = ctx.getCoreSession();
-            session.saveDocument(doc);
-            session.save();
-            return Response.ok("blob updated").build();
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             throw WebException.wrap("Failed to attach file", e);
         }
+        // make snapshot
+        doc.putContextData(VersioningService.VERSIONING_OPTION, form.getVersioningOption());
+        CoreSession session = ctx.getCoreSession();
+        session.saveDocument(doc);
+        session.save();
+        return Response.ok("blob updated").build();
     }
 
 }

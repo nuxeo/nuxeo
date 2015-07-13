@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -92,16 +91,12 @@ public class DocumentHistoryPageProvider extends AuditPageProvider {
                 uuid = params[0].toString();
             }
             if (session != null) {
-                try {
-                    AdditionalDocumentAuditParams additionalParams = DocumentAuditHelper.getAuditParamsForUUID(uuid,
-                            session);
-                    if (additionalParams != null) {
-                        newParams = new Object[] { uuid, additionalParams.targetUUID, additionalParams.maxDate };
-                    } else {
-                        newParams = new Object[] { uuid };
-                    }
-                } catch (ClientException e) {
-                    log.error("Error while fetching additional parameters for audit query", e);
+                AdditionalDocumentAuditParams additionalParams = DocumentAuditHelper.getAuditParamsForUUID(uuid,
+                        session);
+                if (additionalParams != null) {
+                    newParams = new Object[] { uuid, additionalParams.targetUUID, additionalParams.maxDate };
+                } else {
+                    newParams = new Object[] { uuid };
                 }
             } else {
                 log.warn("No core session found: cannot compute all info to get complete audit entries");

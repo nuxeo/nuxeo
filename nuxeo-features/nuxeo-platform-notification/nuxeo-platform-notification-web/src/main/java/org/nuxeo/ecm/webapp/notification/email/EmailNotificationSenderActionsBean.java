@@ -33,7 +33,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -101,13 +100,7 @@ public class EmailNotificationSenderActionsBean extends InputController implemen
             return null;
         }
         for (String user : recipients) {
-            try {
-                sendNotificationEvent(user, mailSubject, mailContent);
-            } catch (ClientException e) {
-                facesMessages.add(StatusMessage.Severity.ERROR,
-                        resourcesAccessor.getMessages().get("label.email.send.failed"));
-                return null;
-            }
+            sendNotificationEvent(user, mailSubject, mailContent);
         }
         facesMessages.add(StatusMessage.Severity.INFO, resourcesAccessor.getMessages().get("label.email.send.ok"));
 

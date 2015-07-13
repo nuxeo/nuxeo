@@ -17,7 +17,6 @@ import java.util.List;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 
@@ -50,21 +49,17 @@ public class LoginStack {
         return currentSession;
     }
 
-    public void push(LoginContext lc) throws OperationException {
+    public void push(LoginContext lc) {
         Entry entry = new Entry(lc);
-        try {
-            String repositoryName;
-            if (originalSession != null) {
-                repositoryName = originalSession.getRepositoryName();
-            } else {
-                repositoryName = null; // default repository
-            }
-            entry.session = CoreInstance.openCoreSession(repositoryName);
-            currentSession = entry.session;
-            stack.add(entry);
-        } catch (ClientException e) {
-            throw new OperationException("Failed to create new core session for loginAs", e);
+        String repositoryName;
+        if (originalSession != null) {
+            repositoryName = originalSession.getRepositoryName();
+        } else {
+            repositoryName = null; // default repository
         }
+        entry.session = CoreInstance.openCoreSession(repositoryName);
+        currentSession = entry.session;
+        stack.add(entry);
     }
 
     public Entry peek() {
@@ -98,12 +93,8 @@ public class LoginStack {
 
     protected void refreshSession(CoreSession session) throws OperationException {
         if (session != null && !session.isStateSharedByAllThreadSessions()) {
-            try {
-                // this will indirectly process refresh the session
-                session.save();
-            } catch (ClientException e) {
-                throw new OperationException(e);
-            }
+            // this will indirectly process refresh the session
+            session.save();
         }
     }
 
@@ -151,8 +142,6 @@ public class LoginStack {
                         session.close();
                     }
                 }
-            } catch (ClientException e) {
-                throw new OperationException(e);
             } finally {
                 try {
                     session = null;

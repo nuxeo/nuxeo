@@ -30,7 +30,6 @@ import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
@@ -64,7 +63,7 @@ public class AnnotationQueryTest extends SQLRepositoryTestCase {
     }
 
     @Test
-    public void testgetAnnotationsForURIs() throws AnnotationException {
+    public void testgetAnnotationsForURIs() throws Exception {
         InputStream is = getClass().getResourceAsStream("/post-rdf.xml");
         assertNotNull(is);
 

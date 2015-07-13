@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.schema.DocumentType;
 
@@ -208,7 +208,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
         try {
             doc.getProperty(key.toString());
             return true;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return false;
         }
     }
@@ -220,7 +220,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     public boolean containsValue(Object value) {
         try {
             return doc.getProperty(value.toString()).getValue() != null;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return false;
         }
     }
@@ -229,7 +229,7 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
     public Serializable get(Object key) {
         try {
             return doc.getProperty(key.toString()).getValue();
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return null;
         }
     }
@@ -261,14 +261,10 @@ public class DocumentWrapper extends HashMap<String, Serializable> {
 
     @Override
     public Serializable put(String key, Serializable value) {
-        try {
-            Property p = doc.getProperty(key);
-            Serializable v = p.getValue();
-            p.setValue(value);
-            return v;
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        Property p = doc.getProperty(key);
+        Serializable v = p.getValue();
+        p.setValue(value);
+        return v;
     }
 
     @Override

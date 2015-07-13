@@ -36,11 +36,12 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.ConversationEntry;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 
 @Name("logoHelper")
@@ -92,15 +93,12 @@ public class LogoHelper implements Serializable {
         if (documentManager == null) {
             return DEFAULT_LOGO;
         }
-
         DocumentRef ref = new IdRef(docRef);
-
         try {
             DocumentModel doc = documentManager.getDocument(ref);
             return getLogoURL(doc);
-
-        } catch (ClientException e) {
-            log.error(e);
+        } catch (DocumentNotFoundException e) {
+            log.error(e, e);
             return DEFAULT_LOGO;
         }
     }
@@ -121,11 +119,7 @@ public class LogoHelper implements Serializable {
         }
         lastURL = PAGE_NAME + "?key=" + key + "&docRef=" + doc.getRef().toString() + '&'
                 + getConversationPropagationSuffix();
-        try {
-            lastLogoHolderKey = doc.getCacheKey();
-        } catch (ClientException e) {
-            lastLogoHolderKey = null;
-        }
+        lastLogoHolderKey = doc.getCacheKey();
         lastLogoHolder = doc;
 
         return lastURL;
@@ -138,7 +132,7 @@ public class LogoHelper implements Serializable {
         if (doc.hasSchema("file")) {
             try {
                 return (Blob) doc.getProperty("file", "content");
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 return null;
             }
         } else {
@@ -167,9 +161,8 @@ public class LogoHelper implements Serializable {
                 DocumentRef ref = new IdRef(docRef);
                 try {
                     ob = documentManager.getDocument(ref);
-                } catch (ClientException e) {
-                    // TODO: more robust exception handling?
-                    log.error(e);
+                } catch (DocumentNotFoundException e) {
+                    log.error(e, e);
                 }
             }
             imgBlob = getBlob(ob);

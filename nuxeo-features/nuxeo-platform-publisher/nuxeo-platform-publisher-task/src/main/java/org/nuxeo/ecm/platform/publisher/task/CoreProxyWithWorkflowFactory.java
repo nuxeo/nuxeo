@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -42,11 +41,9 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublishingEvent;
-import org.nuxeo.ecm.platform.publisher.api.PublishingException;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreFolderPublicationNode;
 import org.nuxeo.ecm.platform.publisher.impl.core.CoreProxyFactory;
 import org.nuxeo.ecm.platform.publisher.impl.core.SimpleCorePublishedDocument;
-import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskEventNames;
@@ -125,33 +122,24 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         return !lookupState.isPublished(doc, session);
     }
 
-    protected boolean isValidator(DocumentModel document, NuxeoPrincipal principal) throws PublishingException {
-        try {
-            String[] validators = getValidatorsFor(document);
-            for (String s : validators) {
-                if (principal.getName().equals(s) || principal.isMemberOf(s)) {
-                    return true;
-                }
+    protected boolean isValidator(DocumentModel document, NuxeoPrincipal principal) {
+        String[] validators = getValidatorsFor(document);
+        for (String s : validators) {
+            if (principal.getName().equals(s) || principal.isMemberOf(s)) {
+                return true;
             }
-        } catch (PublishingValidatorException e) {
-            throw new PublishingException(e);
         }
         return false;
     }
 
-    protected void restrictPermission(DocumentModel newProxy, NuxeoPrincipal principal, CoreSession coreSession, ACL acl)
-            throws PublishingValidatorException, PublishingException {
+    protected void restrictPermission(DocumentModel newProxy, NuxeoPrincipal principal, CoreSession coreSession,
+            ACL acl) {
         ChangePermissionUnrestricted permissionChanger = new ChangePermissionUnrestricted(coreSession, newProxy,
                 getValidatorsFor(newProxy), principal, ACL_NAME, acl);
-        try {
-            permissionChanger.runUnrestricted();
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+        permissionChanger.runUnrestricted();
     }
 
-    protected void createTask(DocumentModel document, CoreSession session, NuxeoPrincipal principal)
-            throws PublishingValidatorException, PublishingException {
+    protected void createTask(DocumentModel document, CoreSession session, NuxeoPrincipal principal) {
         String[] actorIds = getValidatorsFor(document);
         Map<String, String> variables = new HashMap<String, String>();
         variables.put(Task.TaskVariableName.needi18n.name(), "true");
@@ -164,98 +152,71 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
                 null, null, variables, null);
         DocumentEventContext ctx = new DocumentEventContext(session, principal, document);
         ctx.setProperty(NotificationConstants.RECIPIENTS_KEY, actorIds);
-        try {
-            getEventProducer().fireEvent(ctx.newEvent(TaskEventNames.WORKFLOW_TASK_START));
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
-
+        getEventProducer().fireEvent(ctx.newEvent(TaskEventNames.WORKFLOW_TASK_START));
     }
 
     protected TaskService getTaskService() {
         return Framework.getLocalService(TaskService.class);
     }
 
-    protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) throws PublishingException {
-        try {
-
-            DocumentModel sourceVersion = coreSession.getSourceDocument(newProxy.getRef());
-            DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
-            DocumentModelList brothers = coreSession.getProxies(dm.getRef(), newProxy.getParentRef());
-            if (brothers != null && brothers.size() > 1) {
-                // we remove the brothers of the published document if any
-                // the use case is:
-                // v1 is published, v2 is waiting for publication and was just
-                // validated
-                // v1 is removed and v2 is now being published
-                for (DocumentModel doc : brothers) {
-                    if (!doc.getId().equals(newProxy.getId())) {
-                        coreSession.removeDocument(doc.getRef());
-                    }
+    protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) {
+        DocumentModel sourceVersion = coreSession.getSourceDocument(newProxy.getRef());
+        DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
+        DocumentModelList brothers = coreSession.getProxies(dm.getRef(), newProxy.getParentRef());
+        if (brothers != null && brothers.size() > 1) {
+            // we remove the brothers of the published document if any
+            // the use case is:
+            // v1 is published, v2 is waiting for publication and was just
+            // validated
+            // v1 is removed and v2 is now being published
+            for (DocumentModel doc : brothers) {
+                if (!doc.getId().equals(newProxy.getId())) {
+                    coreSession.removeDocument(doc.getRef());
                 }
             }
-        } catch (ClientException e1) {
-            throw new PublishingException(e1.getMessage(), e1);
         }
     }
 
     @Override
-    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment)
-            throws PublishingException {
+    public void validatorPublishDocument(PublishedDocument publishedDocument, String comment) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
-
         removeExistingProxiesOnPreviousVersions(proxy);
-
-        try {
-            removeACL(proxy, coreSession);
-            endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationApproved);
-            notifyEvent(PublishingEvent.documentPublicationApproved, proxy, coreSession);
-            notifyEvent(PublishingEvent.documentPublished, proxy, coreSession);
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+        removeACL(proxy, coreSession);
+        endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationApproved);
+        notifyEvent(PublishingEvent.documentPublicationApproved, proxy, coreSession);
+        notifyEvent(PublishingEvent.documentPublished, proxy, coreSession);
         ((SimpleCorePublishedDocument) publishedDocument).setPending(false);
     }
 
-    protected void removeACL(DocumentModel document, CoreSession coreSession) throws PublishingException {
-        try {
-            RemoveACLUnrestricted remover = new RemoveACLUnrestricted(coreSession, document, ACL_NAME, JBPM_ACL_NAME);
-            remover.runUnrestricted();
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+    protected void removeACL(DocumentModel document, CoreSession coreSession) {
+        RemoveACLUnrestricted remover = new RemoveACLUnrestricted(coreSession, document, ACL_NAME, JBPM_ACL_NAME);
+        remover.runUnrestricted();
     }
 
     protected void endTask(DocumentModel document, NuxeoPrincipal currentUser, CoreSession session, String comment,
-            PublishingEvent event) throws PublishingException {
-        try {
-            List<Task> tis = getTaskService().getTaskInstances(document, currentUser, session);
-            String initiator = null;
-            for (Task task : tis) {
-                if (task.getName().equals(TASK_NAME)) {
-                    initiator = (String) task.getVariable(TaskService.VariableName.initiator.name());
-                    task.end(session);
-                    // make sure taskDoc is attached to prevent sending event with null session
-                    DocumentModel taskDocument = task.getDocument();
-                    if (taskDocument.getSessionId() == null) {
-                        taskDocument.attach(coreSession.getSessionId());
-                    }
-                    session.saveDocument(taskDocument);
-                    break;
+            PublishingEvent event) {
+        List<Task> tis = getTaskService().getTaskInstances(document, currentUser, session);
+        String initiator = null;
+        for (Task task : tis) {
+            if (task.getName().equals(TASK_NAME)) {
+                initiator = (String) task.getVariable(TaskService.VariableName.initiator.name());
+                task.end(session);
+                // make sure taskDoc is attached to prevent sending event with null session
+                DocumentModel taskDocument = task.getDocument();
+                if (taskDocument.getSessionId() == null) {
+                    taskDocument.attach(coreSession.getSessionId());
                 }
+                session.saveDocument(taskDocument);
+                break;
             }
-
-            DocumentModel liveDoc = getLiveDocument(session, document);
-
-            Map<String, Serializable> properties = new HashMap<String, Serializable>();
-            if (initiator != null) {
-                properties.put(NotificationConstants.RECIPIENTS_KEY, new String[] { initiator });
-            }
-            notifyEvent(event.name(), properties, comment, null, liveDoc, session);
-        } catch (ClientException ce) {
-            throw new PublishingException(ce);
         }
+        DocumentModel liveDoc = getLiveDocument(session, document);
+        Map<String, Serializable> properties = new HashMap<String, Serializable>();
+        if (initiator != null) {
+            properties.put(NotificationConstants.RECIPIENTS_KEY, new String[] { initiator });
+        }
+        notifyEvent(event.name(), properties, comment, null, liveDoc, session);
     }
 
     protected DocumentModel getLiveDocument(CoreSession session, DocumentModel proxy) {
@@ -265,26 +226,17 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     @Override
-    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment)
-            throws PublishingException {
+    public void validatorRejectPublication(PublishedDocument publishedDocument, String comment) {
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
         NuxeoPrincipal principal = (NuxeoPrincipal) coreSession.getPrincipal();
-        try {
-            notifyEvent(PublishingEvent.documentPublicationRejected, proxy, coreSession);
-            endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationRejected);
-            removeProxy(proxy, coreSession);
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+        notifyEvent(PublishingEvent.documentPublicationRejected, proxy, coreSession);
+        endTask(proxy, principal, coreSession, comment, PublishingEvent.documentPublicationRejected);
+        removeProxy(proxy, coreSession);
     }
 
-    protected void removeProxy(DocumentModel doc, CoreSession coreSession) throws PublishingException {
-        try {
-            DeleteDocumentUnrestricted deleter = new DeleteDocumentUnrestricted(coreSession, doc);
-            deleter.runUnrestricted();
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+    protected void removeProxy(DocumentModel doc, CoreSession coreSession) {
+        DeleteDocumentUnrestricted deleter = new DeleteDocumentUnrestricted(coreSession, doc);
+        deleter.runUnrestricted();
     }
 
     @Override
@@ -304,14 +256,10 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         return publishedDocument;
     }
 
-    protected boolean isPublished(PublishedDocument publishedDocument, CoreSession session) throws PublishingException {
+    protected boolean isPublished(PublishedDocument publishedDocument, CoreSession session) {
         // FIXME: should be cached
         DocumentModel proxy = ((SimpleCorePublishedDocument) publishedDocument).getProxy();
-        try {
-            return lookupState.isPublished(proxy, session);
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+        return lookupState.isPublished(proxy, session);
     }
 
     @Override
@@ -323,15 +271,11 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
 
     protected boolean hasValidationTask(DocumentModel proxy, NuxeoPrincipal currentUser) {
         assert currentUser != null;
-        try {
-            List<Task> tasks = getTaskService().getTaskInstances(proxy, currentUser, coreSession);
-            for (Task task : tasks) {
-                if (task.getName().equals(TASK_NAME)) {
-                    return true;
-                }
+        List<Task> tasks = getTaskService().getTaskInstances(proxy, currentUser, coreSession);
+        for (Task task : tasks) {
+            if (task.getName().equals(TASK_NAME)) {
+                return true;
             }
-        } catch (ClientException e) {
-            throw new PublishingException(e);
         }
         return false;
     }

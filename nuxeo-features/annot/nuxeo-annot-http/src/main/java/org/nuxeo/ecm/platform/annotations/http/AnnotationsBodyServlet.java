@@ -21,13 +21,11 @@ package org.nuxeo.ecm.platform.annotations.http;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
@@ -39,23 +37,14 @@ public class AnnotationsBodyServlet extends HttpServlet {
     private AnnotationServiceFacade facade;
 
     @Override
-    public void init() throws ServletException {
-        try {
-            facade = new AnnotationServiceFacade();
-        } catch (AnnotationException e) {
-            throw new ServletException(e);
-        }
+    public void init() {
+        facade = new AnnotationServiceFacade();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String annId = req.getPathInfo().replaceFirst("/", "");
-        String body;
-        try {
-            body = facade.getAnnotationBody(annId, (NuxeoPrincipal) req.getUserPrincipal(), req.getRequestURL() + "/");
-        } catch (AnnotationException e) {
-            throw new ServletException(e);
-        }
+        String body = facade.getAnnotationBody(annId, (NuxeoPrincipal) req.getUserPrincipal(), req.getRequestURL() + "/");
         resp.getWriter().write(body);
     }
 }

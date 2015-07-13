@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
  */
 public interface PublicationNodeMarshaler {
 
-    String marshalPublicationNode(PublicationNode node) throws PublishingMarshalingException;;
+    String marshalPublicationNode(PublicationNode node);
 
-    PublicationNode unMarshalPublicationNode(String data) throws PublishingMarshalingException;;
+    PublicationNode unMarshalPublicationNode(String data);
 }

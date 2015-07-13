@@ -25,7 +25,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
@@ -96,15 +95,10 @@ public abstract class AbstractDashBoardItemImpl implements DashBoardItem {
     }
 
     protected boolean needi18n() {
-        try {
-            if (isCreatedFromCreateTaskOperation()) {
-                return false;
-            }
-            return Boolean.parseBoolean(getTask().getVariable(Task.TaskVariableName.needi18n.name()));
-        } catch (ClientException e) {
-            log.error("Error while testing Task variables", e);
+        if (isCreatedFromCreateTaskOperation()) {
             return false;
         }
+        return Boolean.parseBoolean(getTask().getVariable(Task.TaskVariableName.needi18n.name()));
     }
 
     public JSONObject asJSON() {

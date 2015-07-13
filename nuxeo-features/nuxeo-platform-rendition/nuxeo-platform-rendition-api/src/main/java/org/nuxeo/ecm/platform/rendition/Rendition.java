@@ -73,12 +73,12 @@ public interface Rendition {
     /**
      * Returns rendered Blob
      */
-    Blob getBlob() throws RenditionException;
+    Blob getBlob();
 
     /**
      * Returns rendered Blobs
      */
-    List<Blob> getBlobs() throws RenditionException;
+    List<Blob> getBlobs();
 
     /**
      * Return the Document hosting the rendition.

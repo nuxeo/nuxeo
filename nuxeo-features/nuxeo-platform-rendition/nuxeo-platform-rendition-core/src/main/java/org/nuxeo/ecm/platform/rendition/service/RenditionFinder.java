@@ -20,7 +20,6 @@ import static org.nuxeo.ecm.platform.rendition.Constants.RENDITION_SOURCE_ID_PRO
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 

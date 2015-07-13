@@ -28,12 +28,13 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -179,7 +180,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
             String eventName, boolean isValidated) {
 
         if (!canEndTask(principal, task)) {
-            throw new ClientException(String.format("User with id '%s' cannot end this task", principal.getName()));
+            throw new NuxeoException(String.format("User with id '%s' cannot end this task", principal.getName()));
         }
         String taskProviderId = task.getVariable(Task.TASK_PROVIDER_KEY);
         if (taskProviderId == null) {
@@ -187,7 +188,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
         }
         TaskProvider taskProvider = tasksProviders.get(taskProviderId);
         if (taskProvider == null) {
-            throw new ClientException(
+            throw new NuxeoException(
                     String.format(
                             "No task provider registered, cannot end task. Please contribute at least the default task provider: %s.",
                             DEFAULT_TASK_PROVIDER));
@@ -263,7 +264,11 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
 
     @Override
     public DocumentModel getTargetDocumentModel(Task task, CoreSession coreSession) {
-        return coreSession.getDocument(new IdRef(task.getTargetDocumentId()));
+        try {
+            return coreSession.getDocument(new IdRef(task.getTargetDocumentId()));
+        } catch (DocumentNotFoundException e) {
+            return null;
+        }
     }
 
     @Override
@@ -433,11 +438,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
     @Override
     public String getTaskRootParentPath(CoreSession coreSession) {
         GetTaskRootParentPathUnrestricted runner = new GetTaskRootParentPathUnrestricted(coreSession);
-        try {
-            runner.runUnrestricted();
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        runner.runUnrestricted();
         return runner.getParentPath();
     }
 
@@ -500,7 +501,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                 Task task = taskDoc.getAdapter(Task.class);
                 if (task == null) {
-                    throw new ClientException("Invalid taskId: " + taskId);
+                    throw new NuxeoException("Invalid taskId: " + taskId);
                 }
                 List<String> currentAssignees = task.getActors();
                 List<String> currentActors = new ArrayList<String>();
@@ -571,7 +572,7 @@ public class TaskServiceImpl extends DefaultComponent implements TaskService {
                 DocumentModel taskDoc = session.getDocument(new IdRef(taskId));
                 Task task = taskDoc.getAdapter(Task.class);
                 if (task == null) {
-                    throw new ClientException("Invalid taskId: " + taskId);
+                    throw new NuxeoException("Invalid taskId: " + taskId);
                 }
                 // grant EVERYTHING on task doc to the delegated actors
                 List<String> actorIds = new ArrayList<String>();

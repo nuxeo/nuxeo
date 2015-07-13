@@ -37,9 +37,9 @@ import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.contexts.Contexts;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
@@ -157,7 +157,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
         }
         // what if commentableDoc is still null? shouldn't, but...
         if (commentableDoc == null) {
-            throw new ClientException("Can't comment on null document");
+            throw new NuxeoException("Can't comment on null document");
         }
         DocumentModel newComment;
         if (parentComment != null) {
@@ -241,7 +241,7 @@ public abstract class AbstractCommentManagerActionsBean implements CommentManage
     public void initComments() {
         DocumentModel currentDoc = navigationContext.getCurrentDocument();
         if (currentDoc == null) {
-            throw new ClientException("Unable to find current Document");
+            throw new NuxeoException("Unable to find current Document");
         }
         initComments(currentDoc);
     }

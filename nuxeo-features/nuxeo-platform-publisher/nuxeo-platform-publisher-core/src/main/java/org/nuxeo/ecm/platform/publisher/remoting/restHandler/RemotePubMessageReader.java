@@ -32,7 +32,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 import org.nuxeo.ecm.webengine.WebEngine;
 
 @Provider
@@ -58,11 +57,8 @@ public class RemotePubMessageReader implements MessageBodyReader<RemotePubParam>
 
         String xmlData = sb.toString();
 
-        try {
-            List<Object> params = marshaler.unMarshallParameters(xmlData);
-            return new RemotePubParam(params);
-        } catch (PublishingMarshalingException e) {
-            throw new IOException("Error while unmarshaling parameters" + e.getMessage());
-        }
+        List<Object> params = marshaler.unMarshallParameters(xmlData);
+        return new RemotePubParam(params);
     }
+
 }

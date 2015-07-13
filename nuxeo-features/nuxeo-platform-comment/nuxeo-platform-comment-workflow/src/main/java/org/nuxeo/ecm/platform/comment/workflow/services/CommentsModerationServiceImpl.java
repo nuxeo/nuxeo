@@ -25,10 +25,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.task.CreateTask;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
 import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
@@ -51,7 +51,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
             {
         TaskService taskService = Framework.getService(TaskService.class);
         if (moderators == null || moderators.isEmpty()) {
-            throw new ClientException("No moderators defined");
+            throw new NuxeoException("No moderators defined");
         }
         Map<String, String> vars = new HashMap<String, String>();
         vars.put(CommentsConstants.COMMENT_ID, commentID);
@@ -85,7 +85,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         TaskService taskService = Framework.getService(TaskService.class);
         Task moderationTask = getModerationTask(taskService, session, doc, commentId);
         if (moderationTask == null) {
-            // throw new ClientException("No moderation task found");
             session.followTransition(new IdRef(commentId), CommentsConstants.TRANSITION_TO_PUBLISHED_STATE);
         } else {
             taskService.acceptTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
@@ -101,7 +100,6 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
         TaskService taskService = Framework.getService(TaskService.class);
         Task moderationTask = getModerationTask(taskService, session, doc, commentId);
         if (moderationTask == null) {
-            // throw new ClientException("No moderation task found");
             session.followTransition(new IdRef(commentId), CommentsConstants.REJECT_STATE);
         } else {
             taskService.rejectTask(session, (NuxeoPrincipal) session.getPrincipal(), moderationTask, null);
@@ -139,11 +137,7 @@ public class CommentsModerationServiceImpl implements CommentsModerationService 
 
         EventProducer evtProducer = Framework.getService(EventProducer.class);
         Event event = ctx.newEvent(eventId);
-        try {
-            evtProducer.fireEvent(event);
-        } catch (ClientException e) {
-            log.error("Error while sending event", e);
-        }
+        evtProducer.fireEvent(event);
     }
 
 }

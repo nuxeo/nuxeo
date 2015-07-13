@@ -17,12 +17,15 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
-import org.dom4j.*;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
+import org.dom4j.QName;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublicationNode;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublicationNodeMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
  * {@link PublicationNode} marshaler using simple XML representation.
@@ -49,7 +52,7 @@ public class DefaultPublicationNodeMarshaler extends AbstractDefaultXMLMarshaler
     protected static QName sidTag = DocumentFactory.getInstance().createQName("sid", publisherSerializerNSPrefix,
             publisherSerializerNS);
 
-    public String marshalPublicationNode(PublicationNode node) throws PublishingMarshalingException {
+    public String marshalPublicationNode(PublicationNode node) {
 
         org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
         rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
@@ -59,11 +62,7 @@ public class DefaultPublicationNodeMarshaler extends AbstractDefaultXMLMarshaler
         pathElem.setText(node.getPath());
 
         org.dom4j.Element titleElem = rootElem.addElement(nodeTitleTag);
-        try {
-            titleElem.setText(node.getTitle());
-        } catch (ClientException e) {
-            throw new PublishingMarshalingException(e);
-        }
+        titleElem.setText(node.getTitle());
 
         org.dom4j.Element typeElem = rootElem.addElement(nodeTypeTag);
         typeElem.setText(node.getNodeType());
@@ -83,7 +82,7 @@ public class DefaultPublicationNodeMarshaler extends AbstractDefaultXMLMarshaler
         return cleanUpXml(data);
     }
 
-    public PublicationNode unMarshalPublicationNode(String data) throws PublishingMarshalingException {
+    public PublicationNode unMarshalPublicationNode(String data) {
         PublicationNode node = null;
 
         try {
@@ -98,7 +97,7 @@ public class DefaultPublicationNodeMarshaler extends AbstractDefaultXMLMarshaler
             node = new BasicPublicationNode(nodeType, nodePath, nodeTitle, treeName, sid);
 
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException("Unable to unmarshal Piublication Node", e);
+            throw new NuxeoException("Unable to unmarshal Piublication Node", e);
         }
         return node;
     }

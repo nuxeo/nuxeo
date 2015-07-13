@@ -6,7 +6,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 public class DefaultAutomationRenditionProvider implements RenditionProvider {
@@ -19,7 +18,7 @@ public class DefaultAutomationRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         return AutomationRenderer.render(doc, definition, null);
     }
 }

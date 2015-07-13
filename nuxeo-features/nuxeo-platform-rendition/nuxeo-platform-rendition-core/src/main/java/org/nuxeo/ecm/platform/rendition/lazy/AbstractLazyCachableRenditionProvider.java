@@ -27,8 +27,8 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.transientstore.StorageEntryImpl;
 import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.runtime.api.Framework;
@@ -66,7 +65,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
     protected abstract boolean perUserRendition();
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition def) throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition def) {
 
         // build the key
         String key = buildRenditionKey(doc, def);
@@ -78,14 +77,14 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
         TransientStore ts = tss.getStore(CACHE_NAME);
 
         if (ts == null) {
-            throw new ClientException("Unable to find Transient Store  " + CACHE_NAME);
+            throw new NuxeoException("Unable to find Transient Store  " + CACHE_NAME);
         }
 
         StorageEntry entry = null;
         try {
             entry = ts.get(key);
         } catch (IOException e) {
-            throw new RenditionException("Unable to read from cache", e);
+            throw new NuxeoException("Unable to read from cache", e);
         }
 
         if (entry == null) {
@@ -96,7 +95,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
             try {
                 ts.put(entry);
             } catch (IOException e) {
-                throw new RenditionException("Unable to write to TransientStore", e);
+                throw new NuxeoException("Unable to write to TransientStore", e);
             }
             wm.schedule(work);
         } else {
@@ -104,7 +103,7 @@ public abstract class AbstractLazyCachableRenditionProvider implements Rendition
                 try {
                     ts.canDelete(key);
                 } catch (IOException e) {
-                    throw new RenditionException("Unable to release entry in TransientStore", e);
+                    throw new NuxeoException("Unable to release entry in TransientStore", e);
                 }
                 return entry.getBlobs();
             }

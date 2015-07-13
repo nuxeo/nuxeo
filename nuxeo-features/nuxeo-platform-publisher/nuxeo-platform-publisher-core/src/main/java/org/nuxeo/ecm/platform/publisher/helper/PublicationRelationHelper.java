@@ -21,9 +21,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -79,7 +79,7 @@ public class PublicationRelationHelper {
     public static PublicationTree getPublicationTreeUsedForPublishing(DocumentModel documentModel,
             CoreSession coreSession) {
         if (!isPublished(documentModel)) {
-            throw new ClientException("The document " + documentModel.getPathAsString()
+            throw new NuxeoException("The document " + documentModel.getPathAsString()
                     + " is not a published document");
         }
         List<Statement> stmts = RelationHelper.getStatements(PUBLICATION_GRAPH_NAME, documentModel, PUBLISHED_BY);
@@ -90,12 +90,8 @@ public class PublicationRelationHelper {
         if (node.isQNameResource()) {
             QNameResource resource = (QNameResource) statement.getObject();
             String localName = resource.getLocalName();
-            try {
-                PublisherService publisherService = Framework.getService(PublisherService.class);
-                tree = publisherService.getPublicationTree(localName, coreSession, null);
-            } catch (ClientException e) {
-                log.error("Unable to get PublicationTree for name: " + localName, e);
-            }
+            PublisherService publisherService = Framework.getService(PublisherService.class);
+            tree = publisherService.getPublicationTree(localName, coreSession, null);
         } else {
             log.error("Resource is not a QNameResource, check the namespace");
 

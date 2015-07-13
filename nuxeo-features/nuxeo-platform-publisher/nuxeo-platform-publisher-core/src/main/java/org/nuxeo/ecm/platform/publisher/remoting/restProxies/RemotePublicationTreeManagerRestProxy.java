@@ -23,12 +23,10 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
-import org.nuxeo.ecm.platform.publisher.api.PublishingException;
 import org.nuxeo.ecm.platform.publisher.api.RemotePublicationTreeManager;
 import org.nuxeo.ecm.platform.publisher.remoting.invoker.DefaultRemotePublicationInvoker;
 import org.nuxeo.ecm.platform.publisher.remoting.invoker.RemotePublicationInvoker;
@@ -96,15 +94,9 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
     }
 
     public PublicationNode getParent(PublicationNode node) {
-
         List<Object> params = new ArrayList<Object>();
         params.add(node);
-        try {
-            return (PublicationNode) invoker.invoke("getParent", params);
-        } catch (ClientException e) {
-            log.error("Error during parent lookup", e);
-            return null;
-        }
+        return (PublicationNode) invoker.invoke("getParent", params);
     }
 
     public List<PublishedDocument> getPublishedDocumentInNode(PublicationNode node) {
@@ -166,13 +158,11 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
         // The current document is useless on a remote tree
     }
 
-    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment)
-            throws PublishingException {
+    public void validatorPublishDocument(String sid, PublishedDocument publishedDocument, String comment) {
         throw new UnsupportedOperationException();
     }
 
-    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment)
-            throws PublishingException {
+    public void validatorRejectPublication(String sid, PublishedDocument publishedDocument, String comment) {
         throw new UnsupportedOperationException();
     }
 
@@ -210,11 +200,7 @@ public class RemotePublicationTreeManagerRestProxy implements RemotePublicationT
     public void release(String sid) {
         List<Object> params = new ArrayList<Object>();
         params.add(sid);
-        try {
-            invoker.invoke("release", params);
-        } catch (ClientException e) {
-            log.error("Error during release", e);
-        }
+        invoker.invoke("release", params);
     }
 
 }

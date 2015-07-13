@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
 import org.nuxeo.ecm.platform.ui.web.io.ThumbnailJsonEnricher;
@@ -50,16 +49,12 @@ public class ThumbnailContentEnricher extends AbstractContentEnricher {
         ThumbnailAdapter thumbnailAdapter = doc.getAdapter(ThumbnailAdapter.class);
         jg.writeStartObject();
         if (thumbnailAdapter != null) {
-            try {
-                Blob thumbnail = thumbnailAdapter.getThumbnail(doc.getCoreSession());
-                if (thumbnail != null) {
-                    String url = DocumentModelFunctions.fileUrl(Framework.getProperty("nuxeo.url"), DOWNLOAD_THUMBNAIL,
-                            doc, THUMB_THUMBNAIL, thumbnail.getFilename());
-                    jg.writeStringField(THUMBNAIL_URL_LABEL, url);
-                } else {
-                    writeEmptyThumbnail(jg);
-                }
-            } catch (ClientException e) {
+            Blob thumbnail = thumbnailAdapter.getThumbnail(doc.getCoreSession());
+            if (thumbnail != null) {
+                String url = DocumentModelFunctions.fileUrl(Framework.getProperty("nuxeo.url"), DOWNLOAD_THUMBNAIL, doc,
+                        THUMB_THUMBNAIL, thumbnail.getFilename());
+                jg.writeStringField(THUMBNAIL_URL_LABEL, url);
+            } else {
                 writeEmptyThumbnail(jg);
             }
         } else {

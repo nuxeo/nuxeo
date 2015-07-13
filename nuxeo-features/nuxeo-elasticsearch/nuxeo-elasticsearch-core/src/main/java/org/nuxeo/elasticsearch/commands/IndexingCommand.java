@@ -142,7 +142,6 @@ public class IndexingCommand implements Serializable {
      * Return the document or null if it does not exists anymore.
      *
      * @throws java.lang.IllegalStateException if there is no session attached
-     * @throws org.nuxeo.ecm.core.api.ClientException if the document can not be loaded
      */
     public DocumentModel getTargetDocument() {
         CoreSession session = null;

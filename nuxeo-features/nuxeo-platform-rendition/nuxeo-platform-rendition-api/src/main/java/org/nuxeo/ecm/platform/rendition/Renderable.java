@@ -22,34 +22,32 @@ import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
  * Interface on an Object that can be used to produce {@link Rendition}
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public interface Renderable {
 
     /**
      * Returns {@link RenditionDefinition} that are available on the underlying object
-     * 
+     *
      * @return
      */
     List<RenditionDefinition> getAvailableRenditionDefinitions();
 
     /**
      * Retrieve the {@link Rendition} by it's name
-     * 
+     *
      * @param name
      * @return
-     * @throws RenditionException
      */
-    Rendition getRenditionByName(String name) throws RenditionException;
+    Rendition getRenditionByName(String name);
 
     /**
      * Retrieve the {@link Rendition} by it's king (first match rendition is returned)
-     * 
+     *
      * @param name
      * @return
-     * @throws RenditionException
      */
-    Rendition getRenditionByKind(String name) throws RenditionException;
+    Rendition getRenditionByKind(String name);
 
 }

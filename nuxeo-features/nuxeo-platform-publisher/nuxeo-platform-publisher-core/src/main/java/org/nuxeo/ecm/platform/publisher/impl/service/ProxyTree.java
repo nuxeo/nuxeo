@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.publisher.api.*;
 import org.nuxeo.runtime.api.Framework;

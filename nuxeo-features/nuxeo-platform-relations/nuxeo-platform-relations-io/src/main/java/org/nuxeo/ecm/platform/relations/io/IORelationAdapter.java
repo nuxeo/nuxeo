@@ -35,10 +35,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
@@ -201,26 +201,6 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
         return newStatements;
     }
 
-    // protected DocumentRef getDocumentRef(RelationManager relManager,
-    // QNameResource resource) {
-    // Object object = null;
-    // try {
-    // object = relManager.getResourceRepresentation(
-    // resource.getNamespace(), resource);
-    // } catch (ClientException e) {
-    // log.error("Error while retrieving DocumentRef for resource "
-    // + resource, e);
-    // }
-    // if (object instanceof DocumentModel) {
-    // return ((DocumentModel) object).getRef();
-    // }
-    // if (object instanceof DocumentRef) {
-    // return (DocumentRef) object;
-    // }
-    // log.warn("Cannot obtain DocumentRef for resource " + resource);
-    // return null;
-    // }
-
     protected DocumentRef getDocumentRef(RelationManager relManager, QNameResource resource) {
         String ns = resource.getNamespace();
         if ("http://www.nuxeo.org/document/uid/".equals(ns)) {
@@ -264,23 +244,17 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                 return null;
             }
             Map<DocumentRef, Set<Resource>> docResources = new HashMap<DocumentRef, Set<Resource>>();
-            Set<Resource> emptySet = Collections.emptySet();
             List<Statement> statements = new ArrayList<Statement>();
             Set<Resource> allResources = new HashSet<Resource>();
             for (DocumentRef docRef : sources) {
-                try {
-                    DocumentModel doc = session.getDocument(docRef);
-                    Map<String, Object> context = Collections.<String, Object> singletonMap(
-                            ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
-                    Set<Resource> resources = relManager.getAllResources(doc, context);
-                    docResources.put(docRef, resources);
-                    allResources.addAll(resources);
-                    for (Resource resource : resources) {
-                        statements.addAll(getMatchingStatements(graph, resource));
-                    }
-                } catch (ClientException e) {
-                    docResources.put(docRef, emptySet);
-                    continue;
+                DocumentModel doc = session.getDocument(docRef);
+                Map<String, Object> context = Collections.<String, Object> singletonMap(
+                        ResourceAdapter.CORE_SESSION_CONTEXT_KEY, session);
+                Set<Resource> resources = relManager.getAllResources(doc, context);
+                docResources.put(docRef, resources);
+                allResources.addAll(resources);
+                for (Resource resource : resources) {
+                    statements.addAll(getMatchingStatements(graph, resource));
                 }
             }
             Map<String, String> namespaces = graph.getNamespaces();
@@ -309,9 +283,6 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             }
             memoryGraph.remove(toRemove);
             return new IORelationResources(namespaces, docResources, memoryGraph.getStatements());
-        } catch (ClientException e) {
-            log.error(e, e);
-            return null;
         }
     }
 
@@ -347,36 +318,31 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
 
     @Override
     public IOResources loadResourcesFromXML(InputStream in) {
-        try {
-            RelationManager relManager = getRelationManager();
-            String graphName = getStringProperty(IORelationAdapterProperties.IMPORT_GRAPH);
-            if (graphName == null) {
-                graphName = getStringProperty(IORelationAdapterProperties.GRAPH);
-            }
-            // XXX find target graph to retrieve namespaces
-            Map<String, String> namespaces = null;
-            if (graphName != null) {
-                Graph graph = relManager.getGraphByName(graphName);
-                if (graph != null) {
-                    namespaces = graph.getNamespaces();
-                }
-            }
-            IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, null);
-            graphHelper.read(in);
-            // find documents related to given statements
-            List<Statement> statements = filterMatchingStatements(graphHelper.getStatements());
-            Map<DocumentRef, Set<Resource>> docResources = new HashMap<DocumentRef, Set<Resource>>();
-            for (Statement statement : statements) {
-                Subject subject = statement.getSubject();
-                addResourceEntry(relManager, docResources, subject);
-                Node object = statement.getObject();
-                addResourceEntry(relManager, docResources, object);
-            }
-            return new IORelationResources(namespaces, docResources, statements);
-        } catch (ClientException e) {
-            log.error(e, e);
+        RelationManager relManager = getRelationManager();
+        String graphName = getStringProperty(IORelationAdapterProperties.IMPORT_GRAPH);
+        if (graphName == null) {
+            graphName = getStringProperty(IORelationAdapterProperties.GRAPH);
         }
-        return null;
+        // XXX find target graph to retrieve namespaces
+        Map<String, String> namespaces = null;
+        if (graphName != null) {
+            Graph graph = relManager.getGraphByName(graphName);
+            if (graph != null) {
+                namespaces = graph.getNamespaces();
+            }
+        }
+        IORelationGraphHelper graphHelper = new IORelationGraphHelper(namespaces, null);
+        graphHelper.read(in);
+        // find documents related to given statements
+        List<Statement> statements = filterMatchingStatements(graphHelper.getStatements());
+        Map<DocumentRef, Set<Resource>> docResources = new HashMap<DocumentRef, Set<Resource>>();
+        for (Statement statement : statements) {
+            Subject subject = statement.getSubject();
+            addResourceEntry(relManager, docResources, subject);
+            Node object = statement.getObject();
+            addResourceEntry(relManager, docResources, object);
+        }
+        return new IORelationResources(namespaces, docResources, statements);
     }
 
     @Override
@@ -393,17 +359,13 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
             log.error("Cannot find graph name");
             return;
         }
-        try {
-            RelationManager relManager = getRelationManager();
-            Graph graph = relManager.getGraphByName(graphName);
-            if (graph == null) {
-                log.error("Cannot find graph with name " + graphName);
-                return;
-            }
-            graph.add(relResources.getStatements());
-        } catch (ClientException e) {
-            log.error(e, e);
+        RelationManager relManager = getRelationManager();
+        Graph graph = relManager.getGraphByName(graphName);
+        if (graph == null) {
+            log.error("Cannot find graph with name " + graphName);
+            return;
         }
+        graph.add(relResources.getStatements());
     }
 
     protected static Statement updateDate(Statement statement, Literal newDate, List<Resource> properties) {
@@ -465,7 +427,7 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                     DocumentModel newDoc;
                     try {
                         newDoc = session.getDocument(newRef);
-                    } catch (ClientException e) {
+                    } catch (DocumentNotFoundException e) {
                         // do not replace
                         continue;
                     }
@@ -497,9 +459,6 @@ public class IORelationAdapter extends AbstractIOResourceAdapter {
                 }
             }
             return new IORelationResources(namespaces, relResources.getResourcesMap(), graph.getStatements());
-        } catch (ClientException e) {
-            log.error(e, e);
         }
-        return null;
     }
 }

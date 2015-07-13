@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.publisher.api;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -118,8 +117,6 @@ public interface PublicationTree extends PublicationNode {
 
     /**
      * Returns a PublicationNode for the current tree built on the given {@code documentModel}.
-     *
-     * @throws ClientException if the given documentModel cannot be a PublicationNode
      */
     PublicationNode wrapToPublicationNode(DocumentModel documentModel);
 

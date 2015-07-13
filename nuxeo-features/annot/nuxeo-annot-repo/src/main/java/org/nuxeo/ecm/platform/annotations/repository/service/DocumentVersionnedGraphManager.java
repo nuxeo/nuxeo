@@ -29,7 +29,6 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
@@ -86,15 +85,11 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
     }
 
     private void copyGraphFor(String repositoryName, String fromId, String toId, NuxeoPrincipal principal) {
-        try {
-            copyGraphFor(translator.getNuxeoUrn(repositoryName, fromId), translator.getNuxeoUrn(repositoryName, toId),
-                    principal);
-        } catch (AnnotationException e) {
-            log.error(e, e);
-        }
+        copyGraphFor(translator.getNuxeoUrn(repositoryName, fromId), translator.getNuxeoUrn(repositoryName, toId),
+                principal);
     }
 
-    private static void copyGraphFor(URI current, URI copied, NuxeoPrincipal user) throws AnnotationException {
+    private static void copyGraphFor(URI current, URI copied, NuxeoPrincipal user) {
         List<Statement> newStatements = new ArrayList<Statement>();
         AnnotationsService service = Framework.getService(AnnotationsService.class);
         List<Annotation> annotations = service.queryAnnotations(current, null, user);
@@ -120,14 +115,10 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
     }
 
     private void removeGraphFor(String repositoryName, String id, NuxeoPrincipal principal) {
-        try {
-            removeGraphFor(translator.getNuxeoUrn(repositoryName, id), principal);
-        } catch (AnnotationException e) {
-            log.error("Cannot remove graph " + id + " in repository " + repositoryName, e);
-        }
+        removeGraphFor(translator.getNuxeoUrn(repositoryName, id), principal);
     }
 
-    private static void removeGraphFor(URI uri, NuxeoPrincipal user) throws AnnotationException {
+    private static void removeGraphFor(URI uri, NuxeoPrincipal user) {
         log.debug("Removing annotations graph for " + uri);
         AnnotationsService service = Framework.getService(AnnotationsService.class);
         List<Annotation> annotations = service.queryAnnotations(uri, null, user);
@@ -138,12 +129,8 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
 
     private void restoreGraphFor(String repositoryName, String versionId, String docId, NuxeoPrincipal principal) {
         log.debug("Restoring annotations graph for docId:" + docId + " and versionId:" + versionId);
-        try {
-            removeGraphFor(translator.getNuxeoUrn(repositoryName, docId), principal);
-            copyGraphFor(repositoryName, versionId, docId, principal);
-        } catch (AnnotationException e) {
-            log.error("Cannot restore graph " + docId + " in repository " + repositoryName, e);
-        }
+        removeGraphFor(translator.getNuxeoUrn(repositoryName, docId), principal);
+        copyGraphFor(repositoryName, versionId, docId, principal);
     }
 
 }

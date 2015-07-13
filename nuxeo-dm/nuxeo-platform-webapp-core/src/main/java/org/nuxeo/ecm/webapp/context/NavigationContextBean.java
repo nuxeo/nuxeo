@@ -44,13 +44,13 @@ import org.jboss.seam.contexts.Context;
 import org.jboss.seam.contexts.Contexts;
 import org.jboss.seam.core.Events;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -250,21 +250,13 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
 
         if (currentDocument == null) {
-            try {
-                setCurrentDocument(null);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            setCurrentDocument(null);
         }
 
         // if we switched branch then realign currentDocument
         if (currentDocumentParents != null
                 && !DocumentsListsUtils.isDocumentInList(domainDocModel, currentDocumentParents)) {
-            try {
-                setCurrentDocument(domainDocModel);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            setCurrentDocument(domainDocModel);
         }
 
         Events.instance().raiseEvent(EventNames.DOMAIN_SELECTION_CHANGED, currentDomain);
@@ -481,7 +473,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
         DocumentRef ref = currentDocument.getRef();
         if (ref == null) {
-            throw new ClientException("DocumentRef is null for currentDocument: " + currentDocument.getName());
+            throw new NuxeoException("DocumentRef is null for currentDocument: " + currentDocument.getName());
         }
         // Recompute document parents
         currentDocumentParents = documentManager.getParentDocuments(ref);
@@ -686,12 +678,7 @@ public class NavigationContextBean implements NavigationContext, Serializable {
 
     @Override
     public void selectionChanged() {
-        final String logPrefix = "<selectionChanged> ";
-        try {
-            resetCurrentPath();
-        } catch (ClientException e) {
-            log.error(logPrefix + "error reseting current path", e);
-        }
+        resetCurrentPath();
     }
 
     @Override
@@ -811,22 +798,14 @@ public class NavigationContextBean implements NavigationContext, Serializable {
         }
 
         if (currentDocument == null) {
-            try {
-                setCurrentDocument(null);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            setCurrentDocument(null);
             return;
         }
 
         // if we switched branch then realign currentDocument
         if (currentDocumentParents != null
                 && !DocumentsListsUtils.isDocumentInList(crDocumentModel, currentDocumentParents)) {
-            try {
-                setCurrentDocument(crDocumentModel);
-            } catch (ClientException e) {
-                log.error(e, e);
-            }
+            setCurrentDocument(crDocumentModel);
         }
     }
 

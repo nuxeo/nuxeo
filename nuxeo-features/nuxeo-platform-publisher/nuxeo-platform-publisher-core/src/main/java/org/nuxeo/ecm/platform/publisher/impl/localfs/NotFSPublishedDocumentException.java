@@ -17,7 +17,11 @@
 
 package org.nuxeo.ecm.platform.publisher.impl.localfs;
 
-public class NotFSPublishedDocumentException extends RuntimeException {
+import org.nuxeo.ecm.core.api.NuxeoException;
+
+public class NotFSPublishedDocumentException extends NuxeoException {
+
+    private static final long serialVersionUID = 1L;
 
     public NotFSPublishedDocumentException() {
         super();

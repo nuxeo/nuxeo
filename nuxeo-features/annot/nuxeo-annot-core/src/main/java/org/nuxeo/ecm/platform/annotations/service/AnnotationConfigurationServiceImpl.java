@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.ecm.platform.annotations.descriptors.PermissionMapperDescriptor;
@@ -122,19 +121,19 @@ public class AnnotationConfigurationServiceImpl implements AnnotationConfigurati
         listeners.add(listener);
     }
 
-    public String getCreateAnnotationPermission() throws AnnotationException {
+    public String getCreateAnnotationPermission() {
         return permissionMapper.getCreateAnnotationValue();
     }
 
-    public String getDeleteAnnotationPermission() throws AnnotationException {
+    public String getDeleteAnnotationPermission() {
         return permissionMapper.getDeleteAnnotationValue();
     }
 
-    public String getReadAnnotationPermission() throws AnnotationException {
+    public String getReadAnnotationPermission() {
         return permissionMapper.getReadAnnotationValue();
     }
 
-    public String getUpdateAnnotationPermission() throws AnnotationException {
+    public String getUpdateAnnotationPermission() {
         return permissionMapper.getUpdateAnnotationValue();
     }
 

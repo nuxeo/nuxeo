@@ -34,10 +34,10 @@ import org.jboss.seam.annotations.Out;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.Renderer;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webapp.base.InputController;
@@ -99,17 +99,13 @@ public class EmailSenderActionsBean extends InputController implements EmailSend
             DataModel dm = currentUser.getModel().getDataModels().values().iterator().next();
             try {
                 fromEmail = (String) dm.getData(userManager.getUserEmailField());
-            } catch (ClientException e1) {
+            } catch (PropertyException e1) {
                 fromEmail = null;
             }
             List<NuxeoPrincipal> listEmails = new ArrayList<NuxeoPrincipal>();
             for (String user : principalListManager.getSelectedUsers()) {
-                try {
-                    NuxeoPrincipal principal = userManager.getPrincipal(user);
-                    listEmails.add(principal);
-                } catch (ClientException e) {
-                    continue;
-                }
+                NuxeoPrincipal principal = userManager.getPrincipal(user);
+                listEmails.add(principal);
             }
             toEmail = listEmails;
             currentDocumentFullUrl = DocumentModelFunctions.documentUrl(navigationContext.getCurrentDocument());

@@ -40,7 +40,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -94,11 +93,7 @@ public class DocumentTemplatesActionsBean extends InputController implements Doc
     @Override
     @Factory(value = "availableTemplates", scope = EVENT)
     public DocumentModelList templatesListFactory() {
-        try {
-            templates = getTemplates();
-        } catch (ClientException e) {
-            log.error(e);
-        }
+        templates = getTemplates();
         return templates;
     }
 

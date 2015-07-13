@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.oauth.tokens;
 
 import java.util.Calendar;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

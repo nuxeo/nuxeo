@@ -22,7 +22,6 @@ package org.nuxeo.ecm.directory.api.ui;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Manager for directories to be presented to the UI for management.

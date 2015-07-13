@@ -18,7 +18,6 @@
 package org.nuxeo.ecm.platform.publisher.remoting.restHandler;
 
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.DefaultMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 import org.nuxeo.ecm.webengine.WebEngine;
 
 public class RemotePubResult {
@@ -29,7 +28,7 @@ public class RemotePubResult {
         this.result = result;
     }
 
-    public String asXML() throws PublishingMarshalingException {
+    public String asXML() {
         return new DefaultMarshaler(WebEngine.getActiveContext().getCoreSession()).marshallResult(result);
     }
 

@@ -35,7 +35,6 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelComparator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -175,8 +174,6 @@ public class DirectoryUIActionsBean implements Serializable {
                 orderBy.put(sortField, DocumentModelComparator.ORDER_ASC);
                 Collections.sort(currentDirectoryEntries,
                         new DocumentModelComparator(dirService.getDirectorySchema(dirName), orderBy));
-            } catch (DirectoryException e) {
-                throw new ClientException(e);
             }
         }
         return currentDirectoryEntries;
@@ -200,13 +197,9 @@ public class DirectoryUIActionsBean implements Serializable {
 
     public DocumentModel getCreationDirectoryEntry() {
         if (creationDirectoryEntry == null) {
-            try {
-                String dirName = currentDirectoryInfo.getName();
-                String schema = dirService.getDirectorySchema(dirName);
-                creationDirectoryEntry = BaseSession.createEntryModel(null, schema, null, null);
-            } catch (DirectoryException e) {
-                throw new ClientException(e);
-            }
+            String dirName = currentDirectoryInfo.getName();
+            String schema = dirService.getDirectorySchema(dirName);
+            creationDirectoryEntry = BaseSession.createEntryModel(null, schema, null, null);
         }
         return creationDirectoryEntry;
     }
@@ -231,8 +224,6 @@ public class DirectoryUIActionsBean implements Serializable {
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.added"));
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         }
     }
 
@@ -245,8 +236,6 @@ public class DirectoryUIActionsBean implements Serializable {
         String dirName = currentDirectoryInfo.getName();
         try (Session dirSession = dirService.open(dirName)) {
             selectedDirectoryEntry = dirSession.getEntry(entryId);
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         }
     }
 
@@ -268,8 +257,6 @@ public class DirectoryUIActionsBean implements Serializable {
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
 
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.edited"));
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         }
     }
 
@@ -291,8 +278,6 @@ public class DirectoryUIActionsBean implements Serializable {
             currentDirectoryEntries = null;
             Events.instance().raiseEvent(EventNames.DIRECTORY_CHANGED, dirName);
             facesMessages.add(StatusMessage.Severity.INFO, messages.get("vocabulary.entry.deleted"));
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         }
     }
 
@@ -314,8 +299,6 @@ public class DirectoryUIActionsBean implements Serializable {
             }
 
             isReadOnly = dirReadOnly || dirUIReadOnly;
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         }
         return isReadOnly;
     }

@@ -18,9 +18,9 @@ import java.io.IOException;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailFactory;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
@@ -36,7 +36,7 @@ public class ThumbnailPictureFactory implements ThumbnailFactory {
     @Override
     public Blob getThumbnail(DocumentModel doc, CoreSession session) {
         if (!doc.hasFacet("Picture")) {
-            throw new ClientException("Document is not a picture");
+            throw new NuxeoException("Document is not a picture");
         }
         // Choose the nuxeo default thumbnail of the picture views if exists
         MultiviewPicture mViewPicture = doc.getAdapter(MultiviewPicture.class);
@@ -50,7 +50,7 @@ public class ThumbnailPictureFactory implements ThumbnailFactory {
                     return Blobs.createBlob(FileUtils.getResourceFileFromContext("nuxeo.war" + File.separator
                             + docType.getBigIcon()));
                 } catch (IOException e) {
-                    throw new ClientException(e);
+                    throw new NuxeoException(e);
                 }
             }
         }

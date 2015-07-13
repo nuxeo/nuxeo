@@ -37,7 +37,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.mvel2.PropertyAccessException;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -274,15 +273,10 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         }
 
         if (isInterestedInNotification(notification)) {
-            try {
-                sendNotification(event, ctx);
-                if (log.isDebugEnabled()) {
-                    log.debug("notification " + notification.getName() + " sent to " + notification.getSubject());
-                }
-            } catch (ClientException e) {
-                log.error("An error occurred while trying to send user notification", e);
+            sendNotification(event, ctx);
+            if (log.isDebugEnabled()) {
+                log.debug("notification " + notification.getName() + " sent to " + notification.getSubject());
             }
-
         }
     }
 

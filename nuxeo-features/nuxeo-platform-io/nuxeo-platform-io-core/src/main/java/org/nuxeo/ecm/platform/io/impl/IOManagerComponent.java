@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.io.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.descriptors.IOResourceAdapterDescriptor;
@@ -67,17 +66,13 @@ public class IOManagerComponent extends DefaultComponent {
                 return;
             }
             adapter.setProperties(desc.getProperties());
-            try {
-                IOResourceAdapter existing = service.getAdapter(name);
-                if (existing != null) {
-                    log.warn(String.format("Overriding IO Resource adapter definition %s", name));
-                    service.removeAdapter(name);
-                }
-                service.addAdapter(name, adapter);
-                log.info(String.format("IO resource adapter %s registered", name));
-            } catch (ClientException e) {
-                log.error("Error when registering IO resource adapter", e);
+            IOResourceAdapter existing = service.getAdapter(name);
+            if (existing != null) {
+                log.warn(String.format("Overriding IO Resource adapter definition %s", name));
+                service.removeAdapter(name);
             }
+            service.addAdapter(name, adapter);
+            log.info(String.format("IO resource adapter %s registered", name));
         } else {
             log.error(String.format("Unknown extension point %s, can't register !", extensionPoint));
         }
@@ -87,11 +82,7 @@ public class IOManagerComponent extends DefaultComponent {
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (extensionPoint.equals(ADAPTERS_EP_NAME)) {
             IOResourceAdapterDescriptor desc = (IOResourceAdapterDescriptor) contribution;
-            try {
-                service.removeAdapter(desc.getName());
-            } catch (ClientException e) {
-                log.error("Error when unregistering IO resource adapter", e);
-            }
+            service.removeAdapter(desc.getName());
         } else {
             log.error(String.format("Unknown extension point %s, can't unregister !", extensionPoint));
         }

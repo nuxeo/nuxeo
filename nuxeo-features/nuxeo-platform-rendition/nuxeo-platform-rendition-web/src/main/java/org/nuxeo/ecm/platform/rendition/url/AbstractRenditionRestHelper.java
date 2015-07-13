@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -86,7 +86,7 @@ public abstract class AbstractRenditionRestHelper implements Serializable {
             Blob rendered = null;
             try {
                 rendered = renderAsBlob(doc, renditionName);
-            } catch (RenditionException e) {
+            } catch (NuxeoException e) {
                 log.error("Unable to generate rendition " + renditionName, e);
                 facesMessages.add(StatusMessage.Severity.WARN, messages.get("rendition.not.available"), renditionName);
                 // now we need to redirect

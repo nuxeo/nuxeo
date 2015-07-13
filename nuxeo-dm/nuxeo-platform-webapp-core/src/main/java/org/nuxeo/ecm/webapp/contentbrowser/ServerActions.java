@@ -21,7 +21,6 @@ package org.nuxeo.ecm.webapp.contentbrowser;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.repository.Repository;
 import org.nuxeo.ecm.platform.util.RepositoryLocation;
 

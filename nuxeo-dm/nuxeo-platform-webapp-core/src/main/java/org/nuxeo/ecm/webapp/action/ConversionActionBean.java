@@ -38,7 +38,6 @@ import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -194,83 +193,61 @@ public class ConversionActionBean implements ConversionAction {
     @Override
     @WebRemote
     public boolean isFileExportableToPDF(String fieldName) {
-        try {
-            DocumentModel doc = getDocument();
-            Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
-            boolean isSupported;
-            if (cacheResult == null) {
-                String mimetype = getMimetypeFromDocument(fieldName);
-                isSupported = isMimeTypeExportableToPDF(mimetype);
-                exportableToPDFCache.addToCache(doc, fieldName, isSupported);
-            } else {
-                isSupported = cacheResult;
-            }
-            return isSupported;
-        } catch (ClientException e) {
-            log.error("Error while trying to check PDF conversion against a filename", e);
-            return false;
+        DocumentModel doc = getDocument();
+        Boolean cacheResult = exportableToPDFCache.getFromCache(doc, fieldName);
+        boolean isSupported;
+        if (cacheResult == null) {
+            String mimetype = getMimetypeFromDocument(fieldName);
+            isSupported = isMimeTypeExportableToPDF(mimetype);
+            exportableToPDFCache.addToCache(doc, fieldName, isSupported);
+        } else {
+            isSupported = cacheResult;
         }
+        return isSupported;
     }
 
     public String generatePdfFileFromBlobHolder(DocumentModel doc, BlobHolder bh) {
-        try {
-
-            // redirect to the conversion URL when available
-            Blob blob = bh.getBlob();
-            String url = getPDFConversionURL(blob);
-            if (url != null) {
-                try {
-                    FacesContext.getCurrentInstance().getExternalContext().redirect(url);
-                    return null;
-                } catch (IOException e) {
-                    //
-                }
+        // redirect to the conversion URL when available
+        Blob blob = bh.getBlob();
+        String url = getPDFConversionURL(blob);
+        if (url != null) {
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(url);
+                return null;
+            } catch (IOException e) {
+                //
             }
-
-            if (pdfConverterName == null) {
-                log.error("No PDF converter was found.");
-                return "pdf_generation_error";
-            }
-
-            BlobHolder result = Framework.getLocalService(ConversionService.class).convert(pdfConverterName, bh, null);
-
-            if (result == null) {
-                log.error("Transform service didn't return any resulting documents which is not normal.");
-                return "pdf_generation_error";
-            }
-
-            String origFilename = new Path(bh.getFilePath()).lastSegment();
-            String filename = FileUtils.getCleanFileName(origFilename);
-            if (StringUtils.isBlank(filename)) {
-                filename = "file";
-            }
-            // add pdf extension
-            int pos = filename.lastIndexOf('.');
-            if (pos > 0) {
-                filename = filename.substring(0, pos);
-            }
-            filename += ".pdf";
-
-            ComponentUtils.download(doc, null, result.getBlob(), filename, "pdfConversion");
-            return null;
-        } catch (ClientException e) {
-            log.error("PDF generation error for file " + filename, e);
         }
-        return "pdf_generation_error";
-
+        if (pdfConverterName == null) {
+            log.error("No PDF converter was found.");
+            return "pdf_generation_error";
+        }
+        BlobHolder result = Framework.getService(ConversionService.class).convert(pdfConverterName, bh, null);
+        if (result == null) {
+            log.error("Transform service didn't return any resulting documents which is not normal.");
+            return "pdf_generation_error";
+        }
+        String origFilename = new Path(bh.getFilePath()).lastSegment();
+        String filename = FileUtils.getCleanFileName(origFilename);
+        if (StringUtils.isBlank(filename)) {
+            filename = "file";
+        }
+        // add pdf extension
+        int pos = filename.lastIndexOf('.');
+        if (pos > 0) {
+            filename = filename.substring(0, pos);
+        }
+        filename += ".pdf";
+        ComponentUtils.download(doc, null, result.getBlob(), filename, "pdfConversion");
+        return null;
     }
 
     @Override
     @WebRemote
     public String generatePdfFile() {
-        try {
-            DocumentModel doc = getDocument();
-            BlobHolder bh = new DocumentBlobHolder(doc, fileFieldFullName);
-            return generatePdfFileFromBlobHolder(doc, bh);
-        } catch (ClientException e) {
-            log.error("PDF generation error for file " + filename, e);
-        }
-        return "pdf_generation_error";
+        DocumentModel doc = getDocument();
+        BlobHolder bh = new DocumentBlobHolder(doc, fileFieldFullName);
+        return generatePdfFileFromBlobHolder(doc, bh);
     }
 
     /**

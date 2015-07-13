@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.annotations;
 import java.security.Principal;
 
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.service.EventListener;
 
 /**
@@ -30,28 +29,28 @@ import org.nuxeo.ecm.platform.annotations.service.EventListener;
  */
 public class FakeEventListener implements EventListener {
 
-    public void afterAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException {
+    public void afterAnnotationCreated(Principal principal, Annotation annotation) {
     }
 
-    public void afterAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException {
+    public void afterAnnotationDeleted(Principal principal, Annotation annotation) {
     }
 
-    public void afterAnnotationRead(Principal principal, Annotation annotation) throws AnnotationException {
+    public void afterAnnotationRead(Principal principal, Annotation annotation) {
     }
 
-    public void afterAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException {
+    public void afterAnnotationUpdated(Principal principal, Annotation annotation) {
     }
 
-    public void beforeAnnotationCreated(Principal principal, Annotation annotation) throws AnnotationException {
+    public void beforeAnnotationCreated(Principal principal, Annotation annotation) {
     }
 
-    public void beforeAnnotationDeleted(Principal principal, Annotation annotation) throws AnnotationException {
+    public void beforeAnnotationDeleted(Principal principal, Annotation annotation) {
     }
 
-    public void beforeAnnotationRead(Principal principal, String annotationId) throws AnnotationException {
+    public void beforeAnnotationRead(Principal principal, String annotationId) {
     }
 
-    public void beforeAnnotationUpdated(Principal principal, Annotation annotation) throws AnnotationException {
+    public void beforeAnnotationUpdated(Principal principal, Annotation annotation) {
     }
 
 }

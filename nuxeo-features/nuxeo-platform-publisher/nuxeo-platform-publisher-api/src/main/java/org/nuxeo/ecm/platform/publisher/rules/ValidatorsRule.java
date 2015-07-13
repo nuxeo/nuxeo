@@ -39,6 +39,6 @@ public interface ValidatorsRule extends Serializable {
      * @return a list of principal names.
      * @throws PublishingValidatorException TODO
      */
-    String[] computesValidatorsFor(DocumentModel dm) throws PublishingValidatorException;
+    String[] computesValidatorsFor(DocumentModel dm);
 
 }

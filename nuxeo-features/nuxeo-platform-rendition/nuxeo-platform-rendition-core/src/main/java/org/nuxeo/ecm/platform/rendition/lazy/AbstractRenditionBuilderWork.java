@@ -23,10 +23,10 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.api.StorageEntry;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
@@ -91,8 +91,8 @@ public abstract class AbstractRenditionBuilderWork extends AbstractWork implemen
 
         try {
             StorageEntry entry = ts.get(key);
-            if (entry==null) {
-                throw new ClientException("Rendition TransientStore entry can not be null");
+            if (entry == null) {
+                throw new NuxeoException("Rendition TransientStore entry can not be null");
             }
             entry.setBlobs(blobs);
             entry.put(AbstractLazyCachableRenditionProvider.COMPLETED_KEY, true);

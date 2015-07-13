@@ -21,11 +21,9 @@ package org.nuxeo.ecm.platform.annotations.repository.service;
 
 import java.net.URI;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.URNDocumentViewTranslator;
 import org.nuxeo.ecm.platform.annotations.service.AnnotabilityManager;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -41,20 +39,14 @@ public class RepositoryAnnotabilityManager implements AnnotabilityManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
-    public boolean isAnnotable(URI uri) throws AnnotationException {
+    public boolean isAnnotable(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         if (view == null) { // not a nuxeo uri
-            try {
-                return service.isAnnotable(null);
-            } catch (ClientException e) {
-                throw new AnnotationException(e);
-            }
+            return service.isAnnotable(null);
         }
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.isAnnotable(model);
-        } catch (ClientException e) {
-            throw new AnnotationException(e);
         }
     }
 }

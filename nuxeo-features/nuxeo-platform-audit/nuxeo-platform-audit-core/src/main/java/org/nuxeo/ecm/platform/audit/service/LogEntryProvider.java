@@ -29,8 +29,6 @@ import javax.persistence.Query;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
-import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -237,7 +235,8 @@ public class LogEntryProvider implements BaseLogEntryProvider {
         try {
             limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
         } catch (AuditQueryException aqe) {
-            throw new AuditRuntimeException("Wrong date range query. Query was " + dateRange, aqe);
+            aqe.addInfo("Wrong date range query. Query was " + dateRange);
+            throw aqe;
         }
 
         String queryStr = "";
@@ -270,12 +269,13 @@ public class LogEntryProvider implements BaseLogEntryProvider {
      * java.lang.String[], java.lang.String, int, int)
      */
     public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String[] categories, String path,
-            int pageNb, int pageSize) throws AuditException {
+            int pageNb, int pageSize) {
         Date limit = null;
         try {
             limit = DateRangeParser.parseDateRangeQuery(new Date(), dateRange);
         } catch (AuditQueryException aqe) {
-            throw new AuditException("Wrong date range query. Query was " + dateRange, aqe);
+            aqe.addInfo("Wrong date range query. Query was " + dateRange);
+            throw aqe;
         }
         return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
     }

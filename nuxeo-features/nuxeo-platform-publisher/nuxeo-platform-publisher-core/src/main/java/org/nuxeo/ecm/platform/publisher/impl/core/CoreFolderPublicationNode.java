@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -121,12 +120,7 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
         DocumentModelList children = getSortedChildren(true);
         List<PublishedDocument> childrenDocs = new ArrayList<PublishedDocument>();
         for (DocumentModel child : children) {
-            try {
-                childrenDocs.add(factory.wrapDocumentModel(child));
-            } catch (ClientException e) {
-                // Nothing to do for now
-                log.error(e);
-            }
+            childrenDocs.add(factory.wrapDocumentModel(child));
         }
         return childrenDocs;
     }
@@ -174,16 +168,12 @@ public class CoreFolderPublicationNode extends AbstractPublicationNode implement
     public PublicationNode getParent() {
         if (parent == null) {
             DocumentRef docRef = folder.getParentRef();
-            try {
-                if (getCoreSession().hasPermission(docRef, SecurityConstants.READ)) {
-                    parent = new CoreFolderPublicationNode(getCoreSession().getDocument(folder.getParentRef()),
-                            treeConfigName, sid, factory);
-                } else {
-                    parent = new VirtualCoreFolderPublicationNode(getCoreSession().getSessionId(), docRef.toString(),
-                            treeConfigName, sid, factory);
-                }
-            } catch (ClientException e) {
-                log.error("Error while retrieving parent: ", e);
+            if (getCoreSession().hasPermission(docRef, SecurityConstants.READ)) {
+                parent = new CoreFolderPublicationNode(getCoreSession().getDocument(folder.getParentRef()),
+                        treeConfigName, sid, factory);
+            } else {
+                parent = new VirtualCoreFolderPublicationNode(getCoreSession().getSessionId(), docRef.toString(),
+                        treeConfigName, sid, factory);
             }
         }
         return parent;

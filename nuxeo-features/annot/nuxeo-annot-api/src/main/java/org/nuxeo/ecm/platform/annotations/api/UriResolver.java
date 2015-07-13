@@ -27,12 +27,12 @@ import java.util.List;
  */
 public interface UriResolver {
 
-    URI translateToGraphURI(URI uri) throws AnnotationException;
+    URI translateToGraphURI(URI uri);
 
-    URI translateFromGraphURI(URI uri, String baseUrl) throws AnnotationException;
+    URI translateFromGraphURI(URI uri, String baseUrl);
 
-    String getBaseUrl(URI uri) throws AnnotationException;
+    String getBaseUrl(URI uri);
 
-    List<URI> getSearchURI(URI uri) throws AnnotationException;
+    List<URI> getSearchURI(URI uri);
 
 }

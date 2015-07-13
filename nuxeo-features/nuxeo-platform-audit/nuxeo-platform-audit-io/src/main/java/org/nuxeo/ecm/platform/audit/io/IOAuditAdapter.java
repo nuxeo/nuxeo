@@ -31,14 +31,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
-import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.io.api.AbstractIOResourceAdapter;
@@ -97,16 +97,13 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
                     List<LogEntry> logEntries = logService.getLogEntriesFor(uuid);
 
                     docLogs.put(docRef, logEntries);
-                } catch (ClientException e) {
+                } catch (DocumentNotFoundException e) {
                     List<LogEntry> emptyList = Collections.emptyList();
                     docLogs.put(docRef, emptyList);
                     continue;
                 }
             }
             return new IOAuditResources(docLogs);
-        } catch (ClientException e) {
-            log.error(e, e);
-            return null;
         }
     }
 
@@ -129,7 +126,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try {
             IOLogEntryBase.write(logEntries, out);
         } catch (IOException e) {
-            throw new AuditRuntimeException("Cannot write logs", e);
+            throw new NuxeoException("Cannot write logs", e);
         }
     }
 
@@ -139,7 +136,7 @@ public class IOAuditAdapter extends AbstractIOResourceAdapter {
         try {
             allEntries = IOLogEntryBase.read(stream);
         } catch (IOException e) {
-            throw new AuditRuntimeException("Cannot read entries from " + stream);
+            throw new NuxeoException("Cannot read entries from " + stream);
         }
 
         // will put each log entry to its correspondent document ref

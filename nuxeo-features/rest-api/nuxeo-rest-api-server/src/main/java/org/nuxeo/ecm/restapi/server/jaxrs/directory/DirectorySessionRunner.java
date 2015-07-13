@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.restapi.server.jaxrs.directory;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.webengine.WebException;
@@ -31,8 +30,6 @@ public abstract class DirectorySessionRunner<T> {
     public static <T> T withDirectorySession(Directory directory, DirectorySessionRunner<T> runner) {
         try (Session session = directory.getSession()) {
             return runner.run(session);
-        } catch (ClientException e) {
-            throw WebException.wrap(e);
         }
     }
 

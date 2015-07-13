@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.webapp.contentbrowser;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.el.ContextStringWrapper;

@@ -45,7 +45,6 @@ import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -157,7 +156,6 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
      *
      * @param versionModel the version model
      * @return true, if the {@versionModel} is selected
-     * @throws ClientException if the version document could not be retrieved
      */
     protected boolean isVersionSelected(VersionModel versionModel) {
 
@@ -278,19 +276,14 @@ public class VersionedActionsBean implements VersionedActions, Serializable {
 
     @Override
     public boolean canRemoveArchivedVersion(VersionModel selectedVersion) {
-        try {
-            DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
-            DocumentModel docVersion = documentManager.getDocumentWithVersion(docRef, selectedVersion);
-            if (docVersion == null) {
-                // it doesn't exist? don't remove. Still it is a problem
-                log.warn("Unexpectedly couldn't find the version " + selectedVersion.getLabel());
-                return false;
-            }
-            return documentManager.canRemoveDocument(docVersion.getRef());
-        } catch (ClientException e) {
-            log.debug("ClientException in canRemoveArchivedVersion: " + e.getMessage());
+        DocumentRef docRef = navigationContext.getCurrentDocument().getRef();
+        DocumentModel docVersion = documentManager.getDocumentWithVersion(docRef, selectedVersion);
+        if (docVersion == null) {
+            // it doesn't exist? don't remove. Still it is a problem
+            log.warn("Unexpectedly couldn't find the version " + selectedVersion.getLabel());
             return false;
         }
+        return documentManager.canRemoveDocument(docVersion.getRef());
     }
 
     /**

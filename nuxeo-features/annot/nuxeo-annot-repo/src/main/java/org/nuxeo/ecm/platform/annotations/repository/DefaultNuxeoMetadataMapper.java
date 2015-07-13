@@ -27,7 +27,6 @@ import java.util.TimeZone;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsConstants;
 import org.nuxeo.ecm.platform.annotations.service.MetadataMapper;
 
@@ -40,7 +39,7 @@ public class DefaultNuxeoMetadataMapper implements MetadataMapper {
 
     private final TimeZone timezone = TimeZone.getDefault();
 
-    public void updateMetadata(Annotation annotation, NuxeoPrincipal user) throws AnnotationException {
+    public void updateMetadata(Annotation annotation, NuxeoPrincipal user) {
         Calendar calendar = Calendar.getInstance();
         calendar.toString();
         annotation.addMetadata(AnnotationsConstants.D_DATE, getStringUTCDate());

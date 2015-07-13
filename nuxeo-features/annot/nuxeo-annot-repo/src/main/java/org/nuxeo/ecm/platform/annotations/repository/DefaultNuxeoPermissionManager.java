@@ -21,12 +21,10 @@ package org.nuxeo.ecm.platform.annotations.repository;
 
 import java.net.URI;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationsRepositoryService;
 import org.nuxeo.ecm.platform.annotations.service.PermissionManager;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
@@ -45,13 +43,11 @@ public class DefaultNuxeoPermissionManager implements PermissionManager {
         service = Framework.getService(AnnotationsRepositoryService.class);
     }
 
-    public boolean check(NuxeoPrincipal user, String permission, URI uri) throws AnnotationException {
+    public boolean check(NuxeoPrincipal user, String permission, URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
             DocumentModel model = session.getDocument(view.getDocumentLocation().getDocRef());
             return service.check(user, permission, model);
-        } catch (ClientException e) {
-            throw new AnnotationException(e);
         }
     }
 

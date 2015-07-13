@@ -21,7 +21,6 @@ package org.nuxeo.ecm.platform.publisher.rules;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -38,13 +37,9 @@ public class DefaultValidatorsRule implements ValidatorsRule {
 
     private static final long serialVersionUID = 1L;
 
-    public String[] computesValidatorsFor(DocumentModel doc) throws PublishingValidatorException {
+    public String[] computesValidatorsFor(DocumentModel doc) {
         UnrestrictedACPGetter acpg = new UnrestrictedACPGetter(doc);
-        try {
-            acpg.runUnrestricted();
-        } catch (ClientException e) {
-            throw new PublishingValidatorException(e);
-        }
+        acpg.runUnrestricted();
         String[] writePermissions = doc.getCoreSession().getPermissionsToCheck(SecurityConstants.WRITE);
         String[] reviewers = acpg.acp.listUsernamesForAnyPermission(new HashSet<String>(Arrays.asList(writePermissions)));
         return reviewers;

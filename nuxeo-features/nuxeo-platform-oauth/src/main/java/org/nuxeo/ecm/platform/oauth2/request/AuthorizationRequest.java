@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.runtime.api.Framework;
 
@@ -76,7 +76,7 @@ public class AuthorizationRequest extends Oauth2Request {
             if (!registry.hasClient(clientId)) {
                 return unauthorized_client.toString();
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.warn(e, e);
             return server_error.toString();
         }

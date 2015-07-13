@@ -30,7 +30,6 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.relations.api.DocumentRelationManager;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -494,12 +493,8 @@ public class RelationService extends DefaultComponent implements RelationManager
                     GraphDescription desc = graphDescriptions.get(graphName);
                     if (desc.getGraphType().equalsIgnoreCase("jena")) {
                         log.info("create RDF Graph " + graphName);
-                        try {
-                            Graph graph = getGraphByName(graphName);
-                            graph.size();
-                        } catch (ClientException e) {
-                            log.error("Error while initializing graph " + graphName, e);
-                        }
+                        Graph graph = getGraphByName(graphName);
+                        graph.size();
                     }
                 }
 
@@ -510,13 +505,8 @@ public class RelationService extends DefaultComponent implements RelationManager
                         GraphDescription desc = graphDescriptions.get(graphName);
                         if (!desc.getGraphType().equalsIgnoreCase("jena")) {
                             log.info("create RDF Graph " + graphName);
-                            try {
-                                Graph graph = getGraphByName(graphName);
-                                graph.size();
-                            } catch (ClientException e) {
-                                log.error("Error while initializing graph " + graphName, e);
-                                TransactionHelper.setTransactionRollbackOnly();
-                            }
+                            Graph graph = getGraphByName(graphName);
+                            graph.size();
                         }
                     }
                 } finally {

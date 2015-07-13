@@ -27,13 +27,12 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
@@ -57,7 +56,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
     }
 
-    public List<URI> getSearchURI(URI uri) throws AnnotationException {
+    public List<URI> getSearchURI(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         URI translatedUri = null;
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
@@ -67,13 +66,11 @@ public class DefaultNuxeoUriResolver implements UriResolver {
                 idRef = docModel.getRef();
             }
             translatedUri = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
-        } catch (ClientException e) {
-            throw new AnnotationException(e);
         }
         return Collections.singletonList(translatedUri);
     }
 
-    public URI translateFromGraphURI(URI uri, String baseUrl) throws AnnotationException {
+    public URI translateFromGraphURI(URI uri, String baseUrl) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         if (view == null || baseUrl == null) { // not a nuxeo document or
             // already a urn
@@ -84,12 +81,12 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         try {
             u = new URI(url);
         } catch (URISyntaxException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
         return u;
     }
 
-    public URI translateToGraphURI(URI uri) throws AnnotationException {
+    public URI translateToGraphURI(URI uri) {
         if (uri.toString().startsWith("urn")) {
             return uri;
         }
@@ -105,23 +102,21 @@ public class DefaultNuxeoUriResolver implements UriResolver {
                 idRef = docModel.getRef();
             }
             result = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
-        } catch (ClientException e) {
-            throw new AnnotationException(e);
         }
         return result;
     }
 
-    public String getBaseUrl(URI uri) throws AnnotationException {
+    public String getBaseUrl(URI uri) {
         String url;
         try {
             url = uri.toURL().toString();
         } catch (MalformedURLException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
         return url.substring(0, url.lastIndexOf(NUXEO) + NUXEO.length());
     }
 
-    public DocumentRef getDocumentRef(URI uri) throws AnnotationException {
+    public DocumentRef getDocumentRef(URI uri) {
         DocumentView view = null;
         if (translator.isNuxeoUrn(uri)) {
             view = translator.getDocumentViewFromUri(uri);
@@ -135,7 +130,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         return location.getDocRef();
     }
 
-    public DocumentLocation getDocumentLocation(URI uri) throws AnnotationException {
+    public DocumentLocation getDocumentLocation(URI uri) {
         DocumentView view;
         if (translator.isNuxeoUrn(uri)) {
             view = translator.getDocumentViewFromUri(uri);

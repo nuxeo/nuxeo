@@ -49,12 +49,13 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.web.RequestParameter;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -201,13 +202,13 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 if (blobPropertyName != null) {
                     blob = (Blob) doc.getPropertyValue(blobPropertyName);
                     if (blob == null) {
-                        throw new ClientException(String.format("could not find blob to edit with property '%s'",
+                        throw new NuxeoException(String.format("could not find blob to edit with property '%s'",
                                 blobPropertyName));
                     }
                 } else {
                     blob = (Blob) doc.getProperty(schema, blobField);
                     if (blob == null) {
-                        throw new ClientException(String.format(
+                        throw new NuxeoException(String.format(
                                 "could not find blob to edit with schema '%s' and field '%s'", schema, blobField));
                     }
                 }
@@ -225,14 +226,14 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 templateDoc = templateSession.getDocument(new IdRef(templateDocRef));
                 Blob blob = (Blob) templateDoc.getProperty(templateSchema, templateBlobField);
                 if (blob == null) {
-                    throw new ClientException(String.format(
+                    throw new NuxeoException(String.format(
                             "could not find template blob with schema '%s' and field '%s'", templateSchema,
                             templateBlobField));
                 }
                 mimetype = blob.getMimeType();
                 // leave docType from the request query parameter
             } else {
-                throw new ClientException(String.format(
+                throw new NuxeoException(String.format(
                         "action '%s' is not a valid LiveEdit action: should be one of '%s', '%s' or '%s'", action,
                         ACTION_CREATE_DOCUMENT, ACTION_CREATE_DOCUMENT_FROM_TEMPLATE, ACTION_EDIT_DOCUMENT));
             }
@@ -450,7 +451,7 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
         if (doc != null) {
             try {
                 modified = (Calendar) doc.getProperty(DUBLINCORE_SCHEMA, MODIFIED_FIELD);
-            } catch (ClientException e) {
+            } catch (PropertyException e) {
                 modified = null;
             }
         }
@@ -606,16 +607,9 @@ public class LiveEditBootstrapHelper implements Serializable, LiveEditConstants 
                 return cacheBlobToFalse(cacheKey);
             }
 
-            try {
-                if (!documentManager.hasPermission(documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
-                    // the lock state is check as a extension to the
-                    // SecurityPolicyManager
-                    return cacheBlobToFalse(cacheKey);
-                }
-            } catch (ClientException e) {
-                // the document no longer exist in the core
-                log.warn(String.format("document '%s' with reference '%s' no longer exists in the database, "
-                        + "please ensure the indexes are up to date", documentModel.getTitle(), documentModel.getRef()));
+            if (!documentManager.hasPermission(documentModel.getRef(), SecurityConstants.WRITE_PROPERTIES)) {
+                // the lock state is check as a extension to the
+                // SecurityPolicyManager
                 return cacheBlobToFalse(cacheKey);
             }
 

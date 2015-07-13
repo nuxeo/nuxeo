@@ -57,11 +57,11 @@ import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.server.jaxrs.batch.BatchManager;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -253,7 +253,7 @@ public class ImportActions implements Serializable {
             if (selectedImportFolderId != null) {
                 return navigationContext.navigateToRef(new IdRef(selectedImportFolderId));
             }
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.debug(e, e);
             Throwable t = ExceptionHelper.unwrapException(e);
             // FIXME NXP-XXXXX
@@ -324,7 +324,7 @@ public class ImportActions implements Serializable {
             }
         } catch (OperationException e) {
             log.error("Error while executing automation batch ", e);
-            throw ClientException.wrap(e);
+            throw new NuxeoException(e);
         } finally {
             for (NxUploadedFile uploadItem : getUploadedFiles()) {
                 // FIXME: check if a temp file needs to be tracked for

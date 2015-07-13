@@ -19,7 +19,6 @@ package org.nuxeo.ecm.directory.api.ui;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 

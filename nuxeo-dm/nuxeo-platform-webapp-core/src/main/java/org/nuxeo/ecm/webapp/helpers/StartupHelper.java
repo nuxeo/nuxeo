@@ -37,11 +37,11 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.contexts.Context;
 import org.jboss.seam.core.Events;
 import org.jboss.seam.international.LocaleSelector;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -191,7 +191,7 @@ public class StartupHelper implements Serializable {
             }
 
             return result;
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             // avoid pages.xml contribution to catch exceptions silently
             // hiding the cause of the problem to developers
             // TODO: remove this catch clause if we find a way not to make it

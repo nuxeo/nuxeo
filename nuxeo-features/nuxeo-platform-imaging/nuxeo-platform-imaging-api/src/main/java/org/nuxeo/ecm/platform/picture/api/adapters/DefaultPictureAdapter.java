@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
@@ -149,21 +148,17 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
         int size = doc.getProperty(VIEWS_PROPERTY).size();
         for (int i = 0; i < size; i++) {
             String xpath = "picture:views/view[" + i + "]/";
-            try {
-                BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(Blob.class));
-                String type = blob.getBlob().getMimeType();
-                if (type != "image/png") {
-                    Map<String, Serializable> options = new HashMap<String, Serializable>();
-                    options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
-                    blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE, blob, options);
-                    doc.getProperty(xpath + "content").setValue(blob.getBlob());
-                    Long height = (Long) doc.getProperty(xpath + "height").getValue();
-                    Long width = (Long) doc.getProperty(xpath + "width").getValue();
-                    doc.getProperty(xpath + "height").setValue(width);
-                    doc.getProperty(xpath + "width").setValue(height);
-                }
-            } catch (ClientException e) {
-                log.error("Rotation Failed", e);
+            BlobHolder blob = new SimpleBlobHolder(doc.getProperty(xpath + "content").getValue(Blob.class));
+            String type = blob.getBlob().getMimeType();
+            if (type != "image/png") {
+                Map<String, Serializable> options = new HashMap<String, Serializable>();
+                options.put(ImagingConvertConstants.OPTION_ROTATE_ANGLE, angle);
+                blob = getConversionService().convert(ImagingConvertConstants.OPERATION_ROTATE, blob, options);
+                doc.getProperty(xpath + "content").setValue(blob.getBlob());
+                Long height = (Long) doc.getProperty(xpath + "height").getValue();
+                Long width = (Long) doc.getProperty(xpath + "width").getValue();
+                doc.getProperty(xpath + "height").setValue(width);
+                doc.getProperty(xpath + "width").setValue(height);
             }
         }
     }
@@ -198,15 +193,11 @@ public class DefaultPictureAdapter extends AbstractPictureAdapter {
 
     @Override
     public String getViewXPath(String viewName) {
-        try {
-            Property views = doc.getProperty(VIEWS_PROPERTY);
-            for (int i = 0; i < views.size(); i++) {
-                if (views.get(i).getValue(TITLE_PROPERTY).equals(viewName)) {
-                    return getViewXPathFor(i);
-                }
+        Property views = doc.getProperty(VIEWS_PROPERTY);
+        for (int i = 0; i < views.size(); i++) {
+            if (views.get(i).getValue(TITLE_PROPERTY).equals(viewName)) {
+                return getViewXPathFor(i);
             }
-        } catch (ClientException e) {
-            log.error("Unable to get picture views", e);
         }
         return null;
     }

@@ -17,14 +17,18 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
+import org.dom4j.QName;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.DocumentLocationMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
  * {@link DocumentLocation} marshaler using simple XML representation.
@@ -38,7 +42,7 @@ public class DefaultDocumentLocationMarshaler extends AbstractDefaultXMLMarshale
     protected static QName rootTag = DocumentFactory.getInstance().createQName("documentLocation",
             publisherSerializerNSPrefix, publisherSerializerNS);
 
-    public String marshalDocumentLocation(DocumentLocation docLoc) throws PublishingMarshalingException {
+    public String marshalDocumentLocation(DocumentLocation docLoc) {
         org.dom4j.Element rootElem = DocumentFactory.getInstance().createElement(rootTag);
         rootElem.addNamespace(publisherSerializerNSPrefix, publisherSerializerNS);
         org.dom4j.Document rootDoc = DocumentFactory.getInstance().createDocument(rootElem);
@@ -55,7 +59,7 @@ public class DefaultDocumentLocationMarshaler extends AbstractDefaultXMLMarshale
         return cleanUpXml(data);
     }
 
-    public DocumentLocation unMarshalDocumentLocation(String data) throws PublishingMarshalingException {
+    public DocumentLocation unMarshalDocumentLocation(String data) {
 
         DocumentLocation docLoc;
         try {
@@ -78,7 +82,7 @@ public class DefaultDocumentLocationMarshaler extends AbstractDefaultXMLMarshale
             }
 
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException("Unable to unmarshal Piublication Node", e);
+            throw new NuxeoException("Unable to unmarshal Publication Node", e);
         }
         return docLoc;
     }

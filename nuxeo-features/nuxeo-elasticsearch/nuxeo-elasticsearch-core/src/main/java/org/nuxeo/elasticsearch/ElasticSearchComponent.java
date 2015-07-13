@@ -42,7 +42,6 @@ import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
@@ -238,8 +237,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
                         esi.indexNonRecursive(stackedCommands);
                     }
                 }.runUnrestricted();
-            } catch (ClientException e) {
-                log.error("Unable to flush pending indexing commands: " + e.getMessage(), e);
             } finally {
                 if (txCreated) {
                     TransactionHelper.commitOrRollbackTransaction();

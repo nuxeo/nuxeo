@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.invoker;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.RemotePublisherMarshaler;
 
 import java.util.List;

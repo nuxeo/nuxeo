@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.server;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;

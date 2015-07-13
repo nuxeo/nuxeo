@@ -33,7 +33,6 @@ import javax.script.SimpleScriptContext;
 
 import org.apache.commons.io.IOUtils;
 import org.nuxeo.automation.scripting.api.AutomationScriptingConstants;
-import org.nuxeo.automation.scripting.api.AutomationScriptingException;
 import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -45,6 +44,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
 import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
 
@@ -120,7 +120,7 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
         try {
             run(IOUtils.toString(in, "UTF-8"), session);
         } catch (IOException e) {
-            throw new AutomationScriptingException(e);
+            throw new NuxeoException(e);
         }
     }
 

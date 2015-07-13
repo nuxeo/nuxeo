@@ -17,8 +17,8 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.client;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.publisher.api.AbstractBasePublishedDocumentFactory;
 import org.nuxeo.ecm.platform.publisher.api.PublicationNode;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
@@ -45,7 +45,7 @@ public class ClientProxyFactory extends AbstractBasePublishedDocumentFactory imp
     }
 
     public PublishedDocument wrapDocumentModel(DocumentModel doc) {
-        throw new ClientException("this factory can not wrap a PublishedDocument");
+        throw new NuxeoException("this factory can not wrap a PublishedDocument");
     }
 
 }

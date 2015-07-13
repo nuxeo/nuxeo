@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.oauth2.clients.ClientRegistry;
 import org.nuxeo.ecm.platform.oauth2.request.AuthorizationRequest;
 import org.nuxeo.ecm.platform.oauth2.request.TokenRequest;
@@ -76,10 +76,7 @@ public class NuxeoOAuth2Filter implements NuxeoAuthPreFilter {
         boolean done = false;
         try {
             process(request, response, chain);
-
             done = true;
-        } catch (ClientException e) {
-            throw new ServletException(e);
         } finally {
             if (startedTx) {
                 if (!done) {

@@ -16,11 +16,13 @@
  */
 package org.nuxeo.ecm.platform.relations.api.exceptions;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * @since 5.9.2
  */
-public class RelationAlreadyExistsException extends ClientException {
+public class RelationAlreadyExistsException extends NuxeoException {
+
+    private static final long serialVersionUID = 1L;
 
 }

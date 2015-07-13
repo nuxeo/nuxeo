@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.api.imageresource;
 import java.util.Calendar;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 

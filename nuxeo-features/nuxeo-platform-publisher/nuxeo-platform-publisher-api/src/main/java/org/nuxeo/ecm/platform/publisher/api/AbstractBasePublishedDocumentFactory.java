@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
@@ -31,7 +30,6 @@ import org.nuxeo.ecm.core.api.event.DocumentEventCategories;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.publisher.rules.PublishingValidatorException;
 import org.nuxeo.ecm.platform.publisher.rules.ValidatorsRule;
 import org.nuxeo.runtime.api.Framework;
 
@@ -111,11 +109,11 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
         }
     }
 
-    public String[] getValidatorsFor(DocumentModel dm) throws PublishingValidatorException {
+    public String[] getValidatorsFor(DocumentModel dm) {
         return validatorsRule.computesValidatorsFor(dm);
     }
 
-    public ValidatorsRule getValidatorsRule() throws PublishingValidatorException {
+    public ValidatorsRule getValidatorsRule() {
         return validatorsRule;
     }
 
@@ -137,13 +135,8 @@ public abstract class AbstractBasePublishedDocumentFactory implements PublishedD
      * -------- Event firing --------
      */
 
-    protected void notifyEvent(PublishingEvent event, DocumentModel doc, CoreSession coreSession)
-            throws PublishingException {
-        try {
-            notifyEvent(event.name(), null, null, null, doc, coreSession);
-        } catch (ClientException e) {
-            throw new PublishingException(e);
-        }
+    protected void notifyEvent(PublishingEvent event, DocumentModel doc, CoreSession coreSession) {
+        notifyEvent(event.name(), null, null, null, doc, coreSession);
     }
 
     protected void notifyEvent(String eventId, Map<String, Serializable> properties, String comment, String category,

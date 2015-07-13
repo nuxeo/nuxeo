@@ -20,7 +20,6 @@ import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.nuxeo.ecm.collections.core.listener.CollectionAsynchrnonousQuery;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;

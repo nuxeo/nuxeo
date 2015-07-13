@@ -21,13 +21,12 @@ package org.nuxeo.ecm.platform.annotations.service;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
-import org.nuxeo.ecm.platform.annotations.api.AnnotationException;
 
 /**
  * @author Alexandre Russel
  */
 public interface MetadataMapper {
 
-    void updateMetadata(Annotation annotation, NuxeoPrincipal user) throws AnnotationException;
+    void updateMetadata(Annotation annotation, NuxeoPrincipal user);
 
 }

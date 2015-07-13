@@ -19,10 +19,7 @@ package org.nuxeo.ecm.platform.publisher.remoting.marshaling.io;
 
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.Path;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,8 +37,6 @@ import org.nuxeo.ecm.core.io.impl.plugins.DocumentModelWriter;
  */
 public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
 
-    private static final Log log = LogFactory.getLog(SingleShadowDocumentWriter.class);
-
     protected DocumentModel dm;
 
     public SingleShadowDocumentWriter(CoreSession session, String parentPath) {
@@ -50,12 +45,7 @@ public class SingleShadowDocumentWriter extends AbstractDocumentModelWriter {
 
     @Override
     public DocumentTranslationMap write(ExportedDocument doc) throws IOException {
-
-        try {
-            dm = createDocument(doc, null);
-        } catch (ClientException e) {
-            log.error(e, e);
-        }
+        dm = createDocument(doc, null);
         // keep location unchanged
         DocumentLocation oldLoc = doc.getSourceLocation();
         String oldServerName = oldLoc.getServerName();

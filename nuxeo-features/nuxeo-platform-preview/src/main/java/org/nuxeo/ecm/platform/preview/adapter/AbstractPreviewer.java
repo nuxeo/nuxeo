@@ -20,7 +20,6 @@
 package org.nuxeo.ecm.platform.preview.adapter;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

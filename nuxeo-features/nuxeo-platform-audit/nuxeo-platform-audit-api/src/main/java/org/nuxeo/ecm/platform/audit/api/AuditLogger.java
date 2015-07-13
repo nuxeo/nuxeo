@@ -59,11 +59,11 @@ public interface AuditLogger {
     /**
      * Logs an Event.
      */
-    void logEvent(Event event) throws AuditException;
+    void logEvent(Event event);
 
     /**
      * Logs a bundle of events
      */
-    void logEvents(EventBundle eventBundle) throws AuditException;
+    void logEvents(EventBundle eventBundle);
 
 }

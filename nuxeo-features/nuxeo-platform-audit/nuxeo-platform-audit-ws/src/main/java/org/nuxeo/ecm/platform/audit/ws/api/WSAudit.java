@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.audit.ws.api;
 import javax.jws.WebParam;
 
 import org.nuxeo.ecm.platform.api.ws.BaseNuxeoWebService;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
 import org.nuxeo.ecm.platform.audit.ws.EventDescriptorPage;
 import org.nuxeo.ecm.platform.audit.ws.ModifiedDocumentDescriptor;
 import org.nuxeo.ecm.platform.audit.ws.ModifiedDocumentDescriptorPage;
@@ -43,20 +42,19 @@ public interface WSAudit extends BaseNuxeoWebService {
      * @return a list of modified document descriptors.
      * @throws AuditException
      */
-    ModifiedDocumentDescriptor[] listModifiedDocuments(String sessionId, String dateRangeQuery) throws AuditException;
+    ModifiedDocumentDescriptor[] listModifiedDocuments(String sessionId, String dateRangeQuery);
 
     ModifiedDocumentDescriptorPage listModifiedDocumentsByPage(String sessionId, String dateRangeQuery, String path,
-            int page, int pageSize) throws AuditException;
+            int page, int pageSize);
 
     /**
      * Returns the list of deleted documents within a timestamp.
      */
     ModifiedDocumentDescriptorPage listDeletedDocumentsByPage(@WebParam(name = "sessionId") String sessionId,
             @WebParam(name = "dataRangeQuery") String dateRangeQuery, @WebParam(name = "docPath") String path,
-            @WebParam(name = "pageIndex") int page, @WebParam(name = "pageSize") int pageSize) throws AuditException;
+            @WebParam(name = "pageIndex") int page, @WebParam(name = "pageSize") int pageSize);
 
-    EventDescriptorPage listEventsByPage(String sessionId, String dateRangeQuery, int page, int pageSize)
-            throws AuditException;
+    EventDescriptorPage listEventsByPage(String sessionId, String dateRangeQuery, int page, int pageSize);
 
     /**
      * Gets a filtered list of document events.
@@ -75,9 +73,8 @@ public interface WSAudit extends BaseNuxeoWebService {
      * @throws AuditException
      */
     EventDescriptorPage listDocumentEventsByPage(String sessionId, String dateRangeQuery, String startDate,
-            String path, int page, int pageSize) throws AuditException;
+            String path, int page, int pageSize);
 
-    EventDescriptorPage queryEventsByPage(String sessionId, String whereClause, int page, int pageSize)
-            throws AuditException;
+    EventDescriptorPage queryEventsByPage(String sessionId, String whereClause, int page, int pageSize);
 
 }

@@ -17,14 +17,18 @@
 
 package org.nuxeo.ecm.platform.publisher.remoting.marshaling;
 
-import org.dom4j.*;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentFactory;
+import org.dom4j.DocumentHelper;
+import org.dom4j.QName;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.basic.BasicPublishedDocument;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishedDocumentMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 /**
  * {@link PublishedDocument} marshaler using simple XML representation.
@@ -93,7 +97,7 @@ public class DefaultPublishedDocumentMarshaler extends AbstractDefaultXMLMarshal
 
     }
 
-    public PublishedDocument unMarshalPublishedDocument(String data) throws PublishingMarshalingException {
+    public PublishedDocument unMarshalPublishedDocument(String data) {
 
         PublishedDocument pubDoc;
         try {
@@ -116,7 +120,7 @@ public class DefaultPublishedDocumentMarshaler extends AbstractDefaultXMLMarshal
 
             pubDoc = new BasicPublishedDocument(docRef, repo, server, version, path, parentPath, isPending);
         } catch (DocumentException e) {
-            throw new PublishingMarshalingException("Unable to unmarshal Published Document", e);
+            throw new NuxeoException("Unable to unmarshal Published Document", e);
         }
         return pubDoc;
     }

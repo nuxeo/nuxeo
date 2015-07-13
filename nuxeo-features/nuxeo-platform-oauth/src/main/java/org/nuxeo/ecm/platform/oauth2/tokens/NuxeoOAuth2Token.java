@@ -23,7 +23,6 @@ import java.util.Map;
 
 import com.google.api.client.auth.oauth2.StoredCredential;
 import org.apache.commons.lang.RandomStringUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class NuxeoOAuth2Token {

@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.api.adapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
@@ -51,28 +50,22 @@ public class PictureTilesAdapterFactory implements DocumentAdapterFactory {
     public Object getAdapter(DocumentModel doc, Class itf) {
         PictureTilingService tilingService = Framework.getService(PictureTilingService.class);
         String blobProperty = tilingService.getBlobProperty(doc.getType());
-        try {
-            PictureTilesAdapter ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);
-
-            if (ptAdapter != null) {
-                return ptAdapter;
-            }
-
-            // else fall back on default
-            if (doc.hasSchema("file")) {
-                Blob blob = (Blob) doc.getProperty("file", "content");
-                if (blob != null) {
-                    PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, "file:content");
-                    adapter.setFileName((String) doc.getProperty("file", "filename"));
-                    return adapter;
-                }
-            } else {
-                return new PictureTilesAdapterImpl(doc);
-            }
-        } catch (ClientException e) {
-            log.error("Unable to get adapter", e);
+        PictureTilesAdapter ptAdapter = getPictureTilesAdapterFor(doc, blobProperty);
+        if (ptAdapter != null) {
+            return ptAdapter;
         }
-        return null;
+        // else fall back on default
+        if (doc.hasSchema("file")) {
+            Blob blob = (Blob) doc.getProperty("file", "content");
+            if (blob == null) {
+                return null;
+            }
+            PictureTilesAdapter adapter = new PictureTilesAdapterImpl(doc, "file:content");
+            adapter.setFileName((String) doc.getProperty("file", "filename"));
+            return adapter;
+        } else {
+            return new PictureTilesAdapterImpl(doc);
+        }
     }
 
     private PictureTilesAdapter getPictureTilesAdapterFor(DocumentModel doc, String blobProperty)

@@ -28,9 +28,9 @@ import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -74,7 +74,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
             aToken = storeAccessTokenAsDirectoryEntry(aToken);
             removeRequestToken(requestToken.getToken());
             return aToken;
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error during directory persistence", e);
             return null;
         }
@@ -132,7 +132,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
         aToken.clientId = owner;
         try {
             aToken = storeAccessTokenAsDirectoryEntry(aToken);
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error during directory persistence", e);
         }
     }
@@ -187,7 +187,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
 
         try {
             return getTokenFromDirectory(token);
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error while accessing Token SQL storage", e);
             return null;
         }
@@ -211,7 +211,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
             for (DocumentModel entry : entries) {
                 result.add(new NuxeoOAuthToken(entry));
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error during token listing", e);
         }
         return result;
@@ -229,7 +229,7 @@ public class OAuthTokenStoreImpl extends DefaultComponent implements OAuthTokenS
             for (DocumentModel entry : entries) {
                 result.add(new NuxeoOAuthToken(entry));
             }
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error during token listing", e);
         }
         return result;

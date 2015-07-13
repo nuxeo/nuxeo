@@ -37,12 +37,12 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.core.Manager;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.el.ContextStringWrapper;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -156,12 +156,7 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
     @Factory(value = "tmpWorkspace")
     public DocumentModel getTmpWorkspace() {
         if (tmpWorkspace == null) {
-            try {
-                tmpWorkspace = documentManager.createDocumentModel("Workspace");
-            } catch (ClientException e) {
-                // TODO: more robust exception handling?
-                log.error(e);
-            }
+            tmpWorkspace = documentManager.createDocumentModel("Workspace");
         }
         return tmpWorkspace;
     }
@@ -186,18 +181,11 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
         if (selectedTemplateId.equals("none")) {
             return "no_template";
         }
-
-        try {
-            for (DocumentModel t : getTemplates()) {
-                if (selectedTemplateId.equals(t.getId())) {
-                    return (String) t.getProperty("dublincore", "description");
-                }
+        for (DocumentModel t : getTemplates()) {
+            if (selectedTemplateId.equals(t.getId())) {
+                return (String) t.getProperty("dublincore", "description");
             }
-        } catch (ClientException e) {
-            // TODO: more robust exception handling?
-            log.error(e);
         }
-
         return "";
     }
 
@@ -209,18 +197,11 @@ public class WorkspaceActionsBean extends InputController implements WorkspaceAc
         if (selectedTemplateId.equals("none")) {
             return null;
         }
-
-        try {
-            for (DocumentModel t : getTemplates()) {
-                if (selectedTemplateId.equals(t.getId())) {
-                    return t;
-                }
+        for (DocumentModel t : getTemplates()) {
+            if (selectedTemplateId.equals(t.getId())) {
+                return t;
             }
-        } catch (ClientException e) {
-            // TODO: more robust exception handling?
-            log.error(e);
         }
-
         return null;
     }
 

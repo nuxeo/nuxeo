@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.picture.api.ImageInfo;
 

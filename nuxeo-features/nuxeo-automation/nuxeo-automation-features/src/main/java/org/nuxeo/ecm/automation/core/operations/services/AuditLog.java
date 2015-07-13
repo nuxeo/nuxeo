@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -86,11 +85,7 @@ public class AuditLog {
         entry.setPrincipalName(principal);
         entry.setDocType(doc.getType());
         entry.setRepositoryId(doc.getRepositoryName());
-        try {
-            entry.setDocLifeCycle(doc.getCurrentLifeCycleState());
-        } catch (ClientException e) {
-            // ignore error
-        }
+        entry.setDocLifeCycle(doc.getCurrentLifeCycleState());
         return entry;
     }
 

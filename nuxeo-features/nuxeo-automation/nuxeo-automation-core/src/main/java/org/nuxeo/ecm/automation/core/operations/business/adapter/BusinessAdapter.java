@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
@@ -58,11 +57,7 @@ public abstract class BusinessAdapter {
     }
 
     public void save(CoreSession session) {
-        try {
-            session.saveDocument(doc);
-        } catch (ClientException e) {
-            log.error("Cannot save document", e);
-        }
+        session.saveDocument(doc);
     }
 
     @JsonIgnore

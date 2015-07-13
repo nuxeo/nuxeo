@@ -20,7 +20,6 @@ package org.nuxeo.ecm.platform.publisher.impl.finder;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;

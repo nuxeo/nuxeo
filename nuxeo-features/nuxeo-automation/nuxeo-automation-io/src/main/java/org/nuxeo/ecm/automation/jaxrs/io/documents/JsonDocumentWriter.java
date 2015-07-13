@@ -44,7 +44,6 @@ import org.nuxeo.ecm.automation.core.util.JSONPropertyWriter;
 import org.nuxeo.ecm.automation.io.services.enricher.ContentEnricherService;
 import org.nuxeo.ecm.automation.io.services.enricher.HeaderDocEvaluationContext;
 import org.nuxeo.ecm.automation.io.services.enricher.RestEvaluationContext;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;

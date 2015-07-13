@@ -35,7 +35,6 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.helper.VersioningHelper;
 import org.nuxeo.ecm.platform.publisher.remoting.marshaling.CoreIODocumentModelMarshaler;
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
 
 public class FSPublishedDocument implements PublishedDocument {
 
@@ -103,13 +102,11 @@ public class FSPublishedDocument implements PublishedDocument {
         persistPath = output.getAbsolutePath();
     }
 
-    public FSPublishedDocument(String server, DocumentModel doc) throws PublishingMarshalingException,
-            DocumentException {
+    public FSPublishedDocument(String server, DocumentModel doc) throws DocumentException {
         this(server, doc, false);
     }
 
-    public FSPublishedDocument(String server, DocumentModel doc, boolean isPending)
-            throws PublishingMarshalingException, DocumentException {
+    public FSPublishedDocument(String server, DocumentModel doc, boolean isPending) throws DocumentException {
 
         sourceRepositoryName = doc.getRepositoryName();
         sourceDocumentRef = doc.getRef();

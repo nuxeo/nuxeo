@@ -21,7 +21,6 @@ package org.nuxeo.ecm.admin.repo;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -56,8 +55,6 @@ public class StatsTask implements Runnable {
         try {
             TransactionHelper.startTransaction();
             runner.runUnrestricted();
-        } catch (ClientException e) {
-            log.error("Error while executing StatsTaskRunner", e);
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }

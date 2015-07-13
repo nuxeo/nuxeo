@@ -22,12 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
@@ -50,8 +48,6 @@ import org.nuxeo.runtime.api.Framework;
 public class DocumentTaskProvider implements TaskProvider {
 
     private static final long serialVersionUID = 1L;
-
-    private final static Log log = LogFactory.getLog(DocumentTaskProvider.class);
 
     @Override
     public List<Task> getCurrentTaskInstances(CoreSession coreSession) {
@@ -277,7 +273,7 @@ public class DocumentTaskProvider implements TaskProvider {
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(pageProviderName,
                 sortInfos, null, null, props, params);
         if (pp == null) {
-            throw new ClientException("Page provider not found: " + pageProviderName);
+            throw new NuxeoException("Page provider not found: " + pageProviderName);
         }
         return wrapDocModelInTask(pp.getCurrentPage());
     }

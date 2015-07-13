@@ -14,7 +14,7 @@ package org.nuxeo.ecm.automation.core.impl.adapters;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TypeAdaptException;
 import org.nuxeo.ecm.automation.TypeAdapter;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
@@ -27,7 +27,7 @@ public class DocRefToDocModel implements TypeAdapter {
         DocumentRef ref = (DocumentRef) objectToAdapt;
         try {
             return ctx.getCoreSession().getDocument(ref);
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             throw new TypeAdaptException(e);
         }
     }

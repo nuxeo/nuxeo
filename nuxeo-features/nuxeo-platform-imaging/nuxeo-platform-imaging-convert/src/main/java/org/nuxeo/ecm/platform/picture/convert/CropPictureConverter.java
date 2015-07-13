@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.cache.SimpleCachableBlobHolder;
@@ -44,38 +43,26 @@ public class CropPictureConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        try {
-            ImagingService service = Framework.getService(ImagingService.class);
-
-            List<Blob> sources = blobHolder.getBlobs();
-            List<Blob> results = new ArrayList<Blob>(sources.size());
-
-            Serializable h = parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
-            int height = ConverterUtils.getInteger(h);
-
-            Serializable w = parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
-            int width = ConverterUtils.getInteger(w);
-
-            Serializable xValue = parameters.get(ImagingConvertConstants.OPTION_CROP_X);
-            int x = ConverterUtils.getInteger(xValue);
-
-            Serializable yValue = parameters.get(ImagingConvertConstants.OPTION_CROP_Y);
-            int y = ConverterUtils.getInteger(yValue);
-
-            for (Blob source : sources) {
-                if (source != null) {
-                    Blob result = service.crop(source, x, y, width, height);
-                    if (result != null) {
-                        results.add(result);
-                    }
+        ImagingService service = Framework.getService(ImagingService.class);
+        List<Blob> sources = blobHolder.getBlobs();
+        List<Blob> results = new ArrayList<Blob>(sources.size());
+        Serializable h = parameters.get(ImagingConvertConstants.OPTION_RESIZE_HEIGHT);
+        int height = ConverterUtils.getInteger(h);
+        Serializable w = parameters.get(ImagingConvertConstants.OPTION_RESIZE_WIDTH);
+        int width = ConverterUtils.getInteger(w);
+        Serializable xValue = parameters.get(ImagingConvertConstants.OPTION_CROP_X);
+        int x = ConverterUtils.getInteger(xValue);
+        Serializable yValue = parameters.get(ImagingConvertConstants.OPTION_CROP_Y);
+        int y = ConverterUtils.getInteger(yValue);
+        for (Blob source : sources) {
+            if (source != null) {
+                Blob result = service.crop(source, x, y, width, height);
+                if (result != null) {
+                    results.add(result);
                 }
             }
-
-            return new SimpleCachableBlobHolder(results);
-        } catch (ClientException e) {
-            log.error(e, e);
-            throw new ConversionException("Crop conversion has failed", e);
         }
+        return new SimpleCachableBlobHolder(results);
     }
 
     @Override

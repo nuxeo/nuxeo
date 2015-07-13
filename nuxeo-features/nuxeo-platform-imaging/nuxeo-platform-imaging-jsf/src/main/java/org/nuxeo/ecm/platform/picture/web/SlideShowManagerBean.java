@@ -36,7 +36,6 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
@@ -171,17 +170,13 @@ public class SlideShowManagerBean implements SlideShowManager, Serializable {
     }
 
     protected List<DocumentModel> getChildren() {
-        try {
-            if (children == null) {
-                DocumentModel currentDoc = navigationContext.getCurrentDocument();
-                if (currentDoc != null) {
-                    children = documentManager.getChildren(currentDoc.getRef());
-                } else {
-                    children = Collections.emptyList();
-                }
+        if (children == null) {
+            DocumentModel currentDoc = navigationContext.getCurrentDocument();
+            if (currentDoc != null) {
+                children = documentManager.getChildren(currentDoc.getRef());
+            } else {
+                children = Collections.emptyList();
             }
-        } catch (ClientException e) {
-            log.error(e, e);
         }
         return children;
     }

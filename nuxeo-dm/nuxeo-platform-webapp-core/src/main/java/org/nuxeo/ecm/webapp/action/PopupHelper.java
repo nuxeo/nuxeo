@@ -38,9 +38,9 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
 import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
@@ -160,8 +160,8 @@ public class PopupHelper implements Serializable {
             ctx.putLocalVariable("container", currentDocument);
             currentPopupDocument = popupDoc;
             currentContainer = currentDocument;
-        } catch (ClientException e) {
-            log.error(e);
+        } catch (DocumentNotFoundException e) {
+            log.error(e, e);
         }
 
         return ctx;
@@ -328,7 +328,7 @@ public class PopupHelper implements Serializable {
             try {
                 documentManager.getDocument(currentParent.getRef());
                 return currentParent;
-            } catch (ClientException e) {
+            } catch (DocumentNotFoundException e) {
                 continue;
             }
         }
@@ -336,19 +336,13 @@ public class PopupHelper implements Serializable {
     }
 
     private boolean isDocumentDeleted(DocumentModel doc) {
-        try {
-            // test if the document still exists in the repository
-            doc = documentManager.getDocument(doc.getRef());
-        } catch (ClientException e) {
+        // test if the document still exists in the repository
+        if (!documentManager.exists(doc.getRef())) {
             return true;
         }
-        try {
-            // test if the document still exists in the repository
-            if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
-                return true;
-            }
-        } catch (ClientException ex) {
-            log.error(ex);
+        // test if the document is in the trash
+        if (LifeCycleConstants.DELETED_STATE.equals(doc.getCurrentLifeCycleState())) {
+            return true;
         }
         return false;
     }

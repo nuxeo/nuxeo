@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.rest;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -52,7 +52,7 @@ public class DocumentFactory {
             PathRef pathRef = new PathRef(path);
             DocumentModel doc = ctx.getCoreSession().getDocument(pathRef);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -61,7 +61,7 @@ public class DocumentFactory {
         try {
             DocumentModel doc = ctx.getCoreSession().getDocument(ref);
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -69,7 +69,7 @@ public class DocumentFactory {
     public static DocumentObject newDocument(WebContext ctx, DocumentModel doc) {
         try {
             return (DocumentObject) ctx.newObject(doc.getType(), doc);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

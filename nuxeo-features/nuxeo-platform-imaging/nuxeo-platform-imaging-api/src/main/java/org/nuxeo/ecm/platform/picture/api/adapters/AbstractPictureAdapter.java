@@ -85,9 +85,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.blobholder.SimpleBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
@@ -437,7 +437,7 @@ public abstract class AbstractPictureAdapter implements PictureResourceAdapter {
                 return Blobs.createBlob(bh.getBlob().getStream(), type);
             }
         } catch (IOException e) {
-            throw new ClientException("Crop failed", e);
+            throw new NuxeoException("Crop failed", e);
         }
         return null;
     }

@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Property;
 
 /**
@@ -76,11 +76,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     }
 
     public Serializable getProperty(String xpath) {
-        try {
-            return principal.getModel().getPropertyValue(xpath);
-        } catch (ClientException e) {
-            throw new RuntimeException("Principal property not found: " + xpath, e);
-        }
+        return principal.getModel().getPropertyValue(xpath);
     }
 
     /** property map implementation */
@@ -90,7 +86,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
         try {
             getProperty(key.toString());
             return true;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return false;
         }
     }
@@ -102,7 +98,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     public boolean containsValue(Object value) {
         try {
             return getProperty(value.toString()) != null;
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return false;
         }
     }
@@ -111,7 +107,7 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
     public Serializable get(Object key) {
         try {
             return getProperty(key.toString());
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             return null;
         }
     }
@@ -143,14 +139,10 @@ public class PrincipalWrapper extends HashMap<String, Serializable> {
 
     @Override
     public Serializable put(String key, Serializable value) {
-        try {
-            Property p = principal.getModel().getProperty(key);
-            Serializable v = p.getValue();
-            p.setValue(value);
-            return v;
-        } catch (ClientException e) {
-            throw new RuntimeException(e);
-        }
+        Property p = principal.getModel().getProperty(key);
+        Serializable v = p.getValue();
+        p.setValue(value);
+        return v;
     }
 
     @Override

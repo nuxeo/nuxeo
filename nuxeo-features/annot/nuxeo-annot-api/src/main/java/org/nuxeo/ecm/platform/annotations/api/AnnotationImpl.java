@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
@@ -63,26 +64,26 @@ public class AnnotationImpl implements Annotation, Serializable {
     }
 
     @Override
-    public URI getAnnotates() throws AnnotationException {
+    public URI getAnnotates() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_ANNOTATES + "> ?o}",
                 "sparql", null);
         Node node = result.getResults().get(0).get("o");
         try {
             return node.isBlank() ? null : new URI(((Resource) node).getUri());
         } catch (URISyntaxException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
     }
 
     @Override
-    public URI getBody() throws AnnotationException {
+    public URI getBody() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
                 null);
         Node node = result.getResults().get(0).get("o");
         try {
             return node.isBlank() ? null : new URI(((Resource) node).getUri());
         } catch (URISyntaxException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
     }
 
@@ -115,7 +116,7 @@ public class AnnotationImpl implements Annotation, Serializable {
     }
 
     @Override
-    public String getContext() throws AnnotationException {
+    public String getContext() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_CONTEXT + "> ?o}", "sparql",
                 null);
         Node node = result.getResults().get(0).get("o");

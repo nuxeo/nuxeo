@@ -20,8 +20,8 @@ import java.io.Serializable;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
@@ -46,7 +46,7 @@ public class GroupObject extends AbstractUMObject<NuxeoGroup> {
             }
             return newObject("userToGroup", principal, currentArtifact);
 
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
 

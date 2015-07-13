@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.pictures.tiles.api;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.pictures.tiles.api.imageresource.ImageResource;
 
 /**

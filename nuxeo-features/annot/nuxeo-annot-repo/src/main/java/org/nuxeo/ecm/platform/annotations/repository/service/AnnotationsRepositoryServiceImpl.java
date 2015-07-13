@@ -19,7 +19,6 @@
 
 package org.nuxeo.ecm.platform.annotations.repository.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 

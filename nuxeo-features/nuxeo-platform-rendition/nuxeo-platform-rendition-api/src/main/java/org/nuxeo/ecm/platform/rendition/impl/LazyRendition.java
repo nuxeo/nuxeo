@@ -20,12 +20,11 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.rendition.Rendition;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 
 /**
  * Implementation of the {@link Rendition} interface that allows lazy computation of the rendition Blobs
- * 
+ *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 public abstract class LazyRendition extends AbstractRendition implements Rendition {
@@ -36,7 +35,7 @@ public abstract class LazyRendition extends AbstractRendition implements Renditi
         super(definition);
     }
 
-    public Blob getBlob() throws RenditionException {
+    public Blob getBlob() {
         List<Blob> blobs = getBlobs();
         if (blobs != null && blobs.size() > 0) {
             return blobs.get(0);
@@ -45,13 +44,13 @@ public abstract class LazyRendition extends AbstractRendition implements Renditi
     }
 
     @Override
-    public List<Blob> getBlobs() throws RenditionException {
+    public List<Blob> getBlobs() {
         if (blobs == null) {
             blobs = computeRenditionBlobs();
         }
         return blobs;
     }
 
-    protected abstract List<Blob> computeRenditionBlobs() throws RenditionException;
+    protected abstract List<Blob> computeRenditionBlobs();
 
 }

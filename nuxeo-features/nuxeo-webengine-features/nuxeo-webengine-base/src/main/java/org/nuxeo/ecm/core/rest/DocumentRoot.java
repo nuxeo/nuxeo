@@ -19,9 +19,9 @@
 
 package org.nuxeo.ecm.core.rest;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebContext;
@@ -42,7 +42,7 @@ public class DocumentRoot extends DocumentObject {
             initialize(ctx, ctx.getModule().getType(doc.getType()), doc);
             setRoot(true);
             ctx.push(this);
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }

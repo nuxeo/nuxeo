@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.ecm.core.api.ClientException;
 
 /**
  * Expose a way to get contributors to rest entities.

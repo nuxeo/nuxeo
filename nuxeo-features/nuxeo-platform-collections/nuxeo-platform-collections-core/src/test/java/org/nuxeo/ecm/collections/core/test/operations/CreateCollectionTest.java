@@ -31,7 +31,6 @@ import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.TraceException;
 import org.nuxeo.ecm.collections.core.automation.CreateCollectionOperation;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.transaction.TransactionHelper;

@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -99,7 +98,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             }
             setResultsCount(dmList.totalSize());
             currentPageDocuments = dmList;
-        } catch (ClientException | QueryParseException e) {
+        } catch (QueryParseException e) {
             error = e;
             errorMessage = e.getMessage();
             log.warn(e.getMessage(), e);

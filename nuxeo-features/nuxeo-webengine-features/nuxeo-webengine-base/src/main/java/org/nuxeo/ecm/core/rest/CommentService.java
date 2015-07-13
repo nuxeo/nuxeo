@@ -31,10 +31,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.comment.api.CommentManager;
 import org.nuxeo.ecm.platform.comment.workflow.services.CommentsModerationService;
 import org.nuxeo.ecm.webengine.WebException;
@@ -79,7 +79,7 @@ public class CommentService extends DefaultAdapter {
             publishComment(session, pageDoc, comment);
 
             return redirect(getTarget().getPath());
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap(e);
         }
     }
@@ -97,7 +97,7 @@ public class CommentService extends DefaultAdapter {
             DocumentModel comment = session.getDocument(new IdRef(commentId));
             rejectComment(session, pageDoc, comment);
             return redirect(dobj.getPath());
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to reject comment", e);
         }
     }
@@ -115,7 +115,7 @@ public class CommentService extends DefaultAdapter {
             DocumentModel comment = session.getDocument(new IdRef(commentId));
             approveComent(session, pageDoc, comment);
             return redirect(dobj.getPath());
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to approve comment", e);
         }
     }
@@ -125,7 +125,7 @@ public class CommentService extends DefaultAdapter {
     public Response remove() {
         try {
             return deleteComment();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             throw WebException.wrap("Failed to delete comment", e);
         }
     }

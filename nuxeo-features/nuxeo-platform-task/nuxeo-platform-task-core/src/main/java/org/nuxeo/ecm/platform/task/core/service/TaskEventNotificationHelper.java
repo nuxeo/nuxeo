@@ -25,9 +25,9 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
@@ -114,7 +114,7 @@ public final class TaskEventNotificationHelper {
                     document = coreSession.getDocument(new IdRef(id));
                     documents.add(document);
                 }
-            } catch (ClientException e) {
+            } catch (DocumentNotFoundException e) {
                 log.error(String.format("Could not fetch document with id '%s:%s' for notification", docRepo, docId), e);
             }
         } else {

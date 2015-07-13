@@ -38,12 +38,12 @@ import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.automation.task.CreateTask;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.comment.web.CommentManagerActions;
@@ -113,15 +113,11 @@ public class PostActionBean implements PostAction {
 
     @Override
     public boolean checkWritePermissionOnThread() {
-        try {
-            DocumentModel currentDocument = navigationContext.getCurrentDocument();
-            if (currentDocument != null) {
-                return documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.READ_WRITE);
-            } else {
-                log.error("Cannot check write permission on thread: " + "no current document found");
-            }
-        } catch (ClientException e) {
-            log.error(e);
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        if (currentDocument != null) {
+            return documentManager.hasPermission(currentDocument.getRef(), SecurityConstants.READ_WRITE);
+        } else {
+            log.error("Cannot check write permission on thread: " + "no current document found");
         }
         return false;
     }
@@ -198,7 +194,7 @@ public class PostActionBean implements PostAction {
     @Override
     public String deletePost() {
         if (deletePostId == null) {
-            throw new ClientException("No id for post to delete");
+            throw new NuxeoException("No id for post to delete");
         }
 
         DocumentModel thread = getParentThread();
@@ -225,7 +221,7 @@ public class PostActionBean implements PostAction {
 
         Task moderationTask = getModerationTask(thread, post.getId());
         if (moderationTask == null) {
-            throw new ClientException("No moderation task found");
+            throw new NuxeoException("No moderation task found");
         }
 
         taskService.rejectTask(documentManager, (NuxeoPrincipal) currentUser, moderationTask, null);
@@ -249,7 +245,7 @@ public class PostActionBean implements PostAction {
 
         Task moderationTask = getModerationTask(thread, post.getId());
         if (moderationTask == null) {
-            throw new ClientException("No moderation task found");
+            throw new NuxeoException("No moderation task found");
         }
         taskService.acceptTask(documentManager, (NuxeoPrincipal) currentUser, moderationTask, null);
 
@@ -287,7 +283,7 @@ public class PostActionBean implements PostAction {
         List<String> moderators = (ArrayList<String>) thread.getProperty("thread", "moderators");
 
         if (moderators == null || moderators.isEmpty()) {
-            throw new ClientException("No moderators defined");
+            throw new NuxeoException("No moderators defined");
         }
 
         Map<String, String> vars = new HashMap<String, String>();

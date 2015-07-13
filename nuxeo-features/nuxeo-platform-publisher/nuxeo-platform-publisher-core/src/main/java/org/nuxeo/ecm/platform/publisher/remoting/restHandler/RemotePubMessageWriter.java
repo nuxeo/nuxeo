@@ -30,8 +30,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.nuxeo.ecm.platform.publisher.remoting.marshaling.interfaces.PublishingMarshalingException;
-
 @Provider
 public class RemotePubMessageWriter implements MessageBodyWriter<RemotePubResult> {
 
@@ -47,17 +45,12 @@ public class RemotePubMessageWriter implements MessageBodyWriter<RemotePubResult
 
     public void writeTo(RemotePubResult result, Class<?> arg1, Type arg2, Annotation[] arg3, MediaType arg4,
             MultivaluedMap<String, Object> arg5, OutputStream stream) throws IOException, WebApplicationException {
-
-        try {
-            String xmlString = result.asXML();
-            InputStream in = new ByteArrayInputStream(xmlString.getBytes());
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                stream.write(buffer, 0, read);
-            }
-        } catch (PublishingMarshalingException e) {
-            throw new IOException("Error while marshaling result:" + e.getMessage());
+        String xmlString = result.asXML();
+        InputStream in = new ByteArrayInputStream(xmlString.getBytes());
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int read;
+        while ((read = in.read(buffer)) != -1) {
+            stream.write(buffer, 0, read);
         }
     }
 

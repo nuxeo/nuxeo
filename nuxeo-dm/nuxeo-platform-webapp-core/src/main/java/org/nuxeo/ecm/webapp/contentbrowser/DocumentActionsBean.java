@@ -45,7 +45,6 @@ import org.jboss.seam.core.Events;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;

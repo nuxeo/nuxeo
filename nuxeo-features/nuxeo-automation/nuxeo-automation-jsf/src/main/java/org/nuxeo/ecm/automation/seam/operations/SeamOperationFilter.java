@@ -29,8 +29,8 @@ import org.jboss.seam.core.Manager;
 import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.jsf.OperationHelper;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.seam.SeamActionContext;
@@ -58,12 +58,7 @@ public class SeamOperationFilter {
 
         // Initialize Seam context if needed
         if (!OperationHelper.isSeamContextAvailable()) {
-            try {
-                initializeSeamContext(context, conversationId, session);
-            } catch (ClientException e) {
-                log.error(e.getMessage());
-                return;
-            }
+            initializeSeamContext(context, conversationId, session);
         } else {
             // Only set Seam Action context
             setSeamActionContext(context, session);
@@ -108,7 +103,7 @@ public class SeamOperationFilter {
 
         HttpServletRequest request = getRequest(context);
         if (request == null) {
-            throw new ClientException("Can not init Seam context: no HttpServletRequest was found");
+            throw new NuxeoException("Can not init Seam context: no HttpServletRequest was found");
         }
         ServletLifecycle.beginRequest(request);
         ServletContexts.instance().setRequest(request);

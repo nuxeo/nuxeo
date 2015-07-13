@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.comment.api;
 import java.io.Serializable;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**

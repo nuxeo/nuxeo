@@ -27,7 +27,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -43,19 +43,18 @@ public class AnnotationManager {
 
     private static final String TRANSIENT_GRAPH_TYPE = "jena";
 
-    public void writeAnnotation(OutputStream os, Annotation annotation) throws AnnotationException {
+    public void writeAnnotation(OutputStream os, Annotation annotation) {
         Graph graph = getTransientGraph();
         graph.add(annotation.getStatements());
         try {
             os.write("<?xml version='1.0'?>".getBytes());
         } catch (IOException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
         graph.write(os, null, null);
     }
 
-    public Annotation translateAnnotationFromRepo(UriResolver resolver, String baseUrl, Annotation annotation)
-            throws AnnotationException {
+    public Annotation translateAnnotationFromRepo(UriResolver resolver, String baseUrl, Annotation annotation) {
         List<Statement> results = new ArrayList<Statement>();
         for (Statement statement : annotation.getStatements()) {
             Node node = statement.getSubject();
@@ -73,20 +72,19 @@ public class AnnotationManager {
         return getAnnotation(results);
     }
 
-    private static Resource getTranslatedResource(UriResolver resolver, String baseUrl, Node node)
-            throws AnnotationException {
+    private static Resource getTranslatedResource(UriResolver resolver, String baseUrl, Node node) {
         String uri = ((Resource) node).getUri();
         Resource resource = null;
         try {
             URI newUri = resolver.translateFromGraphURI(new URI(uri), baseUrl);
             resource = new ResourceImpl(newUri.toString());
         } catch (URISyntaxException e) {
-            throw new AnnotationException(e);
+            throw new NuxeoException(e);
         }
         return resource;
     }
 
-    public Annotation translateAnnotationToRepo(UriResolver resolver, Annotation annotation) throws AnnotationException {
+    public Annotation translateAnnotationToRepo(UriResolver resolver, Annotation annotation) {
         List<Statement> results = new ArrayList<Statement>();
         for (Statement statement : annotation.getStatements()) {
             Node node = statement.getSubject();
@@ -96,7 +94,7 @@ public class AnnotationManager {
                 try {
                     u = resolver.translateToGraphURI(new URI(uri));
                 } catch (URISyntaxException e) {
-                    throw new AnnotationException(e);
+                    throw new NuxeoException(e);
                 }
                 Resource resource = new ResourceImpl(u.toString());
                 statement.setSubject(resource);
@@ -108,7 +106,7 @@ public class AnnotationManager {
                 try {
                     u = resolver.translateToGraphURI(new URI(uri));
                 } catch (URISyntaxException e) {
-                    throw new AnnotationException(e);
+                    throw new NuxeoException(e);
                 }
                 Resource resource = new ResourceImpl(u.toString());
                 statement.setObject(resource);
@@ -118,7 +116,7 @@ public class AnnotationManager {
         return getAnnotation(results);
     }
 
-    public Annotation getAnnotation(List<Statement> statements) throws AnnotationException {
+    public Annotation getAnnotation(List<Statement> statements) {
         AnnotationImpl annotation = new AnnotationImpl();
         Graph graph = getTransientGraph();
         graph.add(statements);
@@ -126,7 +124,7 @@ public class AnnotationManager {
         return annotation;
     }
 
-    public Annotation getAnnotation(InputStream is) throws AnnotationException {
+    public Annotation getAnnotation(InputStream is) {
         Graph graph = getTransientGraph();
         graph.read(is, null, null);
         AnnotationImpl annotation = new AnnotationImpl();
@@ -134,7 +132,7 @@ public class AnnotationManager {
         return annotation;
     }
 
-    public Annotation getAnnotation(String is) throws AnnotationException {
+    public Annotation getAnnotation(String is) {
         Graph graph = getTransientGraph();
         graph.read(is, null, null);
         AnnotationImpl annotation = new AnnotationImpl();
@@ -142,15 +140,8 @@ public class AnnotationManager {
         return annotation;
     }
 
-    private static Graph getTransientGraph() throws AnnotationException {
-        Graph graph;
-        try {
-            RelationManager service = Framework.getService(RelationManager.class);
-            graph = service.getTransientGraph(TRANSIENT_GRAPH_TYPE);
-        } catch (ClientException e) {
-            throw new AnnotationException(e);
-        }
-        return graph;
+    private static Graph getTransientGraph() {
+        return Framework.getService(RelationManager.class).getTransientGraph(TRANSIENT_GRAPH_TYPE);
     }
 
 }

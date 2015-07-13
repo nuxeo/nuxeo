@@ -23,9 +23,9 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.thumbnail.ThumbnailAdapter;
@@ -101,7 +101,7 @@ public class UpdateThumbnailListener implements PostCommitEventListener {
             }
             return Blobs.createBlob(is);
         } catch (IOException e) {
-            throw new ClientException("Failed to get managed blob thumbnail", e);
+            throw new NuxeoException("Failed to get managed blob thumbnail", e);
         }
     }
 

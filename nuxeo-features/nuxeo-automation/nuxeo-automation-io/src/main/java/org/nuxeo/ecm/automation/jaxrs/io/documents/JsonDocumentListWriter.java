@@ -40,7 +40,6 @@ import org.codehaus.jackson.JsonGenerator;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.ecm.automation.core.util.PaginableDocumentModelList;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityListWriter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;

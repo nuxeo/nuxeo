@@ -35,11 +35,11 @@ import javax.el.ELException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ExpressionFactoryImpl;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -51,8 +51,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.audit.api.AuditException;
-import org.nuxeo.ecm.platform.audit.api.AuditRuntimeException;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
@@ -90,18 +88,13 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         }
         try {
             return session.getDocument(reference);
-        } catch (ClientException e) {
+        } catch (DocumentNotFoundException e) {
             return null;
         }
     }
 
-    protected DocumentModelList guardedDocumentChildren(CoreSession session, DocumentRef reference)
-            throws AuditException {
-        try {
-            return session.getChildren(reference);
-        } catch (ClientException e) {
-            throw new AuditException("Cannot get children of " + reference, e);
-        }
+    protected DocumentModelList guardedDocumentChildren(CoreSession session, DocumentRef reference) {
+        return session.getChildren(reference);
     }
 
     protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc, Principal principal) {
@@ -115,12 +108,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         entry.setEventId(DocumentEventTypes.DOCUMENT_CREATED);
         // why hard-code it if we have the document life cycle?
         entry.setDocLifeCycle("project");
-        Calendar creationDate;
-        try {
-            creationDate = (Calendar) doc.getProperty("dublincore", "created");
-        } catch (ClientException e) {
-            throw new AuditRuntimeException("Cannot fetch date from dublin core for " + doc, e);
-        }
+        Calendar creationDate = (Calendar) doc.getProperty("dublincore", "created");
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
         }
@@ -236,12 +224,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             if (document instanceof DeletedDocumentModel) {
                 entry.setComment("Document does not exist anymore!");
             } else {
-                try {
-                    if (document.isLifeCycleLoaded()) {
-                        entry.setDocLifeCycle(document.getCurrentLifeCycleState());
-                    }
-                } catch (ClientException e1) {
-                    throw new AuditRuntimeException("Cannot fetch life cycle state from " + document, e1);
+                if (document.isLifeCycleLoaded()) {
+                    entry.setDocLifeCycle(document.getCurrentLifeCycleState());
                 }
             }
             if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
@@ -314,8 +298,6 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             }
 
             return nbAddedEntries;
-        } catch (ClientException e) {
-            throw new AuditRuntimeException("Cannot open core session for " + repoId, e);
         }
     }
 
@@ -326,19 +308,15 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         Principal principal = session.getPrincipal();
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
-        try {
-            provider.addLogEntry(doCreateAndFillEntryFromDocument(node, session.getPrincipal()));
+        provider.addLogEntry(doCreateAndFillEntryFromDocument(node, session.getPrincipal()));
 
-            for (DocumentModel child : guardedDocumentChildren(session, node.getRef())) {
-                if (child.isFolder() && recurs) {
-                    folderishChildren.add(child);
-                } else {
-                    provider.addLogEntry(doCreateAndFillEntryFromDocument(child, principal));
-                    nbSyncedEntries += 1;
-                }
+        for (DocumentModel child : guardedDocumentChildren(session, node.getRef())) {
+            if (child.isFolder() && recurs) {
+                folderishChildren.add(child);
+            } else {
+                provider.addLogEntry(doCreateAndFillEntryFromDocument(child, principal));
+                nbSyncedEntries += 1;
             }
-        } catch (AuditException e) {
-            throw new AuditRuntimeException("error occurred while syncing", e);
         }
 
         if (recurs) {

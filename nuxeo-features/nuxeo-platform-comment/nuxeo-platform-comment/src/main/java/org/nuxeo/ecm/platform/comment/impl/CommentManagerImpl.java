@@ -31,13 +31,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -95,7 +96,7 @@ public class CommentManagerImpl implements CommentManager {
         Graph graph = relationManager.getGraphByName(config.graphName);
         Resource docResource = relationManager.getResource(config.documentNamespace, docModel, ctxMap);
         if (docResource == null) {
-            throw new ClientException("Could not adapt document model to relation resource ; "
+            throw new NuxeoException("Could not adapt document model to relation resource ; "
                     + "check the service relation adapters configuration");
         }
 
@@ -112,13 +113,8 @@ public class CommentManagerImpl implements CommentManager {
         for (Statement stmt : statementList) {
             QNameResourceImpl subject = (QNameResourceImpl) stmt.getSubject();
 
-            DocumentModel commentDocModel = null;
-            try {
-                commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(config.commentNamespace,
-                        subject, ctxMap);
-            } catch (ClientException e) {
-                log.error("failed to retrieve commentDocModel from relations");
-            }
+            DocumentModel commentDocModel = (DocumentModel) relationManager.getResourceRepresentation(
+                    config.commentNamespace, subject, ctxMap);
             if (commentDocModel == null) {
                 // XXX AT: maybe user cannot see the comment
                 log.warn("Could not adapt comment relation subject to a document "
@@ -192,7 +188,7 @@ public class CommentManagerImpl implements CommentManager {
         Resource documentRes = relationManager.getResource(config.documentNamespace, docModel, null);
 
         if (commentRes == null || documentRes == null) {
-            throw new ClientException("Could not adapt document model to relation resource ; "
+            throw new NuxeoException("Could not adapt document model to relation resource ; "
                     + "check the service relation adapters configuration");
         }
 
@@ -201,19 +197,13 @@ public class CommentManagerImpl implements CommentManager {
         Statement stmt = new StatementImpl(commentRes, predicateRes, documentRes);
         relationManager.getGraphByName(config.graphName).add(stmt);
 
-        NuxeoPrincipal principal = null;
-        try {
-            UserManager userManager = Framework.getService(UserManager.class);
-            if (userManager == null) {
-                log.error("Error notifying comment added: UserManager " + "service is not found");
-            } else {
-                principal = userManager.getPrincipal(author);
+        UserManager userManager = Framework.getService(UserManager.class);
+        if (userManager != null) {
+            // null in tests
+            NuxeoPrincipal principal = userManager.getPrincipal(author);
+            if (principal != null) {
+                notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, null, createdComment, principal);
             }
-        } catch (ClientException e) {
-            log.error("Error building principal for notification", e);
-        }
-        if (principal != null) {
-            notifyEvent(session, docModel, CommentEvents.COMMENT_ADDED, null, createdComment, principal);
         }
 
         return createdComment;
@@ -247,7 +237,7 @@ public class CommentManagerImpl implements CommentManager {
             if (mySession.exists(ref)) {
                 parent = mySession.getDocument(ref);
                 if (!parent.isFolder()) {
-                    throw new ClientException(parent.getPathAsString() + " is not folderish");
+                    throw new NuxeoException(parent.getPathAsString() + " is not folderish");
                 }
             } else {
                 DocumentModel dm = mySession.createDocumentModel(pathStr, name, "HiddenFolder");
@@ -334,7 +324,7 @@ public class CommentManagerImpl implements CommentManager {
     private static String getCurrentUser(DocumentModel target) {
         CoreSession userSession = target.getCoreSession();
         if (userSession == null) {
-            throw new ClientException("userSession is null, do not invoke this method when the user is not local");
+            throw new NuxeoException("userSession is null, do not invoke this method when the user is not local");
         }
         return userSession.getPrincipal().getName();
     }
@@ -352,7 +342,7 @@ public class CommentManagerImpl implements CommentManager {
         Calendar creationDate;
         try {
             creationDate = (Calendar) comment.getProperty("dublincore", "created");
-        } catch (ClientException e) {
+        } catch (PropertyException e) {
             creationDate = null;
         }
         if (creationDate == null) {
@@ -367,7 +357,7 @@ public class CommentManagerImpl implements CommentManager {
         try (CoreSession session = CoreInstance.openCoreSessionSystem(docModel.getRepositoryName())) {
             DocumentRef ref = comment.getRef();
             if (!session.exists(ref)) {
-                throw new ClientException("Comment Document does not exist: " + comment.getId());
+                throw new NuxeoException("Comment Document does not exist: " + comment.getId());
             }
 
             session.removeDocument(ref);
@@ -390,14 +380,15 @@ public class CommentManagerImpl implements CommentManager {
     }
 
     private static NuxeoPrincipal getAuthor(DocumentModel docModel) {
+        String[] contributors;
         try {
-            String[] contributors = (String[]) docModel.getProperty("dublincore", "contributors");
-            UserManager userManager = Framework.getService(UserManager.class);
-            return userManager.getPrincipal(contributors[0]);
-        } catch (ClientException e) {
+            contributors = (String[]) docModel.getProperty("dublincore", "contributors");
+        } catch (PropertyException e) {
             log.error("Error building principal for comment author", e);
             return null;
         }
+        UserManager userManager = Framework.getService(UserManager.class);
+        return userManager.getPrincipal(contributors[0]);
     }
 
     public List<DocumentModel> getComments(DocumentModel docModel, DocumentModel parent) {
@@ -411,7 +402,7 @@ public class CommentManagerImpl implements CommentManager {
         Graph graph = relationManager.getGraphByName(config.graphName);
         Resource commentResource = relationManager.getResource(config.commentNamespace, comment, ctxMap);
         if (commentResource == null) {
-            throw new ClientException("Could not adapt document model to relation resource ; "
+            throw new NuxeoException("Could not adapt document model to relation resource ; "
                     + "check the service relation adapters configuration");
         }
         Resource predicate = new ResourceImpl(config.predicateNamespace);

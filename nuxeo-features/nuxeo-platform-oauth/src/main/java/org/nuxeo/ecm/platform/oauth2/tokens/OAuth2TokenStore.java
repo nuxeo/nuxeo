@@ -29,9 +29,9 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -159,7 +159,7 @@ public class OAuth2TokenStore implements DataStore<StoredCredential> {
         token.setNuxeoLogin(userId);
         try {
             storeTokenAsDirectoryEntry(token);
-        } catch (ClientException e) {
+        } catch (DirectoryException e) {
             log.error("Error during token storage", e);
         }
     }
