@@ -113,7 +113,7 @@ public class ConstraintViolation implements Serializable {
         List<String> pathTokens = new ArrayList<String>();
         pathTokens.add(Constraint.MESSAGES_KEY);
         pathTokens.add(constraint.getDescription().getName());
-        pathTokens.add(schema.getSchemaName());
+        pathTokens.add(schema.getName());
         for (PathNode node : path) {
             String name = node.getField().getName().getLocalName();
             pathTokens.add(name);
