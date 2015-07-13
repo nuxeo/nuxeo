@@ -133,7 +133,7 @@ public class ITNoteDocumentTest extends AbstractTest {
         // Check the result
         String expectedText = String.format("%s%s", CONTENT_NOTE_EDITED, CONTENT_NOTE);
         NoteSummaryTabSubPage noteSummaryPage = noteDocumentPage.getNoteSummaryTab();
-        assertEquals(expectedText, noteSummaryPage.getTextBlockContentText());
+        assertEquals(expectedText, noteSummaryPage.getTextBlockContentText().replace("\n", ""));
 
         // Clean up repository
         cleanRepository(noteDocumentPage);
