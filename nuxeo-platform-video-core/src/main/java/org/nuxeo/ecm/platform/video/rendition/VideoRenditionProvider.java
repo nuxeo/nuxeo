@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.rendition.RenditionException;
 import org.nuxeo.ecm.platform.rendition.extension.RenditionProvider;
 import org.nuxeo.ecm.platform.rendition.service.RenditionDefinition;
 import org.nuxeo.ecm.platform.video.TranscodedVideo;
@@ -48,7 +47,7 @@ public class VideoRenditionProvider implements RenditionProvider {
     }
 
     @Override
-    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) throws RenditionException {
+    public List<Blob> render(DocumentModel doc, RenditionDefinition definition) {
         VideoDocument videoDocument = doc.getAdapter(VideoDocument.class);
         if (videoDocument == null) {
             return Collections.emptyList();
