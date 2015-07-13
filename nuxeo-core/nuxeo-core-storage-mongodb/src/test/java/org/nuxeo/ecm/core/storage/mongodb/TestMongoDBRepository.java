@@ -3346,4 +3346,25 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
         }
     }
 
+    @Test
+    public void testVersionParent() {
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        doc = session.createDocument(doc);
+        DocumentRef verRef = session.checkIn(doc.getRef(), null, null);
+        DocumentRef parentRef = session.getParentDocumentRef(verRef);
+        assertNotNull(parentRef);
+        assertEquals(session.getRootDocument().getRef(), parentRef);
+        DocumentModel ver = session.getDocument(verRef);
+        assertEquals("/file", ver.getPathAsString());
+        // now remove live doc
+        session.removeDocument(doc.getRef());
+        // version parent is now null
+        parentRef = session.getParentDocumentRef(verRef);
+        assertNull(parentRef);
+        DocumentModel parent = session.getParentDocument(verRef);
+        assertNull(parent);
+        ver = session.getDocument(verRef);
+        assertNull(ver.getPathAsString());
+    }
+
 }
