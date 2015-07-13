@@ -1164,6 +1164,7 @@ public class CMISQLQueryMaker implements QueryMaker {
             hasContains = true;
 
             String qual = qualNode == null ? null : qualNode.getText();
+            qual = canonicalQualifier.get(qual);
             Column column = getSystemColumn(qual, PropertyIds.OBJECT_ID);
             String statement = (String) super.walkString(queryNode);
             String indexName = Model.FULLTEXT_DEFAULT_INDEX;
