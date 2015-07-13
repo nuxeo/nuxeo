@@ -253,7 +253,8 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public Document getParent() {
         if (isVersion()) {
-            return session.getDocument(getVersionSeriesId()).getParent();
+            Document workingCopy = session.getDocument(getVersionSeriesId());
+            return workingCopy == null ? null : workingCopy.getParent();
         }
         String parentId = docState.getParentId();
         return parentId == null ? null : session.getDocument(parentId);
@@ -272,7 +273,8 @@ public class DBSDocument extends BaseDocument<State> {
     @Override
     public String getPath() {
         if (isVersion()) {
-            return session.getDocument(getVersionSeriesId()).getPath();
+            Document workingCopy = session.getDocument(getVersionSeriesId());
+            return workingCopy == null ? null : workingCopy.getPath();
         }
         String name = getName();
         Document doc = getParent();
