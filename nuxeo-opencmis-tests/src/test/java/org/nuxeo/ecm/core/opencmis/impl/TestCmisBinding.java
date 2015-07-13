@@ -2138,6 +2138,29 @@ public class TestCmisBinding extends TestCmisBindingBase {
     }
 
     @Test
+    public void testQueryContainsQualifier() throws Exception {
+
+        ObjectData ob = getObjectByPath("/testfolder1/testfile1");
+        assertEquals("testfile1_Title", getString(ob, "dc:title"));
+
+        PropertyData<?> propTitle = factory.createPropertyStringData("dc:title", "new title1");
+        PropertyData<?> propDescription = factory.createPropertyStringData("dc:description", "new description1");
+        Properties properties = factory.createPropertiesData(Arrays.asList(propTitle, propDescription));
+
+        Holder<String> objectIdHolder = new Holder<String>(ob.getId());
+        objService.updateProperties(repositoryId, objectIdHolder, null, properties, null);
+
+        sleepForFulltext();
+        waitForIndexing();
+
+        // this failed in CMISQL -> SQL mode (NXP-17512)
+        String statement = "SELECT f.* FROM File f WHERE CONTAINS(f, 'title1')";
+        ObjectList res = query(statement);
+        assertEquals(1, res.getNumItems().intValue());
+        assertEquals("new title1", getString(res.getObjects().get(0), PropertyIds.NAME));
+    }
+
+    @Test
     public void testQueryContainsSyntax() throws Exception {
         ObjectData ob = getObjectByPath("/testfolder1/testfile1");
         assertEquals("testfile1_Title", getString(ob, "dc:title"));
