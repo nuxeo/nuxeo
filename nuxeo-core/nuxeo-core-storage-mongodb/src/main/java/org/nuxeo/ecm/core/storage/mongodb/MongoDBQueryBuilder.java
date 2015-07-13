@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -141,9 +142,9 @@ public class MongoDBQueryBuilder {
         } else if (op == Operator.ISNOTNULL) {
             return walkIsNotNull(lvalue);
         } else if (op == Operator.BETWEEN) {
-            throw new UnsupportedOperationException("BETWEEN");
+            return walkBetween(lvalue, rvalue, true);
         } else if (op == Operator.NOTBETWEEN) {
-            throw new UnsupportedOperationException("NOT BETWEEN");
+            return walkBetween(lvalue, rvalue, false);
         } else {
             throw new RuntimeException("Unknown operator: " + op);
         }
@@ -427,6 +428,23 @@ public class MongoDBQueryBuilder {
         String field = walkReference(lvalue).field;
         Object right = walkOperand(rvalue);
         return new BasicDBObject(field, new BasicDBObject(QueryOperators.GTE, right));
+    }
+
+    public DBObject walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
+        LiteralList l = (LiteralList) rvalue;
+        String field = walkReference(lvalue).field;
+        Object left = walkOperand(l.get(0));
+        Object right = walkOperand(l.get(1));
+        if (positive) {
+            DBObject range = new BasicDBObject();
+            range.put(QueryOperators.GTE, left);
+            range.put(QueryOperators.LTE, right);
+            return new BasicDBObject(field, range);
+        } else {
+            DBObject a = new BasicDBObject(field, new BasicDBObject(QueryOperators.LT, left));
+            DBObject b = new BasicDBObject(field, new BasicDBObject(QueryOperators.GT, right));
+            return new BasicDBObject(QueryOperators.OR, Arrays.asList(a, b));
+        }
     }
 
     public DBObject walkIn(Operand lvalue, Operand rvalue, boolean positive) {

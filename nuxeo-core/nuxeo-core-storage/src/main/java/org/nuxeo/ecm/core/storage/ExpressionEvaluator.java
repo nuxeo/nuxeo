@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.query.sql.model.LiteralList;
 import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.Operand;
 import org.nuxeo.ecm.core.query.sql.model.Operator;
+import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 
@@ -138,9 +139,9 @@ public abstract class ExpressionEvaluator {
         } else if (op == Operator.ISNOTNULL) {
             return walkIsNotNull(lvalue);
         } else if (op == Operator.BETWEEN) {
-            throw new UnsupportedOperationException("BETWEEN");
+            return walkBetween(lvalue, rvalue, true);
         } else if (op == Operator.NOTBETWEEN) {
-            throw new UnsupportedOperationException("NOT BETWEEN");
+            return walkBetween(lvalue, rvalue, false);
         } else {
             throw new RuntimeException("Unknown operator: " + op);
         }
@@ -252,6 +253,17 @@ public abstract class ExpressionEvaluator {
     public Boolean walkGtEq(Operand lvalue, Operand rvalue) {
         Integer cmp = cmp(lvalue, rvalue);
         return cmp == null ? null : cmp >= 0;
+    }
+
+    public Object walkBetween(Operand lvalue, Operand rvalue, boolean positive) {
+        LiteralList l = (LiteralList) rvalue;
+        Predicate va = new Predicate(lvalue, Operator.GTEQ, l.get(0));
+        Predicate vb = new Predicate(lvalue, Operator.LTEQ, l.get(1));
+        Predicate pred = new Predicate(va, Operator.AND, vb);
+        if (!positive) {
+            pred = new Predicate(pred, Operator.NOT, null);
+        }
+        return walkExpression(pred);
     }
 
     public Boolean walkIn(Operand lvalue, Operand rvalue, boolean positive) {
