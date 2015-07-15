@@ -14,14 +14,14 @@ input::-moz-focus-inner {
   padding: 0 }
 
 /* =Buttons */
-.button,
-a.button,
-input.button,
-.action_bar a,
-button,
-input[type="reset"],
-input[type="submit"],
-input[type="button"] {
+.nx-page .button,
+.nx-page a.button,
+.nx-page input.button,
+.nx-page .action_bar a,
+.nx-page button,
+.nx-page input[type="reset"],
+.nx-page input[type="submit"],
+.nx-page input[type="button"] {
   background: none "button (__FLAVOR__ background)";
   border-radius: 2px;
   border: 1px solid;
@@ -37,71 +37,72 @@ input[type="button"] {
   text-decoration: none;
   white-space: nowrap }
 
-a.button {
+.nx-page a.button {
   padding: .4em .6em }
 
-.button:hover,
-a.button:hover,
-input.button:hover,
-.action_bar a:hover,
-button:hover,
-input[type="reset"]:hover,
-input[type="submit"]:hover,
-input[type="button"]:hover {
+.nx-page .button:hover,
+.nx-page a.button:hover,
+.nx-page input.button:hover,
+.nx-page .action_bar a:hover,
+.nx-page button:hover,
+.nx-page input[type="reset"]:hover,
+.nx-page input[type="submit"]:hover,
+.nx-page input[type="button"]:hover {
+  background: none "button (__FLAVOR__ background)";
   border-color: "button.hover (__FLAVOR__ border)";
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 150ms ease-in-out 0s }
 
-.button:focus,
-button:focus,
-input[type="reset"]:focus,
-input[type="submit"]:focus,
-input[type="button"]:focus {
+.nx-page .button:focus,
+.nx-page button:focus,
+.nx-page input[type="reset"]:focus,
+.nx-page input[type="submit"]:focus,
+.nx-page input[type="button"]:focus {
   border-color: #2e9cff;
   box-shadow: 0 0 3px #b5dcff;
   outline: none }
 
-button.disabled,
-input.disabled,
-button.disabled:hover,
-input.disabled:hover,
-.button[disabled],
-.button[disabled]:hover,
-.button[disabled=disabled],
-.button[disabled=disabled]:hover,
-button:disabled,
-button:disabled:hover,
-input[type="reset"]:disabled,
-input[type="reset"]:disabled:hover,
-input[type="submit"]:disabled,
-input[type="submit"]:disabled:hover,
-input[type="button"]:disabled,
-input[type="button"]:disabled:hover {
+.nx-page button.disabled,
+.nx-page input.disabled,
+.nx-page button.disabled:hover,
+.nx-page input.disabled:hover,
+.nx-page .button[disabled],
+.nx-page .button[disabled]:hover,
+.nx-page .button[disabled=disabled],
+.nx-page .button[disabled=disabled]:hover,
+.nx-page button:disabled,
+.nx-page button:disabled:hover,
+.nx-page input[type="reset"]:disabled,
+.nx-page input[type="reset"]:disabled:hover,
+.nx-page input[type="submit"]:disabled,
+.nx-page input[type="submit"]:disabled:hover,
+.nx-page input[type="button"]:disabled,
+.nx-page input[type="button"]:disabled:hover {
   display: none }
 
-.tinyButton,
-.smallButton,
-a.tinyButton,
-a.smallButton,
-input.tinyButton,
-input.smallButton {
+.nx-page .tinyButton,
+.nx-page .smallButton,
+.nx-page a.tinyButton,
+.nx-page a.smallButton,
+.nx-page input.tinyButton,
+.nx-page input.smallButton {
   background-color: #fff;
   color: "link (__FLAVOR__ color)";
   font-size: .9em;
   padding: .25em .5em;
   text-decoration: none }
 
-.tinyButton,
-a.tinyButton,
-input.tinyButton {
+.nx-page .tinyButton,
+.nx-page a.tinyButton,
+.nx-page input.tinyButton {
   font-size: .85em;
   padding: 0 .3em }
 
-.button .smallIcon {
+.nx-page .button .smallIcon {
   vertical-align: text-bottom }
 
-.dropdown,
-.dropdown:hover {
+.nx-page .dropdown,
+.nx-page .dropdown:hover {
   background: url("${basePath}/icons/dropdown.png") no-repeat scroll right center;
   background-color: "button (__FLAVOR__ background)";
   padding: .4em 1.5em .43em .8em !important }

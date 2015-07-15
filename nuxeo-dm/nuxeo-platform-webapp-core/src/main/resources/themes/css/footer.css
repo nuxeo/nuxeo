@@ -14,7 +14,8 @@ author: lkemen@nuxeo.com
 .footerDefaultLinks {
   padding: 1.4em }
 
-.nxFooter a {
+.nx-page .nxFooter a,
+.nx-page .nxFooter a:hover {
   color: "link.footer (__FLAVOR__ color)" }
 
 .nxFooter .actionsWidgetPanel {
