@@ -4,14 +4,14 @@ author: lkemen@nuxeo.com
 */
 
 /* Borders, color, corners and fonts */
-.select2-container {
+.nx-page .select2-container {
   margin-bottom: .5em }
 
-.dataInput .select2-container {
+.nx-page .dataInput .select2-container {
   margin-bottom: 0 }
 
-.select2-container .select2-choice,
-.select2-container-multi .select2-choices {
+.nx-page .select2-container .select2-choice,
+.nx-page .select2-container-multi .select2-choices {
   background-image: none;
   border-color: "neutral.light (__FLAVOR__ border)";
   border-radius: 2px;
@@ -19,109 +19,109 @@ author: lkemen@nuxeo.com
   font-family: inherit;
   font-size: inherit; }
 
-.select2-container .select2-choice {
+.nx-page .select2-container .select2-choice {
   border-radius: 2px 4px 4px 2px }
 
-.select2-container a:link,
-.select2-container a:hover,
-.select2-container a.select2-choice,
-.select2-container a.select2-choice:hover,
-.select2-container a.select2-choice .select2-chosen {
+.nx-page .select2-container a:link,
+.nx-page .select2-container a:hover,
+.nx-page .select2-container a.select2-choice,
+.nx-page .select2-container a.select2-choice:hover,
+.nx-page .select2-container a.select2-choice .select2-chosen {
  color: "default (__FLAVOR__ color)";
  text-decoration: none;
  -moz-transition: none;
  -webkit-transition: none;
  transition: none }
 
-.select2-search .select2-input {
+.nx-page .select2-search .select2-input {
   margin-bottom: 0 }
 
-.select2-container-multi .select2-choices .select2-search-field input {
+.nx-page .select2-container-multi .select2-choices .select2-search-field input {
 	font-family: inherit }
 
-.select2-container .select2-choice .select2-arrow {
+.nx-page .select2-container .select2-choice .select2-arrow {
   background: none 0;
   border-color: "neutral.light (__FLAVOR__ border)" }
 
-.select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice {
+.nx-page .select2-container-multi.select2-container-disabled .select2-choices .select2-search-choice {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
   cursor: text;
   margin: 0 .3em 0 0 }
 
-.select2-result-label > a {
+.nx-page .select2-result-label > a {
   vertical-align: top }
 
-.select2-results img {
+.nx-page .select2-results img {
   margin: 0.1em 0.4em -0.2em 0;
   max-height: 14px;
   width: 14px }
 
-.select2-nx-disabled {
+.nx-page .select2-nx-disabled {
   filter: alpha(opacity=30);
   opacity: .3 }
 
-.select2-choices .select2-search-choice img {
+.nx-page .select2-choices .select2-search-choice img {
   margin: 0 .3em -0.2em -0.2em;
   max-height: 14px;
   width: 14px; }
 
-.select2-search-choice table td {
+.nx-page .select2-search-choice table td {
   padding: 0 }
 
-.select2-choices .detail,
-.select2-results .detail {
+.nx-page .select2-choices .detail,
+.nx-page .select2-results .detail {
   display: block;
   padding: .1em 0 .1em 1.6em }
 
-.select2-results .select2-result-label .detail {
+.nx-page .select2-results .select2-result-label .detail {
   padding-left: 2em }
 
-.select2-results .select2-result-label td .detail {
+.nx-page .select2-results .select2-result-label td .detail {
   padding: 0 }
 
-.select2-choice .select2-chosen img {
+.nx-page .select2-choice .select2-chosen img {
   margin: .4em .4em -0.2em 0 }
 
-.select2-container-active .select2-focused,
-.select2-container-active .select2-focused:focus {
+.nx-page .select2-container-active .select2-focused,
+.nx-page .select2-container-active .select2-focused:focus {
   box-shadow: none }
 
-.select2-container-multi .select2-choices .select2-search-choice {
+.nx-page .select2-container-multi .select2-choices .select2-search-choice {
   background: none #fff;
   padding: 3px 18px 3px 5px }
 
-.select2-container-multi .select2-search-choice-close {
+.nx-page .select2-container-multi .select2-search-choice-close {
   left: auto;
   right: 3px }
 
-.select2-drop,
-.select2-results .select2-highlighted {
+.nx-page .select2-drop,
+.nx-page .select2-results .select2-highlighted {
   color: "default (__FLAVOR__ color)" }
 
-.select2-results .select2-highlighted {
+.nx-page .select2-results .select2-highlighted {
   background: "color.major.medium (__FLAVOR__ background)" }
 
-.select2-results .select2-searching,
-.select2-results .select2-no-results,
-.select2-results .select2-result-label {
+.nx-page .select2-results .select2-searching,
+.nx-page .select2-results .select2-no-results,
+.nx-page .select2-results .select2-result-label {
   font-size: .8em;
   padding: .3em .5em }
 
-.select2-results .select2-result-label {
+.nx-page .select2-results .select2-result-label {
   padding: .2em 0.5em .3em }
 
 /* make select2 appears in front of fancybox */
-.select2-drop {
+.nx-page .select2-drop {
   z-index : 10099 }
 
-.select2-drop-mask {
+.nx-page .select2-drop-mask {
   z-index : 10098 }
 
 /* Customize readonly mode used for view mode */
-div.select2-container-disabled > a.select2-choice,
-div.select2-container-disabled > ul.select2-choices {
+.nx-page div.select2-container-disabled > a.select2-choice,
+.nx-page div.select2-container-disabled > ul.select2-choices {
   border: 0;
   background: none repeat scroll 0 0 transparent;
   box-shadow: none;
@@ -132,46 +132,46 @@ div.select2-container-disabled > ul.select2-choices {
   -ms-user-select: text;
   cursor: text }
 
-div.select2-container-disabled > a.select2-choice {
+.nx-page div.select2-container-disabled > a.select2-choice {
   height: auto;
   line-height: inherit;
   padding: 0 }
 
-div.select2-container-disabled span.select2-arrow {
+.nx-page div.select2-container-disabled span.select2-arrow {
   display: none !important }
 
 /* Customize sortable mode */
-.ui-sortable .select2-search-choice {
+.nx-page .ui-sortable .select2-search-choice {
 	cursor: move }
 
 /* Apply default form :focus style */
-.select2-container.select2-container-active .select2-choice,
-.select2-container-multi.select2-container-active .select2-choices {
+.nx-page .select2-container.select2-container-active .select2-choice,
+.nx-page .select2-container-multi.select2-container-active .select2-choices {
   border-color: #2e9cff;
   box-shadow: 0 0 3px #b5dcff;
   color: "black (__FLAVOR__ color)" }
 
 /* Tags */
-.s2tagContainerCssClass .select2-choices {
+.nx-page .s2tagContainerCssClass .select2-choices {
   border-color: transparent;
   box-shadow: none }
 
-.s2tagContainerCssClass .select2-choices .select2-input.select2-default {
+.nx-page .s2tagContainerCssClass .select2-choices .select2-input.select2-default {
   background: url("${basePath}/icons/action_add.gif") no-repeat scroll 0 5px transparent !important;
   padding-left: 1.5em;
   min-width: 9em }
 
-.s2tagContainerCssClass .select2-choices .select2-input {
+.nx-page .s2tagContainerCssClass .select2-choices .select2-input {
   background: url("${basePath}/icons/action_add.gif") no-repeat scroll 0 5px transparent !important }
 
-.s2tagContainerCssClass .select2-choices .select2-input.select2-focused {
+.nx-page .s2tagContainerCssClass .select2-choices .select2-input.select2-focused {
   background: none !important }
 
-.s2tagContainerCssClass.select2-container-active .select2-choices,
-.s2tagContainerCssClass:hover .select2-choices {
+.nx-page .s2tagContainerCssClass.select2-container-active .select2-choices,
+.nx-page .s2tagContainerCssClass:hover .select2-choices {
   border-color: "neutral.light (__FLAVOR__ border)" }
 
-.select2-results .s2newTag,
-.s2tagDropdownCssClass .select2-result-label .s2newTag {
+.nx-page .select2-results .s2newTag,
+.nx-page .s2tagDropdownCssClass .select2-result-label .s2newTag {
   font-weight: bold;
   color: "success.status (__FLAVOR__ color)" }
