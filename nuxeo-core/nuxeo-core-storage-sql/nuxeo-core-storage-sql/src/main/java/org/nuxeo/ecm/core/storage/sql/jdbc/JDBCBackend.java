@@ -17,7 +17,6 @@ import java.sql.SQLException;
 import java.util.Map.Entry;
 
 import javax.naming.NamingException;
-import javax.resource.ResourceException;
 import javax.sql.DataSource;
 import javax.sql.XAConnection;
 import javax.sql.XADataSource;
@@ -61,10 +60,7 @@ public class JDBCBackend implements RepositoryBackend {
 
     private ClusterNodeHandler clusterNodeHandler;
 
-    private JDBCConnectionPropagator connectionPropagator;
-
     public JDBCBackend() {
-        connectionPropagator = new JDBCConnectionPropagator();
     }
 
     protected boolean isPooledDataSource;
@@ -194,8 +190,7 @@ public class JDBCBackend implements RepositoryBackend {
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
         ClusterNodeHandler cnh = noInvalidationPropagation ? null : clusterNodeHandler;
-        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, xadatasource, cnh, connectionPropagator,
-                noSharing, repository);
+        Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, xadatasource, cnh, noSharing, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper);
             if (noSharing) {
@@ -219,7 +214,6 @@ public class JDBCBackend implements RepositoryBackend {
         }
         if (kind == MapperKind.CLUSTER_NODE_HANDLER) {
             clusterNodeHandler = new ClusterNodeHandler(mapper, repositoryDescriptor);
-            connectionPropagator.setClusterNodeHandler(clusterNodeHandler);
         }
         return mapper;
     }

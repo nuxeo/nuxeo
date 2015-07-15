@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
-import java.net.SocketException;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -364,27 +363,6 @@ public class DialectMySQL extends Dialect {
         properties.put("fulltextEnabled", Boolean.valueOf(!fulltextSearchDisabled));
         properties.put("clusteringEnabled", Boolean.valueOf(clusteringEnabled));
         return properties;
-    }
-
-    @Override
-    public boolean isConnectionClosedException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
-        }
-        if (t instanceof SocketException) {
-            return true;
-        }
-        // XAResource.start:
-        // com.mysql.jdbc.jdbc2.optional.MysqlXAException
-        // No operations allowed after connection closed. Connection was
-        // implicitly closed due to underlying exception/error:
-        // com.mysql.jdbc.exceptions.jdbc4.CommunicationsException:
-        // Communications link failure
-        String message = t.toString() + " " + t.getMessage();
-        if (message.contains("Communications link failure") || message.contains("CommunicationsException")) {
-            return true;
-        }
-        return false;
     }
 
     @Override

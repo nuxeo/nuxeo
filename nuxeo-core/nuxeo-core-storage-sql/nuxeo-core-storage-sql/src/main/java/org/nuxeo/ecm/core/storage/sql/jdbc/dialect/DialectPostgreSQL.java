@@ -14,7 +14,6 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
-import java.net.SocketException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -1167,33 +1166,6 @@ public class DialectPostgreSQL extends Dialect {
     @Override
     public String getClusterGetInvalidations() {
         return "DELETE FROM cluster_invals WHERE nodeid = ? RETURNING id, fragments, kind";
-    }
-
-    @Override
-    public boolean isConnectionClosedException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
-        }
-        // org.postgresql.util.PSQLException. message: An I/O error occured
-        // while sending to the backend
-        // Caused by: java.net.SocketException. message: Broken pipe
-        if (t instanceof SocketException) {
-            return true;
-        }
-        // org.postgresql.util.PSQLException. message: FATAL: terminating
-        // connection due to administrator command
-        String message = t.getMessage();
-        if (message != null && message.contains("FATAL:")) {
-            return true;
-        }
-        if (t instanceof SQLException) {
-            // org.postgresql.util.PSQLException: This connection has been
-            // closed.
-            if ("08003".equals(((SQLException) t).getSQLState())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override

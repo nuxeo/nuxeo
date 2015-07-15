@@ -79,7 +79,6 @@ import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnectionPropagator;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
@@ -3054,38 +3053,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
             } while (System.currentTimeMillis() - start < waitMillis);
             session.close();
         }
-    }
-
-    @Test
-    public void testJDBCConnectionPropagatorLeak() throws Exception {
-        assertEquals(0, getJDBCConnectionPropagatorSize());
-        repository.getConnection().close();
-        assertEquals(0, getJDBCConnectionPropagatorSize());
-
-        Session s1 = repository.getConnection();
-        assertEquals(0 + 1, getJDBCConnectionPropagatorSize());
-        s1.getLock(s1.getRootNode().getId());
-        // 1 additional connection for the lock manager
-        assertEquals(1 + 1, getJDBCConnectionPropagatorSize());
-
-        Session s2 = repository.getConnection();
-        Session s3 = repository.getConnection();
-        assertEquals(1 + 3, getJDBCConnectionPropagatorSize());
-        s1.close();
-        s2.close();
-        s3.close();
-        // 1 connection remains for the lock manager
-        assertEquals(1, getJDBCConnectionPropagatorSize());
-    }
-
-    protected int getJDBCConnectionPropagatorSize() throws Exception {
-        Field backendField = RepositoryImpl.class.getDeclaredField("backend");
-        backendField.setAccessible(true);
-        JDBCBackend backend = (JDBCBackend) backendField.get(repository);
-        Field propagatorField = JDBCBackend.class.getDeclaredField("connectionPropagator");
-        propagatorField.setAccessible(true);
-        JDBCConnectionPropagator propagator = (JDBCConnectionPropagator) propagatorField.get(backend);
-        return propagator.connections.size();
     }
 
     @Test

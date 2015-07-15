@@ -15,7 +15,6 @@ package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Array;
@@ -1100,16 +1099,6 @@ public abstract class Dialect {
      */
     public void existingTableDetected(Connection connection, Table table, Model model, Database database)
             throws SQLException {
-    }
-
-    /**
-     * Checks if an exception received means that the low level connection has been trashed and must be reset.
-     */
-    public boolean isConnectionClosedException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
-        }
-        return t instanceof SocketException;
     }
 
     /**

@@ -13,7 +13,6 @@
 package org.nuxeo.ecm.core.storage.sql.jdbc.dialect;
 
 import java.io.Serializable;
-import java.net.SocketException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -615,23 +614,6 @@ public class DialectSQLServer extends Dialect {
     @Override
     public String getClusterGetInvalidations() {
         return "SELECT [id], [fragments], [kind] FROM [cluster_invals] WHERE [nodeid] = ?";
-    }
-
-    @Override
-    public boolean isConnectionClosedException(Throwable t) {
-        while (t.getCause() != null) {
-            t = t.getCause();
-        }
-        if (t instanceof SocketException) {
-            return true;
-        }
-        // java.sql.SQLException: Invalid state, the Connection object is
-        // closed.
-        String message = t.getMessage();
-        if (message != null && message.contains("the Connection object is closed")) {
-            return true;
-        }
-        return false;
     }
 
     @Override

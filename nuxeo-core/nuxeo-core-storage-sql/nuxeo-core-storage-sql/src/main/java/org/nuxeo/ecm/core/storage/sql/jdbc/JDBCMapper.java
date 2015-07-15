@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
@@ -111,13 +110,11 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
      * @param clusterNodeHandler the cluster node handler
-     * @param connectionPropagator the connection propagator
      * @param repository
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, XADataSource xadatasource,
-            ClusterNodeHandler clusterNodeHandler, JDBCConnectionPropagator connectionPropagator, boolean noSharing,
-            RepositoryImpl repository) {
-        super(model, sqlInfo, xadatasource, clusterNodeHandler, connectionPropagator, noSharing);
+            ClusterNodeHandler clusterNodeHandler, boolean noSharing, RepositoryImpl repository) {
+        super(model, sqlInfo, xadatasource, clusterNodeHandler, noSharing);
         this.pathResolver = pathResolver;
         this.repository = repository;
         clusteringEnabled = clusterNodeHandler != null;
@@ -145,7 +142,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             createTables();
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException(e);
         }
     }
@@ -383,7 +379,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException(e);
         }
     }
@@ -407,7 +402,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             // delete un-processed invals from cluster_invals
             deleteClusterInvals(nodeId);
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException(e);
         }
     }
@@ -483,7 +477,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 }
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not invalidate", e);
         } finally {
             try {
@@ -555,7 +548,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             return invalidations;
         } catch (SQLException e) {
-            checkConnectionReset(e, true);
             throw new NuxeoException("Could not invalidate", e);
         }
     }
@@ -593,7 +585,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 closeStatement(ps, rs);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not select: " + sql, e);
         }
     }
@@ -636,7 +627,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not insert: " + sql, e);
         }
     }
@@ -675,7 +665,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             ps.execute();
             countExecute();
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Failed to prepare user read acl cache", e);
         } finally {
             try {
@@ -793,7 +782,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
 
             return new PartialList<Serializable>(ids, totalSize);
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Invalid query: " + query, e);
         } finally {
             try {
@@ -858,7 +846,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         try {
             return new ResultSetQueryResult(queryMaker, query, queryFilter, pathResolver, this, params);
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Invalid query: " + queryType + ": " + query, e);
         }
     }
@@ -912,7 +899,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             return res;
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Failed to get ancestors ids", e);
         } finally {
             try {
@@ -973,7 +959,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
             return res;
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Failed to get ancestors ids", e);
         } finally {
             try {
@@ -1002,7 +987,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             st.execute(sql);
             countExecute();
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Failed to update read acls", e);
         } finally {
             try {
@@ -1030,7 +1014,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             st.execute(sql);
             countExecute();
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Failed to rebuild read acls", e);
         } finally {
             try {
@@ -1047,7 +1030,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      */
 
     protected Connection connection(boolean autocommit) {
-        checkConnectionValid();
         try {
             connection.setAutoCommit(autocommit);
         } catch (SQLException e) {
@@ -1063,7 +1045,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      */
     protected Lock callInTransaction(LockCallable callable, boolean tx) {
         boolean ok = false;
-        checkConnectionValid();
         try {
             if (log.isDebugEnabled()) {
                 log.debug("callInTransaction setAutoCommit " + !tx);
@@ -1120,13 +1101,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
             }
         }
         RowId rowId = new RowId(Model.LOCK_TABLE_NAME, id);
-        Row row;
-        try {
-            row = readSimpleRow(rowId);
-        } catch (ConnectionResetException e) {
-            // retry once
-            row = readSimpleRow(rowId);
-        }
+        Row row = readSimpleRow(rowId);
         return row == null ? null : new Lock((String) row.get(Model.LOCK_OWNER_KEY),
                 (Calendar) row.get(Model.LOCK_CREATED_KEY));
     }
@@ -1237,7 +1212,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 rs.close();
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new RuntimeException("Failed to mark binaries for gC", e);
         } finally {
             try {
@@ -1260,7 +1234,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     @Override
     public void start(Xid xid, int flags) throws XAException {
         try {
-            checkConnectionValid();
             xaresource.start(xid, flags);
             if (logger.isLogEnabled()) {
                 logger.log("XA start on " + systemToString(xid));
@@ -1268,7 +1241,6 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
         } catch (NuxeoException e) {
             throw (XAException) new XAException(XAException.XAER_RMERR).initCause(e);
         } catch (XAException e) {
-            checkConnectionReset(e);
             logger.error("XA start error on " + systemToString(xid), e);
             throw e;
         }

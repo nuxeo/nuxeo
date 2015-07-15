@@ -19,7 +19,6 @@ import java.util.Random;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.storage.ConnectionResetException;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
@@ -132,13 +131,7 @@ public class ClusterNodeHandler {
                 log.trace("Not fetching invalidations, remaining time: " + remaining + "ms");
                 return null;
             }
-            Invalidations invalidations;
-            try {
-                invalidations = clusterNodeMapper.getClusterInvalidations(nodeId);
-            } catch (ConnectionResetException e) {
-                // retry once
-                invalidations = clusterNodeMapper.getClusterInvalidations(nodeId);
-            }
+            Invalidations invalidations = clusterNodeMapper.getClusterInvalidations(nodeId);
             clusterNodeLastInvalidationTimeMillis = System.currentTimeMillis();
             return invalidations;
         }

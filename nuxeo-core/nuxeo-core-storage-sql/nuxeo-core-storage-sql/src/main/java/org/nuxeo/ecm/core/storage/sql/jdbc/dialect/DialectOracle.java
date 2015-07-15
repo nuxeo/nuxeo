@@ -19,7 +19,6 @@ import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.SocketException;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -768,39 +767,6 @@ public class DialectOracle extends Dialect {
             return ((SQLException) t).getErrorCode();
         }
         return 0;
-    }
-
-    @Override
-    public boolean isConnectionClosedException(Throwable t) {
-        if (t instanceof XAException) {
-            if (xaErrorLogger != null) {
-                try {
-                    xaErrorLogger.log((XAException) t);
-                } catch (ReflectiveOperationException e) {
-                    log.error("Cannot introspect oracle error ", e);
-                }
-            }
-            return false;
-        }
-        if (isSocketError(t)) {
-            return true;
-        }
-        if (t instanceof SQLException) {
-            return isConnectionClosed(((SQLException) t).getErrorCode());
-        }
-        log.warn("Unknown exception type " + t.getClass(), t);
-        return false;
-    }
-
-    public boolean isSocketError(Throwable t) {
-        if (t instanceof SocketException) {
-            return true;
-        }
-        Throwable cause = t.getCause();
-        if (cause == null || cause == t) {
-            return false;
-        }
-        return isSocketError(cause);
     }
 
     protected boolean isConnectionClosed(int oracleError) {

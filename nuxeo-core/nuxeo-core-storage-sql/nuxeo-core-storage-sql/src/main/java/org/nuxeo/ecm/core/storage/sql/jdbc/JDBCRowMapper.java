@@ -77,8 +77,8 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     private final InvalidationsQueue queue;
 
     public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            JDBCConnectionPropagator connectionPropagator, boolean noSharing) {
-        super(model, sqlInfo, xadatasource, connectionPropagator, noSharing);
+            boolean noSharing) {
+        super(model, sqlInfo, xadatasource, noSharing);
         this.clusterNodeHandler = clusterNodeHandler;
         if (clusterNodeHandler != null) {
             queue = new InvalidationsQueue("cluster-" + this);
@@ -317,7 +317,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps, rs);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not select: " + sql, e);
         }
     }
@@ -427,7 +426,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return list;
         } catch (SQLException e) {
-            checkConnectionReset(e, true);
             checkConcurrentUpdate(e);
             throw new NuxeoException("Could not select: " + select.sql, e);
         } finally {
@@ -562,7 +560,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             if (e instanceof BatchUpdateException) {
                 BatchUpdateException bue = (BatchUpdateException) e;
                 if (e.getCause() == null && bue.getNextException() != null) {
@@ -593,7 +590,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not insert: " + sql, e);
         }
     }
@@ -680,7 +676,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                     closeStatement(ps);
                 }
             } catch (SQLException e) {
-                checkConnectionReset(e);
                 throw new NuxeoException("Could not update: " + update.sql, e);
             }
         }
@@ -743,7 +738,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not soft delete", e);
         }
     }
@@ -852,7 +846,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 }
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not purge soft delete", e);
         }
     }
@@ -876,7 +869,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             checkConcurrentUpdate(e);
             throw new NuxeoException("Could not delete: " + tableName, e);
         }
@@ -926,7 +918,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps, rs);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not select: " + sql, e);
         }
         return ret;
@@ -969,7 +960,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps, rs);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not select: " + sql, e);
         }
     }
@@ -1052,7 +1042,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return new CopyResult(newRootId, invalidations, proxyIds);
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not copy: " + source.id.toString(), e);
         }
     }
@@ -1090,7 +1079,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
                 closeStatement(ps);
             }
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Could not update: " + sql, e);
         }
     }
@@ -1385,7 +1373,6 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
             }
             return descendants;
         } catch (SQLException e) {
-            checkConnectionReset(e);
             throw new NuxeoException("Failed to get descendants", e);
         } finally {
             try {
