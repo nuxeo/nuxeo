@@ -10,7 +10,7 @@
 <ui:define name="page title"><h:outputText value="#{nuxeoApplicationName}"/> - Servers</ui:define>
 
 <ui:define name="body">
-  <div>
+  <div class="mainFragment">
     <h1><h:outputText value="#{messages['title.availableServers']}" /></h1>
     <h:form>
       <nxu:dataList var="core" value="#{availableCoreRepositories}">
@@ -22,8 +22,9 @@
           </h:commandLink>
         </div>
       </nxu:dataList>
-    <div class="clear" />
+      <div class="clear" />
     </h:form>
   </div>
 </ui:define>
+
 </nxthemes:composition>

@@ -18,19 +18,15 @@
   </ui:define>
 
   <ui:define name="body">
-
-    <div>
-
+    <div class="mainFragment">
       <h:form id="document_header_layout_form" class="titleBlock">
         <nxl:documentLayout documentMode="header" mode="view"
           value="#{currentDocument}" defaultLayout="document_header"
           includeAnyMode="false" />
       </h:form>
-
       <ui:include src="/incl/document_actions_upperbuttons.xhtml"/>
       <ui:include src="/incl/message_banner.xhtml"/>
       <nxl:widget name="documentTabs" mode="view" value="#{currentDocument}" />
-
     </div>
   </ui:define>
 
