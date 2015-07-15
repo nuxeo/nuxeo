@@ -385,7 +385,7 @@ input::-moz-focus-inner {
 .column .widgetPanel .horizontalAction:only-child form {
   display: block }
 
-.column .importButton {
+.nx-page .column .importButton {
   background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
   background-color: "import.button (__FLAVOR__ background)";
   border: none;
@@ -398,7 +398,9 @@ input::-moz-focus-inner {
   text-transform: uppercase;
   width: 100% }
 
-.column .importButton:hover {
+.nx-page .column .importButton:hover {
+  background: url('${basePath}/icons/import.png') no-repeat scroll 29% center / 25px 25px;
+  background-color: "import.button (__FLAVOR__ background)";
   border: none;
   box-shadow: 0 -30px 20px rgba(255, 255, 255, 0.2) inset }
 
