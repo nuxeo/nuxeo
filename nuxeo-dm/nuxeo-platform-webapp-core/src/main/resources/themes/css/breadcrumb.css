@@ -27,12 +27,11 @@ author: lkemen@nuxeo.com
   color: "gray.dark (__FLAVOR__ color)";
   display: inline-block;
   font-weight: normal;
-  height: 24px;
-  line-height: 24px;
+  line-height: 150%;
   margin: 0 8px 0 0;
   padding: 0 .2em;
   position: relative;
-  transition: none }
+  transition: none; }
 
 .breadcrumbs a:hover,
 .breadcrumbs a:active {
