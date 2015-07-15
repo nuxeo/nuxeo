@@ -12,6 +12,7 @@ author: lkemen@nuxeo.com
 .nxHeader {
   background-color: "header (__FLAVOR__ background)";
   box-shadow: 1px 0 4px rgba(0,0,0,0.4);
+  height: 3em;
   line-height: initial;
   overflow: auto;
   position: fixed;
@@ -20,15 +21,18 @@ author: lkemen@nuxeo.com
   z-index: 1041 }
 
 .nxHeader .logo {
-  padding: .1em 0;
+  float: left;
+  line-height: 2.8em;
   text-align: center;
   vertical-align: middle;
   width: 18% }
 
 .nxHeader .logo img {
-  max-height: 8em }
+  max-height: 8em;
+  vertical-align: text-bottom; }
 
 .nxHeader .content {
+  float: right;
   font-size: 12px;
   font-family: Arial;
   padding: .85em 0;
@@ -148,7 +152,7 @@ author: lkemen@nuxeo.com
 
 .mainTabs li:hover,
 .mainTabs li.selected {
-  background-color: "header.tabs.selected (__FLAVOR__ background)"; } 
+  background-color: "header.tabs.selected (__FLAVOR__ background)"; }
 
 .mainTabs li.selected a {
   font-weight: bold;
