@@ -20,12 +20,12 @@ optgroup {
 option {
   font-weight: normal }
 
-.field,
-select,
-textarea,
-input[type="text"],
-input[type="file"],
-input[type="password"] {
+.nx-page .field,
+.nx-page select,
+.nx-page textarea,
+.nx-page input[type="text"],
+.nx-page input[type="file"],
+.nx-page input[type="password"] {
   font-family: "default (__FLAVOR__ font)";
   background: none #fff;
   box-sizing: border-box;
@@ -38,44 +38,44 @@ input[type="password"] {
   margin-bottom: .5em;
   padding: .5em }
 
-input[type="text"],
-input[type="password"],
-input[type="date"],
-textarea {
+.nx-page input[type="text"],
+.nx-page input[type="password"],
+.nx-page input[type="date"],
+.nx-page textarea {
   min-width: 4em;
   width: 100% }
 
-textarea {
+.nx-page textarea {
   min-height: 5.5em }
 
-select {
+.nx-page select {
   margin: 0 .5em .5em 0;
   max-height: 20em;
   min-width: 14em }
 
-label {
+.nx-page label {
   padding-right: .4em }
 
-.dataInputText {
+.nx-page .dataInputText {
   vertical-align: top }
 
-input[type="file"] {
+.nx-page input[type="file"] {
   margin-left: .6em }
 
-input[type="radio"],
-input[type="image"],
-input[type="hidden"],
-input[type="checkbox"] {
+.nx-page input[type="radio"],
+.nx-page input[type="image"],
+.nx-page input[type="hidden"],
+.nx-page input[type="checkbox"] {
   background: none;
   border: none !important;
   box-shadow: none;
   margin-right: .3em }
 
-input:focus,
-select:focus,
-textarea:focus,
-input[type="text"]:focus,
-input[type="password"]:focus {
+.nx-page input:focus,
+.nx-page select:focus,
+.nx-page textarea:focus,
+.nx-page input[type="text"]:focus,
+.nx-page input[type="password"]:focus {
   background-color: #fff;
   border-color: #2e9cff;
   box-shadow: 0 0 3px #b5dcff;
@@ -83,7 +83,7 @@ input[type="password"]:focus {
   outline: 0 none }
 
 /* Placeholders in forms */
-input[placeholder] {
+.nx-page input[placeholder] {
   color: "gray.medium (__FLAVOR__ color)";
   text-overflow: ellipsis; }
 
@@ -103,61 +103,64 @@ input[placeholder] {
   color: "gray.medium (__FLAVOR__ color)";
   text-overflow: ellipsis; }
 
-.contentViewQuickFilterForm input.dataInputText {
+.nx-page .contentViewQuickFilterForm input.dataInputText {
   border-radius: 3px 0 0 3px;
   border-right: medium none;
   margin: 0 }
 
-.contentViewQuickFilterForm input.button {
+.nx-page .contentViewQuickFilterForm input.button {
   border-radius: 0 2px 2px 0;
   margin: 0;
   padding: .3em .7em .33em }
 
 /* Document creation form */
-#document_create .buttonsGadget,
-#createThread .buttonsGadget,
-#document_send .buttonsGadget {
+.nx-page #document_create .buttonsGadget,
+.nx-page #createThread .buttonsGadget,
+.nx-page #document_send .buttonsGadget {
   border-top: 1px solid #eee;
   margin: 2em -2em -2em;
   padding: 1em 2em .5em }
 
-#document_create .buttonsGadget .horizontalAction:first-child .button,
-#createThread .buttonsGadget .button:first-child,
-.button.primary,
-input.button.primary {
+.nx-page #document_create .buttonsGadget .horizontalAction:first-child .button,
+.nx-page #createThread .buttonsGadget .button:first-child,
+.nx-page #document_create .buttonsGadget .button:first-child,
+.nx-page .button.primary,
+.nx-page input.button.primary {
   background-color: "primary.button (__FLAVOR__ background)";
   border: 1px solid;
   border-color: "primary.button (__FLAVOR__ border)";
   box-shadow: inset 0px 1px 0px rgba(255,255,255,0.3);
   color: #fff }
 
-#document_create .buttonsGadget .horizontalAction:first-child .button:hover,
-#createThread .buttonsGadget .button:first-child:hover,
-.button.primary:hover,
-input.button.primary:hover {
+.nx-page #document_create .buttonsGadget .horizontalAction:first-child .button:hover,
+.nx-page #createThread .buttonsGadget .button:first-child:hover,
+.nx-page #document_create .buttonsGadget .button:first-child:hover,
+.nx-page .button.primary:hover,
+.nx-page input.button.primary:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
   transition: all 150ms ease-in-out 0s }
 
-#document_create .buttonsGadget .horizontalAction:first-child .button:focus,
-#createThread .buttonsGadget .button:first-child:focus,
-.button.primary:focus,
-input.button.primary:focus {
+.nx-page #document_create .buttonsGadget .horizontalAction:first-child .button:focus,
+.nx-page #createThread .buttonsGadget .button:first-child:focus,
+.nx-page #document_create .buttonsGadget .button:first-child:focus,
+.nx-page .button.primary:focus,
+.nx-page input.button.primary:focus {
   border-color: #2e9cff;
   box-shadow: 0 0 5px #b5dcff;
   outline: none }
 
 /* in Tables */
-.dataTableNoBorder textarea,
-.dataTableNoBorder input[type="text"] {
+.nx-page .dataTableNoBorder textarea,
+.nx-page .dataTableNoBorder input[type="text"] {
   max-width: 49em }
 
-.chainSelect input[type="image"] {
+.nx-page .chainSelect input[type="image"] {
   margin: -0.1em 0 0 0.2em;
   padding: 0;
   vertical-align: top;
   float: right; }
 
-input.tagInput {
+.nx-page input.tagInput {
   background: url("${basePath}/icons/tag.png") no-repeat scroll 2px center / 12px auto transparent;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   font-size: .95em;
@@ -165,8 +168,8 @@ input.tagInput {
   max-width: 12em;
   min-width: 10em }
 
-.dataInput textarea,
-.dataInput input {
+.nx-page .dataInput textarea,
+.nx-page .dataInput input {
   background-color: #fff }
 
 /* Column Edition*/
