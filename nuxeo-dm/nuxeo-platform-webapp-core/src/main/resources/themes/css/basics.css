@@ -7,11 +7,6 @@ author: lkemen@nuxeo.com
 */
 
 /* =Reset and default values */
-html, body, form, div, p, ul, a, h1, h2, h3, h4, h5, h6, form, p, input, table,
-dd, dt, dl, img, hr, fieldset, iframe {
-  margin: 0;
-  padding: 0 }
-
 iframe {
   border-width: 1px;
   border-style: solid;
@@ -23,6 +18,11 @@ body {
   font-size: 100%;
   line-height: 1.125em;
   color: "default (__FLAVOR__ color)" }
+
+.nx-page * {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0; }
 
 ul {
   list-style: none }

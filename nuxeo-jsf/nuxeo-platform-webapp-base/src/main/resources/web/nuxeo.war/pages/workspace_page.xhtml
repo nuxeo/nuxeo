@@ -8,12 +8,12 @@
 
     <ui:decorate template="/pages/header_footer_template.xhtml">
       <ui:define name="main content">
-        <div class="themeCellFrame column" style="width:20%; float:left;">
+        <div class="column">
           <ui:include src="/incl/import.xhtml" />
           <ui:include src="/incl/multi_tree_explorer.xhtml" />
           <ui:include src="/incl/user_clipboard.xhtml" />
         </div>
-        <div class="themeCellFrame content" style="width:70%; float:right;">
+        <div class="content">
           <ui:include src="/incl/breadcrumb.xhtml" />
           <ui:insert name="body" />
         </div>

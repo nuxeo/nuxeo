@@ -6,13 +6,28 @@ author: lkemen@nuxeo.com
 /* Container of the main part without header and footer */
 .nxMainContainer {
   font-size: .8em;
+  height: 100%;
   margin-top: 3.4em;
+  position: relative;
   width: 100% }
 
-/* Left column */
-.column {
+.nxMainContainer .column {
   background: none "color.major.stronger (__FLAVOR__ background)";
-  width: 19% }
+  bottom: 0;
+  font-size: .85em;
+  width: 270px;
+  padding: 1.2em 0.75em;
+  position: absolute;
+  overflow-y: scroll;
+  top: 0; }
+
+.nxMainContainer .content {
+  padding: 2em 3em 3em;
+  background-color: "neutral.lighter (__FLAVOR__ background)";
+  min-height: 70em }
+
+.nxMainContainer .column + .content {
+  margin-left: 270px }
 
 /* Main region */
 .mainFragment {
