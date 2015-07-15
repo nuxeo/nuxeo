@@ -123,7 +123,6 @@ option {
 
 .nx-page #document_create .buttonsGadget .horizontalAction:first-child .button,
 .nx-page #createThread .buttonsGadget .button:first-child,
-.nx-page #document_create .buttonsGadget .button:first-child,
 .nx-page .button.primary,
 .nx-page input.button.primary {
   background-color: "primary.button (__FLAVOR__ background)";
@@ -134,7 +133,6 @@ option {
 
 .nx-page #document_create .buttonsGadget .horizontalAction:first-child .button:hover,
 .nx-page #createThread .buttonsGadget .button:first-child:hover,
-.nx-page #document_create .buttonsGadget .button:first-child:hover,
 .nx-page .button.primary:hover,
 .nx-page input.button.primary:hover {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 -30px 20px rgba(255, 255, 255, 0.2) inset, inset 0px 1px 0px rgba(255,255,255,0.4);
@@ -142,7 +140,6 @@ option {
 
 .nx-page #document_create .buttonsGadget .horizontalAction:first-child .button:focus,
 .nx-page #createThread .buttonsGadget .button:first-child:focus,
-.nx-page #document_create .buttonsGadget .button:first-child:focus,
 .nx-page .button.primary:focus,
 .nx-page input.button.primary:focus {
   border-color: #2e9cff;
