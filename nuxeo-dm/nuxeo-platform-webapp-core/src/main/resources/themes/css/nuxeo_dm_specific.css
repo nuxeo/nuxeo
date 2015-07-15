@@ -8,20 +8,6 @@ author: lkemen@nuxeo.com
 */
 
 /* =Frame */
-.nxMainContainer {
-  min-height: 660px;
-  height: auto!important;
-  height: 660px }
-
-.nxMainContainer .content {
-  padding: 2em 3em 3em;
-  background-color: "neutral.lighter (__FLAVOR__ background)"; }
-
-.nxMainContainer .column {
-  font-size: .85em;
-  min-width: 20em;
-  padding: 1.2em .75em }
-
 .content .tabsContent {
   background: none #fff;
   margin: .1em;
