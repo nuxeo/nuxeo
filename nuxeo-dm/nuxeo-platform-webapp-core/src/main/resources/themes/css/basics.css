@@ -7,22 +7,26 @@ author: lkemen@nuxeo.com
 */
 
 /* =Reset and default values */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0; }
+
 iframe {
   border-width: 1px;
   border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)" }
 
 html,
-body {
+body,
+.nx-page {
+  color: "default (__FLAVOR__ color)";
+  direction: ltr;
   font-family: "default (__FLAVOR__ font)";
   font-size: 100%;
   line-height: 1.125em;
-  color: "default (__FLAVOR__ color)" }
-
-.nx-page * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0; }
+  text-rendering: optimizelegibility;
+  vertical-align: baseline; }
 
 ul {
   list-style: none }

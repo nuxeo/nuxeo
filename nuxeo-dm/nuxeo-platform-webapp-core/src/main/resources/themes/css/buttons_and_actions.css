@@ -132,7 +132,7 @@ input::-moz-focus-inner {
   margin: 0;
   padding: 0 }
 
-.action_bar a {
+.nx-page.action_bar a {
   float: left;
   font-size: .9em;
   font-weight: bold;
@@ -140,19 +140,19 @@ input::-moz-focus-inner {
   padding: .3em .7em .4em;
   text-decoration:none }
 
-.action_bar a img {
+.nx-page.action_bar a img {
   float: left;
   margin: -0.2em .3em -0.3em -0.4em }
 
-.action_bar input[type="text"] {
+.nx-page .action_bar input[type="text"] {
   margin: 0 .2em;
   padding: .3em .5em;
   width: auto }
 
-.action_bar input.button {
+.nx-page.action_bar input.button {
   margin-top: 0 }
 
-.contentViewQuickFilterForm .action_bar a {
+.nx-page.contentViewQuickFilterForm .action_bar a {
   margin: 0 }
 
 .contentViewUpperActions {
@@ -179,7 +179,7 @@ input::-moz-focus-inner {
   display: inline-block;
   padding: 0 }
 
-.contentViewUpperAction a {
+.nx-page.contentViewUpperAction a {
   color: "gray.light (__FLAVOR__ color)";
   font-size: .85em }
 
