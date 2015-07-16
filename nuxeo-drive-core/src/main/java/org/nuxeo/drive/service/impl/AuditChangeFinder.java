@@ -47,7 +47,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Implementation of {@link FileSystemChangeFinder} using the {@link AuditReader}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class AuditChangeFinder implements FileSystemChangeFinder {
@@ -61,7 +61,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
      * for backward compatibility.
      * <p>
      * Now using event log id for lower and upper bounds to ensure consistency.
-     * 
+     *
      * @see https://jira.nuxeo.com/browse/NXP-14826
      * @see #getFileSystemChangesIntegerBounds(CoreSession, Set, SynchronizationRoots, long, long, int)
      */
@@ -140,27 +140,20 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                         "Found extended info in audit log entry, document %s has been deleted or is an unregistered synchronization root.",
                         docRef));
                 boolean isChangeSet = false;
-                // First try to adapt the document as a FileSystemItem to
-                // provide it to the FileSystemItemChange entry.
-                // This can succeed for an unregistered synchronization root
-                // that can still be adapted as a FileSystemItem, for example in
-                // the case of the "My Docs" virtual folder in the permission
-                // based hierarchy implementation. It can also happen if this is
-                // a security update after which the current user still has
-                // access to the document.
-                if (session.exists(docRef)) {
+                // First try to adapt the document as a FileSystemItem to provide it to the FileSystemItemChange entry,
+                // only in the case of a security update.
+                // This can succeed for if this is a security update after which the current user still has access to
+                // the document.
+                if (!"deleted".equals(entry.getEventId()) && session.exists(docRef)) {
                     change = getFileSystemItemChange(session, docRef, entry, fsIdInfo.getValue(String.class));
                     if (change != null) {
                         isChangeSet = true;
                     }
                 }
                 if (!isChangeSet) {
-                    // If the document is not adaptable as a FileSystemItem,
-                    // typically if it has been deleted, if it is a regular
-                    // unregistered synchronization root or if its security has
-                    // been updated denying access to the current user, only
-                    // provide the FileSystemItem id and name to the
-                    // FileSystemItemChange entry.
+                    // If the document has been deleted, is a regular unregistered synchronization root, if its security
+                    // has been updated denying access to the current user, or if it is not adaptable as a
+                    // FileSystemItem only provide the FileSystemItem id and name to the FileSystemItemChange entry.
                     log.debug(String.format(
                             "Document %s doesn't exist or is not adaptable as a FileSystemItem, only providing the FileSystemItem id and name to the FileSystemItemChange entry.",
                             docRef));
@@ -212,7 +205,7 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
      * milliseconds to have a consistent behavior across databases.
      * <p>
      * Should now use last available log id in the audit log table as upper bound.
-     * 
+     *
      * @see https://jira.nuxeo.com/browse/NXP-14826
      * @see #getUpperBound()
      */
