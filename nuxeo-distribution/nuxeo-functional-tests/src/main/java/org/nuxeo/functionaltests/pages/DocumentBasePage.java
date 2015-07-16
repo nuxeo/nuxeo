@@ -82,7 +82,7 @@ public class DocumentBasePage extends AbstractPage {
     @FindBy(className = "documentDescription")
     public WebElement currentDocumentDescription;
 
-    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td[2]/div[2]//h1")
+    @FindBy(xpath = "//form[@id='document_header_layout_form']//h1")
     public WebElement currentDocumentTitle;
 
     @FindBy(className = "currentDocumentDescription")
