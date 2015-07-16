@@ -21,9 +21,9 @@
 
   </extension>
 
-  <extension target="org.nuxeo.ecm.platform.WebResources" point="resourceBundles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
 
-    <resourceBundle name="layoutDemo">
+    <bundle name="layoutDemo">
       <resources>
         <resource>layoutDemo.css</resource>
         <resource>layoutDemo.js</resource>
@@ -31,7 +31,7 @@
         <resource>prettify.js</resource>
         <resource>layoutDemo-ga.js</resource>
       </resources>
-    </resourceBundle>
+    </bundle>
 
   </extension>
 
@@ -49,7 +49,6 @@
         <bundle>nuxeo_base</bundle>
         <bundle>nuxeo_header_footer</bundle>
         <bundle>layoutDemo</bundle>
-        <resource>screen.css</resource>
       </resources>
     </page>
 
