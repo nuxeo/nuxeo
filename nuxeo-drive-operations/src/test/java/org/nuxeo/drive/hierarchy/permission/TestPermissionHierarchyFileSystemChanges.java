@@ -404,8 +404,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         return session.createDocument(file);
     }
 
-    protected DocumentModel createFolder(CoreSession session, String path, String name, String type)
-            {
+    protected DocumentModel createFolder(CoreSession session, String path, String name, String type) {
 
         DocumentModel folder = session.createDocumentModel(path, name, type);
         return session.createDocument(folder);
