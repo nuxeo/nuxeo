@@ -76,10 +76,7 @@ import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
 import org.nuxeo.ecm.core.storage.PartialList;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
-import org.nuxeo.ecm.core.storage.sql.jdbc.ClusterNodeHandler;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
-import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCRowMapper;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
@@ -3135,26 +3132,19 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     @Test
     public void testCacheInvalidationsPropagatorLeak() throws Exception {
-        assertEquals(0, getCacheInvalidationsPropagatorSize());
+        assertEquals(0, getInvalidationsPropagatorSize());
         Session session = repository.getConnection();
-        assertEquals(1, getCacheInvalidationsPropagatorSize());
+        assertEquals(1, getInvalidationsPropagatorSize());
         session.close();
-        assertEquals(0, getCacheInvalidationsPropagatorSize());
+        assertEquals(0, getInvalidationsPropagatorSize());
         Session s1 = repository.getConnection();
         Session s2 = repository.getConnection();
         Session s3 = repository.getConnection();
-        assertEquals(3, getCacheInvalidationsPropagatorSize());
+        assertEquals(3, getInvalidationsPropagatorSize());
         s1.close();
         s2.close();
         s3.close();
-        assertEquals(0, getCacheInvalidationsPropagatorSize());
-    }
-
-    protected int getCacheInvalidationsPropagatorSize() throws Exception {
-        Field propagatorField = RepositoryImpl.class.getDeclaredField("cachePropagator");
-        propagatorField.setAccessible(true);
-        InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(repository);
-        return propagator.queues.size();
+        assertEquals(0, getInvalidationsPropagatorSize());
     }
 
     @Test
@@ -3170,67 +3160,18 @@ public class TestSQLBackend extends SQLBackendTestCase {
         long DELAY = 500; // ms
         repository = newRepository(DELAY);
 
-        assertEquals(0, getClusterInvalidationsPropagatorSize());
+        assertEquals(0, getInvalidationsPropagatorSize());
         Session session = repository.getConnection();
-        assertEquals(1, getClusterInvalidationsPropagatorSize());
+        assertEquals(1, getInvalidationsPropagatorSize());
         session.close();
-        assertEquals(0, getClusterInvalidationsPropagatorSize());
+        assertEquals(0, getInvalidationsPropagatorSize());
     }
 
-    protected int getClusterInvalidationsPropagatorSize() throws Exception {
-        Field backendField = RepositoryImpl.class.getDeclaredField("backend");
-        backendField.setAccessible(true);
-        JDBCBackend backend = (JDBCBackend) backendField.get(repository);
-        Field handlerField = JDBCBackend.class.getDeclaredField("clusterNodeHandler");
-        handlerField.setAccessible(true);
-        ClusterNodeHandler clusterNodeHandler = (ClusterNodeHandler) handlerField.get(backend);
-        if (clusterNodeHandler == null) {
-            return 0;
-        }
-        Field propagatorField = ClusterNodeHandler.class.getDeclaredField("propagator");
+    protected int getInvalidationsPropagatorSize() throws Exception {
+        Field propagatorField = RepositoryImpl.class.getDeclaredField("invalidationsPropagator");
         propagatorField.setAccessible(true);
-        InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(clusterNodeHandler);
+        InvalidationsPropagator propagator = (InvalidationsPropagator) propagatorField.get(repository);
         return propagator.queues.size();
-    }
-
-    @Test
-    public void testClusterInvalidationsQueueNotNeeded() throws Exception {
-        if (!DatabaseHelper.DATABASE.supportsClustering()) {
-            System.out.println("Skipping clustering test for unsupported database: "
-                    + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-        repository.close();
-
-        // get a clustered repository
-        long DELAY = 0; // ms
-        repository = newRepository(DELAY);
-        Session connection = repository.getConnection(); // init
-        // init lockmanager mapper
-        connection.getLock(connection.getRootNode().getId());
-
-        // lock manager mapper has no invalidations queue
-        VCSLockManager lockManager = (VCSLockManager) ((RepositoryImpl) repository).getLockManager();
-        assertNoInvalidationsQueue((JDBCRowMapper) lockManager.mapper);
-
-        // cluster node handler mapper has no invalidations queue
-        Field backendField = RepositoryImpl.class.getDeclaredField("backend");
-        backendField.setAccessible(true);
-        JDBCBackend backend = (JDBCBackend) backendField.get(repository);
-        Field handlerField = JDBCBackend.class.getDeclaredField("clusterNodeHandler");
-        handlerField.setAccessible(true);
-        ClusterNodeHandler clusterNodeHandler = (ClusterNodeHandler) handlerField.get(backend);
-        Field clusterNodeMapperField = ClusterNodeHandler.class.getDeclaredField("clusterNodeMapper");
-        clusterNodeMapperField.setAccessible(true);
-        JDBCRowMapper mapper = (JDBCRowMapper) clusterNodeMapperField.get(clusterNodeHandler);
-        assertNoInvalidationsQueue(mapper);
-    }
-
-    protected static void assertNoInvalidationsQueue(JDBCRowMapper mapper) throws Exception {
-        Field queueField = JDBCRowMapper.class.getDeclaredField("queue");
-        queueField.setAccessible(true);
-        InvalidationsQueue queue = (InvalidationsQueue) queueField.get(mapper);
-        assertNull(queue);
     }
 
     @SuppressWarnings("boxing")

@@ -15,6 +15,7 @@ package org.nuxeo.ecm.core.storage.sql;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.naming.Reference;
@@ -35,9 +36,9 @@ import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
-import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
+import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCClusterInvalidator;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
@@ -57,6 +58,8 @@ public class RepositoryImpl implements Repository {
 
     private static final Log log = LogFactory.getLog(RepositoryImpl.class);
 
+    private static final Random RANDOM = new Random();
+
     protected final RepositoryDescriptor repositoryDescriptor;
 
     protected final Class<? extends FulltextParser> fulltextParserClass;
@@ -73,8 +76,8 @@ public class RepositoryImpl implements Repository {
 
     private LockManager lockManager;
 
-    /** Propagator of invalidations to all local mappers' caches. */
-    private final InvalidationsPropagator cachePropagator;
+    /** Propagator of invalidations to all mappers' caches. */
+    protected final InvalidationsPropagator invalidationsPropagator;
 
     private Model model;
 
@@ -86,7 +89,7 @@ public class RepositoryImpl implements Repository {
     public RepositoryImpl(RepositoryDescriptor repositoryDescriptor) {
         this.repositoryDescriptor = repositoryDescriptor;
         sessions = new CopyOnWriteArrayList<SessionImpl>();
-        cachePropagator = new InvalidationsPropagator("cache-" + this);
+        invalidationsPropagator = new InvalidationsPropagator();
 
         String className = repositoryDescriptor.fulltextParser;
         if (StringUtils.isBlank(className)) {
@@ -169,7 +172,7 @@ public class RepositoryImpl implements Repository {
                 return mapper;
             }
             CachingMapper cachingMapper = cachingMapperClass.newInstance();
-            cachingMapper.initialize(getName(), model, mapper, cachePropagator,
+            cachingMapper.initialize(getName(), model, mapper, invalidationsPropagator,
                     repositoryDescriptor.cachingMapperProperties);
             return cachingMapper;
         } catch (ReflectiveOperationException e) {
@@ -201,8 +204,8 @@ public class RepositoryImpl implements Repository {
         return model;
     }
 
-    public RepositoryBackend getBackend() {
-        return backend;
+    public InvalidationsPropagator getInvalidationsPropagator() {
+        return invalidationsPropagator;
     }
 
     public Class<? extends FulltextParser> getFulltextParserClass() {
@@ -238,12 +241,25 @@ public class RepositoryImpl implements Repository {
             initRepository();
         }
         SessionPathResolver pathResolver = new SessionPathResolver();
-        Mapper mapper = backend.newMapper(model, pathResolver, null);
+        Mapper mapper = newMapper(pathResolver, true);
         SessionImpl session = newSession(model, mapper);
         pathResolver.setSession(session);
         sessions.add(session);
         sessionCount.inc();
         return session;
+    }
+
+    /**
+     * Creates a new mapper.
+     *
+     * @param pathResolver the path resolver (for regular mappers)
+     * @param useInvalidations whether this mapper participates in invalidation propagation (false for lock manager /
+     *            cluster invalidator)
+     * @return the new mapper.
+     * @since 7.4
+     */
+    public Mapper newMapper(PathResolver pathResolver, boolean useInvalidations) {
+        return backend.newMapper(model, pathResolver, useInvalidations);
     }
 
     protected void initRepository() {
@@ -255,11 +271,9 @@ public class RepositoryImpl implements Repository {
         backend.initializeModel(model);
         initLockManager();
 
-        // create the mapper for the cluster node handler
+        // create the cluster invalidator
         if (repositoryDescriptor.getClusteringEnabled()) {
-            backend.newMapper(model, null, MapperKind.CLUSTER_NODE_HANDLER);
-            log.info("Clustering enabled with " + repositoryDescriptor.getClusteringDelay()
-                    + " ms delay for repository: " + getName());
+            initClusterInvalidator();
         }
 
         // log once which mapper cache is being used
@@ -281,6 +295,22 @@ public class RepositoryImpl implements Repository {
             lockManager = new VCSLockManager(lockManagerName);
         }
         log.info("Repository " + getName() + " using lock manager " + lockManager);
+    }
+
+    protected void initClusterInvalidator() {
+        String nodeId = repositoryDescriptor.getClusterNodeId();
+        if (StringUtils.isBlank(nodeId)) {
+            // need a smallish int because of SQL Server legacy node ids
+            nodeId = String.valueOf(RANDOM.nextInt(32768));
+            log.warn(
+                    "Missing cluster node id configuration, please define it explicitly (usually through repository.clustering.id). "
+                            + "Using random cluster node id instead: " + nodeId);
+        } else {
+            nodeId = nodeId.trim();
+        }
+        ClusterInvalidator clusterInvalidator = new JDBCClusterInvalidator();
+        clusterInvalidator.initialize(nodeId, this);
+        backend.setClusterInvalidator(clusterInvalidator);
     }
 
     protected SessionImpl newSession(Model model, Mapper mapper) {

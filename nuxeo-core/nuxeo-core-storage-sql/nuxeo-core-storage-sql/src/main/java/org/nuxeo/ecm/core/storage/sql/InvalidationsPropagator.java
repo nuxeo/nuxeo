@@ -21,12 +21,8 @@ public class InvalidationsPropagator {
 
     public final ArrayList<InvalidationsQueue> queues; // used synchronized
 
-    /** used for debugging */
-    public final String name;
-
-    public InvalidationsPropagator(String name) {
+    public InvalidationsPropagator() {
         queues = new ArrayList<InvalidationsQueue>();
-        this.name = name;
     }
 
     public synchronized void addQueue(InvalidationsQueue queue) {
@@ -45,18 +41,11 @@ public class InvalidationsPropagator {
         synchronized (this) {
             qq = (Collection<InvalidationsQueue>) queues.clone();
         }
-        int n = 0;
         for (InvalidationsQueue q : qq) {
             if (q != skipQueue) {
                 q.addInvalidations(invalidations);
-                n++;
             }
         }
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName() + '(' + name + ')';
     }
 
 }

@@ -41,7 +41,9 @@ import javax.transaction.xa.Xid;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
+import org.nuxeo.ecm.core.storage.sql.InvalidationsPropagator;
 import org.nuxeo.ecm.core.storage.sql.InvalidationsQueue;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -67,57 +69,39 @@ public class JDBCRowMapper extends JDBCConnection implements RowMapper {
     public static final int DEBUG_MAX_TREE = 50;
 
     /**
-     * Cluster node handler, or {@code null} if this {@link Mapper} is not the cluster node mapper.
+     * Cluster invalidator, or {@code null} if this mapper does not participate in invalidation propagation (cluster
+     * invalidator, lock manager).
      */
-    private final ClusterNodeHandler clusterNodeHandler;
+    private final ClusterInvalidator clusterInvalidator;
 
-    /**
-     * Queue of invalidations received for this cluster node.
-     */
-    private final InvalidationsQueue queue;
+    private final InvalidationsPropagator invalidationsPropagator;
 
-    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource, ClusterNodeHandler clusterNodeHandler,
-            boolean noSharing) {
+    public JDBCRowMapper(Model model, SQLInfo sqlInfo, XADataSource xadatasource, ClusterInvalidator clusterInvalidator,
+            InvalidationsPropagator invalidationsPropagator, boolean noSharing) {
         super(model, sqlInfo, xadatasource, noSharing);
-        this.clusterNodeHandler = clusterNodeHandler;
-        if (clusterNodeHandler != null) {
-            queue = new InvalidationsQueue("cluster-" + this);
-            clusterNodeHandler.addQueue(queue);
-        } else {
-            queue = null;
-        }
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        if (clusterNodeHandler != null) {
-            clusterNodeHandler.removeQueue(queue);
-        }
+        this.clusterInvalidator = clusterInvalidator;
+        this.invalidationsPropagator = invalidationsPropagator;
     }
 
     @Override
     public Invalidations receiveInvalidations() {
-        if (clusterNodeHandler != null && connection != null) {
-            receiveClusterInvalidations();
-            return queue.getInvalidations();
+        if (clusterInvalidator != null) {
+            Invalidations invalidations = clusterInvalidator.receiveInvalidations();
+            // send received invalidations to all mappers
+            if (invalidations != null && !invalidations.isEmpty()) {
+                invalidationsPropagator.propagateInvalidations(invalidations, null);
+            }
+            return invalidations;
         } else {
             return null;
         }
     }
 
-    protected void receiveClusterInvalidations() {
-        Invalidations invalidations = clusterNodeHandler.receiveClusterInvalidations();
-        // send received invalidations to all mappers
-        if (invalidations != null && !invalidations.isEmpty()) {
-            clusterNodeHandler.propagateInvalidations(invalidations, null);
-        }
-    }
 
     @Override
     public void sendInvalidations(Invalidations invalidations) {
-        if (clusterNodeHandler != null) {
-            clusterNodeHandler.sendClusterInvalidations(invalidations);
+        if (clusterInvalidator != null) {
+            clusterInvalidator.sendInvalidations(invalidations);
         }
     }
 

@@ -12,6 +12,7 @@
 
 package org.nuxeo.ecm.core.storage.sql.management;
 
+import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.ModelSetup;
@@ -29,8 +30,8 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) {
-        return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver, kind), Mapper.class);
+    public Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations) {
+        return MetricInvocationHandler.newProxy(wrapped.newMapper(model, pathResolver, useInvalidations), Mapper.class);
     }
 
     @Override
@@ -46,6 +47,11 @@ public abstract class MonitoredBackend implements RepositoryBackend {
     @Override
     public void initializeModelSetup(ModelSetup modelSetup) {
         wrapped.initializeModelSetup(modelSetup);
+    }
+
+    @Override
+    public void setClusterInvalidator(ClusterInvalidator clusterInvalidator) {
+        wrapped.setClusterInvalidator(clusterInvalidator);
     }
 
     @Override

@@ -81,14 +81,15 @@ public class UnifiedCachingRowMapper implements RowMapper {
     private final Invalidations localInvalidations;
 
     /**
-     * The queue of cache invalidations received from other session, to process at pre-transaction time.
+     * The queue of invalidations received from other session or from the cluster invalidator, to process at
+     * pre-transaction time.
      */
-    private final InvalidationsQueue cacheQueue;
+    private final InvalidationsQueue invalidationsQueue;
 
     /**
      * The propagator of invalidations to other mappers.
      */
-    private InvalidationsPropagator cachePropagator;
+    private InvalidationsPropagator invalidationsPropagator;
 
     private static final String CACHE_NAME = "unifiedVCSCache";
 
@@ -114,15 +115,15 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
     public UnifiedCachingRowMapper() {
         localInvalidations = new Invalidations();
-        cacheQueue = new InvalidationsQueue("mapper-" + this);
+        invalidationsQueue = new InvalidationsQueue("mapper-" + this);
     }
 
     synchronized public void initialize(String repositoryName, Model model, RowMapper rowMapper,
-            InvalidationsPropagator cachePropagator, Map<String, String> properties) {
+            InvalidationsPropagator invalidationsPropagator, Map<String, String> properties) {
         this.model = model;
         this.rowMapper = rowMapper;
-        this.cachePropagator = cachePropagator;
-        cachePropagator.addQueue(cacheQueue);
+        this.invalidationsPropagator = invalidationsPropagator;
+        invalidationsPropagator.addQueue(invalidationsQueue);
         if (cacheManager == null) {
             if (properties.containsKey(EHCACHE_FILE_PROP)) {
                 String value = properties.get(EHCACHE_FILE_PROP);
@@ -168,7 +169,7 @@ public class UnifiedCachingRowMapper implements RowMapper {
     }
 
     public void close() {
-        cachePropagator.removeQueue(cacheQueue);
+        invalidationsPropagator.removeQueue(invalidationsQueue);
         rowMapperCount.decrementAndGet();
     }
 
@@ -314,15 +315,15 @@ public class UnifiedCachingRowMapper implements RowMapper {
 
     @Override
     public Invalidations receiveInvalidations() {
-        // local invalidations
-        Invalidations ret = cacheQueue.getInvalidations();
-
-        // invalidations from the underlying mapper (remote, cluster)
+        // invalidations from the underlying mapper (cluster)
+        // already propagated to our invalidations queue
         Invalidations remoteInvals = rowMapper.receiveInvalidations();
 
+        Invalidations ret = invalidationsQueue.getInvalidations();
+
         if (remoteInvals != null) {
-            ret.add(remoteInvals);
             if (!ret.all) {
+                // only handle remote invalidations, the cache is shared and transactional
                 if (remoteInvals.modified != null) {
                     for (RowId rowId : remoteInvals.modified) {
                         cacheRemove(rowId);
@@ -360,8 +361,8 @@ public class UnifiedCachingRowMapper implements RowMapper {
             // send to underlying mapper
             rowMapper.sendInvalidations(invalidations);
 
-            // queue to other local mappers' caches
-            cachePropagator.propagateInvalidations(invalidations, cacheQueue);
+            // queue to other mappers' caches
+            invalidationsPropagator.propagateInvalidations(invalidations, invalidationsQueue);
         }
     }
 

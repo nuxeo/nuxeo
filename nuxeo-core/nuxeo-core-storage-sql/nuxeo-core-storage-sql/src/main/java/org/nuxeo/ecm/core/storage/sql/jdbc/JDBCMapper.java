@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.PartialList;
+import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
 import org.nuxeo.ecm.core.storage.sql.ColumnType.WrappedId;
 import org.nuxeo.ecm.core.storage.sql.Invalidations;
@@ -109,15 +110,15 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
      * @param pathResolver the path resolver (used for startswith queries)
      * @param sqlInfo the sql info
      * @param xadatasource the XA datasource to use to get connections
-     * @param clusterNodeHandler the cluster node handler
+     * @param clusterInvalidator the cluster invalidator
      * @param repository
      */
     public JDBCMapper(Model model, PathResolver pathResolver, SQLInfo sqlInfo, XADataSource xadatasource,
-            ClusterNodeHandler clusterNodeHandler, boolean noSharing, RepositoryImpl repository) {
-        super(model, sqlInfo, xadatasource, clusterNodeHandler, noSharing);
+            ClusterInvalidator clusterInvalidator, boolean noSharing, RepositoryImpl repository) {
+        super(model, sqlInfo, xadatasource, clusterInvalidator, repository.getInvalidationsPropagator(), noSharing);
         this.pathResolver = pathResolver;
         this.repository = repository;
-        clusteringEnabled = clusterNodeHandler != null;
+        clusteringEnabled = clusterInvalidator != null;
         queryMakerService = Framework.getService(QueryMakerService.class);
 
         tableUpgrader = new TableUpgrader(this);

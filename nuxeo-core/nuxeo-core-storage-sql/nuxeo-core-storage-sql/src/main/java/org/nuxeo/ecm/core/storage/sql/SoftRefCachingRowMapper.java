@@ -205,14 +205,11 @@ public class SoftRefCachingRowMapper implements RowMapper {
 
     @Override
     public Invalidations receiveInvalidations() {
-        // invalidations from the underlying mapper (remote, cluster)
-        Invalidations invals = rowMapper.receiveInvalidations();
+        // invalidations from the underlying mapper (cluster)
+        // already propagated to our invalidations queue
+        rowMapper.receiveInvalidations();
 
-        // add local accumulated invalidations to remote ones
         Invalidations invalidations = cacheQueue.getInvalidations();
-        if (invals != null) {
-            invalidations.add(invals);
-        }
 
         // invalidate our cache
         if (invalidations.all) {

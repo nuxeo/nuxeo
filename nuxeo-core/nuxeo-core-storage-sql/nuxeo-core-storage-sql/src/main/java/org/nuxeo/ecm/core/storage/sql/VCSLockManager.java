@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
-import org.nuxeo.ecm.core.storage.sql.RepositoryBackend.MapperKind;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -120,7 +119,7 @@ public class VCSLockManager extends AbstractLockManager {
      */
     protected Mapper getMapper() {
         if (mapper == null) {
-            mapper = repository.getBackend().newMapper(repository.getModel(), null, MapperKind.LOCK_MANAGER);
+            mapper = repository.newMapper(null, false);
         }
         return mapper;
     }

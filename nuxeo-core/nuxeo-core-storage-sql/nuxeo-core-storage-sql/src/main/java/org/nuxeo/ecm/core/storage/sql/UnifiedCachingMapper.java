@@ -40,9 +40,9 @@ public class UnifiedCachingMapper extends UnifiedCachingRowMapper implements Cac
     public Mapper mapper;
 
     @Override
-    public void initialize(String repositoryName, Model model, Mapper mapper, InvalidationsPropagator cachePropagator,
-            Map<String, String> properties) {
-        super.initialize(repositoryName, model, mapper, cachePropagator, properties);
+    public void initialize(String repositoryName, Model model, Mapper mapper,
+            InvalidationsPropagator invalidationsPropagator, Map<String, String> properties) {
+        super.initialize(repositoryName, model, mapper, invalidationsPropagator, properties);
         this.mapper = mapper;
     }
 

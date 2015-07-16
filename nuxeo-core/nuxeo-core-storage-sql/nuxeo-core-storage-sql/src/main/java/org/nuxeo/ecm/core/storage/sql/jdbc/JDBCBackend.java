@@ -25,6 +25,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
 import org.nuxeo.ecm.core.storage.sql.Model.IdType;
@@ -58,12 +59,9 @@ public class JDBCBackend implements RepositoryBackend {
 
     private boolean firstMapper = true;
 
-    private ClusterNodeHandler clusterNodeHandler;
+    private ClusterInvalidator clusterInvalidator;
 
-    public JDBCBackend() {
-    }
-
-    protected boolean isPooledDataSource;
+    private boolean isPooledDataSource;
 
     @Override
     public void initialize(RepositoryImpl repository) {
@@ -184,12 +182,16 @@ public class JDBCBackend implements RepositoryBackend {
     }
 
     @Override
-    public Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind) {
-        boolean noSharing = kind == MapperKind.LOCK_MANAGER || kind == MapperKind.CLUSTER_NODE_HANDLER;
-        boolean noInvalidationPropagation = kind == MapperKind.LOCK_MANAGER;
+    public void setClusterInvalidator(ClusterInvalidator clusterInvalidator) {
+        this.clusterInvalidator = clusterInvalidator;
+    }
+
+    @Override
+    public Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations) {
+        boolean noSharing = !useInvalidations;
         RepositoryDescriptor repositoryDescriptor = repository.getRepositoryDescriptor();
 
-        ClusterNodeHandler cnh = noInvalidationPropagation ? null : clusterNodeHandler;
+        ClusterInvalidator cnh = useInvalidations ? clusterInvalidator : null;
         Mapper mapper = new JDBCMapper(model, pathResolver, sqlInfo, xadatasource, cnh, noSharing, repository);
         if (isPooledDataSource) {
             mapper = JDBCMapperConnector.newConnector(mapper);
@@ -212,16 +214,13 @@ public class JDBCBackend implements RepositoryBackend {
                         repositoryDescriptor.getFulltextDisabled(), repositoryDescriptor.getFulltextSearchDisabled()));
             }
         }
-        if (kind == MapperKind.CLUSTER_NODE_HANDLER) {
-            clusterNodeHandler = new ClusterNodeHandler(mapper, repositoryDescriptor);
-        }
         return mapper;
     }
 
     @Override
     public void shutdown() {
-        if (clusterNodeHandler != null) {
-            clusterNodeHandler.close();
+        if (clusterInvalidator != null) {
+            clusterInvalidator.close();
         }
     }
 

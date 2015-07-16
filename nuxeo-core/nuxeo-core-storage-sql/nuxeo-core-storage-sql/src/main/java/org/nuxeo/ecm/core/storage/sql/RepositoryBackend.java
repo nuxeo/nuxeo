@@ -37,20 +37,20 @@ public interface RepositoryBackend {
     void initializeModel(Model model);
 
     /**
-     * The kind of mapper to create through {@link #newMapper}.
+     * Sets the cluster invalidator, to be used by future mappers created.
+     *
+     * @since 7.4
      */
-    enum MapperKind {
-        LOCK_MANAGER, CLUSTER_NODE_HANDLER
-    }
+    void setClusterInvalidator(ClusterInvalidator clusterInvalidator);
 
     /**
      * Creates a new instance a {@link Mapper}. Called once for every new session.
      *
      * @param model the model
      * @param pathResolver the path resolver
-     * @param kind the kind of mapper to create
+     * @param useInvalidations whether this mapper participates in invalidation propagation
      */
-    Mapper newMapper(Model model, PathResolver pathResolver, MapperKind kind);
+    Mapper newMapper(Model model, PathResolver pathResolver, boolean useInvalidations);
 
     /**
      * Shuts down the backend.
