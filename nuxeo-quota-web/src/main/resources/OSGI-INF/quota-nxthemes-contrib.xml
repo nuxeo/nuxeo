@@ -2,40 +2,39 @@
 
 <component name="org.nuxeo.document.quota.themes">
 
-  <require>org.nuxeo.theme.core</require>
-  <require>org.nuxeo.theme.fragments</require>
-  <require>org.nuxeo.theme.html</require>
-  <require>org.nuxeo.theme.jsf</require>
-  <require>org.nuxeo.theme.nuxeo.default</require>
-  <require>org.nuxeo.ecm.admin.center.theme</require>
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
 
- <!-- views -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="views">
-
-    <view name="nuxeo5 includes" template-engine="jsf-facelets" merge="true">
-      <format-type>widget</format-type>
-      <resource>automation.js</resource>
-      <resource>jquery.flot.pie.min.js</resource>
-      <resource>displayQuotaStats.js</resource>
-      <resource>jquery.ui.slider.js</resource>
-      <resource>jquery.ui.slider.css</resource>
-    </view>
-
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>displayQuotaStats.js</resource>
+      </resources>
+    </bundle>
   </extension>
 
-  <!-- resources -->
-  <extension target="org.nuxeo.theme.services.ThemeService" point="resources">
-    <resource name="automation.js">
-      <path>scripts/automation.js</path>
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
+
+    <!-- JQuery UI Slider 1.9.2 -->
+    <resource name="jquery.ui.slider.js">
+      <uri>/scripts/jquery-ui-1.9.2.slider.js</uri>
+    </resource>
+    <resource name="jquery.ui.slider.css">
+      <uri>/css/jquery-ui-1.9.2.slider.min.css</uri>
+    </resource>
+    <resource name="jquery.flot.min.js">
+      <uri>/scripts/jquery/flot/jquery.flot.min.js</uri>
     </resource>
     <resource name="jquery.flot.pie.min.js">
-      <path>scripts/jquery/flot/jquery.flot.min.js</path>
-      <path>scripts/jquery/flot/jquery.flot.pie.min.js</path>
+      <uri>/scripts/jquery/flot/jquery.flot.pie.min.js</uri>
+      <require>jquery.flot.min.js</require>
     </resource>
     <resource name="displayQuotaStats.js">
-      <path>scripts/displayQuotaStats.js</path>
+      <uri>/scripts/displayQuotaStats.js</uri>
+      <require>jquery.flot.min.js</require>
       <require>jquery.flot.pie.min.js</require>
       <require>automation.js</require>
+      <require>jquery.ui.slider.js</require>
+      <require>jquery.ui.slider.css</require>
     </resource>
 
   </extension>
