@@ -230,9 +230,9 @@ public class TestPermissionHierarchyFileSystemChanges {
             List<FileSystemItemChange> changes = getChanges(principal1);
             assertEquals(1, changes.size());
             FileSystemItemChange change = changes.get(0);
-            assertEquals(userWorkspace1ItemId, change.getFileSystemItemId());
+            assertEquals("test#" + userWorkspace1.getId(), change.getFileSystemItemId());
             assertEquals("My Docs", change.getFileSystemItemName());
-            assertNotNull(change.getFileSystemItem());
+            assertNull(change.getFileSystemItem());
         } finally {
             TransactionHelper.commitOrRollbackTransaction();
         }
