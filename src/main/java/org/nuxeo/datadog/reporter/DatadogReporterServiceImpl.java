@@ -76,13 +76,12 @@ public class DatadogReporterServiceImpl extends DefaultComponent implements Data
 
     private void buildReporter() {
 
-        EnumSet<Expansion> expansions = EnumSet.of(COUNT, RATE_1_MINUTE, RATE_15_MINUTE, MEDIAN, P95, P99);
         HttpTransport httpTransport = new HttpTransport.Builder().withApiKey(conf.getApiKey()).build();
         reporter = DatadogReporter.forRegistry(metrics)//
         .withHost(conf.getHost())//
         .withTags(conf.getTags())
         .withTransport(httpTransport)//
-        .withExpansions(expansions)//
+        .withExpansions(Expansion.ALL)//
         .withMetricNameFormatter(new DefaultMetricNameFormatter())//
         .build();
 
