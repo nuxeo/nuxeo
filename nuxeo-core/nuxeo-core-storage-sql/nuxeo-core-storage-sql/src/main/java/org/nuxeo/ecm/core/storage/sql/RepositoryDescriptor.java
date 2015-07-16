@@ -226,6 +226,9 @@ public class RepositoryDescriptor {
     @XNode("backendClass")
     public Class<? extends RepositoryBackend> backendClass;
 
+    @XNode("clusterInvalidatorClass")
+    public Class<? extends ClusterInvalidator> clusterInvalidatorClass;
+
     @XNode("cachingMapper@class")
     public Class<? extends CachingMapper> cachingMapperClass;
 
@@ -427,6 +430,7 @@ public class RepositoryDescriptor {
         repositoryFactoryClass = other.repositoryFactoryClass;
         pool = other.pool == null ? null : new NuxeoConnectionManagerConfiguration(other.pool);
         backendClass = other.backendClass;
+        clusterInvalidatorClass = other.clusterInvalidatorClass;
         cachingMapperClass = other.cachingMapperClass;
         cachingMapperEnabled = other.cachingMapperEnabled;
         cachingMapperProperties = new HashMap<String, String>(other.cachingMapperProperties);
@@ -476,6 +480,9 @@ public class RepositoryDescriptor {
         }
         if (other.backendClass != null) {
             backendClass = other.backendClass;
+        }
+        if (other.clusterInvalidatorClass != null) {
+            clusterInvalidatorClass = other.clusterInvalidatorClass;
         }
         if (other.cachingMapperClass != null) {
             cachingMapperClass = other.cachingMapperClass;

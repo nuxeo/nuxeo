@@ -308,9 +308,21 @@ public class RepositoryImpl implements Repository {
         } else {
             nodeId = nodeId.trim();
         }
-        ClusterInvalidator clusterInvalidator = new JDBCClusterInvalidator();
+        ClusterInvalidator clusterInvalidator = createClusterInvalidator();
         clusterInvalidator.initialize(nodeId, this);
         backend.setClusterInvalidator(clusterInvalidator);
+    }
+
+    protected ClusterInvalidator createClusterInvalidator() {
+        Class<? extends ClusterInvalidator> klass = repositoryDescriptor.clusterInvalidatorClass;
+        if (klass == null) {
+            klass = JDBCClusterInvalidator.class;
+        }
+        try {
+            return klass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     protected SessionImpl newSession(Model model, Mapper mapper) {
