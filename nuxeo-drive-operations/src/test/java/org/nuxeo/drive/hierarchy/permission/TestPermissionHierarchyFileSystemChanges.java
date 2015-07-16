@@ -78,7 +78,7 @@ import com.google.inject.Inject;
 
 /**
  * Tests the file system changes in the case of the user workspace and permission based hierarchy.
- * 
+ *
  * @author Antoine Taillefer
  * @see AuditChangeFinder#getFileSystemChanges
  */
@@ -253,17 +253,17 @@ public class TestPermissionHierarchyFileSystemChanges {
      * </ul>
      * For the test, the required permission for a folder to be adapted by the {@link PermissionSyncRootFactory} is
      * Everything.
-     * 
+     *
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     * 
+     *
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
      *   |     |-- user1File1
      *   |     |-- user1File2
-     * 
+     *
      * </pre>
      */
     @Test
