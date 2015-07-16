@@ -46,7 +46,7 @@ public class UserViewTabSubPage extends UsersGroupsBasePage {
     @FindBy(linkText = "Change password")
     WebElement changePasswordLink;
 
-    @FindBy(xpath = "/html/body/table[2]/tbody/tr/td/div/div/div/div[2]/div/div[4]//h1")
+    @FindBy(xpath = "//div[@id='nxw_userCenterSubTabs_tab_content']//h1")
     WebElement currentUserName;
 
     public UserViewTabSubPage(WebDriver driver) {
