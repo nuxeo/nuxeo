@@ -1,18 +1,12 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
-  xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:a4j="http://richfaces.org/a4j"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes">
+  xmlns:nxu="http://nuxeo.org/nxweb/util">
 
-<c:if test="false">
+<ui:remove>
 Needed parameters:
 - contentViewName: virtual navigation content view name
-</c:if>
+</ui:remove>
 
   <ui:define name="body">
 
@@ -22,9 +16,7 @@ Needed parameters:
 
       <nxu:set var="contentViewId" value="0">
       <nxu:set var="contentViewName" value="#{contentViewName}">
-    
         <ui:decorate template="/incl/content_view.xhtml" />
-    
       </nxu:set>
       </nxu:set>
 
@@ -32,4 +24,4 @@ Needed parameters:
 
   </ui:define>
 
-</nxthemes:composition>
+</ui:composition>

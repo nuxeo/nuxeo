@@ -1,14 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<nxthemes:composition xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:nxthemes="http://nuxeo.org/nxthemes"
+<ui:composition template="/pages/workspace_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:ui="http://java.sun.com/jsf/facelets"
-  xmlns:f="http://java.sun.com/jsf/core"
   xmlns:h="http://java.sun.com/jsf/html"
-  xmlns:c="http://java.sun.com/jstl/core"
-  xmlns:nxu="http://nuxeo.org/nxweb/util"
-  xmlns:nxl="http://nuxeo.org/nxforms/layout"
-  xmlns:a4j="http://richfaces.org/a4j">
+  xmlns:c="http://java.sun.com/jstl/core">
 
   <ui:define name="body">
 
@@ -27,7 +21,7 @@
            </c:if>
          </c:when>
          <c:otherwise>
-         your Nuxeo instance needs to be registred before you can continue this process.
+         your Nuxeo instance needs to be registered before you can continue this process.
          </c:otherwise>
        </c:choose>
       <h:form>
@@ -38,5 +32,4 @@
 
   </ui:define>
 
-</nxthemes:composition>
-
+</ui:composition>
