@@ -17,6 +17,7 @@ package org.nuxeo.ecm.diff.content.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -45,6 +46,8 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
 
     protected Map<String, MimeTypeContentDiffer> contentDifferFactory = new HashMap<String, MimeTypeContentDiffer>();
 
+    protected Map<String, MimeTypeContentDiffer> contentDifferFactoryByName = new HashMap<String, MimeTypeContentDiffer>();
+
     // Component and EP management
 
     @Override
@@ -64,6 +67,12 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
             MimeTypeContentDifferDescriptor desc = (MimeTypeContentDifferDescriptor) contribution;
             try {
                 contentDifferFactory.put(desc.getPattern(), desc.getKlass().newInstance());
+
+                // Also (since 7.4) add a name in the contribution
+                String name = desc.getName();
+                if (StringUtils.isNotBlank(name)) {
+                    contentDifferFactoryByName.put(name, desc.getKlass().newInstance());
+                }
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
             }
@@ -127,6 +136,15 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
     public MimeTypeContentDiffer getContentDiffer(String mimeType) {
         for (Map.Entry<String, MimeTypeContentDiffer> entry : contentDifferFactory.entrySet()) {
             if (mimeType.matches(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+        return null;
+    }
+
+    public MimeTypeContentDiffer getContentDifferForName(String mimeTypeOrName) {
+        for (Map.Entry<String, MimeTypeContentDiffer> entry : contentDifferFactoryByName.entrySet()) {
+            if (mimeTypeOrName.equals(entry.getKey())) {
                 return entry.getValue();
             }
         }

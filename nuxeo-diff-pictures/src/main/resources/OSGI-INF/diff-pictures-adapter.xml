@@ -4,19 +4,17 @@
 	
 	<extension target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" point="adapterFactory">
 	  <contentDiffAdapter
-	  	name="DiffPictiures"
+	  	name="DiffPictures"
 	  	typeName="Picture"
 	  	class="org.nuxeo.diff.pictures.PictureContentDiffAdapterFactory">
       </contentDiffAdapter>
 	</extension>
 	
-	<!--
 	<extension target="org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManagerComponent" point="mimeTypeContentDiffer">
-	  <contentDiffer class="org.nuxeo.diff.pictures.ImageMagickContentDiffer">
+	  <contentDiffer class="org.nuxeo.diff.pictures.ImageMagickContentDiffer" name="imageMagickContentDiffer">
         <pattern>image/.*</pattern>
       </contentDiffer>
 	</extension>
-	-->
 	
 </component>
 

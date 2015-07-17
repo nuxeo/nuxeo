@@ -32,6 +32,8 @@ public interface ContentDiffAdapterManager {
 
     MimeTypeContentDiffer getContentDiffer(String mimeType);
 
+    MimeTypeContentDiffer getContentDifferForName(String name);
+
     HtmlContentDiffer getHtmlContentDiffer() throws ContentDiffException;
 
 }

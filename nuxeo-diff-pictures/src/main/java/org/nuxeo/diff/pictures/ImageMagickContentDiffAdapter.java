@@ -25,42 +25,49 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.base.AbstractContentDiffAdapter;
 import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
 
 /**
- * 
  * @since 7.4
  */
 public class ImageMagickContentDiffAdapter extends AbstractContentDiffAdapter {
-    
+
     private static final Log log = LogFactory.getLog(ImageMagickContentDiffAdapter.class);
+
+    public static final String IMAGE_MAGIC_CONTENT_DIFFER_NAME = "imageMagickContentDiffer";
 
     @Override
     public boolean cachable() {
-        
-         return true;
+
+        return true;
     }
 
     @Override
     public void cleanup() {
-        log.warn("TEST TEST: Dans CLEANUP");
+        // Cleanup your stuff here
     }
 
     @Override
     protected List<Blob> getContentDiffBlobs(DocumentModel otherDoc, ContentDiffConversionType conversionType,
             Locale locale) throws ContentDiffException, ConversionException {
-        
-        ImageMagickContentDiffer imContentDiffer = new ImageMagickContentDiffer();
-        return imContentDiffer.getContentDiff(this.adaptedDoc, otherDoc, null, locale);
+
+        return getContentDiffBlobs(otherDoc, null, conversionType, locale);
     }
 
     @Override
     protected List<Blob> getContentDiffBlobs(DocumentModel otherDoc, String xpath,
             ContentDiffConversionType conversionType, Locale locale) throws ContentDiffException, ConversionException {
-        
-        ImageMagickContentDiffer imContentDiffer = new ImageMagickContentDiffer();
-        return imContentDiffer.getContentDiff(this.adaptedDoc, otherDoc, xpath, locale);
+
+        MimeTypeContentDiffer contentDiffer = getContentDiffAdapterManager().getContentDifferForName(
+                IMAGE_MAGIC_CONTENT_DIFFER_NAME);
+        if (contentDiffer instanceof ImageMagickContentDiffer) {
+            ImageMagickContentDiffer imContentDiffer = (ImageMagickContentDiffer) contentDiffer;
+            return imContentDiffer.getContentDiff(this.adaptedDoc, otherDoc, xpath, locale);
+        }
+        throw new ContentDiffException("The contentDiffer for '" + IMAGE_MAGIC_CONTENT_DIFFER_NAME
+                + "' should be a ImageMagickContentDiffer. Check the xml contribution.");
     }
 
 }
