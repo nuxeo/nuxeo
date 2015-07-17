@@ -88,7 +88,7 @@
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
         0 AND nt:processId = ? AND nt:task_variables/*/key = 'nodeId' AND
-        nt:task_variables/*/value = ?";
+        nt:task_variables/*/value = ?
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
@@ -101,7 +101,7 @@
         ecm:currentLifeCycleState
         NOT IN ('ended', 'cancelled') AND ecm:isProxy =
         0 AND (nt:targetDocumentId = ? OR nt:targetDocumentsIds/* IN (?)) AND
-        (nt:actors/* IN ? OR nt:delegatedActors/* IN ?)";
+        (nt:actors/* IN ? OR nt:delegatedActors/* IN ?)
       </pattern>
       <pageSize>0</pageSize>
       <maxPageSize>0</maxPageSize>
