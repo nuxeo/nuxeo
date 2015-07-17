@@ -4,6 +4,10 @@
   <ui:param name="pageName" value="galaxy/popup" />
   <ui:param name="pageFlavor" value="#{themeActions.getCurrentFlavor(pageName)}" />
 
+  <ui:define name="basic body includes">
+    <ui:include src="/incl/includes.xhtml" />
+  </ui:define>
+
   <ui:define name="basic body">
 
     <section class="nxMainContainer">
