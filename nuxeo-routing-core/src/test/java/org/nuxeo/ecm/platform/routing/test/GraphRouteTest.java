@@ -1223,7 +1223,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         TransactionHelper.startTransaction();
         // query for all the workflows
         DocumentModelList workflows = session.query(String.format(
-                "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
+                "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
                 doc.getId()));
         assertEquals(1, workflows.size());
         String restartedWorkflowId = workflows.get(0).getId();
@@ -1237,7 +1237,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
         TransactionHelper.startTransaction();
         // query for all the workflows
         workflows = session.query(String.format(
-                "Select * from DocumentRoute where docri:participatingDocuments IN ('%s') and ecm:currentLifeCycleState = 'running'",
+                "Select * from DocumentRoute where docri:participatingDocuments/* IN ('%s') and ecm:currentLifeCycleState = 'running'",
                 doc.getId()));
         assertEquals(1, workflows.size());
         assertFalse(restartedWorkflowId.equals(workflows.get(0).getId()));

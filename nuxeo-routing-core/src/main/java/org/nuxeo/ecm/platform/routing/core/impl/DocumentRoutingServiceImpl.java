@@ -447,7 +447,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
             statesString.append(") AND");
         }
         String query = String.format("SELECT * FROM DocumentRoute WHERE " + statesString.toString()
-                + " docri:participatingDocuments = '%s'"
+                + " docri:participatingDocuments/* = '%s'"
                 // ordering by dc:created makes sure that
                 // a sub-workflow is listed under its parent
                 + " ORDER BY dc:created", attachedDocId);
@@ -1230,7 +1230,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
     @Override
     public List<DocumentRoute> getDocumentRelatedWorkflows(DocumentModel document, CoreSession session) {
         final String query = String.format(
-                "SELECT * FROM %s WHERE docri:participatingDocuments = '%s' AND ecm:currentLifeCycleState = '%s'",
+                "SELECT * FROM %s WHERE docri:participatingDocuments/* = '%s' AND ecm:currentLifeCycleState = '%s'",
                 DocumentRoutingConstants.DOCUMENT_ROUTE_DOCUMENT_TYPE, document.getId(),
                 DocumentRouteElement.ElementLifeCycleState.running);
         DocumentModelList documentModelList = session.query(query.toString());
