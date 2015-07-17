@@ -19,6 +19,7 @@ package org.nuxeo.ecm.core.storage.dbs;
 import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Comparator;
 
 import org.apache.commons.lang.StringUtils;
@@ -152,6 +153,9 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             isArray = type instanceof ListType && ((ListType) type).isArray();
             isBoolean = type instanceof BooleanType;
             isTrueOrNullBoolean = false;
+            if (isArray && split[split.length - 1].startsWith("*")) {
+                split = Arrays.copyOfRange(split, 0, split.length - 1);
+            }
         }
         Serializable value = state.get(prop);
         for (int i = 1; i < split.length; i++) {

@@ -353,6 +353,51 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     }
 
     @Test
+    public void testQueryMultipleNew() throws Exception {
+        DocumentModelList dml;
+        createDocs();
+
+        dml = session.query("SELECT * FROM File WHERE dc:contributors/* = 'pete'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE dc:contributors/* = 'bob'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* = 'bob'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* IN ('bob', 'pete')");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* IN ('bob', 'john')");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'pete')");
+        assertEquals(5, dml.size()); // TODO 1 in VCS
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT IN ('bob', 'john')");
+        assertEquals(5, dml.size()); // TODO 1 in VCS
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* LIKE 'pe%'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* LIKE 'bo%'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* LIKE '%o%'");
+        assertEquals(2, dml.size());
+
+        dml = session.query("SELECT * FROM Document WHERE dc:contributors/* NOT LIKE '%o%'");
+        assertEquals(5, dml.size()); // TODO 1 in VCS
+
+        dml = session.query("SELECT * FROM Document WHERE dc:subjects/* LIKE '%oo%'");
+        assertEquals(1, dml.size());
+
+        dml = session.query("SELECT * FROM File WHERE dc:subjects/* NOT LIKE '%oo%'");
+        assertEquals(2, dml.size()); // TODO 0 in VCS
+    }
+
+    @Test
     public void testQueryNegativeMultiple() throws Exception {
         DocumentModelList dml;
         createDocs();

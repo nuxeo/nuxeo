@@ -46,7 +46,9 @@ import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
@@ -656,10 +658,13 @@ public class MongoDBQueryBuilder {
             // canonical name
             split[0] = field.getName().getPrefixedName();
             // MongoDB embedded field syntax uses . separator
+            Type type = field.getType();
+            boolean isArray = type instanceof ListType && ((ListType) type).isArray();
+            boolean isBoolean = type instanceof BooleanType;
+            if (isArray && split[split.length - 1].startsWith("*")) {
+                split = Arrays.copyOfRange(split, 0, split.length - 1);
+            }
             name = StringUtils.join(split, '.');
-            // isArray = field.getType() instanceof ListType
-            // && ((ListType) field.getType()).isArray();
-            boolean isBoolean = field.getType() instanceof BooleanType;
             return new FieldInfo(name, isBoolean, false);
         }
     }
