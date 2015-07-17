@@ -512,7 +512,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         }
         String query = String.format("SELECT * FROM DocumentRoute WHERE "
                 + statesString.toString()
-                + " docri:participatingDocuments = '%s'"
+                + " docri:participatingDocuments/* = '%s'"
                 // ordering by dc:created makes sure that
                 // a sub-workflow is listed under its parent
                 + " ORDER BY dc:created", attachedDocId);

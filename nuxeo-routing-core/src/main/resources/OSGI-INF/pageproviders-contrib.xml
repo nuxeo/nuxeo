@@ -12,7 +12,7 @@
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
     </coreQueryPageProvider>
-    
+
     <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_INSTANCES">
       <pattern>
         SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
@@ -34,7 +34,7 @@
     <coreQueryPageProvider name="SEARCH_ROUTE_BY_ATTACHED_DOC">
       <pattern>
         SELECT * FROM DocumentRoute WHERE (ecm:currentLifeCycleState = 'running'
-        OR ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments
+        OR ecm:currentLifeCycleState = 'ready') AND docri:participatingDocuments/*
         IN (?)
       </pattern>
       <sort column="dc:title" ascending="true" />
