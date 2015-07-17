@@ -3,6 +3,10 @@
   xmlns:ui="http://java.sun.com/jsf/facelets">
   <ui:param name="pageFlavor" value="#{themeActions.getCurrentFlavor(pageName)}" />
 
+  <ui:define name="basic body includes">
+    <ui:include src="/incl/includes.xhtml" />
+  </ui:define>
+
   <ui:define name="basic body">
 
     <ui:decorate template="/pages/header_footer_template.xhtml">
