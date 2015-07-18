@@ -1,26 +1,17 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<ui:composition template="/pages/basic_page.xhtml"
+  xmlns="http://www.w3.org/1999/xhtml"
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:ui="http://java.sun.com/jsf/facelets"
   xmlns:nxr="http://nuxeo.org/nxweb/resources">
 
-  <f:view contentType="text/html" />
-  <h:head id="pageHead">
-    <title>
+  <ui:param name="pageName" value="layoutDemo/default" />
+
+  <ui:define name="page title">
       <h:outputText value="#{messages['label.layoutDemo.title']}" />
-    </title>
+  </ui:define>
 
-    <ui:decorate template="/incl/page_head.xhtml">
-      <ui:param name="pageName" value="layoutDemo/default" />
-      <ui:param name="pageFlavor" value="default" />
-    </ui:decorate>
-
-  </h:head>
-
-  <h:body>
-
-    <ui:include src="/incl/includes.xhtml" />
+  <ui:define name="basic body">
 
     <div>
       <header class="nxHeader">
@@ -53,6 +44,6 @@
       </footer>
     </div>
 
-  </h:body>
+  </ui:define>
 
-</html>
+</ui:composition>
