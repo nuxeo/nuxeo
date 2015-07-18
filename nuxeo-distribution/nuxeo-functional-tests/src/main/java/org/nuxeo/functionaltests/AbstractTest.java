@@ -383,10 +383,21 @@ public abstract class AbstractTest {
         if (driver != null) {
             List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
             if (jsErrors != null && !jsErrors.isEmpty()) {
+                StringBuilder msg = new StringBuilder();
+                msg.append(jsErrors.size()).append(" Javascript error(s) detected: ");
+                msg.append("[");
+                int i = 0;
                 for (JavaScriptError jsError : jsErrors) {
-                    log.error(jsError);
+                    if (i != 0) {
+                        msg.append(", ");
+                    }
+                    i++;
+                    msg.append("\"").append(jsError.getErrorMessage()).append("\"");
+                    msg.append(" at ").append(jsError.getSourceName());
+                    msg.append(" line ").append(jsError.getLineNumber());
                 }
-                fail("Javascript errors detected");
+                msg.append("]");
+                fail(msg.toString());
             }
         }
     }
