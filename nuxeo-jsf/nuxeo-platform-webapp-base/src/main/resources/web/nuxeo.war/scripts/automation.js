@@ -67,23 +67,24 @@ AutomationWrapper.prototype.execute = function(successCB, failureCB, voidOp){
       },
       url: targetUrl,
       timeout: this.opts.execTimeout,
+      log: this.log,
       error: function(xhr, status, e) {
         if (failureCB) {
             failureCB(xhr,status,"No Data");
           } else {
-            log("Failed to execute");
-            log("Error, Status =" + status);
+            this.log("Failed to execute");
+            this.log("Error, Status =" + status);
           }
       },
       success: function(data, status,xhr) {
-        log("Executed OK");
+        this.log("Executed OK");
         if (status=="success") {
           successCB(data,status,xhr);
         } else {
           if (failureCB) {
             failureCB(xhr,status,"No Data");
           } else {
-            log("Error, Status =" + status);
+            this.log("Error, Status =" + status);
           }
         }
       }
@@ -120,23 +121,24 @@ AutomationWrapper.prototype.executeGetBlob = function(successCB, failureCB, blob
         },
         url: targetUrl,
         timeout: this.opts.execTimeout,
+        log: this.log,
         error: function(xhr, status, e) {
           if (failureCB) {
               failureCB(xhr,status,"No Data");
             } else {
-              log("Failed to execute");
-              log("Error, Status =" + status);
+              this.log("Failed to execute");
+              this.log("Error, Status =" + status);
             }
         },
         success: function(data, status,xhr) {
-          log("Executed OK");
+          this.log("Executed OK");
           if (status=="success") {
             successCB(data,status,xhr);
           } else {
             if (failureCB) {
               failureCB(xhr,status,"No Data");
             } else {
-              log("Error, Status =" + status);
+              this.log("Error, Status =" + status);
             }
           }
         }
@@ -145,8 +147,8 @@ AutomationWrapper.prototype.executeGetBlob = function(successCB, failureCB, blob
 
 AutomationWrapper.prototype.log = function (msg) {
   if (window.console) {
-      //console.log(msg);
-    }
+    //console.log(msg);
+  }
 };
 
 AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureCB, voidOp){
@@ -184,8 +186,9 @@ AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureC
       },
       url: targetUrl,
       timeout: this.opts.execTimeout,
+      log: this.log,
       error: function(xhr, status, e) {
-        log("Failed to execute");
+        this.log("Failed to execute");
         if (failureCB) {
           var errorMessage = null;
           if (xhr.response) {
@@ -200,20 +203,19 @@ AutomationWrapper.prototype.batchExecute = function(batchId, successCB, failureC
           }
           failureCB(xhr,status,errorMessage);
         } else {
-            log("Error, Status =" + status);
+            this.log("Error, Status =" + status);
         }
       },
       success: function(data, status,xhr) {
-        log("Executed OK : " + status);
+        this.log("Executed OK : " + status);
         if (status=="success") {
           successCB(data,status,xhr);
         } else {
-          console.log
-            if (failureCB) {
-                failureCB(xhr,status,"No Data");
-              } else {
-                log("Error, Status =" + status);
-              }
+          if (failureCB) {
+            failureCB(xhr,status,"No Data");
+          } else {
+            this.log("Error, Status =" + status);
+          }
         }
       }
     })
