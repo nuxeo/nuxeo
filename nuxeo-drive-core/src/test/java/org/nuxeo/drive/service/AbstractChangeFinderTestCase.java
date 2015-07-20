@@ -324,6 +324,18 @@ public abstract class AbstractChangeFinderTestCase {
             assertEquals(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test"),
                     toSimpleFileSystemItemChange(changes.get(0)));
 
+            log.trace("Move a doc from a sync root to another sync root");
+            session.move(copiedDoc.getRef(), folder1.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            assertEquals(new SimpleFileSystemItemChange(copiedDoc.getId(), "documentMoved", "test"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
+
             log.trace("Move a doc from a sync root to a non synchronized folder");
             session.move(copiedDoc.getRef(), folder3.getRef(), null);
         } finally {
