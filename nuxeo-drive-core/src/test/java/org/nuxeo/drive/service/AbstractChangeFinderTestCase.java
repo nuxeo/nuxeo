@@ -992,6 +992,50 @@ public abstract class AbstractChangeFinderTestCase {
         }
     }
 
+    @Test
+    public void testRegisterParentSyncRoot() throws Exception {
+        DocumentModel subFolder;
+        List<FileSystemItemChange> changes;
+        try {
+            // Create a subfolder in folder1
+            subFolder = session.createDocument(session.createDocumentModel(folder1.getPathAsString(), "subFolder",
+                    "Folder"));
+            // Register subfolder as a sync root
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), subFolder, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 2:
+            // - rootRegistered for subfolder
+            // - documentCreated for subFolder
+            changes = getChanges(session.getPrincipal());
+            assertEquals(2, changes.size());
+
+            // Register folder1 as a sync root
+            nuxeoDriveManager.registerSynchronizationRoot(session.getPrincipal(), folder1, session);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        try {
+            // Check changes, expecting 2:
+            // - rootRegistered for folder1
+            // - deleted for subFolder
+            changes = getChanges(session.getPrincipal());
+            assertEquals(2, changes.size());
+            Set<SimpleFileSystemItemChange> expectedChanges = new HashSet<SimpleFileSystemItemChange>();
+            expectedChanges.add(new SimpleFileSystemItemChange(folder1.getId(), "rootRegistered", "test",
+                    "defaultSyncRootFolderItemFactory#test#" + folder1.getId(), "folder1"));
+            expectedChanges.add(new SimpleFileSystemItemChange(subFolder.getId(), "deleted", "test", "test#"
+                    + subFolder.getId(), "subFolder"));
+            assertTrue(CollectionUtils.isEqualCollection(expectedChanges, toSimpleFileSystemItemChanges(changes)));
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+    }
+
     /**
      * Gets the document changes for the given user's synchronization roots using the {@link AuditChangeFinder} and
      * updates {@link #lastEventLogId}.
