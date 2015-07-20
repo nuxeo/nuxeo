@@ -94,8 +94,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
     }
 
@@ -105,8 +104,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted) {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
     }
 
@@ -215,8 +213,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     }
 
     /*--------------------------- Protected ---------------------------------*/
-    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem)
-            {
+    protected FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem) {
         return adaptDocument(doc, forceParentItem, parentItem, false);
     }
 
