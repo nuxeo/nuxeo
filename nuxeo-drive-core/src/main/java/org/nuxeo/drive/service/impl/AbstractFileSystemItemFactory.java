@@ -30,13 +30,14 @@ import org.nuxeo.drive.service.FileSystemItemManager;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Base class for {@link FileSystemItemFactory} implementers. It is {@link DocumentModel} backed.
- * 
+ *
  * @author Antoine Taillefer
  * @see DefaultFileSystemItemFactory
  */
@@ -56,7 +57,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
 
     /**
      * Adapts the given {@link DocumentModel} to a {@link FileSystemItem}.
-     * 
+     *
      * @see #getFileSystemItem(DocumentModel, boolean, String, boolean)
      */
     protected abstract FileSystemItem adaptDocument(DocumentModel doc, boolean forceParentItem, FolderItem parentItem,
@@ -129,7 +130,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
     /**
      * The default factory considers that a {@link FileSystemItem} with the given id exists if the backing
      * {@link DocumentModel} can be fetched and {@link #isFileSystemItem(DocumentModel)} returns true.
-     * 
+     *
      * @see #isFileSystemItem(DocumentModel)
      */
     @Override
@@ -141,6 +142,12 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             if (e.getCause() instanceof NoSuchDocumentException) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("No doc related to id %s, returning false.", id));
+                }
+                return false;
+            } else if (e.getCause() instanceof DocumentSecurityException) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("User %s cannot access doc related to id %s, returning false.",
+                            principal.getName(), id));
                 }
                 return false;
             } else {
@@ -160,11 +167,16 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
                     log.debug(String.format("No doc related to id %s, returning null.", id));
                 }
                 return null;
+            } else if (e.getCause() instanceof DocumentSecurityException) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("User %s cannot access doc related to id %s, returning null.",
+                            principal.getName(), id));
+                }
+                return null;
             } else {
                 throw e;
             }
         }
-
     }
 
     @Override
@@ -181,6 +193,12 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             if (e.getCause() instanceof NoSuchDocumentException) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("No doc related to id %s, returning null.", id));
+                }
+                return null;
+            } else if (e.getCause() instanceof DocumentSecurityException) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("User %s cannot access doc related to id %s, returning null.",
+                            principal.getName(), id));
                 }
                 return null;
             } else {
