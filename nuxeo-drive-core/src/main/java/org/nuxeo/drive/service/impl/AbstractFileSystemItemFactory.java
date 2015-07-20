@@ -31,6 +31,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.api.Framework;
@@ -142,7 +143,12 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             return isFileSystemItem(doc);
         } catch (DocumentNotFoundException e) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("No doc related to id %s, returning false.", id));
+                log.debug(String.format("No doc related to id %s, returning false.", docId));
+            }
+            return false;
+        } catch (DocumentSecurityException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("User %s cannot acces doc %s, returning false.", principal.getName(), docId));
             }
             return false;
         }
@@ -158,7 +164,12 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             return getFileSystemItem(doc);
         } catch (DocumentNotFoundException e) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("No doc related to id %s, returning null.", id));
+                log.debug(String.format("No doc related to id %s, returning null.", docId));
+            }
+            return null;
+        } catch (DocumentSecurityException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("User %s cannot acces doc %s, returning null.", principal.getName(), docId));
             }
             return null;
         }
@@ -179,7 +190,12 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             return getFileSystemItem(doc, (FolderItem) parentItem);
         } catch (DocumentNotFoundException e) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("No doc related to id %s, returning null.", id));
+                log.debug(String.format("No doc related to id %s, returning null.", docId));
+            }
+            return null;
+        } catch (DocumentSecurityException e) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("User %s cannot acces doc %s, returning null.", principal.getName(), docId));
             }
             return null;
         }
