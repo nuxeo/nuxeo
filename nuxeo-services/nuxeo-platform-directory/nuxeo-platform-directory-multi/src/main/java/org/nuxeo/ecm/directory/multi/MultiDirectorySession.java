@@ -369,6 +369,7 @@ public class MultiDirectorySession extends BaseSession {
             return null;
         }
         init();
+        String entryId = id;
         source_loop: for (SourceInfo sourceInfo : sourceInfos) {
             boolean isReadOnlyEntry = true;
             final Map<String, Object> map = new HashMap<String, Object>();
@@ -387,6 +388,9 @@ public class MultiDirectorySession extends BaseSession {
                 if (entry == null && isOptional && !dirInfo.getSession().isReadOnly()) {
                     // set readonly to false if null entry is from optional and writable directory
                     isReadOnlyEntry = false;
+                }
+                if (entry != null && entry.getId() == null) {
+                    entryId = entry.getId();
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
                     if (entry != null) {
@@ -409,7 +413,7 @@ public class MultiDirectorySession extends BaseSession {
             }
             // ok we have the data
             try {
-                return BaseSession.createEntryModel(null, schemaName, id, map, isReadOnlyEntry);
+                return BaseSession.createEntryModel(null, schemaName, entryId, map, isReadOnlyEntry);
             } catch (PropertyException e) {
                 throw new DirectoryException(e);
             }
