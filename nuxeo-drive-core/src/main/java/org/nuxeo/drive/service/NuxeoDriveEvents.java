@@ -48,4 +48,6 @@ public final class NuxeoDriveEvents {
 
     public static final String SECURITY_UPDATED_EVENT = "securityUpdated";
 
+    public static final String MOVED_EVENT = "moved";
+
 }

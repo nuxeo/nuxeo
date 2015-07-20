@@ -146,10 +146,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
             DocumentRef docRef = new IdRef(entry.getDocUUID());
             ExtendedInfo fsIdInfo = entry.getExtendedInfos().get("fileSystemItemId");
             if (fsIdInfo != null) {
-                // This document has been deleted, is an unregistered
-                // synchronization root or its security has been updated, we
-                // just know the FileSystemItem id and
-                // name.
+                // This document has been deleted, moved, is an unregistered synchronization root or its security has
+                // been updated, we just know the FileSystemItem id and name.
                 if (log.isDebugEnabled()) {
                     log.debug(String.format(
                             "Found extended info in audit log entry, document %s has been deleted or is an unregistered synchronization root.",
@@ -157,19 +155,30 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 }
                 boolean isChangeSet = false;
                 // First try to adapt the document as a FileSystemItem to provide it to the FileSystemItemChange entry,
-                // only in the case of a security update.
-                // This can succeed for if this is a security update after which the current user still has access to
-                // the document.
+                // only in the case of a move or a security update.
+                // This can succeed if this is a move to a synchronization root or a security update after which the
+                // current user still has access to the document.
                 if (!"deleted".equals(entry.getEventId()) && session.exists(docRef)) {
                     change = getFileSystemItemChange(session, docRef, entry, fsIdInfo.getValue(String.class));
                     if (change != null) {
+                        if (NuxeoDriveEvents.MOVED_EVENT.equals(entry.getEventId())) {
+                            // A move to a synchronization root also fires a documentMoved event, don't propagate the
+                            // virtual event.
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format(
+                                        "Document %s has been moved to another synchronzation root, not adding entry to the change summary.",
+                                        docRef));
+                            }
+                            continue;
+                        }
                         isChangeSet = true;
                     }
                 }
                 if (!isChangeSet) {
-                    // If the document has been deleted, is a regular unregistered synchronization root, if its security
-                    // has been updated denying access to the current user, or if it is not adaptable as a
-                    // FileSystemItem only provide the FileSystemItem id and name to the FileSystemItemChange entry.
+                    // If the document has been deleted, is a regular unregistered synchronization root, has been moved
+                    // to a non synchronization root, if its security has been updated denying access to the current
+                    // user, or if it is not adaptable as a FileSystemItem for any other reason only provide the
+                    // FileSystemItem id and name to the FileSystemItemChange entry.
                     if (log.isDebugEnabled()) {
                         log.debug(String.format(
                                 "Document %s doesn't exist or is not adaptable as a FileSystemItem, only providing the FileSystemItem id and name to the FileSystemItemChange entry.",
@@ -177,7 +186,15 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                     }
                     String fsId = fsIdInfo.getValue(String.class);
                     String fsName = entry.getExtendedInfos().get("fileSystemItemName").getValue(String.class);
-                    change = new FileSystemItemChangeImpl(entry.getEventId(), entry.getEventDate().getTime(),
+                    String eventId;
+                    if (NuxeoDriveEvents.MOVED_EVENT.equals(entry.getEventId())) {
+                        // Move to a non synchronization root
+                        eventId = NuxeoDriveEvents.DELETED_EVENT;
+                    } else {
+                        // Deletion, unregistration or security update
+                        eventId = entry.getEventId();
+                    }
+                    change = new FileSystemItemChangeImpl(eventId, entry.getEventDate().getTime(),
                             entry.getRepositoryId(), entry.getDocUUID(), fsId, fsName);
                 }
                 if (log.isDebugEnabled()) {
@@ -196,8 +213,8 @@ public class AuditChangeFinder implements FileSystemChangeFinder {
                 }
                 if (!session.exists(docRef)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Document %s doesn't exist, not adding any entry to the change summary.", docRef));
+                        log.debug(String.format("Document %s doesn't exist, not adding entry to the change summary.",
+                                docRef));
                     }
                     // Deleted or non accessible documents are mapped to
                     // deleted file system items in a separate event: no need to
