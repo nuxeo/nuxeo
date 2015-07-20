@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.mvel2.CompileException;
 import org.nuxeo.common.utils.StringUtils;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
@@ -312,7 +313,13 @@ public class EventHandler {
          */
         if (!org.apache.commons.lang.StringUtils.isBlank(condition)) {
             Expression expr = Scripting.newExpression(condition);
-            if (!Boolean.TRUE.equals(expr.eval(ctx))) {
+            try {
+                if (!Boolean.TRUE.equals(expr.eval(ctx))) {
+                    return false;
+                }
+            } catch (CompileException e) {
+                // happens for expressions evaluated over a DeletedDocumentModel for instance
+                log.debug("Failed to execute expression: " + e, e);
                 return false;
             }
         } else if (!org.apache.commons.lang.StringUtils.isBlank(expression)) {
