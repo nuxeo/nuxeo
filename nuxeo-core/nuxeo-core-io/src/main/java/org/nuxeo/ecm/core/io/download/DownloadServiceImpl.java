@@ -273,8 +273,8 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
             CoreSession session = doc.getCoreSession();
             Principal principal = session == null ? getPrincipal() : session.getPrincipal();
             ctx = new DocumentEventContext(session, principal, doc);
-            ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, session.getRepositoryName());
-            ctx.setProperty(CoreEventConstants.SESSION_ID, session.getSessionId());
+            ctx.setProperty(CoreEventConstants.REPOSITORY_NAME, doc.getRepositoryName());
+            ctx.setProperty(CoreEventConstants.SESSION_ID, doc.getSessionId());
         } else {
             ctx = new EventContextImpl(null, getPrincipal());
         }
