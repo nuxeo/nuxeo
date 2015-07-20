@@ -1074,7 +1074,8 @@ public class TestAuditFileSystemChangeFinder {
         TransactionHelper.commitOrRollbackTransaction();
     }
 
-    protected Set<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(List<FileSystemItemChange> changes) throws ClientException {
+    protected Set<SimpleFileSystemItemChange> toSimpleFileSystemItemChanges(List<FileSystemItemChange> changes)
+            throws ClientException {
         Set<SimpleFileSystemItemChange> simpleChanges = new HashSet<SimpleFileSystemItemChange>();
         for (FileSystemItemChange change : changes) {
             simpleChanges.add(toSimpleFileSystemItemChange(change));
@@ -1082,7 +1083,8 @@ public class TestAuditFileSystemChangeFinder {
         return simpleChanges;
     }
 
-    protected SimpleFileSystemItemChange toSimpleFileSystemItemChange(FileSystemItemChange change) throws ClientException {
+    protected SimpleFileSystemItemChange toSimpleFileSystemItemChange(FileSystemItemChange change)
+            throws ClientException {
         SimpleFileSystemItemChange simpleChange = new SimpleFileSystemItemChange(change.getDocUuid(),
                 change.getEventId(), change.getRepositoryId(), change.getFileSystemItemId(),
                 change.getFileSystemItemName());
