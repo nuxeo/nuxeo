@@ -104,7 +104,7 @@ public class UserService extends DefaultComponent {
 
     @Override
     public <T> T getAdapter(Class<T> adapter) {
-        if (Authenticator.class == adapter || UserManager.class == adapter)
+        if (Authenticator.class == adapter || UserManager.class == adapter
                 || AdministratorGroupsProvider.class == adapter) {
             return adapter.cast(getUserManager());
         }
