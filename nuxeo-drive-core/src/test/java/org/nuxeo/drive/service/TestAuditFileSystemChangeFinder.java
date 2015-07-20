@@ -37,6 +37,8 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +91,8 @@ import com.google.inject.Inject;
 @Deploy("org.nuxeo.drive.core")
 @LocalDeploy("org.nuxeo.drive.core:OSGI-INF/test-nuxeodrive-types-contrib.xml")
 public class TestAuditFileSystemChangeFinder {
+
+    private static final Log log = LogFactory.getLog(TestAuditFileSystemChangeFinder.class);
 
     @Inject
     protected CoreSession session;
@@ -338,7 +342,20 @@ public class TestAuditFileSystemChangeFinder {
             assertEquals(new SimpleFileSystemItemChange(doc1.getId(), "deleted", "test"),
                     toSimpleFileSystemItemChange(changes.get(0)));
 
-            // Move a doc from a sync root to a non synchronized folder
+            log.trace("Move a doc from a sync root to another sync root");
+            session.move(copiedDoc.getRef(), folder1.getRef(), null);
+        } finally {
+            commitAndWaitForAsyncCompletion();
+        }
+
+        TransactionHelper.startTransaction();
+        try {
+            changes = getChanges();
+            assertEquals(1, changes.size());
+            assertEquals(new SimpleFileSystemItemChange(copiedDoc.getId(), "documentMoved", "test"),
+                    toSimpleFileSystemItemChange(changes.get(0)));
+
+            log.trace("Move a doc from a sync root to a non synchronized folder");
             session.move(copiedDoc.getRef(), folder3.getRef(), null);
         } finally {
             commitAndWaitForAsyncCompletion();
