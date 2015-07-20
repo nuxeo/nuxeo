@@ -191,17 +191,15 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
         String newQuery;
         PageProviderDefinition def = getDefinition();
         if (def.getWhereClause() == null) {
-            newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(),
-                    def.getQuotePatternParameters(), def.getEscapePatternParameters(), getSearchDocumentModel(),
-                    sortArray);
+            newQuery = NXQLQueryBuilder.getQuery(def.getPattern(), getParameters(), def.getQuotePatternParameters(),
+                    def.getEscapePatternParameters(), getSearchDocumentModel(), sortArray);
         } else {
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new ClientException(String.format("Cannot build query of provider '%s': "
+                throw new NuxeoException(String.format("Cannot build query of provider '%s': "
                         + "no search document model is set", getName()));
             }
-            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
-                    sortArray);
+            newQuery = NXQLQueryBuilder.getQuery(searchDocumentModel, def.getWhereClause(), getParameters(), sortArray);
         }
 
         if (query != null && newQuery != null && !newQuery.equals(query)) {
