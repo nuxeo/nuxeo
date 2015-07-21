@@ -25,6 +25,7 @@ import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.search.aggregates.CheckBoxAggregateElements;
+import org.nuxeo.functionaltests.pages.search.aggregates.Select2AggregateElement;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -41,6 +42,9 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
     private static final String S2_COLLECTION_XPATH = "//*[@id='s2id_nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_visible_collection_select2']";
 
     public static final String TREE_PATH_ID = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_ecm_path_treeId";
+
+    @FindBy(id = "s2id_nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_creator_agg")
+    protected WebElement authorAggregate;
 
     @FindBy(id = "nxl_gridSearchLayout:nxw_searchLayout_form:nxl_default_search_layout:nxw_dc_coverage_agg")
     protected WebElement coverageAggregate;
@@ -111,6 +115,14 @@ public class DefaultSearchSubPage extends AbstractSearchSubPage {
 
     public WebElement getSubjectsAggregate() {
         return subjectsAggregate;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public Map<String, Integer> getAvailableAuthorAggregate() {
+        Select2AggregateElement s2AuthorAggregate =  new Select2AggregateElement(driver, authorAggregate, true);
+        return s2AuthorAggregate.getAggregates();
     }
 
     public SearchPage selectCoverageAggregate(String label) {
