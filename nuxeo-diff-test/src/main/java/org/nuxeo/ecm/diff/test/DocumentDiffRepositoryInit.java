@@ -30,7 +30,10 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Inits the repository for a document diff test case with 2 documents of the same type.
@@ -52,6 +55,10 @@ public class DocumentDiffRepositoryInit extends DefaultRepositoryInit {
 
         createLeftDoc(session);
         createRightDoc(session);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     /**
