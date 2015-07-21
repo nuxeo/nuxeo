@@ -21,7 +21,6 @@ import java.io.IOException;
 import javax.ws.rs.core.Application;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.ui.web.auth.NuxeoAuthenticationFilter;
 import org.nuxeo.ecm.webengine.app.WebEngineFilter;
 import org.nuxeo.ecm.webengine.jaxrs.context.RequestContextFilter;
@@ -40,7 +39,7 @@ import com.sun.jersey.spi.container.servlet.ServletContainer;
 /**
  * @since 5.8
  */
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.filemanager.api", "org.nuxeo.ecm.platform.filemanager.core" })
 public class WebDavServerFeature extends WebEngineFeature {
