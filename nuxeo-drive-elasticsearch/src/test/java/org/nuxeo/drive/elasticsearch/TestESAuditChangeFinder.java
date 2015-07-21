@@ -23,7 +23,6 @@ import javax.inject.Inject;
 
 import org.junit.runner.RunWith;
 import org.nuxeo.drive.service.AbstractChangeFinderTestCase;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
@@ -39,7 +38,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * @since 7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, PlatformFeature.class, RepositoryElasticSearchFeature.class })
+@Features({ PlatformFeature.class, RepositoryElasticSearchFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.audit", "org.nuxeo.ecm.platform.uidgen.core", "org.nuxeo.elasticsearch.seqgen",
         "org.nuxeo.elasticsearch.audit", "org.nuxeo.drive.elasticsearch" })
 @LocalDeploy("org.nuxeo.drive.elasticsearch:OSGI-INF/test-nuxeodrive-elasticsearch-contrib.xml")
