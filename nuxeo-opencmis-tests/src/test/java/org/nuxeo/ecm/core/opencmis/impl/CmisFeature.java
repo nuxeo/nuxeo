@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.opencmis.impl;
 import static org.junit.Assume.assumeTrue;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -26,7 +25,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * Feature for CMIS tests.
  */
-@Features({ TransactionalFeature.class, CoreFeature.class, AuditFeature.class })
+@Features({ CoreFeature.class, AuditFeature.class })
 @Deploy({ "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.directory.sql", //
         "org.nuxeo.ecm.core.query", //
