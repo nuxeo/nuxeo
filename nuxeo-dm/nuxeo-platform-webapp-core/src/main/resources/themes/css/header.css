@@ -14,7 +14,6 @@ author: lkemen@nuxeo.com
   box-shadow: 1px 0 4px rgba(0,0,0,0.4);
   height: 3em;
   line-height: initial;
-  overflow: auto;
   position: fixed;
   top: 0;
   width: 100%;
@@ -125,7 +124,7 @@ author: lkemen@nuxeo.com
 
 /* =UserServices */
 .userServicesBlock {
-  float: left }
+  float: left; }
 
 .userServicesBlock a:hover {
   text-decoration: none }
@@ -175,7 +174,8 @@ author: lkemen@nuxeo.com
   display: block }
 
 /* Override default dropdown button styles */
-.userMenuActions .dropdown {
+.userMenuActions .dropdown,
+.userMenuActions .dropdown:hover {
   background: url("${basePath}/icons/user_menu.png") no-repeat scroll 1px center transparent }
 
 .userMenuActions .button {
