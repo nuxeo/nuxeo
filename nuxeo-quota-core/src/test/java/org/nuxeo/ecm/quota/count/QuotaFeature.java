@@ -17,7 +17,6 @@
 package org.nuxeo.ecm.quota.count;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -25,7 +24,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * @author dmetzler
  */
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.api", "org.nuxeo.ecm.platform.userworkspace.core",
         "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.quota.core",
         "org.nuxeo.ecm.core.cache",
