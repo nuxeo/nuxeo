@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -46,7 +45,7 @@ import org.nuxeo.targetplatforms.core.service.DirectoryUpdater;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RuntimeFeature.class })
+@Features(RuntimeFeature.class)
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core",
         "org.nuxeo.ecm.core.schema", "org.nuxeo.targetplatforms.core", "org.nuxeo.ecm.directory",
         "org.nuxeo.ecm.directory.sql" })
