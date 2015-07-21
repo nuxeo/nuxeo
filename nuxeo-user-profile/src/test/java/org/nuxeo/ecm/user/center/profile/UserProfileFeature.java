@@ -20,7 +20,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
@@ -33,7 +32,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 /**
  * @since 7.2
  */
-@Features({ TransactionalFeature.class,PlatformFeature.class })
+@Features(PlatformFeature.class)
 //@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.userworkspace.api",
     "org.nuxeo.ecm.platform.userworkspace.types",
