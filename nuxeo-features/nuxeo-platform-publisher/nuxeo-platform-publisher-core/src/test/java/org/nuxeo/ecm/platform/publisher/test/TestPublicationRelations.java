@@ -116,6 +116,8 @@ public class TestPublicationRelations extends PublisherTestCase {
         assertTrue(pubDoc instanceof SimpleCorePublishedDocument);
 
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
         assertTrue(PublicationRelationHelper.isPublished(proxy));
 
         assertEquals(tree.getConfigName(), service.getPublicationTreeFor(proxy, session).getConfigName());

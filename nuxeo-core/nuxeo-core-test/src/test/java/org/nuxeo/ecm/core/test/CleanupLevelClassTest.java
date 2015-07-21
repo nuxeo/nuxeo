@@ -21,15 +21,23 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class CleanupLevelClassTest {
 
     @Inject
-    CoreSession session;
+    protected CoreSession session;
+
+    @Inject
+    protected EventService eventService;
 
     // the order of execution of the test methods isn't guaranteed by JUnit and
     // changed between Java 6 and Java 7, so the test decides order on its own
@@ -67,6 +75,12 @@ public class CleanupLevelClassTest {
         doc.setProperty("dublincore", "title", "Default domain");
         doc = session.createDocument(doc);
         session.save();
+        assertTrue(session.exists(new PathRef("/default-domain")));
+
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+
         assertTrue(session.exists(new PathRef("/default-domain")));
     }
 

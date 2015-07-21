@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Alexandre Russel
@@ -77,6 +78,9 @@ public abstract class AbstractRepositoryTestCase {
 
     @Inject
     RepositorySettings repo;
+
+    @Inject
+    protected EventService eventService;
 
     @Before
     public void setUp() throws Exception {
@@ -128,7 +132,7 @@ public abstract class AbstractRepositoryTestCase {
         String url = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(doc), true, "http://localhost/nuxeo/");
         assertNotNull(url);
         uri = new URI(url.toString());
-        waitForAsyncExec();
+        nextTransaction();
     }
 
     protected Annotation getAnnotation(String url, int x) throws IOException {
@@ -140,13 +144,14 @@ public abstract class AbstractRepositoryTestCase {
         return manager.getAnnotation(is);
     }
 
-    protected void waitForAsyncExec() {
-        EventServiceImpl evtService = (EventServiceImpl) Framework.getLocalService(EventService.class);
-        evtService.waitForAsyncCompletion();
-    }
-
     protected void sleepForFulltext() {
         coreFeature.getStorageConfiguration().sleepForFulltext();
+    }
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     protected void openSession() {

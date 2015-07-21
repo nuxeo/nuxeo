@@ -113,7 +113,8 @@ public class RepositorySettings extends ServiceProvider<CoreSession> {
         repositoryName = repo.repositoryName();
         databaseName = repo.databaseName();
         username = repo.user();
-        granularity = repo.cleanup();
+        Granularity cleanup = repo.cleanup();
+        granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
         repositoryFactoryClass = repo.repositoryFactoryClass();
         repoInitializer = newInstance(repo.init());
     }

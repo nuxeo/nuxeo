@@ -39,7 +39,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features({ AutomationFeature.class })
 @LocalDeploy({ "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-framework.xml",
-        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-contrib.xml" })
+        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/imaging-service-contrib.xml",
+        "org.nuxeo.ecm.platform.picture.core:OSGI-INF/picture-schemas-contrib.xml"})
 public class TestImagingService {
 
     @Inject

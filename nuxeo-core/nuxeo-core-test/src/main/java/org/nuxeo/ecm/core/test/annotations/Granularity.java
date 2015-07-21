@@ -16,6 +16,8 @@ package org.nuxeo.ecm.core.test.annotations;
  */
 public enum Granularity {
 
+    UNDEFINED,
+
     /**
      * The repository is cleaned up at the class level.
      */

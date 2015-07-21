@@ -35,6 +35,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * PostCommitEventListenerTest test ScriptingPostCommitEventListener
@@ -52,10 +53,19 @@ public class PostCommitEventListenerTest {
     @Inject
     protected CoreSession session;
 
+    @Inject
+    protected EventService eventService;
+
     /**
      * The script listener will update this counter
      */
     public static int SCRIPT_CNT = 0;
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+    }
 
     @Test
     @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreIsolated.class)
@@ -80,7 +90,9 @@ public class PostCommitEventListenerTest {
         assertEquals(0, SCRIPT_CNT);
 
         session.save();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+
+        nextTransaction();
+
         assertEquals(2, SCRIPT_CNT);
 
         harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "test-PostCommitListeners.xml");
@@ -95,7 +107,9 @@ public class PostCommitEventListenerTest {
         doc = session.createDocument(doc);
         ShallowFilterPostCommitEventListener.handledCount = 0;
         session.save();
-        Framework.getService(EventService.class).waitForAsyncCompletion();
+
+        nextTransaction();
+
         assertEquals(1, ShallowFilterPostCommitEventListener.handledCount);
 
         harness.undeployContrib("org.nuxeo.ecm.core.test.tests", "test-ShallowFilteringPostCommitListeners.xml");

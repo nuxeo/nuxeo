@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.trash.TrashInfo;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
@@ -87,6 +88,12 @@ public class TestTrashService {
         doc3 = session.createDocumentModel("/", "doc3", "Note");
         doc3 = session.createDocument(doc3);
         session.save();
+    }
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     @Test
@@ -137,8 +144,8 @@ public class TestTrashService {
         String doc4origname = doc4.getName();
 
         trashService.trashDocuments(Arrays.asList(fold, doc1, doc3, doc4));
-        eventService.waitForAsyncCompletion();
-        session.save(); // fetch invalidations from async sessions
+
+        nextTransaction();
 
         // refetch as lifecycle state is cached
         fold = session.getDocument(new IdRef(fold.getId()));
@@ -201,8 +208,8 @@ public class TestTrashService {
     public void testUndeleteChildren() throws Exception {
         createDocuments();
         trashService.trashDocuments(Collections.singletonList(fold));
-        eventService.waitForAsyncCompletion();
-        session.save(); // fetch invalidations from async sessions
+
+        nextTransaction();
 
         // refetch as lifecycle state is cached
         fold = session.getDocument(new IdRef(fold.getId()));
@@ -215,8 +222,9 @@ public class TestTrashService {
 
         // undelete fold
         trashService.undeleteDocuments(Collections.singletonList(fold));
-        eventService.waitForAsyncCompletion();
-        session.save(); // fetch invalidations from async sessions
+
+        nextTransaction();
+
         fold = session.getDocument(new IdRef(fold.getId()));
         doc1 = session.getDocument(new IdRef(doc1.getId()));
         doc2 = session.getDocument(new IdRef(doc2.getId()));
@@ -240,8 +248,8 @@ public class TestTrashService {
 
         // now delete the folder
         trashService.trashDocuments(Collections.singletonList(fold));
-        eventService.waitForAsyncCompletion();
-        session.save(); // process async invalidations
+
+        nextTransaction();
 
         fold.refresh();
         version.refresh();

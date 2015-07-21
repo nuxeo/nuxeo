@@ -61,7 +61,7 @@ import com.google.inject.Binder;
         "org.nuxeo.ecm.core.storage.sql", //
         "org.nuxeo.ecm.core.storage.sql.test" //
 })
-@Features(RuntimeFeature.class)
+@Features({ RuntimeFeature.class, TransactionalFeature.class })
 public class CoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);

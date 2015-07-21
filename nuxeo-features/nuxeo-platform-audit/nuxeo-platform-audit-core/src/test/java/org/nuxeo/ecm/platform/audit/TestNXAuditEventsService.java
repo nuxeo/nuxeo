@@ -66,7 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
-@RepositoryConfig(init = MyInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(init = MyInit.class, cleanup = Granularity.METHOD)
 @LocalDeploy("org.nuxeo.ecm.platform.audit:test-audit-contrib.xml")
 public class TestNXAuditEventsService {
 

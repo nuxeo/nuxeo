@@ -34,6 +34,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -58,6 +59,9 @@ public class EventOperationsTest {
     @Inject
     EventHandlerRegistry registry;
 
+    @Inject
+    protected EventService eventService;
+
     @Before
     public void initRepo() throws Exception {
         src = session.createDocumentModel("/", "src", "Workspace");
@@ -71,6 +75,12 @@ public class EventOperationsTest {
         dst = session.createDocument(dst);
         session.save();
         dst = session.getDocument(dst.getRef());
+    }
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     // ------ Tests comes here --------
@@ -108,7 +118,7 @@ public class EventOperationsTest {
         session.save();
         folder = session.getDocument(folder.getRef());
 
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        nextTransaction();
 
         // reopen session since the modification occurred in another session in
         // another thread
@@ -146,8 +156,9 @@ public class EventOperationsTest {
         doc.setPropertyValue("dc:description", "ChangeMySource");
         doc = session.createDocument(doc);
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save(); // process invalidations
+
+        nextTransaction();
+
         doc = session.getDocument(doc.getRef());
         assertEquals("New source", doc.getPropertyValue("dc:source"));
     }
@@ -161,8 +172,9 @@ public class EventOperationsTest {
         doc.setPropertyValue("dc:description", doc.getPathAsString());
         doc = session.createDocument(doc);
         session.save();
-        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
-        session.save(); // process invalidations
+
+        nextTransaction();
+
         doc = session.getDocument(doc.getRef());
         assertEquals("New source", doc.getPropertyValue("dc:source"));
     }

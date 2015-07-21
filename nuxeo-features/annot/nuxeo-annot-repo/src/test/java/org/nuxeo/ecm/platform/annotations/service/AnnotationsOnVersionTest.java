@@ -234,7 +234,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         service.addAnnotation(annotationVersion1, user, uriVersion1.toASCIIString());
 
         session.save();
-        waitForAsyncExec();
+        nextTransaction();
         sleepForFulltext();
 
         results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
@@ -287,7 +287,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         DocumentRef v = session.checkIn(ref, null, null);
         session.checkOut(ref);
         session.save();
-        waitForAsyncExec();
+        nextTransaction();
         return v;
     }
 
@@ -295,7 +295,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         session.save();
         DocumentModel docModel = session.restoreToVersion(docRef, versionRef);
         session.save();
-        waitForAsyncExec();
+        nextTransaction();
         return docModel;
     }
 

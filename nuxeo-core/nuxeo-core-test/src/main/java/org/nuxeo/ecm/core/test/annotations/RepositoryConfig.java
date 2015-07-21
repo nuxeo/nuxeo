@@ -45,7 +45,7 @@ public @interface RepositoryConfig {
 
     Class<? extends RepositoryInit> init() default NoopRepositoryInit.class;
 
-    Granularity cleanup() default Granularity.CLASS;
+    Granularity cleanup() default Granularity.UNDEFINED;
 
     String user() default "Administrator";
 }

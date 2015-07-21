@@ -67,7 +67,6 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
     @Test
     public void testAnnotateDocuments() throws Exception {
-        waitForAsyncExec();
         assertNotNull(session);
         DocumentModel myfileModel = session.createDocumentModel(session.getRootDocument().getPathAsString(), "999",
                 "File");
@@ -76,7 +75,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
         session.save();
         closeSession();
-        waitForAsyncExec();
+        nextTransaction();
         sleepForFulltext();
         openSession();
 
@@ -95,7 +94,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
         session.save();
         closeSession();
-        waitForAsyncExec();
+        nextTransaction();
         sleepForFulltext();
         openSession();
 
@@ -114,7 +113,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
 
         session.save();
         closeSession();
-        waitForAsyncExec();
+        nextTransaction();
         sleepForFulltext();
         openSession();
 
@@ -159,7 +158,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         session.checkIn(myfile.getRef(), VersioningOption.MAJOR, comment);
         session.checkOut(myfile.getRef());
         session.save();
-        waitForAsyncExec();
+        nextTransaction();
     }
 
     protected void sameDocumentFrom2Servers(String u1, String u2) throws URISyntaxException {

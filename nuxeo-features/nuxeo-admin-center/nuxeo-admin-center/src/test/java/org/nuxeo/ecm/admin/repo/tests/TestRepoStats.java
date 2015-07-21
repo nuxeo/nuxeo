@@ -41,6 +41,7 @@ import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
@@ -86,10 +87,11 @@ public class TestRepoStats {
         blobDoc = session.createDocument(blobDoc);
         session.save();
 
+        nextTransaction();
+
         // Add a blob Holder
 
         RepoStatInfo stat2 = runRepoStatSync();
-        // System.out.println(stat2.toString());
 
         assertEquals(6, stat2.getTotalNbDocs());
         assertEquals(1, stat2.getTotalBlobNumber());
@@ -110,6 +112,8 @@ public class TestRepoStats {
         DocumentModelList docs = session.query("select * from File");
         assertEquals(2, docs.size());
 
+        nextTransaction();
+
         RepoStatInfo stat3 = runRepoStatSync();
         // System.out.println(stat3.toString());
         assertEquals(1, stat3.getVersions());
@@ -125,6 +129,8 @@ public class TestRepoStats {
         blobDoc = session.saveDocument(blobDoc);
         session.save();
 
+        nextTransaction();
+
         RepoStatInfo stat4 = runRepoStatSync();
         // System.out.println(stat4.toString());
         assertEquals(1, stat4.getVersions());
@@ -133,6 +139,11 @@ public class TestRepoStats {
         assertEquals(14, stat4.getTotalBlobSize());
         assertEquals(9, stat4.getMaxBlobSize());
         assertEquals(Long.valueOf(2), stat4.getDocTypeCount("File"));
+    }
+
+    protected void nextTransaction() {
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
     }
 
     @Test
