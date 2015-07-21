@@ -6,8 +6,15 @@
 
     <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS">
       <pattern>
-        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState =
-        'validated' AND dc:title LIKE ?
+        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'validated'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE">
+      <pattern>
+        SELECT * FROM DocumentRoute WHERE ecm:currentLifeCycleState = 'validated' AND dc:title LIKE ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>20</pageSize>
