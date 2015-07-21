@@ -30,6 +30,11 @@ public interface DocumentRoutingConstants {
      */
     String DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME = "DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS";
 
+    /**
+     * @since 7.4
+     */
+    String DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME = "DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE";
+
     String ROUTE_MANAGERS_GROUP_NAME = "routeManagers";
 
     // document constant

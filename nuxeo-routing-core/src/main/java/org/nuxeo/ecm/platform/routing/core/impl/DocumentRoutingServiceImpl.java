@@ -21,6 +21,7 @@ import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.CO
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.MAX_RESULTS_PROPERTY;
 import static org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider.PAGE_SIZE_RESULTS_KEY;
 import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME;
+import static org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants.DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -790,6 +791,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         return urls;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<DocumentModel> searchRouteModels(CoreSession session,
             String searchString) throws ClientException {
@@ -798,10 +800,15 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements
         Map<String, Serializable> props = new HashMap<String, Serializable>();
         props.put(MAX_RESULTS_PROPERTY, PAGE_SIZE_RESULTS_KEY);
         props.put(CORE_SESSION_PROPERTY, (Serializable) session);
-        @SuppressWarnings({ "unchecked", "boxing" })
-        PageProvider<DocumentModel> pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null,
-                0L, props, String.format("%s%%", searchString));
+        PageProvider<DocumentModel> pageProvider;
+        if (StringUtils.isEmpty(searchString)) {
+            pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    DOC_ROUTING_SEARCH_ALL_ROUTE_MODELS_PROVIDER_NAME, null, null, 0L, props);
+        } else {
+            pageProvider = (PageProvider<DocumentModel>) pageProviderService.getPageProvider(
+                    DOC_ROUTING_SEARCH_ROUTE_MODELS_WITH_TITLE_PROVIDER_NAME, null, null, 0L, props,
+                    searchString + '%');
+        }
         allRouteModels.addAll(pageProvider.getCurrentPage());
         while (pageProvider.isNextPageAvailable()) {
             pageProvider.nextPage();
