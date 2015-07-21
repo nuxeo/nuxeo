@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -54,7 +53,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.7
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.csv", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.types.api",
         "org.nuxeo.ecm.platform.types.core" })
 @LocalDeploy({ "org.nuxeo.ecm.csv:OSGI-INF/test-types-contrib.xml",
