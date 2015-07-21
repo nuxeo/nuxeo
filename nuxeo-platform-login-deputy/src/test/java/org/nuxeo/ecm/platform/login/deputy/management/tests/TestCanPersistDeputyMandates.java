@@ -32,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManagementStorageService;
 import org.nuxeo.ecm.platform.login.deputy.management.DeputyManager;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -42,7 +41,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.directory", "org.nuxeo.ecm.directory.sql",
         "org.nuxeo.ecm.directory.types.contrib", "org.nuxeo.ecm.platform.login.deputy.management" })
 @LocalDeploy("org.nuxeo.ecm.platform.login.deputy.management:datasource-contrib.xml")
