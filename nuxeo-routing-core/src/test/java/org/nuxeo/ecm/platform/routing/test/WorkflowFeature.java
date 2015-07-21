@@ -1,14 +1,12 @@
 package org.nuxeo.ecm.platform.routing.test;
 
 import org.nuxeo.ecm.automation.test.AutomationFeature;
-import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-@Features({ TransactionalFeature.class, CoreFeature.class, AutomationFeature.class })
+@Features(AutomationFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.content.template", //
         "org.nuxeo.ecm.automation.core", //
         "org.nuxeo.ecm.directory", //
