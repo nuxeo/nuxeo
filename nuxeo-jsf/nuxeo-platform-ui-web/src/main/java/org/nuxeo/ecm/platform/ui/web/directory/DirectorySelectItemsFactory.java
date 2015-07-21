@@ -174,9 +174,19 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
     }
 
     /**
-     * @since 7.3
+     * @since 7.4
      */
     protected DirectorySelectItem createSelectItemForEntry(Object itemValue, String separator, DocumentModel ... entries) {
+        return createSelectItemForEntry(itemValue, separator, null, entries);
+    }
+
+    /**
+     * @since 7.3
+     */
+    protected DirectorySelectItem createSelectItemForEntry(Object itemValue, String separator, String[] defaultLabels, DocumentModel ... entries) {
+        if (defaultLabels != null && (entries.length != defaultLabels.length)) {
+            throw new IllegalArgumentException("entryIds  must be the same size that entries");
+        }
         String var = getVar();
         String varEntry = var + "Entry";
         Object varEntryExisting = VariableManager.saveRequestMapVarValue(varEntry);
@@ -186,11 +196,16 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
             VariableManager.putVariableToRequestParam(var, itemValue);
             VariableManager.putVariableToRequestParam(varEntry, entries[entries.length - 1]);
             String label = "";
-            for (DocumentModel entry : entries) {
+            for (int i = 0; i < entries.length; i++) {
+                final DocumentModel entry = entries[i];
                 if (label.length() != 0) {
                     label += separator;
                 }
-                label += retrieveLabelFromEntry(entry);
+                if (entry == null && defaultLabels != null) {
+                    label += defaultLabels[i];
+                } else {
+                    label += retrieveLabelFromEntry(entry);
+                }
             }
             Long ordering = retrieveOrderingFromEntry(entries[entries.length - 1]);
             selectItem = createSelectItem(label, ordering);
@@ -255,7 +270,7 @@ public abstract class DirectorySelectItemsFactory extends SelectItemsFactory {
                 removeIteratorFromRequestParam();
                 return item;
             }
-            return createSelectItemForEntry(entry, separator, docEntries);
+            return createSelectItemForEntry(entry, separator, entryIds, docEntries);
         } catch (DirectoryException e) {
         }
         return null;
