@@ -22,6 +22,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.segment.io.SegmentIO;
 import org.nuxeo.segment.io.SegmentIOComponent;
 import org.nuxeo.segment.io.SegmentIOMapper;
@@ -108,7 +109,10 @@ public class TestSegmentIOService {
         doc.setPropertyValue("dc:title", "Test Doc");
         doc = session.createDocument(doc);
         session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
         eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
 
         List<Map<String, Object>> testData  = component.getTestData();
 
