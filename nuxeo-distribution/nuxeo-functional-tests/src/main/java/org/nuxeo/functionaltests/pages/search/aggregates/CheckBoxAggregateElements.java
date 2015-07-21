@@ -29,9 +29,7 @@ import org.openqa.selenium.WebElement;
 /**
  * @since 6.0
  */
-public class CheckBoxAggregateElements {
-
-    public static final String AGG_REGEX = "(.*) \\((.*)\\)";
+public class CheckBoxAggregateElements implements AggregateElement {
 
     protected WebElement element;
 
@@ -51,6 +49,7 @@ public class CheckBoxAggregateElements {
         this.driver = driver;
     }
 
+    @Override
     public Map<String, Integer> getAggregates() {
         Map<String, Integer> result = new HashMap<String, Integer>();
         for (WebElement e : element.findElements(By.xpath("tbody/tr/td"))) {

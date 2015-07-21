@@ -73,7 +73,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      */
     private static final int SELECT2_LOADING_TIMEOUT = 20;
 
-    private boolean mutliple = false;
+    protected boolean mutliple = false;
 
     /**
      * Constructor.
@@ -256,7 +256,7 @@ public class Select2WidgetElement extends WebFragmentImpl {
      *
      * @since 6.0
      */
-    private void clickOnSelect2Field() {
+    protected void clickOnSelect2Field() {
         WebElement select2Field = null;
         if (mutliple) {
             select2Field = element;

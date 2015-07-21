@@ -22,8 +22,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
@@ -153,9 +153,23 @@ public class ITSearchTabTest extends AbstractTest {
         assertEquals(nbCurrentDoc, resultPanelSubPage.getNumberOfDocumentInCurrentPage());
 
         logout();
+        tearDown();
+
+        // test aggregate on deleted user
+        documentBasePage = login();
+        searchPage = documentBasePage.goToSearchPage();
+        searchLayoutSubPage = searchPage.getDefaultSearch();
+        Map<String, Integer> authorAggs = searchLayoutSubPage.getAvailableAuthorAggregate();
+        boolean testUserFound = false;
+        for (Entry<String, Integer> e : authorAggs.entrySet()) {
+            if (e.getKey().equals(TEST_USERNAME)) {
+                testUserFound = true;
+                break;
+            }
+        }
+        assertTrue(testUserFound);
     }
 
-    @After
     public void tearDown() throws UserNotConnectedException {
         UsersTabSubPage usersTab = login().getAdminCenter().getUsersGroupsHomePage().getUsersTab();
         usersTab = usersTab.searchUser(TEST_USERNAME);
