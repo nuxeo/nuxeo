@@ -29,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.management.api.ProbeInfo;
 import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.management.statuses.ProbeScheduler;
@@ -42,7 +41,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.management", //
         "org.nuxeo.ecm.core.management", //

@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -47,7 +46,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.core", "org.nuxeo.ecm.platform.collections.core",
         "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.web.common" })

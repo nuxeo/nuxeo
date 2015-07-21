@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
  * @since 6.0
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class })
+@Features(PlatformFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.actions" })
 @LocalDeploy("org.nuxeo.ecm.automation.io:test-vocabulary-enricher-contrib.xml")

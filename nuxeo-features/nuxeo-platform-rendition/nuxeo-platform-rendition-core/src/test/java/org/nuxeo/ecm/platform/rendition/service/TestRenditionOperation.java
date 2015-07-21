@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.rendition.Rendition;
@@ -50,7 +49,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RenditionFeature.class })
+@Features(RenditionFeature.class)
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestRenditionOperation {
 

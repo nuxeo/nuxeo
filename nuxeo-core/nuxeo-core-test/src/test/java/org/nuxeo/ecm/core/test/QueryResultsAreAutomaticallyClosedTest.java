@@ -18,7 +18,7 @@ import org.nuxeo.runtime.test.runner.LogCaptureFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class, LogCaptureFeature.class })
+@Features({ CoreFeature.class, LogCaptureFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
 @LogCaptureFeature.FilterWith(QueryResultsAreAutomaticallyClosedTest.LogFilter.class)
 public class QueryResultsAreAutomaticallyClosedTest {

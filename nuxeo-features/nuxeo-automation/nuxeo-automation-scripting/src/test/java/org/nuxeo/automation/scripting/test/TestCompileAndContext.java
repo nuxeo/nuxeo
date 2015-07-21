@@ -29,7 +29,6 @@ import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -60,7 +59,7 @@ import static org.junit.Assert.assertEquals;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.automation.core" })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.automation" +

@@ -24,7 +24,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.test.virusscan.service.DummyVirusScanner;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -38,7 +37,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.core.test" })
 @LocalDeploy({ "org.nuxeo.ecm.core.test:vscan/core-types-contrib.xml",
         "org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml",

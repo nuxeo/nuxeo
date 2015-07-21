@@ -44,7 +44,7 @@ import com.google.inject.Inject;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.actions",
         "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.picture.convert", "org.nuxeo.ecm.platform.rendition.api",

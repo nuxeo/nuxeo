@@ -54,7 +54,7 @@ import static org.junit.Assert.assertNull;
  * @since 5.7.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.actions" })
 @LocalDeploy("org.nuxeo.ecm.automation.io:testrestcontrib.xml")

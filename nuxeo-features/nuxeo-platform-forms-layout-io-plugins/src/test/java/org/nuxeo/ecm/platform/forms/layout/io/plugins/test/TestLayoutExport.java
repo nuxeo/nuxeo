@@ -31,7 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
@@ -56,7 +55,7 @@ import static org.junit.Assert.assertNotNull;
  * @since 5.5
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.forms.layout.core", "org.nuxeo.ecm.platform.forms.layout.client",
         "org.nuxeo.ecm.platform.forms.layout.io.plugins" })
 @LocalDeploy({ "org.nuxeo.ecm.platform.forms.layout.io.plugins:layouts-test-contrib.xml",

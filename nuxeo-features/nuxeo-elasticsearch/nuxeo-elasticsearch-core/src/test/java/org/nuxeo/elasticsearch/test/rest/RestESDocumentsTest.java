@@ -36,7 +36,6 @@ import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOpe
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.jaxrs.io.documents.PaginableDocumentModelListImpl;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -61,11 +60,7 @@ import com.sun.jersey.api.client.ClientResponse;
  * @since 5.9.3
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, RestServerFeature.class, RepositoryElasticSearchFeature.class /*
-                                                                                                       * ,
-                                                                                                       * RandomBug.Feature
-                                                                                                       * .class
-                                                                                                       */})
+@Features({ RestServerFeature.class, RepositoryElasticSearchFeature.class })
 @Jetty(port = 18090)
 @Deploy("org.nuxeo.ecm.platform.contentview.jsf")
 @LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",

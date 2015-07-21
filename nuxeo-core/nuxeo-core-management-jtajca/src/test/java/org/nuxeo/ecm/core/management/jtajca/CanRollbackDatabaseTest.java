@@ -12,7 +12,6 @@ import javax.sql.DataSource;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.datasource.DataSourceHelper;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -23,7 +22,7 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 import junit.framework.AssertionFailedError;
 
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 public class CanRollbackDatabaseTest {
 
     @Inject

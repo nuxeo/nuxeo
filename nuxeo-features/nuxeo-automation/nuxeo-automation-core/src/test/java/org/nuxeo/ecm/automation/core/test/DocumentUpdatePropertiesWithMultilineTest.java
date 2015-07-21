@@ -26,7 +26,6 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.RuntimeServiceEvent;
 import org.nuxeo.runtime.RuntimeServiceListener;
 import org.nuxeo.runtime.api.Framework;
@@ -36,7 +35,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 @RunWith(FeaturesRunner.class)
-@Features({ DocumentUpdatePropertiesWithMultilineTest.InitFeature.class, TransactionalFeature.class, CoreFeature.class })
+@Features({ DocumentUpdatePropertiesWithMultilineTest.InitFeature.class, CoreFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 public class DocumentUpdatePropertiesWithMultilineTest {
 

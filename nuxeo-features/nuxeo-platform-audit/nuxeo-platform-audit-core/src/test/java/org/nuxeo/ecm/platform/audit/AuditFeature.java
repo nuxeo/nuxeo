@@ -19,7 +19,6 @@ package org.nuxeo.ecm.platform.audit;
 import javax.persistence.EntityManager;
 
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -29,7 +28,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
-@Features({ TransactionalFeature.class, PlatformFeature.class })
+@Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.persistence", "org.nuxeo.ecm.platform.audit" })
 @LocalDeploy("org.nuxeo.ecm.platform.audit:nxaudit-ds.xml")
 public class AuditFeature extends SimpleFeature {

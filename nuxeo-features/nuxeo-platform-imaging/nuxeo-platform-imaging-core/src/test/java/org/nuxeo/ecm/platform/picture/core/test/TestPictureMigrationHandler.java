@@ -39,7 +39,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.picture.PictureMigrationHandler;
 import org.nuxeo.ecm.platform.picture.api.PictureView;
 import org.nuxeo.ecm.platform.picture.api.adapters.MultiviewPicture;
@@ -52,7 +51,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 7.2
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, AutomationFeature.class })
+@Features(AutomationFeature.class)
 @Deploy({ "org.nuxeo.ecm.platform.picture.api", "org.nuxeo.ecm.platform.picture.convert",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestPictureMigrationHandler {

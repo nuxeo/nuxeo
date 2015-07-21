@@ -10,7 +10,6 @@ import javax.transaction.TransactionManager;
 
 import org.nuxeo.ecm.core.storage.sql.IgnoreNonPooledCondition;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.management.ServerLocator;
@@ -24,7 +23,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
 
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy({ "org.nuxeo.runtime.metrics", "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.core.management.jtajca" })
 @LocalDeploy({ "org.nuxeo.ecm.core.management.jtajca:login-config.xml",
         "org.nuxeo.ecm.core.management.jtajca:ds-contrib.xml" })

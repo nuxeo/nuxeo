@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryEntry;
@@ -53,7 +52,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 @RunWith(FeaturesRunner.class)
-@Features({ SQLDirectoryFeature.class, TransactionalFeature.class, CoreFeature.class })
+@Features({ SQLDirectoryFeature.class, CoreFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy("org.nuxeo.ecm.directory.sql.tests:test-directory-resolver-contrib.xml")
 public class TestDirectoryEntryResolver {

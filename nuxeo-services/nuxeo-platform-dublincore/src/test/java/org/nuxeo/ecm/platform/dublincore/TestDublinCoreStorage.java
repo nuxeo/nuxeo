@@ -40,7 +40,6 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.platform.dublincore.service.DublinCoreStorageService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -52,7 +51,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  * DublinCoreStorage Test Case.
  */
 @RunWith(FeaturesRunner.class)
-@Features({ TransactionalFeature.class, CoreFeature.class })
+@Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.dublincore")
 @LocalDeploy("org.nuxeo.ecm.platform.dublincore.tests:OSGI-INF/types-contrib.xml")
 public class TestDublinCoreStorage {

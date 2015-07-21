@@ -54,7 +54,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 public class LogEntryWriterTest {
 

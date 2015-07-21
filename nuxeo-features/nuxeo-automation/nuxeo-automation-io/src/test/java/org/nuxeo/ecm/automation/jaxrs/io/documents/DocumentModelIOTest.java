@@ -45,7 +45,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 
 @RunWith(FeaturesRunner.class)
-@Features({ CoreFeature.class })
+@Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.automation.io" })
 @LocalDeploy("org.nuxeo.ecm.automation.io:testdoc-core-contrib.xml")
