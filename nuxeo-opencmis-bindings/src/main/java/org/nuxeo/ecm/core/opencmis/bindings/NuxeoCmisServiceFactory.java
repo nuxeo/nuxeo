@@ -98,7 +98,7 @@ public class NuxeoCmisServiceFactory extends AbstractServiceFactory {
         encryptTempFiles = StringUtils.isBlank(encryptTempStr) ? super.encryptTempFiles()
                 : Boolean.parseBoolean(encryptTempStr.trim());
         memoryThreshold = getLongParameter(parameters, PROP_MEMORY_THERESHOLD, super.getMemoryThreshold());
-        maxContentSize = getLongParameter(parameters, PROP_MAX_CONTENT_SIZE, super.getMaxContentSize());
+        maxContentSize = getLongParameter(parameters, PROP_MAX_CONTENT_SIZE, Long.MAX_VALUE);
         defaultTypesMaxItems = getBigIntegerParameter(parameters, PROP_DEFAULT_TYPES_MAX_ITEMS, DEFAULT_TYPES_MAX_ITEMS);
         defaultTypesDepth = getBigIntegerParameter(parameters, PROP_DEFAULT_TYPES_DEPTH, DEFAULT_TYPES_DEPTH);
         defaultMaxItems = getBigIntegerParameter(parameters, PROP_DEFAULT_MAX_ITEMS, DEFAULT_MAX_ITEMS);
