@@ -428,6 +428,9 @@ The sum of all the .gridBox in a .gridRow line must always be equal to 12 */
   width: 100%;
   z-index: 50; }
 
+.infoViewInfoLayout .widgetPanel.layoutWidgetPanel {
+  padding: 1em 1.5em; }
+
 .infoViewLeft ~ .infoViewRight div.infoViewInfoLayout {
   padding-left: 0;
   padding-right: 0 }

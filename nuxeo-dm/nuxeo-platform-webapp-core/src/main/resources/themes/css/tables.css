@@ -24,7 +24,6 @@ table td {
 .dataTableNoBorder,
 .dataOutput,
 .dataList,
-.dataTableNoBorder,
 .dataInput {
   background-color: #fff;
   border-color: "neutral.lighter (__FLAVOR__ border)";
@@ -37,6 +36,7 @@ table td {
   max-width: 100em }
 
 .dataInput {
+  background-color: transparent;
   max-width: 55em }
 
 .dataTable th,

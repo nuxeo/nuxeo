@@ -7,9 +7,11 @@ author: lkemen@nuxeo.com
 .nxMainContainer {
   font-size: .8em;
   height: 100%;
-  margin-top: 3.4em;
   position: relative;
   width: 100% }
+
+.nxHeader + .nxMainContainer {
+  margin-top: 3.4em; }
 
 .nxMainContainer .column {
   background: none "color.major.stronger (__FLAVOR__ background)";
