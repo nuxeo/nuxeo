@@ -19,6 +19,7 @@ package org.nuxeo.ftest.cap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,6 +38,7 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 /**
@@ -214,6 +216,21 @@ public class ITDefaultWorkflowTest extends AbstractTest {
         summaryTabPage = workflowTab.getSummaryTab();
 
         assertEquals("Approved", summaryTabPage.getCurrentLifeCycleState());
+
+        // Check that the wf selector and the start button are no longer visible since we can't start a default workflow
+        // on a document on which the current lifecycle state is 'approved'
+        try {
+            driver.findElement(By.xpath(SummaryTabSubPage.WORKFLOW_SELECTOR_XPATH));
+            fail("Default workflow should not be started on 'Approved' documents");
+        } catch (NoSuchElementException e) {
+            // expected
+        }
+        try {
+            driver.findElement(By.xpath(SummaryTabSubPage.WORKFLOW_START_BUTTON_XPATH));
+            fail("Default workflow should not be started on 'Approved' documents");
+        } catch (NoSuchElementException e) {
+            // expected
+        }
 
         homePage = filePage.getUserHome();
         // check that Administrator doesn't have the task on his workflow tasks

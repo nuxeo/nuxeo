@@ -34,10 +34,14 @@ public class SummaryTabSubPage extends AbstractPage {
 
     private static final String COLLECTIONS_FORM_ID = "nxl_grid_summary_layout:nxw_summary_current_document_collections_form";
 
-    @FindBy(xpath = "//input[contains(@id, 'nxw_start_route_widget_start_route')]")
+    public static final String WORKFLOW_START_BUTTON_XPATH = "//input[contains(@id, 'nxw_start_route_widget_start_route')]";
+
+    public static final String WORKFLOW_SELECTOR_XPATH = "//select[contains(@id, 'nxw_start_route_widget')]";
+
+    @FindBy(xpath = WORKFLOW_START_BUTTON_XPATH)
     public WebElement startWorkflowBtn;
 
-    @FindBy(xpath = "//select[contains(@id, 'nxw_start_route_widget')]")
+    @FindBy(xpath = WORKFLOW_SELECTOR_XPATH)
     public WebElement workflowSelector;
 
     @FindBy(xpath = "//form[contains(@id, 'nxl_grid_summary_layout:nxw_summary_current_document_single_tasks')]")
