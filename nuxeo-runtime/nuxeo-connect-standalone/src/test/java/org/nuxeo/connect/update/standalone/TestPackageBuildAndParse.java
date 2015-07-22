@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2012-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -33,6 +33,7 @@ import org.nuxeo.connect.update.LocalPackage;
 import org.nuxeo.connect.update.NuxeoValidationState;
 import org.nuxeo.connect.update.PackageState;
 import org.nuxeo.connect.update.PackageType;
+import org.nuxeo.connect.update.PackageVisibility;
 import org.nuxeo.connect.update.ProductionState;
 import org.nuxeo.connect.update.task.standalone.InstallTask;
 import org.nuxeo.connect.update.task.standalone.UninstallTask;
@@ -73,6 +74,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         builder.validationState(NuxeoValidationState.INPROCESS);
         builder.productionState(ProductionState.PRODUCTION_READY);
         builder.requireTermsAndConditionsAcceptance(true);
+        builder.visibility(PackageVisibility.MARKETPLACE);
 
         // test on package def
         String manifest = builder.buildManifest();
@@ -87,6 +89,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertTrue(packageDef.requireTermsAndConditionsAcceptance());
         assertTrue(packageDef.isSupported());
         assertTrue(packageDef.supportsHotReload());
+        assertEquals(PackageVisibility.MARKETPLACE, packageDef.getVisibility());
 
         // test on real unziped package
         File zipFile = builder.build();
@@ -104,6 +107,7 @@ public class TestPackageBuildAndParse extends PackageTestCase {
         assertTrue(pkg.requireTermsAndConditionsAcceptance());
         assertTrue(pkg.isSupported());
         assertTrue(pkg.supportsHotReload());
+        assertEquals(PackageVisibility.MARKETPLACE, pkg.getVisibility());
     }
 
 }

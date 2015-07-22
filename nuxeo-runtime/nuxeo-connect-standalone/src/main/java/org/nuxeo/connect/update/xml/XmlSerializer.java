@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,14 +38,6 @@ public class XmlSerializer extends XmlWriter {
         if (def.getType() != null) {
             attr("type", def.getType().getValue());
         }
-        try {
-            def.getClass().getMethod("getVisibility");
-            if (def.getVisibility() != null) {
-                attr("visibility", def.getVisibility().toString());
-            }
-        } catch (NoSuchMethodException e) {
-            // Ignore visibility with old Connect Client versions
-        }
         attr("name", def.getName());
         if (def.getVersion() != null) {
             attr("version", def.getVersion().toString());
@@ -60,8 +52,8 @@ public class XmlSerializer extends XmlWriter {
 
         element("hotreload-support", Boolean.valueOf(def.supportsHotReload()).toString());
         element("supported", Boolean.valueOf(def.isSupported()).toString());
-        element("require-terms-and-conditions-acceptance",
-                Boolean.valueOf(def.requireTermsAndConditionsAcceptance()).toString());
+        element("require-terms-and-conditions-acceptance", Boolean.valueOf(def.requireTermsAndConditionsAcceptance())
+                                                                  .toString());
         element("production-state", def.getProductionState().toString());
         element("nuxeo-validation", def.getValidationState().toString());
 
@@ -78,6 +70,15 @@ public class XmlSerializer extends XmlWriter {
             end();
         }
         element("validator", def.getValidator());
+
+        try {
+            def.getClass().getMethod("getVisibility");
+            if (def.getVisibility() != null) {
+                element("visibility", def.getVisibility().toString());
+            }
+        } catch (NoSuchMethodException e) {
+            // Ignore visibility with old Connect Client versions
+        }
 
         if (def.getTargetPlatforms() != null && def.getTargetPlatforms().length > 0) {
             start("platforms");
