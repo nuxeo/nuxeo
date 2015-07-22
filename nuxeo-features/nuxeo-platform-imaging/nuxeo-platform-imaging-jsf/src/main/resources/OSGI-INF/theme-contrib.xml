@@ -1,24 +1,21 @@
 <?xml version="1.0"?>
 <component name="org.nuxeo.ecm.platform.picture.theme">
 
-  <!-- mapping between theme pages and resources -->
-  <extension target="org.nuxeo.theme.styling.service" point="pages">
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
 
-    <themePage name="*">
-      <styles append="true">
-        <style>picture_book</style>
-      </styles>
-    </themePage>
-
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="bundles">
+    <bundle name="nuxeo_includes">
+      <resources append="true">
+        <resource>picture_book.css</resource>
+      </resources>
+    </bundle>
   </extension>
 
-  <!-- CSS path declaration -->
-  <extension target="org.nuxeo.theme.styling.service" point="styles">
+  <extension target="org.nuxeo.ecm.platform.WebResources" point="resources">
 
-    <style name="picture_book">
-      <src>themes/css/picture_book.css</src>
-    </style>
-
+    <resource name="picture_book.css">
+      <path>themes/css/picture_book.css</path>
+    </resource>
   </extension>
 
 </component>
