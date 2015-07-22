@@ -44,8 +44,8 @@ public class ThemeMigrationService extends DefaultComponent {
                         r.getName(), contributor.getName(), WR_XP);
                 DeprecationLogger.log(message, "7.4");
                 Framework.getRuntime().getWarnings().add(message);
-                // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare it
-                // directly to the WRM endpoint
+                // ensure path is absolute, consider that resource is in the war, and if not, user will have to declare
+                // it directly to the WRM endpoint
                 String path = r.getPath();
                 if (path != null && !path.startsWith("/")) {
                     r.setUri("/" + path);
@@ -60,7 +60,8 @@ public class ThemeMigrationService extends DefaultComponent {
             }
         } else {
             String message = String.format("Warning: target extension point '%s' of '%s'"
-                    + " is unknown. Check your extension in component %s", extensionPoint, XP, contributor.getName());
+                    + " is unknown as it has been removed since 7.4. Check your extension in component %s",
+                    extensionPoint, XP, contributor.getName());
             DeprecationLogger.log(message, "7.4");
             Framework.getRuntime().getWarnings().add(message);
         }

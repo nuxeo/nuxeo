@@ -3,6 +3,14 @@
   <documentation>Compat registration of theme service</documentation>
 
   <require>org.nuxeo.ecm.platform.WebResources</require>
+  <require>org.nuxeo.theme.nuxeo.webapp</require>
+
+  <!-- compat aliases for old components that might still be required -->
+  <alias>org.nuxeo.theme.core</alias>
+  <alias>org.nuxeo.theme.fragments</alias>
+  <alias>org.nuxeo.theme.html</alias>
+  <alias>org.nuxeo.theme.jsf</alias>
+  <alias>org.nuxeo.theme.nuxeo.default</alias>
 
   <implementation class="org.nuxeo.theme.migration.service.ThemeMigrationService" />
 

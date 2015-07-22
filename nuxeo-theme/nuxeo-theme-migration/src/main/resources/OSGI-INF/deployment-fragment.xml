@@ -2,20 +2,13 @@
 
 <fragment version="1">
 
-  <extension target="application#MODULE">
-    <module>
-      <java>${bundle.fileName}</java>
-    </module>
-  </extension>
-
   <extension target="faces-config#COMPONENT">
     <component>
       <component-type>nuxeo.web.theme.disabled</component-type>
       <component-class>
-        org.nuxeo.ecm.platform.ui.web.compat.tomahawk.DisabledTomahawkComponent
+        org.nuxeo.theme.migration.tag.component.DisabledThemeComponent
       </component-class>
     </component>
   </extension>
 
 </fragment>
-

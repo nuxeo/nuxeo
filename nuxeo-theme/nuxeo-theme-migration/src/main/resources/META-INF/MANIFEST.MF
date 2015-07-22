@@ -5,9 +5,5 @@ Bundle-SymbolicName: org.nuxeo.theme.migration;singleton:=true
 Bundle-Localization: plugin
 Bundle-Vendor: Nuxeo
 Bundle-Category: web
-Nuxeo-Component: OSGI-INF/theme-compat-framework.xml,
-  OSGI-INF/theme-compat-core.xml,
-  OSGI-INF/theme-compat-fragments.xml,
-  OSGI-INF/theme-compat-html.xml,
-  OSGI-INF/theme-compat-jsf.xml,
-  OSGI-INF/theme-compat-webapp-core-default.xml
+Require-Bundle: org.nuxeo.ecm.platform.ui,org.nuxeo.theme.styling
+Nuxeo-Component: OSGI-INF/theme-compat-framework.xml
