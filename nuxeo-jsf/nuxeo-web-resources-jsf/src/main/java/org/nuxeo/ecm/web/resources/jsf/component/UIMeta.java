@@ -47,7 +47,7 @@ public class UIMeta extends UIComponentBase {
     }
 
     public String getCharset() {
-        return (String) getStateHelper().eval(PropertyKeys.charset, "utf-8");
+        return (String) getStateHelper().eval(PropertyKeys.charset);
     }
 
     public void setCharset(String charset) {
@@ -97,7 +97,10 @@ public class UIMeta extends UIComponentBase {
         WebConfiguration webConfig = WebConfiguration.getInstance(context.getExternalContext());
         FaceletsConfiguration faceletsConfig = webConfig.getFaceletsConfiguration();
         if (faceletsConfig.isOutputHtml5Doctype(context.getViewRoot().getViewId())) {
-            writer.writeAttribute("charset", getCharset(), "charset");
+            String charset = getCharset();
+            if (!StringUtils.isBlank(charset)) {
+                writer.writeAttribute("charset", charset, "charset");
+            }
             String httpEquiv = getHttpequiv();
             if (!StringUtils.isBlank(httpEquiv)) {
                 writer.writeAttribute("http-equiv", httpEquiv, "http-equiv");

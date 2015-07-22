@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <fragment version="1">
 
-  <require>org.nuxeo.theme.jsf</require>
   <require>org.nuxeo.ecm.platform.preview</require>
 
   <extension target="web#FILTER-MAPPING">
