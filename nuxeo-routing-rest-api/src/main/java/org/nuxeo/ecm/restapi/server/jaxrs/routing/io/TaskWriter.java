@@ -140,7 +140,9 @@ public class TaskWriter extends EntityWriter<Task> {
             final SchemaManager schemaManager = Framework.getService(SchemaManager.class);
             final Schema transientSchema = schemaManager.getSchema(transientSchemaName);
             for (Entry<String, Serializable> e : workflowInstance.getVariables().entrySet()) {
-                JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(), GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
+                if (transientSchema == null || transientSchema.hasField(e.getKey())) {
+                    JsonEncodeDecodeUtils.encodeVariableEntry(workflowInstance.getDocument(), GraphRoute.PROP_VARIABLES_FACET, e, jg, request);
+                }
             }
         }
         jg.writeEndObject();

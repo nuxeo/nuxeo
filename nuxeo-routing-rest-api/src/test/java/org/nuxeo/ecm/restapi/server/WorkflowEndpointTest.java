@@ -19,6 +19,7 @@
 package org.nuxeo.ecm.restapi.server;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -123,7 +124,7 @@ public class WorkflowEndpointTest extends BaseTest {
         return result;
     }
 
-    protected String getCurrentTask(final String createdWorflowInstanceId) throws IOException, JsonProcessingException {
+    protected String getCurrentTaskId(final String createdWorflowInstanceId) throws IOException, JsonProcessingException {
         ClientResponse response;
         JsonNode node;
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
@@ -311,20 +312,20 @@ public class WorkflowEndpointTest extends BaseTest {
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Complete first task
-        String taskId = getCurrentTask(createdWorflowInstanceId);
+        String taskId = getCurrentTaskId(createdWorflowInstanceId);
         String out = getBodyForStartReviewTaskCompletion(taskId);
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
         // Missing required variables
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Complete second task
-        taskId = getCurrentTask(createdWorflowInstanceId);
+        taskId = getCurrentTaskId(createdWorflowInstanceId);
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/approve", getBodyForTaskCompletion(taskId));
         // Missing required variables
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Complete third task
-        taskId = getCurrentTask(createdWorflowInstanceId);
+        taskId = getCurrentTaskId(createdWorflowInstanceId);
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/validate", getBodyForTaskCompletion(taskId));
         // Missing required variables
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
@@ -361,7 +362,21 @@ public class WorkflowEndpointTest extends BaseTest {
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Complete first task
-        String taskId = getCurrentTask(createdWorflowInstanceId);
+        MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
+        queryParams.put("workflowInstanceId", Arrays.asList(new String[] { createdWorflowInstanceId }));
+        response = getResponse(RequestType.GET, "/task", null, queryParams, null, null);
+        node = mapper.readTree(response.getEntityInputStream());
+        assertEquals(1, node.get("entries").size());
+        Iterator<JsonNode> elements = node.get("entries").getElements();
+        JsonNode task = elements.next();
+        JsonNode variables = task.get("variables");
+
+        // Check we don't see global variables we are not supposed to
+        assertTrue(variables.has("end_date"));
+        assertFalse(variables.has("review_result"));
+
+        String taskId = task.get("id").getTextValue();
+
         String out = getBodyWithSecurityViolationForStartReviewTaskCompletion(taskId);
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
         // Missing required variables
@@ -483,14 +498,14 @@ public class WorkflowEndpointTest extends BaseTest {
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Complete first task
-        String taskId = getCurrentTask(createdWorflowInstanceId);
+        String taskId = getCurrentTaskId(createdWorflowInstanceId);
         String out = getBodyForStartReviewTaskCompletion(taskId);
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
         // Missing required variables
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Delegate
-        taskId = getCurrentTask(createdWorflowInstanceId);
+        taskId = getCurrentTaskId(createdWorflowInstanceId);
         MultivaluedMap<String, String> queryParams = new MultivaluedMapImpl();
         queryParams.put("actors", Arrays.asList(new String[] { "members" }));
         queryParams.put("comment", Arrays.asList(new String[] { "A comment" }));
@@ -515,7 +530,7 @@ public class WorkflowEndpointTest extends BaseTest {
         final String createdWorflowInstanceId = node.get("id").getTextValue();
 
         // Complete first task
-        String taskId = getCurrentTask(createdWorflowInstanceId);
+        String taskId = getCurrentTaskId(createdWorflowInstanceId);
         String out = getBodyForStartReviewTaskCompletion(taskId);
         response = getResponse(RequestType.PUT, "/task/" + taskId + "/start_review", out.toString());
         // Missing required variables
