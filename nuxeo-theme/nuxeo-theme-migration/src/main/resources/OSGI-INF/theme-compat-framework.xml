@@ -95,4 +95,13 @@
     <object class="org.nuxeo.theme.migration.service.descriptors.ResourceBank" />
   </extension-point>
 
+  <extension target="org.nuxeo.theme.styling.service" point="negotiations">
+    <negotiation target="jsfThemeCompatTemplate">
+      <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.DefaultPage"
+        order="100">
+        <property name="jsfThemeCompatTemplate">/pages/workspace_page.xhtml</property>
+      </negotiator>
+    </negotiation>
+  </extension>
+
 </component>
