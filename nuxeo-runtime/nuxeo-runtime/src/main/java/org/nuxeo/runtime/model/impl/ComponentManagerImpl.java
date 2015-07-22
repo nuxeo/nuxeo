@@ -137,13 +137,8 @@ public class ComponentManagerImpl implements ComponentManager {
                 // TODO fix the root cause and remove this
                 return;
             }
-            String msg = "Duplicate component name: " + name;
-            log.error(msg);
-            Framework.getRuntime().getWarnings().add(msg);
+            handleError("Duplicate component name: " + name, null);
             return;
-            // throw new
-            // IllegalStateException("Component was already registered: " +
-            // name);
         }
         for (ComponentName n : ri.getAliases()) {
             if (reg.contains(n)) {
