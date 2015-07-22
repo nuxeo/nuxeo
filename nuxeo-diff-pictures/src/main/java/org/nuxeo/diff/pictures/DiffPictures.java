@@ -43,255 +43,249 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
- *
  * @since 7.3
  */
 public class DiffPictures {
 
-	private static final Log log = LogFactory.getLog(DiffPictures.class);
+    private static final Log log = LogFactory.getLog(DiffPictures.class);
 
-	public static final String DEFAULT_COMMAND = "diff-pictures-default";
+    public static final String DEFAULT_COMMAND = "diff-pictures-default";
 
-	public static final String DEFAULT_XPATH = "file:content";
+    public static final String DEFAULT_XPATH = "file:content";
 
-	public static final String DEFAULT_FUZZ = "0";
+    public static final String DEFAULT_FUZZ = "0";
 
-	public static final String DEFAULT_HIGHLIGHT_COLOR = "Red";
+    public static final String DEFAULT_HIGHLIGHT_COLOR = "Red";
 
-	public static final String DEFAULT_LOWLIGHT_COLOR = "None";
+    public static final String DEFAULT_LOWLIGHT_COLOR = "None";
 
-	protected static final String TEMP_DIR_PATH = System
-			.getProperty("java.io.tmpdir");
+    protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir");
 
-	// See nuxeo-diff-pictures-template.html
-	protected static final String TMPL_PREFIX = "{{";
-	protected static final String TMPL_SUFFIX = "}}";
-	protected static final String TMPL_CONTEXT_PATH = buildTemplateKey("CONTEXT_PATH");
-	protected static final String TMPL_ACTION = buildTemplateKey("ACTION");
-	protected static final String TMPL_LEFT_DOC_ID = buildTemplateKey("LEFT_DOC_ID");
-	protected static final String TMPL_LEFT_DOC_LABEL = buildTemplateKey("LEFT_DOC_LABEL");
-	protected static final String TMPL_RIGHT_DOC_ID = buildTemplateKey("RIGHT_DOC_ID");
-	protected static final String TMPL_RIGHT_DOC_LABEL = buildTemplateKey("RIGHT_DOC_LABEL");
-	protected static final String TMPL_XPATH = buildTemplateKey("XPATH");
-	protected static final String TMPL_TIME_STAMP = buildTemplateKey("TIME_STAMP");
+    // See nuxeo-diff-pictures-template.html
+    protected static final String TMPL_PREFIX = "{{";
 
-	Blob b1;
+    protected static final String TMPL_SUFFIX = "}}";
 
-	Blob b2;
+    protected static final String TMPL_CONTEXT_PATH = buildTemplateKey("CONTEXT_PATH");
 
-	String leftDocId;
+    protected static final String TMPL_ACTION = buildTemplateKey("ACTION");
 
-	String rightDocId;
+    protected static final String TMPL_LEFT_DOC_ID = buildTemplateKey("LEFT_DOC_ID");
 
-	String commandLine;
+    protected static final String TMPL_LEFT_DOC_LABEL = buildTemplateKey("LEFT_DOC_LABEL");
 
-	Map<String, Serializable> clParameters;
-	
-	protected static String buildTemplateKey(String inName) {
-		return TMPL_PREFIX + inName + TMPL_SUFFIX;
-	}
+    protected static final String TMPL_RIGHT_DOC_ID = buildTemplateKey("RIGHT_DOC_ID");
 
-	public DiffPictures(Blob inB1, Blob inB2) {
+    protected static final String TMPL_RIGHT_DOC_LABEL = buildTemplateKey("RIGHT_DOC_LABEL");
 
-		this(inB1, inB2, null, null);
+    protected static final String TMPL_XPATH = buildTemplateKey("XPATH");
 
-	}
+    protected static final String TMPL_TIME_STAMP = buildTemplateKey("TIME_STAMP");
 
-	public DiffPictures(DocumentModel inLeft, DocumentModel inRight) {
+    Blob b1;
 
-		this(inLeft, inRight, null);
-	}
+    Blob b2;
 
-	public DiffPictures(DocumentModel inLeft, DocumentModel inRight,
-			String inXPath) {
+    String leftDocId;
 
-		Blob leftB, rightB;
+    String rightDocId;
 
-		if (StringUtils.isBlank(inXPath) || "null".equals(inXPath)) {
-			leftB = (Blob) inLeft.getPropertyValue(DEFAULT_XPATH);
-			rightB = (Blob) inRight.getPropertyValue(DEFAULT_XPATH);
-		} else {
-			leftB = (Blob) inLeft.getPropertyValue(inXPath);
-			rightB = (Blob) inRight.getPropertyValue(inXPath);
-		}
+    String commandLine;
 
-		init(leftB, rightB, inLeft.getId(), inRight.getId());
-	}
+    Map<String, Serializable> clParameters;
 
-	public DiffPictures(Blob inB1, Blob inB2, String inLeftDocId,
-			String inRightDocId) {
-		init(inB1, inB2, inLeftDocId, inRightDocId);
+    protected static String buildTemplateKey(String inName) {
+        return TMPL_PREFIX + inName + TMPL_SUFFIX;
+    }
 
-	}
+    public DiffPictures(Blob inB1, Blob inB2) {
 
-	private void init(Blob inB1, Blob inB2, String inLeftDocId,
-			String inRightDocId) {
+        this(inB1, inB2, null, null);
 
-		b1 = inB1;
-		b2 = inB2;
-		leftDocId = inLeftDocId;
-		rightDocId = inRightDocId;
-	}
+    }
 
-	public Blob compare(String inCommandLine, Map<String, Serializable> inParams)
-			throws CommandNotAvailable, IOException {
+    public DiffPictures(DocumentModel inLeft, DocumentModel inRight) {
 
-		Blob result = null;
-		String finalName;
-		boolean mustTrackTempFile = false;
+        this(inLeft, inRight, null);
+    }
 
-		commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND
-				: inCommandLine;
+    public DiffPictures(DocumentModel inLeft, DocumentModel inRight, String inXPath) {
 
-		clParameters = inParams == null ? new HashMap<String, Serializable>()
-				: inParams;
+        Blob leftB, rightB;
 
-		finalName = (String) clParameters.get("targetFileName");
-		if (StringUtils.isBlank(finalName)) {
-			finalName = "comp-" + b1.getFilename();
-		}
+        if (StringUtils.isBlank(inXPath) || "null".equals(inXPath)) {
+            leftB = (Blob) inLeft.getPropertyValue(DEFAULT_XPATH);
+            rightB = (Blob) inRight.getPropertyValue(DEFAULT_XPATH);
+        } else {
+            leftB = (Blob) inLeft.getPropertyValue(inXPath);
+            rightB = (Blob) inRight.getPropertyValue(inXPath);
+        }
 
-		// Assume the blob is backed by a File
-		CmdParameters params = new CmdParameters();
-		String sourceFilePath = b1.getFile().getAbsolutePath();
-		params.addNamedParameter("file1", sourceFilePath);
+        init(leftB, rightB, inLeft.getId(), inRight.getId());
+    }
 
-		sourceFilePath = b2.getFile().getAbsolutePath();
-		params.addNamedParameter("file2", sourceFilePath);
+    public DiffPictures(Blob inB1, Blob inB2, String inLeftDocId, String inRightDocId) {
+        init(inB1, inB2, inLeftDocId, inRightDocId);
 
-		checkDefaultParametersValues();
-		for (Entry<String, Serializable> entry : clParameters.entrySet()) {
-			params.addNamedParameter(entry.getKey(), (String) entry.getValue());
-		}
+    }
 
-		String destFilePath;
+    private void init(Blob inB1, Blob inB2, String inLeftDocId, String inRightDocId) {
 
-		if (StringUtils.isNotBlank(leftDocId)) {
-			File tempFolder = TempFilesHandler.prepareOrGetTempFolder(
-					leftDocId, rightDocId);
-			destFilePath = tempFolder.getAbsolutePath() + "/"
-					+ System.currentTimeMillis() + "-" + finalName;
-		} else {
-			mustTrackTempFile = true;
-			destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis()
-					+ "-" + finalName;
-		}
+        b1 = inB1;
+        b2 = inB2;
+        leftDocId = inLeftDocId;
+        rightDocId = inRightDocId;
+    }
 
-		params.addNamedParameter("targetFilePath", destFilePath);
+    public Blob compare(String inCommandLine, Map<String, Serializable> inParams) throws CommandNotAvailable,
+            IOException {
 
-		CommandLineExecutorService cles = Framework
-				.getService(CommandLineExecutorService.class);
-		ExecResult execResult = cles.execCommand(commandLine, params);
+        Blob result = null;
+        String finalName;
+        boolean mustTrackTempFile = false;
 
-		// WARNING
-		// ImageMagick can return a non zero code with some of its commands,
-		// while the execution went totally OK, with no error. The problem is
-		// that the CommandLineExecutorService assumes a non-zero return code is
-		// an error => we must handle the thing by ourselves, basically just
-		// checking if we do have a comparison file created by ImageMagick
-		File tempDestFile = new File(destFilePath);
-		if (!tempDestFile.exists()) {
-			throw new ClientException("Failed to execute the command <"
-					+ commandLine + ">. Final command [ "
-					+ execResult.getCommandLine() + " ] returned with error "
-					+ execResult.getReturnCode(), execResult.getError());
-		} else {
-			if (mustTrackTempFile) {
-				// Well. If the GC cleans the object and the Framework deletes
-				// the file _before_ the browser gets it, then, too bad...
-				Framework.trackFile(tempDestFile, this);
-			}
-		}
+        commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND : inCommandLine;
 
-		// Framework.trackFile(tempDestFile, this);
-		result = new FileBlob(tempDestFile);
-		if (result != null) {
-			result.setFilename(finalName);
-		}
+        clParameters = inParams == null ? new HashMap<String, Serializable>() : inParams;
 
-		return result;
-	}
+        finalName = (String) clParameters.get("targetFileName");
+        if (StringUtils.isBlank(finalName)) {
+            finalName = "comp-" + b1.getFilename();
+        }
 
-	/*
-	 * Adds the default values if a parameter is missing.
-	 * 
-	 * This applies for all command lines (and some will be unused)
-	 */
-	protected void checkDefaultParametersValues() {
+        // Assume the blob is backed by a File
+        CmdParameters params = new CmdParameters();
+        String sourceFilePath = b1.getFile().getAbsolutePath();
+        params.addNamedParameter("file1", sourceFilePath);
 
-		if (isDefaultValue(  (String) clParameters.get("fuzz") )) {
-			clParameters.put("fuzz", DEFAULT_FUZZ);
-		}
+        sourceFilePath = b2.getFile().getAbsolutePath();
+        params.addNamedParameter("file2", sourceFilePath);
 
-		if (isDefaultValue((String) clParameters.get("highlightColor"))) {
-			clParameters.put("highlightColor", DEFAULT_HIGHLIGHT_COLOR);
-		}
+        checkDefaultParametersValues();
+        for (Entry<String, Serializable> entry : clParameters.entrySet()) {
+            params.addNamedParameter(entry.getKey(), (String) entry.getValue());
+        }
 
-		if (isDefaultValue((String) clParameters.get("lowlightColor"))) {
-			clParameters.put("lowlightColor", DEFAULT_LOWLIGHT_COLOR);
-		}
+        String destFilePath;
 
-	}
-	
-	protected boolean isDefaultValue(String inValue) {
-		return StringUtils.isBlank(inValue) || inValue.toLowerCase().equals("default");
-	}
+        if (StringUtils.isNotBlank(leftDocId)) {
+            File tempFolder = TempFilesHandler.prepareOrGetTempFolder(leftDocId, rightDocId);
+            destFilePath = tempFolder.getAbsolutePath() + "/" + System.currentTimeMillis() + "-" + finalName;
+        } else {
+            mustTrackTempFile = true;
+            destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis() + "-" + finalName;
+        }
 
-	public static String buildDiffHtml(DocumentModel leftDoc, DocumentModel rightDoc,
-			String xpath) throws IOException, URISyntaxException {
-		// String path = getClass().getResource("/files/US-zips.txt").getFile();
+        params.addNamedParameter("targetFilePath", destFilePath);
 
-		String html = "";
-		InputStream in = null;
-		try {
-			in = DiffPictures.class.getResourceAsStream("/files/nuxeo-diff-pictures-template.html");
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			String line;
-			while ((line = reader.readLine()) != null) {
-				html += line + "\n";
-			}
-			
-		} finally {
-			if(in != null) {
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
+        ExecResult execResult = cles.execCommand(commandLine, params);
+
+        // WARNING
+        // ImageMagick can return a non zero code with some of its commands,
+        // while the execution went totally OK, with no error. The problem is
+        // that the CommandLineExecutorService assumes a non-zero return code is
+        // an error => we must handle the thing by ourselves, basically just
+        // checking if we do have a comparison file created by ImageMagick
+        File tempDestFile = new File(destFilePath);
+        if (!tempDestFile.exists()) {
+            throw new ClientException("Failed to execute the command <" + commandLine + ">. Final command [ "
+                    + execResult.getCommandLine() + " ] returned with error " + execResult.getReturnCode(),
+                    execResult.getError());
+        } else {
+            if (mustTrackTempFile) {
+                // Well. If the GC cleans the object and the Framework deletes
+                // the file _before_ the browser gets it, then, too bad...
+                Framework.trackFile(tempDestFile, this);
+            }
+        }
+
+        // Framework.trackFile(tempDestFile, this);
+        result = new FileBlob(tempDestFile);
+        if (result != null) {
+            result.setFilename(finalName);
+        }
+
+        return result;
+    }
+
+    /*
+     * Adds the default values if a parameter is missing. This applies for all command lines (and some will be unused)
+     */
+    protected void checkDefaultParametersValues() {
+
+        if (isDefaultValue((String) clParameters.get("fuzz"))) {
+            clParameters.put("fuzz", DEFAULT_FUZZ);
+        }
+
+        if (isDefaultValue((String) clParameters.get("highlightColor"))) {
+            clParameters.put("highlightColor", DEFAULT_HIGHLIGHT_COLOR);
+        }
+
+        if (isDefaultValue((String) clParameters.get("lowlightColor"))) {
+            clParameters.put("lowlightColor", DEFAULT_LOWLIGHT_COLOR);
+        }
+
+    }
+
+    protected boolean isDefaultValue(String inValue) {
+        return StringUtils.isBlank(inValue) || inValue.toLowerCase().equals("default");
+    }
+
+    public static String buildDiffHtml(DocumentModel leftDoc, DocumentModel rightDoc, String xpath) throws IOException,
+            URISyntaxException {
+        // String path = getClass().getResource("/files/US-zips.txt").getFile();
+
+        String html = "";
+        InputStream in = null;
+        try {
+            in = DiffPictures.class.getResourceAsStream("/files/nuxeo-diff-pictures-template.html");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                html += line + "\n";
+            }
+
+        } finally {
+            if (in != null) {
                 in.close();
             }
-		}
+        }
 
-		String leftDocId = leftDoc.getId();
-		String rightDocId = rightDoc.getId();
-		String leftLabel = leftDoc.getTitle();
-		String rightLabel = rightDoc.getTitle();
-		if(leftLabel.equals(rightLabel)) {
-			if(leftDoc.isVersion()) {
-				leftLabel = "Version " + leftDoc.getVersionLabel();
-			}
-			if(rightDoc.isVersion()) {
-				rightLabel = "Version " + rightDoc.getVersionLabel();
-			}
-		}
-		
-		html = html.replace(TMPL_CONTEXT_PATH, VirtualHostHelper.getContextPathProperty());
-		html = html.replace(TMPL_ACTION, "diff");
-		html = html.replace(TMPL_LEFT_DOC_ID, leftDocId);
-		html = html.replace(TMPL_LEFT_DOC_LABEL, leftLabel);
-		html = html.replace(TMPL_RIGHT_DOC_ID, rightDocId);
-		html = html.replace(TMPL_RIGHT_DOC_LABEL, rightLabel);
-		if(StringUtils.isBlank(xpath) || xpath.toLowerCase().equals("default")) {
-			xpath = DEFAULT_XPATH;
-		}
-		html = html.replace(TMPL_XPATH, xpath);
-		// dc:modified can be null... When running the Unit Tests for example
-		String lastModification;
-		Calendar cal = (Calendar) rightDoc.getPropertyValue("dc:modified");
-		if(cal == null) {
-			lastModification = "1234567";
-		} else {
-			lastModification = "" + cal.getTimeInMillis();
-		}
-		html = html.replace(TMPL_TIME_STAMP, lastModification);
+        String leftDocId = leftDoc.getId();
+        String rightDocId = rightDoc.getId();
+        String leftLabel = leftDoc.getTitle();
+        String rightLabel = rightDoc.getTitle();
+        if (leftLabel.equals(rightLabel)) {
+            if (leftDoc.isVersion()) {
+                leftLabel = "Version " + leftDoc.getVersionLabel();
+            }
+            if (rightDoc.isVersion()) {
+                rightLabel = "Version " + rightDoc.getVersionLabel();
+            }
+        }
 
-		return html;
-	}
+        html = html.replace(TMPL_CONTEXT_PATH, VirtualHostHelper.getContextPathProperty());
+        html = html.replace(TMPL_ACTION, "diff");
+        html = html.replace(TMPL_LEFT_DOC_ID, leftDocId);
+        html = html.replace(TMPL_LEFT_DOC_LABEL, leftLabel);
+        html = html.replace(TMPL_RIGHT_DOC_ID, rightDocId);
+        html = html.replace(TMPL_RIGHT_DOC_LABEL, rightLabel);
+        if (StringUtils.isBlank(xpath) || xpath.toLowerCase().equals("default")) {
+            xpath = DEFAULT_XPATH;
+        }
+        html = html.replace(TMPL_XPATH, xpath);
+        // dc:modified can be null... When running the Unit Tests for example
+        String lastModification;
+        Calendar cal = (Calendar) rightDoc.getPropertyValue("dc:modified");
+        if (cal == null) {
+            lastModification = "1234567";
+        } else {
+            lastModification = "" + cal.getTimeInMillis();
+        }
+        html = html.replace(TMPL_TIME_STAMP, lastModification);
+
+        return html;
+    }
 
 }

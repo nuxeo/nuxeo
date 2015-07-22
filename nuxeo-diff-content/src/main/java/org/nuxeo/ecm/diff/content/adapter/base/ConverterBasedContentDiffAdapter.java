@@ -52,6 +52,8 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
 
     protected static final String DEFAULT_CONVERTER_NAME = "any2text";
 
+    public static final String DEFAULT_XPATH = "default";
+
     protected String defaultFieldXPath;
 
     protected MimetypeRegistry mimeTypeService;
@@ -71,7 +73,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         BlobHolder adaptedDocBlobHolder = null;
         BlobHolder otherDocBlobHolder = null;
 
-        if ((xpath == null) || ("default".equals(xpath))) {
+        if ((xpath == null) || (DEFAULT_XPATH.equals(xpath))) {
             adaptedDocBlobHolder = adaptedDoc.getAdapter(BlobHolder.class);
             otherDocBlobHolder = otherDoc.getAdapter(BlobHolder.class);
         } else {

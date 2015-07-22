@@ -19,8 +19,6 @@ package org.nuxeo.diff.pictures;
 import java.io.File;
 
 /**
- * 
- *
  * @since 7.3
  */
 public class TempFilesHandler {
@@ -28,7 +26,7 @@ public class TempFilesHandler {
     protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir");
 
     public static File prepareOrGetTempFolder(String leftDocId, String rightDocId) {
-        
+
         String path = TEMP_DIR_PATH + "/" + leftDocId + rightDocId;
         File folder = new File(path);
         if (!folder.exists()) {

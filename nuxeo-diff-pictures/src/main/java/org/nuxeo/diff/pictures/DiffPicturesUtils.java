@@ -19,18 +19,14 @@ package org.nuxeo.diff.pictures;
 import org.nuxeo.ecm.core.api.Blob;
 
 /**
- * 
- *
  * @since 7.3
  */
 public class DiffPicturesUtils {
 
     /*
-     * Centralize handling of the targetFileName (used in at least 3 operations
-     * => less code in the operation itself)
+     * Centralize handling of the targetFileName (used in at least 3 operations => less code in the operation itself)
      */
-    public static String updateTargetFileName(Blob inBlob,
-            String inTargetFileName, String inTargetFileSuffix) {
+    public static String updateTargetFileName(Blob inBlob, String inTargetFileName, String inTargetFileSuffix) {
 
         String updatedName = "";
 
@@ -41,8 +37,7 @@ public class DiffPicturesUtils {
         }
 
         if (inTargetFileSuffix != null && !inTargetFileSuffix.isEmpty()) {
-            updatedName = DiffPicturesUtils.addSuffixToFileName(updatedName,
-                    inTargetFileSuffix);
+            updatedName = DiffPicturesUtils.addSuffixToFileName(updatedName, inTargetFileSuffix);
         }
 
         return updatedName;
@@ -52,8 +47,7 @@ public class DiffPicturesUtils {
      * Adds the suffix before the file extension, if any
      */
     public static String addSuffixToFileName(String inFileName, String inSuffix) {
-        if (inFileName == null || inFileName.isEmpty() || inSuffix == null
-                || inSuffix.isEmpty()) {
+        if (inFileName == null || inFileName.isEmpty() || inSuffix == null || inSuffix.isEmpty()) {
             return inFileName;
         }
 
@@ -62,8 +56,7 @@ public class DiffPicturesUtils {
             return inFileName + inSuffix;
         }
 
-        return inFileName.substring(0, dotIndex) + inSuffix
-                + inFileName.substring(dotIndex);
+        return inFileName.substring(0, dotIndex) + inSuffix + inFileName.substring(dotIndex);
     }
-    
+
 }

@@ -130,13 +130,12 @@ public class DiffPicturesTest {
         assertEquals(bi.getHeight(), ISLAND_H);
 
         aFile = ((FileBlob) result).getFile();
-        assertTrue("Result image with fuzz should be smaller than original",
-                aFile.length() < (len1 / 2));
+        assertTrue("Result image with fuzz should be smaller than original", aFile.length() < (len1 / 2));
 
         deleteFile(result);
 
     }
-    
+
     @Test
     public void testSamePicture() throws Exception {
 
@@ -160,7 +159,7 @@ public class DiffPicturesTest {
         BufferedImage bi = checkIsImage(result);
         assertEquals(bi.getWidth(), ISLAND_W);
         assertEquals(bi.getHeight(), ISLAND_H);
-        
+
         // Test a 40x40 rectangle in the middle, where every pixel should be red
         int start_i = (ISLAND_W / 2) - 20;
         int max_i = (ISLAND_W / 2) + 20;
@@ -173,13 +172,13 @@ public class DiffPicturesTest {
                 int r = pixel >> 16 & 0xff;
                 int g = pixel >> 8 & 0xff;
                 int b = pixel & 0xff;
-                
+
                 assertTrue("r should be 255", r == 255);
                 assertTrue("g should be 0", g == 0);
                 assertTrue("b should be 0", b == 0);
             }
         }
-        
+
         deleteFile(result);
 
     }

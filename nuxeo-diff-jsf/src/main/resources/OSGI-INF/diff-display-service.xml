@@ -9,8 +9,7 @@
     Antoine Taillefer
   </documentation>
 
-  <implementation
-    class="org.nuxeo.ecm.diff.service.impl.DiffDisplayServiceImpl" />
+  <implementation class="org.nuxeo.ecm.diff.service.impl.DiffDisplayServiceImpl" />
 
   <service>
     <provide interface="org.nuxeo.ecm.diff.service.DiffDisplayService" />
@@ -21,12 +20,15 @@
     <documentation>
       <pre>
         The diffDefaultDisplay extension point allows you to
-        contribute a diffExcludedFields contribution to define a set of
+        contribute a diffExcludedFields contribution to define a
+        set of
         fields from a given schema that will be
         excluded from the default
-        diff display in the document diff view (the default diff display
+        diff display in the document diff view
+        (the default diff display
         takes into account every different field of every common schema
-        between the compared documents, in an undefined order).
+        between the compared
+        documents, in an undefined order).
 
         If no
         fields are specified, the whole schema is excluded.
@@ -41,17 +43,18 @@
         </diffExcludedFields>
       </code>
     </documentation>
-    <object
-      class="org.nuxeo.ecm.diff.service.impl.DiffExcludedFieldsDescriptor" />
+    <object class="org.nuxeo.ecm.diff.service.impl.DiffExcludedFieldsDescriptor" />
 
     <documentation>
       <pre>
         The diffDefaultDisplay extension point also allows you to
-        contribute a diffComplexField contribution to define a set of
+        contribute a diffComplexField contribution to define
+        a set of
         items from a given complex property that will be
         included or
         excluded from the default
-        diff display in the document diff view.
+        diff display in the
+        document diff view.
         Order matters for included items.
       </pre>
       <code>
@@ -80,13 +83,16 @@
 
       <pre>
         A diffDisplay contribution defines which diffBlocks will be
-        displayed in the document diff view for a given document type.
+        displayed in the document diff view for a given
+        document type.
         The order matters.
 
         If the 2 diffed documents have the same type,
-        the diffDisplay matching this type is used, otherwise or if such
+        the diffDisplay matching this type
+        is used, otherwise or if such
         a diffDisplay does not exist, the default diff display is used.
-        The default diff display
+        The default diff
+        display
         takes into account every different field
         of every common schema between the
         compared documents, in an
@@ -132,12 +138,10 @@
         </diffBlock>
         <diffBlock name="files" label="label.diffBlock.files">
           <fields>
-            <field schema="file" name="content"
-              displayContentDiffLinks="true" />
+            <field schema="file" name="content" displayContentDiffLinks="true" />
             <field schema="files" name="files">
               <items>
-                <!-- Display the file only, not the filename which is managed 
-                  by the file widget type -->
+                <!-- Display the file only, not the filename which is managed by the file widget type -->
                 <item name="file" displayContentDiffLinks="true" />
               </items>
             </field>

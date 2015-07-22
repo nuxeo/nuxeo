@@ -43,7 +43,7 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 /**
  * 
  */
-@Operation(id=DiffPicturesOp.ID, category=Constants.CAT_CONVERSION, label="Pictures: Diff", description="Compare input blob with blob referenced in the context variable blob2VarName, using the commandLine and its parapeters (default values apply). Return the result of the diff as a picture")
+@Operation(id = DiffPicturesOp.ID, category = Constants.CAT_CONVERSION, label = "Pictures: Diff", description = "Compare input blob with blob referenced in the context variable blob2VarName, using the commandLine and its parapeters (default values apply). Return the result of the diff as a picture")
 public class DiffPicturesOp {
 
     public static final String ID = "Pictures.Diff";
@@ -57,7 +57,7 @@ public class DiffPicturesOp {
     @Param(name = "blob2VarName", required = true)
     protected String blob2VarName;
 
-    @Param(name = "commandLine", required = true, values = {"diff-pictures-default"})
+    @Param(name = "commandLine", required = true, values = { "diff-pictures-default" })
     protected String commandLine = "diff-pictures-default";
 
     @Param(name = "parameters", required = false)
@@ -69,36 +69,32 @@ public class DiffPicturesOp {
     @Param(name = "targetFileNameSuffix", required = false)
     protected String targetFileNameSuffix = "";
 
-    @OperationMethod(collector=BlobCollector.class)
+    @OperationMethod(collector = BlobCollector.class)
     public Blob run(Blob inBlob) throws OperationException, CommandNotAvailable, IOException {
         Blob result = null;
-        
+
         Blob blob2 = (Blob) ctx.get(blob2VarName);
         if (blob2 == null) {
-            throw new OperationException("The blob to append from variable context: '" + blob2VarName
-                    + "' is null.");
+            throw new OperationException("The blob to append from variable context: '" + blob2VarName + "' is null.");
         }
-        
+
         Map<String, Serializable> serializableParameters = new HashMap<String, Serializable>();
         if (parameters != null && parameters.size() > 0) {
             Set<String> parameterNames = parameters.keySet();
             for (String parameterName : parameterNames) {
-                serializableParameters.put(parameterName,
-                        parameters.get(parameterName));
+                serializableParameters.put(parameterName, parameters.get(parameterName));
             }
         }
-        
-        if(StringUtils.isNotBlank(targetFileName) || StringUtils.isNotBlank(targetFileNameSuffix)) {
+
+        if (StringUtils.isNotBlank(targetFileName) || StringUtils.isNotBlank(targetFileNameSuffix)) {
             targetFileName = DiffPicturesUtils.updateTargetFileName(inBlob, targetFileName, targetFileNameSuffix);
             serializableParameters.put("targetFileName", targetFileName);
         }
-        
+
         DiffPictures dp = new DiffPictures(inBlob, blob2);
         result = dp.compare(commandLine, serializableParameters);
 
-        return result; 
+        return result;
     }
-    
-    
 
 }

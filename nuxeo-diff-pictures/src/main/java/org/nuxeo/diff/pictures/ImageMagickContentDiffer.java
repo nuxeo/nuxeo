@@ -39,45 +39,42 @@ import org.nuxeo.ecm.diff.content.ContentDiffException;
  * @since 7.4
  */
 public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
-	
-	private static final Log log = LogFactory.getLog(ImageMagickContentDiffer.class);
 
-	public MimeTypeContentDiffer.TYPE_OF_PARAMETERS getTypeOfParameters() {
-		return TYPE_OF_PARAMETERS.DOCUMENT;
-	}
+    private static final Log log = LogFactory.getLog(ImageMagickContentDiffer.class);
 
-	@Override
-	public List<Blob> getContentDiff(DocumentModel leftDoc,
-			DocumentModel rightDoc, String xpath, Locale locale)
-			throws ContentDiffException {
+    public MimeTypeContentDiffer.TYPE_OF_PARAMETERS getTypeOfParameters() {
+        return TYPE_OF_PARAMETERS.DOCUMENT;
+    }
 
-		try {
-			List<Blob> blobResults = new ArrayList<Blob>();
-			StringWriter sw = new StringWriter();
+    @Override
+    public List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)
+            throws ContentDiffException {
 
-			String html = DiffPictures.buildDiffHtml(leftDoc, rightDoc, xpath);			
-			sw.write(html);
-			
-			String stringBlob = sw.toString();
-			Blob mainBlob = Blobs.createBlob(stringBlob);
-			sw.close();
+        try {
+            List<Blob> blobResults = new ArrayList<Blob>();
+            StringWriter sw = new StringWriter();
 
-			mainBlob.setFilename("contentDiff.html");
-			mainBlob.setMimeType("text/html");
+            String html = DiffPictures.buildDiffHtml(leftDoc, rightDoc, xpath);
+            sw.write(html);
 
-			blobResults.add(mainBlob);
-			return blobResults;
+            String stringBlob = sw.toString();
+            Blob mainBlob = Blobs.createBlob(stringBlob);
+            sw.close();
 
-		} catch (Exception e) {
-			throw new ContentDiffException(e);
-		}
-	}
+            mainBlob.setFilename("contentDiff.html");
+            mainBlob.setMimeType("text/html");
 
-	@Override
-	public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob,
-			Locale locale) throws ContentDiffException {
+            blobResults.add(mainBlob);
+            return blobResults;
 
-		throw new ContentDiffException(
-				"ImageMagickContentDiffer can handle only DocumentModel");
-	}
+        } catch (Exception e) {
+            throw new ContentDiffException(e);
+        }
+    }
+
+    @Override
+    public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
+
+        throw new ContentDiffException("ImageMagickContentDiffer can handle only DocumentModel");
+    }
 }
