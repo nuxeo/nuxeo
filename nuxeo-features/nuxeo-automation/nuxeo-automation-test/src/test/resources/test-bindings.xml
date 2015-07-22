@@ -13,6 +13,7 @@
   <extension target="org.nuxeo.ecm.automation.io.services.IOComponent"
              point="codecs">
     <codec class="org.nuxeo.ecm.automation.server.test.MyObjectCodec" />
+    <codec class="org.nuxeo.ecm.automation.server.test.json.SimplePojoObjectCodec" />
   </extension>
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
@@ -96,6 +97,8 @@
             class="org.nuxeo.ecm.automation.server.test.WaitForTxTimeoutOperation" />
     <operation
             class="org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation" />
+    <operation
+            class="org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays" />
     <operation
             class="org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest"/>
   </extension>

@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+
 import junit.framework.Assert;
 
 import org.codehaus.jackson.JsonNode;
@@ -70,15 +73,17 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.operations.services.AuditLog;
 import org.nuxeo.ecm.automation.core.operations.services.AuditPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
-
 import org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOperation;
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
+import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
+import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays;
+import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays.SimplePojo;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
+import org.nuxeo.ecm.automation.server.test.json.SimplePojoObjectMarshaller;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
-import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
 import org.nuxeo.ecm.automation.test.helpers.ExceptionTest;
 import org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -95,10 +100,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import com.google.inject.Inject;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -328,7 +329,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             // do nothing
         }
 
-        // 3. create a note and exit with error (rollback)
+        // 3. create a note and exit with error (+rollback)
         try {
             doc = (Document) session.newRequest("exitError").setInput(root).execute();
             fail("expected error");
@@ -369,7 +370,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             operationRequest.execute();
             fail("Call to SendMail operation should have thrown a RemoteException since the SMTP server is not reachable");
         } catch (RemoteException re) {
-            assertEquals("Failed to invoke operation: Notification.SendMail", re.getMessage());
+            assertEquals("Failed to invoke operation: Document.Mail", re.getMessage());
         }
 
         // Call SendMail with rollbackOnError = false
@@ -560,8 +561,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         ObjectMapper mapper = new ObjectMapper();
         @SuppressWarnings("unchecked")
         Map<String, Object> mapInput = mapper.convertValue(pojoInput, Map.class);
-        returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation
-                .ID).setInput(mapInput).execute();
+        returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID).setInput(mapInput).execute();
         assertEquals(expectedListObj, returnedListObj);
 
         // It is also possible to serialize an explicitly typed represenation of
@@ -570,6 +570,20 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         JsonMarshalling.addMarshaller(PojoMarshaller.forClass(POJOObject.class));
         returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID).setInput(pojoInput).execute();
         assertEquals(expectedListObj, returnedListObj);
+    }
+
+    @Test
+    public void testArraysAsParametersAndResult() throws Exception {
+        JsonMarshalling.addMarshaller(new SimplePojoObjectMarshaller());
+        List<SimplePojo> list = new ArrayList<>();
+        list.add(new SimplePojo("test1"));
+        list.add(new SimplePojo("test2"));
+        list.add(new SimplePojo("test3"));
+        SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID).set("pojos", list).execute();
+
+        // SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID).set("pojo1",
+        // new SimplePojo("nico")).execute();
+        assertEquals(result1.getName(), "test1");
     }
 
     @Test
@@ -858,8 +872,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             assertNotNull(e);
             assertEquals("Exception Message", e.getRemoteCause().getCause().getMessage());
             assertEquals(ExceptionTest.class.getCanonicalName(),
-                    ((RemoteThrowable) e.getRemoteCause()).getOtherNodes()
-                            .get("className").getTextValue());
+                    ((RemoteThrowable) e.getRemoteCause()).getOtherNodes().get("className").getTextValue());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();
@@ -867,20 +880,17 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     }
 
     /**
-      * @since 7.3
-      */
+     * @since 7.3
+     */
     @Test
     public void shouldWriteAutomationContextWithDocuments() throws Exception {
-        Document root = (Document) super.session.newRequest(FetchDocument.ID)
-                .set("value", "/").execute();
-        OperationRequest request = session.newRequest("Context.RunOperationOnList");
-        // Set document array list to inject into the context through
-        // automation client
+        Document root = (Document) super.session.newRequest(FetchDocument.ID).set("value", "/").execute();
+        OperationRequest request = session.newRequest("RunOperationOnList");
+        // Set document array list to inject into the context through automation client
         List<Document> list = new ArrayList<>();
         list.add(root);
-        request.setContextProperty("users", list).set("isolate", "true").set
-                ("id", "TestContext").set("list", "users").set("item",
-                "document");
+        request.setContextProperty("users", list).set("isolate", "true").set("id", "TestContext").set("list", "users").set(
+                "item", "document");
         request.execute();
     }
 
