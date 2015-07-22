@@ -30,6 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+
 import junit.framework.Assert;
 
 import org.codehaus.jackson.JsonNode;
@@ -75,10 +78,13 @@ import org.nuxeo.ecm.automation.core.operations.traces.JsonStackToggleDisplayOpe
 import org.nuxeo.ecm.automation.io.services.codec.ObjectCodecService;
 import org.nuxeo.ecm.automation.server.AutomationServerComponent;
 import org.nuxeo.ecm.automation.server.test.business.client.BusinessBean;
+import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
+import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays;
+import org.nuxeo.ecm.automation.server.test.json.JSONOperationWithArrays.SimplePojo;
 import org.nuxeo.ecm.automation.server.test.json.NestedJSONOperation;
 import org.nuxeo.ecm.automation.server.test.json.POJOObject;
+import org.nuxeo.ecm.automation.server.test.json.SimplePojoObjectMarshaller;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
-import org.nuxeo.ecm.automation.server.test.business.client.TestBusinessArray;
 import org.nuxeo.ecm.automation.test.helpers.ExceptionTest;
 import org.nuxeo.ecm.automation.test.helpers.HttpStatusOperationTest;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -95,9 +101,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -568,6 +571,20 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         JsonMarshalling.addMarshaller(PojoMarshaller.forClass(POJOObject.class));
         returnedListObj = (POJOObject) session.newRequest(NestedJSONOperation.ID).setInput(pojoInput).execute();
         assertEquals(expectedListObj, returnedListObj);
+    }
+
+    @Test
+    public void testArraysAsParametersAndResult() throws Exception {
+        JsonMarshalling.addMarshaller(new SimplePojoObjectMarshaller());
+        List<SimplePojo> list = new ArrayList<>();
+        list.add(new SimplePojo("test1"));
+        list.add(new SimplePojo("test2"));
+        list.add(new SimplePojo("test3"));
+        SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID).set("pojos", list).execute();
+
+        // SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID).set("pojo1",
+        // new SimplePojo("nico")).execute();
+        assertEquals(result1.getName(), "test1");
     }
 
     @Test
