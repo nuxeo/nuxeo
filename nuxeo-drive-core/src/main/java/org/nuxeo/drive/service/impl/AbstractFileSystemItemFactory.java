@@ -146,7 +146,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             return false;
         } catch (DocumentSecurityException e) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s cannot acces doc %s, returning false.", principal.getName(), docId));
+                log.debug(String.format("User %s cannot access doc %s, returning false.", principal.getName(), docId));
             }
             return false;
         }
@@ -167,7 +167,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             return null;
         } catch (DocumentSecurityException e) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s cannot acces doc %s, returning null.", principal.getName(), docId));
+                log.debug(String.format("User %s cannot access doc %s, returning null.", principal.getName(), docId));
             }
             return null;
         }
@@ -193,7 +193,7 @@ public abstract class AbstractFileSystemItemFactory implements FileSystemItemFac
             return null;
         } catch (DocumentSecurityException e) {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("User %s cannot acces doc %s, returning null.", principal.getName(), docId));
+                log.debug(String.format("User %s cannot access doc %s, returning null.", principal.getName(), docId));
             }
             return null;
         }
