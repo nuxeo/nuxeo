@@ -4,8 +4,8 @@
   <extension target="org.nuxeo.ecm.core.blob.BlobManager" point="configuration">
     <blobprovider name="default">
       <class>${nuxeo.core.binarymanager}</class>
-      <properties name="path">${repository.binary.store}</properties>
-      <properties name="key">${nuxeo.core.binarymanager_key}</properties>
+      <property name="path">${repository.binary.store}</property>
+      <property name="key">${nuxeo.core.binarymanager_key}</property>
     </blobprovider>
   </extension>
 <#if "${nuxeo.mongodb.server}" == "">
