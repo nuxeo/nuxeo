@@ -324,13 +324,46 @@ public class JsonMarshalling {
 
     public static void writeMap(JsonGenerator jg, Map<String, Object> map) throws IOException {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            Object obj = entry.getValue();
-            if (obj instanceof String) {
-                jg.writeStringField(entry.getKey(), (String) obj);
-            } else if (obj instanceof PropertyMap || obj instanceof OperationInput) {
-                jg.writeStringField(entry.getKey(), obj.toString());
+            Object param = entry.getValue();
+            if (param instanceof String) {
+                jg.writeStringField(entry.getKey(), (String) param);
+            } else if (param instanceof PropertyMap || param instanceof OperationInput) {
+                jg.writeStringField(entry.getKey(), param.toString());
+            } else if (param instanceof Iterable) {
+                jg.writeArrayFieldStart(entry.getKey());
+                for (Object object : (Iterable) param) {
+                    write(jg, object);
+                }
+                jg.writeEndArray();
             } else {
-                jg.writeFieldName(entry.getKey());
+                if (param != null) {
+                    JsonMarshaller<?> marshaller = getMarshaller(param.getClass());
+                    if (marshaller != null) {
+                        jg.writeFieldName(entry.getKey());
+                        try {
+                            marshaller.write(jg, param);
+                        } catch (UnsupportedOperationException e) {
+                            jg.writeObject(param);
+                        }
+                    } else {
+                        jg.writeFieldName(entry.getKey());
+                        jg.writeObject(param);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void write(JsonGenerator jg, Object obj) throws IOException {
+        if (obj != null) {
+            JsonMarshaller<?> marshaller = getMarshaller(obj.getClass());
+            if (marshaller != null) {
+                try {
+                    marshaller.write(jg, obj);
+                } catch (UnsupportedOperationException e) {
+                    jg.writeObject(obj);
+                }
+            } else {
                 jg.writeObject(obj);
             }
         }

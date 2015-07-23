@@ -580,11 +580,16 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         list.add(new SimplePojo("test1"));
         list.add(new SimplePojo("test2"));
         list.add(new SimplePojo("test3"));
-        SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID).set("pojos", list).execute();
-
-        // SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID).set("pojo1",
-        // new SimplePojo("nico")).execute();
+        SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
+                                                 .set("pojos", list)
+                                                 .set("pojo1", null)
+                                                 .execute();
         assertEquals(result1.getName(), "test1");
+        result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
+                                                 .set("pojos", null)
+                                                 .set("pojo1", new SimplePojo("nico"))
+                                                 .execute();
+        assertEquals(result1.getName(), "nico");
     }
 
     @Test
