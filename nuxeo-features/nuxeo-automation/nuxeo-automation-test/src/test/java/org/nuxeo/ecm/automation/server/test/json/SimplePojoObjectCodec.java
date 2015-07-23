@@ -21,10 +21,7 @@ public class SimplePojoObjectCodec extends ObjectCodec<SimplePojo> {
 
     @Override
     public void write(JsonGenerator jg, SimplePojo value) throws IOException {
-        jg.writeStartObject();
-        jg.writeStringField("entity-type", "simplePojo");
-        jg.writeObjectField("value", value);
-        jg.writeEndObject();
+        jg.writeObject(value);
     }
 
     @Override
@@ -34,7 +31,7 @@ public class SimplePojoObjectCodec extends ObjectCodec<SimplePojo> {
 
     @Override
     public boolean isBuiltin() {
-        return true;
+        return false;
     }
 
 }

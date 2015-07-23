@@ -290,6 +290,9 @@ public class ObjectCodecService {
                 }
             }
             JsonParser valueParser = valueNode.traverse();
+            if (valueParser.getCodec() == null) {
+                valueParser.setCodec(new ObjectMapper());
+            }
             if (valueParser.getCurrentToken() == null) {
                 valueParser.nextToken();
             }

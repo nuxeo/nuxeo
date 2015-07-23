@@ -68,14 +68,12 @@ public class JsonMarshalling {
     protected static final Log log = LogFactory.getLog(JsonMarshalling.class);
 
     /**
-     *
      * @author matic
      * @since 5.5
      */
     public static class ThowrableTypeModifier extends TypeModifier {
         @Override
-        public JavaType modifyType(JavaType type, Type jdkType,
-                TypeBindings context, TypeFactory typeFactory) {
+        public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory) {
             Class<?> raw = type.getRawClass();
             if (raw.equals(Throwable.class)) {
                 return typeFactory.constructType(RemoteThrowable.class);
@@ -85,8 +83,7 @@ public class JsonMarshalling {
     }
 
     @JsonCachable(false)
-    public static class ThrowableDeserializer extends
-            org.codehaus.jackson.map.deser.ThrowableDeserializer {
+    public static class ThrowableDeserializer extends org.codehaus.jackson.map.deser.ThrowableDeserializer {
 
         protected HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
 
@@ -95,12 +92,10 @@ public class JsonMarshalling {
         }
 
         @Override
-        public Object deserializeFromObject(JsonParser jp,
-                DeserializationContext ctxt) throws IOException,
+        public Object deserializeFromObject(JsonParser jp, DeserializationContext ctxt) throws IOException,
                 JsonProcessingException {
 
-            RemoteThrowable t = (RemoteThrowable) super.deserializeFromObject(
-                    jp, ctxt);
+            RemoteThrowable t = (RemoteThrowable) super.deserializeFromObject(jp, ctxt);
             t.getOtherNodes().putAll(otherNodes);
             return t;
         }
@@ -122,29 +117,22 @@ public class JsonMarshalling {
     public static JsonFactory newJsonFactory() {
         JsonFactory jf = new JsonFactory();
         ObjectMapper oc = new ObjectMapper(jf);
-        final TypeFactory typeFactoryWithModifier = oc.getTypeFactory().withModifier(
-                new ThowrableTypeModifier());
+        final TypeFactory typeFactoryWithModifier = oc.getTypeFactory().withModifier(new ThowrableTypeModifier());
         oc.setTypeFactory(typeFactoryWithModifier);
-        oc.getDeserializationConfig().addHandler(
-                new DeserializationProblemHandler() {
-                    @Override
-                    public boolean handleUnknownProperty(
-                            DeserializationContext ctxt,
-                            JsonDeserializer<?> deserializer,
-                            Object beanOrClass, String propertyName)
-                            throws IOException, JsonProcessingException {
-                        if (deserializer instanceof ThrowableDeserializer) {
-                            JsonParser jp = ctxt.getParser();
-                            JsonNode propertyNode = jp.readValueAsTree();
-                            ((ThrowableDeserializer) deserializer).otherNodes.put(
-                                    propertyName, propertyNode);
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-        final SimpleModule module = new SimpleModule("automation",
-                Version.unknownVersion()) {
+        oc.getDeserializationConfig().addHandler(new DeserializationProblemHandler() {
+            @Override
+            public boolean handleUnknownProperty(DeserializationContext ctxt, JsonDeserializer<?> deserializer,
+                    Object beanOrClass, String propertyName) throws IOException, JsonProcessingException {
+                if (deserializer instanceof ThrowableDeserializer) {
+                    JsonParser jp = ctxt.getParser();
+                    JsonNode propertyNode = jp.readValueAsTree();
+                    ((ThrowableDeserializer) deserializer).otherNodes.put(propertyName, propertyNode);
+                    return true;
+                }
+                return false;
+            }
+        });
+        final SimpleModule module = new SimpleModule("automation", Version.unknownVersion()) {
 
             @Override
             public void setupModule(SetupContext context) {
@@ -153,16 +141,12 @@ public class JsonMarshalling {
                 context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
 
                     @Override
-                    public JsonDeserializer<?> modifyDeserializer(
-                            DeserializationConfig config,
-                            BasicBeanDescription beanDesc,
-                            JsonDeserializer<?> deserializer) {
+                    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config,
+                            BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer) {
                         if (!Throwable.class.isAssignableFrom(beanDesc.getBeanClass())) {
-                            return super.modifyDeserializer(config, beanDesc,
-                                    deserializer);
+                            return super.modifyDeserializer(config, beanDesc, deserializer);
                         }
-                        return new ThrowableDeserializer(
-                                (BeanDeserializer) deserializer);
+                        return new ThrowableDeserializer((BeanDeserializer) deserializer);
                     }
                 });
             }
@@ -220,8 +204,7 @@ public class JsonMarshalling {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
         return new OperationRegistry(paths, ops, chains);
     }
@@ -258,8 +241,7 @@ public class JsonMarshalling {
             tok = jp.nextToken();
         }
         if (tok == null) {
-            throw new IllegalArgumentException(
-                    "Unexpected end of stream.");
+            throw new IllegalArgumentException("Unexpected end of stream.");
         }
 
     }
@@ -272,8 +254,7 @@ public class JsonMarshalling {
         jp.nextToken(); // will return JsonToken.START_OBJECT (verify?)
         jp.nextToken();
         if (!Constants.KEY_ENTITY_TYPE.equals(jp.getText())) {
-            throw new RuntimeException(
-                    "unuspported respone type. No entity-type key found at top of the object");
+            throw new RuntimeException("unuspported respone type. No entity-type key found at top of the object");
         }
         jp.nextToken();
         String etype = jp.getText();
@@ -287,11 +268,9 @@ public class JsonMarshalling {
                 Class<?> loadClass;
                 // Java mode or OSGi mode
                 if (automationClientActivator == null) {
-                    loadClass = Thread.currentThread().getContextClassLoader().loadClass(
-                            etype);
+                    loadClass = Thread.currentThread().getContextClassLoader().loadClass(etype);
                 } else {
-                    loadClass = automationClientActivator.getContext().getBundle().loadClass(
-                            etype);
+                    loadClass = automationClientActivator.getContext().getBundle().loadClass(etype);
                 }
                 ObjectMapper mapper = new ObjectMapper();
                 jp.nextToken(); // move to next field
@@ -299,8 +278,7 @@ public class JsonMarshalling {
                 jp.nextToken(); // value field content
                 return mapper.readValue(jp, loadClass);
             } catch (ClassNotFoundException e) {
-                log.warn("No marshaller for " + etype
-                        + " and not a valid Java class name either.");
+                log.warn("No marshaller for " + etype + " and not a valid Java class name either.");
                 jp = factory.createJsonParser(content);
                 return jp.readValueAsTree();
             }
@@ -346,14 +324,46 @@ public class JsonMarshalling {
     public static void writeMap(JsonGenerator jg, Map<String, Object> map)
             throws Exception {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            Object obj = entry.getValue();
-            if (obj instanceof String) {
-                jg.writeStringField(entry.getKey(), (String) obj);
-            } else if (obj instanceof PropertyMap
-                    || obj instanceof OperationInput) {
-                jg.writeStringField(entry.getKey(), obj.toString());
+            Object param = entry.getValue();
+            if (param instanceof String) {
+                jg.writeStringField(entry.getKey(), (String) param);
+            } else if (param instanceof PropertyMap || param instanceof OperationInput) {
+                jg.writeStringField(entry.getKey(), param.toString());
+            } else if (param instanceof Iterable) {
+                jg.writeArrayFieldStart(entry.getKey());
+                for (Object object : (Iterable) param) {
+                    write(jg, object);
+                }
+                jg.writeEndArray();
             } else {
-                jg.writeFieldName(entry.getKey());
+                if (param != null) {
+                    JsonMarshaller<?> marshaller = getMarshaller(param.getClass());
+                    if (marshaller != null) {
+                        jg.writeFieldName(entry.getKey());
+                        try {
+                            marshaller.write(jg, param);
+                        } catch (UnsupportedOperationException e) {
+                            jg.writeObject(param);
+                        }
+                    } else {
+                        jg.writeFieldName(entry.getKey());
+                        jg.writeObject(param);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void write(JsonGenerator jg, Object obj) throws Exception {
+        if (obj != null) {
+            JsonMarshaller<?> marshaller = getMarshaller(obj.getClass());
+            if (marshaller != null) {
+                try {
+                    marshaller.write(jg, obj);
+                } catch (UnsupportedOperationException e) {
+                    jg.writeObject(obj);
+                }
+            } else {
                 jg.writeObject(obj);
             }
         }

@@ -24,6 +24,7 @@ public class SimplePojoObjectMarshaller implements JsonMarshaller<SimplePojo> {
 
     @Override
     public SimplePojo read(JsonParser jp) throws IOException {
+        jp.nextValue();
         return jp.readValueAs(SimplePojo.class);
     }
 
