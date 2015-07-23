@@ -50,6 +50,9 @@ public class AttributeConfigDescriptor {
     @XNode("@xmlPath")
     protected String xmlPath;
 
+    @XNode("@overwrite")
+    protected boolean overwrite = false;
+    
     public AttributeConfigDescriptor() {
     }
 
@@ -98,10 +101,14 @@ public class AttributeConfigDescriptor {
         return null;
     }
 
+    public boolean getOverwrite(){
+    	return overwrite;
+    }
+
     @Override
     public String toString() {
-        String msg = "AttributeConfig\n\tTag Name: %s\n\tTarget Doc Property: %s\n\tFilter %s\n\tXML Path: %s\n\tMapping:\n";
-        String result = String.format(msg, tagName, targetDocProperty, filter, xmlPath);
+        String msg = "AttributeConfig\n\tTag Name: %s\n\tTarget Doc Property: %s\n\tFilter %s\n\tXML Path: %s\n\tOverwrite if list: %s\n\tMapping:\n";
+        String result = String.format(msg, tagName, targetDocProperty, filter, xmlPath, overwrite);
         if (mapping != null && !mapping.keySet().isEmpty()) {
             for (String key : mapping.keySet()) {
                 result += "\t\t" + key + ": " + mapping.get(key) + "\n";

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<component
+	name="org.nuxeo.ecm.platform.importer.xml.parser.ImporterComponent.test.contrib"
+	version="1.0">
+
+	<extension
+		target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+		point="documentMapping">
+		<docConfig tagName="document">
+			<docType>File</docType>
+		</docConfig>
+	</extension>
+
+	<extension
+		target="org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterComponent"
+		point="attributeMapping">
+		<attributeConfig tagName="title" docProperty="dc:title"
+			xmlPath="text()" />
+		<attributeConfig tagName="subject" docProperty="dc:subjects"
+			xmlPath="text()" />
+		<attributeConfig tagName="Actor" docProperty="complx:Actors"
+			xmlPath="text()">
+			<mapping documentProperty="FirstName">FirstName/text()</mapping>
+			<mapping documentProperty="LastName">LastName/text()</mapping>
+		</attributeConfig>
+	</extension>
+
+	<require>org.nuxeo.ecm.core.CoreExtensions</require>
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="schema">
+		<schema name="complx" prefix="complx" src="complx.xsd" />
+	</extension>
+
+	<extension target="org.nuxeo.ecm.core.schema.TypeService"
+		point="doctype">
+		<doctype name="File" append="true">
+			<schema name="complx" />
+		</doctype>
+	</extension>
+
+
+</component>

@@ -44,6 +44,10 @@ public class DocConfigDescriptor {
     @XNode("postCreationAutomationChain")
     protected String automationChain;
 
+    @XNode("@updateExistingDocuments")
+    protected boolean update = false;
+
+    
     public DocConfigDescriptor() {
     }
 
@@ -70,15 +74,18 @@ public class DocConfigDescriptor {
         return name;
     }
 
+    public boolean getUpdate() {
+        return update;
+    }
+
     public String getAutomationChain() {
         return automationChain;
-
     }
 
     @Override
     public String toString() {
-        String msg = "\nDocConfig:\n\tTag Name: %s\n\tDocType %s\n\tParent: %s\n\tName: %s\n";
-        return String.format(msg, tagName, docType, parent, name);
+        String msg = "\nDocConfig:\n\tTag Name: %s\n\tDocType %s\n\tParent: %s\n\tName: %s\n\tOverwrite: %s\n";
+        return String.format(msg, tagName, docType, parent, name, update);
     }
 
 }

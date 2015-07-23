@@ -51,7 +51,9 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -202,6 +204,15 @@ public class XMLImporterServiceImpl {
         mvelCtx.put("map", elToDoc);
         process(root);
         return new ArrayList<>(docsStack);
+//        ArrayList<DocumentModel> a = new ArrayList();
+//        DocumentModel d = null;
+//        while(docsStack.size()>0){
+//        	d = popStack();
+//        	d.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
+//        	d = session.saveDocument(d);
+//        	a.add(d);
+//        }        
+//        return a;
     }
 
     protected Object resolveComplex(Element el, AttributeConfigDescriptor conf) {
@@ -436,51 +447,71 @@ public class XMLImporterServiceImpl {
     }
 
     protected void createNewDocument(Element el, DocConfigDescriptor conf) {
-        DocumentModel doc = session.createDocumentModel(conf.getDocType());
+    	DocumentModel doc = session.createDocumentModel(conf.getDocType());
 
-        String path = resolvePath(el, conf.getParent());
-        Object nameOb = resolveName(el, conf.getName());
-        String name = null;
-        if (nameOb == null) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath()));
-            }
-            int idx = 1;
-            for (int i = 0; i < docsStack.size(); i++) {
-                if (docsStack.get(i).getType().equals(conf.getDocType())) {
-                    idx++;
-                }
-            }
-            name = conf.getDocType() + "-" + idx;
-        } else {
-            name = nameOb.toString();
-        }
-        doc.setPathInfo(path, name);
+    	String path = resolvePath(el, conf.getParent());
+    	Object nameOb = resolveName(el, conf.getName());
+    	String name = null;
+    	if (nameOb == null) {
+    		if (log.isDebugEnabled()) {
+    			log.debug(String.format(MSG_NO_ELEMENT_FOUND, conf.getName(), el.getUniquePath()));
+    		}
+    		int idx = 1;
+    		for (int i = 0; i < docsStack.size(); i++) {
+    			if (docsStack.get(i).getType().equals(conf.getDocType())) {
+    				idx++;
+    			}
+    		}
+    		name = conf.getDocType() + "-" + idx;
+    	} else {
+    		name = nameOb.toString();
+    	}
+    	doc.setPathInfo(path, name);
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
-        }
+    	if (log.isDebugEnabled()) {
+    		log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+    	}
 
-        try {
-            doc = session.createDocument(doc);
-        } catch (NuxeoException e) {
-            e.addInfo(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
-            throw e;
-        }
-        pushInStack(doc);
-        elToDoc.put(el, doc);
+    	try {
+    		if (conf.getUpdate() && session.exists(doc.getRef())){
+    			
+    			DocumentModel existingDoc = session.getDocument(doc.getRef());
+    			
+    			// get attributes, if attribute needs to be overwritten, clear it from the doc
+    			for (Object e : el.elements()) {
+    				List<AttributeConfigDescriptor> configs = getAttributConfigs((Element) e);
+    				if (configs != null) {
+    					for (AttributeConfigDescriptor config : configs) {
+    						if (config.overwrite){
+    							String targetDocProperty = config.getTargetDocProperty();
+    							existingDoc.setPropertyValue(targetDocProperty,null);
+    						}
+    					}
+    				} 
+    			}
+    			doc = existingDoc;
+    		} else {
+    			doc = session.createDocument(doc);
+    		}
+    	} catch (NuxeoException e) {
+    		e.addInfo(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+    		throw e;
+    	}
+    	pushInStack(doc);
+    	elToDoc.put(el, doc);
     }
 
     protected void process(Element el) {
         DocConfigDescriptor createConf = getDocCreationConfig(el);
         if (createConf != null) {
-            createNewDocument(el, createConf);
+        	createNewDocument(el, createConf);
         }
         List<AttributeConfigDescriptor> configs = getAttributConfigs(el);
         if (configs != null) {
             for (AttributeConfigDescriptor config : configs) {
                 processDocAttributes(docsStack.peek(), el, config);
             }
+
             DocumentModel doc = popStack();
             doc.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
             doc = session.saveDocument(doc);
@@ -490,7 +521,7 @@ public class XMLImporterServiceImpl {
                 String chain = createConf.getAutomationChain();
                 if (chain != null && !"".equals(chain.trim())) {
                     OperationContext ctx = new OperationContext(session, mvelCtx);
-                    ctx.setInput(doc);
+                    ctx.setInput(docsStack.peek());
                     try {
                         getAutomationService().run(ctx, chain);
                     } catch (OperationException e) {
@@ -498,7 +529,6 @@ public class XMLImporterServiceImpl {
                     }
                 }
             }
-
         }
         for (Object e : el.elements()) {
             process((Element) e);
