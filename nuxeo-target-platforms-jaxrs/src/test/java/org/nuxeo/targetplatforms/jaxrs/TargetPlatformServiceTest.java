@@ -47,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(FeaturesRunner.class)
-@Features({ DetectThreadDeadlocksFeature.class, TransactionalFeature.class, WebEngineFeature.class })
+@Features({ DetectThreadDeadlocksFeature.class, WebEngineFeature.class })
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Jetty(port = 18090)
 @Deploy({ "org.nuxeo.targetplatforms.core", "org.nuxeo.targetplatforms.core.test", "org.nuxeo.targetplatforms.jaxrs" })
