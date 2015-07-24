@@ -447,7 +447,7 @@ public class S3BinaryManager extends CachingBinaryManager {
                         new GetObjectRequest(bucketName, bucketNamePrefix + digest), file);
                 // check ETag
                 String etag = metadata.getETag();
-                if (!isEncrypted && !etag.equals(digest)) {
+                if (!isEncrypted && !etag.equals(digest) && !ServiceUtils.isMultipartUploadETag(etag)) {
                     log.error("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
                     return false;
                 }
@@ -477,7 +477,7 @@ public class S3BinaryManager extends CachingBinaryManager {
                 ObjectMetadata metadata = amazonS3.getObjectMetadata(bucketName, bucketNamePrefix + digest);
                 // check ETag
                 String etag = metadata.getETag();
-                if (!isEncrypted && !etag.equals(digest)) {
+                if (!isEncrypted && !etag.equals(digest) && !ServiceUtils.isMultipartUploadETag(etag)) {
                     log.error("Invalid ETag in S3, ETag=" + etag + " digest=" + digest);
                     return null;
                 }
