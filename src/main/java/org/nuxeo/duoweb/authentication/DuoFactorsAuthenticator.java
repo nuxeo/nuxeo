@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
 
 import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +32,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
@@ -48,6 +47,8 @@ import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 
 import com.duosecurity.DuoWeb;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 /**
  * Authentication filter handles two factors authentication via Duo
@@ -74,6 +75,15 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     private static final String TWO_FACTORS_CHECK = "twoFactorsCheck";
 
+    private static final String HASHCODE = "hash";
+
+    protected static final Integer CACHE_CONCURRENCY_LEVEL = 10;
+
+    protected static final Integer CACHE_MAXIMUM_SIZE = 1000;
+
+    // DuoWeb timeout is 1 minute => taking 4 minutes in case
+    protected static final Integer CACHE_TIMEOUT = 4;
+
     private UserIdentificationInfo userIdent;
 
     private String IKEY;
@@ -84,7 +94,8 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
 
     private String HOST;
 
-    private WeakHashMap<String, String> credentials = new WeakHashMap<>();
+    private Cache<String, UserIdentificationInfo> credentials = CacheBuilder.newBuilder().concurrencyLevel(CACHE_CONCURRENCY_LEVEL).maximumSize(
+            CACHE_MAXIMUM_SIZE).expireAfterWrite(CACHE_TIMEOUT, TimeUnit.MINUTES).build();
 
     @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
@@ -107,7 +118,10 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
                 String request_sig = DuoWeb.signRequest(IKEY, SKEY, AKEY, userName);
                 parameters.put(SIG_REQUEST, request_sig);
                 parameters.put(HOST_REQUEST, HOST);
-                parameters.put(POST_ACTION, postUrl);
+                // Handle callback context
+                String key = Integer.toHexString(userIdent.hashCode());
+                credentials.put(key, userIdent);
+                parameters.put(POST_ACTION, postUrl + "?" + HASHCODE + "=" + key);
                 redirectUrl = URIUtils.addParametersToURIQuery(redirectUrl, parameters);
                 httpResponse.sendRedirect(redirectUrl);
             } catch (IOException e) {
@@ -128,7 +142,6 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         if (session.getAttribute(ONE_FACTOR_CHECK) == null || !(Boolean) session.getAttribute(ONE_FACTOR_CHECK)) {
             userIdent = super.handleRetrieveIdentity(httpRequest, httpResponse);
             if (userIdent != null) {
-                credentials.put(userIdent.getUserName(), userIdent.getPassword());
                 try {
                     NuxeoPrincipal principal = validateUserIdentity();
                     if (principal != null) {
@@ -149,8 +162,9 @@ public class DuoFactorsAuthenticator extends FormAuthenticator {
         } else if (session.getAttribute(TWO_FACTORS_CHECK) == null
                 || !(Boolean) session.getAttribute(TWO_FACTORS_CHECK)) {
             String sigResponse = httpRequest.getParameter(SIG_RESPONSE);
+            String hashResponse = httpRequest.getParameter(HASHCODE);
             String response = DuoWeb.verifyResponse(IKEY, SKEY, AKEY, sigResponse);
-            userIdent = new UserIdentificationInfo(response, credentials.get(response));
+            userIdent = credentials.getIfPresent(hashResponse);
             session.setAttribute(TWO_FACTORS_CHECK, response != null ? Boolean.TRUE : Boolean.FALSE);
             if (response == null) {
                 return null;
