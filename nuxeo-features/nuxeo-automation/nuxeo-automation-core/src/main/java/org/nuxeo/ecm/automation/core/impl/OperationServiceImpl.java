@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonNode;
@@ -457,6 +458,9 @@ public class OperationServiceImpl implements AutomationService, AutomationAdmin 
             if (targetType.isAssignableFrom(toAdaptClass)) {
                 return (T) toAdapt;
             }
+        }
+        if (targetType.isArray() && toAdapt instanceof List) {
+            return (T) Iterables.toArray((Iterable) toAdapt, targetType.getComponentType());
         }
         TypeAdapter adapter = getTypeAdapter(toAdaptClass, targetType);
         if (adapter == null) {
