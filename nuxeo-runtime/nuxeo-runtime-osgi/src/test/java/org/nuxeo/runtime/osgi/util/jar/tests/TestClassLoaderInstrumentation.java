@@ -95,8 +95,11 @@ public class TestClassLoaderInstrumentation {
     }
 
     @Test
-    public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, NoSuchFieldException,
-            SecurityException, IllegalAccessException, NoSuchMethodException, URLJarFileIntrospectionError {
+    public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, SecurityException,
+            URLJarFileIntrospectionError {
+        if (System.getProperty("os.name").startsWith("Windows")) {
+            return;
+        }
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
         URL[] jarURLs = new URL[] { firstURL, otherURL };
