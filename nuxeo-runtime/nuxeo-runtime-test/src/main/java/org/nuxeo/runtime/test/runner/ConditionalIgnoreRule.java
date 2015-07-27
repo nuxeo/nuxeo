@@ -55,7 +55,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Ignore {
-        Class<? extends Condition> condition();
+        Class<? extends Condition>condition();
 
         /**
          * Optional reason why the test is ignored, reported additionally to the condition class simple name.
@@ -75,9 +75,8 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     }
 
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader()
-                                                                                                .getClass()
-                                                                                                .getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(
+                getClass().getClassLoader().getClass().getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -95,7 +94,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     public static final class IgnoreWindows implements Condition {
         @Override
         public boolean shouldIgnore() {
-            return SystemUtils.IS_OS_WINDOWS;
+            return SystemUtils.IS_OS_WINDOWS||SystemUtils.IS_OS_MAC;
         }
     }
 
@@ -104,10 +103,12 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
         Class<?> fixtureType = fixtureTarget.getClass();
         Method fixtureMethod = method.getMethod();
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            check(fixtureType.getAnnotation(Ignore.class), fixtureType, fixtureMethod, fixtureTarget);
+            return shouldIgnore(base, fixtureType.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
+                    fixtureTarget);
         }
         if (fixtureMethod.isAnnotationPresent(Ignore.class)) {
-            check(fixtureMethod.getAnnotation(Ignore.class), fixtureType, fixtureMethod, fixtureTarget);
+            return shouldIgnore(base, fixtureMethod.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
+                    fixtureTarget);
         }
         return base;
     }
@@ -116,24 +117,30 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     public Statement apply(Statement base, Description description) {
         Class<?> fixtureType = description.getTestClass();
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            check(fixtureType.getAnnotation(Ignore.class), fixtureType);
+            return shouldIgnore(base, fixtureType.getAnnotation(Ignore.class), fixtureType);
         }
         return base;
     }
 
-    protected void check(Ignore ignore, Class<?> type) {
-        check(ignore, type, null, null);
+    protected Statement shouldIgnore(Statement base, Ignore ignore, Class<?> type) {
+        return shouldIgnore(base, ignore, type, null, null);
     }
 
-    protected void check(Ignore ignore, Class<?> type, Method method, Object target) {
+    protected Statement shouldIgnore(Statement base, Ignore ignore, Class<?> type, Method method, Object target) {
         Class<? extends Condition> conditionType = ignore.condition();
         if (conditionType == null) {
-            return;
+            return base;
         }
         Condition condition = newCondition(type, method, target, conditionType);
-        if (condition.shouldIgnore()) {
-            throw new AssumptionViolatedException(condition.getClass().getSimpleName() + " " + ignore.cause());
+        if (!condition.shouldIgnore()) {
+            return base;
         }
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                throw new AssumptionViolatedException(condition.getClass().getSimpleName() + " " + ignore.cause());
+            }
+        };
     }
 
     protected Condition newCondition(Class<?> type, Method method, Object target,

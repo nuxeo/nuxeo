@@ -482,7 +482,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertNotNull(binProp);
         Serializable value = binProp.getValue();
         assertTrue(value instanceof String);
-        assertEquals(data, (String) value);
+        assertEquals(data, value);
     }
 
     // assumes one read will read everything
@@ -499,11 +499,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "windows doesn't have enough time granularity for such a test")
     public void testBinaryGC() throws Exception {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            // windows doesn't have enough time granularity for such a test
-            return;
-        }
         SQLRepositoryService sqlRepositoryService = Framework.getService(SQLRepositoryService.class);
 
         Session session = repository.getConnection();
