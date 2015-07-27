@@ -63,6 +63,14 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
         return "/rightOfficeDoc";
     }
 
+    public static String getLeftImageDocPath() {
+        return "/leftImageDoc";
+    }
+
+    public static String getRightImageDocPath() {
+        return "/rightImageDoc";
+    }
+
     @Override
     public void populate(CoreSession session) {
 
@@ -74,6 +82,8 @@ public class ContentDiffRepositoryInit extends DefaultRepositoryInit {
                 "application/vnd.oasis.opendocument.text");
         createFileDoc(session, "rightOfficeDoc", "Right Office doc", "right_doc.odt",
                 "application/vnd.oasis.opendocument.text");
+        createFileDoc(session, "leftImageDoc", "Left image doc", "left_doc.png", "image/png");
+        createFileDoc(session, "rightImageDoc", "Right image doc", "right_doc.png", "image/png");
     }
 
     /**

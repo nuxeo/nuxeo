@@ -23,8 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.diff.pictures.DiffPictures;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -39,12 +37,6 @@ import org.nuxeo.ecm.diff.content.ContentDiffException;
  * @since 7.4
  */
 public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
-
-    private static final Log log = LogFactory.getLog(ImageMagickContentDiffer.class);
-
-    public MimeTypeContentDiffer.TYPE_OF_PARAMETERS getTypeOfParameters() {
-        return TYPE_OF_PARAMETERS.DOCUMENT;
-    }
 
     @Override
     public List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)

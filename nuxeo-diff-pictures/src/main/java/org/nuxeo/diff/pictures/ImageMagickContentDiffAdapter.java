@@ -19,8 +19,6 @@ package org.nuxeo.diff.pictures;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
@@ -34,7 +32,6 @@ import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
  */
 public class ImageMagickContentDiffAdapter extends AbstractContentDiffAdapter {
 
-    private static final Log log = LogFactory.getLog(ImageMagickContentDiffAdapter.class);
 
     public static final String IMAGE_MAGIC_CONTENT_DIFFER_NAME = "imageMagickContentDiffer";
 

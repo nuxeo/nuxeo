@@ -29,8 +29,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,8 +44,6 @@ import org.nuxeo.runtime.api.Framework;
  * @since 7.3
  */
 public class DiffPictures {
-
-    private static final Log log = LogFactory.getLog(DiffPictures.class);
 
     public static final String DEFAULT_COMMAND = "diff-pictures-default";
 
