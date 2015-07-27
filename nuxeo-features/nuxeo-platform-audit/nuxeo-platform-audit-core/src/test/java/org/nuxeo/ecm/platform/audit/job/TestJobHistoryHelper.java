@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.audit.job;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -92,9 +93,8 @@ public class TestJobHistoryHelper {
 
         long elapsed = loggedT1 - loggedT0;
         int min = 3000;
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            // windows has strange clock granularity
-            // elapsed = 2677 has been observed
+        if (SystemUtils.IS_OS_WINDOWS) {
+            // windows has strange clock granularity: elapsed = 2677 has been observed
             min = 2000;
         }
         assertTrue(elapsed + " should be >= " + min, elapsed >= min);

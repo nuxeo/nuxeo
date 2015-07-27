@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -46,9 +47,12 @@ public class ServerController {
 
     protected static Log log = LogFactory.getLog(ServerController.class);
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     public static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
+        return SystemUtils.IS_OS_WINDOWS;
     }
 
     private static String winEscape(String command) {
@@ -57,7 +61,7 @@ public class ServerController {
 
     protected static boolean doExec(String path, String logPath) {
         String[] cmd;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             cmd = new String[] { "cmd", "/C", winEscape(new File(path, CMD_WIN).getPath()), "--gui=false", "restartbg" };
         } else {
             cmd = new String[] { "/bin/sh", "-c", "\"" + new File(path, CMD_POSIX).getPath() + "\"" + " restartbg" };
@@ -75,7 +79,7 @@ public class ServerController {
             return false;
         }
 
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             File logPathDir = new File(logPath);
             File out = new File(logPathDir, "restart-" + System.currentTimeMillis() + ".log");
             File err = new File(logPathDir, "restart-err-" + System.currentTimeMillis() + ".log");

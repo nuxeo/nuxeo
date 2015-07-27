@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import org.nuxeo.runtime.api.Framework;
 
 public class ConfigBuilderHelper {
@@ -76,9 +78,9 @@ public class ConfigBuilderHelper {
     protected static String findJlibPipe() {
         List<String> possiblePaths = new ArrayList<>();
 
-        if (isLinux()) {
+        if (SystemUtils.IS_OS_LINUX) {
             possiblePaths.addAll(Arrays.asList(UNIX_JPIPE_PATHS));
-        } else if (isMac()) {
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
             possiblePaths.addAll(Arrays.asList(MAC_JPIPE_PATHS));
         }
 
@@ -90,14 +92,20 @@ public class ConfigBuilderHelper {
         return null;
     }
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_MAC_OSX}
+     */
+    @Deprecated
     protected static boolean isMac() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        return osName.toLowerCase().startsWith("mac os x");
+        return SystemUtils.IS_OS_MAC_OSX;
     }
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_LINUX}
+     */
+    @Deprecated
     protected static boolean isLinux() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        return osName.toLowerCase().startsWith("linux");
+        return SystemUtils.IS_OS_LINUX;
     }
 
 }

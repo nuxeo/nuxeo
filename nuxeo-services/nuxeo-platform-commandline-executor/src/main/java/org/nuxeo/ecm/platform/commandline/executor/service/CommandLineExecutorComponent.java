@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -189,15 +191,10 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
         return cmds;
     }
 
-    public static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
-    }
-
     @Override
     public boolean isValidParameter(String parameter) {
         Pattern VALID_PATTERN;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             VALID_PATTERN = VALID_PARAMETER_PATTERN_WIN;
         } else {
             VALID_PATTERN = VALID_PARAMETER_PATTERN;
@@ -209,7 +206,7 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
     public void checkParameter(String parameter) {
         if (!isValidParameter(parameter)) {
             Pattern VALID_PATTERN;
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 VALID_PATTERN = VALID_PARAMETER_PATTERN_WIN;
             } else {
                 VALID_PATTERN = VALID_PARAMETER_PATTERN;

@@ -20,6 +20,7 @@ package org.nuxeo.ecm.platform.commandline.executor.tests;
 
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -114,12 +115,11 @@ public class TestService extends NXRuntimeTestCase {
     @Test
     public void testIllegalCharactersInParameters() {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);
-        String osName = System.getProperty("os.name");
 
         assertTrue(cles.isValidParameter("only/valid:%chars."));
         assertTrue(cles.isValidParameter("Non-latin words such as \u0625\u0646\u062a\u0631\u0646\u062a are valid."));
 
-        if (osName.toLowerCase().contains("windows")) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             assertTrue(cles.isValidParameter("(parentheses) are valid characters"));
         } else {
             assertFalse(cles.isValidParameter("(parentheses) are invalid characters"));

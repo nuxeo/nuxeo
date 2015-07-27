@@ -39,6 +39,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -2194,9 +2195,8 @@ public class TestSQLRepositoryAPI {
         assertNotSame(copy1.getName(), copy3.getName());
 
         // copy again again to same space
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            // windows has too coarse time granularity
-            // for SQLSession.findFreeName
+        if (SystemUtils.IS_OS_WINDOWS) {
+            // windows has too coarse time granularity for SQLSession.findFreeName
             Thread.sleep(1000);
         }
         DocumentModel copy4 = session.copy(file.getRef(), folder2.getRef(), null);

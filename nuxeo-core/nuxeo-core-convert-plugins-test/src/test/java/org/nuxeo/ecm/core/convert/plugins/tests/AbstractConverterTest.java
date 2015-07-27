@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
@@ -37,9 +39,12 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractConverterTest {
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     protected final boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        return (os.indexOf("win") >= 0);
+        return SystemUtils.IS_OS_WINDOWS;
     }
 
     protected final BlobHolder getBlobFromPath(String path) throws IOException {
@@ -54,7 +59,7 @@ public abstract class AbstractConverterTest {
         assertEquals(converter, converterName);
 
         BlobHolder hg;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             hg = getBlobFromPath("test-docs\\" + fileName);
         } else {
             hg = getBlobFromPath("test-docs/" + fileName);
@@ -73,7 +78,7 @@ public abstract class AbstractConverterTest {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
 
         BlobHolder hg;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             hg = getBlobFromPath("test-docs\\" + fileName);
         } else {
             hg = getBlobFromPath("test-docs/" + fileName);
@@ -97,7 +102,7 @@ public abstract class AbstractConverterTest {
         assertEquals(converter, converterName);
 
         BlobHolder hg;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             hg = getBlobFromPath("test-docs\\right-to-left\\" + fileName);
         } else {
             hg = getBlobFromPath("test-docs/right-to-left/" + fileName);

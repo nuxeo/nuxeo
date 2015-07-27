@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -102,7 +103,7 @@ public class TestFileUtils {
     @Test
     public void testFilePathMethods() {
         String path, testPath;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             path = "\\a\\b\\c\\d.pdf";
             testPath = "\\a\\b\\c";
         } else {
@@ -144,8 +145,12 @@ public class TestFileUtils {
         assertFalse(FileUtils.areFilesContentEquals(fileContent2, fileContent3));
     }
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     public static boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        return (os.indexOf("win") >= 0);
+        return SystemUtils.IS_OS_WINDOWS;
     }
+
 }

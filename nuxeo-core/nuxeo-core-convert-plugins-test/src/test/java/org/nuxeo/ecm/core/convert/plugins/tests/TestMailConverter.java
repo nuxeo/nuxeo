@@ -27,6 +27,7 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -59,7 +60,7 @@ public class TestMailConverter extends SimpleConverterTest {
     @Test
     public void testTextEmailTransformation() throws Exception {
         BlobHolder bh;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             bh = cs.convert(CONVERTER_NAME, getBlobFromPath("test-docs\\email\\text.eml"), null);
         } else {
             bh = cs.convert(CONVERTER_NAME, getBlobFromPath("test-docs/email/text.eml"), null);
@@ -71,7 +72,7 @@ public class TestMailConverter extends SimpleConverterTest {
         assertEquals("text/plain", result.getMimeType());
 
         Blob expected;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             expected = getTestBlob("test-docs\\email\\text.txt");
         } else {
             expected = getTestBlob("test-docs/email/text.txt");
@@ -95,7 +96,7 @@ public class TestMailConverter extends SimpleConverterTest {
     @Test
     public void testTextAndHtmlEmailTransformation() throws Exception {
         BlobHolder bh;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             bh = cs.convert(CONVERTER_NAME, getBlobFromPath("test-docs\\email\\text_and_html_with_attachments.eml"),
                     null);
         } else {
@@ -109,7 +110,7 @@ public class TestMailConverter extends SimpleConverterTest {
 
         String actual = result.getString();
         String expected;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             expected = getTestBlob("test-docs\\email\\text_and_html_with_attachments.txt").getString();
         } else {
             expected = getTestBlob("test-docs/email/text_and_html_with_attachments.txt").getString();
@@ -120,7 +121,7 @@ public class TestMailConverter extends SimpleConverterTest {
     @Test
     public void testOnlyHtmlEmailTransformation() throws Exception {
         BlobHolder bh;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             bh = cs.convert(CONVERTER_NAME, getBlobFromPath("test-docs\\email\\only_html_with_attachments.eml"), null);
         } else {
             bh = cs.convert(CONVERTER_NAME, getBlobFromPath("test-docs/email/only_html_with_attachments.eml"), null);
@@ -131,7 +132,7 @@ public class TestMailConverter extends SimpleConverterTest {
         assertNotNull(result);
         assertEquals("text/plain", result.getMimeType());
         Blob expected;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             expected = getTestBlob("test-docs\\email\\only_html_with_attachments.txt");
         } else {
             expected = getTestBlob("test-docs/email/only_html_with_attachments.txt");

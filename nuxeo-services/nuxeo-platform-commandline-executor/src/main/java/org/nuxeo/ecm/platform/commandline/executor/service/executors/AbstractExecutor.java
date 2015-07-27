@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
@@ -42,9 +44,12 @@ public abstract class AbstractExecutor implements Executor {
     @Deprecated
     public static final Pattern VALID_PARAMETER_PATTERN = Pattern.compile("[\\p{L}_0-9-.%:=/\\\\ ]+");
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     public static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
+        return SystemUtils.IS_OS_WINDOWS;
     }
 
     /**

@@ -142,6 +142,11 @@
       <artifactId>nuxeo-runtime-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!-- io marshallers tests -->
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>

@@ -60,6 +60,7 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
@@ -459,12 +460,12 @@ public abstract class NuxeoLauncher {
     }
 
     private ProcessManager getOSProcessManager() {
-        if (PlatformUtils.isLinux() || isAix()) {
+        if (PlatformUtils.isLinux() || SystemUtils.IS_OS_AIX) {
             UnixProcessManager unixProcessManager = new UnixProcessManager();
             return unixProcessManager;
         } else if (PlatformUtils.isMac()) {
             return new MacProcessManager();
-        } else if (isSolaris()) {
+        } else if (SystemUtils.IS_OS_SUN_OS) {
             return new SolarisProcessManager();
         } else if (PlatformUtils.isWindows()) {
             WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
@@ -472,15 +473,6 @@ public abstract class NuxeoLauncher {
         } else {
             return new PureJavaProcessManager();
         }
-    }
-
-    // code similar to PlatformUtils
-    private boolean isAix() {
-        return System.getProperty("os.name").toLowerCase().startsWith("aix");
-    }
-
-    private boolean isSolaris() {
-        return System.getProperty("os.name").toLowerCase().startsWith("sunos");
     }
 
     public static class SolarisProcessManager extends UnixProcessManager {

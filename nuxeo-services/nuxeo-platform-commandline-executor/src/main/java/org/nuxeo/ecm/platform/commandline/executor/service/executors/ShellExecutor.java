@@ -26,9 +26,11 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
@@ -49,7 +51,7 @@ public class ShellExecutor extends AbstractExecutor {
         List<String> output = Collections.synchronizedList(new ArrayList<String>());
 
         String[] cmd;
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             String[] paramsArray = getParametersArray(cmdDesc, params);
             cmd = new String[] { "cmd", "/C", cmdDesc.getCommand() };
             cmd = (String[]) ArrayUtils.addAll(cmd, paramsArray);

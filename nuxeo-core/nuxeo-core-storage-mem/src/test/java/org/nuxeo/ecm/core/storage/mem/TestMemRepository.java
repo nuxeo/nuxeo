@@ -35,8 +35,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
@@ -2069,9 +2071,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertNotSame(copy1.getName(), copy3.getName());
 
         // copy again again to same space
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            // windows has too coarse time granularity
-            // for SQLSession.findFreeName
+        if (SystemUtils.IS_OS_WINDOWS) {
+            // windows has too coarse time granularity for SQLSession.findFreeName
             Thread.sleep(1000);
         }
         DocumentModel copy4 = session.copy(file.getRef(), folder2.getRef(), null);

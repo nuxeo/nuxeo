@@ -16,6 +16,8 @@
  */
 package org.nuxeo.connect.update.task.guards;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 
 /**
@@ -68,10 +70,18 @@ public class PlatformHelper {
         return cg.isJetty;
     }
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     public boolean isWindows() {
         return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
     }
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     public boolean isNotWindows() {
         return !isWindows();
     }

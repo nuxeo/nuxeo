@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.SystemUtils;
+
 import org.nuxeo.ecm.platform.pictures.tiles.service.PictureTilingComponent;
 
 /**
@@ -42,11 +44,6 @@ public class GimpExecutor {
     protected static boolean useQuickExec = false;
 
     private static String gimpPath;
-
-    private static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
-    }
 
     public static void setUseQuickExec(boolean quickExec) {
         useQuickExec = quickExec;
@@ -149,7 +146,7 @@ public class GimpExecutor {
         // init command script
         String[] cmd = { "/bin/sh", "-c", getGimpPath() + " " + gimpOpts + procString + gimpQuit + " 2>&1" };
 
-        if (isWindows()) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             cmd[0] = "cmd";
             cmd[1] = "/C";
         }
@@ -163,7 +160,7 @@ public class GimpExecutor {
 
     protected static String getGimpPath() {
         if ((gimpPath == null) || ("".equals(gimpPath))) {
-            if (isWindows()) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 gimpPath = PictureTilingComponent.getEnvValue("GimpExecutable", "gimp.exe");
                 // gimpPath="gimp.exe";
             } else {

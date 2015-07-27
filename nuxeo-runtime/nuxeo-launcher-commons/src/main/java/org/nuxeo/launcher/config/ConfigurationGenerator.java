@@ -58,6 +58,7 @@ import javax.naming.directory.InitialDirContext;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -499,7 +500,7 @@ public class ConfigurationGenerator {
             userConfig = new Properties(defaultConfig);
 
             // If Windows, replace backslashes in paths in nuxeo.conf
-            if (System.getProperty("os.name").toLowerCase().startsWith("win")) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 replaceBackslashes();
             }
             // Load user configuration

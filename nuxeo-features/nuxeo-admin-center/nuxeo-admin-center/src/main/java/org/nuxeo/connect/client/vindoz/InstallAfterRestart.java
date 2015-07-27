@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,10 +52,7 @@ public class InstallAfterRestart {
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
     protected static boolean isNeededByOs() {
-        if (Framework.isBooleanPropertyTrue(FAKE_VIDOZ)) {
-            return true;
-        }
-        return isVindozBox();
+        return Framework.isBooleanPropertyTrue(FAKE_VIDOZ) || SystemUtils.IS_OS_WINDOWS;
     }
 
     /**
@@ -74,8 +72,12 @@ public class InstallAfterRestart {
         return Framework.isDevModeSet();
     }
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     protected static boolean isVindozBox() {
-        return System.getProperty("os.name").toLowerCase().indexOf("win") >= 0;
+        return SystemUtils.IS_OS_WINDOWS;
     }
 
     public static void addPackageForInstallation(String pkgNameOrId) {

@@ -122,6 +122,11 @@
       <artifactId>nuxeo-core-convert-plugins</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>

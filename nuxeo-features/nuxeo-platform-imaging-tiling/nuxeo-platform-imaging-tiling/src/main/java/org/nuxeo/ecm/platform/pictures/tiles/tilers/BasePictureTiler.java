@@ -17,6 +17,8 @@
  */
 package org.nuxeo.ecm.platform.pictures.tiles.tilers;
 
+import org.apache.commons.lang3.SystemUtils;
+
 /**
  * Dummy base class for PictureTilers
  *
@@ -24,9 +26,12 @@ package org.nuxeo.ecm.platform.pictures.tiles.tilers;
  */
 public abstract class BasePictureTiler implements PictureTiler {
 
+    /**
+     * @deprecated Since 7.4. Use {@link SystemUtils#IS_OS_WINDOWS}
+     */
+    @Deprecated
     protected static boolean isWindows() {
-        String osName = System.getProperty("os.name");
-        return osName.toLowerCase().contains("windows");
+        return SystemUtils.IS_OS_WINDOWS;
     }
 
 }
