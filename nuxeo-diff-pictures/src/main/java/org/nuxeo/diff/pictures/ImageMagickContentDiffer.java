@@ -23,16 +23,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.nuxeo.diff.pictures.DiffPictures;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 
 /**
  * ImageMagickContentDiffer
- * <p>
  *
  * @since 7.4
  */
@@ -66,7 +64,6 @@ public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
 
     @Override
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
-
         throw new UnsupportedOperationException("ImageMagickContentDiffer can handle only DocumentModel");
     }
 }

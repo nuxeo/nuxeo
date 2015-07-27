@@ -32,7 +32,6 @@ import org.nuxeo.ecm.diff.content.adapter.base.ContentDiffConversionType;
  */
 public class ImageMagickContentDiffAdapter extends AbstractContentDiffAdapter {
 
-
     public static final String IMAGE_MAGIC_CONTENT_DIFFER_NAME = "imageMagickContentDiffer";
 
     @Override
@@ -61,7 +60,7 @@ public class ImageMagickContentDiffAdapter extends AbstractContentDiffAdapter {
                 IMAGE_MAGIC_CONTENT_DIFFER_NAME);
         if (contentDiffer instanceof ImageMagickContentDiffer) {
             ImageMagickContentDiffer imContentDiffer = (ImageMagickContentDiffer) contentDiffer;
-            return imContentDiffer.getContentDiff(this.adaptedDoc, otherDoc, xpath, locale);
+            return imContentDiffer.getContentDiff(adaptedDoc, otherDoc, xpath, locale);
         }
         throw new ContentDiffException("The contentDiffer for '" + IMAGE_MAGIC_CONTENT_DIFFER_NAME
                 + "' should be a ImageMagickContentDiffer. Check the xml contribution.");

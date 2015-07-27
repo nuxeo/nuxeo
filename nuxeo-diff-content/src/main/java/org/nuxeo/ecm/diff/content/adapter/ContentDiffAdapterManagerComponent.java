@@ -17,7 +17,7 @@ package org.nuxeo.ecm.diff.content.adapter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -86,6 +86,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
 
     // Service interface impl
 
+    @Override
     public boolean hasAdapter(DocumentModel doc) {
         if (doc == null) {
             return false;
@@ -99,6 +100,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         return doc.hasSchema("file") || doc.hasSchema("files");
     }
 
+    @Override
     public ContentDiffAdapter getAdapter(DocumentModel doc) {
         if (doc == null) {
             return null;
@@ -134,6 +136,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         }
     }
 
+    @Override
     public MimeTypeContentDiffer getContentDiffer(String mimeType) {
         for (Map.Entry<String, MimeTypeContentDiffer> entry : contentDifferFactory.entrySet()) {
             if (mimeType.matches(entry.getKey())) {
@@ -143,6 +146,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         return null;
     }
 
+    @Override
     public MimeTypeContentDiffer getContentDifferForName(String name) {
         for (Map.Entry<String, MimeTypeContentDiffer> entry : contentDifferFactoryByName.entrySet()) {
             if (name.equals(entry.getKey())) {
@@ -152,6 +156,7 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         return null;
     }
 
+    @Override
     public HtmlContentDiffer getHtmlContentDiffer() throws ContentDiffException {
         MimeTypeContentDiffer htmlContentDiffer = contentDifferFactory.get("text/html");
         if (htmlContentDiffer == null || !(htmlContentDiffer instanceof HtmlContentDiffer)) {
