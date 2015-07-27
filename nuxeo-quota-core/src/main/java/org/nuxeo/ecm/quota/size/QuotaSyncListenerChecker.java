@@ -63,6 +63,7 @@ import org.nuxeo.ecm.platform.dublincore.listener.DublinCoreListener;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
 import org.nuxeo.ecm.quota.AbstractQuotaStatsUpdater;
 import org.nuxeo.ecm.quota.QuotaStatsInitialWork;
+import org.nuxeo.ecm.quota.size.QuotaAware.MaxSizeAction;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -460,11 +461,9 @@ public class QuotaSyncListenerChecker extends AbstractQuotaStatsUpdater {
                             newTotalSize = new Long(oldTotalSize + addition);
                             log.debug("cache entry to update: " + qap.getDoc().getId() + " total: " + newTotalSize);
                         }
-                        if (newTotalSize <= qap.getMaxQuota()) {
-                            qap.putTotalSizeCache(newTotalSize);
+                        qap.putTotalSizeCache(newTotalSize);
+                        if (log.isDebugEnabled()) {
                             log.debug("cache vs. DB: " + newTotalSize + " # " + (qap.getTotalSize() + addition));
-                        } else {
-                            log.debug("cache entry not stored");
                         }
                     }
                 } catch (IOException e) {
