@@ -580,16 +580,30 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         list.add(new SimplePojo("test1"));
         list.add(new SimplePojo("test2"));
         list.add(new SimplePojo("test3"));
+        List<List<SimplePojo>> listList = new ArrayList<>();
+        listList.add(list);
+        SimplePojo[] simplePojos = list.toArray(new SimplePojo[list.size()]);
         SimplePojo result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                                                 .set("pojos", list)
-                                                 .set("pojo1", null)
+                                                 .set("pojoList", list).set("whichPojo", "pojoList")
                                                  .execute();
         assertEquals(result1.getName(), "test1");
         result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
-                                                 .set("pojos", null)
-                                                 .set("pojo1", new SimplePojo("nico"))
+                                                 .set("pojo", new SimplePojo
+                                                         ("nico")).set("whichPojo", "pojo")
                                                  .execute();
         assertEquals(result1.getName(), "nico");
+        result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
+                .set("pojoListList", listList).set("whichPojo","pojoListList")
+                .execute();
+        assertEquals(result1.getName(), "test1");
+        result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
+                .set("pojoArray", simplePojos).set("whichPojo","pojoArray")
+                .execute();
+        assertEquals(result1.getName(), "test1");
+        result1 = (SimplePojo) session.newRequest(JSONOperationWithArrays.ID)
+                .set("pojoArray", new SimplePojo[]{}).set("whichPojo","empty")
+                .execute();
+        assertNull(result1);
     }
 
     @Test

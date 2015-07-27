@@ -26,15 +26,35 @@ public class JSONOperationWithArrays {
 
     public static final String ID = "Operation.JSONOperationWithArrays";
 
-    @Param(name = "pojos", required = false)
-    protected List<SimplePojo> pojos;
+    @Param(name = "pojoList", required = false)
+    protected List<SimplePojo> pojoList;
 
-    @Param(name = "pojo1", required = false)
-    protected SimplePojo pojo1;
+    @Param(name = "pojoListList", required = false)
+    protected List<List<SimplePojo>> pojosListList;
+
+    @Param(name = "pojoArray", required = false)
+    protected SimplePojo[] pojoArray;
+
+    @Param(name = "pojo", required = false)
+    protected SimplePojo pojo;
+
+    @Param(name = "whichPojo")
+    protected String whichPojo;
 
     @OperationMethod
     public SimplePojo run() {
-        return pojos == null ? pojo1 : pojos.get(0);
+        switch (whichPojo) {
+        case "pojo":
+            return pojo;
+        case "pojoList":
+            return pojoList.get(0);
+        case "pojoListList":
+            return pojosListList.get(0).get(0);
+        case "pojoArray":
+            return pojoArray[0];
+        default:
+            return null;
+        }
     }
 
     public static class SimplePojo {
