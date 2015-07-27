@@ -66,12 +66,13 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         } else if (MIME_TYPE_CONTENT_DIFFER_EP.equals(extensionPoint)) {
             MimeTypeContentDifferDescriptor desc = (MimeTypeContentDifferDescriptor) contribution;
             try {
-                contentDifferFactory.put(desc.getPattern(), desc.getKlass().newInstance());
+                MimeTypeContentDiffer contentDiffer = desc.getKlass().newInstance();
+                contentDifferFactory.put(desc.getPattern(), contentDiffer);
 
                 // Also (since 7.4) add a name in the contribution
                 String name = desc.getName();
                 if (StringUtils.isNotBlank(name)) {
-                    contentDifferFactoryByName.put(name, desc.getKlass().newInstance());
+                    contentDifferFactoryByName.put(name, contentDiffer);
                 }
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException(e);
@@ -142,9 +143,9 @@ public class ContentDiffAdapterManagerComponent extends DefaultComponent impleme
         return null;
     }
 
-    public MimeTypeContentDiffer getContentDifferForName(String mimeTypeOrName) {
+    public MimeTypeContentDiffer getContentDifferForName(String name) {
         for (Map.Entry<String, MimeTypeContentDiffer> entry : contentDifferFactoryByName.entrySet()) {
-            if (mimeTypeOrName.equals(entry.getKey())) {
+            if (name.equals(entry.getKey())) {
                 return entry.getValue();
             }
         }
