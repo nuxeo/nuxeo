@@ -45,7 +45,8 @@ import com.google.inject.Inject;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, CoreFeature.class })
-@Deploy({ "org.nuxeo.diff.content", "org.nuxeo.diff.pictures", "org.nuxeo.ecm.platform.picture.core",
+@Deploy({ "org.nuxeo.ecm.platform.convert:OSGI-INF/convert-service-contrib.xml", "org.nuxeo.diff.content",
+        "org.nuxeo.diff.pictures", "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.picture.core",
         "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestContentDiffIntegration {
 

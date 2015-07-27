@@ -54,7 +54,7 @@ import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
-@Deploy({ "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures",
+@Deploy({ "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.diff.pictures",
         "org.nuxeo.ecm.platform.commandline.executor" })
 public class DiffPicturesTest {
 
