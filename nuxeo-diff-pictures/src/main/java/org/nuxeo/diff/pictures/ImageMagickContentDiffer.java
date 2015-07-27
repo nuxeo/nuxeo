@@ -67,6 +67,6 @@ public class ImageMagickContentDiffer implements MimeTypeContentDiffer {
     @Override
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {
 
-        throw new ContentDiffException("ImageMagickContentDiffer can handle only DocumentModel");
+        throw new UnsupportedOperationException("ImageMagickContentDiffer can handle only DocumentModel");
     }
 }
