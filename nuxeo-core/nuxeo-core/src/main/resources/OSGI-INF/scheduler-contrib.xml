@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.schedulers">
+
+  <extension target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    point="schedule">
+
+    <schedule id="aceScheduler">
+      <eventId>updateACEStatus</eventId>
+      <!-- every 5 mins -->
+      <cronExpression>0 0/5 * * * ?</cronExpression>
+    </schedule>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    <listener name="updateACEStatus" async="true" class="org.nuxeo.ecm.core.security.UpdateACEStatusListener">
+      <event>updateACEStatus</event>
+    </listener>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="updateACEStatus">
+      <maxThreads>1</maxThreads>
+      <category>updateACEStatus</category>
+    </queue>
+  </extension>
+
+</component>

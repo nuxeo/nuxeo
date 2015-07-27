@@ -46,7 +46,9 @@ public class NXQL {
 
     public static final String ECM_ISVERSION = "ecm:isVersion";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_ISVERSION_OLD = "ecm:isCheckedInVersion";
 
     public static final String ECM_LIFECYCLESTATE = "ecm:currentLifeCycleState";
@@ -57,50 +59,80 @@ public class NXQL {
 
     public static final String ECM_FULLTEXT_JOBID = "ecm:fulltextJobId";
 
-    /** @since 6.0 */
+    /**
+     * @since 6.0
+     */
     public static final String ECM_FULLTEXT_SCORE = "ecm:fulltextScore";
 
-    /** @deprecated since 5.4.2, use {@link #ECM_LOCK_OWNER} instead */
+    /**
+     * @deprecated since 5.4.2, use {@link #ECM_LOCK_OWNER} instead
+     */
     @Deprecated
     public static final String ECM_LOCK = "ecm:lock";
 
-    /** @since 5.4.2 */
+    /**
+     * @since 5.4.2
+     */
     public static final String ECM_LOCK_OWNER = "ecm:lockOwner";
 
-    /** @since 5.4.2 */
+    /**
+     * @since 5.4.2
+     */
     public static final String ECM_LOCK_CREATED = "ecm:lockCreated";
 
-    /** @since 5.7 */
+    /**
+     * @since 5.7
+     */
     public static final String ECM_TAG = "ecm:tag";
 
-    /** @since 5.7 */
+    /**
+     * @since 5.7
+     */
     public static final String ECM_PROXY_TARGETID = "ecm:proxyTargetId";
 
-    /** @since 5.7 */
+    /**
+     * @since 5.7
+     */
     public static final String ECM_PROXY_VERSIONABLEID = "ecm:proxyVersionableId";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_ISCHECKEDIN = "ecm:isCheckedIn";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_ISLATESTVERSION = "ecm:isLatestVersion";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_ISLATESTMAJORVERSION = "ecm:isLatestMajorVersion";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_VERSIONCREATED = "ecm:versionCreated";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_VERSIONDESCRIPTION = "ecm:versionDescription";
 
-    /** @since 5.7.3 */
+    /**
+     * @since 5.7.3
+     */
     public static final String ECM_VERSION_VERSIONABLEID = "ecm:versionVersionableId";
 
-    /** @since 6.0 */
+    /**
+     * @since 6.0
+     */
     public static final String ECM_ANCESTORID = "ecm:ancestorId";
 
-    /** @since 6.0-HF06, 7.2 */
+    /**
+     * @since 6.0-HF06, 7.2
+     */
     public static final String ECM_ACL = "ecm:acl";
 
     /**
@@ -158,6 +190,13 @@ public class NXQL {
      * @since 7.4
      */
     public static final String ECM_ACL_END = "end";
+
+    /**
+     * Suffix for ecm:acl, like in {@code ecm:acl/}{@code *}{@code /status}
+     *
+     * @since 7.4
+     */
+    public static final String ECM_ACL_STATUS = "status";
 
     /**
      * Escapes a string into a single-quoted string for NXQL.

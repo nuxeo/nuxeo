@@ -36,7 +36,7 @@ import com.google.common.collect.Lists;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class ACLImpl extends ArrayList<ACE> implements ACL {
+public class ACLImpl extends ArrayList<ACE>implements ACL {
 
     private static final long serialVersionUID = 5332101749929771434L;
 
@@ -85,12 +85,12 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
             Calendar end, Map<String, Serializable> contextData) {
         boolean aclChanged = false;
 
-        ACE aceToAdd = new ACE(username, permission, true, creator, begin, end);
-        if (contextData != null) {
-            for (Map.Entry<String, Serializable> entry : contextData.entrySet()) {
-                aceToAdd.putContextData(entry.getKey(), entry.getValue());
-            }
-        }
+        ACE aceToAdd = ACE.builder(username, permission)
+                          .creator(creator)
+                          .begin(begin)
+                          .end(end)
+                          .contextData(contextData)
+                          .build();
 
         List<ACE> aces = Lists.newArrayList(getACEs());
         if (blockInheritance) {
@@ -102,7 +102,11 @@ public class ACLImpl extends ArrayList<ACE> implements ACL {
             aces.add(aceToAdd);
 
             if (!username.equals(creator)) {
-                aces.add(new ACE(creator, SecurityConstants.EVERYTHING, true, creator, begin, end));
+                aces.add(ACE.builder(creator, SecurityConstants.EVERYTHING)
+                            .creator(creator)
+                            .begin(begin)
+                            .end(end)
+                            .build());
             }
 
             aces.addAll(getAdminEverythingACES());

@@ -43,32 +43,47 @@ public class ACLCollectionIO implements CollectionIO {
         Calendar end = null;
         String user = null;
         String group = null;
+        Long status = null;
         int i = 0;
         for (Column column : columns) {
             i++;
             String key = column.getKey();
             Serializable v = column.getFromResultSet(rs, i);
-            if (key.equals(Model.MAIN_KEY)) {
+            switch (key) {
+            case Model.MAIN_KEY:
                 id = v;
-            } else if (key.equals(Model.ACL_NAME_KEY)) {
+                break;
+            case Model.ACL_NAME_KEY:
                 name = (String) v;
-            } else if (key.equals(Model.ACL_GRANT_KEY)) {
+                break;
+            case Model.ACL_GRANT_KEY:
                 grant = v == null ? false : (Boolean) v;
-            } else if (key.equals(Model.ACL_PERMISSION_KEY)) {
+                break;
+            case Model.ACL_PERMISSION_KEY:
                 permission = (String) v;
-            } else if (key.equals(Model.ACL_CREATOR_KEY)) {
+                break;
+            case Model.ACL_CREATOR_KEY:
                 creator = (String) v;
-            } else if (key.equals(Model.ACL_BEGIN_KEY)) {
+                break;
+            case Model.ACL_BEGIN_KEY:
                 begin = (Calendar) v;
-            } else if (key.equals(Model.ACL_END_KEY)) {
+                break;
+            case Model.ACL_END_KEY:
                 end = (Calendar) v;
-            } else if (key.equals(Model.ACL_USER_KEY)) {
+                break;
+            case Model.ACL_USER_KEY:
                 user = (String) v;
-            } else if (key.equals(Model.ACL_GROUP_KEY)) {
+                break;
+            case Model.ACL_GROUP_KEY:
                 group = (String) v;
-            } else if (key.equals(Model.ACL_POS_KEY)) {
+                break;
+            case Model.ACL_STATUS_KEY:
+                status = (Long) v;
+                break;
+            case Model.ACL_POS_KEY:
                 // ignore, query already sorts by pos
-            } else {
+                break;
+            default:
                 throw new RuntimeException(key);
             }
         }
@@ -76,12 +91,12 @@ public class ACLCollectionIO implements CollectionIO {
         returnId[0] = id;
         int pos = (id != null && !id.equals(prevId)) ? 0 : returnPos[0] + 1;
         returnPos[0] = pos;
-        return new ACLRow(pos, name, grant, permission, user, group, creator, begin, end);
+        return new ACLRow(pos, name, grant, permission, user, group, creator, begin, end, status);
     }
 
     @Override
-    public void executeInserts(PreparedStatement ps, List<Row> rows, List<Column> columns,
-            boolean supportsBatchUpdates, String sql, JDBCConnection connection) throws SQLException {
+    public void executeInserts(PreparedStatement ps, List<Row> rows, List<Column> columns, boolean supportsBatchUpdates,
+            String sql, JDBCConnection connection) throws SQLException {
         List<Serializable> debugValues = connection.logger.isLogEnabled() ? new ArrayList<Serializable>() : null;
         String loggedSql = supportsBatchUpdates ? sql + " -- BATCHED" : sql;
         int batch = 0;
@@ -96,27 +111,41 @@ public class ACLCollectionIO implements CollectionIO {
                     n++;
                     String key = column.getKey();
                     Serializable v;
-                    if (key.equals(Model.MAIN_KEY)) {
+                    switch (key) {
+                    case Model.MAIN_KEY:
                         v = id;
-                    } else if (key.equals(Model.ACL_POS_KEY)) {
+                        break;
+                    case Model.ACL_POS_KEY:
                         v = (long) acl.pos;
-                    } else if (key.equals(Model.ACL_NAME_KEY)) {
+                        break;
+                    case Model.ACL_NAME_KEY:
                         v = acl.name;
-                    } else if (key.equals(Model.ACL_GRANT_KEY)) {
+                        break;
+                    case Model.ACL_GRANT_KEY:
                         v = acl.grant;
-                    } else if (key.equals(Model.ACL_PERMISSION_KEY)) {
+                        break;
+                    case Model.ACL_PERMISSION_KEY:
                         v = acl.permission;
-                    } else if (key.equals(Model.ACL_CREATOR_KEY)) {
+                        break;
+                    case Model.ACL_CREATOR_KEY:
                         v = acl.creator;
-                    } else if (key.equals(Model.ACL_BEGIN_KEY)) {
+                        break;
+                    case Model.ACL_BEGIN_KEY:
                         v = acl.begin;
-                    } else if (key.equals(Model.ACL_END_KEY)) {
+                        break;
+                    case Model.ACL_END_KEY:
                         v = acl.end;
-                    } else if (key.equals(Model.ACL_USER_KEY)) {
+                        break;
+                    case Model.ACL_STATUS_KEY:
+                        v = acl.status;
+                        break;
+                    case Model.ACL_USER_KEY:
                         v = acl.user;
-                    } else if (key.equals(Model.ACL_GROUP_KEY)) {
+                        break;
+                    case Model.ACL_GROUP_KEY:
                         v = acl.group;
-                    } else {
+                        break;
+                    default:
                         throw new RuntimeException(key);
                     }
                     column.setToPreparedStatement(ps, n, v);

@@ -20,7 +20,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.junit.After;
@@ -28,6 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class TestACE {
+
     private ACE ace;
 
     private ACE acebis;
@@ -35,8 +38,11 @@ public class TestACE {
     @Before
     public void setUp() {
         ace = new ACE("bogdan", "write", false);
-        acebis = new ACE("vlad", "write", "pas", new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56),
-                new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56));
+        acebis = ACE.builder("vlad", "write")
+                    .creator("pas")
+                    .begin(new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56))
+                    .end(new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56))
+                    .build();
     }
 
     @After
@@ -79,9 +85,9 @@ public class TestACE {
         assertEquals(ace.hashCode(), ace2.hashCode());
 
         Calendar begin = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        Calendar end= new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
-        ACE ace6 = new ACE("leela", "read", false, null, begin, end);
-        ACE ace7 = new ACE("leela", "read", false, null, begin, end);
+        Calendar end = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
+        ACE ace6 = ACE.builder("leela", "read").isGranted(false).begin(begin).end(end).build();
+        ACE ace7 = ACE.builder("leela", "read").isGranted(false).begin(begin).end(end).build();
         assertEquals(ace6, ace7);
 
         ACE ace8 = ACE.fromId(ace7.getId());
@@ -92,17 +98,21 @@ public class TestACE {
     public void testNewConstructors() {
         Calendar cal1 = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
         Calendar cal2 = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
-        ACE ace1 = new ACE("vlad", "write", "pas", cal1, cal2);
+        ACE ace1 = ACE.builder("vlad", "write").creator("pas").begin(cal1).end(cal2).build();
         assertEquals(acebis, ace1);
     }
 
     @Test
     public void testACEId() {
-        Calendar cal1 = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        Calendar cal2 = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
-        ACE ace = new ACE("vlad", "write", "pas", cal1, cal2);
+        Date now = new Date();
+        Calendar cal1 = new GregorianCalendar();
+        cal1.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
+        Calendar cal2 = new GregorianCalendar();
+        cal2.setTimeInMillis(now.toInstant().plus(5, ChronoUnit.DAYS).toEpochMilli());
+        ACE ace = ACE.builder("vlad", "write").creator("pas").begin(cal1).end(cal2).build();
 
-        assertEquals("vlad:write:true:pas:" + cal1.getTimeInMillis() + ":" + cal2.getTimeInMillis(), ace.getId());
+        assertEquals("vlad:write:true:pas:" + cal1.getTimeInMillis() + ":" + cal2.getTimeInMillis(),
+                ace.getId());
 
         String aceId = "bob:write:false:pablo:" + cal1.getTimeInMillis() + ":" + cal2.getTimeInMillis();
         ace = ACE.fromId(aceId);
@@ -113,6 +123,7 @@ public class TestACE {
         assertEquals("pablo", ace.getCreator());
         assertEquals(cal1, ace.getBegin());
         assertEquals(cal2, ace.getEnd());
+        assertTrue(ace.isEffective());
 
         aceId = "pedro:read:true:::";
         ace = ACE.fromId(aceId);
@@ -123,6 +134,7 @@ public class TestACE {
         assertNull(ace.getCreator());
         assertNull(ace.getBegin());
         assertNull(ace.getEnd());
+        assertTrue(ace.isEffective());
 
         aceId = "pedro:read:true::" + cal1.getTimeInMillis() + ":";
         ace = ACE.fromId(aceId);
@@ -133,6 +145,7 @@ public class TestACE {
         assertNull(ace.getCreator());
         assertEquals(cal1, ace.getBegin());
         assertNull(ace.getEnd());
+        assertTrue(ace.isEffective());
     }
 
     @Test(expected = IllegalArgumentException.class)

@@ -30,7 +30,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.FullTextUtils;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -167,6 +166,11 @@ public class NXQLQueryMaker implements QueryMaker {
      * @since 7.4
      */
     public static final String ECM_SIMPLE_ACP_END = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_END;
+
+    /**
+     * @since 7.4
+     */
+    public static final String ECM_SIMPLE_ACP_STATUS = NXQL.ECM_ACL + "/*/" + NXQL.ECM_ACL_STATUS;
 
     public static final String ECM_TAG_STAR = NXQL.ECM_TAG + "/*";
 
@@ -305,8 +309,8 @@ public class NXQLQueryMaker implements QueryMaker {
         boolean reAnalyze = false;
         // add a default ORDER BY ecm:fulltextScore DESC
         if (queryAnalyzer.ftCount == 1 && !distinct && sqlQuery.orderBy == null) {
-            sqlQuery.orderBy = new OrderByClause(new OrderByList(new OrderByExpr(
-                    new Reference(NXQL.ECM_FULLTEXT_SCORE), true)), false);
+            sqlQuery.orderBy = new OrderByClause(
+                    new OrderByList(new OrderByExpr(new Reference(NXQL.ECM_FULLTEXT_SCORE), true)), false);
             queryAnalyzer.orderByScore = true;
             reAnalyze = true;
         }
@@ -710,8 +714,8 @@ public class NXQLQueryMaker implements QueryMaker {
     }
 
     // overridden by specialized query makers that need to tweak some joins
-    protected void addJoin(int kind, String alias, Table table, String column, Table contextTable,
-            String contextColumn, String name, int index, String primaryType) {
+    protected void addJoin(int kind, String alias, Table table, String column, Table contextTable, String contextColumn,
+            String name, int index, String primaryType) {
         Column column1 = contextTable.getColumn(contextColumn);
         Column column2 = table.getColumn(column);
         Join join = new Join(kind, table.getRealTable().getQuotedName(), alias, null, column1, column2);
@@ -738,7 +742,8 @@ public class NXQLQueryMaker implements QueryMaker {
      */
     protected Table getFragmentTable(Table contextHier, String contextKey, String fragmentName, int index,
             boolean skipJoin) {
-        return getFragmentTable(Join.LEFT, contextHier, contextKey, fragmentName, model.MAIN_KEY, index, skipJoin, null);
+        return getFragmentTable(Join.LEFT, contextHier, contextKey, fragmentName, model.MAIN_KEY, index, skipJoin,
+                null);
     }
 
     /**
@@ -993,8 +998,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 // so do them one by one
                 // expr = getMixinsMatchExpression(Collections.singleton(facet),
                 // true);
-                Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ, new StringLiteral(
-                        mixin));
+                Expression expr = new Expression(new Reference(NXQL.ECM_MIXINTYPE), Operator.EQ,
+                        new StringLiteral(mixin));
                 toplevelOperands.add(expr);
             }
             if (!facetFilter.excluded.isEmpty()) {
@@ -1312,7 +1317,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (simple.equals(ECM_SIMPLE_ACP_PRINCIPAL) || simple.equals(ECM_SIMPLE_ACP_PERMISSION)
                         || simple.equals(ECM_SIMPLE_ACP_GRANT) || simple.equals(ECM_SIMPLE_ACP_NAME)
                         || simple.equals(ECM_SIMPLE_ACP_POS) || simple.equals(ECM_SIMPLE_ACP_CREATOR)
-                        || simple.equals(ECM_SIMPLE_ACP_BEGIN) || simple.equals(ECM_SIMPLE_ACP_END)) {
+                        || simple.equals(ECM_SIMPLE_ACP_BEGIN) || simple.equals(ECM_SIMPLE_ACP_END)
+                        || simple.equals(ECM_SIMPLE_ACP_STATUS)) {
                     // ok
                 } else {
                     throw new QueryParseException("Unknown field: " + name);
@@ -1469,8 +1475,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 propertyArraySubQueries.put(contextKey, arraySubQuery);
                 if (!skipJoin) {
                     Join join = new Join(Join.LEFT, arraySubQuery.toSql(), alias, null,
-                            arraySubQuery.getSubQueryIdColumn().getFullQuotedName(), contextHier.getColumn(
-                                    Model.MAIN_KEY).getFullQuotedName());
+                            arraySubQuery.getSubQueryIdColumn().getFullQuotedName(),
+                            contextHier.getColumn(Model.MAIN_KEY).getFullQuotedName());
                     joins.add(join);
                 }
             }
@@ -1702,8 +1708,8 @@ public class NXQLQueryMaker implements QueryMaker {
                     } else {
                         // use fragment name, not segment, for table context key
                         contextKey = contextStart + prop.fragmentName + contextSuffix;
-                        table = getFragmentTable(contextHier, contextKey, prop.fragmentName, column.isArray() ? -1
-                                : index, skipJoin);
+                        table = getFragmentTable(contextHier, contextKey, prop.fragmentName,
+                                column.isArray() ? -1 : index, skipJoin);
                         column = table.getColumn(prop.fragmentKey);
                     }
                     return new ColumnInfo(column, column.isArray() ? index : -1, isArrayElement,
@@ -1767,16 +1773,18 @@ public class NXQLQueryMaker implements QueryMaker {
             } else if (name != null && name.startsWith(NXQL.ECM_FULLTEXT) && !NXQL.ECM_FULLTEXT_JOBID.equals(name)) {
                 visitExpressionFulltext(node, name);
             } else if ((op == Operator.EQ || op == Operator.NOTEQ || op == Operator.IN || op == Operator.NOTIN
-                    || op == Operator.LIKE || op == Operator.NOTLIKE || op == Operator.ILIKE || op == Operator.NOTILIKE)) {
+                    || op == Operator.LIKE || op == Operator.NOTLIKE || op == Operator.ILIKE
+                    || op == Operator.NOTILIKE)) {
                 ColumnInfo info = name == null ? null : getColumnInfo(name);
                 // node.lvalue must not be accepted from now on
                 if (info != null && info.needsSubSelect) {
                     // use EXISTS with subselect clause
                     boolean direct = op == Operator.EQ || op == Operator.IN || op == Operator.LIKE
                             || op == Operator.ILIKE;
-                    Operator directOp = direct ? op : (op == Operator.NOTEQ ? Operator.EQ
-                            : op == Operator.NOTIN ? Operator.IN : op == Operator.NOTLIKE ? Operator.LIKE
-                                    : Operator.ILIKE);
+                    Operator directOp = direct ? op
+                            : (op == Operator.NOTEQ ? Operator.EQ
+                                    : op == Operator.NOTIN ? Operator.IN
+                                            : op == Operator.NOTLIKE ? Operator.LIKE : Operator.ILIKE);
                     if (!direct) {
                         buf.append("NOT ");
                     }
@@ -1825,8 +1833,8 @@ public class NXQLQueryMaker implements QueryMaker {
             return new BooleanLiteral(v == 1);
         }
 
-        protected void visitColumnExpression(Column column, Operator op, Operand rvalue, String cast,
-                String lvalueName, int arrayElementIndex) {
+        protected void visitColumnExpression(Column column, Operator op, Operand rvalue, String cast, String lvalueName,
+                int arrayElementIndex) {
             if (op == Operator.EQ || op == Operator.NOTEQ || op == Operator.IN || op == Operator.NOTIN) {
                 visitExpressionEqOrIn(column, op, rvalue, cast, arrayElementIndex);
             } else if (op == Operator.LIKE || op == Operator.NOTLIKE) {
@@ -1866,8 +1874,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 tableName = table.getQuotedName();
             }
             buf.append(String.format("EXISTS (SELECT 1 FROM %s WHERE %s = %s AND ", tableName,
-                    dataHierTable.getColumn(model.MAIN_KEY).getFullQuotedName(), table.getColumn(model.MAIN_KEY)
-                                                                                      .getFullQuotedName()));
+                    dataHierTable.getColumn(model.MAIN_KEY).getFullQuotedName(),
+                    table.getColumn(model.MAIN_KEY).getFullQuotedName()));
         }
 
         protected void generateExistsEnd(StringBuilder buf) {
@@ -2014,7 +2022,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 throw new QueryParseException(name + " requires = or <> operator");
             }
             long v;
-            if (!(node.rvalue instanceof IntegerLiteral) || ((v = ((IntegerLiteral) node.rvalue).value) != 0 && v != 1)) {
+            if (!(node.rvalue instanceof IntegerLiteral)
+                    || ((v = ((IntegerLiteral) node.rvalue).value) != 0 && v != 1)) {
                 throw new QueryParseException(name + " requires literal 0 or 1 as right argument");
             }
             boolean bool = node.operator == Operator.EQ ^ v == 0;
@@ -2289,8 +2298,8 @@ public class NXQLQueryMaker implements QueryMaker {
                 if (column.isArray()) {
                     qname = dialect.getArrayElementString(qname, arrayElementIndex);
                 } else {
-                    throw new QueryParseException("Cannot use array index " + arrayElementIndex
-                            + " for non-array column " + column);
+                    throw new QueryParseException(
+                            "Cannot use array index " + arrayElementIndex + " for non-array column " + column);
                 }
             }
             // some databases (Derby) can't do comparisons on CLOB

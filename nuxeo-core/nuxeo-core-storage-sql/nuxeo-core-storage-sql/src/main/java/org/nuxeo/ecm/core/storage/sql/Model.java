@@ -181,6 +181,8 @@ public class Model {
 
     public static final String ACL_END_KEY = "end";
 
+    public static final String ACL_STATUS_KEY = "status";
+
     public static final String ACL_USER_KEY = "user";
 
     public static final String ACL_GROUP_KEY = "group";
@@ -597,9 +599,10 @@ public class Model {
         if (previous == null) {
             mergedPropertyInfos.put(propertyName, propertyInfo);
         } else {
-            log.debug(String.format("Schemas '%s' and '%s' both have a property '%s', "
-                    + "unqualified reference in queries will use schema '%1$s'", previous.fragmentName, fragmentName,
-                    propertyName));
+            log.debug(String.format(
+                    "Schemas '%s' and '%s' both have a property '%s', "
+                            + "unqualified reference in queries will use schema '%1$s'",
+                    previous.fragmentName, fragmentName, propertyName));
         }
         // compatibility for use of schema name as prefix
         if (typeName != null && !propertyName.contains(":")) {
@@ -765,10 +768,10 @@ public class Model {
         for (FulltextIndexDescriptor desc : descs) {
             String name = desc.name == null ? FULLTEXT_DEFAULT_INDEX : desc.name;
             fulltextConfiguration.indexNames.add(name);
-            fulltextConfiguration.indexAnalyzer.put(name, desc.analyzer == null ? repositoryDescriptor.fulltextAnalyzer
-                    : desc.analyzer);
-            fulltextConfiguration.indexCatalog.put(name, desc.catalog == null ? repositoryDescriptor.fulltextCatalog
-                    : desc.catalog);
+            fulltextConfiguration.indexAnalyzer.put(name,
+                    desc.analyzer == null ? repositoryDescriptor.fulltextAnalyzer : desc.analyzer);
+            fulltextConfiguration.indexCatalog.put(name,
+                    desc.catalog == null ? repositoryDescriptor.fulltextCatalog : desc.catalog);
             if (desc.fields == null) {
                 desc.fields = new HashSet<String>();
             }
@@ -823,9 +826,8 @@ public class Model {
                         propPathsByIndex = fields == desc.fields ? fulltextConfiguration.propPathsByIndexBinary
                                 : fulltextConfiguration.propPathsExcludedByIndexBinary;
                     } else {
-                        log.error(String.format(
-                                "Ignoring property '%s' with bad type %s in fulltext configuration: %s", path,
-                                pi.propertyType, name));
+                        log.error(String.format("Ignoring property '%s' with bad type %s in fulltext configuration: %s",
+                                path, pi.propertyType, name));
                         continue;
                     }
                     Set<String> indexes = indexesByPropPath.get(path);
@@ -1356,8 +1358,8 @@ public class Model {
      * but merged into the hierarchy table.
      */
     private void initMainModel() {
-        addPropertyInfo(MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_PRIMARY_TYPE_KEY, true,
-                null, ColumnType.SYSNAME);
+        addPropertyInfo(MAIN_PRIMARY_TYPE_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_PRIMARY_TYPE_KEY, true, null,
+                ColumnType.SYSNAME);
         addPropertyInfo(MAIN_MIXIN_TYPES_PROP, PropertyType.STRING, HIER_TABLE_NAME, MAIN_MIXIN_TYPES_KEY, false, null,
                 ColumnType.SYSNAMEARRAY);
         addPropertyInfo(MAIN_CHECKED_IN_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_CHECKED_IN_KEY, false,
@@ -1373,8 +1375,8 @@ public class Model {
         if (softDeleteEnabled) {
             addPropertyInfo(MAIN_IS_DELETED_PROP, PropertyType.BOOLEAN, HIER_TABLE_NAME, MAIN_IS_DELETED_KEY, true,
                     BooleanType.INSTANCE, ColumnType.BOOLEAN);
-            addPropertyInfo(MAIN_DELETED_TIME_PROP, PropertyType.DATETIME, HIER_TABLE_NAME, MAIN_DELETED_TIME_KEY,
-                    true, DateType.INSTANCE, ColumnType.TIMESTAMP);
+            addPropertyInfo(MAIN_DELETED_TIME_PROP, PropertyType.DATETIME, HIER_TABLE_NAME, MAIN_DELETED_TIME_KEY, true,
+                    DateType.INSTANCE, ColumnType.TIMESTAMP);
         }
     }
 
@@ -1383,8 +1385,8 @@ public class Model {
      */
     private void initMiscModel() {
         String fragmentName = miscInHierarchy ? HIER_TABLE_NAME : MISC_TABLE_NAME;
-        addPropertyInfo(MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING, fragmentName, MISC_LIFECYCLE_POLICY_KEY,
-                false, StringType.INSTANCE, ColumnType.SYSNAME);
+        addPropertyInfo(MISC_LIFECYCLE_POLICY_PROP, PropertyType.STRING, fragmentName, MISC_LIFECYCLE_POLICY_KEY, false,
+                StringType.INSTANCE, ColumnType.SYSNAME);
         addPropertyInfo(MISC_LIFECYCLE_STATE_PROP, PropertyType.STRING, fragmentName, MISC_LIFECYCLE_STATE_KEY, false,
                 StringType.INSTANCE, ColumnType.SYSNAME);
     }
@@ -1464,6 +1466,7 @@ public class Model {
         keysType.put(ACL_CREATOR_KEY, ColumnType.SYSNAME);
         keysType.put(ACL_BEGIN_KEY, ColumnType.TIMESTAMP);
         keysType.put(ACL_END_KEY, ColumnType.TIMESTAMP);
+        keysType.put(ACL_STATUS_KEY, ColumnType.LONG);
         keysType.put(ACL_USER_KEY, ColumnType.SYSNAME);
         keysType.put(ACL_GROUP_KEY, ColumnType.SYSNAME);
         String fragmentName = ACL_TABLE_NAME;
@@ -1471,21 +1474,24 @@ public class Model {
         addPropertyInfo(ACL_PROP, PropertyType.COLL_ACL, fragmentName, null, false, null, null);
         // for query
         // composed of NXQL.ECM_ACL and NXQL.ECM_ACL_PRINCIPAL etc.
-        allPathPropertyInfos.put("ecm:acl.principal/*", new ModelProperty(PropertyType.STRING, fragmentName,
-                ACL_USER_KEY, true));
-        allPathPropertyInfos.put("ecm:acl.permission/*", new ModelProperty(PropertyType.STRING, fragmentName,
-                ACL_PERMISSION_KEY, true));
-        allPathPropertyInfos.put("ecm:acl.grant/*", new ModelProperty(PropertyType.BOOLEAN, fragmentName,
-                ACL_GRANT_KEY, true));
-        allPathPropertyInfos.put("ecm:acl.name/*", new ModelProperty(PropertyType.STRING, fragmentName, ACL_NAME_KEY,
-                true));
-        allPathPropertyInfos.put("ecm:acl.pos/*", new ModelProperty(PropertyType.LONG, fragmentName, ACL_POS_KEY, true));
-        allPathPropertyInfos.put("ecm:acl.creator/*", new ModelProperty(PropertyType.STRING, fragmentName,
-                ACL_CREATOR_KEY, true));
-        allPathPropertyInfos.put("ecm:acl.begin/*", new ModelProperty(PropertyType.DATETIME, fragmentName,
-                ACL_BEGIN_KEY, true));
-        allPathPropertyInfos.put("ecm:acl.end/*", new ModelProperty(PropertyType.DATETIME, fragmentName, ACL_END_KEY,
-                true));
+        allPathPropertyInfos.put("ecm:acl.principal/*",
+                new ModelProperty(PropertyType.STRING, fragmentName, ACL_USER_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.permission/*",
+                new ModelProperty(PropertyType.STRING, fragmentName, ACL_PERMISSION_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.grant/*",
+                new ModelProperty(PropertyType.BOOLEAN, fragmentName, ACL_GRANT_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.name/*",
+                new ModelProperty(PropertyType.STRING, fragmentName, ACL_NAME_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.pos/*",
+                new ModelProperty(PropertyType.LONG, fragmentName, ACL_POS_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.creator/*",
+                new ModelProperty(PropertyType.STRING, fragmentName, ACL_CREATOR_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.begin/*",
+                new ModelProperty(PropertyType.DATETIME, fragmentName, ACL_BEGIN_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.end/*",
+                new ModelProperty(PropertyType.DATETIME, fragmentName, ACL_END_KEY, true));
+        allPathPropertyInfos.put("ecm:acl.status/*",
+                new ModelProperty(PropertyType.LONG, fragmentName, ACL_STATUS_KEY, true));
     }
 
     /**
@@ -1557,7 +1563,8 @@ public class Model {
                                 useArray = supportsArrayColumns;
                                 columnType = ColumnType.fromFieldType(listFieldType, useArray);
                             } else if (FIELD_TYPE_ARRAY_LARGETEXT.equals(fieldDescriptor.type)) {
-                                boolean isStringColSpec = ColumnType.fromFieldType(listFieldType).spec == ColumnSpec.STRING;
+                                boolean isStringColSpec = ColumnType.fromFieldType(
+                                        listFieldType).spec == ColumnSpec.STRING;
                                 if (supportsArrayColumns && !isStringColSpec) {
                                     log.warn("  Field '" + propertyName + "' is not a String yet it is specified"
                                             + " as array_largetext, using ARRAY_CLOB for it");
@@ -1602,8 +1609,8 @@ public class Model {
                              * Array: use a collection table.
                              */
                             String fragmentName = collectionFragmentName(propertyName);
-                            addPropertyInfo(complexType, propertyName, propertyType, fragmentName,
-                                    COLL_TABLE_VALUE_KEY, false, null, columnType);
+                            addPropertyInfo(complexType, propertyName, propertyType, fragmentName, COLL_TABLE_VALUE_KEY,
+                                    false, null, columnType);
 
                             Map<String, ColumnType> keysType = new LinkedHashMap<String, ColumnType>();
                             keysType.put(COLL_TABLE_POS_KEY, ColumnType.INTEGER);
@@ -1650,8 +1657,8 @@ public class Model {
                                 + "' because this is a reserved name, in type: " + typeName;
                         throw new NuxeoException(msg);
                     }
-                    if (fragmentName.equals(UID_SCHEMA_NAME)
-                            && (fragmentKey.equals(UID_MAJOR_VERSION_KEY) || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
+                    if (fragmentName.equals(UID_SCHEMA_NAME) && (fragmentKey.equals(UID_MAJOR_VERSION_KEY)
+                            || fragmentKey.equals(UID_MINOR_VERSION_KEY))) {
                         // workaround: special-case the "uid" schema, put
                         // major/minor in the hierarchy table
                         fragmentName = HIER_TABLE_NAME;

@@ -37,33 +37,54 @@ public class ACLRow implements Serializable {
 
     public final String group;
 
-    public Calendar begin;
+    /**
+     * @since 7.4
+     */
+    public final Calendar begin;
 
-    public Calendar end;
+    /**
+     * @since 7.4
+     */
+    public final Calendar end;
 
-    public String creator;
+    /**
+     * @since 7.4
+     */
+    public final String creator;
 
-    public ACLRow(int pos, String name, boolean grant, String permission, String user, String group, String creator, Calendar begin,
-            Calendar end) {
-        this(pos, name, grant, permission, user, group);
-        this.creator = creator;
-        this.begin = begin;
-        this.end = end;
-    }
+    /**
+     * Status of the ACL row: null, 0, 1 or 2.
+     *
+     * @see org.nuxeo.ecm.core.api.security.ACE
+     * @since 7.4.
+     */
+    public final Long status;
 
-    public ACLRow(int pos, String name, boolean grant, String permission, String user, String group) {
+    /**
+     * @since 7.4
+     */
+    public ACLRow(int pos, String name, boolean grant, String permission, String user, String group, String creator,
+            Calendar begin, Calendar end, Long status) {
         this.pos = pos;
         this.name = name;
         this.grant = grant;
         this.permission = permission;
         this.user = user;
         this.group = group;
+        this.creator = creator;
+        this.begin = begin;
+        this.end = end;
+        this.status = status;
+    }
+
+    public ACLRow(int pos, String name, boolean grant, String permission, String user, String group) {
+        this(pos, name, grant, permission, user, group, null, null, null, null);
     }
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + '(' + pos + ',' + name + ',' + (grant ? "GRANT" : "DENY") + ','
-                + permission + ',' + user + ',' + group + ',' + begin + ',' + end + ')';
+        return getClass().getSimpleName() + '(' + pos + ',' + name + ',' + (grant ? "GRANT" : "DENY") + ',' + permission
+                + ',' + user + ',' + group + ',' + begin + ',' + end + +',' + status + ')';
     }
 
     /**

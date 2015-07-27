@@ -27,15 +27,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -77,7 +75,6 @@ import org.nuxeo.runtime.api.Framework;
  *   }
  * }
  * </pre>
- *
  * </p>
  *
  * @since 7.4
@@ -106,11 +103,11 @@ public class ExtendedACLJsonEnricher extends AbstractJsonEnricher<DocumentModel>
                 jg.writeStringField("permission", ace.getPermission());
                 jg.writeBooleanField("granted", ace.isGranted());
                 jg.writeStringField("creator", ace.getCreator());
-                DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
                 jg.writeStringField("begin",
-                        ace.getBegin() != null ? dateTimeFormatter.print(new DateTime(ace.getBegin())) : null);
-                jg.writeStringField("end", ace.getEnd() != null ? dateTimeFormatter.print(new DateTime(ace.getEnd()))
-                        : null);
+                        ace.getBegin() != null ? DateParser.formatW3CDateTime(ace.getBegin().getTime()) : null);
+                jg.writeStringField("end",
+                        ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime()) : null);
+                jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
                 Map<String, Serializable> m = computeAdditionalFields(document, acl.getName(), ace.getId());
                 for (Map.Entry<String, Serializable> entry : m.entrySet()) {
                     jg.writeObjectField(entry.getKey(), entry.getValue());

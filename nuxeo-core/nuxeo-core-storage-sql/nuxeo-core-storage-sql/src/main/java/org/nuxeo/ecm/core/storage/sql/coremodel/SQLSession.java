@@ -317,7 +317,8 @@ public class SQLSession implements Session {
                     String owner = values[0];
                     Calendar created = new GregorianCalendar();
                     try {
-                        created.setTimeInMillis(DateFormat.getDateInstance(DateFormat.MEDIUM).parse(values[1]).getTime());
+                        created.setTimeInMillis(
+                                DateFormat.getDateInstance(DateFormat.MEDIUM).parse(values[1]).getTime());
                     } catch (ParseException e) {
                         // use current date
                     }
@@ -368,11 +369,11 @@ public class SQLSession implements Session {
         return importChild(uuid, parentNode, name, pos, typeName, props);
     }
 
-    protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile("(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH
-            + "\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected static final Pattern ORDER_BY_PATH_ASC = Pattern.compile(
+            "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    protected static final Pattern ORDER_BY_PATH_DESC = Pattern.compile("(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH
-            + "\\s+DESC\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    protected static final Pattern ORDER_BY_PATH_DESC = Pattern.compile(
+            "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s+DESC\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
     public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
@@ -784,7 +785,12 @@ public class SQLSession implements Session {
             if (user == null) {
                 user = aclrow.group;
             }
-            acl.add(new ACE(user, aclrow.permission, aclrow.grant, aclrow.creator, aclrow.begin, aclrow.end));
+            acl.add(ACE.builder(user, aclrow.permission)
+                       .isGranted(aclrow.grant)
+                       .creator(aclrow.creator)
+                       .begin(aclrow.begin)
+                       .end(aclrow.end)
+                       .build());
         }
         if (acl != null) {
             acp.addACL(acl);
@@ -841,7 +847,7 @@ public class SQLSession implements Session {
             if (!aceKeys.contains(getACLrowKey(aclrow))) {
                 // no match, keep the aclrow info instead of the ace
                 newaclrows.add(new ACLRow(newaclrows.size(), name, aclrow.grant, aclrow.permission, aclrow.user,
-                        aclrow.group, aclrow.creator, aclrow.begin, aclrow.end));
+                        aclrow.group, aclrow.creator, aclrow.begin, aclrow.end, aclrow.status));
             }
         }
         // finish remaining aces for last acl done
@@ -883,7 +889,8 @@ public class SQLSession implements Session {
             return;
         }
         String group = null; // XXX all in user for now
-        aclrows.add(new ACLRow(aclrows.size(), name, ace.isGranted(), ace.getPermission(), user, group, ace.getCreator(), ace.getBegin(), ace.getEnd()));
+        aclrows.add(new ACLRow(aclrows.size(), name, ace.isGranted(), ace.getPermission(), user, group,
+                ace.getCreator(), ace.getBegin(), ace.getEnd(), ace.getLongStatus()));
     }
 
     protected ACL getInheritedACLs(Document doc) {

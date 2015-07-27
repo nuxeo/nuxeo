@@ -34,7 +34,6 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.core.scripting.Expression;
 import org.nuxeo.ecm.automation.core.scripting.Scripting;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -61,7 +60,7 @@ public class PermissionNotificationListener implements PostCommitFilteringEventL
     public static final String SUBJECT_FORMAT = "%s %s %s";
 
     @Override
-    public void handleEvent(EventBundle events) throws ClientException {
+    public void handleEvent(EventBundle events) {
         if (events.containsEventName(PERMISSION_NOTIFICATION_EVENT)) {
             for (Event event : events) {
                 if (PERMISSION_NOTIFICATION_EVENT.equals(event.getName())) {
@@ -106,18 +105,13 @@ public class PermissionNotificationListener implements PostCommitFilteringEventL
         StringList to = new StringList(Collections.singletonList(principal.getEmail()));
         Expression from = Scripting.newExpression("Env[\"mail.from\"]");
         NotificationService notificationService = NotificationServiceHelper.getNotificationService();
-        String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(),
-                "New permission on", doc.getTitle());
+        String subject = String.format(SUBJECT_FORMAT, notificationService.getEMailSubjectPrefix(), "New permission on",
+                doc.getTitle());
         try {
             OperationChain chain = new OperationChain("SendMail");
-            chain.add(SendMail.ID)
-                 .set("from", from)
-                 .set("to", to)
-                 .set("HTML", true)
-                 .set("subject", subject)
-                 .set("message", ACE_GRANTED_TEMPLATE);
-            Framework.getService(AutomationService.class)
-                     .run(ctx, chain);
+            chain.add(SendMail.ID).set("from", from).set("to", to).set("HTML", true).set("subject", subject).set(
+                    "message", ACE_GRANTED_TEMPLATE);
+            Framework.getService(AutomationService.class).run(ctx, chain);
         } catch (OperationException e) {
             log.warn("Unable to notify user", e);
             log.debug(e, e);

@@ -198,7 +198,7 @@ public class TestACP {
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
 
         assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
-        assertEquals(new ACE("john", READ_WRITE, true, "john", null, null), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
+        assertEquals(ACE.builder("john", READ_WRITE).creator("john").build(), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
 
     }
 
@@ -217,7 +217,7 @@ public class TestACP {
         assertEquals(Access.GRANT, acp.getAccess("john", "comment"));
 
         assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
-        assertEquals(new ACE("john", "comment", true, "john", null, null), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
+        assertEquals(ACE.builder("john", "comment").creator("john").build(), acp.getACL(ACL.LOCAL_ACL).getACEs()[0]);
 
     }
 

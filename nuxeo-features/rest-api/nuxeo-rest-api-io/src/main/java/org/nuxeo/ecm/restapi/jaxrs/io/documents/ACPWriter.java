@@ -23,13 +23,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.codehaus.jackson.JsonGenerator;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 import org.nuxeo.ecm.automation.jaxrs.io.EntityWriter;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.schema.utils.DateParser;
 
 /**
  * Json writer for ACP.
@@ -59,11 +57,11 @@ public class ACPWriter extends EntityWriter<ACP> {
                 jg.writeStringField("permission", ace.getPermission());
                 jg.writeBooleanField("granted", ace.isGranted());
                 jg.writeStringField("creator", ace.getCreator());
-                DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTime();
                 jg.writeStringField("begin",
-                        ace.getBegin() != null ? dateTimeFormatter.print(new DateTime(ace.getBegin())) : null);
-                jg.writeStringField("end", ace.getEnd() != null ? dateTimeFormatter.print(new DateTime(ace.getEnd()))
-                        : null);
+                        ace.getBegin() != null ? DateParser.formatW3CDateTime(ace.getBegin().getTime()) : null);
+                jg.writeStringField("end",
+                        ace.getEnd() != null ? DateParser.formatW3CDateTime(ace.getEnd().getTime()) : null);
+                jg.writeStringField("status", ace.getStatus().toString().toLowerCase());
                 jg.writeEndObject();
             }
 

@@ -27,7 +27,6 @@ import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +83,11 @@ public class PermissionListener implements EventListener {
 
                 for (ACE ace : diff.addedACEs) {
                     String id = computeDirectoryId(doc, diff.aclName, ace.getId());
+                    // remove it if it exists
+                    if (session.hasEntry(id)) {
+                        session.deleteEntry(id);
+                    }
+
                     Map<String, Object> m = new HashMap<>();
                     m.put("aceinfo:id", id);
                     m.put("aceinfo:repositoryName", doc.getRepositoryName());
@@ -152,16 +156,11 @@ public class PermissionListener implements EventListener {
 
     protected void sendNotification(DocumentEventContext docCtx, ACE ace) {
         Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
-        if (notify != null && notify && ace.isGranted()) {
-            Date now = new Date();
-            Date beginDate = ace.getBegin() == null ? null : ace.getBegin()
-                                                                .getTime();
-            if (beginDate == null || now.after(beginDate) || now.equals(beginDate)) {
-                docCtx.setProperty(ACE_KEY, ace);
-                Event event = docCtx.newEvent(PERMISSION_NOTIFICATION_EVENT);
-                EventService eventService = Framework.getService(EventService.class);
-                eventService.fireEvent(event);
-            }
+        if (notify != null && notify && ace.isGranted() && ace.isEffective()) {
+            docCtx.setProperty(ACE_KEY, ace);
+            Event event = docCtx.newEvent(PERMISSION_NOTIFICATION_EVENT);
+            EventService eventService = Framework.getService(EventService.class);
+            eventService.fireEvent(event);
         }
     }
 

@@ -14,6 +14,7 @@ package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,9 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class ACE implements Serializable, Cloneable {
 
-    private static final long serialVersionUID = 1L;
+    public enum Status {
+        PENDING, EFFECTIVE, ARCHIVED;
+    }
 
     /**
      * An ACE that blocks all permissions for everyone.
@@ -68,24 +71,36 @@ public final class ACE implements Serializable, Cloneable {
         String permission = parts[1];
         boolean isGranted = Boolean.valueOf(parts[2]);
 
-        String creator = null;
+        ACEBuilder builder = ACE.builder(username, permission).isGranted(isGranted);
+
         if (parts.length >= 4 && StringUtils.isNotBlank(parts[3])) {
-            creator = parts[3];
+            builder.creator(parts[3]);
         }
 
-        Calendar begin = null;
         if (parts.length >= 5 && StringUtils.isNotBlank(parts[4])) {
-            begin = Calendar.getInstance(); // FIXME timezone?
+            Calendar begin = new GregorianCalendar();
             begin.setTimeInMillis(Long.valueOf(parts[4]));
+            builder.begin(begin);
         }
 
-        Calendar end = null;
         if (parts.length >= 6 && StringUtils.isNotBlank(parts[5])) {
-            end = Calendar.getInstance(); // FIXME timezone?
+            Calendar end = new GregorianCalendar();
             end.setTimeInMillis(Long.valueOf(parts[5]));
+            builder.end(end);
         }
 
-        return new ACE(username, permission, isGranted, creator, begin, end);
+        return builder.build();
+    }
+
+    public ACE() {
+        this(null, null, false);
+    }
+
+    /**
+     * Constructs an ACE for a given username and permission, and specifies whether to grant or deny it.
+     */
+    public ACE(String username, String permission, boolean isGranted) {
+        this(username, permission, isGranted, null, null, null, null);
     }
 
     /**
@@ -100,65 +115,28 @@ public final class ACE implements Serializable, Cloneable {
     }
 
     /**
-     * Constructs an ACE for a given username, permission and creator user.
-     *
-     * @since 7.4
-     */
-    public ACE(String username, String permission, String creator) {
-        this(username, permission, true);
-        this.creator = creator;
-    }
-
-    /**
-     * Constructs an ACE for a given username, permission, creator user, begin and end date.
-     *
-     * @since 7.4
-     */
-    public ACE(String username, String permission, String creator, Calendar begin, Calendar end) {
-        this(username, permission, true);
-        this.creator = creator;
-        this.begin = begin;
-        this.end = end;
-    }
-
-    /**
      * Constructs an ACE for a given username, permission, specifying whether to grant or deny it, creator user, begin
      * and end date.
      *
      * @since 7.4
      */
-    public ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end) {
-        this(username, permission, isGranted, creator, begin, end, null);
-    }
-
-    /**
-     * Constructs an ACE for a given username, permission, specifying whether to grant or deny it, creator user, begin
-     * and end date.
-     *
-     * @since 7.3
-     */
-    public ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end,
+    ACE(String username, String permission, boolean isGranted, String creator, Calendar begin, Calendar end,
             Map<String, Serializable> contextData) {
-        this(username, permission, isGranted);
+        this.username = username;
+        this.permission = permission;
+        this.isGranted = isGranted;
         this.creator = creator;
         this.begin = begin;
         this.end = end;
         if (contextData != null) {
             this.contextData = new HashMap<>(contextData);
         }
-    }
 
-    /**
-     * Constructs an ACE for a given username and permission, and specifies whether to grant or deny it.
-     */
-    public ACE(String username, String permission, boolean isGranted) {
-        this.username = username;
-        this.permission = permission;
-        this.isGranted = isGranted;
-    }
-
-    public ACE() {
-        this(null, null, false);
+        if (begin != null && end != null) {
+            if (begin.after(end)) {
+                throw new IllegalArgumentException("'begin' date cannot be after 'end' date");
+            }
+        }
     }
 
     /**
@@ -244,6 +222,50 @@ public final class ACE implements Serializable, Cloneable {
         this.creator = creator;
     }
 
+    /**
+     * Returns the status of this ACE.
+     *
+     * @since 7.4
+     */
+    public Status getStatus() {
+        Status status = Status.EFFECTIVE;
+        Calendar now = new GregorianCalendar();
+        if (begin != null && now.before(begin)) {
+            status = Status.PENDING;
+        }
+        if (end != null && now.after(end)) {
+            status = Status.ARCHIVED;
+        }
+        return status;
+    }
+
+    /**
+     * Returns a Long value of this ACE status.
+     * <p>
+     * It returns {@code null} if there is no begin and end date, which means the ACE is effective. Otherwise, it
+     * returns 0 for PENDING, 1 for EFFECTIVE and 2 for ARCHIVED.
+     *
+     * @since 7.4
+     */
+    public Long getLongStatus() {
+        if (begin == null && end == null) {
+            return null;
+        }
+        return Long.valueOf(getStatus().ordinal());
+    }
+
+    public boolean isEffective() {
+        return getStatus() == Status.EFFECTIVE;
+    }
+
+    public boolean isPending() {
+        return getStatus() == Status.PENDING;
+    }
+
+    public boolean isArchived() {
+        return getStatus() == Status.ARCHIVED;
+    }
+
     public Serializable getContextData(String key) {
         return contextData.get(key);
     }
@@ -260,10 +282,10 @@ public final class ACE implements Serializable, Cloneable {
         if (obj instanceof ACE) {
             ACE ace = (ACE) obj;
             // check Calendars without handling timezone
-            boolean beginEqual = ace.begin == null && begin == null || !(ace.begin == null || begin == null)
-                    && ace.begin.getTimeInMillis() == begin.getTimeInMillis();
-            boolean endEqual = ace.end == null && end == null || !(ace.end == null || end == null)
-                    && ace.end.getTimeInMillis() == end.getTimeInMillis();
+            boolean beginEqual = ace.begin == null && begin == null
+                    || !(ace.begin == null || begin == null) && ace.begin.getTimeInMillis() == begin.getTimeInMillis();
+            boolean endEqual = ace.end == null && end == null
+                    || !(ace.end == null || end == null) && ace.end.getTimeInMillis() == end.getTimeInMillis();
             boolean creatorEqual = ace.creator != null ? ace.creator.equals(creator) : creator == null;
             return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission)
                     && creatorEqual && beginEqual && endEqual;
@@ -287,7 +309,7 @@ public final class ACE implements Serializable, Cloneable {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName());
         sb.append('(');
-        sb.append("username=" + username);
+        sb.append("username=").append(username);
         sb.append(", ");
         sb.append("permission=" + permission);
         sb.append(", ");
@@ -305,6 +327,61 @@ public final class ACE implements Serializable, Cloneable {
     @Override
     public Object clone() {
         return new ACE(username, permission, isGranted, creator, begin, end, contextData);
+    }
+
+    public static ACEBuilder builder(String username, String permission) {
+        return new ACEBuilder(username, permission);
+    }
+
+    public static class ACEBuilder {
+
+        private String username;
+
+        private String permission;
+
+        private boolean isGranted = true;
+
+        private Calendar begin;
+
+        private Calendar end;
+
+        private String creator;
+
+        private Map<String, Serializable> contextData;
+
+        public ACEBuilder(String username, String permission) {
+            this.username = username;
+            this.permission = permission;
+        }
+
+        public ACEBuilder isGranted(boolean isGranted) {
+            this.isGranted = isGranted;
+            return this;
+        }
+
+        public ACEBuilder begin(Calendar begin) {
+            this.begin = begin;
+            return this;
+        }
+
+        public ACEBuilder end(Calendar end) {
+            this.end = end;
+            return this;
+        }
+
+        public ACEBuilder creator(String creator) {
+            this.creator = creator;
+            return this;
+        }
+
+        public ACEBuilder contextData(Map<String, Serializable> contextData) {
+            this.contextData = contextData;
+            return this;
+        }
+
+        public ACE build() {
+            return new ACE(username, permission, isGranted, creator, begin, end, contextData);
+        }
     }
 
 }

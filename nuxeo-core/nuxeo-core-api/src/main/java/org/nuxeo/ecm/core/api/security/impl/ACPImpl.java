@@ -160,11 +160,14 @@ public class ACPImpl implements ACP {
     public Access getAccess(String[] principals, String[] permissions) {
         for (ACL acl : acls) {
             for (ACE ace : acl) {
-                // fully check ACE in turn against username/permissions
-                // and usergroups/permgroups
-                Access access = getAccess(ace, principals, permissions);
-                if (access != Access.UNKNOWN) {
-                    return access;
+                // only check for effective ACEs
+                if (ace.getStatus() == ACE.EFFECTIVE_STATUS) {
+                    // fully check ACE in turn against username/permissions
+                    // and usergroups/permgroups
+                    Access access = getAccess(ace, principals, permissions);
+                    if (access != Access.UNKNOWN) {
+                        return access;
+                    }
                 }
             }
         }

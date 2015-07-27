@@ -24,6 +24,7 @@ import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -439,7 +440,8 @@ public class TestSQLRepositoryQuery {
         dml = session.query("SELECT * FROM File WHERE dc:contributors <> 'blah' AND ecm:isProxy = 0");
         assertEquals(3, dml.size());
 
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
+        dml = session.query(
+                "SELECT * FROM Document WHERE ecm:mixinType = 'Versionable' AND ecm:mixinType <> 'Downloadable'");
         assertEquals(1, dml.size()); // 1 note
     }
 
@@ -611,7 +613,8 @@ public class TestSQLRepositoryQuery {
         file3 = session.createDocument(file3);
         session.save();
 
-        String sql = String.format("SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY ecm:pos", ofolder.getId());
+        String sql = String.format("SELECT * FROM Document WHERE ecm:parentId = '%s' ORDER BY ecm:pos",
+                ofolder.getId());
         String sqldesc = sql + " DESC";
 
         dml = session.query(sql);
@@ -926,14 +929,14 @@ public class TestSQLRepositoryQuery {
                 session.getDocument(new PathRef("/testfolder1")).getId()));
         assertEquals(4, dml.size());
 
-        dml = session.query(String.format(
-                "SELECT * FROM document WHERE dc:title='testfile1_Title' AND ecm:ancestorId = '%s'",
-                session.getRootDocument().getId()));
+        dml = session.query(
+                String.format("SELECT * FROM document WHERE dc:title='testfile1_Title' AND ecm:ancestorId = '%s'",
+                        session.getRootDocument().getId()));
         assertEquals(1, dml.size());
 
-        dml = session.query(String.format(
-                "SELECT * FROM document WHERE dc:title LIKE 'testfile%%' AND ecm:ancestorId = '%s'",
-                session.getRootDocument().getId()));
+        dml = session.query(
+                String.format("SELECT * FROM document WHERE dc:title LIKE 'testfile%%' AND ecm:ancestorId = '%s'",
+                        session.getRootDocument().getId()));
         assertEquals(4, dml.size());
     }
 
@@ -1062,13 +1065,16 @@ public class TestSQLRepositoryQuery {
             // Documents without creation date don't match any DATE query
             // 2 documents with creation date
 
-            dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
+            dml = session.query(
+                    "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-01-01' AND DATE '2008-01-01'");
             assertEquals(0, dml.size()); // 2 Documents match the BETWEEN query
 
-            dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
+            dml = session.query(
+                    "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2007-03-15' AND DATE '2008-01-01'");
             assertEquals(1, dml.size()); // 1 Document matches the BETWEEN query
 
-            dml = session.query("SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
+            dml = session.query(
+                    "SELECT * FROM Document WHERE dc:created NOT BETWEEN DATE '2009-03-15' AND DATE '2009-01-01'");
             assertEquals(2, dml.size()); // 0 Document matches the BETWEEN query
         }
     }
@@ -1361,9 +1367,13 @@ public class TestSQLRepositoryQuery {
         acl.add(new ACE("Administrator", "Everything", true));
         acl.add(new ACE("bob", "Browse", true));
         acl.add(new ACE("steve", "Read", true));
-        Calendar begin = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        Calendar end = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
-        acl.add(new ACE("leela", "Write", true, "Administrator", begin, end));
+        Date now = new Date();
+        Calendar begin = new GregorianCalendar();
+        begin.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
+        Calendar end = new GregorianCalendar();
+        end.setTimeInMillis(now.toInstant().plus(5, ChronoUnit.DAYS).toEpochMilli());
+        acl.add(ACE.builder("leela", "Write").creator("Administrator").begin(begin).end(end).build());
+
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
@@ -1401,16 +1411,20 @@ public class TestSQLRepositoryQuery {
         checkQueryACL(1, queryBase + "ecm:acl/*/creator = 'Administrator'");
 
         // document for leela with a begin date after 2007-01-01
-        checkQueryACL(
-                1,
-                queryBase
-                        + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end <= DATE '2020-01-01'");
+        checkQueryACL(1, queryBase
+                + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end <= DATE '2020-01-01'");
 
         // document for leela with an end date after 2020-01-01, no match
         checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/end >= DATE '2020-01-01'");
 
         // document with valid begin date but not end date, no match
         checkQueryACL(0, queryBase + "ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+
+        // document with effective acl
+        checkQueryACL(1, queryBase + "ecm:acl/*1/status = 1");
+
+        // document with pending or archived acl, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/status <> 1");
 
         // block
         checkQueryACL(1, queryBase
@@ -1439,9 +1453,12 @@ public class TestSQLRepositoryQuery {
         acl.add(new ACE("Administrator", "Everything", true));
         acl.add(new ACE("bob", "Browse", true));
         acl.add(new ACE("steve", "Read", true));
-        Calendar begin = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        Calendar end = new GregorianCalendar(2015, Calendar.AUGUST, 14, 12, 34, 56);
-        acl.add(new ACE("leela", "Write", true, "Administrator", begin, end));
+        Date now = new Date();
+        Calendar begin = new GregorianCalendar();
+        begin.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
+        Calendar end = new GregorianCalendar();
+        end.setTimeInMillis(now.toInstant().plus(5, ChronoUnit.DAYS).toEpochMilli());
+        acl.add(ACE.builder("leela", "Write").creator("Administrator").begin(begin).end(end).build());
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
@@ -1451,7 +1468,8 @@ public class TestSQLRepositoryQuery {
         // simple query
         res = session.queryAndFetch(
                 "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/principal, ecm:acl/*1/permission FROM Document WHERE ecm:isProxy = 0 AND "
-                        + "ecm:acl/*1/permission in ('Read', 'Browse') AND ecm:acl/*1/grant = 1", "NXQL");
+                        + "ecm:acl/*1/permission in ('Read', 'Browse') AND ecm:acl/*1/grant = 1",
+                "NXQL");
         assertEquals(2, res.size());
         Set<String> set = new HashSet<>();
         for (Map<String, Serializable> map : res) {
@@ -1465,7 +1483,8 @@ public class TestSQLRepositoryQuery {
         res = session.queryAndFetch(
                 "SELECT ecm:uuid, ecm:acl/*1/name, ecm:acl/*1/pos, ecm:acl/*1/principal, ecm:acl/*1/permission, ecm:acl/*1/grant, "
                         + "ecm:acl/*1/creator, ecm:acl/*1/begin, ecm:acl/*1/end FROM Document WHERE ecm:isProxy = 0 AND "
-                        + "ecm:acl/*/principal = 'bob'", "NXQL");
+                        + "ecm:acl/*/principal = 'bob'",
+                "NXQL");
         assertEquals(5, res.size());
         set = new HashSet<>();
         for (Map<String, Serializable> map : res) {
@@ -1480,10 +1499,13 @@ public class TestSQLRepositoryQuery {
         }
         res.close();
         assertEquals(
-                new HashSet<>(Arrays.asList("local:0:Administrator:Everything:true:null:null:null",
-                        "local:1:bob:Browse:true:null:null:null", "local:2:steve:Read:true:null:null:null",
-                        "local:3:leela:Write:true:Administrator:1436870096000:1439548496000",
-                        "local:4:Everyone:Everything:false:null:null:null")), set);
+                new HashSet<>(
+                        Arrays.asList("local:0:Administrator:Everything:true:null:null:null",
+                                "local:1:bob:Browse:true:null:null:null", "local:2:steve:Read:true:null:null:null",
+                                "local:3:leela:Write:true:Administrator:" + begin.getTimeInMillis() + ":"
+                                        + end.getTimeInMillis(),
+                                "local:4:Everyone:Everything:false:null:null:null")),
+                set);
     }
 
     @Test
@@ -1541,7 +1563,8 @@ public class TestSQLRepositoryQuery {
         // "deep" isProxy
         dml = session.query("SELECT * FROM Document WHERE (dc:title = 'blah' OR ecm:isProxy = 1)");
         assertIdSet(dml, proxyId);
-        dml = session.query("SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
+        dml = session.query(
+                "SELECT * FROM Document WHERE ecm:isProxy = 0 AND (dc:title = 'testfile1_Title' OR ecm:isProxy = 1)");
         assertEquals(1, dml.size());
 
         // proxy query with order by
@@ -1556,8 +1579,8 @@ public class TestSQLRepositoryQuery {
         createDocs();
         DocumentModelList whole = session.query("SELECT * FROM Document ORDER BY dc:modified, ecm:uuid");
         assertTrue(whole.size() >= 2);
-        DocumentModelList firstPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1,
-                0, false);
+        DocumentModelList firstPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1, 0,
+                false);
         assertEquals(1, firstPage.size());
         assertEquals(whole.get(0).getId(), firstPage.get(0).getId());
         DocumentModelList secondPage = session.query("SELECT * from Document ORDER BY dc:modified, ecm:uuid", null, 1,
@@ -1836,8 +1859,8 @@ public class TestSQLRepositoryQuery {
          */
         dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + doc.getId() + "'");
         assertIdSet(dml, version.getId(), proxy.getId());
-        dml = session.query("SELECT * FROM Document WHERE ecm:versionVersionableId = '" + doc.getId()
-                + "' AND ecm:isProxy = 0");
+        dml = session.query(
+                "SELECT * FROM Document WHERE ecm:versionVersionableId = '" + doc.getId() + "' AND ecm:isProxy = 0");
         assertIdSet(dml, version.getId());
 
         /*
@@ -2127,8 +2150,9 @@ public class TestSQLRepositoryQuery {
     @Test
     public void testEqualsTimeWithMilliseconds() throws Exception {
         Date currentDate = setupDocTest();
-        String testQuery = String.format("SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s"
-                + " AND ecm:isProxy = 0", formatTimestamp(currentDate));
+        String testQuery = String.format(
+                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified = %s" + " AND ecm:isProxy = 0",
+                formatTimestamp(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
@@ -2138,8 +2162,9 @@ public class TestSQLRepositoryQuery {
         Date currentDate = setupDocTest();
         // add a second to be sure that the document is found
         currentDate = addSecond(currentDate);
-        String testQuery = String.format("SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < %s"
-                + " AND ecm:isProxy = 0", formatTimestamp(currentDate));
+        String testQuery = String.format(
+                "SELECT * FROM Folder WHERE dc:title = 'test' AND dc:modified < %s" + " AND ecm:isProxy = 0",
+                formatTimestamp(currentDate));
         DocumentModelList docs = session.query(testQuery);
         assertEquals(1, docs.size());
     }
