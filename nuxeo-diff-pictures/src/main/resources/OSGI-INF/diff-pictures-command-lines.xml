@@ -21,8 +21,7 @@
       the default background (original image with alpha) -->
     <command name="diff-pictures-default-with-params" enabled="true">
       <commandLine>compare</commandLine>
-      <parameterString>#{file1} #{file2} -fuzz #{fuzz} -highlight-color #{highlightColor} -lowlight-color
-        #{lowlightColor} #{targetFilePath}
+      <parameterString>#{file1} #{file2} -fuzz #{fuzz} -highlight-color #{highlightColor} -lowlight-color #{lowlightColor} #{targetFilePath}
       </parameterString>
       <installationDirective>You must install ImageMagick.</installationDirective>
     </command>
