@@ -108,10 +108,10 @@ public class JsonESDocumentWriter extends JsonDocumentWriter {
         jg.writeArrayFieldStart("ecm:acl");
         outerloop: for (ACL acl : acp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
-                if (ace.isGranted() && browsePermissions.contains(ace.getPermission())) {
+                if (ace.isGranted() && ace.isEffective() && browsePermissions.contains(ace.getPermission())) {
                     jg.writeString(ace.getUsername());
                 }
-                if (ace.isDenied()) {
+                if (ace.isDenied() && ace.isEffective()) {
                     if (!EVERYONE.equals(ace.getUsername())) {
                         jg.writeString(UNSUPPORTED_ACL);
                     }

@@ -19,6 +19,10 @@ package org.nuxeo.elasticsearch.test;
 import static org.junit.Assume.assumeTrue;
 
 import java.io.Serializable;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -137,8 +141,14 @@ public class TestTreeIndexing {
 
         startTransaction();
         // check indexing at ES level
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
     }
 
@@ -147,9 +157,13 @@ public class TestTreeIndexing {
         buildAndIndexTree();
 
         // check sub tree search
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2")).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"))
+                                           .execute()
+                                           .actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
     }
 
@@ -167,8 +181,14 @@ public class TestTreeIndexing {
         assertNumberOfCommandProcessed(1);
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
         Assert.assertEquals(2, searchResponse.getHits().getTotalHits());
     }
 
@@ -194,23 +214,42 @@ public class TestTreeIndexing {
         }
 
         startTransaction();
-        SearchResponse searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setFrom(0).setSize(60).execute().actionGet();
+        SearchResponse searchResponse = esa.getClient()
+                                           .prepareSearch(IDX_NAME)
+                                           .setTypes(TYPE_NAME)
+                                           .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                                           .setFrom(0)
+                                           .setSize(60)
+                                           .execute()
+                                           .actionGet();
         Assert.assertEquals(10, searchResponse.getHits().getTotalHits());
 
         // check sub tree search
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2")).execute().actionGet();
+        searchResponse = esa.getClient()
+                            .prepareSearch(IDX_NAME)
+                            .setTypes(TYPE_NAME)
+                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                            .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folder2"))
+                            .execute()
+                            .actionGet();
         Assert.assertEquals(0, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(
-                QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folderA")).execute().actionGet();
+        searchResponse = esa.getClient()
+                            .prepareSearch(IDX_NAME)
+                            .setTypes(TYPE_NAME)
+                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                            .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1/folderA"))
+                            .execute()
+                            .actionGet();
         Assert.assertEquals(8, searchResponse.getHits().getTotalHits());
 
-        searchResponse = esa.getClient().prepareSearch(IDX_NAME).setTypes(TYPE_NAME).setSearchType(
-                SearchType.DFS_QUERY_THEN_FETCH).setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1")).execute().actionGet();
+        searchResponse = esa.getClient()
+                            .prepareSearch(IDX_NAME)
+                            .setTypes(TYPE_NAME)
+                            .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+                            .setQuery(QueryBuilders.prefixQuery("ecm:path", "/folder0/folder1"))
+                            .execute()
+                            .actionGet();
         Assert.assertEquals(9, searchResponse.getHits().getTotalHits());
 
     }
@@ -337,6 +376,51 @@ public class TestTreeIndexing {
     }
 
     @Test
+    public void shouldStoreOnlyEffectiveACEs() throws Exception {
+        buildAndIndexTree();
+
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document"));
+        Assert.assertEquals(10, docs.totalSize());
+
+        CoreSession restrictedSession = getRestrictedSession("toto");
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
+        Assert.assertEquals(0, docs.totalSize());
+
+        DocumentRef ref = new PathRef("/folder0");
+        ACP acp = new ACPImpl();
+        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+        acl.add(ACE.builder("toto", SecurityConstants.READ).build());
+        acp.addACL(acl);
+        session.setACP(ref, acp, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+
+        startTransaction();
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
+        Assert.assertEquals(10, docs.totalSize());
+
+        acp = new ACPImpl();
+        acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+        // make the ACE archived
+        Date now = new Date();
+        Calendar begin = new GregorianCalendar();
+        begin.setTimeInMillis(now.toInstant().minus(10, ChronoUnit.DAYS).toEpochMilli());
+        Calendar end = new GregorianCalendar();
+        end.setTimeInMillis(now.toInstant().minus(2, ChronoUnit.DAYS).toEpochMilli());
+        acl.add(ACE.builder("toto", SecurityConstants.READ).begin(begin).end(end).build());
+        acp.addACL(acl);
+        session.setACP(ref, acp, true);
+
+        TransactionHelper.commitOrRollbackTransaction();
+        waitForCompletion();
+
+        startTransaction();
+        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
+        Assert.assertEquals(0, docs.totalSize());
+    }
+
+    @Test
     public void shouldReindexSubTreeInTrash() throws Exception {
         buildAndIndexTree();
         startTransaction();
@@ -350,7 +434,8 @@ public class TestTreeIndexing {
         assertNumberOfCommandProcessed(8);
 
         startTransaction();
-        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql("select * from Document where ecm:currentLifeCycleState != 'deleted'"));
+        DocumentModelList docs = ess.query(new NxQueryBuilder(session).nxql(
+                "select * from Document where ecm:currentLifeCycleState != 'deleted'"));
         // for (DocumentModel doc : docs) {
         // System.out.println(doc.getPathAsString());
         // }

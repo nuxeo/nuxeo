@@ -266,6 +266,10 @@ public final class ACE implements Serializable, Cloneable {
         return getStatus() == Status.ARCHIVED;
     }
 
+    public boolean isEffective() {
+        return status == EFFECTIVE_STATUS;
+    }
+
     public Serializable getContextData(String key) {
         return contextData.get(key);
     }

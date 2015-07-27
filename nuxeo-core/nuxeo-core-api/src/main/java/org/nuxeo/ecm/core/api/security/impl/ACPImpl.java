@@ -161,7 +161,7 @@ public class ACPImpl implements ACP {
         for (ACL acl : acls) {
             for (ACE ace : acl) {
                 // only check for effective ACEs
-                if (ace.getStatus() == ACE.EFFECTIVE_STATUS) {
+                if (ace.isEffective()) {
                     // fully check ACE in turn against username/permissions
                     // and usergroups/permgroups
                     Access access = getAccess(ace, principals, permissions);
