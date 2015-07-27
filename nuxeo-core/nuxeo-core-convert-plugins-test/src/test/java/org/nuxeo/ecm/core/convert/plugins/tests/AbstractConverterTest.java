@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-20015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,9 +49,7 @@ public abstract class AbstractConverterTest {
     }
 
     protected String doTestTextConverter(String srcMT, String converter, String fileName) throws Exception {
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
-
         String converterName = cs.getConverterName(srcMT, "text/plain");
         assertEquals(converter, converterName);
 
@@ -62,7 +60,7 @@ public abstract class AbstractConverterTest {
             hg = getBlobFromPath("test-docs/" + fileName);
         }
 
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
         BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
@@ -72,10 +70,7 @@ public abstract class AbstractConverterTest {
     }
 
     protected String doTestAny2TextConverter(String srcMT, String converterName, String fileName) throws Exception {
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
-
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
         BlobHolder hg;
         if (isWindows()) {
@@ -85,6 +80,7 @@ public abstract class AbstractConverterTest {
         }
         hg.getBlob().setMimeType(srcMT);
 
+        Map<String, Serializable> parameters = new HashMap<>();
         BlobHolder result = cs.convert(converterName, hg, parameters);
         assertNotNull(result);
 
@@ -94,7 +90,6 @@ public abstract class AbstractConverterTest {
     }
 
     protected String doTestArabicTextConverter(String srcMT, String converter, String fileName) throws Exception {
-
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         assertTrue(cs.isConverterAvailable(converter).isAvailable());
 

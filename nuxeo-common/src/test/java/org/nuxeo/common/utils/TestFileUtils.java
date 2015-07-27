@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,11 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.common.utils;
@@ -28,6 +27,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class TestFileUtils {
@@ -87,10 +87,8 @@ public class TestFileUtils {
     }
 
     @Test
-    public void testGetRessourceFromUrl() throws IOException {
-
+    public void testGetRessourceFromUrl() {
         // testing resources contained in paths with space
-
         String testFilename = FileUtils.getResourcePathFromContext("test-xmap.xml");
         assertFalse(testFilename.equals(""));
 

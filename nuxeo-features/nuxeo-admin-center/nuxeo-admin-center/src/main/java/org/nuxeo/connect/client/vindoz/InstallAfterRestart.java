@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.connect.update.Package;
@@ -43,9 +44,9 @@ public class InstallAfterRestart {
 
     public static final String FAKE_VIDOZ = "org.nuxeo.fake.vindoz";
 
-    protected static final List<String> pkgNameOrIds = new ArrayList<String>();
+    protected static final List<String> pkgNameOrIds = new ArrayList<>();
 
-    protected static final List<String> uninstallpkgNameOrIds = new ArrayList<String>();
+    protected static final List<String> uninstallpkgNameOrIds = new ArrayList<>();
 
     protected static final Log log = LogFactory.getLog(InstallAfterRestart.class);
 
@@ -99,7 +100,7 @@ public class InstallAfterRestart {
     protected static void savePkgList() {
         String path = Framework.getProperty(Environment.NUXEO_DATA_DIR);
         File installFile = new File(path, FILE_NAME);
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         for (String pkgNameOrId : pkgNameOrIds) {
             String cmd = pkgNameOrId;
             if (uninstallpkgNameOrIds.contains(pkgNameOrId)) {

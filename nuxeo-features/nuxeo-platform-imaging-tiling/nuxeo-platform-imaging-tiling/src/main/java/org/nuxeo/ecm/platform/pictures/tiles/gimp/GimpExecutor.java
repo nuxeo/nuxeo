@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 package org.nuxeo.ecm.platform.pictures.tiles.gimp;
@@ -67,7 +65,7 @@ public class GimpExecutor {
             throw new RuntimeException(e);
         }
 
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
 
         if (exitValue == 0) {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
@@ -93,7 +91,7 @@ public class GimpExecutor {
         Process p1 = Runtime.getRuntime().exec(cmd);
 
         boolean execTerminated = false;
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
 
         while (!execTerminated) {
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p1.getInputStream()));
@@ -126,7 +124,6 @@ public class GimpExecutor {
     }
 
     public static Map<String, String> exec(String procName, List<Object> params) throws IOException {
-
         StringBuffer procStringBuf = new StringBuffer();
 
         procStringBuf.append("'(");

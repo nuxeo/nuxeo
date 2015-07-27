@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -70,7 +70,7 @@ public abstract class AbstractExecutor implements Executor {
      * @since 5.5
      */
     public static String[] getParametersArray(CommandLineDescriptor cmdDesc, CmdParameters params) {
-        List<String> res = new ArrayList<String>();
+        List<String> res = new ArrayList<>();
         String[] paramsArray = cmdDesc.getParametersString().split(" ");
         Map<String, CmdParameters.CmdParameter> paramsValues = params.getCmdParameters();
         for (String paramString : paramsArray) {
@@ -84,13 +84,12 @@ public abstract class AbstractExecutor implements Executor {
         for (String pname : paramsValues.keySet()) {
             String param = "#{" + pname + "}";
             if (paramString.contains(param)) {
-                CmdParameters.CmdParameter cmdParameter = paramsValues.get
-                        (pname);
+                CmdParameters.CmdParameter cmdParameter = paramsValues.get(pname);
                 String value = cmdParameter.getValue();
                 commandLineExecutorService.checkParameter(value);
-                if(cmdParameter.isQuote()) {
+                if (cmdParameter.isQuote()) {
                     paramString = paramString.replace("#{" + pname + "}", String.format("\"%s\"", value));
-                }else{
+                } else {
                     paramString = paramString.replace("#{" + pname + "}", String.format("%s", value));
                 }
             }

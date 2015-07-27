@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -56,22 +56,22 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     public static final String DEFAULT_EXECUTOR = "ShellExecutor";
 
-    protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<String, CommandLineDescriptor>();
+    protected static Map<String, CommandLineDescriptor> commandDescriptors = new HashMap<>();
 
     protected static EnvironmentDescriptor env = new EnvironmentDescriptor();
 
-    protected static Map<String, CommandTester> testers = new HashMap<String, CommandTester>();
+    protected static Map<String, CommandTester> testers = new HashMap<>();
 
-    protected static Map<String, Executor> executors = new HashMap<String, Executor>();
+    protected static Map<String, Executor> executors = new HashMap<>();
 
     private static final Log log = LogFactory.getLog(CommandLineExecutorComponent.class);
 
     @Override
     public void activate(ComponentContext context) {
-        commandDescriptors = new HashMap<String, CommandLineDescriptor>();
+        commandDescriptors = new HashMap<>();
         env = new EnvironmentDescriptor();
-        testers = new HashMap<String, CommandTester>();
-        executors = new HashMap<String, Executor>();
+        testers = new HashMap<>();
+        executors = new HashMap<>();
         executors.put(DEFAULT_EXECUTOR, new ShellExecutor());
     }
 
@@ -171,14 +171,14 @@ public class CommandLineExecutorComponent extends DefaultComponent implements Co
 
     @Override
     public List<String> getRegistredCommands() {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
         cmds.addAll(commandDescriptors.keySet());
         return cmds;
     }
 
     @Override
     public List<String> getAvailableCommands() {
-        List<String> cmds = new ArrayList<String>();
+        List<String> cmds = new ArrayList<>();
 
         for (String cmdName : commandDescriptors.keySet()) {
             CommandLineDescriptor cmd = commandDescriptors.get(cmdName);

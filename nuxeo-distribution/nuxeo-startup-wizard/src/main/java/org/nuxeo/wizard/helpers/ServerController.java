@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.SimpleLog;
+
 import org.nuxeo.launcher.config.ConfigurationGenerator;
 import org.nuxeo.log4j.ThreadedStreamGobbler;
 import org.nuxeo.wizard.context.Context;

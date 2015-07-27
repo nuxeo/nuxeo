@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -243,8 +243,6 @@ public abstract class NuxeoLauncher {
      */
     private static final String START_MAX_WAIT_DEFAULT = "300";
 
-    private static final String START_MAX_WAIT_JBOSS_DEFAULT = "900";
-
     /**
      * Default maximum time to wait for effective stop (in seconds)
      */
@@ -258,8 +256,6 @@ public abstract class NuxeoLauncher {
     private static final int STOP_SECONDS_BEFORE_NEXT_TRY = 2;
 
     private static final long STREAM_MAX_WAIT = 3000;
-
-    private static final String PACK_JBOSS_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackZip";
 
     private static final String PACK_TOMCAT_CLASS = "org.nuxeo.runtime.deployment.preprocessor.PackWar";
 
@@ -727,8 +723,8 @@ public abstract class NuxeoLauncher {
 
     protected Collection<? extends String> getNuxeoProperties() {
         ArrayList<String> nuxeoProperties = new ArrayList<>();
-        nuxeoProperties.add(String.format("-D%s=%s", Environment.NUXEO_HOME,
-                configurationGenerator.getNuxeoHome().getPath()));
+        nuxeoProperties.add(String.format("-D%s=%s", Environment.NUXEO_HOME, configurationGenerator.getNuxeoHome()
+                                                                                                   .getPath()));
         nuxeoProperties.add(String.format("-D%s=%s", ConfigurationGenerator.NUXEO_CONF,
                 configurationGenerator.getNuxeoConf().getPath()));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
@@ -895,8 +891,6 @@ public abstract class NuxeoLauncher {
     /**
      * @since 5.5
      * @param launcher
-     * @param launcherGUI
-     * @param command
      * @throws PackageException
      * @throws IOException
      */
@@ -1261,7 +1255,6 @@ public abstract class NuxeoLauncher {
     /**
      * @since 5.5
      * @return Nuxeo startup summary
-     * @throws SocketTimeoutException if Nuxeo server is not responding
      */
     public String getStartupSummary() {
         try {
@@ -1397,7 +1390,6 @@ public abstract class NuxeoLauncher {
     /**
      * Stop stream gobblers contained in the given ArrayList
      *
-     * @throws InterruptedException
      * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
@@ -1468,8 +1460,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Stops the server. Will try to call specific class for a clean stop, retry {@link #STOP_NB_TRY}, waiting
-     * {@link #STOP_SECONDS_BEFORE_NEXT_TRY} between each try, then kill the process if still running.
+     * Stops the server. Will try to call specific class for a clean stop, retry, waiting between each try, then kill
+     * the process if still running.
      */
     public void stop(boolean logProcessOutput) {
         long startTime = new Date().getTime();
@@ -1594,7 +1586,7 @@ public abstract class NuxeoLauncher {
      * Return process status (running or not) as String, depending on OS capability to manage processes. Set status
      * value following "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
      *
-     * @see #status
+     * @see #getStatus()
      */
     public String status() {
         if (processManager instanceof PureJavaProcessManager) {

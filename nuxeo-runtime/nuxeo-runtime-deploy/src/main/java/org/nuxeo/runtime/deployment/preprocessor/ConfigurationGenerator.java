@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.deployment.preprocessor;
@@ -25,7 +24,7 @@ import org.nuxeo.launcher.config.ConfigurationException;
  * Builder for server configuration and datasource files from templates and properties.
  *
  * @author jcarsique
- * @deprecated Use {@link org.nuxeo.launcher.config.ConfigurationGenerator}
+ * @deprecated Since 5.4.1. Use {@link org.nuxeo.launcher.config.ConfigurationGenerator}
  */
 @Deprecated
 public class ConfigurationGenerator {

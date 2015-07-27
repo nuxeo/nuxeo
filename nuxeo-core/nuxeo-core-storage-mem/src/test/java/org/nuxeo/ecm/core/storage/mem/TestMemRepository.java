@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -124,11 +124,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // simple list as array
         child.setProperty("dublincore", "subjects", new String[] { "a", "b" });
         // simple list as List
-        child.setProperty("dublincore", "contributors", new ArrayList<String>(Arrays.asList("c", "d")));
+        child.setProperty("dublincore", "contributors", new ArrayList<>(Arrays.asList("c", "d")));
         // simple list as non-serializable array
         child.setProperty("testList", "strings", new Object[] { "e", "f" });
         // complex list as List
-        child.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("c", "d")));
+        child.setProperty("testList", "participants", new ArrayList<>(Arrays.asList("c", "d")));
         session.saveDocument(child);
         session.save();
         closeSession();
@@ -182,8 +182,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         closeSession();
         openSession();
         doc = session.getDocument(docRef);
-        Map<String, Object> attachedFile = new HashMap<String, Object>();
-        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        Map<String, Object> attachedFile = new HashMap<>();
+        List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("name", "somename");
         attachedFile.put("vignettes", vignettes);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -196,7 +196,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // test setting and reading a list of maps without a complex type in the
         // maps
-        Map<String, Object> vignette = new HashMap<String, Object>();
+        Map<String, Object> vignette = new HashMap<>();
         vignette.put("width", Long.valueOf(0));
         vignette.put("height", Long.valueOf(0));
         vignette.put("content", Blobs.createBlob("textblob content"));
@@ -207,8 +207,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         doc = session.getDocument(docRef);
-        assertEquals("text/plain",
-                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/content/mime-type").getValue());
+        assertEquals("text/plain", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/content/mime-type")
+                                      .getValue());
         assertEquals(Long.valueOf(0), doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
         assertEquals("vignettelabel", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
@@ -255,13 +255,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
         for (int i = iMin; i < iMax; i++) {
             DocumentModel doc = session.createDocumentModel("/", "doc" + i, "ComplexDoc");
 
-            Map<String, Object> attachedFile = new HashMap<String, Object>();
-            List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+            Map<String, Object> attachedFile = new HashMap<>();
+            List<Map<String, Object>> vignettes = new ArrayList<>();
             attachedFile.put("name", "some name");
             attachedFile.put("vignettes", vignettes);
 
             for (int j = 0; j < 3; j++) {
-                Map<String, Object> vignette = new HashMap<String, Object>();
+                Map<String, Object> vignette = new HashMap<>();
                 vignette.put("width", Long.valueOf(j));
                 vignette.put("height", Long.valueOf(j));
                 vignette.put("content", Blobs.createBlob(String.format("document %d, vignette %d", i, j)));
@@ -284,8 +284,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
                 String propertyPath = String.format("cmpf:attachedFile/vignettes/%d/", j);
                 assertEquals(Long.valueOf(j), doc.getProperty(propertyPath + "height").getValue());
                 assertEquals(Long.valueOf(j), doc.getProperty(propertyPath + "width").getValue());
-                assertEquals(String.format("document %d, vignette %d", i, j),
-                        doc.getProperty(propertyPath + "content").getValue(Blob.class).getString());
+                assertEquals(String.format("document %d, vignette %d", i, j), doc.getProperty(propertyPath + "content")
+                                                                                 .getValue(Blob.class)
+                                                                                 .getString());
             }
 
             closeSession();
@@ -300,12 +301,12 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         doc.setProperty("dublincore", "title", "title1");
-        doc.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("a", "b")));
+        doc.setProperty("testList", "participants", new ArrayList<>(Arrays.asList("a", "b")));
         session.saveDocument(doc);
         session.save();
 
         doc.setProperty("dublincore", "title", "title2");
-        doc.setProperty("testList", "participants", new ArrayList<String>(Arrays.asList("c", "d")));
+        doc.setProperty("testList", "participants", new ArrayList<>(Arrays.asList("c", "d")));
         session.saveDocument(doc);
         session.save();
 
@@ -323,10 +324,10 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testMarkDirtyForList() throws Exception {
         DocumentModel doc = new DocumentModelImpl("/", "doc", "ComplexDoc");
-        Map<String, Object> attachedFile = new HashMap<String, Object>();
-        List<Map<String, Object>> vignettes = new ArrayList<Map<String, Object>>();
+        Map<String, Object> attachedFile = new HashMap<>();
+        List<Map<String, Object>> vignettes = new ArrayList<>();
         attachedFile.put("vignettes", vignettes);
-        Map<String, Object> vignette = new HashMap<String, Object>();
+        Map<String, Object> vignette = new HashMap<>();
         vignette.put("width", 111L);
         vignettes.add(vignette);
         doc.setPropertyValue("cmpf:attachedFile", (Serializable) attachedFile);
@@ -373,7 +374,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     }
 
     protected List<DocumentModel> createChildDocuments(List<DocumentModel> childFolders) {
-        List<DocumentModel> rets = new ArrayList<DocumentModel>();
+        List<DocumentModel> rets = new ArrayList<>();
         Collections.addAll(rets, session.createDocument(childFolders.toArray(new DocumentModel[0])));
 
         assertNotNull(rets);
@@ -416,7 +417,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         childFolder = createChildDocument(childFolder);
 
         session.cancel();
-        // TODO, cancel unimplemented
+        // TODO NXP-14278 cancel unimplemented
         // assertFalse(session.exists(childFolder.getRef()));
     }
 
@@ -466,7 +467,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "folder#" + generateUnique();
         DocumentModel childFolder2 = new DocumentModelImpl(root.getPathAsString(), name2, "Folder");
 
-        List<DocumentModel> childFolders = new ArrayList<DocumentModel>();
+        List<DocumentModel> childFolders = new ArrayList<>();
         childFolders.add(childFolder);
         childFolders.add(childFolder2);
 
@@ -485,7 +486,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childFiles = new ArrayList<DocumentModel>();
+        List<DocumentModel> childFiles = new ArrayList<>();
         childFiles.add(childFile);
         childFiles.add(childFile2);
 
@@ -511,7 +512,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -568,7 +569,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -602,7 +603,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -611,7 +612,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name, returnedChildDocs.get(0).getName());
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
-        // get file childs
+        // get file children
         DocumentModelIterator retrievedChilds = session.getChildrenIterator(root.getRef(), "File", null, null);
 
         assertNotNull(retrievedChilds);
@@ -633,7 +634,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testGetChildrenIterator() {
         int n = 200;
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (int i = 0; i < n; i++) {
             String name = "doc" + i;
             names.add(name);
@@ -657,7 +658,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
     @Test
     public void testGetChildrenIteratorFilter() {
         int n = 200;
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (int i = 0; i < n; i++) {
             String name = "doc" + i;
             names.add(name);
@@ -700,7 +701,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -734,7 +735,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -743,7 +744,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(name, returnedChildDocs.get(0).getName());
         assertEquals(name2, returnedChildDocs.get(1).getName());
 
-        // get folder childs
+        // get folder children
         DocumentModelIterator retrievedChilds = session.getChildrenIterator(root.getRef(), "Folder", null, null);
 
         assertNotNull(retrievedChilds);
@@ -771,7 +772,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "folder#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "Folder");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -792,7 +793,6 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
     /**
      * Test for NXP-741: Search based getChildren.
-     *
      */
     @Test
     public void testGetChildrenInFolderWithSearch() {
@@ -804,7 +804,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         folder = createChildDocument(folder);
 
         // create more children
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             name = "File_" + i;
             DocumentModel childFile = new DocumentModelImpl(folder.getPathAsString(), name, "File");
@@ -830,7 +830,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -851,7 +851,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals("Folder", doc.getType());
     }
 
-    // TODO: fix this test.
+    // TODO NXP-14278: fix this test.
     @Test
     @Ignore
     public void testGetDocumentDocumentRefStringArray() {
@@ -880,7 +880,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertNotNull(returnedDocument.getType());
         assertNotNull(returnedDocument.getSchemas());
 
-        // TODO: should it contain 3 or 1 schemas? not sure about that.
+        // TODO NXP-14278: should it contain 3 or 1 schemas? not sure about that.
         List<String> schemas = Arrays.asList(returnedDocument.getSchemas());
         assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
@@ -921,7 +921,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -961,7 +961,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -998,7 +998,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
                 "OrderedFolder");
 
         // persist
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder1);
         childDocs.add(childFolder2);
         childDocs.add(childFolder3);
@@ -1026,7 +1026,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -1091,7 +1091,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -1115,7 +1115,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -1143,7 +1143,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), fname2, "HiddenFile");
         childFile2.setProperty("dublincore", "title", "def");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile1);
         childDocs.add(childFile2);
@@ -1160,7 +1160,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals(1, list.size());
         DocumentModel docModel = list.get(0);
         List<String> schemas = Arrays.asList(docModel.getSchemas());
-        // TODO: is it 3 or 4? (should "uid" be in the list or not?)
+        // TODO NXP-14278: is it 3 or 4? (should "uid" be in the list or not?)
         // assertEquals(3, schemas.size());
         assertTrue(schemas.contains("common"));
         assertTrue(schemas.contains("file"));
@@ -1217,13 +1217,13 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.removeDocument(returnedChildDocs.get(1).getRef());
     }
 
-    public void TODOtestQueryAfterEdit() throws IOException {
+    public void TODOtestQueryAfterEdit() {
         DocumentModel root = session.getRootDocument();
 
         String fname1 = "file1#" + generateUnique();
         DocumentModel childFile1 = new DocumentModelImpl(root.getPathAsString(), fname1, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFile1);
 
         List<DocumentModel> returnedChildDocs = createChildDocuments(childDocs);
@@ -1271,7 +1271,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -1312,7 +1312,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // NXP-3240
         DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name4, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(folderChildFile);
         childDocs.add(folderChildFile2);
@@ -1365,7 +1365,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // NXP-3240
         DocumentModel childFile2 = new DocumentModelImpl(root.getPathAsString(), name4, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(folderChildFile);
         childDocs.add(folderChildFile2);
@@ -1460,7 +1460,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         session.save();
 
-        // TODO: this should be tested across sessions - when it can be done
+        // TODO NXP-14278: this should be tested across sessions - when it can be done
         assertTrue(session.exists(childFolder.getRef()));
         assertTrue(session.exists(childFile.getRef()));
     }
@@ -1479,7 +1479,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         session.saveDocument(childFolder);
 
-        // TODO: this should be tested across sessions - when it can be done
+        // TODO NXP-14278: this should be tested across sessions - when it can be done
         assertTrue(session.exists(childFolder.getRef()));
 
         assertEquals("f1", childFolder.getProperty("dublincore", "title"));
@@ -1502,7 +1502,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         Property p = childFile.getProperty("/file:/filename");
         // System.out.println(p.getPath());
 
-        // TODO: this should be tested across sessions - when it can be done
+        // TODO NXP-14278: this should be tested across sessions - when it can be done
         assertTrue(session.exists(childFile.getRef()));
 
         DocumentModel retrievedFile = session.getDocument(childFile.getRef());
@@ -1528,7 +1528,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         session.saveDocuments(docs);
 
-        // TODO: this should be tested across sessions - when it can be done
+        // TODO NXP-14278: this should be tested across sessions - when it can be done
         assertTrue(session.exists(childFolder.getRef()));
         assertTrue(session.exists(childFile.getRef()));
     }
@@ -1578,7 +1578,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -1619,7 +1619,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         String name2 = "file#" + generateUnique();
         DocumentModel childFile = new DocumentModelImpl(root.getPathAsString(), name2, "File");
 
-        List<DocumentModel> childDocs = new ArrayList<DocumentModel>();
+        List<DocumentModel> childDocs = new ArrayList<>();
         childDocs.add(childFolder);
         childDocs.add(childFile);
 
@@ -1662,7 +1662,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // facet not yet present
         assertFalse(doc.hasFacet("Aged"));
         assertFalse(doc.hasFacet(FacetNames.HIDDEN_IN_NAVIGATION));
-        Set<String> baseFacets = new HashSet<String>(Arrays.asList(FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
+        Set<String> baseFacets = new HashSet<>(Arrays.asList(FacetNames.DOWNLOADABLE, FacetNames.VERSIONABLE,
                 FacetNames.PUBLISHABLE, FacetNames.COMMENTABLE, FacetNames.HAS_RELATED_TEXT));
         assertEquals(baseFacets, doc.getFacets());
         try {
@@ -2246,7 +2246,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals("file3", newFile3.getName());
     }
 
-    // TODO: fix this test
+    // TODO NXP-14278: fix this test
     @Test
     @Ignore
     public void testScalarList() throws Exception {
@@ -2372,7 +2372,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals("folder #1", fieldValuesBis[2]);
     }
 
-    // TODO: fix and reenable.
+    // TODO NXP-14278: fix and reenable.
     @Test
     @Ignore
     public void testDocumentAdapter() throws Exception {
@@ -2409,7 +2409,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // Different source ids now.
         assertNotNull(childFile.getSourceId());
         assertEquals(sourceId, childFile.getSourceId());
-        // TODO: look at this test.
+        // TODO NXP-14278: look at this test.
         // assertFalse(childFile.getId().equals(childFile.getSourceId()));
     }
 
@@ -2424,7 +2424,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertEquals("test", childFile.getRepositoryName());
     }
 
-    // TODO: fix and reenable, is this a bug?
+    // TODO NXP-14278: fix and reenable, is this a bug?
     @Test
     @Ignore
     public void testRetrieveProxies() {
@@ -2489,7 +2489,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // providing additional contextual data to feed a core event listener
         // with
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("Meteo", "Today is a beautiful day");
         docModel = session.createDocumentModel("File", context);
         assertEquals("File", docModel.getType());
@@ -2504,11 +2504,11 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc.setProperty("dublincore", "description", "d");
         doc.setProperty("dublincore", "subjects", new String[] { "a", "b" });
         doc.setProperty("file", "filename", "f");
-        List<Object> files = new ArrayList<Object>(2);
-        Map<String, Object> f = new HashMap<String, Object>();
+        List<Object> files = new ArrayList<>(2);
+        Map<String, Object> f = new HashMap<>();
         f.put("filename", "f1");
         files.add(f);
-        f = new HashMap<String, Object>();
+        f = new HashMap<>();
         f.put("filename", "f2");
         f.put("file", Blobs.createBlob("myfile", "text/test", "UTF-8"));
         files.add(f);
@@ -2766,10 +2766,10 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc2 = session.createDocument(doc2);
         List<DocumentRef> childrenRefs = session.getChildrenRefs(root.getRef(), null);
         assertEquals(2, childrenRefs.size());
-        Set<String> expected = new HashSet<String>();
+        Set<String> expected = new HashSet<>();
         expected.add(doc.getId());
         expected.add(doc2.getId());
-        Set<String> actual = new HashSet<String>();
+        Set<String> actual = new HashSet<>();
         actual.add(childrenRefs.get(0).toString());
         actual.add(childrenRefs.get(1).toString());
         assertEquals(expected, actual);
@@ -3010,7 +3010,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // queryAndFetch
         nxql = "SELECT ecm:uuid, info:info FROM File WHERE info:info IS NOT NULL";
         IterableQueryResult res = session.queryAndFetch(nxql, "NXQL");
-        Map<Serializable, String> actual = new HashMap<Serializable, String>();
+        Map<Serializable, String> actual = new HashMap<>();
         for (Map<String, Serializable> map : res) {
             Serializable uuid = map.get("ecm:uuid");
             String info = (String) map.get("info:info");
@@ -3106,7 +3106,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         openSession();
         ver = session.getDocument(new IdRef(vid));
         // assertEquals(name, doc.getName()); // no path -> no name...
-        assertEquals("Ver title", (String) ver.getProperty("dublincore", "title"));
+        assertEquals("Ver title", ver.getProperty("dublincore", "title"));
         assertEquals(mod, ver.getProperty("dublincore", "modified"));
         assertEquals("v lcp", ver.getLifeCyclePolicy());
         assertEquals("v lcst", ver.getCurrentLifeCycleState());
@@ -3137,7 +3137,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         openSession();
         proxy = session.getDocument(new IdRef(pid));
         assertEquals(name, proxy.getName());
-        assertEquals("Ver title", (String) proxy.getProperty("dublincore", "title"));
+        assertEquals("Ver title", proxy.getProperty("dublincore", "title"));
         assertEquals(mod, proxy.getProperty("dublincore", "modified"));
         assertEquals("v lcp", proxy.getLifeCyclePolicy());
         assertEquals("v lcst", proxy.getCurrentLifeCycleState());
@@ -3166,7 +3166,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         openSession();
         doc = session.getDocument(new IdRef(id));
         assertEquals(name, doc.getName());
-        assertEquals("Live title", (String) doc.getProperty("dublincore", "title"));
+        assertEquals("Live title", doc.getProperty("dublincore", "title"));
         assertEquals(folderId, doc.getParentRef().toString());
         assertEquals("lcp", doc.getLifeCyclePolicy());
         assertEquals("lcst", doc.getCurrentLifeCycleState());
@@ -3246,7 +3246,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
         doc = session.getDocument(new IdRef(doc.getId()));
         assertNull(doc.getParentRef());
 
-        assertEquals("The title", (String) doc.getProperty("dublincore", "title"));
+        assertEquals("The title", doc.getProperty("dublincore", "title"));
         assertNull(doc.getProperty("dublincore", "description"));
 
         doc2 = session.getDocument(new IdRef(doc2.getId()));

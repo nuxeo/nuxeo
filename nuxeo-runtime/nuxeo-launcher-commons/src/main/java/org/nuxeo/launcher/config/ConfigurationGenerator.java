@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -903,13 +903,12 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with
-     * {@link #getChangedParametersMap(Map, Map)}
+     * Save changed parameters in {@code nuxeo.conf}, filtering parameters with {@link #getChangedParameters(Map)}
      *
      * @param changedParameters Maps of modified parameters
      * @since 5.4.2
-     * @see #saveConfiguration(Map, boolean)
-     * @see #getChangedParametersMap(Map, Map)
+     * @see #saveConfiguration(Map)
+     * @see #getChangedParameters(Map)
      */
     public void saveFilteredConfiguration(Map<String, String> changedParameters) throws ConfigurationException {
         Map<String, String> filteredParameters = getChangedParameters(changedParameters);
@@ -1239,11 +1238,11 @@ public class ConfigurationGenerator {
     /**
      * Will check the configured addresses are reachable and Nuxeo required ports are available on those addresses.
      * Server specific implementations should override this method in order to check for server specific ports.
-     * {@link #bindAddress} must be set before.
+     * {@link #PARAM_BIND_ADDRESS} must be set before.
      *
      * @throws ConfigurationException
      * @since 5.5
-     * @see ServerConfigurator#checkNetwork()
+     * @see ServerConfigurator#verifyInstallation()
      */
     public void checkAddressesAndPorts() throws ConfigurationException {
         InetAddress bindAddress = getBindAddress();
@@ -1363,8 +1362,8 @@ public class ConfigurationGenerator {
      * @return new templates string using given dbTemplate
      * @since 5.4.2
      * @see #extractDatabaseTemplateName()
-     * @see {@link #changeDBTemplate(String)}
-     * @see {@link #changeTemplates(String)}
+     * @see #changeDBTemplate(String)
+     * @see #changeTemplates(String)
      */
     public String rebuildTemplatesStr(String dbTemplate) {
         String currentDBTemplate = userConfig.getProperty(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME);
@@ -1466,7 +1465,7 @@ public class ConfigurationGenerator {
     /**
      * Remove template(s) from the {@link #PARAM_TEMPLATES_NAME} list
      *
-     * @param templates Comma separated templates to remove
+     * @param templatesToRm Comma separated templates to remove
      * @throws ConfigurationException
      * @since 5.5
      */
@@ -1638,7 +1637,6 @@ public class ConfigurationGenerator {
 
     /**
      * @since 5.6
-     * @param props Properties object to be filled
      * @param propsFile Properties file
      * @return new Properties containing trimmed keys and values read in {@code propsFile}
      * @throws IOException

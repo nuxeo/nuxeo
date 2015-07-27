@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,6 +58,7 @@ import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
 import org.nuxeo.common.utils.XidImpl;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -273,7 +274,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             node = session.addChildNode(node, String.valueOf(i), null, "TestDoc", false);
             ids[i] = node.getId();
         }
-        session.save(); // TODO shouldn't be needed
+        session.save(); // TODO NXP-3126 shouldn't be needed
         // delete the second one
         session.removeNode(session.getNodeById(ids[1]));
         session.save();
@@ -685,7 +686,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected void multiThreadedUpdateReadAclsJob(int i) throws Exception {
-        List<Thread> threads = new ArrayList<Thread>(THREADS);
+        List<Thread> threads = new ArrayList<>(THREADS);
         for (int n = 0; n < THREADS; n++) {
             DocCreator creator = new DocCreator(repository, "doc-" + i + "-" + n);
             threads.add(new Thread(creator));
@@ -1291,6 +1292,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             this.repository2 = repository2;
         }
 
+        @SuppressWarnings("null")
         @Override
         public void job() throws Exception {
             Session session1 = null;
@@ -1486,7 +1488,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected List<String> getNames(List<Node> nodes) {
-        List<String> names = new ArrayList<String>(nodes.size());
+        List<String> names = new ArrayList<>(nodes.size());
         for (Node node : nodes) {
             names.add(node.getName());
         }
@@ -1585,10 +1587,10 @@ public class TestSQLBackend extends SQLBackendTestCase {
     public void testMoveMany() throws Exception {
         Session session = repository.getConnection();
         Node root = session.getRootNode();
-        ArrayList<Node> nodes = new ArrayList<Node>();
+        ArrayList<Node> nodes = new ArrayList<>();
         nodes.add(root);
         Random rnd = new Random(123456);
-        List<String[]> graph = new ArrayList<String[]>();
+        List<String[]> graph = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
             // create a node under a random node
             Node parent = nodes.get((int) Math.floor(rnd.nextFloat() * nodes.size()));
@@ -1649,13 +1651,13 @@ public class TestSQLBackend extends SQLBackendTestCase {
         if (p.equals(c)) {
             return true;
         }
-        Set<String> under = new HashSet<String>();
+        Set<String> under = new HashSet<>();
         under.add(p);
         int oldSize = 0;
         // inefficient algorithm but for tests it's ok
         while (under.size() != oldSize) {
             oldSize = under.size();
-            Set<String> add = new HashSet<String>();
+            Set<String> add = new HashSet<>();
             for (String n : under) {
                 for (String[] edge : graph) {
                     if (edge[0].equals(n)) {
@@ -1673,8 +1675,8 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     private static Map<String, Set<String>> buildDescendants(List<String[]> graph, String root) {
-        Map<String, Set<String>> ancestors = new HashMap<String, Set<String>>();
-        Map<String, Set<String>> descendants = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> ancestors = new HashMap<>();
+        Map<String, Set<String>> descendants = new HashMap<>();
         // create all sets, for clearer code later
         for (String[] edge : graph) {
             for (String n : edge) {
@@ -1687,7 +1689,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             }
         }
         // traverse from root
-        LinkedList<String> todo = new LinkedList<String>();
+        LinkedList<String> todo = new LinkedList<>();
         todo.add(root);
         do {
             String p = todo.removeFirst();
@@ -2215,12 +2217,12 @@ public class TestSQLBackend extends SQLBackendTestCase {
         IterableQueryResult it;
         nxql = "SELECT ecm:uuid, info:info FROM Document WHERE info:info IS NOT NULL";
         it = session.queryAndFetch(nxql, "NXQL", QueryFilter.EMPTY);
-        Map<Serializable, String> expected = new HashMap<Serializable, String>();
+        Map<Serializable, String> expected = new HashMap<>();
         if (shadow) {
             expected.put(String.valueOf(doc.getId()), "docinfo");
         }
         expected.put(String.valueOf(proxy.getId()), "proxyinfo");
-        Map<Serializable, String> actual = new HashMap<Serializable, String>();
+        Map<Serializable, String> actual = new HashMap<>();
         for (Map<String, Serializable> map : it) {
             Serializable uuid = map.get("ecm:uuid");
             String info = (String) map.get("info:info");
@@ -2311,7 +2313,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     private static Set<Serializable> idSet(Collection<Node> nodes) {
-        Set<Serializable> set = new HashSet<Serializable>();
+        Set<Serializable> set = new HashSet<>();
         for (Node node : nodes) {
             set.add(node.getId());
         }
@@ -2417,7 +2419,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Model model = ((SessionImpl) session).getModel();
 
         // fragments that are always present
-        Set<String> alwaysFragments = new HashSet<String>();
+        Set<String> alwaysFragments = new HashSet<>();
         if (!model.miscInHierarchy) {
             alwaysFragments.add(Model.MISC_TABLE_NAME);
         }
@@ -2427,7 +2429,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // check computed prefetch info
         HashSet<String> expectedFragments;
-        expectedFragments = new HashSet<String>(Arrays.asList("testschema", "tst:bignotes", "acls", "versions"));
+        expectedFragments = new HashSet<>(Arrays.asList("testschema", "tst:bignotes", "acls", "versions"));
         expectedFragments.addAll(alwaysFragments);
         if (!subjectsIsArray) {
             expectedFragments.add("tst:subjects");
@@ -2437,11 +2439,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         assertEquals(expectedFragments, model.getTypePrefetchedFragments("TestDoc"));
 
-        expectedFragments = new HashSet<String>(Arrays.asList("testschema2", "acls", "versions"));
+        expectedFragments = new HashSet<>(Arrays.asList("testschema2", "acls", "versions"));
         expectedFragments.addAll(alwaysFragments);
         assertEquals(expectedFragments, model.getTypePrefetchedFragments("TestDoc2"));
 
-        expectedFragments = new HashSet<String>(Arrays.asList("acls", "versions"));
+        expectedFragments = new HashSet<>(Arrays.asList("acls", "versions"));
         expectedFragments.addAll(alwaysFragments);
         if (subjectsIsArray) {
             expectedFragments.add("testschema");
@@ -2537,7 +2539,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         session.close();
         session = repository.getConnection();
 
-        List<Serializable> ids = new ArrayList<Serializable>();
+        List<Serializable> ids = new ArrayList<>();
         ids.add(node2.getId());
         ids.add(node1.getId());
         int size = 2000; // > dialect.getMaximumArgsForIn()
@@ -3441,11 +3443,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(oneDoc, res.list);
         it = session.queryAndFetch("SELECT tst:friends/*/lastname" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
-        set = new HashSet<String>();
+        set = new HashSet<>();
         for (Map<String, Serializable> map : it) {
             set.add((String) map.get("tst:friends/*/lastname"));
         }
-        assertEquals(new HashSet<String>(Arrays.asList("Lennon", "Smith")), set);
+        assertEquals(new HashSet<>(Arrays.asList("Lennon", "Smith")), set);
         it.close();
 
         // SELECT p.firstname, p.lastname
@@ -3459,14 +3461,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it = session.queryAndFetch("SELECT tst:friends/*1/firstname, tst:friends/*1/lastname" + FROM_WHERE + clause,
                 "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
-        Set<String> fn = new HashSet<String>();
-        Set<String> ln = new HashSet<String>();
+        Set<String> fn = new HashSet<>();
+        Set<String> ln = new HashSet<>();
         for (Map<String, Serializable> map : it) {
             fn.add((String) map.get("tst:friends/*1/firstname"));
             ln.add((String) map.get("tst:friends/*1/lastname"));
         }
         assertEquals(Collections.singleton("John"), fn);
-        assertEquals(new HashSet<String>(Arrays.asList("Lennon", "Smith")), ln);
+        assertEquals(new HashSet<>(Arrays.asList("Lennon", "Smith")), ln);
         it.close();
 
     }
@@ -3526,11 +3528,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(oneDoc, res.list);
         it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(2, it.size());
-        set = new HashSet<String>();
+        set = new HashSet<>();
         for (Map<String, Serializable> map : it) {
             set.add((String) map.get("tst:subjects/*1"));
         }
-        assertEquals(new HashSet<String>(Arrays.asList("foo", "moo")), set);
+        assertEquals(new HashSet<>(Arrays.asList("foo", "moo")), set);
         it.close();
 
         clause = "tst:subjects/* LIKE '%oo'";
@@ -3539,22 +3541,22 @@ public class TestSQLBackend extends SQLBackendTestCase {
         it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         // two uncorrelated stars, resulting in a cross join
         assertEquals(6, it.size());
-        set = new HashSet<String>();
+        set = new HashSet<>();
         for (Map<String, Serializable> map : it) {
             set.add((String) map.get("tst:subjects/*"));
         }
-        assertEquals(new HashSet<String>(Arrays.asList("foo", "moo", "bar")), set);
+        assertEquals(new HashSet<>(Arrays.asList("foo", "moo", "bar")), set);
         it.close();
 
         // WHAT
         clause = "tst:title = 'hello world'";
         it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(3, it.size());
-        set = new HashSet<String>();
+        set = new HashSet<>();
         for (Map<String, Serializable> map : it) {
             set.add((String) map.get("tst:subjects/*"));
         }
-        assertEquals(new HashSet<String>(Arrays.asList("foo", "bar", "moo")), set);
+        assertEquals(new HashSet<>(Arrays.asList("foo", "bar", "moo")), set);
         it.close();
     }
 
@@ -3631,7 +3633,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
         it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL", QueryFilter.EMPTY);
         assertEquals(3, it.size());
-        list = new LinkedList<String>();
+        list = new LinkedList<>();
         for (Map<String, Serializable> map : it) {
             list.add((String) map.get("tst:subjects/*1"));
         }
@@ -3923,7 +3925,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         Session session = repository.getConnection();
         PartialList<Serializable> res;
         Node root = session.getRootNode();
-        List<Serializable> ids = new ArrayList<Serializable>();
+        List<Serializable> ids = new ArrayList<>();
         Node node = session.addChildNode(root, "r1", null, "TestDoc", false);
         for (int i = 0; i < 4; i++) {
             node = session.addChildNode(node, "node" + i, null, "TestDoc", false);

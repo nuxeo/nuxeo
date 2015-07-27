@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,7 +26,7 @@ public class TestSidGenerator {
 
     @Test
     public void testGenerator() {
-        Set<Long> ids = new HashSet<Long>();
+        Set<Long> ids = new HashSet<>();
         for (int i = 0; i < 1000; i++) {
             long id = SIDGenerator.next();
             if (!ids.add(id)) {
@@ -43,7 +43,7 @@ public class TestSidGenerator {
             return;
         }
 
-        Set<Long> ids = new HashSet<Long>();
+        Set<Long> ids = new HashSet<>();
         for (int i = 0; i < 1000; i++) {
             long id = SIDGenerator.next();
             if (!ids.add(id)) {
@@ -55,7 +55,8 @@ public class TestSidGenerator {
         Field field = SIDGenerator.class.getDeclaredField("count");
         field.setAccessible(true);
         field.set(null, Integer.MAX_VALUE - 1000);
-        Thread.sleep(1);;
+        Thread.sleep(1);
+        ;
 
         for (int i = 0; i < 3000; i++) {
             long id = SIDGenerator.next();

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.audit.job;
@@ -40,7 +39,6 @@ public class TestJobHistoryHelper {
 
     @Test
     public void testLogger() throws Exception {
-
         StringBuffer query = new StringBuffer("from LogEntry log where ");
         query.append(" log.category='");
         query.append("MyExport");
@@ -48,7 +46,7 @@ public class TestJobHistoryHelper {
 
         AuditReader reader = Framework.getService(AuditReader.class);
 
-        List result = reader.nativeQuery(query.toString(), 1, 1);
+        List<?> result = reader.nativeQuery(query.toString(), 1, 1);
         assertEquals(0, result.size());
 
         JobHistoryHelper helper = new JobHistoryHelper("MyExport");
@@ -64,7 +62,6 @@ public class TestJobHistoryHelper {
 
     @Test
     public void testLoggerHelper() throws Exception {
-
         JobHistoryHelper helper = new JobHistoryHelper("MyExport2");
 
         helper.logJobStarted();

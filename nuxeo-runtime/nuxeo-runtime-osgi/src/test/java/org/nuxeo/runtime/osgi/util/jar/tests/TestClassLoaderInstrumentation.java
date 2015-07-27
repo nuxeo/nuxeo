@@ -28,12 +28,12 @@ import org.nuxeo.runtime.osgi.util.jar.index.BuildMetaIndex;
 import sun.misc.MetaIndex;
 
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -63,7 +63,7 @@ public class TestClassLoaderInstrumentation {
     }
 
     @Test
-    @Ignore
+    @Ignore("NXP-7109")
     public void canGenerateMetaIndex() throws FileNotFoundException, IOException {
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
@@ -76,13 +76,13 @@ public class TestClassLoaderInstrumentation {
     }
 
     @Test
-    @Ignore
+    @Ignore("NXP-7109")
     public void dontOpenJar() throws MalformedURLException {
         File bundles = new File("bundles");
         MetaIndex.registerDirectory(bundles);
         URLClassLoader cl = newClassLoader(bundles);
         URL template = cl.findResource("templates/FileOpen.ftl");
-        // TODO check launchers
+        // TODO NXP-7109 check launchers
         assertThat(template, notNullValue());
         Assert.fail();
     }
