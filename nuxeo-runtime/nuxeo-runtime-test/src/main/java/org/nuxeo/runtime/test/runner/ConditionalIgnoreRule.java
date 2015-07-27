@@ -30,14 +30,17 @@ import javax.inject.Named;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.ClassRule;
 import org.junit.Rule;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.MethodRule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 public class ConditionalIgnoreRule implements MethodRule, TestRule {
+    @Inject
+    private RunNotifier runNotifier;
+
     public static class Feature extends SimpleFeature {
         protected static final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
@@ -103,13 +106,15 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     public Statement apply(Statement base, FrameworkMethod method, Object fixtureTarget) {
         Class<?> fixtureType = fixtureTarget.getClass();
         Method fixtureMethod = method.getMethod();
+        Description description = Description.createTestDescription(fixtureType, fixtureMethod.getName(),
+                fixtureMethod.getAnnotations());
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            return shouldIgnore(base, fixtureType.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
+            return shouldIgnore(base, description, fixtureType.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
                     fixtureTarget);
         }
         if (fixtureMethod.isAnnotationPresent(Ignore.class)) {
-            return shouldIgnore(base, fixtureMethod.getAnnotation(Ignore.class), fixtureType, fixtureMethod,
-                    fixtureTarget);
+            return shouldIgnore(base, description, fixtureMethod.getAnnotation(Ignore.class), fixtureType,
+                    fixtureMethod, fixtureTarget);
         }
         return base;
     }
@@ -118,16 +123,17 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     public Statement apply(Statement base, Description description) {
         Class<?> fixtureType = description.getTestClass();
         if (fixtureType.isAnnotationPresent(Ignore.class)) {
-            return shouldIgnore(base, fixtureType.getAnnotation(Ignore.class), fixtureType);
+            return shouldIgnore(base, description, fixtureType.getAnnotation(Ignore.class), fixtureType);
         }
         return base;
     }
 
-    protected Statement shouldIgnore(Statement base, Ignore ignore, Class<?> type) {
-        return shouldIgnore(base, ignore, type, null, null);
+    protected Statement shouldIgnore(Statement base, Description description, Ignore ignore, Class<?> type) {
+        return shouldIgnore(base, description, ignore, type, null, null);
     }
 
-    protected Statement shouldIgnore(Statement base, Ignore ignore, Class<?> type, Method method, Object target) {
+    protected Statement shouldIgnore(Statement base, Description description, Ignore ignore, Class<?> type,
+            Method method, Object target) {
         Class<? extends Condition> conditionType = ignore.condition();
         if (conditionType == null) {
             return base;
@@ -139,7 +145,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                throw new AssumptionViolatedException(condition.getClass().getSimpleName() + " " + ignore.cause());
+                runNotifier.fireTestIgnored(description);
             }
         };
     }
