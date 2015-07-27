@@ -1,16 +1,20 @@
-/*******************************************************************************
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+/*
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *******************************************************************************/
+ *
+ * Contributors:
+ *     Stephane Lacoin, Julien Carsique
+ *
+ */
 package org.nuxeo.runtime.test.runner;
 
 import java.lang.annotation.ElementType;
@@ -23,6 +27,7 @@ import java.lang.reflect.Method;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.internal.AssumptionViolatedException;
@@ -33,7 +38,6 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.Statement;
 
 public class ConditionalIgnoreRule implements MethodRule, TestRule {
-
     public static class Feature extends SimpleFeature {
         protected static final ConditionalIgnoreRule rule = new ConditionalIgnoreRule();
 
@@ -52,6 +56,11 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Ignore {
         Class<? extends Condition> condition();
+
+        /**
+         * Optional reason why the test is ignored, reported additionally to the condition class simple name.
+         */
+        String cause() default "";
     }
 
     public interface Condition {
@@ -59,16 +68,16 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     }
 
     public static final class NXP10926H2Upgrade implements Condition {
-
         @Override
         public boolean shouldIgnore() {
             return false;
         }
-
     }
 
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader().getClass().getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader()
+                                                                                                .getClass()
+                                                                                                .getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -77,12 +86,17 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     }
 
     public static final class IgnoreLongRunning implements Condition {
-
         @Override
         public boolean shouldIgnore() {
-            return true; // TODO add an annotation suitable for
+            return true;
         }
+    }
 
+    public static final class IgnoreWindows implements Condition {
+        @Override
+        public boolean shouldIgnore() {
+            return SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX;
+        }
     }
 
     @Override
@@ -118,7 +132,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
         }
         Condition condition = newCondition(type, method, target, conditionType);
         if (condition.shouldIgnore()) {
-            throw new AssumptionViolatedException(condition.getClass().getSimpleName());
+            throw new AssumptionViolatedException(condition.getClass().getSimpleName() + " " + ignore.cause());
         }
     }
 
