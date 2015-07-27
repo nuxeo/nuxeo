@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.diff.content.HtmlGuesser;
 import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
@@ -51,8 +52,6 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
     private static final Log log = LogFactory.getLog(ConverterBasedContentDiffAdapter.class);
 
     protected static final String DEFAULT_CONVERTER_NAME = "any2text";
-
-    public static final String DEFAULT_XPATH = "default";
 
     protected String defaultFieldXPath;
 
@@ -73,7 +72,7 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
         BlobHolder adaptedDocBlobHolder = null;
         BlobHolder otherDocBlobHolder = null;
 
-        if ((xpath == null) || (DEFAULT_XPATH.equals(xpath))) {
+        if ((xpath == null) || (ContentDiffHelper.DEFAULT_XPATH.equals(xpath))) {
             adaptedDocBlobHolder = adaptedDoc.getAdapter(BlobHolder.class);
             otherDocBlobHolder = otherDoc.getAdapter(BlobHolder.class);
         } else {

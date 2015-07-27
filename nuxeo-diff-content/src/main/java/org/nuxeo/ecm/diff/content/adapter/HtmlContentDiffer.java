@@ -31,11 +31,15 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
+import org.nuxeo.ecm.diff.content.ContentDiffHelper;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.outerj.daisy.diff.HtmlCleaner;
 import org.outerj.daisy.diff.XslFilter;
@@ -57,6 +61,23 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
     private static final Log LOGGER = LogFactory.getLog(HtmlContentDiffer.class);
 
     protected static final String NUXEO_DEFAULT_CONTEXT_PATH = "/nuxeo";
+
+    @Override
+    public List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)
+            throws ContentDiffException {
+
+        Blob leftBlob, rightBlob;
+
+        if (StringUtils.isBlank(xpath) || ContentDiffHelper.DEFAULT_XPATH.equals(xpath)) {
+            leftBlob = leftDoc.getAdapter(BlobHolder.class).getBlob();
+            rightBlob = rightDoc.getAdapter(BlobHolder.class).getBlob();
+        } else {
+            leftBlob = (Blob) leftDoc.getPropertyValue(xpath);
+            rightBlob = (Blob) rightDoc.getPropertyValue(xpath);
+        }
+        return getContentDiff(leftBlob, rightBlob, locale);
+
+    }
 
     @Override
     public List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException {

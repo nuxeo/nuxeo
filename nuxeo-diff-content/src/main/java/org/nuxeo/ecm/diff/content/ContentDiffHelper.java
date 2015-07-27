@@ -53,7 +53,7 @@ public final class ContentDiffHelper {
 
     public static final String CONTENT_DIFF_URL_PREFIX = "restAPI/contentDiff/";
 
-    public static final String CONTENT_DIFF_URL_DEFAULT_XPATH = "default";
+    public static final String DEFAULT_XPATH = "default";
 
     /**
      * Final class constructor.
@@ -113,7 +113,7 @@ public final class ContentDiffHelper {
     public static String getContentDiffURL(DocumentModel leftDoc, DocumentModel rightDoc, String conversionType,
             String locale) {
 
-        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc, rightDoc, CONTENT_DIFF_URL_DEFAULT_XPATH,
+        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc, rightDoc, DEFAULT_XPATH,
                 conversionType, locale);
     }
 
@@ -148,7 +148,7 @@ public final class ContentDiffHelper {
             String propertyXPath, String conversionType, String locale) {
 
         if (propertyXPath == null) {
-            propertyXPath = CONTENT_DIFF_URL_DEFAULT_XPATH;
+            propertyXPath = DEFAULT_XPATH;
         }
 
         StringBuilder sb = new StringBuilder();
