@@ -55,7 +55,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.TYPE, ElementType.METHOD })
     public @interface Ignore {
-        Class<? extends Condition>condition();
+        Class<? extends Condition> condition();
 
         /**
          * Optional reason why the test is ignored, reported additionally to the condition class simple name.
@@ -75,8 +75,9 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     }
 
     public static final class IgnoreIsolated implements Condition {
-        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(
-                getClass().getClassLoader().getClass().getName());
+        boolean isIsolated = "org.nuxeo.runtime.testsuite.IsolatedClassloader".equals(getClass().getClassLoader()
+                                                                                                .getClass()
+                                                                                                .getName());
 
         @Override
         public boolean shouldIgnore() {
@@ -94,7 +95,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     public static final class IgnoreWindows implements Condition {
         @Override
         public boolean shouldIgnore() {
-            return SystemUtils.IS_OS_WINDOWS||SystemUtils.IS_OS_MAC;
+            return SystemUtils.IS_OS_WINDOWS;
         }
     }
 
