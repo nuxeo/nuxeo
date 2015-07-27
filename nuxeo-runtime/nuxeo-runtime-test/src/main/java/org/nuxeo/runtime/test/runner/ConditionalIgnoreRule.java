@@ -95,7 +95,7 @@ public class ConditionalIgnoreRule implements MethodRule, TestRule {
     public static final class IgnoreWindows implements Condition {
         @Override
         public boolean shouldIgnore() {
-            return SystemUtils.IS_OS_WINDOWS || SystemUtils.IS_OS_LINUX;
+            return SystemUtils.IS_OS_WINDOWS;
         }
     }
 
