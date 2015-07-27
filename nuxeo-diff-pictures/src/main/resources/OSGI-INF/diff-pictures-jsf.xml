@@ -1,7 +1,5 @@
 <component name="org.nuxeo.diff.pictures.jsf">
 
-  <require>org.nuxeo.ecm.diff.service.DiffDisplayService.contrib</require>
-
   <extension target="org.nuxeo.ecm.diff.service.DiffDisplayService" point="diffDisplay">
 
     <diffDisplay type="Picture">
