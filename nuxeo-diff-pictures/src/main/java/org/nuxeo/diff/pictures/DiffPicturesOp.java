@@ -38,7 +38,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 
 /**
- * 
+ * @since 7.4
  */
 @Operation(id = DiffPicturesOp.ID, category = Constants.CAT_CONVERSION, label = "Pictures: Diff", description = "Compare input blob with blob referenced in the context variable blob2VarName, using the commandLine and its parapeters (default values apply). Return the result of the diff as a picture")
 public class DiffPicturesOp {

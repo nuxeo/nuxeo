@@ -29,6 +29,9 @@ import org.nuxeo.common.xmap.annotation.XObject;
 @XObject("contentDiffer")
 public class MimeTypeContentDifferDescriptor {
 
+    /**
+     * @since 7.4
+     */
     @XNode("@name")
     private String name;
 

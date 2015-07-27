@@ -66,7 +66,7 @@ import org.nuxeo.runtime.api.Framework;
  * files created on the server: /nuxeo/diffPictures?cleanup=true&leftDocId=123456&rightDocId=456789& WARNING: Why can't
  * I use the public static void downloadBlob() from DownloadServlet?
  *
- * @since 7.3
+ * @since 7.4
  */
 public class DiffPicturesServlet extends HttpServlet {
 

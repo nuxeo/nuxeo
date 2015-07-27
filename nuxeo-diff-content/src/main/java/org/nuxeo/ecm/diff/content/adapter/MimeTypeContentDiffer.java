@@ -34,6 +34,9 @@ public interface MimeTypeContentDiffer {
 
     List<Blob> getContentDiff(Blob leftBlob, Blob rightBlob, Locale locale) throws ContentDiffException;
 
+    /**
+     * @since 7.4
+     */
     List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)
             throws ContentDiffException;
 

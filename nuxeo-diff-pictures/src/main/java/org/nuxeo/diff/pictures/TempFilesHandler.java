@@ -19,7 +19,7 @@ package org.nuxeo.diff.pictures;
 import java.io.File;
 
 /**
- * @since 7.3
+ * @since 7.4
  */
 public class TempFilesHandler {
 

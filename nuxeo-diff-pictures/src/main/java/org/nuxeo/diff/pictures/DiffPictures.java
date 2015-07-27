@@ -41,7 +41,7 @@ import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * @since 7.3
+ * @since 7.4
  */
 public class DiffPictures {
 
