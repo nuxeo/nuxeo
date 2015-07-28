@@ -94,6 +94,20 @@ public class NuxeoObjectData implements ObjectData {
 
     public static final String REND_KIND_NUXEO_RENDITION = "nuxeo:rendition";
 
+    /**
+     * Property to determine whether all renditions provide a computed size and length.
+     *
+     * @since 7.4
+     */
+    public static final String RENDITION_COMPUTE_INFO_PROP = "org.nuxeo.cmis.computeRenditionInfo";
+
+    /**
+     * Default for {@value #RENDITION_COMPUTE_INFO_PROP}.
+     *
+     * @since 7.4
+     */
+    public static final String RENDITION_COMPUTE_INFO_DEFAULT = "false";
+
     public CmisService service;
 
     public DocumentModel doc;
@@ -425,8 +439,9 @@ public class NuxeoObjectData implements ObjectData {
             ren.setTitle(def.getLabel());
             ren.setMimeType(def.getContentType());
 
-            // cmis:thumbnail specific case
-            if (REND_KIND_CMIS_THUMBNAIL.equals(ren.getKind())) {
+            boolean computeInfo = Boolean.parseBoolean(
+                    Framework.getProperty(RENDITION_COMPUTE_INFO_PROP, RENDITION_COMPUTE_INFO_DEFAULT));
+            if (REND_KIND_CMIS_THUMBNAIL.equals(ren.getKind()) || computeInfo) {
                 Rendition rendition = renditionService.getRendition(doc, def.getName());
                 Blob blob = rendition.getBlob();
                 if (blob != null) {
