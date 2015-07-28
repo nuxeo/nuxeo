@@ -26,6 +26,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
+import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.diff.content.adapter.ContentDiffAdapterManager;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
@@ -113,8 +116,7 @@ public final class ContentDiffHelper {
     public static String getContentDiffURL(DocumentModel leftDoc, DocumentModel rightDoc, String conversionType,
             String locale) {
 
-        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc, rightDoc, DEFAULT_XPATH,
-                conversionType, locale);
+        return getContentDiffURL(leftDoc.getRepositoryName(), leftDoc, rightDoc, DEFAULT_XPATH, conversionType, locale);
     }
 
     /**
@@ -265,5 +267,29 @@ public final class ContentDiffHelper {
         blackListedMimeTypes.add("application/vnd.oasis.opendocument.presentation-template");
 
         return blackListedMimeTypes;
+    }
+
+    public static BlobHolder getBlobHolder(DocumentModel doc, String xPath) throws ContentDiffException {
+        // TODO: manage other property types than Blob / String?
+        Serializable prop = doc.getPropertyValue(xPath);
+        if (prop instanceof Blob) {
+            return new DocumentBlobHolder(doc, xPath);
+        }
+        if (prop instanceof String) {
+            // Default mime type is text/plain. For a Note, use the
+            // "note:mime_type" property, otherwise if the property value is
+            // HTML use text/html.
+            String mimeType = "text/plain";
+            if ("note:note".equals(xPath)) {
+                mimeType = (String) doc.getPropertyValue("note:mime_type");
+            } else {
+                if (HtmlGuesser.isHtml((String) prop)) {
+                    mimeType = "text/html";
+                }
+            }
+            return new DocumentStringBlobHolder(doc, xPath, mimeType);
+        }
+        throw new ContentDiffException(String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.",
+                doc.getTitle(), xPath));
     }
 }

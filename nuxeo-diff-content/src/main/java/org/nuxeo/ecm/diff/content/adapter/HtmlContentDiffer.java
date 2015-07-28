@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
@@ -65,18 +66,30 @@ public class HtmlContentDiffer implements MimeTypeContentDiffer {
     @Override
     public List<Blob> getContentDiff(DocumentModel leftDoc, DocumentModel rightDoc, String xpath, Locale locale)
             throws ContentDiffException {
-
-        Blob leftBlob, rightBlob;
-
-        if (StringUtils.isBlank(xpath) || ContentDiffHelper.DEFAULT_XPATH.equals(xpath)) {
-            leftBlob = leftDoc.getAdapter(BlobHolder.class).getBlob();
-            rightBlob = rightDoc.getAdapter(BlobHolder.class).getBlob();
-        } else {
-            leftBlob = (Blob) leftDoc.getPropertyValue(xpath);
-            rightBlob = (Blob) rightDoc.getPropertyValue(xpath);
+        Blob leftBlob = null;
+        Blob rightBlob = null;
+        BlobHolder leftBlobHolder = null;
+        BlobHolder rightBlobHolder = null;
+        try {
+            if (StringUtils.isBlank(xpath) || ContentDiffHelper.DEFAULT_XPATH.equals(xpath)) {
+                leftBlobHolder = leftDoc.getAdapter(BlobHolder.class);
+                rightBlobHolder = rightDoc.getAdapter(BlobHolder.class);
+            } else {
+                leftBlobHolder = ContentDiffHelper.getBlobHolder(leftDoc, xpath);
+                rightBlobHolder = ContentDiffHelper.getBlobHolder(rightDoc, xpath);
+            }
+        } catch (ClientException ce) {
+            throw new ContentDiffException("Error while getting blobs", ce);
+        }
+        if (leftBlobHolder == null || rightBlobHolder == null) {
+            throw new ContentDiffException("Can not make a content diff of documents without a blob");
+        }
+        leftBlob = leftBlobHolder.getBlob();
+        rightBlob = rightBlobHolder.getBlob();
+        if (leftBlob == null || rightBlob == null) {
+            throw new ContentDiffException("Can not make a content diff of documents without a blob");
         }
         return getContentDiff(leftBlob, rightBlob, locale);
-
     }
 
     @Override

@@ -15,7 +15,6 @@
 package org.nuxeo.ecm.diff.content.adapter.base;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -28,13 +27,10 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.DocumentBlobHolder;
-import org.nuxeo.ecm.core.api.blobholder.DocumentStringBlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionException;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.diff.content.ContentDiffException;
 import org.nuxeo.ecm.diff.content.ContentDiffHelper;
-import org.nuxeo.ecm.diff.content.HtmlGuesser;
 import org.nuxeo.ecm.diff.content.adapter.HtmlContentDiffer;
 import org.nuxeo.ecm.diff.content.adapter.MimeTypeContentDiffer;
 import org.nuxeo.ecm.platform.mimetype.MimetypeDetectionException;
@@ -76,8 +72,8 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
             adaptedDocBlobHolder = adaptedDoc.getAdapter(BlobHolder.class);
             otherDocBlobHolder = otherDoc.getAdapter(BlobHolder.class);
         } else {
-            adaptedDocBlobHolder = getBlobHolder(adaptedDoc, xpath);
-            otherDocBlobHolder = getBlobHolder(otherDoc, xpath);
+            adaptedDocBlobHolder = ContentDiffHelper.getBlobHolder(adaptedDoc, xpath);
+            otherDocBlobHolder = ContentDiffHelper.getBlobHolder(otherDoc, xpath);
         }
         if (adaptedDocBlobHolder == null || otherDocBlobHolder == null) {
             throw new ContentDiffException("Can not make a content diff of documents without a blob");
@@ -158,30 +154,6 @@ public class ConverterBasedContentDiffAdapter extends AbstractContentDiffAdapter
 
     public void setDefaultContentDiffFieldXPath(String xPath) {
         defaultFieldXPath = xPath;
-    }
-
-    protected BlobHolder getBlobHolder(DocumentModel doc, String xPath) {
-        // TODO: manage other property types than Blob / String?
-        Serializable prop = doc.getPropertyValue(xPath);
-        if (prop instanceof Blob) {
-            return new DocumentBlobHolder(doc, xPath);
-        }
-        if (prop instanceof String) {
-            // Default mime type is text/plain. For a Note, use the
-            // "note:mime_type" property, otherwise if the property value is
-            // HTML use text/html.
-            String mimeType = "text/plain";
-            if ("note:note".equals(xPath)) {
-                mimeType = (String) doc.getPropertyValue("note:mime_type");
-            } else {
-                if (HtmlGuesser.isHtml((String) prop)) {
-                    mimeType = "text/html";
-                }
-            }
-            return new DocumentStringBlobHolder(doc, xPath, mimeType);
-        }
-        throw new NuxeoException(String.format("Cannot get BlobHolder for doc '%s' and xpath '%s'.", doc.getTitle(),
-                xPath));
     }
 
     protected String getMimeType(Blob blob) {
