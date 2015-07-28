@@ -20,11 +20,9 @@ import static org.jboss.seam.ScopeType.SESSION;
 
 import java.io.Serializable;
 
-import org.jboss.seam.annotations.Destroy;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.Unwrap;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -34,32 +32,11 @@ import org.nuxeo.runtime.api.Framework;
 @Scope(SESSION)
 public class LayoutDemoManagerBusinessDelegate implements Serializable {
 
-    private static final long serialVersionUID = -4778456059717447736L;
-
-    protected LayoutDemoManager layoutDemoManager;
+    private static final long serialVersionUID = 1L;
 
     @Unwrap
     public LayoutDemoManager getLayoutDemoManager() {
-        if (layoutDemoManager == null) {
-            try {
-                layoutDemoManager = Framework.getService(LayoutDemoManager.class);
-            } catch (Exception e) {
-                final String errMsg = "Error connecting to LayoutDemoManager. " + e.getMessage();
-                throw new ClientException(errMsg, e);
-            }
-            if (layoutDemoManager == null) {
-                throw new ClientException("LayoutDemoManager service not bound");
-            }
-
-        }
-        return layoutDemoManager;
-    }
-
-    @Destroy
-    public void destroy() {
-        if (layoutDemoManager != null) {
-            layoutDemoManager = null;
-        }
+        return Framework.getService(LayoutDemoManager.class);
     }
 
 }

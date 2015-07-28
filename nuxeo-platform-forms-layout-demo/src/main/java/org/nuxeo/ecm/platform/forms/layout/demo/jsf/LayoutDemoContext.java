@@ -37,10 +37,10 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.actions.Action;
 import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
@@ -101,7 +101,7 @@ public class LayoutDemoContext implements Serializable {
     protected Map<String, Aggregate<Bucket>> layoutDemoAggregates;
 
     @Create
-    public void openCoreSession() throws Exception {
+    public void openCoreSession() {
         demoCoreSession = CoreInstance.openCoreSessionSystem("layoutDemo");
     }
 
@@ -142,24 +142,16 @@ public class LayoutDemoContext implements Serializable {
     }
 
     protected DocumentModel generateBareDemoDocument() {
-        try {
-            return demoCoreSession.createDocumentModel(DEMO_DOCUMENT_TYPE);
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        return demoCoreSession.createDocumentModel(DEMO_DOCUMENT_TYPE);
     }
 
     /**
      * @since 7.2
      */
     protected DocumentModel generateValidationDocument() {
-        try {
-            DocumentModel doc = demoCoreSession.createDocumentModel(VALIDATION_DOCUMENT_TYPE);
-            doc.setPropertyValue("dc:title", "My title");
-            return doc;
-        } catch (Exception e) {
-            throw new ClientException(e);
-        }
+        DocumentModel doc = demoCoreSession.createDocumentModel(VALIDATION_DOCUMENT_TYPE);
+        doc.setPropertyValue("dc:title", "My title");
+        return doc;
     }
 
     @Factory(value = "layoutBareDemoDocument", scope = EVENT)
@@ -193,31 +185,23 @@ public class LayoutDemoContext implements Serializable {
     @Factory(value = "layoutPreviewDocument", scope = EVENT)
     public DocumentModel getPreviewDocument() {
         if (previewDocument == null) {
-            try {
-                previewDocument = generateBareDemoDocument();
-                previewDocument.setPathInfo("/", "preview");
-                fillPreviewDocumentProperties(previewDocument, 0);
-                previewDocument = demoCoreSession.createDocument(previewDocument);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            previewDocument = generateBareDemoDocument();
+            previewDocument.setPathInfo("/", "preview");
+            fillPreviewDocumentProperties(previewDocument, 0);
+            previewDocument = demoCoreSession.createDocument(previewDocument);
         }
         return previewDocument;
     }
 
     @Factory(value = "layoutDemoDocuments", scope = EVENT)
-    public PageSelections<DocumentModel> getDemoDocuments() throws Exception {
+    public PageSelections<DocumentModel> getDemoDocuments() {
         if (demoDocuments == null) {
-            try {
-                List<PageSelection<DocumentModel>> docs = new ArrayList<PageSelection<DocumentModel>>();
-                DocumentModel demoDocument1 = getListingDemoDocument(1);
-                docs.add(new PageSelection<DocumentModel>(demoDocument1, false));
-                DocumentModel demoDocument2 = getListingDemoDocument(2);
-                docs.add(new PageSelection<DocumentModel>(demoDocument2, false));
-                demoDocuments = new PageSelections<DocumentModel>(docs);
-            } catch (Exception e) {
-                throw new ClientException(e);
-            }
+            List<PageSelection<DocumentModel>> docs = new ArrayList<PageSelection<DocumentModel>>();
+            DocumentModel demoDocument1 = getListingDemoDocument(1);
+            docs.add(new PageSelection<DocumentModel>(demoDocument1, false));
+            DocumentModel demoDocument2 = getListingDemoDocument(2);
+            docs.add(new PageSelection<DocumentModel>(demoDocument2, false));
+            demoDocuments = new PageSelections<DocumentModel>(docs);
         }
         return demoDocuments;
     }
@@ -341,21 +325,17 @@ public class LayoutDemoContext implements Serializable {
     }
 
     @Factory(value = "layoutDemoCustomActions", scope = EVENT)
-    public List<Action> getLayoutDemoCustomActions() throws Exception {
+    public List<Action> getLayoutDemoCustomActions() {
         if (layoutDemoCustomActions == null) {
-            try {
-                layoutDemoCustomActions = new ArrayList<Action>();
-                FacesContext faces = FacesContext.getCurrentInstance();
-                if (faces == null) {
-                    throw new IllegalArgumentException("Faces context is null");
-                }
-                ActionContext ctx = new JSFActionContext(faces);
-                List<Action> actions = actionManager.getActions("LAYOUT_DEMO_ACTIONS", ctx);
-                if (actions != null) {
-                    layoutDemoCustomActions.addAll(actions);
-                }
-            } catch (Exception e) {
-                throw new ClientException(e);
+            layoutDemoCustomActions = new ArrayList<Action>();
+            FacesContext faces = FacesContext.getCurrentInstance();
+            if (faces == null) {
+                throw new NuxeoException("Faces context is null");
+            }
+            ActionContext ctx = new JSFActionContext(faces);
+            List<Action> actions = actionManager.getActions("LAYOUT_DEMO_ACTIONS", ctx);
+            if (actions != null) {
+                layoutDemoCustomActions.addAll(actions);
             }
         }
         return layoutDemoCustomActions;
@@ -365,7 +345,7 @@ public class LayoutDemoContext implements Serializable {
      * @since 6.0
      */
     @Factory(value = "layoutDemoAggregates", scope = EVENT)
-    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates() throws Exception {
+    public Map<String, Aggregate<Bucket>> getLayoutDemoAggregates() {
         if (layoutDemoAggregates == null) {
             layoutDemoAggregates = new HashMap<>();
 

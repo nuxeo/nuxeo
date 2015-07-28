@@ -34,8 +34,8 @@ import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.LocaleSelector;
 import org.jboss.seam.international.StatusMessage;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.validation.ConstraintViolation;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationReport;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
@@ -114,8 +114,8 @@ public class LayoutDemoActions implements Serializable {
         if (layoutDemoDocument == null) {
             try {
                 layoutDemoDocument = layoutBareDemoDocument.clone();
-            } catch (Exception e) {
-                throw new ClientException(e);
+            } catch (CloneNotSupportedException e) {
+                throw new NuxeoException(e);
             }
         }
         return layoutDemoDocument;
