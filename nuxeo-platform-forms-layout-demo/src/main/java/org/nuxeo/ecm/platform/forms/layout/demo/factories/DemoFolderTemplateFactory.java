@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.demo.factories;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.content.template.factories.SimpleTemplateBasedFactory;
 import org.nuxeo.ecm.platform.content.template.service.TemplateItemDescriptor;
