@@ -173,6 +173,11 @@ public class JsonMarshalling {
         marshallersByJavaType.put(marshaller.getJavaType(), marshaller);
     }
 
+    public static void removeMarshaller(JsonMarshaller<?> marshaller) {
+        marshallersByType.remove(marshaller.getType());
+        marshallersByJavaType.remove(marshaller.getJavaType());
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> JsonMarshaller<T> getMarshaller(String type) {
         return (JsonMarshaller<T>) marshallersByType.get(type);

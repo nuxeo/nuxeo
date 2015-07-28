@@ -528,6 +528,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         // It is also possible to pass alternative Java representation of the
         // input parameters as long as they share the same JSON representation
         // for the transport.
+        JsonMarshalling.removeMarshaller(PojoMarshaller.forClass(POJOObject.class));
         returnedObj12 = (POJOObject) session.newRequest(NestedJSONOperation.ID).set("pojo", map1).set("map", obj2).execute();
         assertEquals(expectedObj12, returnedObj12);
 
