@@ -45,6 +45,10 @@ public class TemplateBundleActivator implements BundleActivator {
 
     protected static final Log log = LogFactory.getLog(TemplateBundleActivator.class);
 
+    private static File tmpDir;
+
+    private static String dataDirPath;
+
     protected static String getTemplateResourcesRootPath() {
         return ModelImporter.RESOURCES_ROOT;
     }
@@ -64,25 +68,49 @@ public class TemplateBundleActivator implements BundleActivator {
     @Override
     public void start(BundleContext context) {
         this.context = context;
+        initDataDirPath();
         expandResources();
     }
 
     @Override
     public void stop(BundleContext context) {
         this.context = null;
+        cleanupDataDirPath();
     }
 
-    protected static Path getDataDirPath() {
-        String dataDir = null;
-
+    /* Note that this may be called twice, because several activators inherit from this class. */
+    protected static void initDataDirPath() {
+        if (dataDirPath != null) {
+            return;
+        }
+        String dataDir;
         if (Framework.isTestModeSet()) {
-            dataDir = "/tmp";
+            try {
+                tmpDir = File.createTempFile("templates.", "");
+                tmpDir.delete();
+                dataDir = tmpDir.getAbsolutePath();
+            } catch (IOException e) {
+                throw new NuxeoException(e);
+            }
         } else {
             dataDir = Framework.getProperty("nuxeo.data.dir");
         }
         Path path = new Path(dataDir);
         path = path.append("resources");
-        return path;
+        dataDirPath = path.toString();
+    }
+
+    @SuppressWarnings("deprecation")
+    protected static void cleanupDataDirPath() {
+        if (tmpDir != null) {
+            FileUtils.deleteTree(tmpDir);
+            tmpDir = null;
+        }
+        dataDirPath = null;
+    }
+
+    protected static Path getDataDirPath() {
+        return new Path(dataDirPath);
     }
 
     public void expandResources() {
