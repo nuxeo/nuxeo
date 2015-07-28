@@ -14,12 +14,12 @@ import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -36,11 +36,9 @@ import java.util.zip.ZipEntry;
 public class JarBuilder {
 
     public static class First {
-
     }
 
     public static class Other {
-
     }
 
     protected final File bindir;
@@ -53,11 +51,8 @@ public class JarBuilder {
     }
 
     protected File locateBinaries() {
-
         String classpath = System.getProperty("java.class.path");
-
-        StringTokenizer tokenizer = new StringTokenizer(classpath, ":");
-
+        StringTokenizer tokenizer = new StringTokenizer(classpath, File.pathSeparator);
         while (tokenizer.hasMoreElements()) {
             File bindir = new File(tokenizer.nextToken());
             if (!bindir.isDirectory()) {
@@ -67,7 +62,6 @@ public class JarBuilder {
                 return bindir;
             }
         }
-
         throw new IllegalStateException("cannot locate binaries");
     }
 
@@ -84,7 +78,7 @@ public class JarBuilder {
         return new File(pkg, clazz.getSimpleName() + ".class");
     }
 
-    ArrayList<File> builtFiles = new ArrayList<File>();
+    ArrayList<File> builtFiles = new ArrayList<>();
 
     File rootFile = createRootFile();
 

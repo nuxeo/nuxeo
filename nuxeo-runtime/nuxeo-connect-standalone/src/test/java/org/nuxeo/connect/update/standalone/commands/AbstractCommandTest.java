@@ -24,7 +24,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,6 +36,7 @@ import org.nuxeo.connect.update.standalone.PackageTestCase;
 import org.nuxeo.connect.update.task.Task;
 import org.nuxeo.connect.update.util.PackageBuilder;
 import org.nuxeo.connect.update.xml.XmlWriter;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 /**
  * A base test case for testing command execution.
@@ -191,8 +191,8 @@ public abstract class AbstractCommandTest extends PackageTestCase {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-9086")
     public void testInstallThenUninstall() throws Exception {
-        Assume.assumeTrue(!isWindows());
         File zip = createPackage();
         LocalPackage pkg = service.addPackage(zip);
         zip.delete();
@@ -206,8 +206,4 @@ public abstract class AbstractCommandTest extends PackageTestCase {
         }
     }
 
-    private boolean isWindows() {
-        String os = System.getProperty("os.name").toLowerCase();
-        return (os.indexOf("win") >= 0);
-    }
 }

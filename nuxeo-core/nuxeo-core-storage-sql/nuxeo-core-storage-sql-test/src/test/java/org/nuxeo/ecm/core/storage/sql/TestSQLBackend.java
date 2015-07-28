@@ -1255,14 +1255,11 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "windows doesn't have enough time granularity for such a test")
     public void testClustering() throws Exception {
         if (!DatabaseHelper.DATABASE.supportsClustering()) {
             System.out.println("Skipping clustering test for unsupported database: "
                     + DatabaseHelper.DATABASE.getClass().getName());
-            return;
-        }
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            // windows doesn't have enough time granularity for such a test
             return;
         }
 

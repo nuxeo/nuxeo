@@ -21,9 +21,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import org.nuxeo.osgi.util.jar.URLJarFileIntrospectionError;
 import org.nuxeo.osgi.util.jar.URLJarFileIntrospector;
 import org.nuxeo.runtime.osgi.util.jar.index.BuildMetaIndex;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import sun.misc.MetaIndex;
 
@@ -48,6 +53,8 @@ import sun.misc.MetaIndex;
  * @author matic
  * @since 5.6
  */
+@RunWith(FeaturesRunner.class)
+@Features(ConditionalIgnoreRule.Feature.class)
 public class TestClassLoaderInstrumentation {
 
     protected JarBuilder jarBuilder;
@@ -95,11 +102,9 @@ public class TestClassLoaderInstrumentation {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-16567: temporarily deactivate test under Windows")
     public void canDeleteJar() throws FileNotFoundException, IOException, ClassNotFoundException, SecurityException,
             URLJarFileIntrospectionError {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            return;
-        }
         URL firstURL = jarBuilder.buildFirst();
         URL otherURL = jarBuilder.buildOther();
         URL[] jarURLs = new URL[] { firstURL, otherURL };

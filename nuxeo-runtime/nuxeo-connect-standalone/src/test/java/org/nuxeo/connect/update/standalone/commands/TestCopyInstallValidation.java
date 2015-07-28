@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import org.nuxeo.connect.update.ValidationStatus;
 import org.nuxeo.connect.update.task.Task;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -30,6 +31,7 @@ public class TestCopyInstallValidation extends TestCopy {
 
     @Test
     @Override
+    @ConditionalIgnoreRule.Ignore(condition = ConditionalIgnoreRule.IgnoreWindows.class, cause = "NXP-9086")
     public void testInstallThenUninstall() throws Exception {
         // create the target file so that the copy command will not validate
         getTargetFile().createNewFile();

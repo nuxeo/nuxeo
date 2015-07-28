@@ -18,10 +18,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.ecm.core.utils.SIDGenerator;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.IgnoreWindows;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
+@RunWith(FeaturesRunner.class)
+@Features(ConditionalIgnoreRule.Feature.class)
 public class TestSidGenerator {
 
     @Test
@@ -36,13 +44,8 @@ public class TestSidGenerator {
     }
 
     @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "windows doesn't have enough time granularity for such a high-speed test")
     public void testGeneratorReset() throws Exception {
-        if (System.getProperty("os.name").startsWith("Windows")) {
-            // windows doesn't have enough time granularity for such
-            // a high-speed test
-            return;
-        }
-
         Set<Long> ids = new HashSet<>();
         for (int i = 0; i < 1000; i++) {
             long id = SIDGenerator.next();
