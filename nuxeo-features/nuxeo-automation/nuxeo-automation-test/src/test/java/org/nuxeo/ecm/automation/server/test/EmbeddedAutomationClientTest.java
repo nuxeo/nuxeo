@@ -370,7 +370,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
             operationRequest.execute();
             fail("Call to SendMail operation should have thrown a RemoteException since the SMTP server is not reachable");
         } catch (RemoteException re) {
-            assertEquals("Failed to invoke operation: Document.Mail", re.getMessage());
+            assertEquals("Failed to invoke operation: Notification.SendMail", re.getMessage());
         }
 
         // Call SendMail with rollbackOnError = false
@@ -904,7 +904,7 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
     @Test
     public void shouldWriteAutomationContextWithDocuments() throws Exception {
         Document root = (Document) super.session.newRequest(FetchDocument.ID).set("value", "/").execute();
-        OperationRequest request = session.newRequest("RunOperationOnList");
+        OperationRequest request = session.newRequest("Context.RunOperationOnList");
         // Set document array list to inject into the context through automation client
         List<Document> list = new ArrayList<>();
         list.add(root);
