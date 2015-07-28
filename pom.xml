@@ -691,6 +691,11 @@
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-pictures</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-diff-test</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
