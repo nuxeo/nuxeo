@@ -30,8 +30,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
@@ -185,7 +185,7 @@ public class DiffPictures {
         // checking if we do have a comparison file created by ImageMagick
         File tempDestFile = new File(destFilePath);
         if (!tempDestFile.exists()) {
-            throw new ClientException("Failed to execute the command <" + commandLine + ">. Final command [ "
+            throw new NuxeoException("Failed to execute the command <" + commandLine + ">. Final command [ "
                     + execResult.getCommandLine() + " ] returned with error " + execResult.getReturnCode(),
                     execResult.getError());
         } else {
