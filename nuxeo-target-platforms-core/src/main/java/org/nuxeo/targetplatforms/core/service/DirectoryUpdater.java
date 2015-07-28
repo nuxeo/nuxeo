@@ -16,7 +16,6 @@
  */
 package org.nuxeo.targetplatforms.core.service;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -59,8 +58,6 @@ public abstract class DirectoryUpdater {
             DirectoryService service = Framework.getLocalService(DirectoryService.class);
             session = service.open(dirName);
             run(service, session);
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         } finally {
             if (session != null) {
                 session.close();

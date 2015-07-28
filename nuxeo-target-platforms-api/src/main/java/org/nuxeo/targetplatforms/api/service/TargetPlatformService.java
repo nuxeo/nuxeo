@@ -18,7 +18,6 @@ package org.nuxeo.targetplatforms.api.service;
 
 import java.util.List;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.targetplatforms.api.TargetPackage;
 import org.nuxeo.targetplatforms.api.TargetPackageInfo;
 import org.nuxeo.targetplatforms.api.TargetPlatform;

@@ -32,7 +32,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.directory.BaseSession;
 import org.nuxeo.ecm.directory.DirectoryException;
@@ -527,8 +526,6 @@ public class TargetPlatformServiceImpl extends DefaultComponent implements Targe
             String dirName = getOverrideDirectory();
             dirSession = dirService.open(dirName);
             return dirSession.getEntry(id);
-        } catch (DirectoryException e) {
-            throw new ClientException(e);
         } finally {
             if (dirSession != null) {
                 dirSession.close();
