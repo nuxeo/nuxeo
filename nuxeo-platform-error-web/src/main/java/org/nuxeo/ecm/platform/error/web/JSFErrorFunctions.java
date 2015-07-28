@@ -16,7 +16,7 @@
  */
 package org.nuxeo.ecm.platform.error.web;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 
 /**
  * JSF functions triggering errors
@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 public class JSFErrorFunctions {
 
     public static String triggerCheckedError() {
-        throw new ClientException("JSF function triggering a checked error");
+        throw new NuxeoException("JSF function triggering a checked error");
     }
 
     public static String triggerUncheckedError() {

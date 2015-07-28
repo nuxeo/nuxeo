@@ -27,8 +27,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -53,7 +53,7 @@ public class WebengineError extends ModuleRoot {
 
     @Path("checkedError")
     public Object getCheckedError() {
-        throw new ClientException("CheckedError in webengine");
+        throw new NuxeoException("CheckedError in webengine");
     }
 
     @Path("uncheckedError")

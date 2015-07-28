@@ -34,10 +34,10 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.common.utils.IdUtils;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.RecoverableClientException;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
@@ -85,20 +85,20 @@ public class SeamErrorComponent implements Serializable {
 
     public void checkedErrorAfterCreation() {
         createNewDocument();
-        throw new ClientException("Checked exception after document creation");
+        throw new NuxeoException("Checked exception after document creation");
     }
 
     public void uncheckedErrorAfterCreation() {
         try {
             createNewDocument();
-        } catch (ClientException e) {
+        } catch (NuxeoException e) {
             log.error("********** Unexpected exception while testing error handling ***********");
         }
         throw new NullPointerException("Unchecked exception after document creation");
     }
 
     public String getCheckedError() {
-        throw new ClientException("Checked error on getter");
+        throw new NuxeoException("Checked error on getter");
     }
 
     public String getUncheckedError() {
@@ -111,7 +111,7 @@ public class SeamErrorComponent implements Serializable {
 
     @Factory(value = "checkedErrorFactoryEvent", scope = EVENT)
     public String getCheckedErrorFactoryEvent() {
-        throw new ClientException("Checked error on factory, scope event");
+        throw new NuxeoException("Checked error on factory, scope event");
     }
 
     @Factory(value = "uncheckedErrorFactoryEvent", scope = EVENT)
@@ -125,7 +125,7 @@ public class SeamErrorComponent implements Serializable {
     }
 
     public String performCheckedError() {
-        throw new ClientException("Checked error on action");
+        throw new NuxeoException("Checked error on action");
     }
 
     public String performUncheckedError() {
