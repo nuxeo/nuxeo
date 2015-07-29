@@ -19,9 +19,12 @@ package org.nuxeo.ecm.diff.content;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -75,33 +78,23 @@ public final class ContentDiffHelper {
      */
     public static String getContentDiffFancyBoxURL(DocumentModel currentDoc, String propertyLabel,
             String propertyXPath, String conversionType) {
-
         DocumentLocation docLocation = new DocumentLocationImpl(currentDoc.getRepositoryName(), currentDoc.getRef());
         DocumentView docView = new DocumentViewImpl(docLocation, CONTENT_DIFF_FANCYBOX_VIEW);
         docView.setPatternName("id");
         URLPolicyService urlPolicyService = Framework.getLocalService(URLPolicyService.class);
-        String docUrl = urlPolicyService.getUrlFromDocumentView(docView, null);
+        String docUrl = urlPolicyService.getUrlFromDocumentView(docView, VirtualHostHelper.getContextPathProperty());
         if (docUrl == null) {
             throw new NuxeoException(
                     "Cannot get URL from document view, probably because of a missing urlPattern contribution.");
         }
-        StringBuilder urlSb = new StringBuilder(docUrl);
-        urlSb.append("?");
-        urlSb.append(LABEL_URL_PARAM_NAME);
-        urlSb.append("=");
-        urlSb.append(propertyLabel);
-        urlSb.append("&");
-        urlSb.append(XPATH_URL_PARAM_NAME);
-        urlSb.append("=");
-        urlSb.append(propertyXPath);
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(LABEL_URL_PARAM_NAME, propertyLabel);
+        requestParams.put(XPATH_URL_PARAM_NAME, propertyXPath);
         if (!StringUtils.isEmpty(conversionType)) {
-            urlSb.append("&");
-            urlSb.append(CONVERSION_TYPE_URL_PARAM_NAME);
-            urlSb.append("=");
-            urlSb.append(conversionType);
+            requestParams.put(CONVERSION_TYPE_URL_PARAM_NAME, conversionType);
         }
-        return VirtualHostHelper.getContextPathProperty() + "/"
-                + RestHelper.addCurrentConversationParameters(urlSb.toString());
+        docUrl = URIUtils.addParametersToURIQuery(docUrl, requestParams);
+        return RestHelper.addCurrentConversationParameters(docUrl);
     }
 
     /**
