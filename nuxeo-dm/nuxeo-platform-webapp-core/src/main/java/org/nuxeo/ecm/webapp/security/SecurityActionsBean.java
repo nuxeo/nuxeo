@@ -624,23 +624,28 @@ public class SecurityActionsBean extends InputController implements SecurityActi
      * rebuilt.
      */
     private boolean checkPermissions() throws ClientException {
-        List<String> principals = new ArrayList<String>();
-        principals.add(currentUser.getName());
-        principals.addAll(currentUser.getAllGroups());
+        if (currentUser.isAdministrator()) {
+            return true;
+        } else {
+            List<String> principals = new ArrayList<String>();
+            principals.add(currentUser.getName());
+            principals.addAll(currentUser.getAllGroups());
 
-        ACP acp = currentDocument.getACP();
-        new SecurityDataConverter();
-        List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
-        if (null == acp) {
-            acp = new ACPImpl();
-        }
-        acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
+            ACP acp = currentDocument.getACP();
+            new SecurityDataConverter();
+            List<UserEntry> modifiableEntries = SecurityDataConverter.convertToUserEntries(securityData);
 
-        final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck()).toBoolean();
-        if (!access) {
-            rebuildSecurityData();
+            if (null == acp) {
+                acp = new ACPImpl();
+            }
+            acp.setRules(modifiableEntries.toArray(new UserEntry[0]));
+
+            final boolean access = acp.getAccess(principals.toArray(new String[0]), getPermissionsToCheck()).toBoolean();
+            if (!access) {
+                rebuildSecurityData();
+            }
+            return access;
         }
-        return access;
     }
 
     protected String[] getPermissionsToCheck() throws ClientException {
