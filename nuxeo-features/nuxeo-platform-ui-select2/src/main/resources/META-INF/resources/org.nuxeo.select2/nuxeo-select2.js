@@ -254,7 +254,9 @@
               });
               requestInProgress = false;
             }, function(xhr, status, e) {
-                alert("Error while querying data from server: " + status);
+                if (xhr.status == 500) {
+                    alert("Error while querying data from server: " + status);
+                }
                 requestInProgress = false;
             });
           } else {
