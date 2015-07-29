@@ -26,8 +26,7 @@ public class TempFilesHandler {
     protected static final String TEMP_DIR_PATH = System.getProperty("java.io.tmpdir");
 
     public static File prepareOrGetTempFolder(String leftDocId, String rightDocId) {
-
-        String path = TEMP_DIR_PATH + "/" + leftDocId + rightDocId;
+        String path = TEMP_DIR_PATH + File.separator + leftDocId + rightDocId;
         File folder = new File(path);
         if (!folder.exists()) {
             folder.mkdir();

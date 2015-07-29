@@ -166,10 +166,10 @@ public class DiffPictures {
 
         if (StringUtils.isNotBlank(leftDocId)) {
             File tempFolder = TempFilesHandler.prepareOrGetTempFolder(leftDocId, rightDocId);
-            destFilePath = tempFolder.getAbsolutePath() + "/" + System.currentTimeMillis() + "-" + finalName;
+            destFilePath = tempFolder.getAbsolutePath() + File.separator + System.currentTimeMillis() + "-" + finalName;
         } else {
             mustTrackTempFile = true;
-            destFilePath = TEMP_DIR_PATH + "/" + System.currentTimeMillis() + "-" + finalName;
+            destFilePath = TEMP_DIR_PATH + File.separator + System.currentTimeMillis() + "-" + finalName;
         }
 
         params.addNamedParameter("targetFilePath", destFilePath);
@@ -196,7 +196,6 @@ public class DiffPictures {
             }
         }
 
-        // Framework.trackFile(tempDestFile, this);
         result = new FileBlob(tempDestFile);
         if (result != null) {
             result.setFilename(finalName);
@@ -230,8 +229,6 @@ public class DiffPictures {
 
     public static String buildDiffHtml(DocumentModel leftDoc, DocumentModel rightDoc, String xpath) throws IOException,
             URISyntaxException {
-        // String path = getClass().getResource("/files/US-zips.txt").getFile();
-
         String html = "";
         InputStream in = null;
         try {
