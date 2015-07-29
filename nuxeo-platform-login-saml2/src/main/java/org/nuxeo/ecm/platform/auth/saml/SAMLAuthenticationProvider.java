@@ -121,7 +121,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
     // Supported SAML Bindings
     // TODO: Allow registering new bindings
-    private static List<SAMLBinding> bindings = new ArrayList<>();
+    static List<SAMLBinding> bindings = new ArrayList<>();
     static {
         bindings.add(new HTTPPostBinding());
         bindings.add(new HTTPRedirectBinding());
