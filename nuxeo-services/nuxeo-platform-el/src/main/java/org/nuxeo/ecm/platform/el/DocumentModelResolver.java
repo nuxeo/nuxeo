@@ -84,7 +84,7 @@ public class DocumentModelResolver extends BeanELResolver {
                     }
                 } catch (PropertyException pe) {
                     // avoid errors, return Object
-                    log.warn(pe.getMessage());
+                    log.warn(pe.toString());
                 }
             } else if (base instanceof Property) {
                 try {
@@ -100,7 +100,7 @@ public class DocumentModelResolver extends BeanELResolver {
                         type = super.getType(context, base, property);
                     } catch (PropertyNotFoundException e) {
                         // avoid errors, log original error and return Object
-                        log.warn(pe.getMessage());
+                        log.warn(pe.toString());
                     }
                 }
             }
@@ -127,7 +127,7 @@ public class DocumentModelResolver extends BeanELResolver {
                 value = getDocumentPropertyValue(docProperty);
             } catch (PropertyException pe) {
                 // avoid errors, return null
-                log.warn(pe.getMessage());
+                log.warn(pe.toString());
             }
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
@@ -142,7 +142,7 @@ public class DocumentModelResolver extends BeanELResolver {
                     value = super.getValue(context, base, property);
                 } catch (PropertyNotFoundException e) {
                     // avoid errors, log original error and return null
-                    log.warn(pe.getMessage());
+                    log.warn(pe.toString());
                 }
             }
             context.setPropertyResolved(true);
@@ -227,7 +227,7 @@ public class DocumentModelResolver extends BeanELResolver {
                 ctx.doc.setPropertyValue(getDocumentPropertyName(ctx, property), (Serializable) value);
             } catch (PropertyException e) {
                 // avoid errors here too
-                log.warn(e.getMessage());
+                log.warn(e.toString());
             }
             context.setPropertyResolved(true);
         } else if (base instanceof Property) {
@@ -243,7 +243,7 @@ public class DocumentModelResolver extends BeanELResolver {
                     super.setValue(context, base, property, value);
                 } catch (PropertyNotFoundException e) {
                     // log original error and avoid errors here too
-                    log.warn(pe.getMessage());
+                    log.warn(pe.toString());
                 }
             }
             context.setPropertyResolved(true);
