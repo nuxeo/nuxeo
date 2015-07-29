@@ -16,7 +16,6 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
-        <bundle>nuxeo_header_footer</bundle>
         <resource>nuxeo_usercenter_specific.css</resource>
       </resources>
     </themePage>
