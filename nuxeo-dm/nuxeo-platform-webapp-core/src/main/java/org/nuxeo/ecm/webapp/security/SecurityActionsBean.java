@@ -162,10 +162,19 @@ public class SecurityActionsBean extends InputController implements SecurityActi
      * rebuildSecurityData method
      */
     protected void reconstructTableModel() {
-        List<String> items = securityData.getCurrentDocumentUsers();
+        List<String> items = getCurrentDocumentUsers();
         entries = new PageSelections<String>();
         if (items != null) {
             for (String item : items) {
+                if (SecurityConstants.EVERYONE.equals(item)) {
+                    final List<String> grantedPerms = securityData.getCurrentDocGrant().get(item);
+                    final List<String> deniedPerms = securityData.getCurrentDocDeny().get(item);
+                    if (deniedPerms != null && deniedPerms.contains(SecurityConstants.EVERYTHING)
+                            && grantedPerms == null && deniedPerms.size() == 1) {
+                        // the only perm is deny everything, there is no need to display the row
+                        continue;
+                    }
+                }
                 entries.add(new PageSelection<String>(item, false));
             }
         }
@@ -385,9 +394,11 @@ public class SecurityActionsBean extends InputController implements SecurityActi
     private List<PageSelection<String>> getSelectedRows() {
         List<PageSelection<String>> selectedRows = new ArrayList<PageSelection<String>>();
 
-        for (PageSelection<String> entry : getDataTableModel().getEntries()) {
-            if (entry.isSelected()) {
-                selectedRows.add(entry);
+        if (!getDataTableModel().isEmpty()) {
+            for (PageSelection<String> entry : getDataTableModel().getEntries()) {
+                if (entry.isSelected()) {
+                    selectedRows.add(entry);
+                }
             }
         }
         return selectedRows;
