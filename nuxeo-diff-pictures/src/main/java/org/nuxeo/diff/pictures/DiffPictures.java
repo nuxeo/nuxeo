@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CloseableFile;
@@ -150,9 +151,9 @@ public class DiffPictures {
             finalName = "comp-" + b1.getFilename();
         }
 
-        String filePath1, filePath2;        
+        String filePath1, filePath2;
         CmdParameters params = new CmdParameters();
-        
+
         try (CloseableFile cf = b1.getCloseableFile()) {
             filePath1 = cf.getFile().getAbsolutePath();
             params.addNamedParameter("file1", filePath1);
@@ -270,14 +271,18 @@ public class DiffPictures {
 
         html = html.replace(TMPL_CONTEXT_PATH, VirtualHostHelper.getContextPathProperty());
         html = html.replace(TMPL_ACTION, "diff");
-        html = html.replace(TMPL_LEFT_DOC_ID, leftDocId);
-        html = html.replace(TMPL_LEFT_DOC_LABEL, leftLabel);
-        html = html.replace(TMPL_RIGHT_DOC_ID, rightDocId);
-        html = html.replace(TMPL_RIGHT_DOC_LABEL, rightLabel);
+        html = html.replace(TMPL_LEFT_DOC_ID,
+                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(leftDocId)));
+        html = html.replace(TMPL_LEFT_DOC_LABEL,
+                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(leftLabel)));
+        html = html.replace(TMPL_RIGHT_DOC_ID,
+                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(rightDocId)));
+        html = html.replace(TMPL_RIGHT_DOC_LABEL,
+                StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(rightLabel)));
         if (StringUtils.isBlank(xpath) || xpath.toLowerCase().equals("default")) {
             xpath = DEFAULT_XPATH;
         }
-        html = html.replace(TMPL_XPATH, xpath);
+        html = html.replace(TMPL_XPATH, StringEscapeUtils.escapeJavaScript(StringEscapeUtils.escapeHtml(xpath)));
         // dc:modified can be null... When running the Unit Tests for example
         String lastModification;
         Calendar cal = (Calendar) rightDoc.getPropertyValue("dc:modified");
