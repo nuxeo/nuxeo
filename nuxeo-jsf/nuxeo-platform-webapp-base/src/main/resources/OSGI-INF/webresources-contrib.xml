@@ -12,7 +12,6 @@
     </resource>
     <resource name="nxdropzone.js">
       <uri>/scripts/dnd/nxdropzone.js</uri>
-      <require>automation.js</require>
     </resource>
     <resource name="nxdropout.js">
       <uri>/scripts/dnd/nxdropout.js</uri>
