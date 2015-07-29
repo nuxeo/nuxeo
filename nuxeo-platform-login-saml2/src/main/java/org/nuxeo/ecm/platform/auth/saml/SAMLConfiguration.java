@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.auth.saml;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.auth.saml.binding.SAMLBinding;
 import org.nuxeo.ecm.platform.auth.saml.key.KeyManager;
 import org.nuxeo.runtime.api.Framework;
 import org.opensaml.common.SAMLObject;
@@ -38,9 +39,13 @@ import org.opensaml.xml.security.keyinfo.KeyInfoGenerator;
 import org.opensaml.xml.signature.KeyInfo;
 
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @since 7.3
@@ -51,9 +56,15 @@ public class SAMLConfiguration {
 
     public static final String ENTITY_ID = "nuxeo.saml2.entityId";
 
+    public static final String LOGIN_BINDINGS = "nuxeo.saml2.loginBindings";
+
     public static final String AUTHN_REQUESTS_SIGNED = "nuxeo.saml2.authnRequestsSigned";
 
     public static final String WANT_ASSERTIONS_SIGNED = "nuxeo.saml2.wantAssertionsSigned";
+
+    public static final String BINDING_PREFIX = "urn:oasis:names:tc:SAML:2.0:bindings";
+
+    public static final String DEFAULT_LOGIN_BINDINGS = "HTTP-Redirect,HTTP-POST";
 
     public static final Collection<String> nameID = Arrays.asList(NameIDType.EMAIL, NameIDType.TRANSIENT,
         NameIDType.PERSISTENT, NameIDType.UNSPECIFIED, NameIDType.X509_SUBJECT);
@@ -64,6 +75,24 @@ public class SAMLConfiguration {
 
     public static String getEntityId() {
         return Framework.getProperty(ENTITY_ID, Framework.getProperty("nuxeo.url"));
+    }
+
+    public static List<String> getLoginBindings() {
+        Set<String> supportedBindings = new HashSet<>();
+        for (SAMLBinding binding : SAMLAuthenticationProvider.bindings) {
+            supportedBindings.add(binding.getBindingURI());
+        }
+        List<String> bindings = new ArrayList<>();
+        String[] suffixes = Framework.getProperty(LOGIN_BINDINGS, DEFAULT_LOGIN_BINDINGS).split(",");
+        for (String sufix : suffixes) {
+            String binding = BINDING_PREFIX + ":" + sufix;
+            if (supportedBindings.contains(binding)) {
+                bindings.add(binding);
+            } else {
+                log.warn("Unknown SAML binding " + binding);
+            }
+        }
+        return bindings;
     }
 
     public static boolean getAuthnRequestsSigned() {
@@ -111,20 +140,16 @@ public class SAMLConfiguration {
                     generateKeyInfoForCredential(keyManager.getTlsCredential())));
         }
 
-        // LOGIN - SAML2_REDIRECT_BINDING_URI
-        AssertionConsumerService consumer = build(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
-        consumer.setLocation(baseURL);
-        consumer.setBinding(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-        consumer.setIndex(1);
-        consumer.setIsDefault(true);
-        spDescriptor.getAssertionConsumerServices().add(consumer);
-
-        // LOGIN - SAML2_POST_BINDING_URI
-        consumer = build(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
-        consumer.setLocation(baseURL);
-        consumer.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
-        consumer.setIndex(2);
-        spDescriptor.getAssertionConsumerServices().add(consumer);
+        // LOGIN
+        int index = 0;
+        for (String binding : getLoginBindings()) {
+            AssertionConsumerService consumer = build(AssertionConsumerService.DEFAULT_ELEMENT_NAME);
+            consumer.setLocation(baseURL);
+            consumer.setBinding(binding);
+            consumer.setIsDefault(index == 0);
+            consumer.setIndex(index++);
+            spDescriptor.getAssertionConsumerServices().add(consumer);
+        }
 
         // LOGOUT - SAML2_POST_BINDING_URI
         SingleLogoutService logoutService = build(SingleLogoutService.DEFAULT_ELEMENT_NAME);
