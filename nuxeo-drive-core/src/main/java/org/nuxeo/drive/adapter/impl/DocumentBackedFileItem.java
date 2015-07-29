@@ -27,12 +27,11 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * {@link DocumentModel} backed implementation of a {@link FileItem}.
- * 
+ *
  * @author Antoine Taillefer
  */
 public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem implements FileItem {
@@ -81,7 +80,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
         // Handle versioning
-        versionIfNeeded(doc, session);
+        FileSystemItemHelper.versionIfNeeded(factory, doc, session);
         BlobHolder bh = getBlobHolder(doc);
         Blob blob = getBlob(bh);
         blob.setFilename(name);
@@ -128,7 +127,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         CoreSession session = getSession();
         DocumentModel doc = getDocument(session);
         // Handle versioning
-        versionIfNeeded(doc, session);
+        FileSystemItemHelper.versionIfNeeded(factory, doc, session);
         // If blob's filename is empty, set it to the current name
         String blobFileName = blob.getFilename();
         if (StringUtils.isEmpty(blobFileName)) {
@@ -150,17 +149,17 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     /*--------------------- Protected -----------------*/
     protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) throws ClientException {
         this.factory = factory;
-        this.name = getFileName(doc);
-        this.folder = false;
+        name = getFileName(doc);
+        folder = false;
         updateDownloadURL();
         // TODO: should get the digest algorithm from the binary store
         // configuration, but it is not exposed as a public API for now
-        this.digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
+        digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
         updateDigest(doc);
-        if (this.digest == null) {
-            this.digestAlgorithm = null;
+        if (digest == null) {
+            digestAlgorithm = null;
         }
-        this.canUpdate = this.canRename;
+        canUpdate = canRename;
     }
 
     protected BlobHolder getBlobHolder(DocumentModel doc) throws ClientException {
@@ -221,13 +220,6 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         // Force digest computation for a StringBlob,
         // typically the note:note property of a Note document
         digest = FileSystemItemHelper.getDigest(blob, digestAlgorithm);
-    }
-
-    protected void versionIfNeeded(DocumentModel doc, CoreSession session) throws ClientException {
-        if (factory.needsVersioning(doc)) {
-            doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
-            session.saveDocument(doc);
-        }
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {

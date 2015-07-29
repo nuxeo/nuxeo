@@ -21,12 +21,16 @@ import java.io.IOException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * Helper for {@link FileSystemItem} manipulation.
- * 
+ *
  * @author Antoine Taillefer
  */
 public final class FileSystemItemHelper {
@@ -38,9 +42,20 @@ public final class FileSystemItemHelper {
     }
 
     /**
+     * @since 7.4
+     */
+    public static void versionIfNeeded(VersioningFileSystemItemFactory factory, DocumentModel doc, CoreSession session)
+            throws ClientException {
+        if (factory.needsVersioning(doc)) {
+            doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
+            session.saveDocument(doc);
+        }
+    }
+
+    /**
      * Gets the digest of the given blob. If null, computes it using the given digest algorithm. For now only md5 is
      * supported.
-     * 
+     *
      * @throws UnsupportedOperationException if the digest algorithm is not supported
      * @throws ClientException if the digest computation fails with an {@link IOException}
      */
