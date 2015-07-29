@@ -64,8 +64,8 @@ public final class FileSystemItemHelper {
                 try {
                     digest = DigestUtils.md5Hex(blob.getStream());
                 } catch (IOException e) {
-                    throw new NuxeoException(
-                            String.format("Error while computing digest for blob %s.", blob.getFilename()), e);
+                    throw new NuxeoException(String.format("Error while computing digest for blob %s.",
+                            blob.getFilename()), e);
                 }
             } else {
                 throw new UnsupportedOperationException(String.format("Unsupported digest algorithm %s.",

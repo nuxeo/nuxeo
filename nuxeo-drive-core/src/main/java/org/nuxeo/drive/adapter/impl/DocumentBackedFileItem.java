@@ -59,8 +59,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         initialize(factory, doc);
     }
 
-    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc)
-            {
+    public DocumentBackedFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
         this(factory, parentItem, doc, false);
     }
 
@@ -154,17 +153,17 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     /*--------------------- Protected -----------------*/
     protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) {
         this.factory = factory;
-        this.name = getFileName(doc);
-        this.folder = false;
+        name = getFileName(doc);
+        folder = false;
         updateDownloadURL();
         // TODO: should get the digest algorithm from the binary store
         // configuration, but it is not exposed as a public API for now
-        this.digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
+        digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
         updateDigest(doc);
-        if (this.digest == null) {
-            this.digestAlgorithm = null;
+        if (digest == null) {
+            digestAlgorithm = null;
         }
-        this.canUpdate = this.canRename;
+        canUpdate = canRename;
     }
 
     protected BlobHolder getBlobHolder(DocumentModel doc) {
