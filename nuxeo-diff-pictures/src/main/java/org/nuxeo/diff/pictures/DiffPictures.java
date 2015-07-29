@@ -31,6 +31,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -140,7 +141,6 @@ public class DiffPictures {
 
         Blob result = null;
         String finalName;
-        boolean mustTrackTempFile = false;
 
         commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND : inCommandLine;
 
@@ -174,14 +174,17 @@ public class DiffPictures {
         }
 
         String destFilePath;
-
-        if (StringUtils.isNotBlank(leftDocId)) {
-            File tempFolder = TempFilesHandler.prepareOrGetTempFolder(leftDocId, rightDocId);
-            destFilePath = tempFolder.getAbsolutePath() + File.separator + System.currentTimeMillis() + "-" + finalName;
+        String destFileExtension;
+        
+        int dotIndex = finalName.lastIndexOf('.');
+        if(dotIndex < 0) {
+            destFileExtension = ".tmp";
         } else {
-            mustTrackTempFile = true;
-            destFilePath = TEMP_DIR_PATH + File.separator + System.currentTimeMillis() + "-" + finalName;
+            destFileExtension = finalName.substring(dotIndex);
         }
+        
+        Blob tempBlob = Blobs.createBlobWithExtension(destFileExtension);
+        destFilePath = tempBlob.getFile().getAbsolutePath();
 
         params.addNamedParameter("targetFilePath", destFilePath);
 
@@ -194,20 +197,14 @@ public class DiffPictures {
         // that the CommandLineExecutorService assumes a non-zero return code is
         // an error => we must handle the thing by ourselves, basically just
         // checking if we do have a comparison file created by ImageMagick
-        File tempDestFile = new File(destFilePath);
-        if (!tempDestFile.exists()) {
+        File tempDestFile = tempBlob.getFile();
+        if (!tempDestFile.exists() || tempDestFile.length() < 1) {
             throw new NuxeoException("Failed to execute the command <" + commandLine + ">. Final command [ "
                     + execResult.getCommandLine() + " ] returned with error " + execResult.getReturnCode(),
                     execResult.getError());
-        } else {
-            if (mustTrackTempFile) {
-                // Well. If the GC cleans the object and the Framework deletes
-                // the file _before_ the browser gets it, then, too bad...
-                Framework.trackFile(tempDestFile, this);
-            }
         }
 
-        result = new FileBlob(tempDestFile);
+        result = Blobs.createBlob(tempDestFile);
         if (result != null) {
             result.setFilename(finalName);
         }

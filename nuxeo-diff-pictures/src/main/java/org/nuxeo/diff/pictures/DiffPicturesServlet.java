@@ -41,27 +41,15 @@ import org.nuxeo.ecm.platform.web.common.ServletHelper;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * /nuxeo/diffPictures?&action=diff&repo=therepo&leftDocId=123456&rightDocId= 456789012
- * &xpath=file:content&commandLine=thecommandline&fuzz=1000&highlightColor= Red&lowlightColor=White Depending on the
- * value of "action", other parameters are used or not
+ * /nuxeo/diffPictures?&repo=therepo&leftDocId=123456&rightDocId= 456789012
+ * &xpath=file:content&commandLine=thecommandline&fuzz=1000&highlightColor= Red&lowlightColor=White
+ * <p>
  * <ul>
- * <li>diff
- * <ul>
- * <li>This is the default value if <code>action</code> is not passed</li>
  * <li><code>leftDocId</code> and <code>rightDocId</code> are required</li>
  * <li>All other parameters are optional (commandLine, xpath, fuzz, ...). Default values are defined in
  * <code>DiffPictures</code></li>
  * </ul>
- * </li>
- * <li>cleanup
- * <ul>
- * <li>Tells the code to delete the temporary files. It is a good habit to ask for the cleanup<br/>
- * Returns a text message letting the caller knows everything went well.</li>
- * <li><code>leftDocId</code> and <code>rightDocId</code> are required (used to build unique file names)</li>
- * <li>Other parameters are not used</li>
- * </ul>
- * </li>
- * </ul>
+ * <p>
  * commandine, xpath, fuzz, highlightColor, lowlightColor and repo are optional Utility to force cleanup of temporary
  * files created on the server: /nuxeo/diffPictures?cleanup=true&leftDocId=123456&rightDocId=456789& WARNING: Why can't
  * I use the public static void downloadBlob() from DownloadServlet?
@@ -81,7 +69,6 @@ public class DiffPicturesServlet extends HttpServlet {
 
         DocumentModel leftDoc, rightDoc;
 
-        String action = req.getParameter("action");
         String leftDocId = req.getParameter("leftDocId");
         String rightDocId = req.getParameter("rightDocId");
 
@@ -93,20 +80,6 @@ public class DiffPicturesServlet extends HttpServlet {
             sendTextResponse(resp, "you must specify 'right' used for comparison against the left document.");
             return;
         }
-
-        if (StringUtils.isBlank(action)) {
-            action = "diff";
-        }
-        action = action.toLowerCase();
-
-        switch (action) {
-        case "cleanup":
-            TempFilesHandler.deleteTempFolder(leftDocId, rightDocId);
-            sendTextResponse(resp, "Temporaty files deleted");
-            return;
-        }
-
-        // Ok, not a special action, let's diff.
 
         String repo = req.getParameter("repo");
         String xpath = req.getParameter("xpath");
