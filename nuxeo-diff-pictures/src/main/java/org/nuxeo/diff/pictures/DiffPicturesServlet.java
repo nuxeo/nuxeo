@@ -171,8 +171,6 @@ public class DiffPicturesServlet extends HttpServlet {
 
     protected void sendBlobResult(HttpServletRequest req, HttpServletResponse resp, Blob blob) throws IOException {
 
-        log.warn("Should use DownloadServlet.downloadBlob with 7.3 and higher");
-
         InputStream in = blob.getStream();
         OutputStream out = resp.getOutputStream();
         String fileName = blob.getFilename();
