@@ -38,6 +38,7 @@ import org.nuxeo.runtime.api.Framework;
  * {@link VersioningFileSystemItemFactory}.
  *
  * @author Antoine Taillefer
+ * @since 7.4
  */
 @Operation(id = NuxeoDriveAttachBlob.ID, category = Constants.CAT_SERVICES, label = "Nuxeo Drive: Attach blob")
 public class NuxeoDriveAttachBlob {
