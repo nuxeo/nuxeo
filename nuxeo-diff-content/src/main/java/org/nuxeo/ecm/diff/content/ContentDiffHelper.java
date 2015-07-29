@@ -19,7 +19,7 @@ package org.nuxeo.ecm.diff.content;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +87,7 @@ public final class ContentDiffHelper {
             throw new NuxeoException(
                     "Cannot get URL from document view, probably because of a missing urlPattern contribution.");
         }
-        Map<String, String> requestParams = new HashMap<>();
+        Map<String, String> requestParams = new LinkedHashMap<>();
         requestParams.put(LABEL_URL_PARAM_NAME, propertyLabel);
         requestParams.put(XPATH_URL_PARAM_NAME, propertyXPath);
         if (!StringUtils.isEmpty(conversionType)) {

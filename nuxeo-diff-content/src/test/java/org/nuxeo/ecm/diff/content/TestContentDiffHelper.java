@@ -63,7 +63,7 @@ public class TestContentDiffHelper {
                 ContentDiffConversionType.html.name());
         StringBuilder sb = new StringBuilder("/nuxeo/nxdoc/test/");
         sb.append(doc.getId());
-        sb.append("/content_diff_fancybox?label=my.property.label&xPath=file:content&conversionType=html");
+        sb.append("/content_diff_fancybox?label=my.property.label&xPath=file%3Acontent&conversionType=html");
         assertEquals(sb.toString(), fancyBoxURL);
     }
 
