@@ -192,7 +192,7 @@ public class TestACP {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
-        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, false, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).creator("john").build(), false);
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
@@ -211,7 +211,7 @@ public class TestACP {
         assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
 
         // When i set Permission to a user
-        acp.addACE(ACL.LOCAL_ACL, "john", "comment", false, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", "comment").creator("john").build(), false);
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", "comment"));
@@ -226,10 +226,11 @@ public class TestACP {
         // Given an ACP
         ACP acp = getInheritedReadWriteACP();
         // When i set Permission to a user
-        boolean hasChanged = acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, false, null, null, null, null);
+
+        boolean hasChanged = acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).build(), false);
         assertTrue(hasChanged);
         // When i call the operation another time
-        hasChanged = acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, false, null, null, null, null);
+        hasChanged = acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).build(), false);
         // Then nothing should change
         assertFalse(hasChanged);
         assertEquals(1, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
@@ -241,12 +242,12 @@ public class TestACP {
         ACP acp = getInheritedReadWriteACP();
 
         // When i add the permission to a user with blocking inheritance
-        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).creator("john").build(), true);
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
 
-        // Other user don't have access anymor
+        // Other user don't have access anymore
         assertEquals(Access.DENY, acp.getAccess("jack", READ_WRITE));
 
         // Administrators still have access
@@ -260,7 +261,7 @@ public class TestACP {
         ACP acp = getInheritedReadWriteACP();
 
         // When i add the permission to a user with blocking inheritance
-        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, null, null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).build(), true);
 
     }
 
@@ -272,7 +273,7 @@ public class TestACP {
         acl.add(new ACE("john", READ_WRITE, true));
 
         // When i add the permission to a user with blocking inheritance
-        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).creator("john").build(), true);
 
         // Then he still have access and local ACL have an entry
         assertEquals(Access.GRANT, acp.getAccess("john", READ_WRITE));
@@ -336,7 +337,7 @@ public class TestACP {
         assertEquals(4, acp.getACL(ACL.LOCAL_ACL).getACEs().length);
 
         // When i call the removePermission operation
-        boolean hasChanged = acp.removeACEById(ACL.LOCAL_ACL, ace.getId());
+        boolean hasChanged = acp.removeACE(ACL.LOCAL_ACL, ace);
 
         // Then the user doesn't have any permission anymore
         assertTrue(hasChanged);
@@ -355,15 +356,15 @@ public class TestACP {
         assertEquals(Access.UNKNOWN, acp.getAccess("john", "comment"));
 
         // When i set Permission to a user with inheritance block
-        acp.addACE(ACL.LOCAL_ACL, "john", READ_WRITE, true, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("john", READ_WRITE).creator("john").build(), true);
 
         // only john have Permission
         assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
         assertEquals(Access.DENY, acp.getAccess("jack", "ReadWrite"));
         assertEquals(Access.DENY, acp.getAccess("jerry", "ReadWrite"));
 
-        acp.addACE(ACL.LOCAL_ACL, "jack", READ_WRITE, false, "john", null, null, null);
-        acp.addACE(ACL.LOCAL_ACL, "jerry", READ_WRITE, false, "john", null, null, null);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("jack", READ_WRITE).creator("john").build(), false);
+        acp.addACE(ACL.LOCAL_ACL, ACE.builder("jerry", READ_WRITE).creator("john").build(), false);
 
         // Check jack and jerry have permission, even with inheritance block
         assertEquals(Access.GRANT, acp.getAccess("john", "ReadWrite"));
@@ -376,7 +377,6 @@ public class TestACP {
         ACP acp = new ACPImpl();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
         acl = acp.getOrCreateACL(ACL.INHERITED_ACL);
-
         acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.READ_WRITE, true));
         return acp;
 

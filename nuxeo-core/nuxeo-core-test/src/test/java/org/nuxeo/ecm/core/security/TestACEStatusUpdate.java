@@ -65,7 +65,8 @@ public class TestACEStatusUpdate {
         Calendar begin = new GregorianCalendar();
         begin.setTimeInMillis(now.toInstant().plus(1, ChronoUnit.DAYS).toEpochMilli());
         ACP acp = doc.getACP();
-        acp.addACE(ACL.LOCAL_ACL, "leela", "Read", false, "Administrator", begin, null, null);
+        ACE ace = ACE.builder("leela", "Read").creator("Administrator").begin(begin).build();
+        acp.addACE(ACL.LOCAL_ACL, ace, false);
         doc.setACP(acp, true);
 
         ACE leelaACE = getACEFor(acp, "leela");
@@ -121,7 +122,8 @@ public class TestACEStatusUpdate {
         Calendar begin = new GregorianCalendar();
         begin.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
         ACP acp = doc.getACP();
-        acp.addACE(ACL.LOCAL_ACL, "leela", "Read", false, "Administrator", begin, null, null);
+        ACE ace = ACE.builder("leela", "Read").creator("Administrator").begin(begin).build();
+        acp.addACE(ACL.LOCAL_ACL, ace, false);
         doc.setACP(acp, true);
 
         ACE leelaACE = getACEFor(acp, "leela");

@@ -95,7 +95,7 @@ public class UpdatePermission {
     protected void updatePermission(DocumentModel doc) throws ClientException {
         Map<String, Serializable> contextData = new HashMap<>();
         if (notify) {
-            contextData.put(NOTIFY_KEY, notify);
+            contextData.put(NOTIFY_KEY, true);
             contextData.put(COMMENT_KEY, comment);
         }
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();

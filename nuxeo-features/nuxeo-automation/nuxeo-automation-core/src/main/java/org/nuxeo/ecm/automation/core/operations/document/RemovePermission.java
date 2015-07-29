@@ -25,6 +25,7 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
@@ -79,7 +80,8 @@ public class RemovePermission {
             permissionChanged = acp.removeACEsByUsername(aclName, user);
 
         } else if (id != null) {
-            permissionChanged = acp.removeACEById(aclName, id);
+            ACE ace = ACE.fromId(id);
+            permissionChanged = acp.removeACE(aclName, ace);
         }
 
         if (permissionChanged) {

@@ -68,8 +68,7 @@ public interface ACL extends List<ACE>, Serializable, Cloneable {
      *
      * @since 7.4
      */
-    boolean add(String username, String permission, boolean blockInheritance, String creator, Calendar begin,
-            Calendar end, Map<String, Serializable> contextData);
+    boolean add(ACE ace, boolean blockInheritance);
 
     /**
      * Update an ACE identified by its {@code id}.
@@ -78,13 +77,6 @@ public interface ACL extends List<ACE>, Serializable, Cloneable {
      */
     boolean update(String id, String username, String permission, boolean blockInheritance, String creator,
             Calendar begin, Calendar end, Map<String, Serializable> contextData);
-
-    /**
-     * Remove an ACE identified by its {@code id}.
-     *
-     * @since 7.4
-     */
-    boolean removeById(String id);
 
     /**
      * Remove all ACEs for {@username}.

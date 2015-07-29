@@ -330,14 +330,13 @@ public class ACPImpl implements ACP {
     }
 
     @Override
-    public boolean addACE(String aclName, String username, String permission, boolean blockInheritance, String creator,
-            Calendar begin, Calendar end, Map<String, Serializable> contextData) {
+    public boolean addACE(String aclName, ACE ace, boolean blockInheritance) {
         if (aclName == null) {
             throw new NullPointerException("'aclName' cannot be null");
         }
 
         ACL acl = getOrCreateACL(aclName);
-        boolean aclChanged = acl.add(username, permission, blockInheritance, creator, begin, end, contextData);
+        boolean aclChanged = acl.add(ace, blockInheritance);
         if (aclChanged) {
             addACL(acl);
         }
@@ -360,13 +359,13 @@ public class ACPImpl implements ACP {
     }
 
     @Override
-    public boolean removeACEById(String aclName, String id) {
+    public boolean removeACE(String aclName, ACE ace) {
         if (aclName == null) {
             throw new NullPointerException("'aclName' cannot be null");
         }
 
         ACL acl = getOrCreateACL(aclName);
-        boolean aclChanged = acl.removeById(id);
+        boolean aclChanged = acl.remove(ace);
         if (aclChanged) {
             addACL(acl);
         }

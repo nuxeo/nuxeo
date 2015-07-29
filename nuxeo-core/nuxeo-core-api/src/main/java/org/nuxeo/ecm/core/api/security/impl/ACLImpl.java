@@ -81,44 +81,34 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     }
 
     @Override
-    public boolean add(String username, String permission, boolean blockInheritance, String creator, Calendar begin,
-            Calendar end, Map<String, Serializable> contextData) {
+    public boolean add(ACE ace, boolean blockInheritance) {
         boolean aclChanged = false;
 
-        ACE aceToAdd = ACE.builder(username, permission)
-                          .creator(creator)
-                          .begin(begin)
-                          .end(end)
-                          .contextData(contextData)
-                          .build();
-
         List<ACE> aces = Lists.newArrayList(getACEs());
+        String username = ace.getUsername();
+        String creator = ace.getCreator();
         if (blockInheritance) {
-            if (StringUtils.isEmpty(creator)) {
+            if (StringUtils.isEmpty(ace.getCreator())) {
                 throw new IllegalArgumentException("Can't block inheritance without a creator");
             }
 
             aces.clear();
-            aces.add(aceToAdd);
+            aces.add(ace);
 
             if (!username.equals(creator)) {
-                aces.add(ACE.builder(creator, SecurityConstants.EVERYTHING)
-                            .creator(creator)
-                            .begin(begin)
-                            .end(end)
-                            .build());
+                aces.add(ACE.builder(creator, SecurityConstants.EVERYTHING).creator(creator).build());
             }
 
             aces.addAll(getAdminEverythingACES());
             aces.add(BLOCK_INHERITANCE_ACE);
             aclChanged = true;
         } else {
-            if (!aces.contains(aceToAdd)) {
+            if (!aces.contains(ace)) {
                 int pos = aces.indexOf(BLOCK_INHERITANCE_ACE);
                 if (pos >= 0) {
-                    aces.add(pos, aceToAdd);
+                    aces.add(pos, ace);
                 } else {
-                    aces.add(aceToAdd);
+                    aces.add(ace);
                 }
                 aclChanged = true;
             }
@@ -143,27 +133,21 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     public boolean update(String id, String username, String permission, boolean blockInheritance, String creator,
             Calendar begin, Calendar end, Map<String, Serializable> contextData) {
         // add the new ACE
-        boolean aclChanged = add(username, permission, blockInheritance, creator, begin, end, contextData);
+        ACE ace = ACE.builder(username, permission)
+                     .creator(creator)
+                     .begin(begin)
+                     .end(end)
+                     .contextData(contextData)
+                     .build();
+        boolean aclChanged = add(ace, blockInheritance);
 
         if (aclChanged) {
             // remove the old ACE
-            ACE ace = ACE.fromId(id);
-            if (contains(ace)) {
-                remove(ace);
+            ACE oldAce = ACE.fromId(id);
+            if (contains(oldAce)) {
+                remove(oldAce);
                 aclChanged = true;
             }
-        }
-
-        return aclChanged;
-    }
-
-    @Override
-    public boolean removeById(String id) {
-        boolean aclChanged = false;
-        ACE ace = ACE.fromId(id);
-        if (contains(ace)) {
-            remove(ace);
-            aclChanged = true;
         }
 
         return aclChanged;

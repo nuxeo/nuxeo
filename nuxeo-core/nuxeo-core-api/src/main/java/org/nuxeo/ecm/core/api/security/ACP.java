@@ -151,8 +151,7 @@ public interface ACP extends Serializable, Cloneable {
      *
      * @since 7.4
      */
-    boolean addACE(String aclName, String username, String permission, boolean blockInheritance, String creator,
-            Calendar begin, Calendar end, Map<String, Serializable> contextData);
+    boolean addACE(String aclName, ACE ace, boolean blockInheritance);
 
     /**
      * Update the ACE identified by {@code id} on the given {@code aclName}.
@@ -163,11 +162,11 @@ public interface ACP extends Serializable, Cloneable {
             String creator, Calendar begin, Calendar end, Map<String, Serializable> contextData);
 
     /**
-     * Remove an ACE identified by its {@code id} on the given {@code aclName}.
+     * Remove an ACE on the given {@code aclName}.
      *
      * @since 7.4
      */
-    boolean removeACEById(String aclName, String id);
+    boolean removeACE(String aclName, ACE ace);
 
     /**
      * Remove all ACEs for {@code username} on the given {@code aclName}.

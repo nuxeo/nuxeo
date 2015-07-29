@@ -31,6 +31,7 @@ import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
@@ -40,7 +41,8 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
  *
  * @since 5.7.3
  */
-@Operation(id = AddPermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Add Permission on the input document(s). Returns the document(s).", aliases = { "Document.AddACL" })
+@Operation(id = AddPermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Add Permission on the input document(s). Returns the document(s).", aliases = {
+        "Document.AddACL" })
 public class AddPermission {
 
     public static final String ID = "Document.AddPermission";
@@ -93,13 +95,13 @@ public class AddPermission {
         ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
         Map<String, Serializable> contextData = new HashMap<>();
         if (notify) {
-            contextData.put(NOTIFY_KEY, notify);
+            contextData.put(NOTIFY_KEY, true);
             contextData.put(COMMENT_KEY, comment);
         }
 
         String creator = session.getPrincipal().getName();
-        boolean permissionChanged = acp.addACE(aclName, user, permission, blockInheritance, creator, begin, end,
-                contextData);
+        ACE ace = ACE.builder(user, permission).creator(creator).begin(begin).end(end).contextData(contextData).build();
+        boolean permissionChanged = acp.addACE(aclName, ace, blockInheritance);
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
