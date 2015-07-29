@@ -284,7 +284,7 @@ public class DiffPictures {
         String lastModification;
         Calendar cal = (Calendar) rightDoc.getPropertyValue("dc:modified");
         if (cal == null) {
-            lastModification = "1234567";
+            lastModification = "" + Calendar.getInstance().getTimeInMillis();
         } else {
             lastModification = "" + cal.getTimeInMillis();
         }
