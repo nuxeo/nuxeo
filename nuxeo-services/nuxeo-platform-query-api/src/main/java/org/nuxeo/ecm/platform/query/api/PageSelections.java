@@ -107,4 +107,8 @@ public class PageSelections<T> {
         return getEntries();
     }
 
+    public boolean isEmpty() {
+        return getSize() == 0;
+    }
+
 }
