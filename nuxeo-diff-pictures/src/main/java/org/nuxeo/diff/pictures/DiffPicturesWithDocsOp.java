@@ -31,19 +31,19 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 
 /**
  * @since 7.4
  */
-@Operation(id = DiffPicturesOp.ID, category = Constants.CAT_CONVERSION, label = "Pictures: Diff", description = "Compare input blob with blob referenced in the context variable blob2VarName, using the commandLine and its parapeters (default values apply). Return the result of the diff as a picture")
-public class DiffPicturesOp {
+@Operation(id = DiffPicturesWithDocsOp.ID, category = Constants.CAT_CONVERSION, label = "Pictures: Diff with Docs", description = "Compare the pictures of the two documents (referenced by their ID or their path), using the commandLine and its parameters (default values apply). Does nopt check the documents contain pictures. Return the result of the diff as a picture")
+public class DiffPicturesWithDocsOp {
 
-    public static final String ID = "Pictures.Diff";
+    public static final String ID = "Pictures.DiffWithDocs";
 
     @Context
     protected CoreSession session;
@@ -51,10 +51,16 @@ public class DiffPicturesOp {
     @Context
     protected OperationContext ctx;
 
-    @Param(name = "blob2VarName", required = true)
-    protected String blob2VarName;
+    @Param(name = "leftDoc", required = true)
+    protected DocumentModel leftDoc;
 
-    @Param(name = "commandLine", required = true, values = { "diff-pictures-default" })
+    @Param(name = "rightDoc", required = true)
+    protected DocumentModel rightDoc;
+
+    @Param(name = "xpath", required = false, values = { "file:content" })
+    protected String xpath;
+
+    @Param(name = "commandLine", required = false, values = { "diff-pictures-default" })
     protected String commandLine = "diff-pictures-default";
 
     @Param(name = "parameters", required = false)
@@ -66,14 +72,10 @@ public class DiffPicturesOp {
     @Param(name = "targetFileNameSuffix", required = false)
     protected String targetFileNameSuffix = "";
 
-    @OperationMethod(collector = BlobCollector.class)
-    public Blob run(Blob inBlob) throws OperationException, CommandNotAvailable, IOException {
+    @OperationMethod()
+    public Blob run() throws OperationException, CommandNotAvailable, IOException {
+        
         Blob result = null;
-
-        Blob blob2 = (Blob) ctx.get(blob2VarName);
-        if (blob2 == null) {
-            throw new OperationException("The blob to append from variable context: '" + blob2VarName + "' is null.");
-        }
 
         Map<String, Serializable> serializableParameters = new HashMap<String, Serializable>();
         if (parameters != null && parameters.size() > 0) {
@@ -84,11 +86,11 @@ public class DiffPicturesOp {
         }
 
         if (StringUtils.isNotBlank(targetFileName) || StringUtils.isNotBlank(targetFileNameSuffix)) {
-            targetFileName = DiffPicturesUtils.updateTargetFileName(inBlob, targetFileName, targetFileNameSuffix);
+            targetFileName = DiffPicturesUtils.addSuffixToFileName(targetFileName, targetFileNameSuffix);
             serializableParameters.put("targetFileName", targetFileName);
         }
 
-        DiffPictures dp = new DiffPictures(inBlob, blob2);
+        DiffPictures dp = new DiffPictures(leftDoc, rightDoc, xpath);
         result = dp.compare(commandLine, serializableParameters);
 
         return result;
