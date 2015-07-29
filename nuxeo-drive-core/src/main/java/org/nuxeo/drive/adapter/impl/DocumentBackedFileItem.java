@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -82,7 +81,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
             // Handle versioning
-            versionIfNeeded(doc, session);
+            FileSystemItemHelper.versionIfNeeded(factory, doc, session);
             BlobHolder bh = getBlobHolder(doc);
             Blob blob = getBlob(bh);
             blob.setFilename(name);
@@ -132,7 +131,7 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
             /* Update doc properties */
             DocumentModel doc = getDocument(session);
             // Handle versioning
-            versionIfNeeded(doc, session);
+            FileSystemItemHelper.versionIfNeeded(factory, doc, session);
             // If blob's filename is empty, set it to the current name
             String blobFileName = blob.getFilename();
             if (StringUtils.isEmpty(blobFileName)) {
@@ -226,13 +225,6 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         // Force digest computation for a StringBlob,
         // typically the note:note property of a Note document
         digest = FileSystemItemHelper.getDigest(blob, digestAlgorithm);
-    }
-
-    protected void versionIfNeeded(DocumentModel doc, CoreSession session) {
-        if (factory.needsVersioning(doc)) {
-            doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
-            session.saveDocument(doc);
-        }
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {

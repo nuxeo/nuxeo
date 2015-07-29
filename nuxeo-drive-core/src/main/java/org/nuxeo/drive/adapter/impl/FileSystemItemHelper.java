@@ -21,8 +21,12 @@ import java.io.IOException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
+import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.versioning.VersioningService;
 
 /**
  * Helper for {@link FileSystemItem} manipulation.
@@ -35,6 +39,16 @@ public final class FileSystemItemHelper {
 
     private FileSystemItemHelper() {
         // Helper class
+    }
+
+    /**
+     * @since 7.4
+     */
+    public static void versionIfNeeded(VersioningFileSystemItemFactory factory, DocumentModel doc, CoreSession session) {
+        if (factory.needsVersioning(doc)) {
+            doc.putContextData(VersioningService.VERSIONING_OPTION, factory.getVersioningOption());
+            session.saveDocument(doc);
+        }
     }
 
     /**
