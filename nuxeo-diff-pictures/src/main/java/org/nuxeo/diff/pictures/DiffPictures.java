@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.CloseableFile;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
@@ -149,13 +150,22 @@ public class DiffPictures {
             finalName = "comp-" + b1.getFilename();
         }
 
-        // Assume the blob is backed by a File
+        String filePath1, filePath2;        
         CmdParameters params = new CmdParameters();
-        String sourceFilePath = b1.getFile().getAbsolutePath();
-        params.addNamedParameter("file1", sourceFilePath);
+        
+        try (CloseableFile cf = b1.getCloseableFile()) {
+            filePath1 = cf.getFile().getAbsolutePath();
+            params.addNamedParameter("file1", filePath1);
+        } catch (IOException e) {
+            throw new IOException("Could not get a valid File from left blob.", e);
+        }
 
-        sourceFilePath = b2.getFile().getAbsolutePath();
-        params.addNamedParameter("file2", sourceFilePath);
+        try (CloseableFile cf = b2.getCloseableFile()) {
+            filePath2 = cf.getFile().getAbsolutePath();
+            params.addNamedParameter("file2", filePath2);
+        } catch (IOException e) {
+            throw new IOException("Could not get a valid File from right blob.", e);
+        }
 
         checkDefaultParametersValues();
         for (Entry<String, Serializable> entry : clParameters.entrySet()) {
