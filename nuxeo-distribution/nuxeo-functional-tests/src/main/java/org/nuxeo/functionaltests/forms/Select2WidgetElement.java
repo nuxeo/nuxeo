@@ -29,6 +29,7 @@ import org.nuxeo.functionaltests.pages.search.SearchPage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -210,7 +211,12 @@ public class Select2WidgetElement extends WebFragmentImpl {
         if (wait4A4J) {
             arm.watchAjaxRequests();
         }
-        suggestion.click();
+        try {
+            suggestion.click();
+        } catch (StaleElementReferenceException e) {
+            suggestion = driver.findElement(By.xpath(S2_SUGGEST_RESULT_XPATH));
+            suggestion.click();
+        }
         if (wait4A4J) {
             arm.waitForAjaxRequests();
         }
