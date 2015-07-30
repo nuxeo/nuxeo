@@ -113,10 +113,8 @@ public class StatementImpl implements Statement {
 
     public void setSubject(Node subject) {
         if (subject != null) {
-            if (subject.isBlank()) {
-                this.subject = (Blank) subject;
-            } else if (subject.isResource()) {
-                this.subject = (Resource) subject;
+            if (subject instanceof Subject) {
+                this.subject = (Subject) subject;
             } else {
                 throw new InvalidSubjectException();
             }

@@ -25,13 +25,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -52,12 +56,15 @@ import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.GraphDescription;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
+import org.nuxeo.ecm.platform.relations.api.NodeType;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
 import org.nuxeo.ecm.platform.relations.api.QueryResult;
 import org.nuxeo.ecm.platform.relations.api.Resource;
 import org.nuxeo.ecm.platform.relations.api.Statement;
 import org.nuxeo.ecm.platform.relations.api.Subject;
+import org.nuxeo.ecm.platform.relations.api.impl.AbstractNode;
 import org.nuxeo.ecm.platform.relations.api.impl.NodeFactory;
+import org.nuxeo.ecm.platform.relations.api.impl.QueryResultImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.RelationDate;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
@@ -604,9 +611,32 @@ public class CoreGraph implements Graph {
         }
     }
 
+    public static final Pattern SPARQL_PAT1 = Pattern.compile("SELECT \\?s \\?p \\?o WHERE \\{ \\?s \\?p \\?o . \\?s <(.*)> <(.*)> . \\}");
+
     @Override
     public QueryResult query(String queryString, String language, String baseURI) {
-        throw new UnsupportedOperationException();
+        // language is ignored, assume SPARQL
+        Matcher matcher = SPARQL_PAT1.matcher(queryString);
+        if (!matcher.matches()) {
+            throw new UnsupportedOperationException("Cannot parse query: " + queryString);
+        }
+        Node predicate = NodeFactory.createResource(matcher.group(1));
+        Node object = NodeFactory.createResource(matcher.group(2));
+        // find subjects with this predicate and object
+        List<Node> subjects = getSubjects(predicate, object);
+        List<Map<String, Node>> results = new ArrayList<>();
+        if (!subjects.isEmpty()) {
+            // find all statements with these subjects
+            List<Statement> statements = getStatements(new Subjects(subjects), null, null);
+            for (Statement st : statements) {
+                Map<String, Node> map = new HashMap<>();
+                map.put("s", st.getSubject());
+                map.put("p", st.getPredicate());
+                map.put("o", st.getObject());
+                results.add(map);
+            }
+        }
+        return new QueryResultImpl(Integer.valueOf(results.size()), Arrays.asList("s", "p", "o"), results);
     }
 
     @Override
@@ -661,6 +691,27 @@ public class CoreGraph implements Graph {
         return Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
     }
 
+    /** Fake Node type used to pass down multiple nodes into whereBuilder. */
+    public static class Subjects extends AbstractNode implements Subject {
+
+        private static final long serialVersionUID = 1L;
+
+        protected List<Node> nodes;
+
+        public Subjects(List<Node> nodes) {
+            this.nodes = nodes;
+        }
+
+        public List<Node> getNodes() {
+            return nodes;
+        }
+
+        @Override
+        public NodeType getNodeType() {
+            return null;
+        }
+    }
+
     protected String whereBuilder(String query, Statement statement) {
         List<Object> params = new ArrayList<Object>(3);
         List<String> clauses = new ArrayList<String>(3);
@@ -677,13 +728,34 @@ public class CoreGraph implements Graph {
 
         Node s = statement.getSubject();
         if (s != null) {
-            NodeAsString sn = getNodeAsString(s);
-            if (sn.id != null) {
-                clauses.add(REL_SOURCE_ID + " = ?");
-                params.add(sn.id);
+            if (s instanceof Subjects) {
+                List<Node> subjects = ((Subjects) s).getNodes();
+                if (subjects.isEmpty()) {
+                    throw new UnsupportedOperationException("empty subjects");
+                }
+                StringBuilder buf = new StringBuilder(REL_SOURCE_URI);
+                buf.append(" IN (");
+                for (Node sub : subjects) {
+                    NodeAsString sn = getNodeAsString(sub);
+                    if (sn.id != null) {
+                        throw new UnsupportedOperationException("subjects ListNode with id instead of uri" + subjects);
+                    }
+                    buf.append("?, ");
+                    params.add(sn.uri);
+                }
+                buf.setLength(buf.length() - 2); // remove last comma/space
+                buf.append(")");
+                clauses.add(buf.toString());
             } else {
-                clauses.add(REL_SOURCE_URI + " = ?");
-                params.add(sn.uri);
+                NodeAsString sn = getNodeAsString(s);
+                if (sn.id != null) {
+                    clauses.add(REL_SOURCE_ID + " = ?");
+                    params.add(sn.id);
+                } else {
+                    clauses.add(REL_SOURCE_URI + " = ?");
+                    params.add(sn.uri);
+                }
+
             }
         }
 
