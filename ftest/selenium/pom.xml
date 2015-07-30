@@ -9,10 +9,10 @@
   </parent>
 
   <groupId>org.nuxeo.tool</groupId>
-  <artifactId>selenium-utility</artifactId>
+  <artifactId>nuxeo-platform-forms-layout-demo-selenium-tests</artifactId>
   <packaging>pom</packaging>
-  <name>Utility POM for running Selenium tests</name>
-  <description>This POM uses an assembly for running functional tests.</description>
+  <name>Layout Demo Functional Tests with Selenium</name>
+  <description>Layout Demo Functional Tests with Selenium</description>
 
   <dependencies>
     <dependency>
