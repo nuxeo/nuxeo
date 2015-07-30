@@ -43,7 +43,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.PropertyException;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -183,7 +183,12 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             Serializable value = null;
             try {
                 value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
-            } catch (PropertyException | UnsupportedOperationException e) {
+            } catch (PropertyException e) {
+                if (source instanceof DeletedDocumentModel) {
+                    log.debug("Unable to get property: " + exp + " on a DeletedDocumentModel, skipping.");
+                }
+                continue;
+            } catch (UnsupportedOperationException e) {
                 if (source instanceof DeletedDocumentModel) {
                     log.debug("Can not evaluate the expression: " + exp + " on a DeletedDocumentModel, skipping.");
                 }
