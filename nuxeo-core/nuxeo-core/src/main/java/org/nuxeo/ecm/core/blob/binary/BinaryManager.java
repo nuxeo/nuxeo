@@ -34,7 +34,6 @@ public interface BinaryManager {
      *
      * @param blobProviderId the blob provider id for this binary manager
      * @param properties initialization properties
-     *
      * @since 7.3
      */
     void initialize(String blobProviderId, Map<String, String> properties) throws IOException;

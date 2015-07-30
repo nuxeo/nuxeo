@@ -44,7 +44,6 @@ import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.common.collections.ScopedMap;
 import org.nuxeo.common.utils.FileUtils;
@@ -290,8 +289,8 @@ public class TestSQLRepositoryAPI {
         session.save();
 
         doc = session.getDocument(docRef);
-        assertEquals("text/plain", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/content/mime-type")
-                                      .getValue());
+        assertEquals("text/plain",
+                doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/content/mime-type").getValue());
         assertEquals(Long.valueOf(0), doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/height").getValue());
         assertEquals("vignettelabel", doc.getProperty("cmpf:attachedFile/vignettes/vignette[0]/label").getValue());
 
@@ -372,9 +371,8 @@ public class TestSQLRepositoryAPI {
                 String propertyPath = String.format("cmpf:attachedFile/vignettes/%d/", j);
                 assertEquals(Long.valueOf(j), doc.getProperty(propertyPath + "height").getValue());
                 assertEquals(Long.valueOf(j), doc.getProperty(propertyPath + "width").getValue());
-                assertEquals(String.format("document %d, vignette %d", i, j), doc.getProperty(propertyPath + "content")
-                                                                                 .getValue(Blob.class)
-                                                                                 .getString());
+                assertEquals(String.format("document %d, vignette %d", i, j),
+                        doc.getProperty(propertyPath + "content").getValue(Blob.class).getString());
             }
         }
     }
@@ -1229,8 +1227,8 @@ public class TestSQLRepositoryAPI {
         // TransactionHelper.startTransaction();
         dumpAllDocuments(session);
 
-        assertTrue("NXP-14686 removeChildren fails to delete orphan version", session.query("SELECT * FROM Document")
-                                                                                     .isEmpty());
+        assertTrue("NXP-14686 removeChildren fails to delete orphan version",
+                session.query("SELECT * FROM Document").isEmpty());
     }
 
     @Test

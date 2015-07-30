@@ -31,10 +31,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.ecm.core.blob.binary.Binary;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestDefaultBinaryManager extends NXRuntimeTestCase {
