@@ -24,6 +24,8 @@ import static org.assertj.core.api.Assertions.fail;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assume;
@@ -37,8 +39,8 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
+
 import org.nuxeo.runtime.test.Failures;
-import org.nuxeo.runtime.test.runner.RandomBug.Repeat;
 import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
 
 /**
@@ -48,6 +50,7 @@ import org.nuxeo.runtime.test.runner.RandomBug.RepeatRule;
  * @since 5.9.5
  */
 public class RandomBugTest {
+    private static final Log log = LogFactory.getLog(RandomBugTest.class);
 
     protected static final String FAILURE_MESSAGE = "FAILURE";
 
@@ -73,8 +76,7 @@ public class RandomBugTest {
 
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class })
-    public static class BeforeWithIgnoredTest {
-
+    public static class BeforeWithRandomTest {
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
@@ -93,14 +95,13 @@ public class RandomBugTest {
     @Test
     public void beforeShouldNotRunWhenAllTestsAreIgnored() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
-        runClassAndVerifyNoFailures(BeforeWithIgnoredTest.class,
-                "Before method should not have been executed because the test method is ignored");
+        runClassAndVerify(BeforeWithRandomTest.class,
+                "Before method should not have been executed because the test method is ignored", 1, 0, 1);
     }
 
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class })
-    public static class AfterWithIgnoredTest {
-
+    public static class AfterWithRandomTest {
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
@@ -119,35 +120,56 @@ public class RandomBugTest {
     @Test
     public void afterShouldNotRunWhenAllTestsAreIgnored() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
-        runClassAndVerifyNoFailures(AfterWithIgnoredTest.class,
-                "After method should not have been executed because the test method is ignored");
+        runClassAndVerify(AfterWithRandomTest.class,
+                "After method should not have been executed because the test method is ignored", 1, 0, 1);
     }
 
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class })
     @RandomBug.Repeat(issue = "failingTest")
     public static class FailingTest {
-         @ClassRule
-         public static final IgnoreInner ignoreInner = new IgnoreInner();
+        @ClassRule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Inject
         @Named("test")
         RepeatRule repeatRule;
 
         @Test
-        @RandomBug.Repeat(issue = "failingTest", bypass = true)
+        @RandomBug.Repeat(issue = "failingTest.other", bypass = true)
         public void other() throws Exception {
-            return;
+            log.trace(repeatRule.statement.serial);
+            fail("should be bypassed");
         }
 
         @Test
-        public void failAfterThreeRetry() throws Exception {
-            if (repeatRule.statement.serial < 3) {
-                return;
-            }
-            fail("on third retry");
+        public void success() {
+            log.trace(repeatRule.statement.serial);
         }
 
+        @Test
+        public void failbeforeFiveRetry() throws Exception {
+            log.trace(repeatRule.statement.serial);
+            if (repeatRule.statement.serial < 5) {
+                fail("on retry " + repeatRule.statement.serial);
+            }
+        }
+
+        @Test
+        public void successOnSevenRetry() throws Exception {
+            log.trace(repeatRule.statement.serial);
+            if (repeatRule.statement.serial != 7) {
+                fail("on retry " + repeatRule.statement.serial);
+            }
+        }
+
+        @Test
+        public void failAfterTenRetry() throws Exception {
+            log.trace(repeatRule.statement.serial);
+            if (repeatRule.statement.serial > 10) {
+                fail("on retry " + repeatRule.statement.serial);
+            }
+        }
     }
 
     @RunWith(FeaturesRunner.class)
@@ -157,72 +179,124 @@ public class RandomBugTest {
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Inject
-        @Named("test")
-        RepeatRule testRule;
-
-        @Inject
         @Named("method")
         RepeatRule methodRule;
 
         @Test
+        @RandomBug.Repeat(issue = "failingMethod.other", bypass = true)
         public void other() throws Exception {
+            log.trace(methodRule.statement.serial);
+            fail("should be bypassed");
+        }
 
+        @Test
+        public void success() {
+            log.trace(methodRule.statement);
+        }
+
+        @Test
+        @RandomBug.Repeat(issue = "failingMethod")
+        public void failbeforeFiveRetry() throws Exception {
+            log.trace(methodRule.statement.serial);
+            if (methodRule.statement.serial < 5) {
+                fail("on retry " + methodRule.statement.serial);
+            }
+        }
+
+        @Test
+        @RandomBug.Repeat(issue = "failingMethod")
+        public void successOnSevenRetry() throws Exception {
+            log.trace(methodRule.statement.serial);
+            if (methodRule.statement.serial != 7) {
+                fail("on retry " + methodRule.statement.serial);
+            }
         }
 
         @Test
         @RandomBug.Repeat(issue = "failingMethod")
         public void failAfterTenRetry() throws Exception {
-            if (methodRule.statement.serial < 10) {
-                return;
+            log.trace(methodRule.statement.serial);
+            if (methodRule.statement.serial > 10) {
+                fail("on retry " + methodRule.statement.serial);
             }
-            fail("on tenth retry");
         }
-
     }
 
     @Test
-    public void testBypass() {
+    public void testBypassOnClass() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
-        runClassAndVerifyNoFailures(FailingTest.class, "Test should be ignored in BYPASS mode!");
+        runClassAndVerify(FailingTest.class, "Test should be ignored in BYPASS mode!", 0, 0, 1);
     }
 
     @Test
-    public void testStrict() {
+    public void testBypassOnMethod() {
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.BYPASS.toString());
+        runClassAndVerify(FailingMethod.class, "Test should be ignored in BYPASS mode!", 5, 0, 4);
+    }
+
+    @Test
+    public void testStrictOnClass() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.STRICT.toString());
-        {
-            Result result = JUnitCore.runClasses(FailingTest.class);
-            assertThat(result.wasSuccessful()).as("strict mode should reveal failure").isFalse();
-            assertThat(result.getIgnoreCount()).isEqualTo(0);
-        }
-        {
-            Result result = JUnitCore.runClasses(FailingMethod.class);
-            assertThat(result.wasSuccessful()).as("strict mode should reveal failure").isFalse();
-            assertThat(result.getIgnoreCount()).isEqualTo(0);
-        }
+        runClassAndVerify(FailingTest.class, "STRICT mode should reveal failure", 5, 2, 1);
     }
 
     @Test
-    public void testRelax() {
+    public void testStrictOnMethod() {
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.STRICT.toString());
+        runClassAndVerify(FailingMethod.class, "STRICT mode should reveal failure", 5, 3, 1);
+    }
+
+    @Test
+    public void testRelaxOnClass() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
-        Result result = JUnitCore.runClasses(FailingTest.class);
-        if (!result.wasSuccessful()) {
-            Failures failures = new Failures(result.getFailures());
-            fail("Unexpected failure: RELAX mode expects a success\n" + failures.toString());
-        }
+        // JC: it remembers the failures: result.wasSuccessful() == false
+        runClassAndVerify(FailingTest.class, "RELAX mode expects a success", 35, 10, 7);
+    }
+
+    @Test
+    public void testRelaxOnMethod() {
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
+        runClassAndVerify(FailingMethod.class, "RELAX mode expects a success", 5, 0, 1);
     }
 
     public static class ThisFeature extends SimpleFeature {
-
         public int repeated;
 
         @Override
         public void beforeSetup(FeaturesRunner runner) throws Exception {
             repeated++;
+            log.trace(runner.toString() + " " + repeated);
         }
     }
 
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class, ThisFeature.class })
+    public static class RepeatFeaturesMethod {
+        @ClassRule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
+
+        @Inject
+        public FeaturesRunner runner;
+
+        public ThisFeature feature;
+
+        @Before
+        public void injectFeature() {
+            feature = runner.getFeature(ThisFeature.class);
+        }
+
+        @Test
+        @RandomBug.Repeat(issue = "repeatedMethod", onFailure = 5)
+        public void repeatedTest() {
+            if (feature.repeated < 5) {
+                fail("should fail");
+            }
+        }
+    }
+
+    @RunWith(FeaturesRunner.class)
+    @Features({ RandomBug.Feature.class, ThisFeature.class })
+    @RandomBug.Repeat(issue = "repeatedTest", onFailure = 5)
     public static class RepeatFeaturesTest {
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
@@ -238,7 +312,6 @@ public class RandomBugTest {
         }
 
         @Test
-        @Repeat(issue = "repeatedTest", onFailure = 5)
         public void repeatedTest() {
             if (feature.repeated < 5) {
                 fail("should fail");
@@ -247,24 +320,27 @@ public class RandomBugTest {
     }
 
     @Test
-    public void shouldRepeatFeatures() {
+    public void shouldRepeatFeaturesOnClass() {
         System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
-        Result result = JUnitCore.runClasses(RepeatFeaturesTest.class);
-        if (!result.wasSuccessful()) {
-            Failures failures = new Failures(result.getFailures());
-            fail("Unexpected failure\n" + failures.toString());
-        }
+        runClassAndVerify(RepeatFeaturesTest.class, "RELAX mode expects a success", 5, 4, 0);
     }
 
-    protected void runClassAndVerifyNoFailures(Class<?> klass, String testFailureDescription) {
+    @Test
+    public void shouldRepeatFeaturesOnMethod() {
+        System.setProperty(RandomBug.MODE_PROPERTY, RandomBug.Mode.RELAX.toString());
+        runClassAndVerify(RepeatFeaturesMethod.class, "RELAX mode expects a success", 1, 0, 0);
+    }
+
+    protected Result runClassAndVerify(Class<?> klass, String testFailureDescription, int runCount, int failureCount,
+            int ignoreCount) {
         Result result = JUnitCore.runClasses(klass);
-        analyseResult(result, testFailureDescription);
-    }
-
-    protected void analyseResult(Result result, String testFailureDescription) {
-        if (!result.wasSuccessful()) {
+        assertThat(result.getRunCount()).isEqualTo(runCount);
+        assertThat(result.getFailureCount()).isEqualTo(failureCount);
+        if (failureCount == 0 && !result.wasSuccessful()) {
             new Failures(result).fail(FAILURE_MESSAGE, testFailureDescription);
         }
+        assertThat(result.getIgnoreCount()).isEqualTo(ignoreCount);
+        return result;
     }
 
 }

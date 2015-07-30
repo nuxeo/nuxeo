@@ -22,10 +22,11 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.MDC;
 import org.junit.ClassRule;
 import org.junit.Ignore;
@@ -97,6 +98,7 @@ import org.junit.runners.model.Statement;
  * @since 5.9.5
  */
 public class RandomBug {
+    private static final Log log = LogFactory.getLog(RandomBug.class);
 
     protected static final RandomBug self = new RandomBug();
 
@@ -155,16 +157,19 @@ public class RandomBug {
             if (actual == null) {
                 return base;
             }
-            return statement = onRepeat(actual, notifier, base);
+            return statement = onRepeat(actual, notifier, base, description);
         }
 
         @Override
-        public Statement apply(Statement base, FrameworkMethod method, Object target) {
+        public Statement apply(Statement base, FrameworkMethod method, Object fixtureTarget) {
             final Repeat actual = method.getAnnotation(Repeat.class);
             if (actual == null) {
                 return base;
             }
-            return statement = onRepeat(actual, notifier, base);
+            Class<?> fixtureType = fixtureTarget.getClass();
+            Description description = Description.createTestDescription(fixtureType, method.getName(),
+                    method.getAnnotations());
+            return statement = onRepeat(actual, notifier, base, description);
         }
     }
 
@@ -212,19 +217,54 @@ public class RandomBug {
 
         protected final RunListener listener = new RunListener() {
             @Override
+            public void testStarted(Description desc) throws Exception {
+                log.debug(displayName(desc) + " STARTED");
+            };
+
+            @Override
             public void testFailure(Failure failure) throws Exception {
                 gotFailure = true;
+                log.debug(displayName(failure.getDescription()) + " FAILURE");
+                log.trace(failure, failure.getException());
             }
+
+            @Override
+            public void testAssumptionFailure(Failure failure) {
+                log.debug(displayName(failure.getDescription()) + " ASSUMPTION FAILURE");
+                log.trace(failure, failure.getException());
+            }
+
+            @Override
+            public void testIgnored(Description desc) throws Exception {
+                log.debug(displayName(desc) + " IGNORED");
+            };
+
+            @Override
+            public void testFinished(Description desc) throws Exception {
+                log.debug(displayName(desc) + " FINISHED");
+            };
         };
 
         protected final Statement base;
 
         protected int serial;
 
-        protected RepeatStatement(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
+        protected Description description;
+
+        protected RepeatStatement(Repeat someParams, RunNotifier aNotifier, Statement aStatement,
+                Description aDescription) {
             params = someParams;
             notifier = aNotifier;
             base = aStatement;
+            description = aDescription;
+        }
+
+        protected String displayName(Description desc) {
+            String displayName = desc.getClassName().substring(desc.getClassName().lastIndexOf(".") + 1);
+            if (desc.isTest()) {
+                displayName += "." + desc.getMethodName();
+            }
+            return displayName;
         }
 
         protected void onEnter(int aSerial) {
@@ -240,28 +280,45 @@ public class RandomBug {
             Error error = error();
             notifier.addListener(listener);
             try {
-                for (int i = 1; i <= retryCount(); i++) {
-                    onEnter(i);
+                log.debug(displayName(description) + " STARTED");
+                for (int retry = 1; retry <= retryCount(); retry++) {
+                    gotFailure = false;
+                    onEnter(retry);
                     try {
+                        log.debug(displayName(description) + " retry " + retry);
                         base.evaluate();
-                        if (!gotFailure && returnOnSuccess()) {
-                            return;
-                        }
+                    } catch (AssumptionViolatedException cause) {
+                        Throwable t = new Throwable("On retry " + retry).initCause(cause);
+                        error.addSuppressed(t);
+                        notifier.fireTestAssumptionFailed(new Failure(description, t));
                     } catch (Throwable cause) {
-                        error.addSuppressed(cause);
+                        // Repeat annotation is on method (else the Throwable is not raised up to here)
+                        Throwable t = new Throwable("On retry " + retry).initCause(cause);
+                        error.addSuppressed(t);
                         if (returnOnFailure()) {
-                            throw error;
+                            notifier.fireTestFailure(new Failure(description, t));
+                        } else {
+                            gotFailure = true;
+                            log.debug(displayName(description) + " FAILURE SWALLOW");
+                            log.trace(t, t);
                         }
                     } finally {
                         onLeave();
                     }
                     if (gotFailure && returnOnFailure()) {
+                        log.debug(displayName(description) + " returnOnFailure");
+                        return;
+                    }
+                    if (!gotFailure && returnOnSuccess()) {
+                        log.debug(displayName(description) + " returnOnSuccess");
                         return;
                     }
                 }
             } finally {
+                log.debug(displayName(description) + " FINISHED");
                 notifier.removeListener(listener);
             }
+            log.trace("throw " + error);
             throw error;
         }
 
@@ -272,14 +329,14 @@ public class RandomBug {
         protected abstract boolean returnOnSuccess();
 
         protected abstract boolean returnOnFailure();
-
     }
 
     protected class RepeatOnFailure extends RepeatStatement {
         protected String issue;
 
-        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
-            super(someParams, aNotifier, aStatement);
+        protected RepeatOnFailure(Repeat someParams, RunNotifier aNotifier, Statement aStatement,
+                Description description) {
+            super(someParams, aNotifier, aStatement, description);
         }
 
         @Override
@@ -305,8 +362,9 @@ public class RandomBug {
     }
 
     protected class RepeatOnSuccess extends RepeatStatement {
-        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
-            super(someParams, aNotifier, aStatement);
+        protected RepeatOnSuccess(Repeat someParams, RunNotifier aNotifier, Statement aStatement,
+                Description description) {
+            super(someParams, aNotifier, aStatement, description);
         }
 
         @Override
@@ -333,13 +391,13 @@ public class RandomBug {
     }
 
     protected class Bypass extends RepeatStatement {
-        public Bypass(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
-            super(someParams, aNotifier, aStatement);
+        public Bypass(Repeat someParams, RunNotifier aNotifier, Statement aStatement, Description description) {
+            super(someParams, aNotifier, aStatement, description);
         }
 
         @Override
         public void evaluate() throws Throwable {
-            throw new AssumptionViolatedException("Random bug ignored (bypass mode): " + params.issue());
+            notifier.fireTestIgnored(description);
         }
 
         @Override
@@ -363,17 +421,18 @@ public class RandomBug {
         }
     }
 
-    protected RepeatStatement onRepeat(Repeat someParams, RunNotifier aNotifier, Statement aStatement) {
+    protected RepeatStatement onRepeat(Repeat someParams, RunNotifier aNotifier, Statement aStatement,
+            Description description) {
         if (someParams.bypass()) {
-            return new Bypass(someParams, aNotifier, aStatement);
+            return new Bypass(someParams, aNotifier, aStatement, description);
         }
         switch (fetchMode()) {
         case BYPASS:
-            return new Bypass(someParams, aNotifier, aStatement);
+            return new Bypass(someParams, aNotifier, aStatement, description);
         case STRICT:
-            return new RepeatOnSuccess(someParams, aNotifier, aStatement);
+            return new RepeatOnSuccess(someParams, aNotifier, aStatement, description);
         case RELAX:
-            return new RepeatOnFailure(someParams, aNotifier, aStatement);
+            return new RepeatOnFailure(someParams, aNotifier, aStatement, description);
         }
         throw new IllegalArgumentException("no such mode");
     }

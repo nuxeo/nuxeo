@@ -76,23 +76,24 @@ public class Failures {
      */
     public void fail(String originalMessage, String customMessage) {
         if (failures.isEmpty()) {
-            return;
+            Assert.fail(customMessage);
         }
         StringBuffer buffer = new StringBuffer();
         int i = 1;
-        AssertionFailedError errors = new AssertionFailedError();
+        AssertionFailedError errors = new AssertionFailedError(customMessage);
+        buffer.append(customMessage);
         for (Failure failure : failures) {
             buffer.append("\n* Failure " + i + ": ");
+            String trace = failure.getTrace();
             if (originalMessage != null && originalMessage.equals(failure.getMessage())) {
-                buffer.append(failure.getTestHeader() + ":" + customMessage);
-            } else {
-                buffer.append(String.format("Unexpected failure at %s\n%s", failure.getTestHeader(), failure.getTrace()));
-                errors.addSuppressed(failure.getException());
+                trace.replaceAll(originalMessage, customMessage);
             }
+            buffer.append(failure.getTestHeader()).append("\n").append(trace);
+            errors.addSuppressed(failure.getException());
             i++;
         }
         // Log because JUnit swallows some parts of the stack trace
-        log.error(errors.getMessage(), errors);
+        log.debug(errors.getMessage(), errors);
         Assert.fail(buffer.toString());
     }
 }
