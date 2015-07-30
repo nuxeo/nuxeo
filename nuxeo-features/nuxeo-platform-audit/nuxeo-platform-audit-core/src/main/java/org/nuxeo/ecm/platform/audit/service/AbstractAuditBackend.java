@@ -67,7 +67,6 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
  * Abstract class to share code between {@link AuditBackend} implementations
  * 
  * @author tiry
- * 
  */
 public abstract class AbstractAuditBackend implements AuditBackend {
 
@@ -80,15 +79,13 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         this.component = component;
     }
 
-    protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(
-            new ExpressionFactoryImpl());
+    protected final ExpressionEvaluator expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
 
     protected Principal guardedPrincipal(CoreSession session) {
         try {
             return session.getPrincipal();
         } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + session, e);
+            throw new AuditRuntimeException("Cannot get principal from " + session, e);
         }
     }
 
@@ -96,13 +93,11 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         try {
             return event.getPrincipal();
         } catch (Exception e) {
-            throw new AuditRuntimeException("Cannot get principal from "
-                    + event, e);
+            throw new AuditRuntimeException("Cannot get principal from " + event, e);
         }
     }
 
-    protected DocumentModel guardedDocument(CoreSession session,
-            DocumentRef reference) {
+    protected DocumentModel guardedDocument(CoreSession session, DocumentRef reference) {
         if (session == null) {
             return null;
         }
@@ -116,8 +111,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         }
     }
 
-    protected DocumentModelList guardedDocumentChildren(CoreSession session,
-            DocumentRef reference) throws AuditException {
+    protected DocumentModelList guardedDocumentChildren(CoreSession session, DocumentRef reference)
+            throws AuditException {
         try {
             return session.getChildren(reference);
         } catch (ClientException e) {
@@ -125,8 +120,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         }
     }
 
-    protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc,
-            Principal principal) {
+    protected LogEntry doCreateAndFillEntryFromDocument(DocumentModel doc, Principal principal) {
         LogEntry entry = newLogEntry();
         entry.setDocPath(doc.getPathAsString());
         entry.setDocType(doc.getType());
@@ -141,8 +135,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         try {
             creationDate = (Calendar) doc.getProperty("dublincore", "created");
         } catch (ClientException e) {
-            throw new AuditRuntimeException(
-                    "Cannot fetch date from dublin core for " + doc, e);
+            throw new AuditRuntimeException("Cannot fetch date from dublin core for " + doc, e);
         }
         if (creationDate != null) {
             entry.setEventDate(creationDate.getTime());
@@ -153,8 +146,8 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return entry;
     }
 
-    protected void doPutExtendedInfos(LogEntry entry,
-            EventContext eventContext, DocumentModel source, Principal principal) {
+    protected void doPutExtendedInfos(LogEntry entry, EventContext eventContext, DocumentModel source,
+            Principal principal) {
         if (source instanceof DeletedDocumentModel) {
             // nothing to log ; it's a light doc
             return;
@@ -172,13 +165,11 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                 try {
                     adapter = source.getAdapter(ad.getKlass());
                 } catch (Exception e) {
-                    log.debug(String.format(
-                            "can't get adapter for %s to log extinfo: %s",
-                            source.getPathAsString(), e.getMessage()));
+                    log.debug(String.format("can't get adapter for %s to log extinfo: %s", source.getPathAsString(),
+                            e.getMessage()));
                 }
                 if (adapter != null) {
-                    expressionEvaluator.bindValue(context, ad.getName(),
-                            adapter);
+                    expressionEvaluator.bindValue(context, ad.getName(), adapter);
                 }
             }
         }
@@ -191,8 +182,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             String exp = descriptor.getExpression();
             Serializable value = null;
             try {
-                value = expressionEvaluator.evaluateExpression(context, exp,
-                        Serializable.class);
+                value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
             } catch (ELException e) {
                 continue;
             }
@@ -263,9 +253,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                         entry.setDocLifeCycle(document.getCurrentLifeCycleState());
                     }
                 } catch (ClientException e1) {
-                    throw new AuditRuntimeException(
-                            "Cannot fetch life cycle state from " + document,
-                            e1);
+                    throw new AuditRuntimeException("Cannot fetch life cycle state from " + document, e1);
                 }
             }
             if (LifeCycleConstants.TRANSITION_EVENT.equals(eventName)) {
@@ -303,18 +291,16 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return entry;
     }
 
-    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange,
-            String category, String path, int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(String[] eventIds, String dateRange, String category, String path,
+            int pageNb, int pageSize) {
         String[] categories = { category };
-        return queryLogsByPage(eventIds, dateRange, categories, path, pageNb,
-                pageSize);
+        return queryLogsByPage(eventIds, dateRange, categories, path, pageNb, pageSize);
     }
 
-    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit,
-            String category, String path, int pageNb, int pageSize) {
+    public List<LogEntry> queryLogsByPage(String[] eventIds, Date limit, String category, String path, int pageNb,
+            int pageSize) {
         String[] categories = { category };
-        return queryLogsByPage(eventIds, limit, categories, path, pageNb,
-                pageSize);
+        return queryLogsByPage(eventIds, limit, categories, path, pageNb, pageSize);
     }
 
     @Override
@@ -327,8 +313,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         return ExtendedInfoImpl.createExtendedInfo(value);
     }
 
-    protected long syncLogCreationEntries(BaseLogEntryProvider provider,
-            String repoId, String path, Boolean recurs) {
+    protected long syncLogCreationEntries(BaseLogEntryProvider provider, String repoId, String path, Boolean recurs) {
 
         provider.removeEntries(DocumentEventTypes.DOCUMENT_CREATED, path);
         try (CoreSession session = CoreInstance.openCoreSession(repoId)) {
@@ -342,13 +327,11 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
             return nbAddedEntries;
         } catch (ClientException e) {
-            throw new AuditRuntimeException("Cannot open core session for "
-                    + repoId, e);
+            throw new AuditRuntimeException("Cannot open core session for " + repoId, e);
         }
     }
 
-    protected long doSyncNode(BaseLogEntryProvider provider, CoreSession session,
-            DocumentModel node, boolean recurs) {
+    protected long doSyncNode(BaseLogEntryProvider provider, CoreSession session, DocumentModel node, boolean recurs) {
 
         long nbSyncedEntries = 1;
 
@@ -356,16 +339,13 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         List<DocumentModel> folderishChildren = new ArrayList<DocumentModel>();
 
         try {
-            provider.addLogEntry(doCreateAndFillEntryFromDocument(node,
-                    guardedPrincipal(session)));
+            provider.addLogEntry(doCreateAndFillEntryFromDocument(node, guardedPrincipal(session)));
 
-            for (DocumentModel child : guardedDocumentChildren(session,
-                    node.getRef())) {
+            for (DocumentModel child : guardedDocumentChildren(session, node.getRef())) {
                 if (child.isFolder() && recurs) {
                     folderishChildren.add(child);
                 } else {
-                    provider.addLogEntry(doCreateAndFillEntryFromDocument(
-                            child, principal));
+                    provider.addLogEntry(doCreateAndFillEntryFromDocument(child, principal));
                     nbSyncedEntries += 1;
                 }
             }
@@ -375,8 +355,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
         if (recurs) {
             for (DocumentModel folderChild : folderishChildren) {
-                nbSyncedEntries += doSyncNode(provider, session, folderChild,
-                        recurs);
+                nbSyncedEntries += doSyncNode(provider, session, folderChild, recurs);
             }
         }
 
@@ -418,25 +397,20 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
     @Override
     public List<LogEntry> getLogEntriesFor(String uuid) {
-        return getLogEntriesFor(uuid,
-                Collections.<String, FilterMapEntry> emptyMap(), false);
+        return getLogEntriesFor(uuid, Collections.<String, FilterMapEntry> emptyMap(), false);
     }
 
     @Override
     public List<?> nativeQuery(String query, int pageNb, int pageSize) {
-        return nativeQuery(query, Collections.<String, Object> emptyMap(),
-                pageNb, pageSize);
+        return nativeQuery(query, Collections.<String, Object> emptyMap(), pageNb, pageSize);
     }
 
     @Override
-    public List<LogEntry> queryLogs(final String[] eventIds,
-            final String dateRange) {
-        return queryLogsByPage(eventIds, (String) null, (String[]) null, null,
-                0, 10000);
+    public List<LogEntry> queryLogs(final String[] eventIds, final String dateRange) {
+        return queryLogsByPage(eventIds, (String) null, (String[]) null, null, 0, 10000);
     }
 
-    public List<LogEntry> nativeQueryLogs(final String whereClause,
-            final int pageNb, final int pageSize) {
+    public List<LogEntry> nativeQueryLogs(final String whereClause, final int pageNb, final int pageSize) {
         List<LogEntry> entries = new LinkedList<>();
         for (Object entry : nativeQuery(whereClause, pageNb, pageSize)) {
             if (entry instanceof LogEntry) {
