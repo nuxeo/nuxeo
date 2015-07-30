@@ -68,6 +68,9 @@ public class CommandSetInfo {
      * @since 5.7
      */
     public void log(boolean debug) {
+        if (commands.isEmpty()) {
+            return;
+        }
         if (debug) {
             log.debug("\nCommands debug dump:");
         } else {

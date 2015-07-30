@@ -68,7 +68,7 @@ public class StatusServletClient {
     /**
      * Set secure key used for connection
      *
-     * @param key server.status.key configured on Server
+     * @param key any {@link String}
      */
     public void setKey(String key) {
         this.key = key;

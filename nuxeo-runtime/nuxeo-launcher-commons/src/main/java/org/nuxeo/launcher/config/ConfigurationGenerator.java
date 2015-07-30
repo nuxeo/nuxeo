@@ -19,6 +19,7 @@
 package org.nuxeo.launcher.config;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -65,10 +66,13 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.NullEnumeration;
 
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.codec.Crypto;
+import org.nuxeo.common.codec.CryptoProperties;
+import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.launcher.commons.DatabaseDriverException;
-import org.nuxeo.launcher.commons.text.TextTemplate;
 import org.nuxeo.log4j.Log4JHelper;
 
+import freemarker.core.ParseException;
 import freemarker.template.TemplateException;
 
 /**
@@ -105,7 +109,7 @@ public class ConfigurationGenerator {
 
     public static final String TEMPLATES = "templates";
 
-    protected static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
+    public static final String NUXEO_DEFAULT_CONF = "nuxeo.defaults";
 
     /**
      * Absolute or relative PATH to the user chosen template
@@ -167,7 +171,11 @@ public class ConfigurationGenerator {
 
     public static final String PARAM_HTTP_PORT = "nuxeo.server.http.port";
 
-    public static final String PARAM_STATUS_KEY = "server.status.key";
+    /**
+     * @deprecated Since 7.4. Use {@link Environment#SERVER_STATUS_KEY} instead
+     */
+    @Deprecated
+    public static final String PARAM_STATUS_KEY = Environment.SERVER_STATUS_KEY;
 
     public static final String PARAM_CONTEXT_PATH = "org.nuxeo.ecm.contextPath";
 
@@ -247,7 +255,7 @@ public class ConfigurationGenerator {
 
     private Properties defaultConfig;
 
-    private Properties userConfig;
+    private CryptoProperties userConfig;
 
     private boolean configurable = false;
 
@@ -397,7 +405,7 @@ public class ConfigurationGenerator {
         return forceGeneration;
     }
 
-    public Properties getUserConfig() {
+    public CryptoProperties getUserConfig() {
         return userConfig;
     }
 
@@ -451,7 +459,7 @@ public class ConfigurationGenerator {
         if (!nuxeoConf.exists()) {
             log.info("Missing " + nuxeoConf);
             configurable = false;
-            userConfig = new Properties();
+            userConfig = new CryptoProperties();
         } else if (userConfig == null || userConfig.size() == 0 || forceReload) {
             try {
                 setBasicConfiguration();
@@ -466,15 +474,21 @@ public class ConfigurationGenerator {
         return configurable;
     }
 
-    public void changeTemplates(String newTemplates) {
+    /**
+     * @param newTemplates
+     * @return Old templates
+     */
+    public String changeTemplates(String newTemplates) {
+        String oldTemplates = templates;
+        templates = newTemplates;
         try {
-            templates = newTemplates;
             setBasicConfiguration(false);
             configurable = true;
         } catch (ConfigurationException e) {
             log.warn("Error reading basic configuration.", e);
             configurable = false;
         }
+        return oldTemplates;
     }
 
     /**
@@ -497,7 +511,7 @@ public class ConfigurationGenerator {
             defaultConfig = loadTrimmedProperties(nuxeoDefaultConf);
             // Add System properties
             defaultConfig.putAll(System.getProperties());
-            userConfig = new Properties(defaultConfig);
+            userConfig = new CryptoProperties(defaultConfig);
 
             // If Windows, replace backslashes in paths in nuxeo.conf
             if (SystemUtils.IS_OS_WINDOWS) {
@@ -619,12 +633,12 @@ public class ConfigurationGenerator {
      *
      * @param newParametersToSave
      * @throws ConfigurationException
-     * @see #PARAM_STATUS_KEY
+     * @see Environment#SERVER_STATUS_KEY
      * @since 5.5
      */
     private void evalServerStatusKey(Map<String, String> newParametersToSave) throws ConfigurationException {
-        if (userConfig.getProperty(PARAM_STATUS_KEY) == null) {
-            newParametersToSave.put(PARAM_STATUS_KEY, UUID.randomUUID().toString().substring(0, 8));
+        if (userConfig.getProperty(Environment.SERVER_STATUS_KEY) == null) {
+            newParametersToSave.put(Environment.SERVER_STATUS_KEY, UUID.randomUUID().toString().substring(0, 8));
         }
     }
 
@@ -750,10 +764,10 @@ public class ConfigurationGenerator {
             }
         } catch (FileNotFoundException e) {
             throw new ConfigurationException("Missing file: " + e.getMessage(), e);
+        } catch (TemplateException | ParseException e) {
+            throw new ConfigurationException("Could not process FreeMarker template: " + e.getMessage(), e);
         } catch (IOException e) {
             throw new ConfigurationException("Configuration failure: " + e.getMessage(), e);
-        } catch (TemplateException e) {
-            throw new ConfigurationException("Could not process FreeMarker template: " + e.getMessage(), e);
         }
     }
 
@@ -858,8 +872,10 @@ public class ConfigurationGenerator {
 
     /**
      * Save changed parameters in {@code nuxeo.conf} calculating templates if changedParameters contains a value for
-     * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset. This
-     * method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
+     * {@link #PARAM_TEMPLATE_DBNAME}. If a parameter value is empty ("" or null), then the property is unset.
+     * {@link #PARAM_WIZARD_DONE}, {@link #PARAM_TEMPLATES_NAME} and {@link #PARAM_FORCE_GENERATION} cannot be unset,
+     * but their value can be changed.<br/>
+     * This method does not check values in map: use {@link #saveFilteredConfiguration(Map)} for parameters filtering.
      *
      * @param changedParameters Map of modified parameters
      * @param setGenerationOnceToFalse If generation was on (true or once), then set it to false or not?
@@ -957,7 +973,7 @@ public class ConfigurationGenerator {
                     continue;
                 }
                 String oldValue = storedConfig.getProperty(key, "");
-                String newValue = userConfig.getProperty(key, "");
+                String newValue = userConfig.getRawProperty(key, "");
                 if (!newValue.equals(oldValue)) {
                     writer.write("#" + key + "=" + oldValue + System.getProperty("line.separator"));
                     writer.write(key + "=" + newValue + System.getProperty("line.separator"));
@@ -1027,7 +1043,17 @@ public class ConfigurationGenerator {
                                 newLines.set(templatesIndex, line);
                             }
                         } else {
-                            newLines.add(line);
+                            int equalIdx = line.indexOf("=");
+                            if (equalIdx < 1 || line.trim().startsWith("#")) {
+                                newLines.add(line);
+                            } else {
+                                String key = line.substring(0, equalIdx).trim();
+                                if (userConfig.getProperty(key) != null) {
+                                    newLines.add(line);
+                                } else {
+                                    newLines.add("#" + line);
+                                }
+                            }
                         }
                     } else {
                         // What must be written just before the BOUNDARY_BEGIN
@@ -1058,7 +1084,7 @@ public class ConfigurationGenerator {
                         } else {
                             String key = line.substring(0, equalIdx).trim();
                             String value = line.substring(equalIdx + 1).trim();
-                            if (!value.equals(userConfig.getProperty(key))) {
+                            if (!value.equals(userConfig.getRawProperty(key))) {
                                 getStoredConfig().setProperty(key, value);
                             }
                         }
@@ -1495,11 +1521,86 @@ public class ConfigurationGenerator {
      */
     public String setProperty(String key, String value) throws ConfigurationException {
         String oldValue = getStoredConfig().getProperty(key);
+        if (PARAM_TEMPLATES_NAME.equals(key)) {
+            templates = StringUtils.isBlank(value) ? null : value;
+        }
         HashMap<String, String> newParametersToSave = new HashMap<>();
         newParametersToSave.put(key, value);
         saveFilteredConfiguration(newParametersToSave);
         setBasicConfiguration();
         return oldValue;
+    }
+
+    /**
+     * Set properties in nuxeo configuration
+     *
+     * @param newParametersToSave
+     * @return The old values
+     * @throws ConfigurationException
+     * @since 7.4
+     */
+    public Map<String, String> setProperties(Map<String, String> newParametersToSave) throws ConfigurationException {
+        Map<String, String> oldValues = new HashMap<>();
+        for (String key : newParametersToSave.keySet()) {
+            oldValues.put(key, getStoredConfig().getProperty(key));
+            if (PARAM_TEMPLATES_NAME.equals(key)) {
+                String value = newParametersToSave.get(key);
+                templates = StringUtils.isBlank(value) ? null : value;
+            }
+        }
+        saveFilteredConfiguration(newParametersToSave);
+        setBasicConfiguration();
+        return oldValues;
+    }
+
+    /**
+     * Set properties in the given template, if it exists
+     *
+     * @param newParametersToSave
+     * @return The old values
+     * @throws ConfigurationException
+     * @throws IOException
+     * @since 7.4
+     */
+    public Map<String, String> setProperties(String template, Map<String, String> newParametersToSave)
+            throws ConfigurationException, IOException {
+        File templateConf = getTemplateConf(template);
+        Properties templateProperties = loadTrimmedProperties(templateConf);
+        Map<String, String> oldValues = new HashMap<>();
+        StringBuffer newContent = new StringBuffer();
+        try (BufferedReader reader = new BufferedReader(new FileReader(templateConf))) {
+            String line = reader.readLine();
+            if (line != null && line.startsWith("## DO NOT EDIT THIS FILE")) {
+                throw new ConfigurationException("The template states in its header that it must not be modified.");
+            }
+            while (line != null) {
+                int equalIdx = line.indexOf("=");
+                if (equalIdx < 1 || line.trim().startsWith("#")) {
+                    newContent.append(line + System.getProperty("line.separator"));
+                } else {
+                    String key = line.substring(0, equalIdx).trim();
+                    if (newParametersToSave.containsKey(key)) {
+                        newContent.append(key + "=" + newParametersToSave.get(key)
+                                + System.getProperty("line.separator"));
+                    } else {
+                        newContent.append(line + System.getProperty("line.separator"));
+                    }
+                }
+                line = reader.readLine();
+            }
+        }
+        for (String key : newParametersToSave.keySet()) {
+            if (templateProperties.containsKey(key)) {
+                oldValues.put(key, templateProperties.getProperty(key));
+            } else {
+                newContent.append(key + "=" + newParametersToSave.get(key) + System.getProperty("line.separator"));
+            }
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(templateConf))) {
+            writer.append(newContent.toString());
+        }
+        setBasicConfiguration();
+        return oldValues;
     }
 
     /**
@@ -1717,11 +1818,41 @@ public class ConfigurationGenerator {
     }
 
     /**
-     * @oaram env Environment properties to build a {@link InitialDirContext}
+     * @param contextEnv Environment properties to build a {@link InitialDirContext}
      * @since 6.0
      */
     public void checkLdapConnection(Hashtable<Object, Object> contextEnv) throws NamingException {
         DirContext dirContext = new InitialDirContext(contextEnv);
         dirContext.close();
     }
+
+    /**
+     * @return a {@link Crypto} instance initialized with the configuration parameters
+     * @since 7.4
+     * @see Crypto
+     */
+    public Crypto getCrypto() {
+        return userConfig.getCrypto();
+    }
+
+    /**
+     * @param template path to configuration template directory
+     * @return A {@code nuxeo.defaults} file if it exists.
+     * @throws ConfigurationException if the template file is not found.
+     * @since 7.4
+     */
+    public File getTemplateConf(String template) throws ConfigurationException {
+        File templateDir = new File(template);
+        if (!templateDir.isAbsolute()) {
+            templateDir = new File(System.getProperty("user.dir"), template);
+            if (!templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists()) {
+                templateDir = new File(nuxeoDefaultConf.getParentFile(), template);
+            }
+        }
+        if (!templateDir.exists() || !new File(templateDir, NUXEO_DEFAULT_CONF).exists()) {
+            throw new ConfigurationException("Template not found: " + template);
+        }
+        return new File(templateDir, NUXEO_DEFAULT_CONF);
+    }
+
 }

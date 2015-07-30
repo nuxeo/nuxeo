@@ -43,7 +43,7 @@ public class CommandContextImpl extends HashMap<String, String> implements Comma
 
     @Override
     public String expandVars(String text) {
-        return new TextTemplate(this).process(text);
+        return new TextTemplate(this).processText(text);
     }
 
 }

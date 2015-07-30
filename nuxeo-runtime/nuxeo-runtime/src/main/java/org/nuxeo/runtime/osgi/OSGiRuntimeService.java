@@ -30,15 +30,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.Environment;
+import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.AbstractRuntimeService;
@@ -50,6 +50,7 @@ import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentPersistence;
 import org.nuxeo.runtime.model.impl.RegistrationInfoImpl;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -381,7 +382,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     return o1.compareToIgnoreCase(o2);
                 }
             });
-            Properties props = new Properties();
+            CryptoProperties props = new CryptoProperties(System.getProperties());
             for (String name : names) {
                 if (name.endsWith(".config") || name.endsWith(".ini") || name.endsWith(".properties")) {
                     FileInputStream in = new FileInputStream(new File(dir, name));
@@ -431,11 +432,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     public void loadProperties(InputStream in) throws IOException {
-        Properties props = new Properties();
-        props.load(in);
-        for (Entry<Object, Object> prop : props.entrySet()) {
-            properties.put(prop.getKey().toString(), prop.getValue().toString());
-        }
+        properties.load(in);
     }
 
     /**
@@ -450,7 +447,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 return defValue == null ? null : expandVars(defValue);
             }
         }
-        if (value.startsWith("$") && value.equals("${" + name + "}")) {
+        if (("${" + name + "}").equals(value)) {
             // avoid loop, don't expand
             return value;
         }
@@ -472,7 +469,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 return value;
             }
 
-        }.process(expression);
+        }.processText(expression);
     }
 
     protected void notifyComponentsOnStarted() {

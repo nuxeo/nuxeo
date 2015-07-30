@@ -64,7 +64,7 @@ public class Template {
 
     public void update(TemplateContribution tc, Map<String, String> ctx) {
         String content = getContent(tc, ctx);
-        content = new TextTemplate(ctx).process(content);
+        content = new TextTemplate(ctx).processText(content);
         if (tc.isAppending()) {
             appendText(tc.getMarker(), content);
         } else if (tc.isPrepending()) {

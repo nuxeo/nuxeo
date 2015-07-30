@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,73 +12,86 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Anahide Tchertchian
+ *     jcarsique
  */
 package org.nuxeo.runtime;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
+import org.apache.commons.codec.binary.Base64;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.common.Environment;
 
 /**
- * @since 5.7
+ * @since 7.4
  */
-@RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class })
-public class TestFrameworkProperties {
+public class TestCryptoFrameworkProperties extends TestFrameworkProperties {
+    // aValue == "myValue"
+    final String aCryptedValue = "{$$CTT3p7DKBpCgkmPDSkUFPg==}";
 
-    protected RuntimeService runtime = Framework.getRuntime();
+    // aValue == "myValue"
+    final String aDESCryptedValue = "{$REVT$g14b3eWAgSU=}";
 
-    final String aValue = "myValue";
+    // aDefaultValue == "myDefaultValue"
+    final String aCryptedDefaultValue = "{$$WPdr+gWTfXknlZS53VhyJA==}";
 
-    final String aDefaultValue = "myDefaultValue";
+    // aStrangeValue == "${\\my.strange/value}"
+    final String aCryptedStrangeValue = "{$$mdKe++UN0LUHnw4DrHor952CmGYm+ZzGBM2oi0hLO9E=}";
 
-    final String aParam = "myParam";
+    // aSystemValue == "mySystemValue"
+    final String aCryptedSystemValue = "{$$L7kzxIJxOx3T6LWqRkxjOg==}";
 
-    final String aStrangeValue = "${\\my.strange/value}";
+    @Before
+    public void setUp() throws Exception {
+        runtime.setProperty(Environment.CRYPT_KEY, Base64.encodeBase64String("secret".getBytes()));
+    }
 
-    final String aParamWithDot = "my.param.with.dot";
-
-    final String aSystemValue = "mySystemValue";
-
+    @Override
     @Test
     public void testExpandVars() {
+        // RuntimeService.expandVars(String) does not decrypt raw content, only variable values
+        assertEquals("<myProp>" + aCryptedValue + "</myProp>",
+                runtime.expandVars("<myProp>" + aCryptedValue + "</myProp>"));
+
         List<String> testExpressions = new ArrayList<>();
         testExpressions.add("<myProp>" + aValue + "</myProp>");
         testExpressions.add("<myProp>${" + aParam + "}</myProp>");
         testExpressions.add("<myProp>${" + aParam + ":=" + aDefaultValue + "}</myProp>");
+        testExpressions.add("<myProp>${" + aParam + ":=" + aCryptedDefaultValue + "}</myProp>");
 
         // property undefined
         assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
         assertEquals("<myProp>${" + aParam + "}</myProp>", runtime.expandVars(testExpressions.get(1)));
         assertEquals("<myProp>" + aDefaultValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
+        assertEquals("<myProp>" + aDefaultValue + "</myProp>", runtime.expandVars(testExpressions.get(3)));
 
         // system property
-        System.setProperty(aParam, aSystemValue);
+        System.setProperty(aParam, aCryptedSystemValue);
         assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
         assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
         assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
+        assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(3)));
 
         // runtime property
-        runtime.setProperty(aParam, aValue);
+        runtime.setProperty(aParam, aCryptedValue);
         assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
         assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
         assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(3)));
+
+        runtime.setProperty(aParam, aDESCryptedValue);
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(3)));
     }
 
+    @Override
     @Test
     public void testExpandVarsWithSpecialChars() {
         List<String> testExpressions = new ArrayList<>();
@@ -92,63 +105,16 @@ public class TestFrameworkProperties {
         assertEquals("<myProp>" + aDefaultValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
 
         // system property
-        System.setProperty(aParamWithDot, aSystemValue);
+        System.setProperty(aParamWithDot, aCryptedSystemValue);
         assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
         assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
         assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
 
         // runtime property
-        runtime.setProperty(aParamWithDot, aStrangeValue);
+        runtime.setProperty(aParamWithDot, aCryptedStrangeValue);
         assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
         assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
         assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
-    }
-
-    @Test
-    public void testIsBooleanPropertyTrueFalse() throws Exception {
-        String booleanVar1 = "booleanVar1";
-        String booleanVar2 = "booleanVar2";
-        assertNull(runtime.getProperty(booleanVar1));
-        assertNull(runtime.getProperty(booleanVar2));
-        assertNull(System.getProperty(booleanVar1));
-        assertNull(System.getProperty(booleanVar2));
-        assertFalse(Framework.isBooleanPropertyTrue(booleanVar1));
-        assertFalse(Framework.isBooleanPropertyTrue(booleanVar2));
-        assertFalse(Framework.isBooleanPropertyFalse(booleanVar2));
-        assertFalse(Framework.isBooleanPropertyFalse(booleanVar1));
-        runtime.setProperty(booleanVar1, "true");
-        runtime.setProperty(booleanVar2, "false");
-        assertTrue(Framework.isBooleanPropertyTrue(booleanVar1));
-        assertFalse(Framework.isBooleanPropertyTrue(booleanVar2));
-        assertFalse(Framework.isBooleanPropertyFalse(booleanVar1));
-        assertTrue(Framework.isBooleanPropertyFalse(booleanVar2));
-        runtime.setProperty(booleanVar1, "false");
-        runtime.setProperty(booleanVar2, "true");
-        assertFalse(Framework.isBooleanPropertyTrue(booleanVar1));
-        assertTrue(Framework.isBooleanPropertyTrue(booleanVar2));
-        assertTrue(Framework.isBooleanPropertyFalse(booleanVar1));
-        assertFalse(Framework.isBooleanPropertyFalse(booleanVar2));
-    }
-
-    @Test
-    public void testIsDevModeSet() throws Exception {
-        assertTrue(Framework.isInitialized());
-        // check compat
-        assertEquals("org.nuxeo.dev", Framework.NUXEO_DEV_SYSTEM_PROP);
-        // make sure runtime prop is not set
-        assertNull(runtime.getProperty(Framework.NUXEO_DEV_SYSTEM_PROP));
-        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, "true");
-        assertTrue(Framework.isDevModeSet());
-        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, "");
-        assertFalse(Framework.isDevModeSet());
-        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, "false");
-        assertFalse(Framework.isDevModeSet());
-    }
-
-    @After
-    public void tearDown() {
-        System.clearProperty(aParam);
-        System.clearProperty(aParamWithDot);
     }
 
 }

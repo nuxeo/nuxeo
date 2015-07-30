@@ -223,7 +223,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
                     tmpl.setVariable(key, val.toString());
                 }
             }
-            query = tmpl.process(query);
+            query = tmpl.processText(query);
         }
         return query;
     }
