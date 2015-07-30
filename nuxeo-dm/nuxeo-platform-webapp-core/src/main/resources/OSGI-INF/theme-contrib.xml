@@ -502,7 +502,6 @@
       <resources>
         <bundle>nuxeo_includes</bundle>
         <bundle>nuxeo_base</bundle>
-        <bundle>nuxeo_header_footer</bundle>
         <bundle>nuxeo_dm</bundle>
       </resources>
     </page>
