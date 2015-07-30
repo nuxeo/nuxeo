@@ -27,11 +27,6 @@
       <param name="name" value="nuxeo.server.declare_datasources" />
       <param name="value" value="false" />
     </antcall>
-    <!-- disable ES to avoid multi repo issues -->
-    <antcall target="set-conf">
-      <param name="name" value="elasticsearch.enabled" />
-      <param name="value" value="false" />
-    </antcall>
   </target>
 
   <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss" description="prepare all ressources for test">

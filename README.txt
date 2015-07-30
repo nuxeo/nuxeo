@@ -17,7 +17,6 @@ Install
 2. Add the following to you nuxeo.conf file:
 
     nuxeo.server.declare_datasources=false
-    elasticsearch.enabled=false
 
 3. Start the server.
 
