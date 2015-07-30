@@ -139,7 +139,6 @@ public class DiffPictures {
     public Blob compare(String inCommandLine, Map<String, Serializable> inParams) throws CommandNotAvailable,
             IOException {
 
-        Blob result = null;
         String finalName;
 
         commandLine = StringUtils.isBlank(inCommandLine) ? DEFAULT_COMMAND : inCommandLine;
@@ -203,13 +202,10 @@ public class DiffPictures {
                     + execResult.getCommandLine() + " ] returned with error " + execResult.getReturnCode(),
                     execResult.getError());
         }
+        
+        tempBlob.setFilename(finalName);
 
-        result = Blobs.createBlob(tempDestFile);
-        if (result != null) {
-            result.setFilename(finalName);
-        }
-
-        return result;
+        return tempBlob;
     }
 
     /*
