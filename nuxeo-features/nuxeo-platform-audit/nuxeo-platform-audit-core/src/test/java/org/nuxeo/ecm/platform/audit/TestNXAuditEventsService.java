@@ -23,7 +23,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -46,6 +48,8 @@ import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.TestNXAuditEventsService.MyInit;
+import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
+import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.audit.service.DefaultAuditBackend;
@@ -58,6 +62,7 @@ import org.nuxeo.runtime.management.ServerLocator;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Test the event conf service.
@@ -213,7 +218,48 @@ public class TestNXAuditEventsService {
         assertEquals("Root", entry.getDocType());
         assertEquals("documentCreated", entry.getEventId());
         assertEquals(SecurityConstants.SYSTEM_USERNAME, entry.getPrincipalName());
+
+    }
+
+    @Test
+    public void testExtendedInfos() {
+        DocumentModel rootDocument = session.getRootDocument();
+        DocumentModel model = session.createDocumentModel(rootDocument.getPathAsString(), "youps", "File");
+        model.setProperty("dublincore", "title", "huum");
+        model = session.createDocument(model);
+        long count = serviceUnderTest.syncLogCreationEntries(session.getRepositoryName(), model.getPathAsString(), true);
+        assertEquals(1, count);
+
+        String query = String.format("log.docUUID = '%s' and log.eventId = 'documentCreated'", model.getId());
+
+        List<LogEntry> entries = serviceUnderTest.nativeQueryLogs(query, 1, 1);
+        assertEquals(1, entries.size());
+
+        LogEntry entry = entries.get(0);
+        assertEquals("eventDocumentCategory", entry.getCategory());
         assertEquals("test", entry.getRepositoryId());
+        assertEquals("huum", entry.getExtendedInfos().get("title").getSerializableValue());
+        assertEquals("/", entry.getExtendedInfos().get("parentPath").getSerializableValue());
+
+        session.removeDocument(model.getRef());
+        session.save();
+
+        TransactionHelper.commitOrRollbackTransaction();
+        Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+
+        FilterMapEntry filterByDocRemoved = new FilterMapEntry();
+        filterByDocRemoved.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
+        filterByDocRemoved.setOperator("=");
+        filterByDocRemoved.setQueryParameterName(BuiltinLogEntryData.LOG_EVENT_ID);
+        filterByDocRemoved.setObject("documentRemoved");
+
+        Map<String, FilterMapEntry> filterMap = new HashMap<String, FilterMapEntry>();
+        filterMap.put("eventId", filterByDocRemoved);
+        entries = serviceUnderTest.getLogEntriesFor(model.getId(), filterMap, true);
+        assertEquals(1, entries.size());
+        assertNull(entries.get(0).getExtendedInfos().get("title"));
+        assertEquals("/", entries.get(0).getExtendedInfos().get("parentPath").getSerializableValue());
     }
 
     protected Set<ObjectName> doQuery(String name) {

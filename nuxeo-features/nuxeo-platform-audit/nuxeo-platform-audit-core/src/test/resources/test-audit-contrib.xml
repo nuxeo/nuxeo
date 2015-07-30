@@ -30,6 +30,7 @@
            target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService">
         <extendedInfo expression="${source.dublincore.title}" key="title" />
         <extendedInfo expression="${principal.name}" key="user" />
+        <extendedInfo expression="${source.path.removeLastSegments(1).toString()}" key="parentPath" />
     </extension>
 
 </component>
