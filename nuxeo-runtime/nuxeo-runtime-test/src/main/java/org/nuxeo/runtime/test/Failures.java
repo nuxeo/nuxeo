@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -20,11 +20,11 @@ package org.nuxeo.runtime.test;
 
 import java.util.List;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 
@@ -43,7 +43,7 @@ public class Failures {
     }
 
     public Failures(Result result) {
-        this.failures = result.getFailures();
+        failures = result.getFailures();
     }
 
     @Override
@@ -52,9 +52,11 @@ public class Failures {
         int i = 1;
         AssertionFailedError errors = new AssertionFailedError();
         for (Failure failure : failures) {
-            buffer.append("* Failure " + i + ": ") //
-            .append(failure.getTestHeader()).append("\n") //
-            .append(failure.getTrace()).append("\n");
+            buffer.append("* Failure " + i + ": ")
+                  .append(failure.getTestHeader())
+                  .append("\n")
+                  .append(failure.getTrace())
+                  .append("\n");
             errors.addSuppressed(failure.getException());
             i++;
         }

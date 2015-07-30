@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -54,13 +54,11 @@ public class RandomBugTest {
     protected static boolean isRunningInners;
 
     protected static class IgnoreInner implements TestRule {
-
         @Override
         public Statement apply(Statement base, Description description) {
             Assume.assumeTrue(isRunningInners);
             return base;
         }
-
     }
 
     @BeforeClass
@@ -129,13 +127,12 @@ public class RandomBugTest {
     @Features({ RandomBug.Feature.class })
     @RandomBug.Repeat(issue = "failingTest")
     public static class FailingTest {
+         @ClassRule
+         public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Inject
         @Named("test")
         RepeatRule repeatRule;
-
-        @ClassRule
-        public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
         @RandomBug.Repeat(issue = "failingTest", bypass = true)
@@ -156,6 +153,8 @@ public class RandomBugTest {
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class })
     public static class FailingMethod {
+        @ClassRule
+        public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Inject
         @Named("test")
@@ -164,9 +163,6 @@ public class RandomBugTest {
         @Inject
         @Named("method")
         RepeatRule methodRule;
-
-        @ClassRule
-        public static final IgnoreInner ignoreInner = new IgnoreInner();
 
         @Test
         public void other() throws Exception {
@@ -228,7 +224,6 @@ public class RandomBugTest {
     @RunWith(FeaturesRunner.class)
     @Features({ RandomBug.Feature.class, ThisFeature.class })
     public static class RepeatFeaturesTest {
-
         @ClassRule
         public static final IgnoreInner ignoreInner = new IgnoreInner();
 

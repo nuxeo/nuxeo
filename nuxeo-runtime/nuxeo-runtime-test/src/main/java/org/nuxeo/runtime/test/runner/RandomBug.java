@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -22,6 +22,7 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 
 import javax.inject.Inject;
 
@@ -89,7 +90,7 @@ import org.junit.runners.model.Statement;
  * </p>
  * <p>
  * You may also repeat a whole suite in the same way by annotating the class itself. You may want also want to skip some
- * tests, then you should then annotate the tests method with the {@link NoRepeat} annotation.
+ * tests, then you can annotate them and set {@link Repeat#bypass()} to true.
  * </p>
  *
  * @see Mode
@@ -193,7 +194,7 @@ public class RandomBug {
     };
 
     /**
-     * The default mode if {@link MODE_PROPERTY} is not set.
+     * The default mode if {@link #MODE_PROPERTY} is not set.
      */
     public final Mode DEFAULT = Mode.RELAX;
 
