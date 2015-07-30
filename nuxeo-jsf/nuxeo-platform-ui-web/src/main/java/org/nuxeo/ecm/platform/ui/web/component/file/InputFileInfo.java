@@ -185,4 +185,16 @@ public class InputFileInfo implements Serializable {
         return true;
     }
 
+    /**
+     * @since 6.0-HF17
+     */
+    public InputFileInfo clone() {
+        InputFileInfo clone = new InputFileInfo();
+        clone.choice = choice;
+        clone.filename = filename;
+        clone.blob = blob;
+        clone.mimeType = mimeType;
+        return clone;
+    }
+
 }

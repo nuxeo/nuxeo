@@ -18,13 +18,13 @@ package org.nuxeo.ecm.platform.ui.web.component.file;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
-import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
@@ -39,16 +39,13 @@ import javax.faces.convert.ConverterException;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
-import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.platform.ui.web.application.NuxeoResponseStateManagerImpl;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
-import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.util.MessageFactory;
@@ -79,17 +76,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     protected static final Log log = LogFactory.getLog(UIInputFile.class);
 
-    // value for filename, will disappear when it's part of the blob
-    protected String filename;
-
-    // used to decide whether filename can be edited
-    protected Boolean editFilename;
-
-    protected String onchange;
-
-    protected String onclick;
-
-    protected String onselect;
+    protected enum PropertyKeys {
+        filename, editFilename, onchange, onclick, onselect, submitted
+    }
 
     public UIInputFile() {
         // initiate sub components
@@ -134,48 +123,30 @@ public class UIInputFile extends UIInput implements NamingContainer {
     }
 
     public String getFilename() {
-        if (filename != null) {
-            return filename;
-        }
-        ValueExpression ve = getValueExpression("filename");
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return null;
-        }
+        return (String) getStateHelper().eval(PropertyKeys.filename);
     }
 
     public void setFilename(String filename) {
-        this.filename = filename;
+        getStateHelper().put(PropertyKeys.filename, filename);
     }
 
     public Boolean getEditFilename() {
-        if (editFilename != null) {
-            return editFilename;
-        }
-        ValueExpression ve = getValueExpression("editFilename");
-        if (ve != null) {
-            try {
-                return !Boolean.FALSE.equals(ve.getValue(getFacesContext().getELContext()));
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            // default value
-            return false;
-        }
+        return (Boolean) getStateHelper().eval(PropertyKeys.editFilename, Boolean.FALSE);
     }
 
     public void setEditFilename(Boolean editFilename) {
-        this.editFilename = editFilename;
+        getStateHelper().put(PropertyKeys.editFilename, editFilename);
     }
 
     public InputFileInfo getFileInfoValue() {
-        return (InputFileInfo) getValue();
+        InputFileInfo res = getFileInfoSubmittedValue();
+        if (res == null) {
+            res = getFileInfoLocalValue();
+        }
+        if (res == null) {
+            res = (InputFileInfo) getValue();
+        }
+        return res;
     }
 
     public InputFileInfo getFileInfoLocalValue() {
@@ -186,50 +157,28 @@ public class UIInputFile extends UIInput implements NamingContainer {
         return (InputFileInfo) getSubmittedValue();
     }
 
-    protected String getStringValue(String name, String defaultValue) {
-        ValueExpression ve = getValueExpression(name);
-        if (ve != null) {
-            try {
-                return (String) ve.getValue(getFacesContext().getELContext());
-            } catch (ELException e) {
-                throw new FacesException(e);
-            }
-        } else {
-            return defaultValue;
-        }
-    }
-
     public String getOnchange() {
-        if (onchange != null) {
-            return onchange;
-        }
-        return getStringValue("onchange", null);
+        return (String) getStateHelper().eval(PropertyKeys.onchange);
     }
 
     public void setOnchange(String onchange) {
-        this.onchange = onchange;
+        getStateHelper().put(PropertyKeys.onchange, onchange);
     }
 
     public String getOnclick() {
-        if (onclick != null) {
-            return onclick;
-        }
-        return getStringValue("onclick", null);
+        return (String) getStateHelper().eval(PropertyKeys.onclick);
     }
 
     public void setOnclick(String onclick) {
-        this.onclick = onclick;
+        getStateHelper().put(PropertyKeys.onclick, onclick);
     }
 
     public String getOnselect() {
-        if (onselect != null) {
-            return onselect;
-        }
-        return getStringValue("onselect", null);
+        return (String) getStateHelper().eval(PropertyKeys.onselect);
     }
 
     public void setOnselect(String onselect) {
-        this.onselect = onselect;
+        getStateHelper().put(PropertyKeys.onselect, onselect);
     }
 
     // handle submitted values
@@ -243,13 +192,31 @@ public class UIInputFile extends UIInput implements NamingContainer {
         // Force validity back to "true"
         setValid(true);
 
-        // decode the radio button, other input components will decode
-        // themselves
+        // decode the radio button, other input components will decode themselves
         Map<String, String> requestMap = context.getExternalContext().getRequestParameterMap();
         String radioClientId = getClientId(context) + NamingContainer.SEPARATOR_CHAR + CHOICE_FACET_NAME;
         String choice = requestMap.get(radioClientId);
-        // other submitted values will be handled at validation time
+
         InputFileInfo submitted = new InputFileInfo(choice, null, null, null);
+        if (InputFileChoice.tempKeep.name().equals(choice) || InputFileChoice.keep.name().equals(choice)) {
+            // re-submit already stored values
+            InputFileInfo previous = getFileInfoValue();
+            if (previous != null) {
+                submitted.setBlob(previous.getConvertedBlob());
+                submitted.setFilename(previous.getConvertedFilename());
+                submitted.setMimeType(previous.getMimeType());
+            }
+        } else if (InputFileChoice.upload.name().equals(choice)) {
+            decodeBlob(context, submitted);
+            if (context.getRenderResponse()) {
+                // validate phase will not be performed => change choice to "temp keep" directly here
+                submitted.setChoice(InputFileChoice.tempKeep.name());
+            }
+        } else if (InputFileChoice.delete.name().equals(choice) || InputFileChoice.none.name().equals(choice)) {
+            submitted.setBlob(null);
+            submitted.setFilename(null);
+            submitted.setMimeType(null);
+        }
         setSubmittedValue(submitted);
     }
 
@@ -268,13 +235,12 @@ public class UIInputFile extends UIInput implements NamingContainer {
         if (submitted == null) {
             return;
         }
-
-        InputFileInfo previous = getFileInfoValue();
+        InputFileInfo toValidate = submitted.clone();
 
         // validate choice
         InputFileChoice choice;
         try {
-            choice = submitted.getConvertedChoice();
+            choice = toValidate.getConvertedChoice();
         } catch (ConverterException ce) {
             ComponentUtils.addErrorMessage(context, this, ce.getMessage());
             setValid(false);
@@ -285,7 +251,9 @@ public class UIInputFile extends UIInput implements NamingContainer {
             setValid(false);
             return;
         }
-        submitted.setChoice(choice);
+        toValidate.setChoice(choice);
+
+        InputFileInfo previous = getFileInfoValue();
         InputFileChoice previousChoice = previous.getConvertedChoice();
         boolean temp = InputFileChoice.tempKeep == previousChoice || InputFileChoice.upload == previousChoice;
         List<InputFileChoice> choices = getAvailableChoices(previous.getBlob(), temp);
@@ -300,54 +268,68 @@ public class UIInputFile extends UIInput implements NamingContainer {
         case tempKeep:
             // re-submit stored values
             if (isLocalValueSet()) {
-                submitted.setBlob(previous.getConvertedBlob());
-                submitted.setFilename(previous.getConvertedFilename());
+                toValidate.setBlob(previous.getConvertedBlob());
+                toValidate.setFilename(previous.getConvertedFilename());
             }
+            validateBlob(context, toValidate);
             if (getEditFilename()) {
-                validateFilename(context, submitted);
+                validateFilename(context, toValidate);
             }
             break;
         case keep:
             // re-submit stored values
-            submitted.setBlob(previous.getConvertedBlob());
-            submitted.setFilename(previous.getConvertedFilename());
+            toValidate.setBlob(previous.getConvertedBlob());
+            toValidate.setFilename(previous.getConvertedFilename());
+            validateBlob(context, toValidate);
             if (getEditFilename()) {
-                validateFilename(context, submitted);
+                validateFilename(context, toValidate);
             }
             break;
         case upload:
-            try {
-                validateBlob(context, submitted);
-                if (isValid()) {
-                    submitted.setChoice(InputFileChoice.tempKeep);
-                }
-            } catch (ValidatorException e) {
-                // set file to null: blob is null but file is not required
-                submitted.setBlob(null);
-                submitted.setFilename(null);
-                submitted.setChoice(InputFileChoice.none);
+            validateBlob(context, toValidate);
+            if (isValid()) {
+                toValidate.setChoice(InputFileChoice.tempKeep);
             }
             break;
         case delete:
-            submitted.setBlob(null);
-            submitted.setFilename(null);
+            toValidate.setBlob(null);
+            toValidate.setFilename(null);
             break;
         case none:
-            submitted.setBlob(null);
-            submitted.setFilename(null);
+            toValidate.setBlob(null);
+            toValidate.setFilename(null);
             break;
         }
 
+        if (!isValid()) {
+            return;
+        }
+
         // will need this to call declared validators
-        super.validateValue(context, submitted);
+        super.validateValue(context, toValidate);
 
         // If our value is valid, store the new value, erase the
         // "submitted" value, and emit a ValueChangeEvent if appropriate
         if (isValid()) {
-            setValue(submitted);
+            setValue(toValidate);
             setSubmittedValue(null);
-            if (compareValues(previous, submitted)) {
-                queueEvent(new ValueChangeEvent(this, previous, submitted));
+            if (compareValues(previous, toValidate)) {
+                queueEvent(new ValueChangeEvent(this, previous, toValidate));
+            }
+        }
+    }
+
+    protected void handleValidatorException(FacesContext context, ValidatorException ve) {
+        setValid(false);
+        Collection<FacesMessage> messages = ve.getFacesMessages();
+        if (messages != null) {
+            for (FacesMessage m : messages) {
+                ComponentUtils.addErrorMessage(context, this, m.getSummary());
+            }
+        } else {
+            FacesMessage message = ve.getFacesMessage();
+            if (message != null) {
+                ComponentUtils.addErrorMessage(context, this, message.getSummary());
             }
         }
     }
@@ -370,15 +352,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
     }
 
-    /**
-     * Validates submitted blob.
-     * <p>
-     * Throws ValidatorException as a flag when blob is null and file is not required to set choice back to "no file"
-     * (see NXP-1732).
-     *
-     * @throws ValidatorException
-     */
-    public void validateBlob(FacesContext context, InputFileInfo submitted) throws ValidatorException {
+    protected void decodeBlob(FacesContext context, InputFileInfo submitted) {
         // validate blob
         UIComponent uploadFacet = getFacet(UPLOAD_FACET_NAME);
         if (uploadFacet instanceof HtmlInputFile) {
@@ -386,17 +360,35 @@ public class UIInputFile extends UIInput implements NamingContainer {
             Object submittedFile = uploadComp.getSubmittedValue();
             if (submittedFile instanceof Blob) {
                 Blob sblob = (Blob) submittedFile;
-                if (sblob.getLength() == 0) {
-                    String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
-                            : InputFileInfo.INVALID_FILE_MESSAGE;
-                    ComponentUtils.addErrorMessage(context, this, message);
-                    setValid(false);
-                    return;
-                }
                 submitted.setBlob(sblob);
-                submitted.setFilename(sblob.getFilename());
-                submitted.setMimeType(sblob.getMimeType());
+                if (sblob != null) {
+                    submitted.setFilename(sblob.getFilename());
+                    submitted.setMimeType(sblob.getMimeType());
+                }
+            } else if (submittedFile == null) {
+                // set file to null: blob is null but file is not required
+                submitted.setBlob(null);
+                submitted.setFilename(null);
+                submitted.setMimeType(null);
+                submitted.setChoice(InputFileChoice.none.name());
             }
+        }
+    }
+
+    /**
+     * Validates submitted blob.
+     */
+    public void validateBlob(FacesContext context, InputFileInfo submitted) {
+        Blob blob = submitted.getConvertedBlob();
+        if (blob.getLength() == 0) {
+            submitted.setBlob(null);
+            submitted.setFilename(null);
+            submitted.setChoice(InputFileChoice.none.name());
+            String message = context.getPartialViewContext().isAjaxRequest() ? InputFileInfo.INVALID_WITH_AJAX_MESSAGE
+                    : InputFileInfo.INVALID_FILE_MESSAGE;
+            ComponentUtils.addErrorMessage(context, this, message);
+            setValid(false);
+            return;
         }
     }
 
@@ -525,46 +517,18 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     public Blob getCurrentBlob() {
         Blob blob = null;
-        try {
-            InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
-            if (submittedFileInfo != null) {
-                InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
-                    // rebuild other info from current value
-                    InputFileInfo fileInfo = getFileInfoValue();
-                    blob = fileInfo.getConvertedBlob();
-                } else {
-                    blob = submittedFileInfo.getConvertedBlob();
-                }
-            } else {
-                InputFileInfo fileInfo = getFileInfoValue();
-                blob = fileInfo.getConvertedBlob();
-            }
-        } catch (Exception e) {
-            log.error(e);
+        InputFileInfo ifi = getFileInfoValue();
+        if (ifi != null) {
+            blob = ifi.getConvertedBlob();
         }
         return blob;
     }
 
     public String getCurrentFilename() {
         String filename = null;
-        try {
-            InputFileInfo submittedFileInfo = getFileInfoSubmittedValue();
-            if (submittedFileInfo != null) {
-                InputFileChoice choice = submittedFileInfo.getConvertedChoice();
-                if (InputFileChoice.keep == choice || InputFileChoice.tempKeep == choice) {
-                    // rebuild it in case it's supposed to be kept
-                    InputFileInfo fileInfo = getFileInfoValue();
-                    filename = fileInfo.getConvertedFilename();
-                } else {
-                    filename = submittedFileInfo.getConvertedFilename();
-                }
-            } else {
-                InputFileInfo fileInfo = getFileInfoValue();
-                filename = fileInfo.getConvertedFilename();
-            }
-        } catch (Exception e) {
-            log.error(e);
+        InputFileInfo ifi = getFileInfoValue();
+        if (ifi != null) {
+            filename = ifi.getConvertedFilename();
         }
         return filename;
     }
@@ -577,10 +541,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         ResponseWriter writer = context.getResponseWriter();
         Blob blob = getCurrentBlob();
         String filename = getCurrentFilename();
-        InputFileInfo fileInfo = getFileInfoSubmittedValue();
-        if (fileInfo == null) {
-            fileInfo = getFileInfoValue();
-        }
+        InputFileInfo fileInfo = getFileInfoValue();
         InputFileChoice currentChoice = fileInfo.getConvertedChoice();
         boolean temp = InputFileChoice.tempKeep == currentChoice;
         List<InputFileChoice> choices = getAvailableChoices(blob, temp);
@@ -751,17 +712,13 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
     }
 
-    // state holder
-
-    @Override
+    /**
+     * Override save to make sure submitted value can be restored
+     */
     public Object saveState(FacesContext context) {
-        Object[] values = new Object[6];
+        Object[] values = new Object[2];
         values[0] = super.saveState(context);
-        values[1] = filename;
-        values[2] = editFilename;
-        values[3] = onchange;
-        values[4] = onclick;
-        values[5] = onselect;
+        values[1] = getSubmittedValue();
         return values;
     }
 
@@ -769,11 +726,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
     public void restoreState(FacesContext context, Object state) {
         Object[] values = (Object[]) state;
         super.restoreState(context, values[0]);
-        filename = (String) values[1];
-        editFilename = (Boolean) values[2];
-        onchange = (String) values[3];
-        onclick = (String) values[4];
-        onselect = (String) values[5];
+        setSubmittedValue(values[1]);
     }
 
 }
