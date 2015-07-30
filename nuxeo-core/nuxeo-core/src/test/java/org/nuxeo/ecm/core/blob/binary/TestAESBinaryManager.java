@@ -63,7 +63,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
     @Test
     public void testEncryptDecryptWithPassword() throws Exception {
         AESBinaryManager binaryManager = new AESBinaryManager();
-        binaryManager.digestAlgorithm = binaryManager.getDigest(); // MD5
+        binaryManager.digestAlgorithm = binaryManager.getDefaultDigestAlgorithm(); // MD5
         String options = String.format("%s=%s", PARAM_PASSWORD, "mypassword");
         binaryManager.initializeOptions(options);
 
@@ -109,7 +109,7 @@ public class TestAESBinaryManager extends NXRuntimeTestCase {
                 PARAM_KEY_PASSWORD, KEY_PASSWORD);
 
         AESBinaryManager binaryManager = new AESBinaryManager();
-        binaryManager.digestAlgorithm = binaryManager.getDigest(); // MD5
+        binaryManager.digestAlgorithm = binaryManager.getDefaultDigestAlgorithm(); // MD5
         binaryManager.initializeOptions(options);
 
         // encrypt

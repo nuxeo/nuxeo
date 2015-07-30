@@ -169,7 +169,7 @@ public class AESBinaryManager extends LocalBinaryManager {
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
-        digestAlgorithm = descriptor.digest;
+        digestAlgorithm = getDigestAlgorithm();
         String options = properties.get(BinaryManager.PROP_KEY);
         // TODO parse options from properties directly
         if (StringUtils.isBlank(options)) {

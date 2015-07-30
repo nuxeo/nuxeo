@@ -64,6 +64,11 @@ public abstract class AbstractBlob implements Blob, Serializable {
     }
 
     @Override
+    public String getDigestAlgorithm() {
+        return null;
+    }
+
+    @Override
     public String getDigest() {
         return digest;
     }

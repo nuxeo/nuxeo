@@ -43,8 +43,13 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
 
     private static final String CONTENT_MD5 = "d25ea4f4642073b7f218024d397dbaef";
 
+    private static final String CONTENT_SHA1 = "3f3bdf817537faa28483eabc69a4bb3912cf0c6c";
+
     @Test
     public void testDefaultBinaryManager() throws Exception {
+        deployBundle("org.nuxeo.ecm.core");
+        deployContrib("org.nuxeo.ecm.core.tests", "OSGI-INF/test-default-blob-provider.xml");
+
         DefaultBinaryManager binaryManager = new DefaultBinaryManager();
         binaryManager.initialize("repo", Collections.emptyMap());
         assertEquals(0, countFiles(binaryManager.getStorageDir()));
@@ -52,17 +57,27 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         Binary binary = binaryManager.getBinary(CONTENT_MD5);
         assertNull(binary);
 
+        // check digest algorithm
+        assertEquals("MD5", binaryManager.getDigestAlgorithm());
+
         // store binary
         byte[] bytes = CONTENT.getBytes("UTF-8");
         binary = binaryManager.getBinary(Blobs.createBlob(CONTENT));
         assertNotNull(binary);
         assertEquals(1, countFiles(binaryManager.getStorageDir()));
 
-        // get binary
+        // get MD5 binary
         binary = binaryManager.getBinary(CONTENT_MD5);
         assertNotNull(binary);
         assertEquals(bytes.length, binary.getLength());
         assertEquals(CONTENT, IOUtils.toString(binary.getStream(), "UTF-8"));
+        assertEquals("MD5", binary.getDigestAlgorithm());
+        assertEquals(CONTENT_MD5, binary.getDigest());
+
+        // check SHA-1 binary
+        Binary sha1Binary = new Binary(CONTENT_SHA1, "repo");
+        assertEquals("SHA-1", sha1Binary.getDigestAlgorithm());
+        assertEquals(CONTENT_SHA1, sha1Binary.getDigest());
 
         // other binary we'll GC
         binaryManager.getBinary(Blobs.createBlob("abc"));

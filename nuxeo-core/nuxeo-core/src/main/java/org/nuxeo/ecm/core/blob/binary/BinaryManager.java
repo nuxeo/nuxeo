@@ -80,4 +80,11 @@ public interface BinaryManager {
      */
     void close();
 
+    /**
+     * Returns the digest algorithm used to store and digest binaries.
+     *
+     * @since 7.4
+     */
+    String getDigestAlgorithm();
+
 }

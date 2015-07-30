@@ -2439,6 +2439,8 @@ public class TestSQLRepositoryAPI {
         childFile = session.getDocument(childFile.getRef());
         blob = (Blob) childFile.getProperty("file", "content");
 
+        // digest algorithm is null for any type of blob other than BinaryBlob
+        assertNull(blob.getDigestAlgorithm());
         assertEquals("XXX", blob.getDigest());
         assertEquals("blob.txt", blob.getFilename());
         assertEquals(length, blob.getLength());

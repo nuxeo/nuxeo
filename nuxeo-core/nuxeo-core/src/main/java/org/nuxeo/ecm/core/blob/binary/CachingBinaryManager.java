@@ -61,7 +61,7 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
         super.initialize(blobProviderId, properties);
         descriptor = new BinaryManagerRootDescriptor();
-        descriptor.digest = getDigest();
+        descriptor.digest = getDefaultDigestAlgorithm();
         log.info("Registering binary manager '" + blobProviderId + "' using " + getClass().getSimpleName());
     }
 

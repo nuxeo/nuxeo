@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Objects;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
@@ -65,6 +66,11 @@ public class BinaryBlob extends AbstractBlob implements ManagedBlob, Serializabl
      */
     public Binary getBinary() {
         return binary;
+    }
+
+    @Override
+    public String getDigestAlgorithm() {
+        return Objects.equals(binary.getDigest(), getDigest()) ? binary.getDigestAlgorithm() : null;
     }
 
     @Override

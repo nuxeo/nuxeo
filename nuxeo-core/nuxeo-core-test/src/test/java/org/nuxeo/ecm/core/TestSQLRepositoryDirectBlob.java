@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
@@ -58,6 +59,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
+@Deploy("org.nuxeo.ecm.core.tests:OSGI-INF/test-default-blob-provider.xml")
 public class TestSQLRepositoryDirectBlob {
 
     @Inject
@@ -106,6 +108,8 @@ public class TestSQLRepositoryDirectBlob {
         assertNotNull("Missing file for digest: " + digest, binary);
         String filename = "doc.txt";
         Blob blob = new BinaryBlob(binary, digest, filename, "text/plain", "utf-8", digest, binary.getLength());
+        assertEquals("MD5", blob.getDigestAlgorithm());
+        assertEquals(digest, blob.getDigest());
         file.setProperty("file", "filename", filename);
         file.setProperty("file", "content", blob);
         session.saveDocument(file);
