@@ -82,7 +82,7 @@ public class S3BinaryManager extends CachingBinaryManager {
     private static final String MD5 = "MD5"; // must be MD5 for Etag
 
     @Override
-    protected String getDigest() {
+    protected String getDefaultDigestAlgorithm() {
         return MD5;
     }
 
