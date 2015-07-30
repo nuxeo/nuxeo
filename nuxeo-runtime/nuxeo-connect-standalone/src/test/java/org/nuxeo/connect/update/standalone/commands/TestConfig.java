@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -27,8 +27,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
 import java.net.URLDecoder;
-import java.util.Properties;
-
 import javax.inject.Inject;
 
 import org.apache.commons.io.FileUtils;
@@ -56,14 +54,13 @@ public class TestConfig extends AbstractCommandTest {
         super.setUp();
 
         URL url = locator.getTargetTestResource("config/nuxeo.conf");
-        File nuxeoConf = new File(org.nuxeo.common.Environment.getDefault().getServerHome(), "nuxeo.conf");
+        File nuxeoConf = new File(Environment.getDefault().getServerHome(), "nuxeo.conf");
         FileUtils.copyFile(new File(URLDecoder.decode(url.getPath(), "UTF-8")), nuxeoConf);
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
-        System.setProperty(TomcatConfigurator.TOMCAT_HOME,
-                org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
+        System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
         url = locator.getTargetTestResource("templates");
         FileUtils.copyDirectory(new File(URLDecoder.decode(url.getPath(), "UTF-8")), new File(
-                org.nuxeo.common.Environment.getDefault().getServerHome(), "templates"));
+                Environment.getDefault().getServerHome(), "templates"));
 
         configurationGenerator = new ConfigurationGenerator();
         assertTrue(configurationGenerator.init());
@@ -151,12 +148,11 @@ public class TestConfig extends AbstractCommandTest {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        Properties sysProperties = System.getProperties();
-        sysProperties.remove(ConfigurationGenerator.NUXEO_CONF);
-        sysProperties.remove(Environment.NUXEO_HOME);
-        sysProperties.remove(TomcatConfigurator.TOMCAT_HOME);
-        sysProperties.remove(Environment.NUXEO_DATA_DIR);
-        sysProperties.remove(Environment.NUXEO_LOG_DIR);
+        System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
+        System.clearProperty(Environment.NUXEO_HOME);
+        System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
+        System.clearProperty(Environment.NUXEO_DATA_DIR);
+        System.clearProperty(Environment.NUXEO_LOG_DIR);
     }
 
 }

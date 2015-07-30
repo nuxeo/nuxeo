@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -144,8 +143,7 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
         FileUtils.copyDirectory(getResourceFile("templates"), new File(nuxeoHome, "templates"));
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
         System.setProperty(ConfigurationGenerator.NUXEO_CONF, new File(nuxeoHome, nuxeoConf.getName()).getPath());
-        System.setProperty(TomcatConfigurator.TOMCAT_HOME,
-                org.nuxeo.common.Environment.getDefault().getServerHome().getPath());
+        System.setProperty(TomcatConfigurator.TOMCAT_HOME, Environment.getDefault().getServerHome().getPath());
     }
 
     @Test
@@ -171,12 +169,11 @@ public class TestNuxeoLauncher extends AbstractConfigurationTest {
     @After
     public void tearDown() {
         FileUtils.deleteQuietly(nuxeoHome);
-        Properties sysProperties = System.getProperties();
-        sysProperties.remove(ConfigurationGenerator.NUXEO_CONF);
-        sysProperties.remove(Environment.NUXEO_HOME);
-        sysProperties.remove(TomcatConfigurator.TOMCAT_HOME);
-        sysProperties.remove(Environment.NUXEO_DATA_DIR);
-        sysProperties.remove(Environment.NUXEO_LOG_DIR);
+        System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
+        System.clearProperty(Environment.NUXEO_HOME);
+        System.clearProperty(TomcatConfigurator.TOMCAT_HOME);
+        System.clearProperty(Environment.NUXEO_DATA_DIR);
+        System.clearProperty(Environment.NUXEO_LOG_DIR);
     }
 
 }

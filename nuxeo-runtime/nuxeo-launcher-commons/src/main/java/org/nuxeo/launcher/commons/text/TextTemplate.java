@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -55,8 +55,8 @@ import freemarker.template.TemplateException;
  * Copy files or directories replacing parameters matching pattern '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map}
  * (deprecated) or a {@link Properties}.
  * <p>
- * Method {@link #setTextParsingExtensions(String)} allow to set list of files being processed when using
- * {@link #processDirectory(File, File)} or #pro, others are simply copied.
+ * Method {@link #setTextParsingExtensions(String)} allow to set the list of files being processed when using
+ * {@link #processDirectory(File, File)}, based on their extension; others being simply copied.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -76,7 +76,7 @@ public class TextTemplate {
 
     private List<String> plainTextExtensions;
 
-    private List<String> freemarkerExtensions = new ArrayList<String>();
+    private List<String> freemarkerExtensions = new ArrayList<>();
 
     private Configuration freemarkerConfiguration = null;
 
@@ -182,8 +182,8 @@ public class TextTemplate {
 
     protected Properties unescape(Properties props) {
         // unescape variables
-        for (Object key:props.keySet()) {
-            props.put(key, unescape((String)props.get(key)));
+        for (Object key : props.keySet()) {
+            props.put(key, unescape((String) props.get(key)));
         }
         return props;
     }
@@ -236,12 +236,13 @@ public class TextTemplate {
         os.write(text.getBytes("UTF-8"));
     }
 
+    @SuppressWarnings("unchecked")
     public void initFreeMarker() {
         // Initialize FreeMarker
         freemarkerConfiguration = new Configuration();
         freemarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper());
         // Initialize data model
-        freemarkerVars = new HashMap<String, Object>();
+        freemarkerVars = new HashMap<>();
         @SuppressWarnings("rawtypes")
         Enumeration processedEnum = processedVars.propertyNames();
         Map<String, Object> currentMap;
@@ -256,7 +257,7 @@ public class TextTemplate {
             for (int i = 0; i < (keyparts.length - 1); i++) {
                 currentString = currentString + (currentString.equals("") ? "" : ".") + keyparts[i];
                 if (!currentMap.containsKey(keyparts[i])) {
-                    Map<String, Object> nextMap = new HashMap<String, Object>();
+                    Map<String, Object> nextMap = new HashMap<>();
                     currentMap.put(keyparts[i], nextMap);
                     currentMap = nextMap;
                 } else {
@@ -323,15 +324,17 @@ public class TextTemplate {
     }
 
     /**
-     * Recursive call {@link #process(InputStream, OutputStream, boolean)} on
-     * each file from "in" directory to "out" directory.
+     * Recursively process each file from "in" directory to "out" directory.
      *
      * @param in Directory to read files from
      * @param out Directory to write files to
      * @return copied files list
+     * @see TextTemplate#processText(InputStream, OutputStream)
+     * @see TextTemplate#processFreemarker(File, File)
      */
-    public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException, TemplateException {
-        List<String> newFiles = new ArrayList<String>();
+    public List<String> processDirectory(File in, File out) throws FileNotFoundException, IOException,
+            TemplateException {
+        List<String> newFiles = new ArrayList<>();
         if (in.isFile()) {
             if (out.isDirectory()) {
                 out = new File(out, in.getName());
@@ -410,7 +413,7 @@ public class TextTemplate {
                 // allow renaming destination directory
                 out.mkdirs();
             } else if (!out.getName().equals(in.getName())) {
-                // allow copy over existing arborescence
+                // allow copy over existing hierarchy
                 out = new File(out, in.getName());
                 out.mkdir();
             }
@@ -426,7 +429,7 @@ public class TextTemplate {
      */
     public void setTextParsingExtensions(String extensionsList) {
         StringTokenizer st = new StringTokenizer(extensionsList, ",");
-        plainTextExtensions = new ArrayList<String>();
+        plainTextExtensions = new ArrayList<>();
         while (st.hasMoreTokens()) {
             String extension = st.nextToken();
             plainTextExtensions.add(extension);
@@ -438,7 +441,7 @@ public class TextTemplate {
 
     public void setFreemarkerParsingExtensions(String extensionsList) {
         StringTokenizer st = new StringTokenizer(extensionsList, ",");
-        freemarkerExtensions = new ArrayList<String>();
+        freemarkerExtensions = new ArrayList<>();
         while (st.hasMoreTokens()) {
             String extension = st.nextToken();
             freemarkerExtensions.add(extension);

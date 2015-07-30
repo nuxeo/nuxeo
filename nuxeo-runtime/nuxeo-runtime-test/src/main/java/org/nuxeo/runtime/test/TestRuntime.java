@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.test;
@@ -25,7 +24,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import org.nuxeo.common.utils.FileUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.runtime.AbstractRuntimeService;
 import org.nuxeo.runtime.Version;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
@@ -38,6 +40,7 @@ import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
 public class TestRuntime extends AbstractRuntimeService {
+    private static final Log log = LogFactory.getLog(TestRuntime.class);
 
     public static final String NAME = "Test Runtime";
 
@@ -51,7 +54,7 @@ public class TestRuntime extends AbstractRuntimeService {
             workingDir = File.createTempFile("NXTestFramework", generateId());
             workingDir.delete();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e, e);
         }
     }
 
@@ -83,7 +86,7 @@ public class TestRuntime extends AbstractRuntimeService {
     public synchronized void stop() {
         super.stop();
         if (workingDir != null) {
-            FileUtils.deleteTree(workingDir);
+            FileUtils.deleteQuietly(workingDir);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -14,8 +14,10 @@ package org.nuxeo.runtime;
 
 import java.io.File;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 import org.nuxeo.common.Environment;
@@ -25,12 +27,23 @@ import org.nuxeo.runtime.util.SimpleRuntime;
 
 public class TestSystemLoginRestriction {
 
+    private String oldProperty;
+
     @Before
     public void setUp() throws Exception {
-        System.setProperty("org.nuxeo.runtime.testing", "true");
+        oldProperty = System.setProperty(Framework.NUXEO_TESTING_SYSTEM_PROP, "true");
         Environment env = new Environment(new File(System.getProperty("java.io.tmpdir")));
         Environment.setDefault(env);
         Framework.initialize(new SimpleRuntime());
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        if (oldProperty != null) {
+            System.setProperty(Framework.NUXEO_TESTING_SYSTEM_PROP, oldProperty);
+        } else {
+            System.clearProperty(Framework.NUXEO_TESTING_SYSTEM_PROP);
+        }
     }
 
     @Test

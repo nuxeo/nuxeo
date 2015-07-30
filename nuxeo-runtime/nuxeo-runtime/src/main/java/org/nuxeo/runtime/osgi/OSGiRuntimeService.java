@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -107,8 +107,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     public OSGiRuntimeService(OSGiRuntimeContext runtimeContext, BundleContext context) {
         super(runtimeContext);
         bundleContext = context;
-        bundles = new ConcurrentHashMap<String, Bundle>();
-        contexts = new ConcurrentHashMap<String, RuntimeContext>();
+        bundles = new ConcurrentHashMap<>();
+        contexts = new ConcurrentHashMap<>();
         String bindAddress = context.getProperty(PROP_NUXEO_BIND_ADDRESS);
         if (bindAddress != null) {
             properties.put(PROP_NUXEO_BIND_ADDRESS, bindAddress);
@@ -222,8 +222,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                 try {
                     ctx.deploy(url);
                 } catch (IOException e) {
-                    // just log error to know where is the cause of the
-                    // exception
+                    // just log error to know where is the cause of the exception
                     log.error("Error deploying resource: " + url);
                     Framework.handleDevError(e);
                     throw new RuntimeServiceException("Cannot deploy: " + url, e);
@@ -248,8 +247,8 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
             return false;
         }
         Iterator<URL> it = provider.iterator();
-        ArrayList<URL> props = new ArrayList<URL>();
-        ArrayList<URL> xmls = new ArrayList<URL>();
+        ArrayList<URL> props = new ArrayList<>();
+        ArrayList<URL> xmls = new ArrayList<>();
         while (it.hasNext()) {
             URL url = it.next();
             String path = url.getPath();
@@ -287,14 +286,14 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         File blacklistFile = new File(env.getConfig(), "blacklist");
         if (blacklistFile.isFile()) {
             List<String> lines = FileUtils.readLines(blacklistFile);
-            Set<String> blacklist = new HashSet<String>();
+            Set<String> blacklist = new HashSet<>();
             for (String line : lines) {
                 line = line.trim();
                 if (line.length() > 0) {
                     blacklist.add(line);
                 }
             }
-            manager.setBlacklist(new HashSet<String>(lines));
+            manager.setBlacklist(new HashSet<>(lines));
         }
 
         if (loadConfigurationFromProvider()) {
@@ -302,8 +301,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
         }
 
         String configDir = bundleContext.getProperty(PROP_CONFIG_DIR);
-        if (configDir != null && configDir.contains(":/")) { // an url of a
-                                                             // config file
+        if (configDir != null && configDir.contains(":/")) { // an url of a config file
             log.debug("Configuration: " + configDir);
             URL url = new URL(configDir);
             log.debug("Configuration:   loading properties url: " + configDir);
@@ -392,7 +390,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
                     } finally {
                         in.close();
                     }
-
                 }
             }
             // replace the current runtime properties
@@ -466,7 +463,6 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     @Override
     public String expandVars(String expression) {
         return new TextTemplate(getProperties()) {
-
             @Override
             public String getVariable(String name) {
                 String value = super.getVariable(name);
@@ -480,7 +476,7 @@ public class OSGiRuntimeService extends AbstractRuntimeService implements Framew
     }
 
     protected void notifyComponentsOnStarted() {
-        List<RegistrationInfo> ris = new ArrayList<RegistrationInfo>(manager.getRegistrations());
+        List<RegistrationInfo> ris = new ArrayList<>(manager.getRegistrations());
         Collections.sort(ris, new RIApplicationStartedComparator());
         for (RegistrationInfo ri : ris) {
             try {

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime.deployment.preprocessor.template;
@@ -51,7 +50,7 @@ public class Template {
     protected boolean runningOnJBoss5 = false;
 
     public Template() {
-        parts = new LinkedHashMap<String, Part>();
+        parts = new LinkedHashMap<>();
         // XXX compat code
         String v = System.getProperty(JBOSS5_COMPAT);
         if (v != null) {
@@ -123,16 +122,16 @@ public class Template {
             offset = this.text.length();
         }
 
-        public void append(String text) {
-            this.text.append(text);
+        public void append(String aText) {
+            text.append(aText);
         }
 
-        public void prepend(String text) {
-            this.text.insert(offset, text);
+        public void prepend(String aText) {
+            text.insert(offset, aText);
         }
 
-        public void replace(String text) {
-            this.text.replace(offset, this.text.length(), text);
+        public void replace(String aText) {
+            text.replace(offset, text.length(), aText);
         }
 
         public String getText() {
@@ -147,7 +146,7 @@ public class Template {
 
     /*
      * TODO: Remove the following methods when deployment-fragment.xml files will be fixed. These files must not contain
-     * <modue><java>...</java></module> declarations.
+     * <module><java>...</java></module> declarations.
      */
 
     /**

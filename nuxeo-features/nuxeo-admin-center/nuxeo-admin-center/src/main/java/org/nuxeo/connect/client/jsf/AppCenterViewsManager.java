@@ -455,10 +455,6 @@ public class AppCenterViewsManager implements Serializable {
                     } catch (ConnectServerError e) {
                         setStatus(SnapshotStatus.error, e.getMessage());
                         return;
-                    } catch (Exception e) { // TODO fix connect-client API
-                        ExceptionUtils.checkInterrupt(e);
-                        setStatus(SnapshotStatus.error, e.getMessage());
-                        return;
                     }
                     try {
                         while (!downloadingPkg.isCompleted()) {

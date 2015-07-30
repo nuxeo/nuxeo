@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.launcher.commons.text.TextTemplate;
@@ -41,6 +42,15 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         super.setUp();
         FileUtils.copyDirectory(getResourceFile("templates/jboss"), new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
+    }
+
+    @Override
+    @After
+    public void tearDown() {
+        super.tearDown();
+        System.clearProperty("jboss.home.dir");
+        System.clearProperty("java.net.preferIPv4Stack");
+        System.clearProperty("java.net.preferIPv6Addresses");
     }
 
     @Test
@@ -83,8 +93,8 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         assertTrue(configGenerator.init());
         String oldValue = configGenerator.setProperty("test.prop.key", "test.prop.value");
         assertEquals("Wrong old value", null, oldValue);
-        assertEquals("Property not set", "test.prop.value",
-                configGenerator.getUserConfig().getProperty("test.prop.key"));
+        assertEquals("Property not set", "test.prop.value", configGenerator.getUserConfig()
+                                                                           .getProperty("test.prop.key"));
         oldValue = configGenerator.setProperty("test.prop.key", null);
         assertEquals("Wrong old value", "test.prop.value", oldValue);
         assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
@@ -128,7 +138,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testSetWizardDone() throws ConfigurationException {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        Map<String, String> changedParameters = new HashMap<String, String>();
+        Map<String, String> changedParameters = new HashMap<>();
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         configGenerator.saveFilteredConfiguration(changedParameters);
         configGenerator = new ConfigurationGenerator();
@@ -174,7 +184,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
                 configGenerator.getUserTemplates());
-        Map<String, String> customParameters = new HashMap<String, String>();
+        Map<String, String> customParameters = new HashMap<>();
         customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
         configGenerator.saveFilteredConfiguration(customParameters);
         // Check stored value

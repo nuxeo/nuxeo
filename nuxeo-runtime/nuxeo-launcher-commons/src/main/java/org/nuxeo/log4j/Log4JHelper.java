@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -63,7 +63,7 @@ public class Log4JHelper {
      * @return {@link FileAppender}s configured in loggerRepository
      */
     public static ArrayList<String> getFileAppendersFiles(LoggerRepository loggerRepository) {
-        ArrayList<String> logFiles = new ArrayList<String>();
+        ArrayList<String> logFiles = new ArrayList<>();
         for (Enumeration<Appender> appenders = loggerRepository.getRootLogger().getAllAppenders(); appenders.hasMoreElements();) {
             Appender appender = appenders.nextElement();
             if (appender instanceof FileAppender) {
@@ -188,7 +188,7 @@ public class Log4JHelper {
      * @since 5.5
      * @param category Log4J category for which to switch debug log level
      * @param debug set debug log level to true or false
-     * @see #setDebug(String, boolean, boolean, String)
+     * @see #setDebug(String, boolean, boolean, String[])
      */
     public static void setDebug(String category, boolean debug) {
         setDebug(category, debug, false, new String[] { CONSOLE_APPENDER_NAME });

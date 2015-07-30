@@ -56,6 +56,8 @@ public class RandomBugTest {
 
     protected static boolean isRunningInners;
 
+    private String oldProperty;
+
     protected static class IgnoreInner implements TestRule {
         @Override
         public Statement apply(Statement base, Description description) {
@@ -341,6 +343,20 @@ public class RandomBugTest {
         }
         assertThat(result.getIgnoreCount()).isEqualTo(ignoreCount);
         return result;
+    }
+
+    @Before
+    public void storeSystemProperties() {
+        oldProperty = System.getProperty(RandomBug.MODE_PROPERTY);
+    }
+
+    @After
+    public void clearSystemProperties() {
+        if (oldProperty != null) {
+            System.setProperty(RandomBug.MODE_PROPERTY, oldProperty);
+        } else {
+            System.clearProperty(RandomBug.MODE_PROPERTY);
+        }
     }
 
 }

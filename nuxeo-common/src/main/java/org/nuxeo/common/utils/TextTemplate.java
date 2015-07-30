@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
  *     bstefanescu, jcarsique
  *     Anahide Tchertchian
  *
- * $Id$
  */
 
 package org.nuxeo.common.utils;
@@ -38,17 +37,20 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
+
 /**
  * Text template processing.
  * <p>
  * Copy files or directories replacing parameters matching pattern '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map}
  * (deprecated) or a {@link Properties}.
  * <p>
- * Since 5.7.2, it an accept default values using syntax ${parameter:=defaultValue}. The default value will be used if
- * parameter is null or unset.
+ * Since 5.7.2, variables can have a default value using syntax ${parameter:=defaultValue}. The default value will be
+ * used if parameter is null or unset.
  * <p>
- * Method {@link #setParsingExtensions(String)} allow to set list of files being processed when using
- * {@link #processDirectory(File, File)} or #pro, others are simply copied.
+ * Method {@link #setParsingExtensions(String)} allow to set the list of files being processed when using
+ * {@link #processDirectory(File, File)}, based on their extension; others being simply copied.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
@@ -139,7 +141,7 @@ public class TextTemplate {
     }
 
     public String process(InputStream in) throws IOException {
-        String text = FileUtils.read(in);
+        String text = IOUtils.toString(in, Charsets.UTF_8);
         return process(text);
     }
 
@@ -178,7 +180,7 @@ public class TextTemplate {
                 // allow renaming destination directory
                 out.mkdirs();
             } else if (!out.getName().equals(in.getName())) {
-                // allow copy over existing arborescence
+                // allow copy over existing hierarchy
                 out = new File(out, in.getName());
                 out.mkdir();
             }
@@ -193,7 +195,7 @@ public class TextTemplate {
      */
     public void process(InputStream is, OutputStream os, boolean processText) throws IOException {
         if (processText) {
-            String text = FileUtils.read(is);
+            String text = IOUtils.toString(is, Charsets.UTF_8);
             text = process(text);
             os.write(text.getBytes());
         } else {
@@ -206,7 +208,7 @@ public class TextTemplate {
      */
     public void setParsingExtensions(String extensionsList) {
         StringTokenizer st = new StringTokenizer(extensionsList, ",");
-        extensions = new ArrayList<String>();
+        extensions = new ArrayList<>();
         while (st.hasMoreTokens()) {
             extensions.add(st.nextToken());
         }

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -134,7 +134,7 @@ public abstract class ServerConfigurator {
             File[] listFiles = includedTemplate.listFiles(filter);
             if (listFiles != null) {
                 String templateName = includedTemplate.getName();
-                log.debug(String.format("Parsing %s... %s", templateName, listFiles));
+                log.debug(String.format("Parsing %s... %s", templateName, Arrays.toString(listFiles)));
                 // Check for deprecation
                 Boolean isDeprecated = Boolean.valueOf(config.getProperty(templateName + ".deprecated"));
                 if (isDeprecated) {
@@ -283,7 +283,7 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Initialize logs. This is called before {@link ConfigurationGenerator#init()} so the {@link #logDir} field is not
+     * Initialize logs. This is called before {@link ConfigurationGenerator#init()} so the {@code logDir} field is not
      * yet initialized
      *
      * @since 5.4.2

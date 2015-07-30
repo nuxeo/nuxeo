@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2013 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -483,8 +483,8 @@ public final class Framework {
 
     /**
      * @see FileEventTracker
-     * @param file The file to delete
-     * @param marker the marker Object
+     * @param aFile The file to delete
+     * @param aMarker the marker Object
      */
     public static void trackFile(File aFile, Object aMarker) {
         FileEvent.onFile(Framework.class, aFile, aMarker).send();

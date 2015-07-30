@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,7 +124,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
 
     protected Bundle runtimeBundle;
 
-    protected final List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<WorkingDirectoryConfigurator>();
+    protected final List<WorkingDirectoryConfigurator> wdConfigs = new ArrayList<>();
 
     protected final TargetResourceLocator targetResourceLocator;
 
@@ -252,8 +252,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
         assertNotNull(runtime);
     }
 
-    protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService runtime) {
-        return runtime;
+    protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService aRuntime) {
+        return aRuntime;
     }
 
     public static URL[] introspectClasspath(ClassLoader loader) {
@@ -334,8 +334,8 @@ public class NXRuntimeTestCase implements RuntimeHarness {
             }
             log.debug(sb.toString());
         }
-        readUris = new HashSet<URI>();
-        bundles = new HashMap<String, BundleFile>();
+        readUris = new HashSet<>();
+        bundles = new HashMap<>();
     }
 
     /**
@@ -400,7 +400,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * The first contribution file found by the class loader will be used. You have no guarantee in case of name
      * collisions.
      *
-     * @deprecated use the less ambiguous {@link #deployContrib(BundleFile,String)}
+     * @deprecated use the less ambiguous {@link #deployContrib(String, String)}
      * @param contrib the relative path to the contribution file
      */
     @Override
@@ -420,7 +420,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * <p>
      * For compatibility reasons the name of the bundle may be a jar name, but this use is discouraged and deprecated.
      *
-     * @param bundle the name of the bundle to peek the contrib in
+     * @param name the name of the bundle to peek the contrib in
      * @param contrib the path to contrib in the bundle.
      */
     @Override
@@ -499,7 +499,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * undeployContrib("org.nuxeo.ecm.core", "OSGI-INF/CoreExtensions.xml")
      * </code>
      *
-     * @param bundle the bundle
+     * @param name the bundle
      * @param contrib the contribution
      */
     @Override
@@ -555,7 +555,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      * The lookup is first done on symbolic name, as set in <code>MANIFEST.MF</code> and then falls back to the bundle
      * url (e.g., <code>nuxeo-platform-search-api</code>) for backwards compatibility.
      *
-     * @param bundle the symbolic name
+     * @param name the symbolic name
      */
     @Override
     public void deployBundle(String name) throws Exception {
@@ -666,7 +666,7 @@ public class NXRuntimeTestCase implements RuntimeHarness {
      */
     @Override
     public List<String> getClassLoaderFiles() throws URISyntaxException {
-        List<String> files = new ArrayList<String>(urls.length);
+        List<String> files = new ArrayList<>(urls.length);
         for (URL url : urls) {
             files.add(url.toURI().getPath());
         }

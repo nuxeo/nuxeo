@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ package org.nuxeo.runtime.test.runner;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -50,6 +52,11 @@ public class CanExpandVariablesInContributionTest {
     public void variablesAreExpanded() throws Exception {
         ComponentInstance component = runtime.getComponentInstance("test:contrib");
         assertThat("component is installed", component, notNullValue());
+    }
+
+    @After
+    public void tearDown() {
+        System.clearProperty("nuxeo.test.domain");
     }
 
 }

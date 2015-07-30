@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime;
@@ -70,7 +69,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected final RuntimeContext context;
 
-    protected final List<RuntimeExtension> extensions = new ArrayList<RuntimeExtension>();
+    protected final List<RuntimeExtension> extensions = new ArrayList<>();
 
     protected AbstractRuntimeService(DefaultRuntimeContext context) {
         this(context, null);
@@ -78,7 +77,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     // warnings during the deployment. Here are collected all errors occurred
     // during the startup
-    protected final List<String> warnings = new ArrayList<String>();
+    protected final List<String> warnings = new ArrayList<>();
 
     protected AbstractRuntimeService(DefaultRuntimeContext context, Map<String, String> properties) {
         this.context = context;

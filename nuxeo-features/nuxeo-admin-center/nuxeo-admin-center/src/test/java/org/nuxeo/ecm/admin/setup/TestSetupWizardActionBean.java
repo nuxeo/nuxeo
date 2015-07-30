@@ -34,9 +34,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.admin.setup.TestSetupWizardActionBean.CustomLogFilter;
@@ -105,6 +107,15 @@ public class TestSetupWizardActionBean {
          */
         capturedLog.assertHasEvent();
         assertEquals(4, capturedLog.getCaughtEvents().size());
+    }
+
+    @After
+    public void tearDown() {
+        System.clearProperty(ConfigurationGenerator.NUXEO_CONF);
+        System.clearProperty(Environment.NUXEO_HOME);
+        System.clearProperty("jboss.home.dir");
+        System.clearProperty(Environment.NUXEO_DATA_DIR);
+        System.clearProperty(Environment.NUXEO_LOG_DIR);
     }
 
     @Test

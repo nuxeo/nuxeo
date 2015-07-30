@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -92,11 +92,11 @@ public class CommandInfo {
 
     @XmlElementWrapper(name = "messages")
     @XmlElement(name = "message")
-    public List<MessageInfo> messages = new ArrayList<MessageInfo>();
+    public List<MessageInfo> messages = new ArrayList<>();
 
     @XmlElementWrapper(name = "packages")
     @XmlElement(name = "package")
-    public List<PackageInfo> packages = new ArrayList<PackageInfo>();
+    public List<PackageInfo> packages = new ArrayList<>();
 
     /**
      * @return new {@link MessageInfo} added to messages
@@ -156,7 +156,8 @@ public class CommandInfo {
         for (PackageInfo packageInfo : packages) {
             sb.append("\n\t"
                     + new ReflectionToStringBuilder(packageInfo, ToStringStyle.SHORT_PREFIX_STYLE).setExcludeFieldNames(
-                            new String[] { "description" }).toString());
+                            new String[] { "description" })
+                                                                                                  .toString());
         }
         if (exitCode != 0 || debug) {
             if (exitCode != 0) {

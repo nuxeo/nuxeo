@@ -221,8 +221,8 @@ public final class FileUtils {
     }
 
     /**
-     * @param dst
-     * @param content
+     * @param file
+     * @param buf
      * @param append
      * @throws IOException
      * @since 5.5

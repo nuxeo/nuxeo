@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2012-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -38,18 +38,18 @@ public class ConfigurationInfo {
 
     @XmlElementWrapper(name = "basetemplates")
     @XmlElement(name = "template")
-    public List<String> basetemplates = new ArrayList<String>();
+    public List<String> basetemplates = new ArrayList<>();
 
     @XmlElementWrapper(name = "pkgtemplates")
     @XmlElement(name = "template")
-    public List<String> pkgtemplates = new ArrayList<String>();
+    public List<String> pkgtemplates = new ArrayList<>();
 
     @XmlElementWrapper(name = "usertemplates")
     @XmlElement(name = "template")
-    public List<String> usertemplates = new ArrayList<String>();
+    public List<String> usertemplates = new ArrayList<>();
 
     @XmlElementWrapper(name = "keyvals")
     @XmlElement(name = "keyval")
-    public List<KeyValueInfo> keyvals = new ArrayList<KeyValueInfo>();
+    public List<KeyValueInfo> keyvals = new ArrayList<>();
 
 }
