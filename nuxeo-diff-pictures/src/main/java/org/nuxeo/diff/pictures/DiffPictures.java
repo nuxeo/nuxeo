@@ -150,62 +150,77 @@ public class DiffPictures {
             finalName = "comp-" + b1.getFilename();
         }
 
-        String filePath1, filePath2;
+        CloseableFile cf1 = null, cf2 = null;
+        String filePath1 = null, filePath2 = null;
         CmdParameters params = new CmdParameters();
 
-        try (CloseableFile cf = b1.getCloseableFile()) {
-            filePath1 = cf.getFile().getAbsolutePath();
+        try {
+            cf1 = b1.getCloseableFile();
+            filePath1 = cf1.getFile().getAbsolutePath();
             params.addNamedParameter("file1", filePath1);
-        } catch (IOException e) {
-            throw new IOException("Could not get a valid File from left blob.", e);
-        }
 
-        try (CloseableFile cf = b2.getCloseableFile()) {
-            filePath2 = cf.getFile().getAbsolutePath();
+            cf2 = b2.getCloseableFile();
+            filePath2 = cf2.getFile().getAbsolutePath();
             params.addNamedParameter("file2", filePath2);
+
+            checkDefaultParametersValues();
+            for (Entry<String, Serializable> entry : clParameters.entrySet()) {
+                params.addNamedParameter(entry.getKey(), (String) entry.getValue());
+            }
+
+            String destFilePath;
+            String destFileExtension;
+
+            int dotIndex = finalName.lastIndexOf('.');
+            if (dotIndex < 0) {
+                destFileExtension = ".tmp";
+            } else {
+                destFileExtension = finalName.substring(dotIndex);
+            }
+
+            Blob tempBlob = Blobs.createBlobWithExtension(destFileExtension);
+            destFilePath = tempBlob.getFile().getAbsolutePath();
+
+            params.addNamedParameter("targetFilePath", destFilePath);
+
+            CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
+            ExecResult execResult = cles.execCommand(commandLine, params);
+
+            // WARNING
+            // ImageMagick can return a non zero code with some of its commands,
+            // while the execution went totally OK, with no error. The problem is
+            // that the CommandLineExecutorService assumes a non-zero return code is
+            // an error => we must handle the thing by ourselves, basically just
+            // checking if we do have a comparison file created by ImageMagick
+            File tempDestFile = tempBlob.getFile();
+            if (!tempDestFile.exists() || tempDestFile.length() < 1) {
+                throw new NuxeoException("Failed to execute the command <" + commandLine + ">. Final command [ "
+                        + execResult.getCommandLine() + " ] returned with error " + execResult.getReturnCode(),
+                        execResult.getError());
+            }
+
+            tempBlob.setFilename(finalName);
+
+            return tempBlob;
+
         } catch (IOException e) {
-            throw new IOException("Could not get a valid File from right blob.", e);
+            if (filePath1 == null) {
+                throw new IOException("Could not get a valid File from left blob.", e);
+            }
+            if (filePath2 == null) {
+                throw new IOException("Could not get a valid File from right blob.", e);
+            }
+
+            throw e;
+
+        } finally {
+            if (cf1 != null) {
+                cf1.close();
+            }
+            if (cf2 != null) {
+                cf2.close();
+            }
         }
-
-        checkDefaultParametersValues();
-        for (Entry<String, Serializable> entry : clParameters.entrySet()) {
-            params.addNamedParameter(entry.getKey(), (String) entry.getValue());
-        }
-
-        String destFilePath;
-        String destFileExtension;
-        
-        int dotIndex = finalName.lastIndexOf('.');
-        if(dotIndex < 0) {
-            destFileExtension = ".tmp";
-        } else {
-            destFileExtension = finalName.substring(dotIndex);
-        }
-        
-        Blob tempBlob = Blobs.createBlobWithExtension(destFileExtension);
-        destFilePath = tempBlob.getFile().getAbsolutePath();
-
-        params.addNamedParameter("targetFilePath", destFilePath);
-
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        ExecResult execResult = cles.execCommand(commandLine, params);
-
-        // WARNING
-        // ImageMagick can return a non zero code with some of its commands,
-        // while the execution went totally OK, with no error. The problem is
-        // that the CommandLineExecutorService assumes a non-zero return code is
-        // an error => we must handle the thing by ourselves, basically just
-        // checking if we do have a comparison file created by ImageMagick
-        File tempDestFile = tempBlob.getFile();
-        if (!tempDestFile.exists() || tempDestFile.length() < 1) {
-            throw new NuxeoException("Failed to execute the command <" + commandLine + ">. Final command [ "
-                    + execResult.getCommandLine() + " ] returned with error " + execResult.getReturnCode(),
-                    execResult.getError());
-        }
-        
-        tempBlob.setFilename(finalName);
-
-        return tempBlob;
     }
 
     /*
