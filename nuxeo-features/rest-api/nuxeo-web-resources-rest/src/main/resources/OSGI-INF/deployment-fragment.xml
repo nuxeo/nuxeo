@@ -21,7 +21,7 @@
     </filter>
     <filter-mapping>
       <filter-name>WroContextFilter</filter-name>
-      <url-pattern>/wapi/v1/resource/bundle/*</url-pattern>
+      <url-pattern>/wro/api/v1/resource/bundle/*</url-pattern>
       <dispatcher>FORWARD</dispatcher>
       <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
@@ -32,7 +32,7 @@
     </filter>
     <filter-mapping>
       <filter-name>WroFilter</filter-name>
-      <url-pattern>/wapi/v1/resource/bundle/*</url-pattern>
+      <url-pattern>/wro/api/v1/resource/bundle/*</url-pattern>
       <dispatcher>REQUEST</dispatcher>
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
