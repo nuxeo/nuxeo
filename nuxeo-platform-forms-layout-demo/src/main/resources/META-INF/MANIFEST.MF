@@ -7,6 +7,7 @@ Bundle-Category: stateless
 Require-Bundle: org.nuxeo.ecm.core.api
 Nuxeo-Component: OSGI-INF/layout-demo-framework.xml,
  OSGI-INF/layout-demo-core-contrib.xml,
+ OSGI-INF/layout-demo-elasticsearch-index-contrib.xml,
  OSGI-INF/layout-demo-contrib.xml,
  OSGI-INF/layout-demo-auth-contrib.xml,
  OSGI-INF/layout-demo-url-contrib.xml,

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.forms.layoutDemo.elasticsearch.index">
+
+  <extension target="org.nuxeo.elasticsearch.ElasticSearchComponent" point="elasticSearchIndex">
+
+    <elasticSearchIndex name="layout-demo" type="doc" repository="layoutDemo" />
+
+  </extension>
+
+</component>
