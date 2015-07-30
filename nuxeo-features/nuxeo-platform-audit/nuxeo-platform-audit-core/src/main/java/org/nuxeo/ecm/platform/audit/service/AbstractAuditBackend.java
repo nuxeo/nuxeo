@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.event.CoreEvent;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -148,10 +149,6 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
     protected void doPutExtendedInfos(LogEntry entry, EventContext eventContext, DocumentModel source,
             Principal principal) {
-        if (source instanceof DeletedDocumentModel) {
-            // nothing to log ; it's a light doc
-            return;
-        }
 
         ExpressionContext context = new ExpressionContext();
         if (eventContext != null) {
@@ -168,6 +165,9 @@ public abstract class AbstractAuditBackend implements AuditBackend {
                     log.debug(String.format("can't get adapter for %s to log extinfo: %s", source.getPathAsString(),
                             e.getMessage()));
                 }
+                if (source instanceof DeletedDocumentModel) {
+                    continue; // skip
+                }
                 if (adapter != null) {
                     expressionEvaluator.bindValue(context, ad.getName(), adapter);
                 }
@@ -183,6 +183,11 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             Serializable value = null;
             try {
                 value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
+            } catch (PropertyException | UnsupportedOperationException e) {
+                if (source instanceof DeletedDocumentModel) {
+                    log.debug("Can not evaluate the expression: " + exp + " on a DeletedDocumentModel, skipping.");
+                }
+                continue;
             } catch (ELException e) {
                 continue;
             }
