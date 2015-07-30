@@ -294,8 +294,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sourceId = entry.getId();
         for (Reference reference : getDirectory().getReferences()) {
             String referenceFieldName = schemaFieldMap.get(reference.getFieldName()).getName().getPrefixedName();
-            if (getDirectory().getReferences(referenceFieldName).size() > 1) {
-                log.warn("Directory " + getDirectory().getName() + " cannot create field " + referenceFieldName
+            if (getDirectory().getReferences(reference.getFieldName()).size() > 1) {
+                log.warn("Directory " + getDirectory().getName() + " cannot create field " + reference.getFieldName()
                         + " for entry " + fieldMap.get(idFieldName)
                         + ": this field is associated with more than one reference");
                 continue;
