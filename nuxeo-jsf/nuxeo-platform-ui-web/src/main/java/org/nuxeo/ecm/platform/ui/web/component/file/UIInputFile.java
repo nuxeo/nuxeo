@@ -380,7 +380,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
      */
     public void validateBlob(FacesContext context, InputFileInfo submitted) {
         Blob blob = submitted.getConvertedBlob();
-        if (blob.getLength() == 0) {
+        if (blob != null && blob.getLength() == 0) {
             submitted.setBlob(null);
             submitted.setFilename(null);
             submitted.setChoice(InputFileChoice.none.name());
