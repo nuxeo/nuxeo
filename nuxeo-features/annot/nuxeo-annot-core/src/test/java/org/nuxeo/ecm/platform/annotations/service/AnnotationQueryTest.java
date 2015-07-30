@@ -76,8 +76,7 @@ public class AnnotationQueryTest extends SQLRepositoryTestCase {
         AnnotationImpl ann = (AnnotationImpl) annotation;
         assertNotNull(ann);
 
-        List<Annotation> annotations = query.getAnnotationsForURIs(Collections.singletonList(ann.getAnnotates()),
-                ann.getGraph());
+        List<Annotation> annotations = query.getAnnotationsForURIs(ann.getAnnotates(), ann.getGraph());
         assertNotNull(annotations);
         assertEquals(1, annotations.size());
 

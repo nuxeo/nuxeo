@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.annotations.service;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.annotations.api.UriResolver;
@@ -50,8 +48,8 @@ public class DefaultUriResolver implements UriResolver {
         }
     }
 
-    public List<URI> getSearchURI(URI uri) {
-        return Collections.singletonList(uri);
+    public URI getSearchURI(URI uri) {
+        return uri;
     }
 
     public URI translateFromGraphURI(URI uri, String baseUrl) {

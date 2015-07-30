@@ -33,6 +33,6 @@ public interface UriResolver {
 
     String getBaseUrl(URI uri);
 
-    List<URI> getSearchURI(URI uri);
+    URI getSearchURI(URI uri);
 
 }

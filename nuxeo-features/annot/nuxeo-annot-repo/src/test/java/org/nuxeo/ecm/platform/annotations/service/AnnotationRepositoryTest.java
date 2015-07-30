@@ -132,16 +132,16 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     protected void annotationOnNewVersion(String u1) throws IOException, URISyntaxException {
         annotation = service.addAnnotation(getAnnotation(u1, 2), user, SERVER1);
         assertNotNull(annotation);
-        List<Annotation> annotations = service.queryAnnotations(new URI(u1), null, user);
+        List<Annotation> annotations = service.queryAnnotations(new URI(u1), user);
         assertEquals(1, annotations.size());
         String versionUrl = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(version1), true, SERVER1);
-        annotations = service.queryAnnotations(new URI(versionUrl), null, user);
+        annotations = service.queryAnnotations(new URI(versionUrl), user);
         assertEquals(1, annotations.size());
     }
 
     protected void newVersionSameAnnotations(CoreSession session, DocumentModel myfile, String uriAnnotatedDoc)
             throws URISyntaxException {
-        List<Annotation> annotations = service.queryAnnotations(new URI(uriAnnotatedDoc), null, user);
+        List<Annotation> annotations = service.queryAnnotations(new URI(uriAnnotatedDoc), user);
         log.debug(annotations.size() + " annotations for: " + uriAnnotatedDoc);
         assertEquals(0, annotations.size());
         List<DocumentModel> versions = session.getVersions(myfile.getRef());
@@ -149,7 +149,7 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         version1 = versions.get(0);
         String versionUrl = viewCodecManager.getUrlFromDocumentView(new DocumentViewImpl(version1), true, SERVER1);
         assertNotNull(versionUrl);
-        annotations = service.queryAnnotations(new URI(versionUrl), null, user);
+        annotations = service.queryAnnotations(new URI(versionUrl), user);
         log.debug(annotations.size() + " annotations for: " + versionUrl);
         assertEquals(1, annotations.size());
     }
@@ -162,9 +162,9 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
     }
 
     protected void sameDocumentFrom2Servers(String u1, String u2) throws URISyntaxException {
-        List<Annotation> annotations = service.queryAnnotations(new URI(u1), null, user);
+        List<Annotation> annotations = service.queryAnnotations(new URI(u1), user);
         assertEquals(1, annotations.size());
-        annotations = service.queryAnnotations(new URI(u2), null, user);
+        annotations = service.queryAnnotations(new URI(u2), user);
         assertEquals(1, annotations.size());
     }
 

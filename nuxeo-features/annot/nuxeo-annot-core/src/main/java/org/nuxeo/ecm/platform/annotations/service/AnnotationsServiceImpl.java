@@ -131,11 +131,11 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         return ((Literal) result.get(0)).getValue();
     }
 
-    public List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user) {
+    public List<Annotation> queryAnnotations(URI uri, NuxeoPrincipal user) {
         AnnotationQuery query = new AnnotationQuery();
         Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
-        List<URI> uris = resolver.getSearchURI(uri);
-        return query.getAnnotationsForURIs(uris, graph, filters);
+        uri = resolver.getSearchURI(uri);
+        return query.getAnnotationsForURIs(uri, graph);
     }
 
     public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {

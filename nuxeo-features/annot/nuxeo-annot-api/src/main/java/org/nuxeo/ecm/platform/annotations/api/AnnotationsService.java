@@ -36,9 +36,9 @@ public interface AnnotationsService {
     Graph getAnnotationGraph();
 
     /**
-     * Finds Annotation ids according to URI and filter.
+     * Finds Annotation ids according to URI.
      */
-    List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user);
+    List<Annotation> queryAnnotations(URI uri, NuxeoPrincipal user);
 
     /**
      * Returns an Annotation according to its Id.

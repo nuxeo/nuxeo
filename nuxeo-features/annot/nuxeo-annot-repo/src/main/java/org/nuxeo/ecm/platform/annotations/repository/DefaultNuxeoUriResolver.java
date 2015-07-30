@@ -22,8 +22,6 @@ package org.nuxeo.ecm.platform.annotations.repository;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,7 +54,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
         viewCodecManager = Framework.getService(DocumentViewCodecManager.class);
     }
 
-    public List<URI> getSearchURI(URI uri) {
+    public URI getSearchURI(URI uri) {
         DocumentView view = translator.getDocumentViewFromUri(uri);
         URI translatedUri = null;
         try (CoreSession session = CoreInstance.openCoreSession(null)) {
@@ -67,7 +65,7 @@ public class DefaultNuxeoUriResolver implements UriResolver {
             }
             translatedUri = translator.getUriFromDocumentView(view.getDocumentLocation().getServerName(), idRef);
         }
-        return Collections.singletonList(translatedUri);
+        return translatedUri;
     }
 
     public URI translateFromGraphURI(URI uri, String baseUrl) {

@@ -61,30 +61,30 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         URI uri = translator.getNuxeoUrn(docModel.getRepositoryName(), docModel.getId());
 
-        List<Annotation> annotations = service.queryAnnotations(uri, null, user);
+        List<Annotation> annotations = service.queryAnnotations(uri, user);
         assertEquals(1, annotations.size());
 
         DocumentRef versionRef = checkIn(docModel.getRef());
 
         // annotation reset on current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(0, annotations.size());
         log.debug(annotations.size() + " annotations for: " + uri);
         // 1 annotation on the version
         DocumentModel versionModel = session.getDocument(versionRef);
         URI uriVersion = translator.getNuxeoUrn(versionModel.getRepositoryName(), versionModel.getId());
-        annotations = service.queryAnnotations(uriVersion, null, user);
+        annotations = service.queryAnnotations(uriVersion, user);
         log.debug(annotations.size() + " annotations for: " + uriVersion);
         assertEquals(1, annotations.size());
 
         addAnnotationOn(url);
         // 2 annotations on the current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         log.debug(annotations.size() + " annotations for: " + uri);
         assertEquals(1, annotations.size());
 
         // but still 1 on the version
-        annotations = service.queryAnnotations(uriVersion, null, user);
+        annotations = service.queryAnnotations(uriVersion, user);
         log.debug(annotations.size() + " annotations for: " + uriVersion);
         assertEquals(1, annotations.size());
 
@@ -99,34 +99,34 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         URI uri = translator.getNuxeoUrn(docModel.getRepositoryName(), docModel.getId());
 
-        List<Annotation> annotations = service.queryAnnotations(uri, null, user);
+        List<Annotation> annotations = service.queryAnnotations(uri, user);
         assertEquals(1, annotations.size());
 
         DocumentRef versionRef = checkIn(docModel.getRef());
 
         // annotation reset on current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(0, annotations.size());
 
         // 1 annotation on the version
         DocumentModel versionModel = session.getDocument(versionRef);
         URI uriVersion = translator.getNuxeoUrn(versionModel.getRepositoryName(), versionModel.getId());
-        annotations = service.queryAnnotations(uriVersion, null, user);
+        annotations = service.queryAnnotations(uriVersion, user);
         assertEquals(1, annotations.size());
 
         addAnnotationOn(url);
         // 1 new annotation on document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(1, annotations.size());
 
         // and still 1 on the version
-        annotations = service.queryAnnotations(uriVersion, null, user);
+        annotations = service.queryAnnotations(uriVersion, user);
         assertEquals(1, annotations.size());
 
         // Restore the first version
         docModel = restoreToVersion(docModel.getRef(), versionRef);
         // 1 annotation on the current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(1, annotations.size());
     }
 
@@ -140,7 +140,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         URI uri = translator.getNuxeoUrn(docModel.getRepositoryName(), docModel.getId());
 
-        List<Annotation> annotations = service.queryAnnotations(uri, null, user);
+        List<Annotation> annotations = service.queryAnnotations(uri, user);
         assertEquals(3, annotations.size());
 
         DocumentRef version1ref = checkIn(docModel.getRef());
@@ -149,11 +149,11 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         DocumentModel versionModel1 = session.getDocument(version1ref);
         URI uriVersion1 = translator.getNuxeoUrn(versionModel1.getRepositoryName(), versionModel1.getId());
-        annotations = service.queryAnnotations(uriVersion1, null, user);
+        annotations = service.queryAnnotations(uriVersion1, user);
         assertEquals(3, annotations.size());
 
         addAnnotationsOn(url, 3);
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(3, annotations.size());
 
         DocumentRef version2ref = checkIn(docModel.getRef());
@@ -164,27 +164,27 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         URI uriVersion2 = translator.getNuxeoUrn(versionModel2.getRepositoryName(), versionModel2.getId());
 
         // 3 annotations on version 2
-        annotations = service.queryAnnotations(uriVersion2, null, user);
+        annotations = service.queryAnnotations(uriVersion2, user);
         assertEquals(3, annotations.size());
 
         // annotations reset on current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(0, annotations.size());
 
         // 3 annotations on version 1
-        annotations = service.queryAnnotations(uriVersion1, null, user);
+        annotations = service.queryAnnotations(uriVersion1, user);
         assertEquals(3, annotations.size());
 
         // Restore the first version
         docModel = restoreToVersion(docModel.getRef(), version1ref);
         // 1 annotation on the current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(3, annotations.size());
 
         // Restore the second version
         docModel = restoreToVersion(docModel.getRef(), version2ref);
         // 1 annotation on the current document
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(3, annotations.size());
     }
 
@@ -198,7 +198,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         URI uri = translator.getNuxeoUrn(docModel.getRepositoryName(), docModel.getId());
 
-        List<Annotation> annotations = service.queryAnnotations(uri, null, user);
+        List<Annotation> annotations = service.queryAnnotations(uri, user);
         assertEquals(3, annotations.size());
 
         DocumentRef version1ref = checkIn(docModel.getRef());
@@ -207,11 +207,11 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         DocumentModel versionModel1 = session.getDocument(version1ref);
         URI uriVersion1 = translator.getNuxeoUrn(versionModel1.getRepositoryName(), versionModel1.getId());
-        annotations = service.queryAnnotations(uriVersion1, null, user);
+        annotations = service.queryAnnotations(uriVersion1, user);
         assertEquals(3, annotations.size());
 
         addAnnotationsOn(url, 3);
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         assertEquals(3, annotations.size());
 
         DocumentRef version2ref = checkIn(docModel.getRef());
@@ -220,7 +220,7 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
 
         DocumentModel versionModel2 = session.getDocument(version2ref);
         URI uriVersion2 = translator.getNuxeoUrn(versionModel2.getRepositoryName(), versionModel2.getId());
-        annotations = service.queryAnnotations(uriVersion2, null, user);
+        annotations = service.queryAnnotations(uriVersion2, user);
         assertEquals(3, annotations.size());
 
         // the text 'zombie' is not found in the document
@@ -242,24 +242,24 @@ public class AnnotationsOnVersionTest extends AbstractRepositoryTestCase {
         assertEquals(version1ref, results.get(0).getRef());
 
         // Delete annotations for version 1
-        annotations = service.queryAnnotations(uriVersion1, null, user);
+        annotations = service.queryAnnotations(uriVersion1, user);
         for (Annotation annotation : annotations) {
             service.deleteAnnotationFor(uriVersion1, annotation, user);
         }
-        annotations = service.queryAnnotations(uriVersion1, null, user);
+        annotations = service.queryAnnotations(uriVersion1, user);
         assertEquals(0, annotations.size());
 
         // Delete annotations for version 2
-        annotations = service.queryAnnotations(uriVersion2, null, user);
+        annotations = service.queryAnnotations(uriVersion2, user);
         for (Annotation annotation : annotations) {
             service.deleteAnnotationFor(uriVersion2, annotation, user);
         }
-        annotations = service.queryAnnotations(uriVersion2, null, user);
+        annotations = service.queryAnnotations(uriVersion2, user);
         assertEquals(0, annotations.size());
 
         // restore version 1
         docModel = restoreToVersion(docModel.getRef(), version1ref);
-        annotations = service.queryAnnotations(uri, null, user);
+        annotations = service.queryAnnotations(uri, user);
         // still no annotation on the current document
         assertEquals(0, annotations.size());
     }

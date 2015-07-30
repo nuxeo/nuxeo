@@ -54,8 +54,7 @@ public class AnnotationsServiceTest extends AbstractAnnotationTest {
         assertNotNull(annId);
 
         waitForAsyncCompletion();
-        List<Annotation> annotations = service.queryAnnotations(new URI("http://www.w3.org/2005/Incubator/"), null,
-                user);
+        List<Annotation> annotations = service.queryAnnotations(new URI("http://www.w3.org/2005/Incubator/"), user);
         assertNotNull(annotations);
 
         // assertEquals(1, annotations.size()); TODO eclipse gave one result and maven two

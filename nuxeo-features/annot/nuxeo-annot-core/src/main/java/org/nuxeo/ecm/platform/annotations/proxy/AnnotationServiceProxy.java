@@ -158,12 +158,12 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return service.getAnnotationGraph();
     }
 
-    public List<Annotation> queryAnnotations(URI uri, Map<String, String> filters, NuxeoPrincipal user) {
+    public List<Annotation> queryAnnotations(URI uri, NuxeoPrincipal user) {
         String baseUrl = null;
         if (!uri.toString().startsWith("urn")) {
             baseUrl = resolver.getBaseUrl(uri);
         }
-        List<Annotation> tempResult = service.queryAnnotations(resolver.translateToGraphURI(uri), filters, user);
+        List<Annotation> tempResult = service.queryAnnotations(resolver.translateToGraphURI(uri), user);
         List<Annotation> result = new ArrayList<Annotation>();
         for (Annotation annotation : tempResult) {
             Annotation translatedAnnotation = annotationManager.translateAnnotationFromRepo(resolver, baseUrl,

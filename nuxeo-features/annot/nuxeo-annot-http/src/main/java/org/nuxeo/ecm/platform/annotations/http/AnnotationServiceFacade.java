@@ -61,7 +61,7 @@ public class AnnotationServiceFacade {
     public void query(String uri, OutputStream outputStream, NuxeoPrincipal name) {
         List<Annotation> annotations;
         try {
-            annotations = getService().queryAnnotations(new URI(uri), null, name);
+            annotations = getService().queryAnnotations(new URI(uri), name);
         } catch (URISyntaxException e) {
             throw new NuxeoException(e);
         }

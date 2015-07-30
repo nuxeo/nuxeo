@@ -92,7 +92,7 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
     private static void copyGraphFor(URI current, URI copied, NuxeoPrincipal user) {
         List<Statement> newStatements = new ArrayList<Statement>();
         AnnotationsService service = Framework.getService(AnnotationsService.class);
-        List<Annotation> annotations = service.queryAnnotations(current, null, user);
+        List<Annotation> annotations = service.queryAnnotations(current, user);
         log.debug("Copying annotations graph from " + current + " to " + copied + " for " + annotations.size()
                 + " annotations.");
         for (Annotation annotation : annotations) {
@@ -121,7 +121,7 @@ public class DocumentVersionnedGraphManager implements GraphManagerEventListener
     private static void removeGraphFor(URI uri, NuxeoPrincipal user) {
         log.debug("Removing annotations graph for " + uri);
         AnnotationsService service = Framework.getService(AnnotationsService.class);
-        List<Annotation> annotations = service.queryAnnotations(uri, null, user);
+        List<Annotation> annotations = service.queryAnnotations(uri, user);
         for (Annotation annotation : annotations) {
             service.deleteAnnotationFor(uri, annotation, user);
         }
