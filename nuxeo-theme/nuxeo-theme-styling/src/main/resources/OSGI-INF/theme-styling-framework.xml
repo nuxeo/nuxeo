@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 
-<!-- FIXME: document -->
 <component name="org.nuxeo.theme.styling.service">
+  <documentation>
+    The ThemeStylingService service provides extension points for
+    pluggable resources and resource bundles management per page.
+
+    @since 5.5
+  </documentation>
 
   <require>org.nuxeo.ecm.platform.WebResources</require>
 
@@ -11,23 +16,186 @@
   <implementation class="org.nuxeo.theme.styling.service.ThemeStylingServiceImpl" />
 
   <extension-point name="pages">
+    <documentation>
+      The pages extension point allows to define a set of resources and
+      resource bundles for a given "page", as well as additional information
+      about available flavors, for instance.
+
+      Example:
+
+      <code>
+        <page name="galaxy/default" charset="utf-8">
+          <favorites>
+            <icon name="icon">/icons/favicon.png</icon>
+            <icon name="shortcut icon">/icons/favicon.ico</icon>
+          </favorites>
+          <defaultFlavor>default</defaultFlavor>
+          <flavors>
+            <flavor>default</flavor>
+            <flavor>rainbow</flavor>
+          </flavors>
+          <resources>
+            <bundle>nuxeo_includes</bundle>
+            <bundle>nuxeo_base</bundle>
+            <bundle>nuxeo_header_footer</bundle>
+            <bundle>nuxeo_dm</bundle>
+            <resource>my_resource.css</resource>
+          </resources>
+        </page>
+      </code>
+
+      The charset and favorites are used inside the page head.
+
+      Flavors define available flavors on this page, resource bundles are
+      also references (see corresponding extension points on this same component).
+
+      This extension point accepts merge. When contributing new elements to
+      flavors or resources, the attribute append="true" should be added,
+      otherwise existing configurations will be overridden.
+
+      Attribute "charset" and elements "links" are available only since 7.4
+      (they were previously defined by the Theme extension point layout
+      configuration).
+
+      Deprecation note: since 7.4, the 'themePage' element is deprecated: just
+      change it to use the 'page' element instead.
+    </documentation>
     <object class="org.nuxeo.theme.styling.service.descriptors.ThemePage" />
     <object class="org.nuxeo.theme.styling.service.descriptors.PageDescriptor" />
   </extension-point>
 
   <extension-point name="styles">
+    <documentation>
+      The styles extension point is deprecated since 7.4.
+
+      It used to allow defining CSS files holding flavor variables, that can
+      be defined as standard resources on the
+      org.nuxeo.ecm.platform.WebResources extension point.
+    </documentation>
     <object class="org.nuxeo.theme.styling.service.descriptors.SimpleStyle" />
   </extension-point>
 
   <extension-point name="flavors">
+    <documentation>
+      The flavors extension point allows to define a set of variables that can
+      be referenced inside CSS files, for dynamic replacement depending on
+      context, as well as a logo.
+
+      Example:
+
+      <code>
+        <flavor name="default">
+          <label>label.theme.flavor.nuxeo.default</label>
+          <logo>
+            <path>/img/nuxeo_logo.png</path>
+            <previewPath>/img/nuxeo_preview_logo_black.png</previewPath>
+            <width>113</width>
+            <height>20</height>
+            <title>Nuxeo</title>
+          </logo>
+          <presetsList>
+            <presets category="border" src="themes/palettes/default-borders.properties" />
+            <presets category="background" src="themes/palettes/default-backgrounds.properties" />
+            <presets category="font" src="themes/palettes/default-fonts.properties" />
+            <presets category="color" src="themes/palettes/default-colors.properties" />
+          </presetsList>
+          <palettePreview>
+            <colors>
+              <color>#17384e</color>
+              <color>#00adff</color>
+              <color>#00adff</color>
+              <color>#00adff</color>
+              <color>#fff</color>
+              <color>#00adff</color>
+              <color>#404040</color>
+              <color>#cfecff</color>
+              <color>#e6f1ff</color>
+            </colors>
+          </palettePreview>
+        </flavor>
+      </code>
+
+      The presets files are looked up in the jar holding the flavor declaration.
+      CSS files will reference the flavor marker, as well as additionnal hint
+      about the type of preset to use:
+
+      <code>
+        .nx-page input[type="button"] {
+          background: none "button (__FLAVOR__ background)";
+          border-radius: 2px;
+          border: 1px solid;
+          border-color: "button (__FLAVOR__ border)";
+          color: "link.action (__FLAVOR__ color)";
+          cursor: pointer;
+          display: inline-block;
+          font-size: .95em;
+          font-weight: bold;
+          line-height: 1.3em;
+          margin: 0 .5em .5em 0;
+          padding: .4em .9em;
+          text-decoration: none;
+          white-space: nowrap }
+      </code>
+
+      The current flavor can be computed at runtime using negotiator logics, see
+      the negotiators extension point on this service.
+
+      The default flavor defined for a given page will be used if
+      the page does not accept this flavor in its configuration.
+    </documentation>
     <object class="org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor" />
   </extension-point>
 
   <extension-point name="resources">
+    <documentation>
+      The resources extension point is deprecated since 7.4.
+
+      Resources can now be defined directly on the
+      org.nuxeo.ecm.platform.WebResources extension point.
+    </documentation>
     <object class="org.nuxeo.ecm.web.resources.core.ResourceDescriptor" />
   </extension-point>
 
   <extension-point name="negotiations">
+    <documentation>
+      The negotations extension point allows to define a list of Java classes
+      that will compute the current page or current flavor to use, depending
+      on the context.
+
+      Example:
+
+      <code>
+        <negotiation target="jsfFlavor">
+          <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.RequestParameter"
+            order="10">
+            <property name="param">flavor</property>
+          </negotiator>
+          <negotiator class="org.nuxeo.ecm.web.resources.jsf.negotiators.RequestAttribute"
+            order="20">
+            <property name="param">flavor</property>
+          </negotiator>
+          <negotiator class="org.nuxeo.ecm.localconf.LocalThemeFlavor"
+            order="30">
+            <property name="negotiatedPageVariable">jsfPage</property>
+          </negotiator>
+          <negotiator
+            class="org.nuxeo.ecm.web.resources.jsf.negotiators.DefaultPageFlavor"
+            order="100">
+            <property name="negotiatedPageVariable">jsfPage</property>
+          </negotiator>
+        </negotiation>
+      </code>
+
+      Negotiator classes must implement the
+      org.nuxeo.theme.styling.negotiation.Negotiator interface. The abstract
+      class org.nuxeo.theme.styling.negotiation.AbstractNegotiator can be
+      extended to benefit from generic implementation.
+
+      The context used in negotiator API can depend on the caller. In JSF
+      default pages, this context will be the current JSF FacesContext.
+
+      @since 7.4
+    </documentation>
     <object class="org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor" />
   </extension-point>
 
