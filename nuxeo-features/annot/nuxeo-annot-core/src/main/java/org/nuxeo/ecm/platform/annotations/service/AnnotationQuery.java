@@ -59,4 +59,10 @@ public class AnnotationQuery {
         }
         return annotations;
     }
+
+    public int getAnnotationsCountForURIs(URI uri, Graph graph) {
+        String query = "SELECT ?s WHERE { ?s <" + AnnotationsConstants.A_ANNOTATES + "> <" + uri.toString() + "> }";
+        return graph.queryCount(query, "sparql", null);
+    }
+
 }

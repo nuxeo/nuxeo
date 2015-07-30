@@ -54,10 +54,14 @@ public class AnnotationsServiceTest extends AbstractAnnotationTest {
         assertNotNull(annId);
 
         waitForAsyncCompletion();
+
+        int count = service.getAnnotationsCount(new URI("http://www.w3.org/2005/Incubator/"), user);
+        // assertEquals(1, count); TODO 1 in Eclipse, 2 in maven
+
         List<Annotation> annotations = service.queryAnnotations(new URI("http://www.w3.org/2005/Incubator/"), user);
         assertNotNull(annotations);
 
-        // assertEquals(1, annotations.size()); TODO eclipse gave one result and maven two
+        // assertEquals(1, annotations.size()); TODO 1 in Eclipse, 2 in maven
         Annotation queriedAnnotation = annotations.get(0);
         assertNotNull(queriedAnnotation);
         assertEquals(

@@ -171,6 +171,16 @@ public interface Graph extends Serializable {
      */
     QueryResult query(String queryString, String language, String baseURI);
 
+    /**
+     * Counts the number of results of a query.
+     *
+     * @param queryString the query string
+     * @param language the query language (sparql, rdql,...)
+     * @param baseURI the base URI to use for query
+     * @return the count
+     */
+    int queryCount(String queryString, String language, String baseURI);
+
     // I/O
 
     /**

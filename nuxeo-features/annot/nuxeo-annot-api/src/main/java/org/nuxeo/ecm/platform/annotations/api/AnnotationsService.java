@@ -41,6 +41,11 @@ public interface AnnotationsService {
     List<Annotation> queryAnnotations(URI uri, NuxeoPrincipal user);
 
     /**
+     * Finds number of Annotation according to URI.
+     */
+    int getAnnotationsCount(URI uri, NuxeoPrincipal user);
+
+    /**
      * Returns an Annotation according to its Id.
      */
     Annotation getAnnotation(String annotationId, NuxeoPrincipal user, String baseUrl);

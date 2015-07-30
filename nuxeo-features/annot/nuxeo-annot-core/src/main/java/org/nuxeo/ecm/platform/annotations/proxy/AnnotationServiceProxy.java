@@ -177,6 +177,15 @@ public class AnnotationServiceProxy implements AnnotationsService {
         return result;
     }
 
+    @Override
+    public int getAnnotationsCount(URI uri, NuxeoPrincipal user) {
+        String baseUrl = null;
+        if (!uri.toString().startsWith("urn")) {
+            baseUrl = resolver.getBaseUrl(uri);
+        }
+        return service.getAnnotationsCount(resolver.translateToGraphURI(uri), user);
+    }
+
     public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         checkPermission(annotation, user, configurationService.getUpdateAnnotationPermission());
         for (EventListener listener : listeners) {

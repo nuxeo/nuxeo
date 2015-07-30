@@ -76,9 +76,7 @@ public class AnnotationsActions implements Serializable {
         String documentUrl = documentViewCodecManager.getUrlFromDocumentView("docpath", docView, true,
                 VirtualHostHelper.getBaseURL(request));
         try {
-            List<Annotation> annotations = annotationsService.queryAnnotations(new URI(documentUrl),
-                    (NuxeoPrincipal) currentUser);
-            return annotations.size();
+            return annotationsService.getAnnotationsCount(new URI(documentUrl), (NuxeoPrincipal) currentUser);
         } catch (URISyntaxException e) {
             throw new NuxeoException(e);
         }

@@ -138,6 +138,14 @@ public class AnnotationsServiceImpl implements AnnotationsService {
         return query.getAnnotationsForURIs(uri, graph);
     }
 
+    @Override
+    public int getAnnotationsCount(URI uri, NuxeoPrincipal user) {
+        AnnotationQuery query = new AnnotationQuery();
+        Graph graph = relationManager.getGraphByName(AnnotationsConstants.DEFAULT_GRAPH_NAME);
+        uri = resolver.getSearchURI(uri);
+        return query.getAnnotationsCountForURIs(uri, graph);
+    }
+
     public Annotation updateAnnotation(Annotation annotation, NuxeoPrincipal user, String baseUrl) {
         String id = annotation.getId();
         deleteAnnotation(annotation, user);

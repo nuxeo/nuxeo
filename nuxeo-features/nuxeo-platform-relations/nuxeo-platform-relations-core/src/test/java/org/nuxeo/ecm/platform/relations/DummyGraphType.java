@@ -120,6 +120,11 @@ public class DummyGraphType implements Graph {
         return null;
     }
 
+    @Override
+    public int queryCount(String queryString, String language, String baseURI) {
+        return 0;
+    }
+
     public boolean read(InputStream in, String lang, String base) {
         return false;
     }

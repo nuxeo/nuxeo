@@ -639,6 +639,21 @@ public class CoreGraph implements Graph {
         return new QueryResultImpl(Integer.valueOf(results.size()), Arrays.asList("s", "p", "o"), results);
     }
 
+    public static final Pattern SPARQL_PAT2 = Pattern.compile("SELECT \\?s WHERE \\{ \\?s <(.*)> <(.*)> \\}");
+
+    @Override
+    public int queryCount(String queryString, String language, String baseURI) {
+        // language is ignored, assume SPARQL
+        Matcher matcher = SPARQL_PAT2.matcher(queryString);
+        if (!matcher.matches()) {
+            throw new UnsupportedOperationException("Cannot parse query: " + queryString);
+        }
+        Node predicate = NodeFactory.createResource(matcher.group(1));
+        Node object = NodeFactory.createResource(matcher.group(2));
+        List<Node> subjects = getSubjects(predicate, object);
+        return subjects.size();
+    }
+
     @Override
     public boolean read(String path, String lang, String base) {
         InputStream in = null;

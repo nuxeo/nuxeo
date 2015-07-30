@@ -852,6 +852,11 @@ public class JenaGraph implements Graph {
     }
 
     @Override
+    public int queryCount(String queryString, String language, String baseURI) {
+        return query(queryString, language, baseURI).getResults().size();
+    }
+
+    @Override
     public boolean read(InputStream in, String lang, String base) {
         // XXX AT: maybe update namespaces in case some new appeared
         Model graph = null;
