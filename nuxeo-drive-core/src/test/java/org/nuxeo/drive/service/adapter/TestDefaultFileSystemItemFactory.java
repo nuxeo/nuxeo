@@ -459,15 +459,15 @@ public class TestDefaultFileSystemItemFactory {
         // ------------------------------------------------------------
         // FileItem#getDigestAlgorithm
         // ------------------------------------------------------------
-        assertEquals("md5", fileItem.getDigestAlgorithm());
+        assertEquals("MD5", fileItem.getDigestAlgorithm());
         FileItem noteItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(note);
-        assertEquals("md5", noteItem.getDigestAlgorithm());
+        assertEquals("MD5", noteItem.getDigestAlgorithm());
 
         // ------------------------------------------------------------
         // FileItem#getDigest
         // ------------------------------------------------------------
         assertEquals(file.getAdapter(BlobHolder.class).getBlob().getDigest(), fileItem.getDigest());
-        String noteDigest = FileSystemItemHelper.getDigest(note.getAdapter(BlobHolder.class).getBlob(), "md5");
+        String noteDigest = FileSystemItemHelper.getMD5Digest(note.getAdapter(BlobHolder.class).getBlob());
         assertEquals(noteDigest, noteItem.getDigest());
         assertEquals(custom.getAdapter(BlobHolder.class).getBlob().getDigest(),
                 ((FileItem) defaultFileSystemItemFactory.getFileSystemItem(custom)).getDigest());
