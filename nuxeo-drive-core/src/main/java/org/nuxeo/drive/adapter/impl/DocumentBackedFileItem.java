@@ -146,20 +146,18 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
             session.save();
             /* Update FileSystemItem attributes */
             updateLastModificationDate(doc);
-            updateDigest(doc);
+            updateDigest(getBlob(doc));
         }
     }
 
     /*--------------------- Protected -----------------*/
     protected final void initialize(VersioningFileSystemItemFactory factory, DocumentModel doc) {
         this.factory = factory;
-        name = getFileName(doc);
+        Blob blob = getBlob(doc);
+        name = getFileName(blob, doc.getTitle());
         folder = false;
         updateDownloadURL();
-        // TODO: should get the digest algorithm from the binary store
-        // configuration, but it is not exposed as a public API for now
-        digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
-        updateDigest(doc);
+        updateDigest(blob);
         if (digest == null) {
             digestAlgorithm = null;
         }
@@ -191,9 +189,9 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         return getBlob(bh);
     }
 
-    protected String getFileName(DocumentModel doc) {
-        String filename = getBlob(doc).getFilename();
-        return filename != null ? filename : doc.getTitle();
+    protected String getFileName(Blob blob, String docTitle) {
+        String filename = blob.getFilename();
+        return filename != null ? filename : docTitle;
     }
 
     protected void updateDocTitleIfNeeded(DocumentModel doc, String name) {
@@ -219,11 +217,17 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
         downloadURL = downloadURLSb.toString();
     }
 
-    protected void updateDigest(DocumentModel doc) {
-        Blob blob = getBlob(doc);
-        // Force digest computation for a StringBlob,
-        // typically the note:note property of a Note document
-        digest = FileSystemItemHelper.getDigest(blob, digestAlgorithm);
+    protected void updateDigest(Blob blob) {
+        String blobDigest = blob.getDigest();
+        if (StringUtils.isEmpty(blobDigest)) {
+            // Force md5 digest algorithm and digest computation for a StringBlob,
+            // typically the note:note property of a Note document
+            digestAlgorithm = FileSystemItemHelper.MD5_DIGEST_ALGORITHM;
+            digest = FileSystemItemHelper.getMD5Digest(blob);
+        } else {
+            digestAlgorithm = blob.getDigestAlgorithm();
+            digest = blobDigest;
+        }
     }
 
     protected NuxeoDriveManager getNuxeoDriveManager() {

@@ -19,7 +19,6 @@ package org.nuxeo.drive.adapter.impl;
 import java.io.IOException;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.drive.adapter.FileSystemItem;
 import org.nuxeo.drive.service.VersioningFileSystemItemFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -35,7 +34,7 @@ import org.nuxeo.ecm.core.versioning.VersioningService;
  */
 public final class FileSystemItemHelper {
 
-    public static final String MD5_DIGEST_ALGORITHM = "md5";
+    public static final String MD5_DIGEST_ALGORITHM = "MD5";
 
     private FileSystemItemHelper() {
         // Helper class
@@ -52,27 +51,14 @@ public final class FileSystemItemHelper {
     }
 
     /**
-     * Gets the digest of the given blob. If null, computes it using the given digest algorithm. For now only md5 is
-     * supported.
-     *
-     * @throws UnsupportedOperationException if the digest algorithm is not supported
+     * Gets the md5 digest of the given blob.
      */
-    public static String getDigest(Blob blob, String digestAlgorithm) {
-        String digest = blob.getDigest();
-        if (StringUtils.isEmpty(digest)) {
-            if (MD5_DIGEST_ALGORITHM.equals(digestAlgorithm)) {
-                try {
-                    digest = DigestUtils.md5Hex(blob.getStream());
-                } catch (IOException e) {
-                    throw new NuxeoException(String.format("Error while computing digest for blob %s.",
-                            blob.getFilename()), e);
-                }
-            } else {
-                throw new UnsupportedOperationException(String.format("Unsupported digest algorithm %s.",
-                        digestAlgorithm));
-            }
+    public static String getMD5Digest(Blob blob) {
+        try {
+            return DigestUtils.md5Hex(blob.getStream());
+        } catch (IOException e) {
+            throw new NuxeoException(String.format("Error while computing digest for blob %s.", blob.getFilename()), e);
         }
-        return digest;
     }
 
 }
