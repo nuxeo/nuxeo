@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
+import javax.faces.convert.ConverterException;
 
 import com.sun.faces.renderkit.RenderKitUtils;
 import com.sun.faces.renderkit.html_basic.HiddenRenderer;
@@ -31,6 +32,17 @@ import com.sun.faces.renderkit.html_basic.HiddenRenderer;
  * @since 6.0
  */
 public class ValueHolderRenderer extends HiddenRenderer {
+
+    @Override
+    public Object getConvertedValue(FacesContext context, UIComponent component, Object submittedValue)
+            throws ConverterException {
+        // make sure submitted value is converted to String first
+        String submitted = null;
+        if (submittedValue != null) {
+            submitted = submittedValue.toString();
+        }
+        return super.getConvertedValue(context, component, submitted);
+    }
 
     @Override
     protected void getEndTextToRender(FacesContext context, UIComponent component, String currentValue)
