@@ -103,9 +103,6 @@ public class ITContextualActionsTest extends AbstractTest {
         states = filePage.getCurrentStates();
         Assert.assertTrue(states.contains(DOCUMENT_LOCKED));
 
-        // Test download action
-        actions.clickOnButton(actions.downloadButton);
-        actions = filePage.getContextualActions();
         // Test permalink action
         actions.clickOnButton(actions.permaButton);
         actions = filePage.getContextualActions();

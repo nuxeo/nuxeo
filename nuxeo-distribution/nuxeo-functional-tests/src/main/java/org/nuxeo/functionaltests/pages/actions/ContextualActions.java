@@ -49,9 +49,6 @@ public class ContextualActions extends AbstractPage {
     @FindBy(xpath = "//img[@alt=\"Export\"]")
     public WebElement exportButton;
 
-    @FindBy(xpath = "//img[@alt=\"Download\"]")
-    public WebElement downloadButton;
-
     @FindBy(xpath = "//img[@alt=\"Add to Favorites\"]")
     public WebElement favoritesButton;
 

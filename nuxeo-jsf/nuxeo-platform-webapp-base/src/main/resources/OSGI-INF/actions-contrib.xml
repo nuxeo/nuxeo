@@ -77,13 +77,6 @@
       </properties>
     </action>
 
-    <action id="downloadAction" link="#{operationActionBean.doOperation('downloadFilesZip')}"
-      order="30" label="label.document.download" type="link"
-      icon="/icons/contextual_menu/download.png">
-      <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>documentHasBlobs</filter-id>
-    </action>
-
     <action id="subscribesAllDocNotifications" link="#{subscriptionAction.updateAllSubscriptions}"
       order="40" label="label.subscriptions.follow" type="link"
       icon="/icons/contextual_menu/subscribe.png">
