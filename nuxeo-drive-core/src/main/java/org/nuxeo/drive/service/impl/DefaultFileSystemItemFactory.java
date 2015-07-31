@@ -86,8 +86,7 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         // Check version
         if (doc.isVersion()) {
             if (log.isDebugEnabled()) {

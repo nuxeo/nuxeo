@@ -56,14 +56,12 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
         this(factoryName, doc, false);
     }
 
-    public DocumentBackedFolderItem(String factoryName, DocumentModel doc, boolean relaxSyncRootConstraint)
-            {
+    public DocumentBackedFolderItem(String factoryName, DocumentModel doc, boolean relaxSyncRootConstraint) {
         super(factoryName, doc, relaxSyncRootConstraint);
         initialize(doc);
     }
 
-    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
-            {
+    public DocumentBackedFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {
         this(factoryName, parentItem, doc, false);
     }
 
@@ -157,8 +155,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             e.addInfo(String.format("Error while trying to create folder %s as a child of doc %s", name, docPath));
             throw e;
         } catch (IOException e) {
-            throw new NuxeoException(
-                    String.format("Error while trying to create folder %s as a child of doc %s", name, docPath), e);
+            throw new NuxeoException(String.format("Error while trying to create folder %s as a child of doc %s", name,
+                    docPath), e);
         }
     }
 
@@ -179,8 +177,8 @@ public class DocumentBackedFolderItem extends AbstractDocumentBackedFileSystemIt
             e.addInfo(String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath));
             throw e;
         } catch (IOException e) {
-            throw new NuxeoException(
-                    String.format("Error while trying to create file %s as a child of doc %s", fileName, docPath), e);
+            throw new NuxeoException(String.format("Error while trying to create file %s as a child of doc %s",
+                    fileName, docPath), e);
         }
     }
 

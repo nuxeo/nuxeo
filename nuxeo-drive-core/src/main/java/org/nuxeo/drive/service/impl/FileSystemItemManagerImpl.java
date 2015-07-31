@@ -260,8 +260,8 @@ public class FileSystemItemManagerImpl implements FileSystemItemManager {
     public FileSystemItem move(String srcId, String destId, Principal principal) {
         FileSystemItem srcFsItem = getFileSystemItemById(srcId, principal);
         if (srcFsItem == null) {
-            throw new NuxeoException(String.format(
-                    "Cannot move file system item with id %s because it doesn't exist.", srcId));
+            throw new NuxeoException(String.format("Cannot move file system item with id %s because it doesn't exist.",
+                    srcId));
         }
         FileSystemItem destFsItem = getFileSystemItemById(destId, principal);
         if (destFsItem == null) {

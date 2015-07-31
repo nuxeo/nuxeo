@@ -46,8 +46,7 @@ public class CollectionSyncRootFolderItem extends DefaultSyncRootFolderItem impl
 
     private static final long serialVersionUID = 1L;
 
-    public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
-            {
+    public CollectionSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {
         this(factoryName, parentItem, doc, false);
     }
 

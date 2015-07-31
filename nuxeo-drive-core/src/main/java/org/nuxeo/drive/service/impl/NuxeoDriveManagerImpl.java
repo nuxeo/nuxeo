@@ -435,8 +435,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         return syncRoots.getRefs().contains(doc.getRef());
     }
 
-    protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, Principal principal)
-            {
+    protected Map<String, SynchronizationRoots> computeSynchronizationRoots(String query, Principal principal) {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
@@ -447,8 +446,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         return syncRoots;
     }
 
-    protected Map<String, SynchronizationRoots> queryAndFecthSynchronizationRoots(CoreSession session, String query)
-            {
+    protected Map<String, SynchronizationRoots> queryAndFecthSynchronizationRoots(CoreSession session, String query) {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         Set<IdRef> references = new LinkedHashSet<IdRef>();
         Set<String> paths = new LinkedHashSet<String>();
@@ -497,8 +495,7 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         return collectionSyncRootMemberIds;
     }
 
-    protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer, CoreSession session)
-            {
+    protected void checkCanUpdateSynchronizationRoot(DocumentModel newRootContainer, CoreSession session) {
         // Cannot update a proxy or a version
         if (newRootContainer.isProxy() || newRootContainer.isVersion()) {
             throw new NuxeoException(String.format("Document '%s' (%s) is not a suitable synchronization root"

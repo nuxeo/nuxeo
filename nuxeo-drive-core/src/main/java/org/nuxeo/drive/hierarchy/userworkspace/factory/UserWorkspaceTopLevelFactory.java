@@ -79,8 +79,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
@@ -125,8 +124,7 @@ public class UserWorkspaceTopLevelFactory extends AbstractFileSystemItemFactory 
             UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             if (userWorkspace == null) {
-                throw new NuxeoException(
-                        String.format("No personal workspace found for user %s.", principal.getName()));
+                throw new NuxeoException(String.format("No personal workspace found for user %s.", principal.getName()));
             }
             return (FolderItem) getFileSystemItem(userWorkspace);
         }

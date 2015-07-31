@@ -33,8 +33,7 @@ public class DefaultSyncRootFolderItem extends DocumentBackedFolderItem implemen
 
     private static final long serialVersionUID = 1L;
 
-    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc)
-            {
+    public DefaultSyncRootFolderItem(String factoryName, FolderItem parentItem, DocumentModel doc) {
         this(factoryName, parentItem, doc, false);
     }
 

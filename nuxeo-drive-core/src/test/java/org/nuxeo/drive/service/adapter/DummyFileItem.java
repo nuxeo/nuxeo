@@ -35,8 +35,7 @@ public class DummyFileItem extends DocumentBackedFileItem {
         super(factory, doc);
     }
 
-    public DummyFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc)
-            {
+    public DummyFileItem(VersioningFileSystemItemFactory factory, FolderItem parentItem, DocumentModel doc) {
         super(factory, parentItem, doc);
     }
 

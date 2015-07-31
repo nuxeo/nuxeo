@@ -98,8 +98,7 @@ public class PermissionSyncRootFactory extends AbstractSyncRootFolderItemFactory
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         // Check required permission
         CoreSession session = doc.getCoreSession();
         boolean hasRequiredPermission = session.hasPermission(doc.getRef(), requiredPermission);

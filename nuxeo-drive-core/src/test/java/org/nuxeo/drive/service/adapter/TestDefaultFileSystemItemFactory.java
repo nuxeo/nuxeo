@@ -793,8 +793,7 @@ public class TestDefaultFileSystemItemFactory {
         assertEquals(fsItem, defaultFileSystemItemFactory.getFileSystemItem(doc));
     }
 
-    protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
-            {
+    protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));

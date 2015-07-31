@@ -31,6 +31,7 @@ public class RootlessItemException extends NuxeoException {
     public RootlessItemException(String message) {
         super(message);
     }
+
     public RootlessItemException(String message, Throwable cause) {
         super(message, cause);
     }

@@ -70,8 +70,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
 
         // Check Folderish
         if (!doc.isFolder()) {
@@ -143,8 +142,7 @@ public abstract class AbstractSyncRootFolderItemFactory extends AbstractFileSyst
      * Force parent id using {@link #getParentId(String)}.
      */
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, getParentItem(doc), includeDeleted, relaxSyncRootConstraint);
     }
 

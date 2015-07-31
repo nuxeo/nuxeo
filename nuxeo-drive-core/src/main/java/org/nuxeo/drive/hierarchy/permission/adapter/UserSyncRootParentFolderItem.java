@@ -50,8 +50,7 @@ public class UserSyncRootParentFolderItem extends DocumentBackedFolderItem {
 
     protected boolean isUserWorkspaceSyncRoot = false;
 
-    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName)
-            {
+    public UserSyncRootParentFolderItem(String factoryName, DocumentModel doc, FolderItem parentItem, String folderName) {
         this(factoryName, doc, parentItem, folderName, false);
     }
 

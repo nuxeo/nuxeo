@@ -139,8 +139,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         return getFileSystemItem(doc, false, null, includeDeleted, relaxSyncRootConstraint);
     }
 
@@ -150,8 +149,7 @@ public class FileSystemItemAdapterServiceImpl extends DefaultComponent implement
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted)
-            {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, FolderItem parentItem, boolean includeDeleted) {
         return getFileSystemItem(doc, true, parentItem, includeDeleted, false);
     }
 

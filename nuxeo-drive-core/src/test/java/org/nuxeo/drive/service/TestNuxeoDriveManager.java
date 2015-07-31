@@ -579,8 +579,7 @@ public class TestNuxeoDriveManager {
                 nuxeoDriveManager.getSynchronizationRoots(principal).get(repository.getName()).refs.size());
     }
 
-    protected void checkRoots(Principal principal, int expectedCount, Set<String> expectedRootPaths)
-            {
+    protected void checkRoots(Principal principal, int expectedCount, Set<String> expectedRootPaths) {
         Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
         Set<String> syncRootPaths = syncRoots.get(repository.getName()).paths;
         assertEquals(expectedCount, syncRootPaths.size());

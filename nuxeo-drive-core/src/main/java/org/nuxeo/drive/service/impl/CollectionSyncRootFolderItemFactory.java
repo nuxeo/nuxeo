@@ -53,8 +53,7 @@ public class CollectionSyncRootFolderItemFactory extends DefaultSyncRootFolderIt
      * </ul>
      */
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
 
         // Check Collection
         if (!Framework.getService(CollectionManager.class).isCollection(doc)) {

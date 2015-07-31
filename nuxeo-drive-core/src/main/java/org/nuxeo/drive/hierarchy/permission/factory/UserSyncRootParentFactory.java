@@ -66,8 +66,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     }
 
     @Override
-    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public boolean isFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         // Check user workspace
         boolean isUserWorkspace = UserWorkspaceHelper.isUserWorkspace(doc);
         if (!isUserWorkspace) {
@@ -106,8 +105,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
     }
 
     @Override
-    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint)
-            {
+    public FileSystemItem getFileSystemItem(DocumentModel doc, boolean includeDeleted, boolean relaxSyncRootConstraint) {
         Principal principal = doc.getCoreSession().getPrincipal();
         return getFileSystemItem(doc, getTopLevelFolderItem(principal), includeDeleted, relaxSyncRootConstraint);
     }
@@ -121,8 +119,7 @@ public class UserSyncRootParentFactory extends AbstractFileSystemItemFactory imp
             UserWorkspaceService userWorkspaceService = Framework.getLocalService(UserWorkspaceService.class);
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             if (userWorkspace == null) {
-                throw new NuxeoException(
-                        String.format("No personal workspace found for user %s.", principal.getName()));
+                throw new NuxeoException(String.format("No personal workspace found for user %s.", principal.getName()));
             }
             return (FolderItem) getFileSystemItem(userWorkspace);
         }

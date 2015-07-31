@@ -150,7 +150,7 @@ public class TestUserWorkspaceHierarchy {
      * <pre>
      * Server side for user1
      * ==============================
-     *
+     * 
      * /user1 (user workspace)
      *   |-- user1Folder1
      *   |     |-- user1File1
@@ -229,7 +229,7 @@ public class TestUserWorkspaceHierarchy {
      * <pre>
      * Expected client side for user1
      * ==============================
-     *
+     * 
      * Nuxeo Drive
      *   |-- My synchronized folders
      *   |     |-- user1Folder3
@@ -285,9 +285,8 @@ public class TestUserWorkspaceHierarchy {
         assertFalse(topLevelFolder.getCanDelete());
         assertTrue(topLevelFolder.getCanCreateChild());
 
-        Blob topLevelChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                         .set("id", topLevelFolder.getId())
-                                                         .execute();
+        Blob topLevelChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
+                topLevelFolder.getId()).execute();
 
         ArrayNode topLevelChildren = mapper.readValue(topLevelChildrenJSON.getStream(), ArrayNode.class);
         assertNotNull(topLevelChildren);
@@ -312,9 +311,8 @@ public class TestUserWorkspaceHierarchy {
         assertFalse(syncRootParent.getCanDelete());
         assertFalse(syncRootParent.getCanCreateChild());
 
-        Blob syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                  .set("id", syncRootParent.getId())
-                                                  .execute();
+        Blob syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
+                syncRootParent.getId()).execute();
 
         List<DefaultSyncRootFolderItem> syncRoots = mapper.readValue(syncRootsJSON.getStream(),
                 new TypeReference<List<DefaultSyncRootFolderItem>>() {
@@ -327,9 +325,8 @@ public class TestUserWorkspaceHierarchy {
         DefaultSyncRootFolderItem syncRootItem = syncRoots.get(0);
         checkFolderItem(syncRootItem, SYNC_ROOT_ID_PREFIX, user1Folder3, SYNC_ROOT_PARENT_ID, syncRootParentItemPath,
                 "user1Folder3", "user1", "user1");
-        Blob syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                             .set("id", syncRootItem.getId())
-                                                             .execute();
+        Blob syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
+                syncRootItem.getId()).execute();
         List<DocumentBackedFileItem> syncRootItemChildren = mapper.readValue(syncRootItemChildrenJSON.getStream(),
                 new TypeReference<List<DocumentBackedFileItem>>() {
                 });
@@ -343,9 +340,8 @@ public class TestUserWorkspaceHierarchy {
         syncRootItem = syncRoots.get(1);
         checkFolderItem(syncRootItem, SYNC_ROOT_ID_PREFIX, user1Folder4, SYNC_ROOT_PARENT_ID, syncRootParentItemPath,
                 "user1Folder4", "user1", "user1");
-        syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                        .set("id", syncRootItem.getId())
-                                                        .execute();
+        syncRootItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
+                syncRootItem.getId()).execute();
         syncRootItemChildren = mapper.readValue(syncRootItemChildrenJSON.getStream(),
                 new TypeReference<List<DocumentBackedFileItem>>() {
                 });
@@ -367,9 +363,8 @@ public class TestUserWorkspaceHierarchy {
         DocumentBackedFolderItem folderItem = mapper.readValue(topLevelChildrenNodes[2], DocumentBackedFolderItem.class);
         checkFolderItem(folderItem, DEFAULT_FILE_SYSTEM_ITEM_ID_PREFIX, user1Folder1, userWorkspace1ItemId,
                 userWorkspace1ItemPath, "user1Folder1", "user1", "user1");
-        Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                           .set("id", folderItem.getId())
-                                                           .execute();
+        Blob folderItemChildrenJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id",
+                folderItem.getId()).execute();
         ArrayNode folderItemChildren = mapper.readValue(folderItemChildrenJSON.getStream(), ArrayNode.class);
         assertNotNull(folderItemChildren);
         assertEquals(2, folderItemChildren.size());
@@ -397,9 +392,7 @@ public class TestUserWorkspaceHierarchy {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
 
-            syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID)
-                                                 .set("id", syncRootParent.getId())
-                                                 .execute();
+            syncRootsJSON = (Blob) clientSession1.newRequest(NuxeoDriveGetChildren.ID).set("id", syncRootParent.getId()).execute();
             syncRoots = mapper.readValue(syncRootsJSON.getStream(),
                     new TypeReference<List<DefaultSyncRootFolderItem>>() {
                     });
@@ -445,8 +438,7 @@ public class TestUserWorkspaceHierarchy {
     }
 
     protected void checkFolderItem(FolderItem folderItem, String folderItemIdPrefix, DocumentModel doc,
-            String parentId, String parentPath, String name, String creator, String lastContributor)
-            {
+            String parentId, String parentPath, String name, String creator, String lastContributor) {
 
         String expectedFolderItemId = folderItemIdPrefix + doc.getId();
         assertEquals(expectedFolderItemId, folderItem.getId());
@@ -504,8 +496,7 @@ public class TestUserWorkspaceHierarchy {
         }
     }
 
-    protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted)
-            {
+    protected void setPermission(DocumentModel doc, String userName, String permission, boolean isGranted) {
         ACP acp = session.getACP(doc.getRef());
         ACL localACL = acp.getOrCreateACL(ACL.LOCAL_ACL);
         localACL.add(new ACE(userName, permission, isGranted));
