@@ -52,4 +52,11 @@ public interface JSFBlobUploader {
      */
     void validateUpload(UIInput parent, FacesContext context, InputFileInfo submitted);
 
+    /**
+     * Checks if the uploader is enabled. Only enabled uploaders are added to the UI.
+     *
+     * @since 7.4
+     */
+    boolean isEnabled();
+
 }

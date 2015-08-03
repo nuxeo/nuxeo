@@ -64,7 +64,7 @@ public class JSFBlobUploaderService extends DefaultComponent {
             Collections.sort(descs); // sort according to order
             for (JSFBlobUploaderDescriptor desc : descs) {
                 JSFBlobUploader uploader = desc.getJSFBlobUploader();
-                if (uploader != null) {
+                if (uploader != null && uploader.isEnabled()) {
                     uploaders.add(uploader);
                 }
             }
@@ -74,7 +74,7 @@ public class JSFBlobUploaderService extends DefaultComponent {
         public JSFBlobUploader getJSFBlobUploader(String choice) {
             for (JSFBlobUploaderDescriptor desc : currentContribs.values()) {
                 JSFBlobUploader uploader = desc.getJSFBlobUploader();
-                if (uploader != null && uploader.getChoice().equals(choice)) {
+                if (uploader != null && uploader.getChoice().equals(choice) && uploader.isEnabled()) {
                     return uploader;
                 }
             }

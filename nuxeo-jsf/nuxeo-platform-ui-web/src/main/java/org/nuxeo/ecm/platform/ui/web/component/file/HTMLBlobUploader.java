@@ -142,4 +142,9 @@ public class HTMLBlobUploader implements JSFBlobUploader {
         submitted.setMimeType(sblob.getMimeType());
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }
