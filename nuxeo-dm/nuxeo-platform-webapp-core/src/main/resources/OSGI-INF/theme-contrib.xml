@@ -460,8 +460,6 @@
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
-      </flavors>
-      <flavors>
         <flavor>rainbow</flavor>
       </flavors>
       <resources>
