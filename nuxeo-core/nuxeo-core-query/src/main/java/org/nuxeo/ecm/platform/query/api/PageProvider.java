@@ -95,12 +95,14 @@ public interface PageProvider<T> extends Serializable {
     void setParameters(Object[] parameters);
 
     /**
-     * Returns the number of results per page. 0 means no pagination.
+     * Returns the number of results per page. 0 means no pagination unless {@link #getMaxPageSize()} is greater than
+     * this value, it will be taken into account instead.
      */
     long getPageSize();
 
     /**
-     * Sets the number results per page. 0 means no pagination.
+     * Sets the number of results per page. 0 means no pagination unless {@link #getMaxPageSize()} is greater than this
+     * value, it will be taken into account instead.
      */
     void setPageSize(long pageSize);
 
