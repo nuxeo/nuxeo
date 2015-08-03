@@ -56,7 +56,7 @@ author: lkemen@nuxeo.com
   vertical-align: top }
 
 .description_block {
-  color: "gray.medium (__FLAVOR__ color)";
+  color: "gray.dark (__FLAVOR__ color)";
   line-height: 155% }
 
 .description_block span {
@@ -374,7 +374,7 @@ author: lkemen@nuxeo.com
 
 .summary .labelColumn {
   font-weight: normal;
-  color: #999 }
+  color: "gray.dark (__FLAVOR__ color)"; }
 
 .summary .fieldColumn {
   color: #000 }
