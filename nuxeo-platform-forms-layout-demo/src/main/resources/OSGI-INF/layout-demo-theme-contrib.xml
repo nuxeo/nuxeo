@@ -52,10 +52,10 @@
     </page>
 
     <themePage name="layoutDemo/frame" charset="utf-8">
-      <favorites>
+      <links>
         <icon name="icon">/icons/favicon.png</icon>
         <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </favorites>
+      </links>
       <defaultFlavor>default</defaultFlavor>
       <resources>
         <bundle>nuxeo_includes</bundle>
