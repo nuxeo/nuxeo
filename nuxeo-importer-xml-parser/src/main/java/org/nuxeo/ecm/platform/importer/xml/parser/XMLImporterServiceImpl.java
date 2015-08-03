@@ -212,14 +212,14 @@ public class XMLImporterServiceImpl {
         return propValue;
     }
 
-    protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf) {
+    protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf, String blobPropertyName) {
         @SuppressWarnings("unchecked")
         Map<String, Object> propValues = (Map<String, Object>) resolveComplex(el, conf);
 
-        if (propValues.containsKey("content")) {
+        if (propValues.containsKey(blobPropertyName)) {
             try {
                 Blob blob = null;
-                String content = (String) propValues.get("content");
+                String content = (String) propValues.get(blobPropertyName);
                 if (content != null && workingDirectory != null) {
                     File file = new File(workingDirectory, content.trim());
                     if (file.exists()) {
@@ -227,7 +227,7 @@ public class XMLImporterServiceImpl {
                     }
                 }
                 if (blob == null) {
-                    blob = Blobs.createBlob((String) propValues.get("content"));
+                    blob = Blobs.createBlob((String) propValues.get(blobPropertyName));
                 }
                 if (propValues.containsKey("mimetype")) {
                     blob.setMimeType((String) propValues.get("mimetype"));
@@ -263,7 +263,7 @@ public class XMLImporterServiceImpl {
         } else if (property.isComplex()) {
 
             if (property instanceof BlobProperty) {
-                Object value = resolveBlob(el, conf);
+                Object value = resolveBlob(el, conf, "content");
                 if (log.isTraceEnabled()) {
                     log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                             conf.toString()));
@@ -302,9 +302,14 @@ public class XMLImporterServiceImpl {
                     }
                 }
             } else {
-                value = (Serializable) resolveComplex(el, conf);
-                if (value != null) {
-                    property.addValue(value);
+            	Map<String, Object> props = (Map<String, Object>) resolveComplex(el, conf);
+            	value = new HashMap<>(props);
+            	if (props.containsKey("file")) {
+            		Blob blob = resolveBlob(el, conf, "file");
+            		props.put("file", blob);
+            		property.addValue(props);
+            	} else {
+            		property.addValue(value);
                 }
             }
 
