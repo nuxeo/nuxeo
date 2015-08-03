@@ -203,6 +203,16 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
     }
 
     /**
+     * Google Drive upload button is added to the file widget if and only if Google Drive OAuth service provider is enabled
+     *
+     * @return true if Google Drive OAuth service provider is enabled or false otherwise.
+     */
+    @Override
+    public boolean isEnabled() {
+        return getGoogleDriveBlobProvider().getOAuth2Provider().isEnabled();
+    }
+
+    /**
      * Creates a Google Drive managed blob.
      *
      * @param fileInfo the Google Drive file info

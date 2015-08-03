@@ -24,6 +24,7 @@ import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.platform.oauth2.tokens.NuxeoOAuth2Token;
 import org.nuxeo.ecm.platform.ui.web.component.file.InputFileChoice;
@@ -61,6 +62,13 @@ public class DropboxBlobUploader implements JSFBlobUploader {
     public static final String UPLOAD_DROPBOX_FACET_NAME = "uploadDropbox";
 
     public DropboxBlobUploader() {
+        try {
+            getDropboxBlobProvider();
+        } catch (NuxeoException e) {
+            // this exception is caught by JSFBlobUploaderDescriptor.getJSFBlobUploader
+            // to mean that the uploader is not available because badly configured
+            throw new IllegalStateException(e);
+        }
     }
 
     @Override
@@ -194,6 +202,16 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         submitted.setBlob(blob);
         submitted.setFilename(blob.getFilename());
         submitted.setMimeType(blob.getMimeType());
+    }
+
+    /**
+     * Dropbox upload button is added to the file widget if and only if Dropbox OAuth service provider is enabled
+     *
+     * @return true if Dropbox OAuth service provider is enabled or false otherwise.
+     */
+    @Override
+    public boolean isEnabled() {
+        return getDropboxBlobProvider().getOAuth2Provider().isEnabled();
     }
 
     /**
