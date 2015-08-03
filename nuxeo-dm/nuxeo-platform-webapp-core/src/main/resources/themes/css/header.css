@@ -200,5 +200,6 @@ author: lkemen@nuxeo.com
 /* =Connect header links */
 .updateNotificationArea {
   float: right;
-  line-height: normal;
+  line-height: inherit;
+  padding: .3em .5em 0;
   vertical-align: middle }
