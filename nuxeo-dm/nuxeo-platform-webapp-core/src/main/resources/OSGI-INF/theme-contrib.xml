@@ -470,10 +470,10 @@
     </page>
 
     <page name="galaxy/popup" charset="utf-8">
-      <favorites>
+      <links>
         <icon name="icon">/icons/favicon.png</icon>
         <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </favorites>
+      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -488,10 +488,10 @@
     </page>
 
     <page name="galaxy/default" charset="utf-8">
-      <favorites>
+      <links>
         <icon name="icon">/icons/favicon.png</icon>
         <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </favorites>
+      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
