@@ -3,7 +3,7 @@
   xmlns:c="http://java.sun.com/jstl/core"
   xmlns:f="http://java.sun.com/jsf/core"
   xmlns:r="http://jboss.com/products/seam/rss"
-  xmlns:nxr="http://nuxeo.org/nxweb/seam/rss"
+  xmlns:nxrss="http://nuxeo.org/nxweb/seam/rss"
   xmlns:nxd="http://nuxeo.org/nxweb/document"
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
@@ -49,13 +49,13 @@
         value="#{nxu:translate(feedTitle, contentViewName)}" />
     </c:if>
 
-    <nxr:feed
+    <nxrss:feed
       title="#{resolvedFeedTitle}"
       subtitle="#{currentDocument.dc.description}"
       link="#{nxd:documentUrl(currentDocument)}"
       feedFormat="#{feedFormat}">
       <ui:repeat var="doc" value="#{provider.currentPage}">
-        <nxr:entry
+        <nxrss:entry
           uid="#{nxd:complexDocumentUrl(null, doc, null, null, true)}"
           title="#{doc.dc.title}"
           link="#{nxd:documentUrl(doc)}"
