@@ -220,6 +220,12 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         } else {
             jg.writeStringField("encoding", v);
         }
+        v = blob.getDigestAlgorithm();
+        if (v == null) {
+            jg.writeNullField("digestAlgorithm");
+        } else {
+            jg.writeStringField("digestAlgorithm", v);
+        }
         v = blob.getDigest();
         if (v == null) {
             jg.writeNullField("digest");
