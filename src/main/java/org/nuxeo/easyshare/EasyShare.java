@@ -18,9 +18,11 @@
 package org.nuxeo.easyshare;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.MessagingException;
@@ -39,14 +41,15 @@ import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
-
 import org.nuxeo.ecm.core.api.IdRef;
 
 /**
@@ -84,7 +87,15 @@ public class EasyShare extends ModuleRoot {
                         return Response.serverError().status(Response.Status.NOT_FOUND).build();
                     }
 
-                    DocumentModelList docList = session.getChildren(docRef);
+                    final PageProviderService ppService = Framework.getService(PageProviderService.class);
+                    final Map<String, Serializable> props = new HashMap<String, Serializable>();
+                    props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+                    @SuppressWarnings("unchecked")
+                    final PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) ppService.getPageProvider(
+                            "EASYSHARE_FOLDER_CONTENT_PP", null, null, null, props, new Object[] { docRef.value });
+
+                    // Note: for now we do not use pagination:
+                    final List<DocumentModel> docList = pp.getCurrentPage();
 
                     // Audit Log
                     OperationContext ctx = new OperationContext(session);
