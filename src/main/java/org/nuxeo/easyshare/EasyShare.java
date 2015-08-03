@@ -59,7 +59,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 @WebObject(type = "EasyShare")
 public class EasyShare extends ModuleRoot {
 
-    protected final Log log = LogFactory.getLog(EasyShare.class);
+    private static final Log log = LogFactory.getLog(EasyShare.class);
 
     @GET
     public Object doGet() {
