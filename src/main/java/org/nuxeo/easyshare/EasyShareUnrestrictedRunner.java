@@ -33,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class EasyShareUnrestrictedRunner {
 
-    protected final Log log = LogFactory.getLog(EasyShareUnrestrictedRunner.class);
+    private static final Log log = LogFactory.getLog(EasyShareUnrestrictedRunner.class);
 
     protected CoreSession session;
 
@@ -70,7 +70,6 @@ public abstract class EasyShareUnrestrictedRunner {
             });
 
         }
-
 
     }
 
