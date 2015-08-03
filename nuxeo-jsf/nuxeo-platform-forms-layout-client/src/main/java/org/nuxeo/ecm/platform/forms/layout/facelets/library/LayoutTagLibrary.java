@@ -19,128 +19,29 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.library;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes;
-import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetTypeDefinition;
-import org.nuxeo.ecm.platform.forms.layout.facelets.DocumentLayoutTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutRowWidgetTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.LayoutTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.SubWidgetTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTagHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.faces.facelets.tag.AbstractTagLibrary;
-
 /**
- * Layout tag library
+ * Layout tag library.
+ * <p>
+ * Since 7.4, only holds JSF functions for the nxl tag library.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class LayoutTagLibrary extends AbstractTagLibrary {
+public class LayoutTagLibrary {
 
     private static final Log log = LogFactory.getLog(LayoutTagLibrary.class);
-
-    public static final String Namespace = "http://nuxeo.org/nxforms/layout";
-
-    public static final LayoutTagLibrary Instance = new LayoutTagLibrary();
-
-    public LayoutTagLibrary() {
-        super(Namespace);
-        addTagHandler("widgetType", WidgetTypeTagHandler.class);
-        addTagHandler("widget", WidgetTagHandler.class);
-        addTagHandler("layout", LayoutTagHandler.class);
-        addTagHandler("layoutRow", LayoutRowTagHandler.class);
-        addTagHandler("layoutColumn", LayoutRowTagHandler.class);
-        addTagHandler("layoutRowWidget", LayoutRowWidgetTagHandler.class);
-        addTagHandler("layoutColumnWidget", LayoutRowWidgetTagHandler.class);
-        addTagHandler("subWidget", SubWidgetTagHandler.class);
-        addTagHandler("documentLayout", DocumentLayoutTagHandler.class);
-
-        try {
-            addFunction("widgetTypeDefinition",
-                    LayoutTagLibrary.class.getMethod("getWidgetTypeDefinition", new Class[] { String.class }));
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            addFunction("fieldDefinitionsAsString", LayoutTagLibrary.class.getMethod("getFieldDefinitionsAsString",
-                    new Class[] { FieldDefinition[].class }));
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            Method getSelectedRows = LayoutTagLibrary.class.getMethod("getSelectedRows", new Class[] { Layout.class,
-                    List.class, boolean.class });
-            addFunction("selectedRows", getSelectedRows);
-            addFunction("selectedColumns", getSelectedRows);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            Method getNotSelectedRows = LayoutTagLibrary.class.getMethod("getNotSelectedRows", new Class[] {
-                    Layout.class, List.class });
-            addFunction("notSelectedRows", getNotSelectedRows);
-            addFunction("notSelectedColumns", getNotSelectedRows);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            Method getDefaultSelectedRowNames = LayoutTagLibrary.class.getMethod("getDefaultSelectedRowNames",
-                    new Class[] { Layout.class, boolean.class });
-            addFunction("defaultSelectedRowNames", getDefaultSelectedRowNames);
-            addFunction("defaultSelectedColumnNames", getDefaultSelectedRowNames);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            Method isBoundToEditMode = BuiltinModes.class.getMethod("isBoundToEditMode", new Class[] { String.class });
-            addFunction("isBoundToEditMode", isBoundToEditMode);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            Method isLikePlainMode = BuiltinWidgetModes.class.getMethod("isLikePlainMode", new Class[] { String.class });
-            addFunction("isLikePlainMode", isLikePlainMode);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        try {
-            Method isLikeViewMode = BuiltinWidgetModes.class.getMethod("isLikeViewMode", new Class[] { String.class });
-            addFunction("isLikeViewMode", isLikeViewMode);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-        // BBB
-        try {
-            Method joinReRender = LayoutTagLibrary.class.getMethod("joinReRender", new Class[] { String.class,
-                    String.class });
-            addFunction("joinReRender", joinReRender);
-        } catch (NoSuchMethodException e) {
-            log.error(e, e);
-        }
-
-    }
 
     // JSF functions
 
