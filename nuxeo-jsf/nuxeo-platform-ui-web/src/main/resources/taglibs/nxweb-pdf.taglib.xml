@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<facelet-taglib id="nxp"
-  xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+<facelet-taglib id="nxp" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd"
   version="2.2">
-  <description>Nuxeo Seam PDF Taglib Override</description>
+  <description>
+    <![CDATA[
+    <p>Nuxeo Seam PDF Taglib Override</p>
+    <p>
+      This JSF library works as a wrapper of the Seam PDF tag library. As this
+      library may not be the one we'd like to keep for PDF generation, this
+      wrapper library makes it possible to change easily the implementation
+      without impacting templates using it.
+    </p>
+    ]]>
+  </description>
   <namespace>http://nuxeo.org/nxweb/pdf</namespace>
 
   <tag>
@@ -13,6 +22,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIDocument</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -20,6 +32,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIHeader</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -27,6 +42,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIFooter</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -34,6 +52,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIPageNumber</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -41,6 +62,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIParagraph</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -48,6 +72,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIPage</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -55,6 +82,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIList</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -62,6 +92,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIListItem</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -69,18 +102,21 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIFont</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
     <tag-name>image</tag-name>
     <component>
-      <!-- 
-        <component-type>org.jboss.seam.pdf.ui.UIImage</component-type>
-      -->
-      <component-type>
-        org.nuxeo.ecm.platform.ui.web.component.seam.UIImage
-      </component-type>
+      <!-- <component-type>org.jboss.seam.pdf.ui.UIImage</component-type> -->
+      <component-type>org.nuxeo.ecm.platform.ui.web.component.seam.UIImage</component-type>
     </component>
+    <description>
+      Overrides original Seam PDF image tag to avoid crash when image is not
+      found. Same configuration than the original tag.
+    </description>
   </tag>
 
   <tag>
@@ -88,6 +124,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIAnchor</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -95,6 +134,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIChapter</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -102,6 +144,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UISection</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -109,6 +154,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UITitle</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -116,6 +164,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UITable</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -123,6 +174,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UICell</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -130,6 +184,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UISignature</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -137,6 +194,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIOutputText</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -144,6 +204,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIElement</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -151,6 +214,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIBarCode</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -158,6 +224,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIPieChart</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -165,6 +234,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIBarChart</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -172,6 +244,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UILineChart</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -179,6 +254,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIChartData</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -186,6 +264,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIChartSeries</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -193,6 +274,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIColor</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -200,18 +284,22 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIStroke</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
     <tag-name>html</tag-name>
     <component>
-      <!-- 
-        <component-type>org.jboss.seam.pdf.ui.UIHtmlText</component-type>
-      -->
-      <component-type>
-        org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText
-      </component-type>
+      <!-- <component-type>org.jboss.seam.pdf.ui.UIHtmlText</component-type> -->
+      <component-type>org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText</component-type>
     </component>
+    <description>
+      Overrides original Seam PDF html tag to fix resolution of images and
+      avoid crash when image is not found. Same configuration than the original
+      tag.
+    </description>
   </tag>
 
   <tag>
@@ -219,6 +307,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UISwingComponent</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -226,6 +317,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIForm</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
   <tag>
@@ -233,6 +327,9 @@
     <component>
       <component-type>org.jboss.seam.pdf.ui.UIField</component-type>
     </component>
+    <description>
+      Same behavior and configuration than original Seam PDF tag.
+    </description>
   </tag>
 
 </facelet-taglib>

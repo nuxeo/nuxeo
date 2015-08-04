@@ -30,7 +30,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
 
 /**
- * Overrides default image to avoid crash when image is not found
+ * Overrides default image to avoid crash when image is not found.
  *
  * @since 5.4.2
  */
