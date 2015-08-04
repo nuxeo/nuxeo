@@ -57,6 +57,7 @@ import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
+import org.nuxeo.ecm.platform.audit.service.extension.EventDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
@@ -69,6 +70,8 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 public abstract class AbstractAuditBackend implements AuditBackend {
 
     protected static final Log log = LogFactory.getLog(AbstractAuditBackend.class);
+
+    public static final String FORCE_AUDIT_FACET = "ForceAudit";
 
     protected NXAuditEventsService component;
 
@@ -145,6 +148,20 @@ public abstract class AbstractAuditBackend implements AuditBackend {
 
         Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
         for (ExtendedInfoDescriptor descriptor : component.getExtendedInfoDescriptors()) {
+            boolean isForEvent = true;
+            if (descriptor.getEventDescriptors() != null && !descriptor.getEventDescriptors().isEmpty()) {
+                isForEvent = false;
+                // TODO: optimize this
+                for (EventDescriptor eventDescriptor : descriptor.getEventDescriptors()) {
+                    if (entry.getEventId().equals(eventDescriptor.getName()) && eventDescriptor.getEnabled()) {
+                        isForEvent = true;
+                        break;
+                    }
+                }
+            }
+            if (!isForEvent) {
+                continue;
+            }
             String exp = descriptor.getExpression();
             Serializable value = null;
             try {
@@ -192,8 +209,9 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel document = docCtx.getSourceDocument();
-            if (document.hasFacet(SYSTEM_DOCUMENT)) {
+            if (document.hasFacet(SYSTEM_DOCUMENT) && !document.hasFacet(FORCE_AUDIT_FACET)) {
                 // do not log event on System documents
+                // unless it has the FORCE_AUDIT_FACET facet
                 return null;
             }
 

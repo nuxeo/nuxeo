@@ -20,9 +20,12 @@
 package org.nuxeo.ecm.platform.audit.service.extension;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -44,6 +47,26 @@ public class ExtendedInfoDescriptor implements Serializable {
     @XNode("@enabled")
     private boolean enabled = true;
 
+    /**
+     * If null or empty, then extendedIndo applies for all events. Else only for specified events.
+     */
+    @XNodeList(value = "events/event", type = ArrayList.class, componentType = EventDescriptor.class)
+    protected List<EventDescriptor> eventDescriptors;
+
+    public List<EventDescriptor> getEventDescriptors() {
+        return eventDescriptors;
+    }
+
+    /**
+     * @since 7.3
+     */
+    public void setEventDescriptors(List<EventDescriptor> eventDescriptors) {
+        this.eventDescriptors = eventDescriptors;
+    }
+
+    /**
+     * @since 7.3
+     */
     public String getKey() {
         return key;
     }
