@@ -256,7 +256,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     *
+     * 
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)
