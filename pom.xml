@@ -24,6 +24,13 @@
         <module>ftest/selenium</module>
       </modules>
     </profile>
+    <profile>
+      <!-- Additional profile to select these tests to be run during test&push -->
+      <id>itestplatform</id>
+      <modules>
+        <module>ftest/selenium</module>
+      </modules>
+    </profile>
   </profiles>
 
   <developers>
