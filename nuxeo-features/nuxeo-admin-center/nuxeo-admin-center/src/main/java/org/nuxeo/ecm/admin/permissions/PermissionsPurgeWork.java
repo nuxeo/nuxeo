@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.ecm.admin.rights;
+package org.nuxeo.ecm.admin.permissions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -38,23 +38,23 @@ import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 /**
  * @since 7.4
  */
-public class RightsPurgeWork extends AbstractWork {
+public class PermissionsPurgeWork extends AbstractWork {
 
     public static final int DEFAULT_BATCH_SIZE = 20;
 
-    public static final String CATEGORY = "rightsPurge";
+    public static final String CATEGORY = "permissionsPurge";
 
     protected DocumentModel searchDocument;
 
     protected int batchSize = DEFAULT_BATCH_SIZE;
 
-    public RightsPurgeWork(DocumentModel searchDocument) {
+    public PermissionsPurgeWork(DocumentModel searchDocument) {
         this.searchDocument = searchDocument;
     }
 
     @Override
     public String getTitle() {
-        return String.format("Rights purge for: %s, %s", searchDocument.getPropertyValue("rs:ace_username"),
+        return String.format("Permissions purge for: %s, %s", searchDocument.getPropertyValue("rs:ace_username"),
                 searchDocument.getPropertyValue("rs:ecm_path"));
     }
 
@@ -69,7 +69,7 @@ public class RightsPurgeWork extends AbstractWork {
         initSession();
 
         PageProviderService pageProviderService = Framework.getService(PageProviderService.class);
-        PageProviderDefinition def = pageProviderService.getPageProviderDefinition("rights_purge");
+        PageProviderDefinition def = pageProviderService.getPageProviderDefinition("permissions_purge");
         String query = NXQLQueryBuilder.getQuery(searchDocument, def.getWhereClause(), null);
 
         IterableQueryResult result = session.queryAndFetch(query, NXQL.NXQL);

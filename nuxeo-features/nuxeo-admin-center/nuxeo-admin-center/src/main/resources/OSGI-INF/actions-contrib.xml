@@ -153,24 +153,24 @@
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="Rights" link="/view_admin-fragment.xhtml"
+    <action id="Permissions" link="/view_admin-fragment.xhtml"
       type="admin_rest_document_link"
-      label="admcommand.rights" order="40">
+      label="admcommand.permissions" order="40">
       <category>NUXEO_ADMIN</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="SearchRights" link="/incl/rights/searchRights.xhtml" label="tab.rights.search"
+    <action id="SearchPermissions" link="/incl/permissions/searchPermissions.xhtml" label="tab.permissions.search"
       type="admin_rest_document_link"
       order="10">
-      <category>Rights_sub_tab</category>
+      <category>Permissions_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 
-    <action id="PurgeRights" link="/incl/rights/purgeRights.xhtml" label="tab.rights.purge"
+    <action id="PurgePermissions" link="/incl/permissions/purgePermissions.xhtml" label="tab.permissions.purge"
       type="admin_rest_document_link"
       order="50">
-      <category>Rights_sub_tab</category>
+      <category>Permissions_sub_tab</category>
       <filter-id>only_for_manager</filter-id>
     </action>
 

@@ -1617,8 +1617,8 @@
       </properties>
     </layout>
 
-    <!-- rights search -->
-    <layout name="rights_search_filter">
+    <!-- permissions search -->
+    <layout name="permissions_search_filter">
       <templates>
         <template mode="any">
           /layouts/layout_default_template.xhtml
@@ -1646,7 +1646,7 @@
       </rows>
       <widget name="username" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">label.rights.search.username</label>
+          <label mode="any">label.permissions.search.username</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1658,7 +1658,7 @@
       </widget>
       <widget name="creator" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">label.rights.search.creator</label>
+          <label mode="any">label.permissions.search.creator</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1683,7 +1683,7 @@
       </widget>
       <widget name="date_range" type="datetimeRange">
         <labels>
-          <label mode="any">label.rights.search.date.range</label>
+          <label mode="any">label.permissions.search.date.range</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1697,7 +1697,7 @@
       </widget>
       <widget name="aclName" type="text">
         <labels>
-          <label mode="any">label.rights.search.aclName</label>
+          <label mode="any">label.permissions.search.aclName</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1706,7 +1706,7 @@
       </widget>
       <widget name="path" type="select_path_tree">
         <labels>
-          <label mode="any">label.rights.search.path</label>
+          <label mode="any">label.permissions.search.path</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1718,7 +1718,7 @@
       </widget>
     </layout>
 
-    <layout name="rights_purge_filter">
+    <layout name="permissions_purge_filter">
       <templates>
         <template mode="any">
           /layouts/layout_default_template.xhtml
@@ -1734,7 +1734,7 @@
       </rows>
       <widget name="username" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">label.rights.search.username</label>
+          <label mode="any">label.permissions.search.username</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1746,7 +1746,7 @@
       </widget>
       <widget name="path" type="select_path_tree">
         <labels>
-          <label mode="any">label.rights.search.path</label>
+          <label mode="any">label.permissions.search.path</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1758,7 +1758,7 @@
       </widget>
     </layout>
 
-    <layout name="rights_search_listing">
+    <layout name="permissions_search_listing">
       <templates>
         <template mode="any">/layouts/layout_listing_ajax_template.xhtml
         </template>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/rightssearch/"
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/permissionssearch/"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/rightssearch/">
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/permissionssearch/">
 
   <xs:include schemaLocation="base.xsd" />
 

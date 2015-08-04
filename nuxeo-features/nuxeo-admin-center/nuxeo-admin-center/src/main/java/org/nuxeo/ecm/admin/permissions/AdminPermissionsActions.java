@@ -15,7 +15,7 @@
  *     Thomas Roger
  */
 
-package org.nuxeo.ecm.admin.rights;
+package org.nuxeo.ecm.admin.permissions;
 
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
@@ -28,40 +28,38 @@ import org.nuxeo.ecm.platform.contentview.seam.ContentViewActions;
 import org.nuxeo.runtime.api.Framework;
 
 import java.io.Serializable;
-import java.util.List;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
 import static org.jboss.seam.ScopeType.STATELESS;
 
 /**
  * @since 7.4
  */
-@Name("adminRightsActions")
+@Name("adminPermissionsActions")
 @Scope(STATELESS)
-public class AdminRightsActions implements Serializable {
+public class AdminPermissionsActions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public final static String RIGHTS_PURGE_CONTENT_VIEW = "RIGHTS_PURGE";
+    public final static String PERMISSIONS_PURGE_CONTENT_VIEW = "PERMISSIONS_PURGE";
 
     @In(create = true)
     protected ContentViewActions contentViewActions;
 
     public void doPurge() {
-        ContentView contentView = contentViewActions.getContentView(RIGHTS_PURGE_CONTENT_VIEW);
+        ContentView contentView = contentViewActions.getContentView(PERMISSIONS_PURGE_CONTENT_VIEW);
         DocumentModel searchDocumentModel = contentView.getSearchDocumentModel();
-        RightsPurgeWork work = new RightsPurgeWork(searchDocumentModel);
+        PermissionsPurgeWork work = new PermissionsPurgeWork(searchDocumentModel);
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work, WorkManager.Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
     }
 
     public void cancelPurge() {
-        ContentView contentView = contentViewActions.getContentView(RIGHTS_PURGE_CONTENT_VIEW);
+        ContentView contentView = contentViewActions.getContentView(PERMISSIONS_PURGE_CONTENT_VIEW);
         contentView.resetSearchDocumentModel();
     }
 
     public boolean canStartPurge() {
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
-        return workManager.getQueueSize("rightsPurge", Work.State.RUNNING) <= 0;
+        return workManager.getQueueSize("permissionsPurge", Work.State.RUNNING) <= 0;
     }
 }

@@ -2,9 +2,9 @@
 <component name="org.nuxeo.admin.workmanager" version="1.0">
 
   <extension target="org.nuxeo.ecm.core.work.service" point="queues">
-    <queue id="rightsPurge">
+    <queue id="permissionsPurge">
       <maxThreads>1</maxThreads>
-      <category>rightsPurge</category>
+      <category>permissionsPurge</category>
     </queue>
   </extension>
 

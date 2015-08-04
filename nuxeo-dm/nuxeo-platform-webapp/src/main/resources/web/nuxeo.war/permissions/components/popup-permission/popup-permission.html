@@ -10,7 +10,7 @@
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
 
 
-<dom-module id="popup-right">
+<dom-module id="popup-permission">
   <template>
     <nx-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
     <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
@@ -98,7 +98,7 @@
 
 <script>
   Polymer({
-    is: 'popup-right',
+    is: 'popup-permission',
 
     properties: {
       docId: {

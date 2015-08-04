@@ -4,8 +4,8 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:c="http://java.sun.com/jstl/core">
 
-  <nxu:set var="contentViewName" value="RIGHTS_PURGE">
-    <c:if test="#{adminRightsActions.canStartPurge()}">
+  <nxu:set var="contentViewName" value="PERMISSIONS_PURGE">
+    <c:if test="#{adminPermissionsActions.canStartPurge()}">
     <nxu:set var="contentView"
       value="#{contentViewActions.getContentViewWithProvider(contentViewName, contentViewDocument, finalSortInfos, finalDefaultPageSize, -1, -1)}"
       cache="true">
@@ -15,7 +15,7 @@
           <nxl:layout name="#{contentView.searchLayout.name}" mode="edit"
             value="#{contentView.searchDocumentModel}" />
 
-          <h:commandButton value="#{messages['command.rights.purge']}"
+          <h:commandButton value="#{messages['command.permissions.purge']}"
             action="#{contentViewActions.refreshAndRewind(contentViewName)}"
             styleClass="button">
           </h:commandButton>
@@ -29,12 +29,12 @@
         </ui:decorate>
         <h:form>
           <h:commandButton value="#{messages['command.cancel']}"
-            action="#{adminRightsActions.cancelPurge()}"
+            action="#{adminPermissionsActions.cancelPurge()}"
             styleClass="button">
           </h:commandButton>
 
-          <h:commandButton value="#{messages['command.rights.purge']}"
-            action="#{adminRightsActions.doPurge()}"
+          <h:commandButton value="#{messages['command.permissions.purge']}"
+            action="#{adminPermissionsActions.doPurge()}"
             styleClass="button">
           </h:commandButton>
         </h:form>
@@ -43,8 +43,8 @@
     </nxu:set>
     </c:if>
 
-    <c:if test="#{!adminRightsActions.canStartPurge()}">
-      <div class="processMessage running">#{messages['label.rights.purge.in.progress']}</div>
+    <c:if test="#{!adminPermissionsActions.canStartPurge()}">
+      <div class="processMessage running">#{messages['label.permissions.purge.in.progress']}</div>
     </c:if>
   </nxu:set>
 
