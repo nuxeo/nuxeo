@@ -587,9 +587,4 @@
     </attribute>
   </tag>
 
-  <tag>
-    <tag-name>extendedRestDocumentLink</tag-name>
-    <source>util/extendedRestDocumentLink.xhtml</source>
-  </tag>
-
 </facelet-taglib>
