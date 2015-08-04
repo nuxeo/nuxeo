@@ -308,13 +308,15 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         final CoreSession coreSession = (CoreSession) Component.getInstance("documentManager");
         if (StringUtils.isNotBlank(documentId)) {
             try {
-                return coreSession.getDocument(new IdRef(documentId)).getTitle();
+                DocumentModel doc = coreSession.getDocument(new IdRef(documentId));
+                if (doc != null) {
+                    return titleOrId(doc);
+                }
             } catch (DocumentNotFoundException e) {
                 log.info(String.format("Could not find document with id %s", documentId));
-                return documentId;
             }
         }
-        return null;
+        return documentId;
     }
 
     public static boolean isDocumentModel(Object value) {
