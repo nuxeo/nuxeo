@@ -1,0 +1,19 @@
+*.class
+
+# Package Files #
+*.jar
+
+target
+bin
+.classpath
+.project
+.settings
+pojo-bin
+seam-bin
+deploy.sh
+log/
+
+*.pyc
+*~
+*.xls
+*.xlsx
