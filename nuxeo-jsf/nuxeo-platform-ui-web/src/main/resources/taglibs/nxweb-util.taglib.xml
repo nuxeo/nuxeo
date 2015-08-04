@@ -423,20 +423,6 @@
     </description>
   </function>
 
-  <!-- XXX AT: should be in nxdirectory taglib, not util -->
-  <function>
-    <function-name>getCSLData</function-name>
-    <function-class>org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions</function-class>
-    <function-signature>List getCSLData(java.lang.String)</function-signature>
-  </function>
-
-  <!-- XXX AT: should be in nxdirectory taglib, not util -->
-  <function>
-    <function-name>getListSize</function-name>
-    <function-class>org.nuxeo.ecm.platform.ui.web.directory.DirectoryFunctions</function-class>
-    <function-signature>int getListSize(java.lang.String)</function-signature>
-  </function>
-
   <tag>
     <tag-name>set</tag-name>
     <component>

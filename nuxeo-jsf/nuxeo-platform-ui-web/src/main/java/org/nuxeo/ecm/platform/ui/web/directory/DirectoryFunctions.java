@@ -18,9 +18,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.directory;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -43,40 +41,6 @@ public final class DirectoryFunctions {
     private DirectoryFunctions() {
     }
 
-    /**
-     * @param data comma-separated values that will be used to create a list of structures containing an index also
-     * @return
-     */
-    public static List<CSLData> getCSLData(String data) {
-        if (data == null) {
-            throw new IllegalArgumentException("null data");
-        }
-
-        String[] items = data.split(",");
-
-        List<CSLData> result = new ArrayList<CSLData>();
-        for (int i = 0; i < items.length; i++) {
-            CSLData obj = new CSLData(i, items[i]);
-            result.add(obj);
-        }
-
-        return result;
-    }
-
-    /**
-     * @param data
-     * @return number of elements (comma sepparated) in the given string
-     */
-    public static int getListSize(String data) {
-        if (data == null) {
-            throw new IllegalArgumentException("null data");
-        }
-
-        String[] items = data.split(",");
-
-        return items.length;
-    }
-
     public static DocumentModel getDirectoryEntry(String directoryName, String entryId) {
         if (entryId == null) {
             return null;
@@ -87,8 +51,7 @@ public final class DirectoryFunctions {
         }
     }
 
-    public static DocumentModelList getDirectoryEntries(String directoryName, String... entryIds)
-            {
+    public static DocumentModelList getDirectoryEntries(String directoryName, String... entryIds) {
         if (entryIds == null) {
             return null;
         }
@@ -105,8 +68,7 @@ public final class DirectoryFunctions {
         }
     }
 
-    public static DocumentModelList getDirectoryListEntries(String directoryName, Collection<String> entryIds)
-            {
+    public static DocumentModelList getDirectoryListEntries(String directoryName, Collection<String> entryIds) {
         if (entryIds == null) {
             return null;
         }
