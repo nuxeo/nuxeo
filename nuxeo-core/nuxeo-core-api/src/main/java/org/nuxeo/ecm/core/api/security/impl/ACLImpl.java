@@ -14,13 +14,10 @@
 
 package org.nuxeo.ecm.core.api.security.impl;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -130,24 +127,13 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     }
 
     @Override
-    public boolean update(String id, String username, String permission, boolean blockInheritance, String creator,
-            Calendar begin, Calendar end, Map<String, Serializable> contextData) {
-        // add the new ACE
-        ACE ace = ACE.builder(username, permission)
-                     .creator(creator)
-                     .begin(begin)
-                     .end(end)
-                     .contextData(contextData)
-                     .build();
-        boolean aclChanged = add(ace, blockInheritance);
-
-        if (aclChanged) {
-            // remove the old ACE
-            ACE oldAce = ACE.fromId(id);
-            if (contains(oldAce)) {
-                remove(oldAce);
-                aclChanged = true;
-            }
+    public boolean replace(ACE oldACE, ACE newACE) {
+        boolean aclChanged = false;
+        int index = indexOf(oldACE);
+        if (index != -1) {
+            remove(oldACE);
+            add(index, newACE);
+            aclChanged = true;
         }
 
         return aclChanged;

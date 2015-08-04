@@ -17,21 +17,28 @@
 
 package org.nuxeo.ecm.permissions;
 
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.CHANGED_ACL_NAME;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACP;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACE;
 import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACP;
 import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.DOCUMENT_SECURITY_UPDATED;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFIED;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 import static org.nuxeo.ecm.permissions.Constants.ACE_KEY;
+import static org.nuxeo.ecm.permissions.Constants.ACL_NAME_KEY;
+import static org.nuxeo.ecm.permissions.Constants.COMMENT_KEY;
 import static org.nuxeo.ecm.permissions.Constants.NOTIFY_KEY;
 import static org.nuxeo.ecm.permissions.Constants.PERMISSION_NOTIFICATION_EVENT;
+import static org.nuxeo.ecm.permissions.PermissionHelper.computeDirectoryId;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -53,7 +60,7 @@ import org.nuxeo.runtime.api.Framework;
 public class PermissionListener implements EventListener {
 
     @Override
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
@@ -65,17 +72,27 @@ public class PermissionListener implements EventListener {
     }
 
     protected void updateDirectory(DocumentEventContext docCtx) {
+        ACE oldACE = (ACE) docCtx.getProperty(OLD_ACE);
+        ACE newACE = (ACE) docCtx.getProperty(NEW_ACE);
+        String changedACLName = (String) docCtx.getProperty(CHANGED_ACL_NAME);
+        if (oldACE != null && newACE != null && changedACLName != null) {
+            handleReplaceACE(docCtx, changedACLName, oldACE, newACE);
+        } else {
+            ACP oldACP = (ACP) docCtx.getProperty(OLD_ACP);
+            ACP newACP = (ACP) docCtx.getProperty(NEW_ACP);
+            if (oldACP != null && newACP != null) {
+                handleUpdateACP(docCtx, oldACP, newACP);
+            }
+        }
+    }
+
+    protected void handleUpdateACP(DocumentEventContext docCtx, ACP oldACP, ACP newACP) {
         DocumentModel doc = docCtx.getSourceDocument();
 
-        ACP oldACP = (ACP) docCtx.getProperty(OLD_ACP);
-        ACP newACP = (ACP) docCtx.getProperty(NEW_ACP);
         List<ACLDiff> aclDiffs = extractACLDiffs(oldACP, newACP);
-
         DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
         for (ACLDiff diff : aclDiffs) {
-            Session session = null;
-            try {
-                session = directoryService.open(ACE_INFO_DIRECTORY);
+            try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
                 for (ACE ace : diff.removedACEs) {
                     String id = computeDirectoryId(doc, diff.aclName, ace.getId());
                     session.deleteEntry(id);
@@ -88,29 +105,61 @@ public class PermissionListener implements EventListener {
                         session.deleteEntry(id);
                     }
 
-                    Map<String, Object> m = new HashMap<>();
-                    m.put("aceinfo:id", id);
-                    m.put("aceinfo:repositoryName", doc.getRepositoryName());
-                    m.put("aceinfo:docId", doc.getId());
-                    m.put("aceinfo:aclName", diff.aclName);
-                    m.put("aceinfo:aceId", ace.getId());
                     Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
-                    m.put("aceinfo:notify", notify != null ? notify : false);
-                    m.put("aceinfo:comment", ace.getContextData(Constants.COMMENT_KEY));
+                    String comment = (String) ace.getContextData(Constants.COMMENT_KEY);
+                    notify = notify != null ? notify : false;
+                    Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, diff.aclName, ace, notify, false,
+                            comment);
                     session.createEntry(m);
 
-                    sendNotification(docCtx, ace);
-                }
-            } finally {
-                if (session != null) {
-                    session.close();
+                    if (notify && ace.isGranted() && ace.isEffective()) {
+                        firePermissionNotificationEvent(docCtx, diff.aclName, ace);
+                    }
                 }
             }
         }
     }
 
-    protected String computeDirectoryId(DocumentModel doc, String aclName, String aceId) {
-        return String.format("%s:%s:%s:%s", doc.getId(), doc.getRepositoryName(), aclName, aceId);
+    protected void handleReplaceACE(DocumentEventContext docCtx, String changedACLName, ACE oldACE, ACE newACE) {
+        DocumentModel doc = docCtx.getSourceDocument();
+
+        DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
+        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
+            Boolean notify = (Boolean) newACE.getContextData(NOTIFY_KEY);
+            String comment = (String) newACE.getContextData(COMMENT_KEY);
+            boolean notified = false;
+
+            String oldId = computeDirectoryId(doc, changedACLName, oldACE.getId());
+            DocumentModel oldEntry = session.getEntry(oldId);
+            if (oldEntry != null) {
+                boolean oldNotified = (boolean) oldEntry.getPropertyValue(ACE_INFO_NOTIFIED);
+                boolean oldNotify = (boolean) oldEntry.getPropertyValue(ACE_INFO_NOTIFY);
+                String oldComment = (String) oldEntry.getPropertyValue(ACE_INFO_COMMENT);
+
+                // put back notified to false if notify has changed
+                notified = !(notify != null && notify != oldNotify) && oldNotified;
+                // only use old notify and comment if not updated
+                if (notify == null) {
+                    notify = oldNotify;
+                }
+                if (comment == null) {
+                    comment = oldComment;
+                }
+
+                // remove the old entry
+                session.deleteEntry(oldId);
+            }
+
+            // add the new entry
+            notify = notify != null ? notify : false;
+            Map<String, Object> m = PermissionHelper.createDirectoryEntry(doc, changedACLName, newACE, notify, notified,
+                    comment);
+            session.createEntry(m);
+
+            if (notify && newACE.isGranted() && newACE.isEffective() && !notified) {
+                firePermissionNotificationEvent(docCtx, changedACLName, newACE);
+            }
+        }
     }
 
     protected List<ACLDiff> extractACLDiffs(ACP oldACP, ACP newACP) {
@@ -154,14 +203,12 @@ public class PermissionListener implements EventListener {
         return aclNames;
     }
 
-    protected void sendNotification(DocumentEventContext docCtx, ACE ace) {
-        Boolean notify = (Boolean) ace.getContextData(NOTIFY_KEY);
-        if (notify != null && notify && ace.isGranted() && ace.isEffective()) {
-            docCtx.setProperty(ACE_KEY, ace);
-            Event event = docCtx.newEvent(PERMISSION_NOTIFICATION_EVENT);
-            EventService eventService = Framework.getService(EventService.class);
-            eventService.fireEvent(event);
-        }
+    protected void firePermissionNotificationEvent(DocumentEventContext docCtx, String aclName, ACE ace) {
+        docCtx.setProperty(ACE_KEY, ace);
+        docCtx.setProperty(ACL_NAME_KEY, aclName);
+        EventService eventService = Framework.getService(EventService.class);
+        eventService.fireEvent(PERMISSION_NOTIFICATION_EVENT, docCtx);
+
     }
 
     private static class ACLDiff {

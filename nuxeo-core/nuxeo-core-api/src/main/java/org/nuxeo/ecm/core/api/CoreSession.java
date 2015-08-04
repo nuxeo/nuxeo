@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.DocumentModel.DocumentModelRefresh;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.types.Schema;
@@ -709,6 +710,14 @@ public interface CoreSession extends AutoCloseable {
      * @param overwrite
      */
     void setACP(DocumentRef docRef, ACP acp, boolean overwrite);
+
+    /**
+     * Replace the {@code oldACE} with the {@code newACE} on the given {@code aclName}.
+     * <p>
+     *
+     * @since 7.4
+     */
+    void replaceACE(DocumentRef docRef, String aclName, ACE oldACE, ACE newACE);
 
     /**
      * Returns {@code true} if negative ACLs are allowed.

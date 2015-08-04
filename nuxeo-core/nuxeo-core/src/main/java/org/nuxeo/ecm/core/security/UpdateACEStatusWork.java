@@ -17,6 +17,10 @@
 
 package org.nuxeo.ecm.core.security;
 
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.DOCUMENT_REFS;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.REPOSITORY_NAME;
+import static org.nuxeo.ecm.core.api.event.DocumentEventTypes.ACE_STATUS_UPDATED;
+
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,8 +32,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
 /**
@@ -75,15 +83,19 @@ public class UpdateACEStatusWork extends AbstractWork {
         }
 
         int acpUpdatedCount = 0;
+        List<DocumentRef> processedDocIds = new ArrayList<>();
         for (String docId : docIds) {
             try {
                 DocumentRef ref = new IdRef(docId);
                 ACP acp = session.getACP(ref);
                 session.setACP(ref, acp, true);
                 acpUpdatedCount++;
+                processedDocIds.add(ref);
                 if (acpUpdatedCount % batchSize == 0) {
+                    fireACEStatusUpdatedEvent(processedDocIds);
                     commitOrRollbackTransaction();
                     startTransaction();
+                    processedDocIds.clear();
                 }
             } catch (TransactionRuntimeException e) {
                 if (e.getMessage().contains("Transaction timeout")) {
@@ -92,8 +104,16 @@ public class UpdateACEStatusWork extends AbstractWork {
                 throw e;
             }
         }
+        fireACEStatusUpdatedEvent(processedDocIds);
 
         setStatus(null);
+    }
+
+    protected void fireACEStatusUpdatedEvent(List<DocumentRef> docRefs) {
+        EventContext eventContext = new EventContextImpl(session);
+        eventContext.setProperty(DOCUMENT_REFS, (Serializable) docRefs);
+        eventContext.setProperty(REPOSITORY_NAME, session.getRepositoryName());
+        Framework.getService(EventService.class).fireEvent(ACE_STATUS_UPDATED, eventContext);
     }
 
     @Override

@@ -18,6 +18,7 @@
 package org.nuxeo.ecm.permissions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
@@ -69,18 +70,14 @@ public class TestPermissionListener {
     public void shouldFillDirectory() {
         DocumentModel doc = createTestDocument();
 
-        ACP acp = doc.getACP();
-        ACL acl = acp.getOrCreateACL();
         ACE fryACE = new ACE("fry", WRITE, true);
         ACE leelaACE = new ACE("leela", READ, true);
-        acl.add(fryACE);
-        acl.add(leelaACE);
-        acp.addACL(acl);
+        ACP acp = doc.getACP();
+        acp.addACE(ACL.LOCAL_ACL, fryACE, false);
+        acp.addACE(ACL.LOCAL_ACL, leelaACE, false);
         doc.setACP(acp, true);
 
-        Session session = null;
-        try {
-            session = directoryService.open(ACE_INFO_DIRECTORY);
+        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = session.query(filter);
@@ -95,10 +92,6 @@ public class TestPermissionListener {
             assertEquals(doc.getRepositoryName(), entry.getPropertyValue("aceinfo:repositoryName"));
             assertEquals("local", entry.getPropertyValue("aceinfo:aclName"));
             assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -111,24 +104,22 @@ public class TestPermissionListener {
     public void shouldUpdateDirectory() {
         DocumentModel doc = createTestDocument();
 
+        ACE fryACE = new ACE("fry", WRITE, true);
+        ACE leelaACE = new ACE("leela", READ, true);
         ACP acp = doc.getACP();
-        ACL acl = acp.getOrCreateACL();
-        acl.add(new ACE("fry", WRITE, true));
-        acl.add(new ACE("leela", READ, true));
-        acp.addACL(acl);
+        acp.addACE(ACL.LOCAL_ACL, fryACE, false);
+        acp.addACE(ACL.LOCAL_ACL, leelaACE, false);
         doc.setACP(acp, true);
+
 
         acp = doc.getACP();
-        acl = acp.getOrCreateACL();
-        acl.clear();
-
-        ACE fryACE = new ACE("fry", READ, true);
-        acl.add(fryACE);
-        acp.addACL(acl);
+        acp.removeACE(ACL.LOCAL_ACL, leelaACE);
+        acp.removeACE(ACL.LOCAL_ACL, fryACE);
+        fryACE = new ACE("fry", READ, true);
+        acp.addACE(ACL.LOCAL_ACL, fryACE, false);
         doc.setACP(acp, true);
-        Session session = null;
-        try {
-            session = directoryService.open(ACE_INFO_DIRECTORY);
+
+        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = session.query(filter);
@@ -140,16 +131,12 @@ public class TestPermissionListener {
             assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
 
             acp = doc.getACP();
-            acl = acp.getOrCreateACL();
+            ACL acl = acp.getOrCreateACL();
             acl.clear();
             acp.addACL(acl);
             doc.setACP(acp, true);
             entries = session.query(filter);
             assertTrue(entries.isEmpty());
-        } finally {
-            if (session != null) {
-                session.close();
-            }
         }
     }
 
@@ -168,9 +155,7 @@ public class TestPermissionListener {
         acp.addACL(acl);
         doc.setACP(acp, true);
 
-        Session session = null;
-        try {
-            session = directoryService.open(ACE_INFO_DIRECTORY);
+        try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
             Map<String, Serializable> filter = new HashMap<>();
             filter.put("docId", doc.getId());
             DocumentModelList entries = session.query(filter);
@@ -183,12 +168,61 @@ public class TestPermissionListener {
 
             entry = entries.get(1);
             assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
-            assertNull(entry.getPropertyValue("aceinfo:notify"));
+            assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertNull(entry.getPropertyValue("aceinfo:comment"));
-        } finally {
-            if (session != null) {
-                session.close();
-            }
+        }
+    }
+
+    @Test
+    public void replacingAnACEShouldKeepNotifyAndComment() {
+        DocumentModel doc = createTestDocument();
+
+        ACP acp = doc.getACP();
+        ACL acl = acp.getOrCreateACL();
+        ACE fryACE = new ACE("fry", WRITE, true);
+        fryACE.putContextData(NOTIFY_KEY, true);
+        fryACE.putContextData(COMMENT_KEY, "fry comment");
+        ACE leelaACE = new ACE("leela", READ, true);
+        acl.add(fryACE);
+        acl.add(leelaACE);
+        acp.addACL(acl);
+        doc.setACP(acp, true);
+
+        try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("docId", doc.getId());
+            DocumentModelList entries = dirSession.query(filter);
+            assertEquals(2, entries.size());
+
+            DocumentModel entry = entries.get(0);
+            assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
+            assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
+            assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
+
+            entry = entries.get(1);
+            assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
+            assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
+            assertNull(entry.getPropertyValue("aceinfo:comment"));
+        }
+
+        // replacing the ACE for fry
+        ACE newFryACE = ACE.builder("fry", READ).build();
+        session.replaceACE(doc.getRef(), ACL.LOCAL_ACL, fryACE, newFryACE);
+        try (Session dirSession = directoryService.open(ACE_INFO_DIRECTORY)) {
+            Map<String, Serializable> filter = new HashMap<>();
+            filter.put("docId", doc.getId());
+            DocumentModelList entries = dirSession.query(filter);
+            assertEquals(2, entries.size());
+
+            DocumentModel entry = entries.get(0);
+            assertEquals(newFryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
+            assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
+            assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
+
+            entry = entries.get(1);
+            assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
+            assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
+            assertNull(entry.getPropertyValue("aceinfo:comment"));
         }
     }
 }

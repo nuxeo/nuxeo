@@ -34,7 +34,26 @@ public class Constants {
 
     public static final String ACE_KEY = "ace";
 
+    public static final String ACL_NAME_KEY = "aclName";
+
     public static final String PERMISSION_NOTIFICATION_EVENT = "permissionNotification";
 
     public static final String ACE_GRANTED_TEMPLATE = "template:aceGranted";
+
+    public static final String ACE_INFO_ID = "aceinfo:id";
+
+    public static final String ACE_INFO_REPOSITORY_NAME = "aceinfo:repositoryName";
+
+    public static final String ACE_INFO_DOC_ID = "aceinfo:docId";
+
+    public static final String ACE_INFO_ACL_NAME = "aceinfo:aclName";
+
+    public static final String ACE_INFO_ACE_ID = "aceinfo:aceId";
+
+    public static final String ACE_INFO_NOTIFY = "aceinfo:notify";
+
+    public static final String ACE_INFO_NOTIFIED = "aceinfo:notified";
+
+    public static final String ACE_INFO_COMMENT = "aceinfo:comment";
+
 }

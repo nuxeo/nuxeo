@@ -19,7 +19,9 @@ package org.nuxeo.ecm.permissions;
 
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_COMMENT;
 import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_DIRECTORY;
+import static org.nuxeo.ecm.permissions.Constants.ACE_INFO_NOTIFY;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -130,8 +132,8 @@ public class ExtendedACLJsonEnricher extends AbstractJsonEnricher<DocumentModel>
             String id = computeDirectoryId(doc, aclName, aceId);
             DocumentModel entry = session.getEntry(id);
             if (entry != null) {
-                m.put("notify", entry.getPropertyValue("aceinfo:notify"));
-                m.put("comment", entry.getPropertyValue("aceinfo:comment"));
+                m.put("notify", entry.getPropertyValue(ACE_INFO_NOTIFY));
+                m.put("comment", entry.getPropertyValue(ACE_INFO_COMMENT));
             }
         } finally {
             if (session != null) {

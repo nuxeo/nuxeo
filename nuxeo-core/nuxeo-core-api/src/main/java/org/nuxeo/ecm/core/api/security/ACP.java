@@ -15,8 +15,6 @@
 package org.nuxeo.ecm.core.api.security;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -149,21 +147,25 @@ public interface ACP extends Serializable, Cloneable {
     /**
      * Add an ACE to the given {@code aclName}.
      *
+     * @return true if the {@code acp} was changed.
      * @since 7.4
      */
     boolean addACE(String aclName, ACE ace, boolean blockInheritance);
 
     /**
-     * Update the ACE identified by {@code id} on the given {@code aclName}.
+     * Replace the {@code oldACE} with {@code newACE} on the given {@code aclName}, only if the {@code oldACE} exists.
+     * <p>
+     * The {@code newACE} keeps the same index as {@code oldACE}.
      *
+     * @return true if the ACP was changed.
      * @since 7.4
      */
-    boolean updateACE(String aclName, String id, String username, String permission, boolean blockInheritance,
-            String creator, Calendar begin, Calendar end, Map<String, Serializable> contextData);
+    boolean replaceACE(String aclName, ACE oldACE, ACE newACE);
 
     /**
      * Remove an ACE on the given {@code aclName}.
      *
+     * @return true if the ACP was changed.
      * @since 7.4
      */
     boolean removeACE(String aclName, ACE ace);
@@ -171,6 +173,7 @@ public interface ACP extends Serializable, Cloneable {
     /**
      * Remove all ACEs for {@code username} on the given {@code aclName}.
      *
+     * @return true if the ACP was changed.
      * @since 7.4
      */
     boolean removeACEsByUsername(String aclName, String username);
@@ -178,6 +181,7 @@ public interface ACP extends Serializable, Cloneable {
     /**
      * Remove all ACEs for {@code username} on the whole ACP.
      *
+     * @return true if the ACP was changed.
      * @since 7.4
      */
     boolean removeACEsByUsername(String username);

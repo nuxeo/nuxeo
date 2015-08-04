@@ -134,6 +134,13 @@ public final class DocumentEventTypes {
      */
     public static final String DOCUMENT_TAG_UPDATED = "documentTagUpdated";
 
+    /**
+     * Event triggered when one or more ACE status have been updated.
+     *
+     * @since 7.4
+     */
+    public static final String ACE_STATUS_UPDATED = "ACEStatusUpdated";
+
     // Constant utility class
     private DocumentEventTypes() {
     }

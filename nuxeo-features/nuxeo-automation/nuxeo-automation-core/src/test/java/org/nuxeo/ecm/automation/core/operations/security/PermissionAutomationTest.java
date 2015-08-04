@@ -88,7 +88,7 @@ public class PermissionAutomationTest {
         assertEquals(end, src.getACP().getACL(ACL.LOCAL_ACL).get(0).getEnd());
 
         // Tear down
-        src.getACP().removeACEById(ACL.LOCAL_ACL, "members");
+        src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "members");
     }
 
     @Test
@@ -110,6 +110,7 @@ public class PermissionAutomationTest {
 
         assertEquals("Write", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
         automationService.run(ctx, UpdatePermission.ID, params);
+        src.refresh();
         assertEquals("Everything", src.getACP().getACL(ACL.LOCAL_ACL).get(0).getPermission());
 
         // Tear down

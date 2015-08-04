@@ -14,9 +14,7 @@ package org.nuxeo.ecm.core.api.security.impl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -344,14 +342,13 @@ public class ACPImpl implements ACP {
     }
 
     @Override
-    public boolean updateACE(String aclName, String id, String username, String permission, boolean blockInheritance,
-            String creator, Calendar begin, Calendar end, Map<String, Serializable> contextData) {
+    public boolean replaceACE(String aclName, ACE oldACE, ACE newACE) {
         if (aclName == null) {
             throw new NullPointerException("'aclName' cannot be null");
         }
 
         ACL acl = getOrCreateACL(aclName);
-        boolean aclChanged = acl.update(id, username, permission, blockInheritance, creator, begin, end, contextData);
+        boolean aclChanged = acl.replace(oldACE, newACE);
         if (aclChanged) {
             addACL(acl);
         }

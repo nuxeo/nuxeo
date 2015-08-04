@@ -69,7 +69,6 @@ import org.nuxeo.ecm.automation.client.model.PropertyMap;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessCreateOperation;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessFetchOperation;
 import org.nuxeo.ecm.automation.core.operations.business.BusinessUpdateOperation;
-
 import org.nuxeo.ecm.automation.core.operations.document.AddPermission;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
@@ -941,7 +940,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         OperationRequest request = session.newRequest(AddPermission.ID);
         GregorianCalendar begin = new GregorianCalendar(2015, Calendar.JUNE, 20, 12, 34, 56);
         GregorianCalendar end = new GregorianCalendar(2015, Calendar.JULY, 14, 12, 34, 56);
-        request.setInput(root).set("user","members").set("permission", "Write").set("begin", begin).set("end", end).execute();
+        request.setInput(root)
+               .set("username", "members")
+               .set("permission", "Write")
+               .set("begin", begin)
+               .set("end", end)
+               .execute();
         // TODO NXP-17232 to use context parameters in json payload response with automation and automation client.
         // Once NXP-17232 resolved: assertions possible to get related doc ACLs.
     }

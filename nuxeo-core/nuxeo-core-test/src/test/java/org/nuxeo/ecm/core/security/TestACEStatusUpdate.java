@@ -84,9 +84,9 @@ public class TestACEStatusUpdate {
         // make the ACE effective
         begin = new GregorianCalendar();
         begin.setTimeInMillis(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli());
-        acp.updateACE(ACL.LOCAL_ACL, leelaACE.getId(), leelaACE.getUsername(), leelaACE.getPermission(), false,
-                leelaACE.getCreator(), begin, null, null);
-        doc.setACP(acp, true);
+        ACE newLeelaACE = (ACE) leelaACE.clone();
+        newLeelaACE.setBegin(begin);
+        session.replaceACE(doc.getRef(), ACL.LOCAL_ACL, leelaACE, newLeelaACE);
 
         fireUpdateACEStatusEventAndWait();
 
@@ -141,9 +141,9 @@ public class TestACEStatusUpdate {
         // make the ACE archived
         Calendar end = new GregorianCalendar();
         end.setTimeInMillis(now.toInstant().minus(1, ChronoUnit.DAYS).toEpochMilli());
-        acp.updateACE(ACL.LOCAL_ACL, leelaACE.getId(), leelaACE.getUsername(), leelaACE.getPermission(), false,
-                leelaACE.getCreator(), null, end, null);
-        doc.setACP(acp, true);
+        ACE newLeelaACE = (ACE) leelaACE.clone();
+        newLeelaACE.setEnd(end);
+        session.replaceACE(doc.getRef(), ACL.LOCAL_ACL, leelaACE, newLeelaACE);
 
         fireUpdateACEStatusEventAndWait();
 

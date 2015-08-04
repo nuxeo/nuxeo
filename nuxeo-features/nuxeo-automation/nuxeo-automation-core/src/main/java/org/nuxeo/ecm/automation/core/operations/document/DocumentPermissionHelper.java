@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
 
 /**
@@ -66,9 +67,14 @@ public final class DocumentPermissionHelper {
     public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
             boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end,
             Map<String, Serializable> contextData) {
-
-        return acp.addACE(aclName, userName, permission, blockInheritance, currentPrincipalName, begin, end,
-                contextData);
+        return acp.addACE(aclName,
+                ACE.builder(userName, permission)
+                   .creator(currentPrincipalName)
+                   .begin(begin)
+                   .end(end)
+                   .contextData(contextData)
+                   .build(),
+                blockInheritance);
     }
 
     /**
@@ -91,27 +97,6 @@ public final class DocumentPermissionHelper {
      * @since 7.3
      */
     public static boolean removePermissionById(ACP acp, String aclName, String id) {
-        return acp.removeACEById(aclName, id);
+        return acp.removeACE(aclName, ACE.fromId(id));
     }
-
-    /**
-     * @param acp The ACP to modify
-     * @param aclName the name of the ACL to target
-     * @param id the ACE id
-     * @param userName the name of the principal (user or group)
-     * @param permission the permission of the ACE
-     * @param blockInheritance should we block inheritance
-     * @param currentPrincipalName the creator
-     * @param begin the begin date of the ACE
-     * @param end the end date of the ACE
-     * @return true if something has changed on the document security
-     * @since 7.4
-     */
-    public static boolean updatePermission(ACP acp, String aclName, String id, String userName, String permission,
-            boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end,
-            Map<String, Serializable> contextData) {
-        return acp.updateACE(aclName, id, userName, permission, blockInheritance, currentPrincipalName, begin, end,
-                contextData);
-    }
-
 }

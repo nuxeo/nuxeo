@@ -31,16 +31,17 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 
 /**
- * Updates a ACE permission given ACL for a given user/group.
+ * Updates a given ACE.
+ * <p>
+ * Updates only the non-null fields, otherwise keep the ones of the old ACE.
  *
  * @since 7.4
  */
-@Operation(id = UpdatePermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Update Permission on the input document(s). Returns the document(s).")
+@Operation(id = UpdatePermission.ID, category = Constants.CAT_DOCUMENT, label = "Add Permission", description = "Update a given permission on the input document(s). Returns the document(s).")
 public class UpdatePermission {
 
     public static final String ID = "Document.UpdatePermission";
@@ -70,11 +71,8 @@ public class UpdatePermission {
     @Param(name = "id", description = "ACE id.")
     String id;
 
-    @Param(name = "blockInheritance", required = false, description = "Block inheritance or not.")
-    boolean blockInheritance = false;
-
     @Param(name = "notify", required = false, description = "Notify the user or not")
-    boolean notify = false;
+    Boolean notify;
 
     @Param(name = "comment", required = false, description = "Comment")
     String comment;
@@ -94,18 +92,26 @@ public class UpdatePermission {
 
     protected void updatePermission(DocumentModel doc) throws ClientException {
         Map<String, Serializable> contextData = new HashMap<>();
-        if (notify) {
+        if (notify != null && notify) {
             contextData.put(NOTIFY_KEY, true);
-            contextData.put(COMMENT_KEY, comment);
-        }
-        ACP acp = doc.getACP() != null ? doc.getACP() : new ACPImpl();
-        String creator = session.getPrincipal().getName();
-        boolean permissionChanged = acp.updateACE(aclName, id, user, permission, blockInheritance, creator, begin, end,
-                contextData);
-        if (permissionChanged) {
-            doc.setACP(acp, true);
+            if (comment != null) {
+                contextData.put(COMMENT_KEY, comment);
+            }
         }
 
+        ACE oldACE = ACE.fromId(id);
+        String username = user != null ? user : oldACE.getUsername();
+        String permission = this.permission != null ? this.permission : oldACE.getPermission();
+        String creator = session.getPrincipal().getName();
+
+        ACE newACE = ACE.builder(username, permission)
+                        .creator(creator)
+                        .begin(begin != null ? begin : oldACE.getBegin())
+                        .end(end != null ? end : oldACE.getEnd())
+                        .contextData(contextData)
+                        .build();
+
+        session.replaceACE(doc.getRef(), aclName, oldACE, newACE);
     }
 
 }

@@ -49,9 +49,29 @@ public final class CoreEventConstants {
 
     public static final String NEW_ACP = "newACP";
 
+    /**
+     * @since 7.4
+     */
+    public static final String OLD_ACE = "oldACE";
+
+    /**
+     * @since 7.4
+     */
+    public static final String NEW_ACE = "newACE";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CHANGED_ACL_NAME = "changedACLName";
+
     public static final String REORDERED_CHILD = "reorderedChild";
 
     public static final String REPLACED_PROXY_IDS = "replacedProxyRefs";
+
+    /**
+     * @since 7.4
+     */
+    public static final String DOCUMENT_REFS = "documentRefs";
 
     /**
      * Passed with beforeDocumentModification and documentModified events to hold the state that is about to be / has

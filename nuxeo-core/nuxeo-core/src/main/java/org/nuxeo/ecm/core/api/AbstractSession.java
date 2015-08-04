@@ -14,6 +14,9 @@
 
 package org.nuxeo.ecm.core.api;
 
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.CHANGED_ACL_NAME;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.NEW_ACE;
+import static org.nuxeo.ecm.core.api.event.CoreEventConstants.OLD_ACE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.BROWSE;
 import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
@@ -63,6 +66,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
+import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.UserEntry;
@@ -139,12 +143,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     protected Counter updateDocumentCount;
 
     protected void createMetrics() {
-        createDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
-                "documents", "create"));
-        deleteDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
-                "documents", "delete"));
-        updateDocumentCount = registry.counter(MetricRegistry.name("nuxeo.repositories", getRepositoryName(),
-                "documents", "update"));
+        createDocumentCount = registry.counter(
+                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "create"));
+        deleteDocumentCount = registry.counter(
+                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "delete"));
+        updateDocumentCount = registry.counter(
+                MetricRegistry.name("nuxeo.repositories", getRepositoryName(), "documents", "update"));
     }
 
     /**
@@ -196,8 +200,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         if (!hasPermission(doc, permission)) {
             log.error("Permission '" + permission + "' is not granted to '" + getPrincipal().getName()
                     + "' on document " + doc.getPath() + " (" + doc.getUUID() + " - " + doc.getType().getName() + ")");
-            throw new DocumentSecurityException("Privilege '" + permission + "' is not granted to '"
-                    + getPrincipal().getName() + "'");
+            throw new DocumentSecurityException(
+                    "Privilege '" + permission + "' is not granted to '" + getPrincipal().getName() + "'");
         }
     }
 
@@ -220,8 +224,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return ctx;
     }
 
-    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options,
-            String category, String comment, boolean withLifeCycle, boolean inline) {
+    protected void notifyEvent(String eventId, DocumentModel source, Map<String, Serializable> options, String category,
+            String comment, boolean withLifeCycle, boolean inline) {
 
         DocumentEventContext ctx = new DocumentEventContext(this, getPrincipal(), source);
 
@@ -362,8 +366,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
-            {
+    public DocumentModel copy(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
         Document dstDoc = resolveReference(dst);
         checkPermission(dstDoc, ADD_CHILDREN);
 
@@ -413,8 +416,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
-            {
+    public List<DocumentModel> copy(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
@@ -430,8 +432,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle)
-            {
+    public DocumentModel copyProxyAsDocument(DocumentRef src, DocumentRef dst, String name, boolean resetLifeCycle) {
         Document srcDoc = resolveReference(src);
         if (!srcDoc.isProxy()) {
             return copy(src, dst, name);
@@ -468,8 +469,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle)
-            {
+    public List<DocumentModel> copyProxyAsDocument(List<DocumentRef> src, DocumentRef dst, boolean resetLifeCycle) {
         List<DocumentModel> newDocuments = new ArrayList<DocumentModel>();
 
         for (DocumentRef ref : src) {
@@ -553,9 +553,15 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public void setACP(DocumentRef docRef, ACP newAcp, boolean overwrite) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_SECURITY);
-        DocumentModel docModel = readModel(doc);
 
-        Map<String, Serializable> options = new HashMap<String, Serializable>();
+        setACP(doc, newAcp, overwrite, null);
+    }
+
+    protected void setACP(Document doc, ACP newAcp, boolean overwrite, Map<String, Serializable> options) {
+        DocumentModel docModel = readModel(doc);
+        if (options == null) {
+            options = new HashMap<>();
+        }
         options.put(CoreEventConstants.OLD_ACP, docModel.getACP().clone());
         options.put(CoreEventConstants.NEW_ACP, newAcp);
 
@@ -564,6 +570,21 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         docModel = readModel(doc);
         options.put(CoreEventConstants.NEW_ACP, newAcp.clone());
         notifyEvent(DocumentEventTypes.DOCUMENT_SECURITY_UPDATED, docModel, options, null, null, true, false);
+    }
+
+    @Override
+    public void replaceACE(DocumentRef docRef, String aclName, ACE oldACE, ACE newACE) {
+        Document doc = resolveReference(docRef);
+        checkPermission(doc, WRITE_SECURITY);
+
+        ACP acp = getACP(docRef);
+        if (acp.replaceACE(aclName, oldACE, newACE)) {
+            Map<String, Serializable> options = new HashMap<>();
+            options.put(OLD_ACE, oldACE);
+            options.put(NEW_ACE, newACE);
+            options.put(CHANGED_ACL_NAME, aclName);
+            setACP(doc, acp, true, options);
+        }
     }
 
     @Override
@@ -576,8 +597,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         // nothing
     }
 
-    private DocumentModel createDocumentModelFromTypeName(String typeName, Map<String, Serializable> options)
-            {
+    private DocumentModel createDocumentModelFromTypeName(String typeName, Map<String, Serializable> options) {
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         DocumentType docType = schemaManager.getDocumentType(typeName);
         if (docType == null) {
@@ -814,14 +834,12 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList getChildren(DocumentRef parent, String type, Filter filter, Sorter sorter)
-            {
+    public DocumentModelList getChildren(DocumentRef parent, String type, Filter filter, Sorter sorter) {
         return getChildren(parent, type, null, filter, sorter);
     }
 
     @Override
-    public DocumentModelList getChildren(DocumentRef parent, String type, String perm, Filter filter, Sorter sorter)
-            {
+    public DocumentModelList getChildren(DocumentRef parent, String type, String perm, Filter filter, Sorter sorter) {
         if (perm == null) {
             perm = READ;
         }
@@ -871,8 +889,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelIterator getChildrenIterator(DocumentRef parent, String type, String perm, Filter filter)
-            {
+    public DocumentModelIterator getChildrenIterator(DocumentRef parent, String type, String perm, Filter filter) {
         // perm unused, kept for API compat
         return new DocumentModelChildrenIterator(this, parent, type, filter);
     }
@@ -1041,8 +1058,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList query(String query, Filter filter, long limit, long offset, boolean countTotal)
-            {
+    public DocumentModelList query(String query, Filter filter, long limit, long offset, boolean countTotal) {
         return query(query, NXQL.NXQL, filter, limit, offset, countTotal);
     }
 
@@ -1085,8 +1101,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModelList query(String query, Filter filter, long limit, long offset, long countUpTo)
-            {
+    public DocumentModelList query(String query, Filter filter, long limit, long offset, long countUpTo) {
         return query(query, NXQL.NXQL, filter, limit, offset, countUpTo);
     }
 
@@ -1110,8 +1125,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
             String[] permissions = securityService.getPermissionsToCheck(permission);
             QueryFilter queryFilter = new QueryFilter(principal, principals, permissions,
                     filter instanceof FacetFilter ? (FacetFilter) filter : null,
-                    securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit, postFilter ? 0
-                            : offset);
+                    securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit,
+                    postFilter ? 0 : offset);
 
             DocumentModelList dms = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
 
@@ -1557,8 +1572,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     @Deprecated
-    public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation)
-            {
+    public DocumentModel restoreToVersion(DocumentRef docRef, VersionModel version, boolean skipSnapshotCreation) {
         Document doc = resolveReference(docRef);
         Document ver = doc.getVersion(version.getLabel());
         return restoreToVersion(doc, ver, skipSnapshotCreation, false);
@@ -1645,8 +1659,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment)
-            {
+    public DocumentRef checkIn(DocumentRef docRef, VersioningOption option, String checkinComment) {
         Document doc = resolveReference(docRef);
         checkPermission(doc, WRITE_PROPERTIES);
         DocumentModel docModel = readModel(doc);
@@ -1792,8 +1805,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return createProxyInternal(doc, fold, new HashMap<String, Serializable>());
     }
 
-    protected DocumentModel createProxyInternal(Document doc, Document folder, Map<String, Serializable> options)
-            {
+    protected DocumentModel createProxyInternal(Document doc, Document folder, Map<String, Serializable> options) {
         // create the new proxy
         Document proxy = getSession().createProxy(doc, folder);
         DocumentModel proxyModel = readModel(proxy);
@@ -1824,8 +1836,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      *
      * @return the proxy if it was updated, or {@code null} if none or several were found
      */
-    protected DocumentModel updateExistingProxies(Document doc, Document folder, Document target)
-            {
+    protected DocumentModel updateExistingProxies(Document doc, Document folder, Document target) {
         Collection<Document> proxies = getSession().getProxies(doc, folder);
         try {
             if (proxies.size() == 1) {
@@ -2156,8 +2167,8 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section, boolean overwriteExistingProxy)
-            {
+    public DocumentModel publishDocument(DocumentModel docModel, DocumentModel section,
+            boolean overwriteExistingProxy) {
         Document doc = resolveReference(docModel.getRef());
         Document sec = resolveReference(section.getRef());
         checkPermission(doc, READ);
@@ -2270,15 +2281,13 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     }
 
     @Override
-    public <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type)
-            {
+    public <T extends Serializable> T getDocumentSystemProp(DocumentRef ref, String systemProperty, Class<T> type) {
         Document doc = resolveReference(ref);
         return doc.getSystemProp(systemProperty, type);
     }
 
     @Override
-    public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value)
-            {
+    public <T extends Serializable> void setDocumentSystemProp(DocumentRef ref, String systemProperty, T value) {
         Document doc = resolveReference(ref);
         if (systemProperty != null && systemProperty.startsWith(BINARY_TEXT_SYS_PROP)) {
             DocumentModel docModel = readModel(doc);
@@ -2346,8 +2355,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         return null;
     }
 
-    protected void loadDataModelsForFacet(DocumentModel docModel, Document doc, String facetName)
-            {
+    protected void loadDataModelsForFacet(DocumentModel docModel, Document doc, String facetName) {
         // Load all the data related to facet's schemas
         SchemaManager schemaManager = Framework.getLocalService(SchemaManager.class);
         CompositeType facet = schemaManager.getFacet(facetName);

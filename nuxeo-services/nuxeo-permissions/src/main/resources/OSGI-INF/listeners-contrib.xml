@@ -9,8 +9,13 @@
     </listener>
 
     <listener name="permissionNotificationListener" async="true" postCommit="true"
-      class="org.nuxeo.ecm.permissions.PermissionNotificationListener">
+      class="org.nuxeo.ecm.permissions.PermissionGrantedNotificationListener">
       <event>permissionNotification</event>
+    </listener>
+
+    <listener name="aceStatusUpdatedListener" async="true" postCommit="true"
+      class="org.nuxeo.ecm.permissions.ACEStatusUpdatedListener">
+      <event>ACEStatusUpdated</event>
     </listener>
 
   </extension>
