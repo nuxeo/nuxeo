@@ -29,6 +29,8 @@ public class CssUrlRewritingProcessor extends ro.isdc.wro.model.resource.process
 
     protected static final String BASE_PATH_REGEXP = "\\$\\{basePath}";
 
+    protected static final String BASE_PATH = "${basePath}";
+
     @Inject
     private ReadOnlyContext context;
 
@@ -38,7 +40,12 @@ public class CssUrlRewritingProcessor extends ro.isdc.wro.model.resource.process
         final String contextPath = context.getRequest() != null ? context.getRequest().getContextPath() : null;
         String finalImageUrl = imageUrl;
         if (imageUrl != null) {
-            finalImageUrl = imageUrl.replaceAll(BASE_PATH_REGEXP, contextPath);
+            // some resources begin with ../ instead of BASE_PATH (e.g: ../img/fancybox.png)
+            if (!imageUrl.contains(BASE_PATH) && imageUrl.startsWith("../")) {
+                finalImageUrl = imageUrl.replace("../", contextPath + "/");
+            } else {
+                finalImageUrl = imageUrl.replaceAll(BASE_PATH_REGEXP, contextPath);
+            }
         }
         return finalImageUrl;
     }
