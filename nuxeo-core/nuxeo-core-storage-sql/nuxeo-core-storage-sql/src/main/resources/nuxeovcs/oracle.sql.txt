@@ -719,6 +719,7 @@ BEGIN
     FOR r in (SELECT * FROM acls
                 WHERE permission MEMBER OF read_permissions
                 AND acls.id = curid
+                AND (status IS NULL OR status = 1)
                 ORDER BY acls.pos) LOOP
       IF acl IS NOT NULL THEN
          acl := acl || sep;

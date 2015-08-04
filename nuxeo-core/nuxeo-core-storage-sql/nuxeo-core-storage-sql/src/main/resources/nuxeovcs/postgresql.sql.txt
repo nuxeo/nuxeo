@@ -508,7 +508,8 @@ BEGIN
     END || acls.user AS op
   FROM acls
   WHERE acls.id = curid AND
-      permission IN (SELECT permission FROM aclr_permission)
+      permission IN (SELECT permission FROM aclr_permission) AND
+      (status IS NULL OR status = 1)
   ORDER BY acls.pos LOOP
     IF r.op IS NULL THEN
       CONTINUE;
