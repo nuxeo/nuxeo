@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
-import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.impl.blob.DefaultStreamBlob;
@@ -32,8 +31,7 @@ public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
 
     protected final long length;
 
-    public StorageBlob(Binary binary, String filename, String mimeType,
-            String encoding, String digest, long length) {
+    public StorageBlob(Binary binary, String filename, String mimeType, String encoding, String digest, long length) {
         this.binary = binary;
         this.length = length;
         setFilename(filename);
@@ -62,6 +60,7 @@ public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
         return this;
     }
 
+    @Override
     public Binary getBinary() {
         return binary;
     }

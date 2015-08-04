@@ -29,11 +29,6 @@ import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.storage.binary.Binary;
-import org.nuxeo.ecm.core.storage.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerDescriptor;
-import org.nuxeo.ecm.core.storage.binary.BinaryManagerStatus;
-import org.nuxeo.ecm.core.storage.binary.DefaultBinaryManager;
 import org.nuxeo.runtime.services.streaming.FileSource;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
@@ -79,16 +74,14 @@ public class TestDefaultBinaryManager extends NXRuntimeTestCase {
         assertEquals(CONTENT_SHA1, sha1Binary.getDigest());
 
         // other binary we'll GC
-        binaryManager.getBinary(new ByteArrayInputStream(
-                "abc".getBytes("UTF-8")));
+        binaryManager.getBinary(new ByteArrayInputStream("abc".getBytes("UTF-8")));
         assertEquals(2, countFiles(binaryManager.getStorageDir()));
 
         // sleep before GC to pass its time threshold
         Thread.sleep(3 * 1000);
 
         // create another binary after time threshold, it won't be GCed
-        binaryManager.getBinary(new ByteArrayInputStream(
-                "defg".getBytes("UTF-8")));
+        binaryManager.getBinary(new ByteArrayInputStream("defg".getBytes("UTF-8")));
         assertEquals(3, countFiles(binaryManager.getStorageDir()));
 
         // GC in non-delete mode

@@ -29,8 +29,8 @@ public interface BinaryManager extends Closeable {
     /**
      * Saves the given input stream into a {@link Binary}.
      * <p>
-     * Returns a {@link Binary} representing the stream. The {@link Binary}
-     * includes a digest that is a sufficient representation to persist it.
+     * Returns a {@link Binary} representing the stream. The {@link Binary} includes a digest that is a sufficient
+     * representation to persist it.
      * <p>
      * The stream is closed after use.
      *
@@ -51,19 +51,17 @@ public interface BinaryManager extends Closeable {
     Binary getBinary(String digest);
 
     /**
-     * Returns the Binary Garbage Collector that can be used for this binary
-     * manager.
+     * Returns the Binary Garbage Collector that can be used for this binary manager.
      * <p>
-     * Several calls to this method will return the same GC, so that its status
-     * can be monitored using {@link BinaryGarbageCollector#isInProgress}.
+     * Several calls to this method will return the same GC, so that its status can be monitored using
+     * {@link BinaryGarbageCollector#isInProgress}.
      *
      * @return the binary GC
      */
     BinaryGarbageCollector getGarbageCollector();
 
     /**
-     * Closes the binary manager and releases all resources and temporary
-     * objects held by it.
+     * Closes the binary manager and releases all resources and temporary objects held by it.
      */
     @Override
     void close();
