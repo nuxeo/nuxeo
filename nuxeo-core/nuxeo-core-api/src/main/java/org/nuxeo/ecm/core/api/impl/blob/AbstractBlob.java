@@ -43,6 +43,10 @@ public abstract class AbstractBlob implements Blob {
     protected static final int BUFFER_SIZE = 4096*16;
     //protected static int BUFFER_SIZE = 16;
 
+    @Override
+    public String getDigestAlgorithm() {
+        return null;
+    }
 
     public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[BUFFER_SIZE];

@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.storage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.io.Serializable;
 
 import org.nuxeo.ecm.core.api.Blob;
@@ -63,6 +64,11 @@ public class StorageBlob extends DefaultStreamBlob implements SQLBlob {
 
     public Binary getBinary() {
         return binary;
+    }
+
+    @Override
+    public String getDigestAlgorithm() {
+        return Objects.equals(binary.getDigest(), getDigest()) ? binary.getDigestAlgorithm() : null;
     }
 
     @Override

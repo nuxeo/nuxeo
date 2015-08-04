@@ -68,4 +68,11 @@ public interface BinaryManager extends Closeable {
     @Override
     void close();
 
+    /**
+     * Returns the digest algorithm used to store and digest binaries.
+     *
+     * @since 7.4
+     */
+    String getDigestAlgorithm();
+
 }

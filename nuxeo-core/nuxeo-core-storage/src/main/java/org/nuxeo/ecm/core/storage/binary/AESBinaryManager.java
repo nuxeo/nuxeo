@@ -179,7 +179,7 @@ public class AESBinaryManager extends LocalBinaryManager {
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
         super.initialize(binaryManagerDescriptor);
-        digestAlgorithm = descriptor.digest;
+        digestAlgorithm = getDigestAlgorithm();
         String options = binaryManagerDescriptor.key;
         if (StringUtils.isBlank(options)) {
             throw new NuxeoException("Missing key for "

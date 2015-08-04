@@ -67,6 +67,7 @@ public class LocalBinaryManager extends AbstractBinaryManager {
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
+        super.initialize(binaryManagerDescriptor);
         String path = binaryManagerDescriptor.storePath;
         if (path == null || path.trim().length() == 0) {
             path = DEFAULT_PATH;

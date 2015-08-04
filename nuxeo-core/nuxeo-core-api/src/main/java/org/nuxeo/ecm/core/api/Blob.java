@@ -71,6 +71,11 @@ public interface Blob {
 
     String getFilename();
 
+    /**
+     * @since 7.4
+     */
+    String getDigestAlgorithm();
+
     String getDigest();
 
     void setDigest(String digest);

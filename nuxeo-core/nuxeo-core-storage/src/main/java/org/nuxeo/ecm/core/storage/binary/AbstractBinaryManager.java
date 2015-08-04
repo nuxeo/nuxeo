@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 
 import org.nuxeo.common.xmap.XMap;
 import org.nuxeo.runtime.services.streaming.FileSource;
@@ -31,7 +32,24 @@ import org.nuxeo.runtime.services.streaming.StreamSource;
  */
 public abstract class AbstractBinaryManager implements BinaryManager {
 
-    public static final String DEFAULT_DIGEST = "MD5"; // "SHA-256"
+    public static final String MD5_DIGEST = "MD5";
+
+    public static final String SHA1_DIGEST = "SHA-1";
+
+    public static final String SHA256_DIGEST = "SHA-256";
+
+    public static final int MD5_DIGEST_LENGTH = 32;
+
+    public static final int SHA1_DIGEST_LENGTH = 40;
+
+    public static final int SHA256_DIGEST_LENGTH = 64;
+
+    /**
+     * @since 7.4
+     */
+    public static final HashMap<Integer, String> DIGESTS_BY_LENGTH = new HashMap<>();
+
+    public static final String DEFAULT_DIGEST = MD5_DIGEST; // SHA256_DIGEST
 
     public static final int DEFAULT_DEPTH = 2;
 
@@ -42,8 +60,11 @@ public abstract class AbstractBinaryManager implements BinaryManager {
     protected BinaryGarbageCollector garbageCollector;
 
     @Override
-    abstract public void initialize(
-            BinaryManagerDescriptor binaryManagerDescriptor) throws IOException;
+    public void initialize(BinaryManagerDescriptor binaryManagerDescriptor) throws IOException {
+        DIGESTS_BY_LENGTH.put(MD5_DIGEST_LENGTH, MD5_DIGEST);
+        DIGESTS_BY_LENGTH.put(SHA1_DIGEST_LENGTH, SHA1_DIGEST);
+        DIGESTS_BY_LENGTH.put(SHA256_DIGEST_LENGTH, SHA256_DIGEST);
+    }
 
     @Override
     abstract public Binary getBinary(InputStream in) throws IOException;
@@ -69,7 +90,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         } else {
             desc = new BinaryManagerRootDescriptor();
             // TODO fetch from repo descriptor
-            desc.digest = getDigest();
+            desc.digest = getDefaultDigestAlgorithm();
             desc.depth = DEFAULT_DEPTH;
             desc.write(configFile); // may throw IOException
         }
@@ -88,7 +109,7 @@ public abstract class AbstractBinaryManager implements BinaryManager {
             throws IOException {
         MessageDigest digest;
         try {
-            digest = MessageDigest.getInstance(descriptor.digest);
+            digest = MessageDigest.getInstance(getDigestAlgorithm());
         } catch (NoSuchAlgorithmException e) {
             throw (IOException) new IOException().initCause(e);
         }
@@ -134,12 +155,17 @@ public abstract class AbstractBinaryManager implements BinaryManager {
         return garbageCollector;
     }
 
+    @Override
+    public String getDigestAlgorithm() {
+        return descriptor.digest;
+    }
+
     /**
-     * Gets the message digest to use to hash binaries.
+     * Gets the default message digest to use to hash binaries.
      *
      * @since 6.0
      */
-    protected String getDigest() {
+    protected String getDefaultDigestAlgorithm() {
         return DEFAULT_DIGEST;
     }
 

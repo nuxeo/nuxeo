@@ -68,6 +68,11 @@ public class BlobWrapper extends AbstractBlob implements Serializable {
     }
 
     @Override
+    public String getDigestAlgorithm() {
+        return blob.getDigestAlgorithm();
+    }
+
+    @Override
     public String getDigest() {
         return blob.getDigest();
     }

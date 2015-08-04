@@ -60,9 +60,10 @@ public abstract class CachingBinaryManager extends AbstractBinaryManager {
     @Override
     public void initialize(BinaryManagerDescriptor binaryManagerDescriptor)
             throws IOException {
+        super.initialize(binaryManagerDescriptor);
         repositoryName = binaryManagerDescriptor.repositoryName;
         descriptor = new BinaryManagerRootDescriptor();
-        descriptor.digest = getDigest();
+        descriptor.digest = getDefaultDigestAlgorithm();
         log.info("Repository '" + repositoryName + "' using "
                 + getClass().getSimpleName());
     }

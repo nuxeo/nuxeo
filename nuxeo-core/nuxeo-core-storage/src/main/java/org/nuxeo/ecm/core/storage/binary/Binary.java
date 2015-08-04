@@ -85,6 +85,21 @@ public class Binary implements Serializable {
     }
 
     /**
+     * Gets the digest algorithm from the digest length.
+     *
+     * @since 7.4
+     */
+    public String getDigestAlgorithm() {
+        // Cannot use current digest algorithm of the binary manager here since it might have changed after the binary
+        // storage
+        String digest = getDigest();
+        if (digest == null) {
+            return null;
+        }
+        return AbstractBinaryManager.DIGESTS_BY_LENGTH.get(digest.length());
+    }
+
+    /**
      * Gets a string representation of the hex digest of the binary.
      *
      * @return the digest, characters are in the range {@code [0-9a-f]}
