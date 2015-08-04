@@ -52,6 +52,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -415,7 +416,7 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (document == null) {
             return false;
         }
-        return hasPermission(document, "Write") && !document.hasFacet(FacetNames.IMMUTABLE);
+        return hasPermission(document, SecurityConstants.WRITE) && !document.hasFacet(FacetNames.IMMUTABLE);
     }
 
     /**
