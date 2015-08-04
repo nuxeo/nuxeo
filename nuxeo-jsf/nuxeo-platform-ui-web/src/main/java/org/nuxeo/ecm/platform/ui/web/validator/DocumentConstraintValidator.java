@@ -132,7 +132,7 @@ public class DocumentConstraintValidator implements Validator, PartialStateHolde
         DocumentValidationReport report = null;
         Field field = resolveField(context, vref, e);
         if (field != null) {
-            boolean validateSubs = handleSubProperties != null && handleSubProperties.booleanValue();
+            boolean validateSubs = getHandleSubProperties().booleanValue();
             report = s.validate(field, value, validateSubs);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("VALIDATED  value '%s' for expression '%s', base=%s, prop=%s", value,
