@@ -441,16 +441,10 @@
         <resource>popups.css</resource>
         <resource>breadcrumb.css</resource>
         <resource>drag_and_drop.css</resource>
-        <resource>polymer.css</resource>
-      </resources>
-    </bundle>
-
-    <!-- resources for all pages including nuxeo header and footer -->
-    <bundle name="nuxeo_header_footer">
-      <resources>
         <resource>screen.css</resource>
         <resource>header.css</resource>
         <resource>footer.css</resource>
+        <resource>polymer.css</resource>
       </resources>
     </bundle>
 
