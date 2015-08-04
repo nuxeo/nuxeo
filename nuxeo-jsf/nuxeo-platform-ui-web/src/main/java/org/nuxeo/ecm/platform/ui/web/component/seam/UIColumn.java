@@ -44,6 +44,7 @@ public class UIColumn extends org.jboss.seam.excel.ui.UIColumn {
 
     public static final String FOOTER_FACET_NAME = "footer";
 
+    @SuppressWarnings("rawtypes")
     @Override
     public void encodeBegin(FacesContext facesContext) throws IOException {
         // Get workbook and worksheet

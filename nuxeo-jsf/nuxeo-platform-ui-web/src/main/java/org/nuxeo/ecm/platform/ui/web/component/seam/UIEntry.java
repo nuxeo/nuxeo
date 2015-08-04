@@ -29,9 +29,9 @@ import yarfraw.core.datamodel.Person;
 import yarfraw.core.datamodel.Text;
 
 /**
- * Override to support date formatting for RSS 2.0
+ * Override to support date formatting for RSS 2.0.
  * <p>
- * Defaut component only deals with ATOM format.
+ * Default component only deals with ATOM format.
  *
  * @since 5.6
  */
