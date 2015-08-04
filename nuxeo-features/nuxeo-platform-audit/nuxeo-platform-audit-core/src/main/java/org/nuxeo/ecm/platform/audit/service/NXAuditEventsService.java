@@ -73,22 +73,23 @@ public class NXAuditEventsService extends DefaultComponent {
     protected AuditBackend backend;
 
     @Override
+    public void applicationStarted(ComponentContext context) {
+        if (backend != null) {
+            backend.onApplicationStarted();
+        }
+    }
+
+    @Override
     public void deactivate(ComponentContext context) {
         backend.deactivate();
         super.deactivate(context);
     }
 
-    @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(EVENT_EXT_POINT)) {
-            doRegisterEvent((EventDescriptor) contribution);
-        } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
-            doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if (extensionPoint.equals(ADAPTER_POINT)) {
-            doRegisterAdapter((AdapterDescriptor) contribution);
-        } else if (extensionPoint.equals(BACKEND_EXT_POINT)) {
-            doRegisterBackend((AuditBackendDescriptor) contribution);
+    protected void doRegisterAdapter(AdapterDescriptor desc) {
+        if (log.isDebugEnabled()) {
+            log.debug("Registered adapter : " + desc.getName());
         }
+        documentAdapters.add(desc);
     }
 
     protected void doRegisterBackend(AuditBackendDescriptor desc) {
@@ -119,21 +120,11 @@ public class NXAuditEventsService extends DefaultComponent {
         extendedInfoDescriptors.add(desc);
     }
 
-    protected void doRegisterAdapter(AdapterDescriptor desc) {
+    protected void doUnregisterAdapter(AdapterDescriptor desc) {
+        // FIXME: this doesn't look right
+        documentAdapters.remove(desc.getName());
         if (log.isDebugEnabled()) {
-            log.debug("Registered adapter : " + desc.getName());
-        }
-        documentAdapters.add(desc);
-    }
-
-    @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (extensionPoint.equals(EVENT_EXT_POINT)) {
-            doUnregisterEvent((EventDescriptor) contribution);
-        } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
-            doUnregisterExtendedInfo((ExtendedInfoDescriptor) contribution);
-        } else if (extensionPoint.equals(ADAPTER_POINT)) {
-            doUnregisterAdapter((AdapterDescriptor) contribution);
+            log.debug("Unregistered adapter: " + desc.getName());
         }
     }
 
@@ -152,18 +143,6 @@ public class NXAuditEventsService extends DefaultComponent {
         }
     }
 
-    protected void doUnregisterAdapter(AdapterDescriptor desc) {
-        // FIXME: this doesn't look right
-        documentAdapters.remove(desc.getName());
-        if (log.isDebugEnabled()) {
-            log.debug("Unregistered adapter: " + desc.getName());
-        }
-    }
-
-    public Set<String> getAuditableEventNames() {
-        return eventNames;
-    }
-
     @Override
     public <T> T getAdapter(Class<T> adapter) {
         if (adapter.getCanonicalName().equals(DocumentHistoryReader.class.getCanonicalName())) {
@@ -178,22 +157,43 @@ public class NXAuditEventsService extends DefaultComponent {
         }
     }
 
-    public Set<ExtendedInfoDescriptor> getExtendedInfoDescriptors() {
-        return extendedInfoDescriptors;
-    }
-
-    public Set<AdapterDescriptor> getDocumentAdapters() {
-        return documentAdapters;
+    public Set<String> getAuditableEventNames() {
+        return eventNames;
     }
 
     public AuditBackend getBackend() {
         return backend;
     }
 
+    public Set<AdapterDescriptor> getDocumentAdapters() {
+        return documentAdapters;
+    }
+
+    public Set<ExtendedInfoDescriptor> getExtendedInfoDescriptors() {
+        return extendedInfoDescriptors;
+    }
+
     @Override
-    public void applicationStarted(ComponentContext context) {
-        if (backend != null) {
-            backend.onApplicationStarted();
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (extensionPoint.equals(EVENT_EXT_POINT)) {
+            doRegisterEvent((EventDescriptor) contribution);
+        } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
+            doRegisterExtendedInfo((ExtendedInfoDescriptor) contribution);
+        } else if (extensionPoint.equals(ADAPTER_POINT)) {
+            doRegisterAdapter((AdapterDescriptor) contribution);
+        } else if (extensionPoint.equals(BACKEND_EXT_POINT)) {
+            doRegisterBackend((AuditBackendDescriptor) contribution);
+        }
+    }
+
+    @Override
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        if (extensionPoint.equals(EVENT_EXT_POINT)) {
+            doUnregisterEvent((EventDescriptor) contribution);
+        } else if (extensionPoint.equals(EXTENDED_INFO_EXT_POINT)) {
+            doUnregisterExtendedInfo((ExtendedInfoDescriptor) contribution);
+        } else if (extensionPoint.equals(ADAPTER_POINT)) {
+            doUnregisterAdapter((AdapterDescriptor) contribution);
         }
     }
 
