@@ -461,10 +461,6 @@ public final class Functions {
         return "" + size + " " + suffix[ex] + msg;
     }
 
-    public static Integer integerDivision(Integer x, Integer y) {
-        return x / y;
-    }
-
     /**
      * Format the duration of a media in a string of two consecutive units to best express the duration of a media,
      * e.g.:

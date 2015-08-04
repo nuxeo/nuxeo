@@ -108,14 +108,6 @@
   </function>
 
   <function>
-    <function-name>integerDivision</function-name>
-    <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
-    <function-signature>java.lang.Integer integerDivision(java.lang.Integer,
-      java.lang.Integer)
-    </function-signature>
-  </function>
-
-  <function>
     <function-name>htmlEscape</function-name>
     <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
     <function-signature>java.lang.String htmlEscape(java.lang.String)</function-signature>
