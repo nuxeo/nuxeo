@@ -1,5 +1,5 @@
 /* nuxeo-diff-pictures.js
-
+ * 
  */
 var NxDiffPictures;
 (function scope_NxDiffPictures() {
@@ -76,6 +76,8 @@ var NxDiffPictures;
     url += "&fuzz=" + encodeURIComponent(fuzzObj.val() + "%");
     url += "&highlightColor=" + encodeURIComponent(highlightColorObj.val());
     url += "&lowlightColor=" + encodeURIComponent(lowLight);
+    // In case we are comparing psd, tif, or anything that is not jpeg, png or gif.
+    url += "&altExtension=.jpg";
 
     return url;
   }

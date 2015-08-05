@@ -42,15 +42,18 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * /nuxeo/diffPictures?&repo=therepo&leftDocId=123456&rightDocId= 456789012
- * &xpath=file:content&commandLine=thecommandline&fuzz=1000&highlightColor= Red&lowlightColor=White
+ * &xpath=file:content&commandLine=thecommandline&fuzz=1000&highlightColor=Red &lowlightColor=White&altExtension=jpg
  * <p>
  * <ul>
  * <li><code>leftDocId</code> and <code>rightDocId</code> are required</li>
  * <li>All other parameters are optional (commandLine, xpath, fuzz, ...). Default values are defined in
  * <code>DiffPictures</code></li>
+ * <li><code>altExtension</code> is special. If the pictures to compare are _not_ jpeg, png, or gif, _and_ if this
+ * parameter is set, then the result picture will be of this kind. Useful when comparing 2 psd or tif files for example,
+ * and the browser can't display them</li>
  * </ul>
  * <p>
- * commandine, xpath, fuzz, highlightColor, lowlightColor and repo are optional Utility to force cleanup of temporary
+ * commandline, xpath, fuzz, highlightColor, lowlightColor and repo are optional Utility to force cleanup of temporary
  * files created on the server: /nuxeo/diffPictures?cleanup=true&leftDocId=123456&rightDocId=456789& WARNING: Why can't
  * I use the public static void downloadBlob() from DownloadServlet?
  *
@@ -81,12 +84,14 @@ public class DiffPicturesServlet extends HttpServlet {
             return;
         }
 
+        // WARNING: If you change the name of a parameter, also change it in nuxeo-diff-pictures.js
         String repo = req.getParameter("repo");
         String xpath = req.getParameter("xpath");
         String commandLine = req.getParameter("commandLine");
         String fuzz = req.getParameter("fuzz");
         String highlightColor = req.getParameter("highlightColor");
         String lowlightColor = req.getParameter("lowlightColor");
+        String altExtension = req.getParameter("altExtension");
 
         if (StringUtils.isBlank(repo)) {
             repo = Framework.getLocalService(RepositoryManager.class).getDefaultRepository().getName();
@@ -109,6 +114,37 @@ public class DiffPicturesServlet extends HttpServlet {
             }
             if (StringUtils.isNotBlank(lowlightColor)) {
                 params.put("lowlightColor", lowlightColor);
+            }
+
+            if (StringUtils.isNotBlank(altExtension)) {
+                // Using the leftDoc only
+                Blob leftB;
+                if (StringUtils.isBlank(xpath) || "null".equals(xpath)) {
+                    leftB = (Blob) leftDoc.getPropertyValue(DiffPictures.DEFAULT_XPATH);
+                } else {
+                    leftB = (Blob) leftDoc.getPropertyValue(xpath);
+                }
+                String fileName = leftB.getFilename();
+                int dotPos = fileName.lastIndexOf(".");
+                String ext = fileName.substring(dotPos + 1);
+                ext = ext.toLowerCase();
+                switch (ext) {
+                case "jpg":
+                case "jpeg":
+                case "png":
+                case "gif":
+                    // No need to change anything
+                    break;
+
+                default:
+                    if (altExtension.indexOf(".") != 0) {
+                        altExtension = "." + altExtension;
+                    }
+                    fileName = "comp-" + fileName + altExtension;
+                    params.put("targetFileName", fileName);
+                    break;
+
+                }
             }
 
             Blob bResult;
