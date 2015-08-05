@@ -10,8 +10,9 @@
   <groupId>org.nuxeo.tool</groupId>
   <artifactId>selenium-utility</artifactId>
   <packaging>pom</packaging>
-  <name>Utility POM for running Selenium tests</name>
-  <description>This POM uses an assembly for running functional tests.</description>
+
+  <name>Error Web Functional Tests with Selenium</name>
+  <description>Error Web Functional Tests with Selenium</description>
 
   <dependencies>
     <dependency>
