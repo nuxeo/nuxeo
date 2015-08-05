@@ -72,4 +72,9 @@ public interface OAuth2ServiceProvider {
     boolean isEnabled();
 
     void setEnabled(Boolean enabled);
+
+    /**
+     * @since 7.4
+     */
+    boolean isProviderAvailable();
 }

@@ -250,6 +250,11 @@ public class NuxeoOAuth2ServiceProvider implements OAuth2ServiceProvider {
     }
 
     @Override
+    public boolean isProviderAvailable() {
+        return isEnabled() && getClientSecret() != null && getClientId() != null;
+    }
+
+    @Override
     public void setServiceName(String serviceName) {
         this.serviceName = serviceName;
     }
