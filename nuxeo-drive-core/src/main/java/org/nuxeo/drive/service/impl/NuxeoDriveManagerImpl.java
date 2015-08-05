@@ -49,7 +49,9 @@ import org.nuxeo.ecm.collections.api.CollectionManager;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -454,8 +456,19 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         try {
             for (Map<String, Serializable> result : results) {
                 IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
-                references.add(docRef);
-                paths.add(session.getDocument(docRef).getPathAsString());
+                try {
+                    DocumentModel doc = session.getDocument(docRef);
+                    references.add(docRef);
+                    paths.add(doc.getPathAsString());
+                } catch (DocumentNotFoundException e) {
+                    log.warn(String.format(
+                            "Document %s not found, not adding it to the list of synchronization roots for user %s.",
+                            docRef, session.getPrincipal().getName()));
+                } catch (DocumentSecurityException e) {
+                    log.warn(String.format(
+                            "User %s cannot access document %s, not adding it to the list of synchronization roots.",
+                            session.getPrincipal().getName(), docRef));
+                }
             }
         } finally {
             results.close();
