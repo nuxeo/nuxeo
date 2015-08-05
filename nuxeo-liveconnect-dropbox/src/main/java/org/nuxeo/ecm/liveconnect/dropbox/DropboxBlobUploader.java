@@ -94,16 +94,21 @@ public class DropboxBlobUploader implements JSFBlobUploader {
         String authorizationUrl = hasServiceAccount() ? "" : getOAuthAuthorizationUrl();
         Locale locale = context.getViewRoot().getLocale();
         String message;
+        boolean isProviderAvailable = getDropboxBlobProvider().getOAuth2Provider().isProviderAvailable();
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
         writer.writeAttribute("class", "button", null);
 
-        String onButtonClick = onClick
-            + ";"
-            + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s', '%s')",
-            inputId, infoId, authorizationUrl, getClientId());
-        writer.writeAttribute("onclick", onButtonClick, null);
+        // only add onclick event to button if oauth service provider is available
+        // this prevents users from using the picker if some configuration is missing
+        if (isProviderAvailable) {
+            String onButtonClick = onClick
+                + ";"
+                + String.format("new nuxeo.utils.DropboxPicker('%s', '%s','%s', '%s')",
+                inputId, infoId, authorizationUrl, getClientId());
+            writer.writeAttribute("onclick", onButtonClick, null);
+        }
 
         writer.startElement("span", parent);
         writer.writeAttribute("id", pickId, null);
@@ -113,12 +118,24 @@ public class DropboxBlobUploader implements JSFBlobUploader {
 
         writer.endElement("button");
 
-        writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-        writer.startElement("span", parent);
-        writer.writeAttribute("id", infoId, null);
-        message = I18NUtils.getMessageString("messages", "error.inputFile.noFileSelected", null, locale);
-        writer.write(message);
-        writer.endElement("span");
+        if (isProviderAvailable) {
+            writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
+            writer.startElement("span", parent);
+            writer.writeAttribute("id", infoId, null);
+            message = I18NUtils.getMessageString("messages", "error.inputFile.noFileSelected", null, locale);
+            writer.write(message);
+            writer.endElement("span");
+        } else {
+            // if oauth service provider not properly setup, add warning message
+            writer.startElement("span", parent);
+            writer.writeAttribute("class", "processMessage completeWarning", null);
+            writer.writeAttribute("style",
+                "margin: 0 0 .5em 0; font-size: 11px; padding: 0.4em 0.5em 0.5em 2.2em; background-position-y: 0.6em",
+                null);
+            message = I18NUtils.getMessageString("messages", "error.dropbox.providerUnavailable", null, locale);
+            writer.write(message);
+            writer.endElement("span");
+        }
 
         inputText.setLocalValueSet(false);
         inputText.setStyle("display: none");

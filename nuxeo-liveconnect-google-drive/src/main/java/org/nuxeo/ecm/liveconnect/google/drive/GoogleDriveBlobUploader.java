@@ -106,17 +106,22 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
         String authorizationUrl = hasServiceAccount() ? "" : getOAuthAuthorizationUrl();
         Locale locale = context.getViewRoot().getLocale();
         String message;
+        boolean isProviderAvailable = getGoogleDriveBlobProvider().getOAuth2Provider().isProviderAvailable();
 
         writer.startElement("button", parent);
         writer.writeAttribute("type", "button", null);
         writer.writeAttribute("class", "button GoogleDrivePickerButton", null);
 
-        // TODO pass existing access token
-        String onButtonClick = onClick
+        // only add onclick event to button if oauth service provider is available
+        // this prevents users from using the picker if some configuration is missing
+        if (isProviderAvailable) {
+            // TODO pass existing access token
+            String onButtonClick = onClick
                 + ";"
                 + String.format("new nuxeo.utils.GoogleDrivePicker('%s','%s','%s','%s','%s','%s', '%s')",
-            getClientId(), pickId, authId, inputId, infoId, getGoogleDomain(), authorizationUrl);
-        writer.writeAttribute("onclick", onButtonClick, null);
+                getClientId(), pickId, authId, inputId, infoId, getGoogleDomain(), authorizationUrl);
+            writer.writeAttribute("onclick", onButtonClick, null);
+        }
 
         writer.startElement("span", parent);
         writer.writeAttribute("id", pickId, null);
@@ -133,12 +138,22 @@ public class GoogleDriveBlobUploader implements JSFBlobUploader {
 
         writer.endElement("button");
 
-        writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
-        writer.startElement("span", parent);
-        writer.writeAttribute("id", infoId, null);
-        message = I18NUtils.getMessageString("messages", "error.inputFile.noFileSelected", null, locale);
-        writer.write(message);
-        writer.endElement("span");
+        if (isProviderAvailable) {
+            writer.write(ComponentUtils.WHITE_SPACE_CHARACTER);
+            writer.startElement("span", parent);
+            writer.writeAttribute("id", infoId, null);
+            message = I18NUtils.getMessageString("messages", "error.inputFile.noFileSelected", null, locale);
+            writer.write(message);
+            writer.endElement("span");
+        } else {
+            // if oauth service provider not properly setup, add warning message
+            writer.startElement("span", parent);
+            writer.writeAttribute("class", "processMessage completeWarning", null);
+            writer.writeAttribute("style", "margin: 0 0 .5em 0; font-size: 11px; background-position-y: 0.6em", null);
+            message = I18NUtils.getMessageString("messages", "error.googledrive.providerUnavailable", null, locale);
+            writer.write(message);
+            writer.endElement("span");
+        }
 
         inputText.setLocalValueSet(false);
         inputText.setStyle("display:none"); // hidden
