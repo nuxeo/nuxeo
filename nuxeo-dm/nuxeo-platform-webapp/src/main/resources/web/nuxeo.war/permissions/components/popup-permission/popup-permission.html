@@ -11,196 +11,200 @@
 
 
 <dom-module id="popup-permission">
-  <template>
-    <nx-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
-    <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+    <template>
+        <nx-operation id="createOp" op="Document.AddPermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
+        <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
 
-    <template is="dom-if" if="{{!updatingACE}}">
-      <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
-    </template>
-    <template is="dom-if" if="{{updatingACE}}">
-      <paper-button raised="true" on-click="togglePopup">Update</paper-button>
-    </template>
-
-    <paper-dialog id="popupRight" modal>
-      <template is="dom-if" if="{{!updatingACE}}">
-        <h2>Add new permission</h2>
-      </template>
-      <template is="dom-if" if="{{updatingACE}}">
-        <h2>Update permission</h2>
-      </template>
-
-      <!-- Give acces to row -->
-      <paper-dialog-scrollable>
-        <div>
-          <div>Give access to</div>
-          <div>
-            <paper-input
-              id="user"
-              value="{{params.username}}">
-            </paper-input>
-          </div>
-        </div>
-        <div>
-          <div>Start</div>
-          <div>
-            <paper-input id="begin" type="date" value="{{params.begin}}" />
-          </div>
-        </div>
-        <div>
-          <div>End</div>
-          <div>
-            <paper-input id="end" type="date" value="{{params.end}}" />
-          </div>
-        </div>
-        <!-- Allowed rights row -->
-        <div layout horizontal>
-          <div>Allowed rights</div>
-          <select id="allowedRights" flex two value="{{params.permission::change}}">
-            <option value="Read">Read</option>
-            <option value="Write">Write</option>
-            <option value="Everything">Everything</option>
-          </select>
-        </div>
-
-        <div id="notification">
-          <template is="dom-if" if="{{showNotificationFields}}">
-            <div layout horizontal>
-              <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify users by sending them a message </paper-checkbox>
-            </div>
-            <div layout horizontal>
-              <iron-autogrow-textarea placeholder="Hi! Could you comment this document and ..." id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
-            </div>
-          </template>
-        </div>
-      </paper-dialog-scrollable>
-
-      <div class="buttons">
-        <paper-button dialog-dismiss>Cancel</paper-button>
         <template is="dom-if" if="{{!updatingACE}}">
-          <paper-button on-tap="doSend">
-            Create and add a new one
-          </paper-button>
+            <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
         </template>
-        <paper-button class="colorful" dialog-confirm on-tap="doSend">
-          <template is="dom-if" if="{{!updatingACE}}">
-            Create
-          </template>
-          <template is="dom-if" if="{{updatingACE}}">
-            Update
-          </template>
-        </paper-button>
+        <template is="dom-if" if="{{updatingACE}}">
+            <paper-button raised="true" on-click="togglePopup">Update</paper-button>
+        </template>
 
-      </div>
-    </paper-dialog>
-  </template>
+        <paper-dialog id="popupRight" modal>
+            <template is="dom-if" if="{{!updatingACE}}">
+                <h2>Add new permission</h2>
+            </template>
+            <template is="dom-if" if="{{updatingACE}}">
+                <h2>Update permission</h2>
+            </template>
+
+            <!-- Give acces to row -->
+            <paper-dialog-scrollable>
+                <div>
+                    <div>Give access to</div>
+                    <div>
+                        <paper-input
+                                id="user"
+                                value="{{params.username}}">
+                        </paper-input>
+                    </div>
+                </div>
+                <div>
+                    <div>Start</div>
+                    <div>
+                        <paper-input id="begin" type="date" value="{{params.begin}}" />
+                    </div>
+                </div>
+                <div>
+                    <div>End</div>
+                    <div>
+                        <paper-input id="end" type="date" value="{{params.end}}" />
+                    </div>
+                </div>
+                <!-- Allowed rights row -->
+                <div layout horizontal>
+                    <div>Allowed rights</div>
+                    <select id="allowedRights" flex two value="{{params.permission::change}}">
+                        <template is="dom-repeat" items="{{userVisiblePermissions}}">
+                            <option value="{{item}}">{{item}}</option>
+                        </template>
+                    </select>
+                </div>
+
+                <div id="notification">
+                    <template is="dom-if" if="{{showNotificationFields}}">
+                        <div layout horizontal>
+                            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify users by sending them a message </paper-checkbox>
+                        </div>
+                        <div layout horizontal>
+                            <iron-autogrow-textarea placeholder="Hi! Could you comment this document and ..." id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+                        </div>
+                    </template>
+                </div>
+            </paper-dialog-scrollable>
+
+            <div class="buttons">
+                <paper-button dialog-dismiss>Cancel</paper-button>
+                <template is="dom-if" if="{{!updatingACE}}">
+                    <paper-button on-tap="doSend">
+                        Create and add a new one
+                    </paper-button>
+                </template>
+                <paper-button class="colorful" dialog-confirm on-tap="doSend">
+                    <template is="dom-if" if="{{!updatingACE}}">
+                        Create
+                    </template>
+                    <template is="dom-if" if="{{updatingACE}}">
+                        Update
+                    </template>
+                </paper-button>
+
+            </div>
+        </paper-dialog>
+    </template>
 </dom-module>
 
 <script>
-  Polymer({
-    is: 'popup-permission',
+    Polymer({
+        is: 'popup-permission',
 
-    properties: {
-      docId: {
-        type: String,
-        value: ''
-      },
-      ace: {
-        type: Object,
-        value: null
-      },
-      params: {
-        type: Object,
-        computed: 'computeParams(ace)'
-      },
-      updatingACE: {
-        type: Boolean,
-        computed: 'isUpdatingACE(ace)'
-      },
-      showNotificationFields: {
-        type: Boolean,
-        value: true,
-        computed: 'shouldShowNotification(ace)'
-      }
-    },
+        properties: {
+            docId: {
+                type: String,
+                value: ''
+            },
+            ace: {
+                type: Object,
+                value: null
+            },
+            userVisiblePermissions: {
+                type: Array,
+                value: []
+            },
+            params: {
+                type: Object,
+                computed: 'computeParams(ace)'
+            },
+            updatingACE: {
+                type: Boolean,
+                computed: 'isUpdatingACE(ace)'
+            },
+            showNotificationFields: {
+                type: Boolean,
+                value: true,
+                computed: 'shouldShowNotification(ace)'
+            }
+        },
 
-    ready: function() {
-    },
+        ready: function() {
+        },
 
-    togglePopup: function() {
-      this.$.popupRight.toggle();
-    },
+        togglePopup: function() {
+            this.$.popupRight.toggle();
+        },
 
-    doSend: function() {
-      if(this.params.begin) {
-        this.params.begin = new Date(this.params.begin).toISOString();
-      }
+        doSend: function() {
+            if(this.params.begin) {
+                this.params.begin = new Date(this.params.begin).toISOString();
+            }
 
-      if(this.params.end) {
-        this.params.end = new Date(this.params.end).toISOString();
-      }
-      this.params.permission = this.$.allowedRights.value;
-      if (this.updatingACE) {
-        this.$.updateOp.execute();
-      } else {
-        this.$.createOp.execute();
-      }
+            if(this.params.end) {
+                this.params.end = new Date(this.params.end).toISOString();
+            }
+            this.params.permission = this.$.allowedRights.value;
+            if (this.updatingACE) {
+                this.$.updateOp.execute();
+            } else {
+                this.$.createOp.execute();
+            }
 
-    },
+        },
 
-    handleResponse: function() {
-      if (this.updatingACE) {
-        this.fire('aceupdated');
-      } else {
-        this.fire('acecreated');
-      }
+        handleResponse: function() {
+            if (this.updatingACE) {
+                this.fire('aceupdated');
+            } else {
+                this.fire('acecreated');
+            }
 
-      this.set('params.username', '');
-      this.set('params.permission', 'Read');
-      this.set('params.begin', null);
-      this.set('params.end', null);
-      this.set('params.notify', true);
-      this.set('params.comment', '');
-    },
+            this.set('params.username', '');
+            this.set('params.permission', 'Read');
+            this.set('params.begin', null);
+            this.set('params.end', null);
+            this.set('params.notify', true);
+            this.set('params.comment', '');
+        },
 
-    toggleCommentText: function(event) {
-      var checked = event.element().checked;
-      this.$.notification.querySelector('#commentText').readonly = !checked;
-      if (!checked) {
-        this.set('params.comment', '');
-      }
-    },
+        toggleCommentText: function(event) {
+            var checked = event.element().checked;
+            this.$.notification.querySelector('#commentText').readonly = !checked;
+            if (!checked) {
+                this.set('params.comment', '');
+            }
+        },
 
-    computeParams: function(ace) {
-      if (ace !== null) {
-        this.$.allowedRights.value = ace.permission;
-        if (ace.begin !== null) {
-          ace.begin = ace.begin.substring(0, ace.begin.indexOf('T'));
+        computeParams: function(ace) {
+            if (ace !== null) {
+                this.$.allowedRights.value = ace.permission;
+                if (ace.begin !== null) {
+                    ace.begin = ace.begin.substring(0, ace.begin.indexOf('T'));
+                }
+                if (ace.end !== null) {
+                    ace.end = ace.end.substring(0, ace.end.indexOf('T'));
+                }
+                return ace;
+            } else {
+                return {
+                    username: '',
+                    permission: 'Read',
+                    begin: null,
+                    end: null,
+                    notify: true,
+                    comment: ''
+                };
+            }
+        },
+
+        isUpdatingACE: function(ace) {
+            return ace !== null;
+        },
+
+        shouldShowNotification: function(ace) {
+            if (ace !== null) {
+                return ace.begin !== null;
+            }
         }
-        if (ace.end !== null) {
-          ace.end = ace.end.substring(0, ace.end.indexOf('T'));
-        }
-        return ace;
-      } else {
-        return {
-          username: '',
-          permission: 'Read',
-          begin: null,
-          end: null,
-          notify: true,
-          comment: ''
-        };
-      }
-    },
-
-    isUpdatingACE: function(ace) {
-      return ace !== null;
-    },
-
-    shouldShowNotification: function(ace) {
-      if (ace !== null) {
-        return ace.begin !== null;
-      }
-    }
-  });
+    });
 </script>

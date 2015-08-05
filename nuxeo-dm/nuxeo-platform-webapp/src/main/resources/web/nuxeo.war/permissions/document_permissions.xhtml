@@ -1,150 +1,150 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  class="nx-wc">
+     xmlns:ui="http://java.sun.com/jsf/facelets"
+     class="nx-wc">
 
-  <script type="text/javascript"
-    src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <script type="text/javascript"
+            src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
-  <link rel="import" href="#{baseURL}bower_components/paper-styles/paper-styles.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/paper-styles/paper-styles.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
 
-  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-resource.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-doc-resource.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/popup-confirm.html"></link>
-  <link rel="import" href="#{baseURL}permissions/components/popup-permission/popup-permission.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-resource.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-doc-resource.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/popup-confirm.html"></link>
+    <link rel="import" href="#{baseURL}permissions/components/popup-permission/popup-permission.html"></link>
 
-  <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
-  <link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/paper-button/paper-button.html"></link>
+    <link rel="import" href="#{baseURL}bower_components/paper-input/paper-input.html"></link>
 
-  <template id="document-permissions" is="dom-bind">
+    <template id="document-permissions" is="dom-bind">
 
-    <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
+        <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
 
-    <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="extendedAcls, permissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
+        <nx-doc-resource auto="true" id="doc" path="{{currentDocumentPath}}" response="{{doc}}" haslocalrights="{{hasLocalRights}}" enrichers="extendedAcls, permissions, userVisiblePermissions" localrights="{{localRights}}" inheritedrights="{{inheritedRights}}" haseverythingright="{{hasEverythingRight}}"></nx-doc-resource>
 
-    <div class="bubbleBox">
-      <div class="bubbleHeader">
-        <h3>Access rights defined explicitely on this folder</h3>
-        <template is="dom-if" if="{{hasEverythingRight}}">
-          <popup-permission doc-id="#{currentDocument.id}" on-acecreated="refresh"></popup-permission>
-        </template>
-      </div>
-      <template is="dom-if" if="{{hasLocalRights}}">
-        <div>
-          <table class="dataTable tmp-tab">
-            <tr class="tmp-tab">
-              <th class="tmp-tab">Username</th>
-              <th class="tmp-tab">Creator</th>
-              <th class="tmp-tab">Permission</th>
-              <th class="tmp-tab">Granted</th>
-              <th class="tmp-tab">Begin</th>
-              <th class="tmp-tab">End</th>
-              <th class="tmp-tab">Actions</th>
-            </tr>
-            <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
-              <tr>
-                <td><span>{{item.username}}</span></td>
-                <td><span>{{item.creator}}</span></td>
-                <td><span>{{item.permission}}</span></td>
-                <td><span>{{item.granted}}</span></td>
-                <td><span>{{format(item.begin)}}</span></td>
-                <td><span>{{format(item.end)}}</span></td>
-                <td>
-                  <template is="dom-if" if="{{hasEverythingRight}}">
-                    <popup-permission doc-id="#{currentDocument.id}" ace="{{item}}" on-aceupdated="refresh"></popup-permission>
-                    <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
-                  </template>
-                </td>
-              </tr>
+        <div class="bubbleBox">
+            <div class="bubbleHeader">
+                <h3>Access rights defined explicitely on this folder</h3>
+                <template is="dom-if" if="{{hasEverythingRight}}">
+                    <popup-permission doc-id="#{currentDocument.id}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}" on-acecreated="refresh"></popup-permission>
+                </template>
+            </div>
+            <template is="dom-if" if="{{hasLocalRights}}">
+                <div>
+                    <table class="dataTable tmp-tab">
+                        <tr class="tmp-tab">
+                            <th class="tmp-tab">Username</th>
+                            <th class="tmp-tab">Creator</th>
+                            <th class="tmp-tab">Permission</th>
+                            <th class="tmp-tab">Granted</th>
+                            <th class="tmp-tab">Begin</th>
+                            <th class="tmp-tab">End</th>
+                            <th class="tmp-tab">Actions</th>
+                        </tr>
+                        <template id="localRights-repeat" is="dom-repeat" items="{{localRights}}">
+                            <tr>
+                                <td><span>{{item.username}}</span></td>
+                                <td><span>{{item.creator}}</span></td>
+                                <td><span>{{item.permission}}</span></td>
+                                <td><span>{{item.granted}}</span></td>
+                                <td><span>{{format(item.begin)}}</span></td>
+                                <td><span>{{format(item.end)}}</span></td>
+                                <td>
+                                    <template is="dom-if" if="{{hasEverythingRight}}">
+                                        <popup-permission doc-id="#{currentDocument.id}" ace="{{item}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}" on-aceupdated="refresh"></popup-permission>
+                                        <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </table>
+                </div>
             </template>
-          </table>
+            <template is="dom-if" if="{{!hasLocalRights}}">
+                <p class="emptyResult">There is no specific right defined here.</p>
+            </template>
         </div>
-      </template>
-      <template is="dom-if" if="{{!hasLocalRights}}">
-        <p class="emptyResult">There is no specific right defined here.</p>
-      </template>
-    </div>
 
-    <div class="bubbleBox">
-      <div class="bubbleHeader">
-        <h3>Access rights coming from upper folders in the hierarchy</h3>
-        <template is="dom-if" if="{{!hasLocalRights}}">
-          <paper-button raised="true" class="button">Redefine Access Rights From This Folder Only</paper-button>
-        </template>
-      </div>
-      <div>
-        <table class="dataTable tmp-tab">
-          <tr class="tmp-tab">
-            <th class="tmp-tab">Username</th>
-            <th class="tmp-tab">Creator</th>
-            <th class="tmp-tab">Permission</th>
-            <th class="tmp-tab">Granted</th>
-            <th class="tmp-tab">Begin</th>
-            <th class="tmp-tab">End</th>
-          </tr>
-          <template is="dom-repeat" items="{{inheritedRights}}">
-            <tr>
-              <td><span>{{item.username}}</span></td>
-              <td><span>{{item.creator}}</span></td>
-              <td><span>{{item.permission}}</span></td>
-              <td><span>{{item.granted}}</span></td>
-              <td><span>{{format(item.begin)}}</span></td>
-              <td><span>{{format(item.end)}}</span></td>
-            </tr>
-          </template>
-        </table>
-      </div>
-    </div>
+        <div class="bubbleBox">
+            <div class="bubbleHeader">
+                <h3>Access rights coming from upper folders in the hierarchy</h3>
+                <template is="dom-if" if="{{!hasLocalRights}}">
+                    <paper-button raised="true" class="button">Redefine Access Rights From This Folder Only</paper-button>
+                </template>
+            </div>
+            <div>
+                <table class="dataTable tmp-tab">
+                    <tr class="tmp-tab">
+                        <th class="tmp-tab">Username</th>
+                        <th class="tmp-tab">Creator</th>
+                        <th class="tmp-tab">Permission</th>
+                        <th class="tmp-tab">Granted</th>
+                        <th class="tmp-tab">Begin</th>
+                        <th class="tmp-tab">End</th>
+                    </tr>
+                    <template is="dom-repeat" items="{{inheritedRights}}">
+                        <tr>
+                            <td><span>{{item.username}}</span></td>
+                            <td><span>{{item.creator}}</span></td>
+                            <td><span>{{item.permission}}</span></td>
+                            <td><span>{{item.granted}}</span></td>
+                            <td><span>{{format(item.begin)}}</span></td>
+                            <td><span>{{format(item.end)}}</span></td>
+                        </tr>
+                    </template>
+                </table>
+            </div>
+        </div>
 
-    <popup-confirm id="confirmation">
-      <h2>Confirm ACE deletion?</h2>
-    </popup-confirm>
+        <popup-confirm id="confirmation">
+            <h2>Confirm ACE deletion?</h2>
+        </popup-confirm>
 
-    <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="refresh"></nx-operation>
-  </template>
+        <nx-operation id="rmPermission" op="Document.RemovePermission" input="#{currentDocument.id}" on-response="refresh"></nx-operation>
+    </template>
 
-  <script>//<![CDATA[
-  (function() {
-    function leadingZero(str) {
-      if(parseInt(str) < 10) {
-        return "0" + str;
-      }
+    <script>//<![CDATA[
+    (function() {
+        function leadingZero(str) {
+            if(parseInt(str) < 10) {
+                return "0" + str;
+            }
 
-      return str;
-    }
+            return str;
+        }
 
-    // Cache timezone offset
-    var timezoneOffset = new Date().getTimezoneOffset() * 60000;
+        // Cache timezone offset
+        var timezoneOffset = new Date().getTimezoneOffset() * 60000;
 
-    var t = document.querySelector('#document-permissions');
-    t.localRightsDel = function(e, i) {
-      var self = this;
-      this.$.confirmation.toggle(function() {
-        // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
-        var item = e.model.dataHost.dataHost.item;
-        self.$.rmPermission.params = {
-          id: item.id
+        var t = document.querySelector('#document-permissions');
+        t.localRightsDel = function(e, i) {
+            var self = this;
+            this.$.confirmation.toggle(function() {
+                // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
+                var item = e.model.dataHost.dataHost.item;
+                self.$.rmPermission.params = {
+                    id: item.id
+                };
+                self.$.rmPermission.execute();
+            });
         };
-        self.$.rmPermission.execute();
-      });
-    };
 
-    t.refresh = function() {
-      document.querySelector('#doc').get();
-    };
+        t.refresh = function() {
+            document.querySelector('#doc').get();
+        };
 
-    t.format = function(date) {
-      if (date === null) {
-        return '';
-      }
-      // TimeZone aware local date
-      var tzDate = new Date(Date.parse(date) + timezoneOffset);
-      return leadingZero(tzDate.getDate()) + '/' + leadingZero(tzDate.getMonth() + 1) + '/' + tzDate.getFullYear();
-    };
+        t.format = function(date) {
+            if (date === null) {
+                return '';
+            }
+            // TimeZone aware local date
+            var tzDate = new Date(Date.parse(date) + timezoneOffset);
+            return leadingZero(tzDate.getDate()) + '/' + leadingZero(tzDate.getMonth() + 1) + '/' + tzDate.getFullYear();
+        };
 
-    t.currentDocumentPath = "/path" + currentDocumentPath;
-  })();
-  //]]></script>
+        t.currentDocumentPath = "/path" + currentDocumentPath;
+    })();
+    //]]></script>
 
 </div>
