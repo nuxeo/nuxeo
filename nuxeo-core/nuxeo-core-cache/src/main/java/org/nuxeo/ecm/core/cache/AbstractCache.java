@@ -26,24 +26,26 @@ import java.io.IOException;
  */
 public abstract class AbstractCache implements Cache {
 
-    protected final String name;
+    protected final CacheDescriptor config;
 
-    protected final int ttl;
+    protected AbstractCache(CacheDescriptor config) {
+        this.config = config;
+    }
 
-    protected AbstractCache(CacheDescriptor desc) {
-        name = desc.name;
-        ttl = desc.ttl;
+    @Override
+    public CacheDescriptor getConfig() {
+        return config;
     }
 
     @Override
     public String getName() {
-        return name;
+        return config.getName();
     }
 
     @Override
     public boolean hasEntry(String key) throws IOException {
         // dummy implementation to avoid breaking compatibility
-        return get(key)!=null;
+        return get(key) != null;
     }
 
 }

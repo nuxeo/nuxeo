@@ -17,19 +17,13 @@
 
 package org.nuxeo.ecm.core.redis.transientstore;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.ecm.core.cache.CacheComplianceFixture;
-import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
+import org.nuxeo.ecm.core.transientstore.TransientStorageComplianceFixture;
 import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.transientstore.test.TransientStorageComplianceFixture;
 
 /**
  * Unit test of cache implementation on top of redis since 6.0
  */
-@RunWith(ContributableFeaturesRunner.class)
-@Features({ TransientStoreRedisFeature.class })
-@SuiteClasses(TransientStorageComplianceFixture.class)
-public class TestTransientStoreService {
+@Features(TransientStoreRedisFeature.class )
+public class TestTransientStoreService extends TransientStorageComplianceFixture {
 
 }

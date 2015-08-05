@@ -32,22 +32,22 @@ import com.google.common.cache.CacheBuilder;
  *
  * @since 6.0
  */
-public class InMemoryCacheImpl extends AbstractCache {
+public class InMemoryCache extends AbstractCache {
 
-    public InMemoryCacheImpl(CacheDescriptor desc) {
-        super(desc);
+    public InMemoryCache(InMemoryCacheDescriptor config) {
+        super(config);
         CacheBuilder<Object, Object> builder = CacheBuilder.newBuilder();
-        builder = builder.expireAfterWrite(desc.ttl, TimeUnit.MINUTES);
-        if (desc.options.containsKey("concurrencyLevel")) {
-            builder = builder.concurrencyLevel(Integer.valueOf(desc.options.get("concurrencyLevel")).intValue());
+        builder = builder.expireAfterWrite(config.ttl, TimeUnit.MINUTES);
+        if (config.concurrencyLevel > 0) {
+            builder = builder.concurrencyLevel(config.concurrencyLevel);
         }
-        if (desc.options.containsKey("maxSize")) {
-            builder = builder.maximumSize(Integer.valueOf(desc.options.get("maxSize")).intValue());
+        if (config.maxSize >= 0) {
+            builder.maximumSize(config.maxSize);
         }
         cache = builder.build();
     }
 
-    protected static final Log log = LogFactory.getLog(InMemoryCacheImpl.class);
+    protected static final Log log = LogFactory.getLog(InMemoryCache.class);
 
     protected final Cache<String, Serializable> cache;
 
@@ -75,7 +75,7 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key != null) {
             cache.invalidate(key);
         } else {
-            log.warn(String.format("Can't invalidate a null key for the cache '%s'!", name));
+            log.warn(String.format("Can't invalidate a null key for the cache '%s'!", config.getName()));
         }
     }
 
@@ -89,7 +89,7 @@ public class InMemoryCacheImpl extends AbstractCache {
         if (key != null && value != null) {
             cache.put(key, value);
         } else {
-            log.warn(String.format("Can't put a null key nor a null value in the cache '%s'!", name));
+            log.warn(String.format("Can't put a null key nor a null value in the cache '%s'!", config.getName()));
         }
     }
 

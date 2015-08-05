@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.cache.InMemory">
+  
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="factories">
+    <parameters>
+          <define name="nuxeo.cache.maxsize" documentation="max size">-1</define>
+          <define name="nuxeo.cache.concurrencylevel" documentation="number of concurrency updates allowed">10</define>
+    </parameters>
+    <factory name="inmemory" type="org.nuxeo.ecm.core.cache.InMemoryCacheFactory" default="true"/>
+  </extension>
+
+  <extension-point target="org.nuxeo.ecm.core.cache.CacheService" name="caches">
+    <object class="org.nuxeo.ecm.core.cache.InMemoryCacheDescriptor" />
+  </extension-point>
+  
+  <!-- contribute an in-memory cache
+  <extension target="org.nuxeo.ecm.core.cache.InMemory" point="caches">
+    <cache name="default"/>
+  </extension>
+    -->
+
+</component>

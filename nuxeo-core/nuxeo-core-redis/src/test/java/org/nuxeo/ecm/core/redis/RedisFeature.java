@@ -35,6 +35,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
@@ -43,6 +44,7 @@ import redis.clients.jedis.Protocol;
 
 @Features({ CoreFeature.class, CacheFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class)
+@LocalDeploy("org.nuxeo.ecm.core.redis.tests:redis-contribs.xml")
 public class RedisFeature extends SimpleFeature {
 
     /**
@@ -190,7 +192,6 @@ public class RedisFeature extends SimpleFeature {
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
         config = runner.getConfig(Config.class);
-        runner.getFeature(CacheFeature.class).enable();
     }
 
     @Override

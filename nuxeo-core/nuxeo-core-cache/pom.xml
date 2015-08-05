@@ -52,13 +52,6 @@
       <artifactId>nuxeo-core</artifactId>
     </dependency>
 
-    <!-- test scope -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
 
   <build>

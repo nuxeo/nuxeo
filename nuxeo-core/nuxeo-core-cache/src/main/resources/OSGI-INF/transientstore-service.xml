@@ -40,7 +40,7 @@
      </ul>
 
     </documentation>
-    <object class="org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig"/>
+    <object class="org.nuxeo.ecm.core.transientstore.TransientStoreConfig"/>
 
   </extension-point>
 

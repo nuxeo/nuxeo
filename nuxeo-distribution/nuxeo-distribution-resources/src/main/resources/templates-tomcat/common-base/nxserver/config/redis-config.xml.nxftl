@@ -32,9 +32,9 @@
 
 
 <#if "${nuxeo.lock.manager}" == "redis">
-  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService" point="lockmanager">
-    <lockmanager name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
-  </extension>
+  <extension target="org.nuxeo.ecm.core.storage.lock.LockManagerService" point="lockmanager">
+    <lockmanager name="default" class="org.nuxeo.ecm.core.redis.contribs.RedisLockManager" />
+  </extension>
 </#if>
 
 <#if "${nuxeo.work.queuing}" == "redis">
@@ -42,6 +42,14 @@
     <queuing class="org.nuxeo.ecm.core.redis.contribs.RedisWorkQueuing"/>
   </extension>
 </#if>
+  <extension target="org.nuxeo.ecm.core.cache.CacheService" point="factories">
+<#if "${nuxeo.cache.type}" == "redis">
+    <factory name="RedisCache" type="org.nuxeo.ecm.core.redis.contribs.RedisCacheFactory" default="true"/>
+</#else>
+    <factory name="RedisCache" type="org.nuxeo.ecm.core.redis.contribs.RedisCacheFactory"/>
+</#if>
+  </extension>
+
 </#if>
 
 </component>

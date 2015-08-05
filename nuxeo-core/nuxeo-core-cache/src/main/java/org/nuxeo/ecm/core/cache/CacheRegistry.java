@@ -17,13 +17,12 @@
  */
 package org.nuxeo.ecm.core.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.model.ContributionFragmentRegistry;
 
 /**
@@ -35,8 +34,50 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
 
     private static final Log log = LogFactory.getLog(CacheRegistry.class);
 
-    // map of cache
-    protected final Map<String, CacheDescriptor> caches = new HashMap<String, CacheDescriptor>();
+    protected final Map<String, CacheDescriptor> configs = new HashMap<>();
+
+    protected final CacheFactory factory;
+
+    public CacheRegistry(CacheFactory factory) {
+        this.factory = factory;
+    }
+
+    boolean started;
+
+    void start() {
+        started = true;
+        NuxeoException errors = new NuxeoException("starting caches");
+        for (CacheDescriptor config : configs.values()) {
+            try {
+                config.cache = factory.createCache(config);
+            } catch (NuxeoException cause) {
+                errors.addSuppressed(cause);
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
+
+    void stop() {
+        started = false;
+        NuxeoException errors = new NuxeoException("stopping caches");
+        for (CacheDescriptor config : configs.values()) {
+            if (config.cache == null) {
+                continue;
+            }
+            try {
+                factory.destroyCache(config.cache);
+            } catch (NuxeoException cause) {
+                errors.addSuppressed(cause);
+            } finally {
+                config.cache = null;
+            }
+        }
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
+    }
 
     @Override
     public String getContributionId(CacheDescriptor contrib) {
@@ -44,104 +85,52 @@ public final class CacheRegistry extends ContributionFragmentRegistry<CacheDescr
     }
 
     @Override
-    public void contributionUpdated(String id, CacheDescriptor descriptor, CacheDescriptor newOrigContrib) {
-        String name = descriptor.name;
+    public void contributionUpdated(String id, CacheDescriptor config, CacheDescriptor newOrigContrib) {
+        String name = config.name;
         if (name == null) {
             throw new RuntimeException("The cache name must not be null!");
         }
-        if (descriptor.remove) {
-            contributionRemoved(id, descriptor);
+        if (config.remove) {
+            contributionRemoved(id, config);
             return;
         }
-
-        if (caches.containsKey(name)) {
-            throw new IllegalStateException(String.format(
-                    "Another cache has already been registered for the given name %s", name));
+        configs.put(name, config);
+        if (started) {
+            config.cache = factory.createCache(config);
         }
-
-        caches.put(name, descriptor);
         log.info("cache registered: " + name);
-    }
-
-    @Override
-    public boolean isSupportingMerge() {
-        return false;
     }
 
     @Override
     public void contributionRemoved(String id, CacheDescriptor origContrib) {
         String name = origContrib.name;
-        CacheDescriptor cache = caches.remove(name);
-        if (cache == null) {
+        CacheDescriptor config = configs.remove(name);
+        if (config == null) {
             throw new IllegalStateException("No such cache registered" + name);
         }
-        try {
-            cache.stop();
-        } catch (RuntimeException e) {
-            log.error(String.format("Error while removing cache '%s'", name), e);
-        }
         log.info("cache removed: " + name);
+        if (config.cache != null) {
+            try {
+                factory.destroyCache(config.cache);
+            } finally {
+                config.cache = null;
+            }
+        }
     }
 
     @Override
     public CacheDescriptor clone(CacheDescriptor orig) {
-        return orig.clone();
+        CacheDescriptor clone = factory.createConfig(orig.context, orig.name);
+        return CacheDescriptor.class.cast(factory.xmap(clone).load(orig.context, orig.document));
     }
 
     @Override
     public void merge(CacheDescriptor src, CacheDescriptor dst) {
-        boolean remove = src.remove;
-        // keep old remove info: if old contribution was removed, new one
-        // should replace the old one completely
-        if (remove) {
-            dst.remove = remove;
-            // don't bother merging
-            return;
-        }
-
+        factory.merge(src, dst);
     }
 
-    public CacheAttributesChecker getCache(String name) {
-        if (caches.containsKey(name)) {
-            return caches.get(name).cacheChecker;
-        }
-        return null;
-    }
-
-    public List<CacheAttributesChecker> getCaches() {
-        List<CacheAttributesChecker> res = new ArrayList<CacheAttributesChecker>(caches.size());
-        for (CacheDescriptor desc : caches.values()) {
-            res.add(desc.cacheChecker);
-        }
-        return res;
-    }
-
-    public void start() {
-        RuntimeException errors = new RuntimeException("Cannot start caches, check suppressed error");
-        for (CacheDescriptor desc : caches.values()) {
-            try {
-                desc.start();
-            } catch (RuntimeException cause) {
-                errors.addSuppressed(cause);
-            }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
-    }
-
-    public void stop() {
-        RuntimeException errors = new RuntimeException("Cannot stop caches, check suppressed error");
-        for (CacheDescriptor desc : caches.values()) {
-            try {
-                desc.stop();
-            } catch (RuntimeException cause) {
-                errors.addSuppressed(cause);
-            }
-        }
-        if (errors.getSuppressed().length > 0) {
-            throw errors;
-        }
+    public CacheDescriptor getConfig(String name) {
+        return configs.get(name);
     }
 
 }

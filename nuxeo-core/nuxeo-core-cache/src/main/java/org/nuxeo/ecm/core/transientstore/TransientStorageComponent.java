@@ -17,13 +17,15 @@
 
 package org.nuxeo.ecm.core.transientstore;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
-import org.nuxeo.ecm.core.transientstore.api.TransientStoreConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
+import org.nuxeo.runtime.RuntimeServiceEvent;
+import org.nuxeo.runtime.RuntimeServiceListener;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -38,75 +40,65 @@ public class TransientStorageComponent extends DefaultComponent implements Trans
 
     protected Map<String, TransientStoreConfig> configs = new HashMap<String, TransientStoreConfig>();
 
-    protected Map<String, TransientStore> stores = new HashMap<String, TransientStore>();
-
-    public static final String EP_STORE = "store";
-
     @Override
     public TransientStore getStore(String name) {
-        return stores.get(name);
+        return configs.get(name).store;
     }
 
     @Override
-    public TransientStoreConfig getStoreConfig(String name) throws IOException {
-        TransientStore store = getStore(name);
-        if (store != null) {
-            return store.getConfig();
+    public void applicationStarted(ComponentContext context) {
+        Framework.addListener(new RuntimeServiceListener() {
+
+            @Override
+            public void handleEvent(RuntimeServiceEvent event) {
+                if (event.id != RuntimeServiceEvent.RUNTIME_ABOUT_TO_STOP) {
+                    return;
+                }
+                Framework.removeListener(this);
+                NuxeoException errors = new NuxeoException("Shutdown transient stores");
+                for (TransientStoreConfig each : configs.values()) {
+                    try {
+                        each.shutdown();
+                    } catch (RuntimeException cause) {
+                        errors.addSuppressed(cause);
+                    }
+                }
+                if (errors.getSuppressed().length > 0) {
+                    throw errors;
+                }
+            }
+        });
+        NuxeoException errors = new NuxeoException("Initializing transient stores");
+        for (TransientStoreConfig each : configs.values()) {
+            try {
+                each.init();
+            } catch (RuntimeException cause) {
+                errors.addSuppressed(cause);
+            }
         }
-        return null;
+        if (errors.getSuppressed().length > 0) {
+            throw errors;
+        }
     }
 
-    public TransientStore registerStore(TransientStoreConfig config) {
-        try {
-            TransientStore store = config.getStore();
-            stores.put(config.getName(), store);
-            return store;
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to register Store", e);
+    @Override
+    public void doGC() {
+        for (TransientStoreConfig each : configs.values()) {
+            each.store.doGC();
         }
     }
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_STORE.equals(extensionPoint)) {
-            TransientStoreConfig config = (TransientStoreConfig) contribution;
-            // XXX merge
-            configs.put(config.getName(), config);
-        }
+        TransientStoreConfig config = (TransientStoreConfig) contribution;
+        // XXX merge
+        configs.put(config.name, config);
     }
-
-    @Override
-    public void applicationStarted(ComponentContext context) {
-        for (TransientStoreConfig config : configs.values()) {
-            registerStore(config);
-        }
-    }
-
-    public void doGC() {
-        for (TransientStore store : stores.values()) {
-            store.doGC();
-        }
-    }
-
-    @Override
-    public void deactivate(ComponentContext context) {
-        for (TransientStore store : stores.values()) {
-            store.shutdown();
-        }
-        super.deactivate(context);
-    }
-
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (EP_STORE.equals(extensionPoint)) {
-            TransientStoreConfig config = (TransientStoreConfig) contribution;
-            TransientStore store = stores.get(config.getName());
-            store.shutdown();
-            super.unregisterContribution(contribution, extensionPoint, contributor);
-        }
+        TransientStoreConfig config = (TransientStoreConfig) contribution;
+        configs.remove(config.name);
     }
-
-
 
 }

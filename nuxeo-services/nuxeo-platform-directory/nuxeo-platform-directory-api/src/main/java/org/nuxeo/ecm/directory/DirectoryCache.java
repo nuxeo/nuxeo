@@ -19,12 +19,15 @@ package org.nuxeo.ecm.directory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.cache.Cache;
+import org.nuxeo.ecm.core.cache.CacheDescriptor;
+import org.nuxeo.ecm.core.cache.CacheRegistry;
 import org.nuxeo.ecm.core.cache.CacheService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
@@ -65,8 +68,8 @@ public class DirectoryCache {
     protected DirectoryCache(String name) {
         this.name = name;
         hitsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "hits"));
-        invalidationsCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache",
-                "invalidations"));
+        invalidationsCounter = metrics.counter(
+                MetricRegistry.name("nuxeo", "directories", name, "cache", "invalidations"));
         sizeCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "size"));
         maxCounter = metrics.counter(MetricRegistry.name("nuxeo", "directories", name, "cache", "max"));
     }
@@ -83,15 +86,16 @@ public class DirectoryCache {
             throws DirectoryException {
         if (!isCacheEnabled()) {
             return source.getEntryFromSource(entryId, fetchReferences);
-        } else if (isCacheEnabled() && (getEntryCache() == null || getEntryCacheWithoutReferences() == null)) {
+        } else if (isCacheEnabled()
+                && (getOrCreateEntryCache() == null || getOrCreateEntryCacheWithoutReferences() == null)) {
 
             log.warn("Your directory configuration for cache is wrong, directory cache will not be used.");
-            if (getEntryCache() == null) {
+            if (getOrCreateEntryCache() == null) {
                 log.warn(String.format(
                         "The cache for entry '%s' has not been found, please check the cache name or make sure you have deployed it",
                         entryCacheName));
             }
-            if (getEntryCacheWithoutReferences() == null) {
+            if (getOrCreateEntryCacheWithoutReferences() == null) {
                 log.warn(String.format(
                         "The cache for entry without references '%s' has not been found, please check the cache name or make sure you have deployed it",
                         entryCacheWithoutReferencesName));
@@ -102,26 +106,26 @@ public class DirectoryCache {
         try {
             DocumentModel dm = null;
             if (fetchReferences) {
-                dm = (DocumentModel) getEntryCache().get(entryId);
+                dm = (DocumentModel) getOrCreateEntryCache().get(entryId);
                 if (dm == null) {
                     // fetch the entry from the backend and cache it for later
                     // reuse
                     dm = source.getEntryFromSource(entryId, fetchReferences);
                     if (dm != null) {
-                        getEntryCache().put(entryId, dm);
+                        getOrCreateEntryCache().put(entryId, dm);
                         sizeCounter.inc();
                     }
                 } else {
                     hitsCounter.inc();
                 }
             } else {
-                dm = (DocumentModel) getEntryCacheWithoutReferences().get(entryId);
+                dm = (DocumentModel) getOrCreateEntryCacheWithoutReferences().get(entryId);
                 if (dm == null) {
                     // fetch the entry from the backend and cache it for later
                     // reuse
                     dm = source.getEntryFromSource(entryId, fetchReferences);
                     if (dm != null) {
-                        getEntryCacheWithoutReferences().put(entryId, dm);
+                        getOrCreateEntryCacheWithoutReferences().put(entryId, dm);
                     }
                 } else {
                     hitsCounter.inc();
@@ -152,8 +156,8 @@ public class DirectoryCache {
             synchronized (this) {
                 try {
                     for (String entryId : entryIds) {
-                        getEntryCache().invalidate(entryId);
-                        getEntryCacheWithoutReferences().invalidate(entryId);
+                        getOrCreateEntryCache().invalidate(entryId);
+                        getOrCreateEntryCacheWithoutReferences().invalidate(entryId);
                         sizeCounter.dec();
                         invalidationsCounter.inc();
                     }
@@ -175,8 +179,8 @@ public class DirectoryCache {
                     long count = sizeCounter.getCount();
                     sizeCounter.dec(count);
                     invalidationsCounter.inc(count);
-                    getEntryCache().invalidateAll();
-                    getEntryCacheWithoutReferences().invalidateAll();
+                    getOrCreateEntryCache().invalidateAll();
+                    getOrCreateEntryCacheWithoutReferences().invalidateAll();
                 } catch (IOException e) {
                     throw new DirectoryException(e);
                 }
@@ -184,26 +188,41 @@ public class DirectoryCache {
         }
     }
 
-    public void setEntryCacheName(String entryCacheName) {
-        this.entryCacheName = entryCacheName;
+    public void setEntryCacheName(String name) {
+        entryCacheName = name;
     }
 
-    public void setEntryCacheWithoutReferencesName(String entryCacheWithoutReferencesName) {
-        this.entryCacheWithoutReferencesName = entryCacheWithoutReferencesName;
+    public void setEntryCacheWithoutReferencesName(String name) {
+        entryCacheWithoutReferencesName = name;
     }
 
-    public Cache getEntryCache() {
+    public Cache getOrCreateEntryCache() {
         if (entryCache == null) {
-            entryCache = Framework.getService(CacheService.class).getCache(entryCacheName);
+            if (entryCacheName == null) {
+                entryCacheName = name;
+            }
+            entryCache = getOrCreateEntryCache(entryCacheName);
         }
         return entryCache;
     }
 
-    public Cache getEntryCacheWithoutReferences() {
+    Cache getOrCreateEntryCache(String name) {
+        CacheService caches = Framework.getService(CacheService.class);
+        Cache cache = caches.getCache(name);
+        if (cache == null) {
+            Framework.getService(CacheRegistry.class).addContribution(
+                    new CacheDescriptor(name));
+            cache = caches.getCache(name);
+        }
+        return cache;
+    }
 
+    public Cache getOrCreateEntryCacheWithoutReferences() {
         if (entryCacheWithoutReferences == null) {
-            entryCacheWithoutReferences = Framework.getService(CacheService.class).getCache(
-                    entryCacheWithoutReferencesName);
+            if (entryCacheWithoutReferencesName == null) {
+                entryCacheWithoutReferencesName = name + "-withoutref";
+            }
+            entryCacheWithoutReferences = getOrCreateEntryCache(entryCacheWithoutReferencesName);
         }
         return entryCacheWithoutReferences;
     }

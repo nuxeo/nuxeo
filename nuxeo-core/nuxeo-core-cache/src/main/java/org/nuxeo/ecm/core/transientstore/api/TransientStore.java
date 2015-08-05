@@ -20,6 +20,7 @@ package org.nuxeo.ecm.core.transientstore.api;
 import java.io.IOException;
 
 import org.nuxeo.common.annotation.Experimental;
+import org.nuxeo.ecm.core.transientstore.TransientStoreConfig;
 
 /**
  *
@@ -90,14 +91,18 @@ public interface TransientStore {
     int getStorageSizeMB();
 
 
+    /**
+     * Shutdown the store
+     *
+     */
     void shutdown();
 
     /**
-     * Initialize the store from the configuration
+     * Initialize the store
      *
      * @param config
      */
-    void init(TransientStoreConfig config);
+    void init();
 
 
 }

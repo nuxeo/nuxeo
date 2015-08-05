@@ -49,7 +49,8 @@ import com.google.inject.name.Names;
  */
 @Features({ ClientLoginFeature.class })
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", //
+@Deploy({
+        "org.nuxeo.ecm.directory.api", //
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.directory.types.contrib", //

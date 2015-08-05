@@ -23,33 +23,35 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Maxime Hilaire
  */
 @RunWith(FeaturesRunner.class)
-@Features({ CacheFeature.class, InMemoryCacheFeature.class })
+@Features({ CacheFeature.class })
+@LocalDeploy("org.nuxeo.ecm.core.test:inmemory-cache-config.xml")
 public class TestInMemoryCacheService {
 
     @Inject
-    @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME)
+    @Named("default")
     Cache defaultCache;
 
     @Inject
-    @Named(InMemoryCacheFeature.MAXSIZE_TEST_CACHE_NAME)
+    @Named("maxsize")
     Cache maxSizeCache;
 
-    @Test
-    public void getGuavaCache() {
-        InMemoryCacheImpl guavaCache = CacheFeature.unwrapImpl(InMemoryCacheImpl.class, defaultCache);
-        Assert.assertNotNull(guavaCache);
-    }
+    @Inject
+    CacheRegistry configs;
+
+    @Inject
+    CacheService caches;
+
 
     @Test
     public void maxSizeZero() throws IOException {
@@ -76,6 +78,15 @@ public class TestInMemoryCacheService {
         // Check that the oldest values have been evicted
         Assert.assertNull(defaultCache.get("key1"));
         Assert.assertNull(defaultCache.get("key2"));
+    }
+
+    @Test
+    @LocalDeploy("org.nuxeo.ecm.core.test:cache-backward-config.xml")
+    public void backwardCompatibility() throws IOException {
+        InMemoryCacheDescriptor config = (InMemoryCacheDescriptor)configs.getConfig("backward");
+        Assert.assertEquals("inmemory", config.type);
+        Assert.assertEquals(1000, config.maxSize);
+        Assert.assertEquals(1000, config.concurrencyLevel);
     }
 
     // protected class TestCacheConcurrency implements Runnable

@@ -161,7 +161,8 @@ public class RedisComponent extends DefaultComponent implements RedisAdmin {
             public Long call(Jedis jedis) {
                 List<String> keys = Arrays.asList(pattern);
                 List<String> args = Arrays.asList();
-                return (Long) jedis.evalsha(delsha, keys, args);
+                Long result = (Long) jedis.evalsha(delsha, keys, args);
+                return result;
             }
         });
     }

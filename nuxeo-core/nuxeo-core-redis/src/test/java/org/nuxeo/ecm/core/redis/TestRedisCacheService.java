@@ -17,18 +17,13 @@
 
 package org.nuxeo.ecm.core.redis;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
 import org.nuxeo.ecm.core.cache.CacheComplianceFixture;
-import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
 import org.nuxeo.runtime.test.runner.Features;
 
 /**
  * Unit test of cache implementation on top of redis since 6.0
  */
-@RunWith(ContributableFeaturesRunner.class)
 @Features({ RedisFeature.class })
-@SuiteClasses(CacheComplianceFixture.class)
-public class TestRedisCacheService {
+public class TestRedisCacheService extends CacheComplianceFixture {
 
 }

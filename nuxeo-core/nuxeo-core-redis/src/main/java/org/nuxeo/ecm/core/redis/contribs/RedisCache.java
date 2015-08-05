@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.cache.AbstractCache;
@@ -49,12 +48,13 @@ public class RedisCache extends AbstractCache {
 
     protected final RedisExecutor executor;
 
+
     protected final String namespace;
 
-    public RedisCache(CacheDescriptor desc) {
-        super(desc);
+    public RedisCache(CacheDescriptor config) {
+        super(config);
         executor = Framework.getService(RedisExecutor.class);
-        namespace = Framework.getService(RedisAdmin.class).namespace("cache", name);
+        namespace = Framework.getService(RedisAdmin.class).namespace("cache", config.getName());
     }
 
     protected String formatKey(String key) {
@@ -130,7 +130,7 @@ public class RedisCache extends AbstractCache {
                 byte[] bkey = bytes(formatKey(key));
                 jedis.set(bkey, serializeValue(value));
                 // Redis set in second ttl but descriptor set as mn
-                int ttlKey = ttl * 60;
+                int ttlKey = ((RedisCacheConfig)config).ttlInSeconds;
                 jedis.expire(bkey, ttlKey);
                 return null;
             }

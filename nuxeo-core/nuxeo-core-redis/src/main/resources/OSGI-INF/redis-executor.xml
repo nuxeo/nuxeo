@@ -50,5 +50,4 @@
     <object class="org.nuxeo.ecm.core.redis.RedisSentinelDescriptor" />
   </extension-point>
 
-
 </component>

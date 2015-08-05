@@ -124,10 +124,10 @@ public class SQLDirectoryDescriptor {
     private boolean remove = false;
 
     @XNode("cacheEntryName")
-    public String cacheEntryName = null;
+    public String cacheEntryName;
 
     @XNode("cacheEntryWithoutReferencesName")
-    public String cacheEntryWithoutReferencesName = null;
+    public String cacheEntryWithoutReferencesName;
 
     @XNodeList(value = "filters/staticFilter", type = SQLStaticFilter[].class, componentType = SQLStaticFilter.class)
     private SQLStaticFilter[] staticFilters;
@@ -315,7 +315,7 @@ public class SQLDirectoryDescriptor {
     }
 
     public void setDataFileName(String dataFile) {
-        this.dataFileName = dataFile;
+        dataFileName = dataFile;
     }
 
     public void setTableReferences(TableReference[] tableReferences) {
@@ -331,11 +331,11 @@ public class SQLDirectoryDescriptor {
     }
 
     public void setRemove(boolean delete) {
-        this.remove = delete;
+        remove = delete;
     }
 
     public boolean getRemove() {
-        return this.remove;
+        return remove;
     }
 
     public SubstringMatchType getSubstringMatchType() {
@@ -457,6 +457,7 @@ public class SQLDirectoryDescriptor {
         computeMultiTenantId = other.computeMultiTenantId;
     }
 
+    @Override
     public SQLDirectoryDescriptor clone() {
         SQLDirectoryDescriptor clone = new SQLDirectoryDescriptor();
         clone.name = name;

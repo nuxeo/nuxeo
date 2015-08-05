@@ -15,7 +15,7 @@
  *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
 
-package org.nuxeo.transientstore.test;
+package org.nuxeo.ecm.core.transientstore;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -44,21 +44,23 @@ import org.nuxeo.ecm.core.transientstore.api.TransientStoreService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features({ TransientStoreFeature.class })
+@LocalDeploy({ "org.nuxeo.ecm.core.test:transientstore-contrib.xml" })
 public class TransientStorageComplianceFixture {
 
     @Inject
     CoreSession coreSession;
 
+    @Inject
+    TransientStoreService tss;
+
     @Test
     public void verifyServiceDeclared() throws Exception {
-
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
-        assertNotNull(tss);
 
         TransientStore ts = tss.getStore("testStore");
         assertNotNull(ts);
@@ -86,7 +88,6 @@ public class TransientStorageComplianceFixture {
     @Test
     public void verifyStorage() throws Exception {
 
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
 
         long size = ((AbstractTransientStore)ts).getStorageSize();
@@ -153,7 +154,6 @@ public class TransientStorageComplianceFixture {
     @Test
     public void verifyDeleteAfterUse() throws Exception {
 
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("miniStore");
         ts.put(createEntry("1"));
 
@@ -171,13 +171,12 @@ public class TransientStorageComplianceFixture {
         ts.canDelete("1");
 
         se = ts.get("1");
-        assertNull(se);
+        assertNotNull(se);
     }
 
     @Test
     public void verifyDeleteOnGC() throws Exception {
 
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
         ts.put(createEntry("X"));
 
@@ -219,7 +218,6 @@ public class TransientStorageComplianceFixture {
     @Test
     public void verifyDeleteOnGCEvent() throws Exception {
 
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
         ts.put(createEntry("X"));
 
@@ -254,7 +252,6 @@ public class TransientStorageComplianceFixture {
     @Test
     public void verifyDeleteAfterUseGC() throws Exception {
 
-        TransientStoreService tss = Framework.getService(TransientStoreService.class);
         TransientStore ts = tss.getStore("testStore");
         ts.put(createEntry("XXX"));
 

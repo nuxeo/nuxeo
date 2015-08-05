@@ -18,34 +18,44 @@
 
 package org.nuxeo.ecm.core.cache;
 
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
-@Features(CacheFeature.class)
-@LocalDeploy("org.nuxeo.ecm.core.cache:inmemory-cache-config.xml")
-public class InMemoryCacheFeature extends SimpleFeature {
-
-    public static final String MAXSIZE_TEST_CACHE_NAME = "maxsize-test-cache";
+@Features(CoreFeature.class)
+@RepositoryConfig(init = DefaultRepositoryInit.class)
+@Deploy({ "org.nuxeo.ecm.core.cache" })
+public class CacheFeature extends SimpleFeature {
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        runner.getFeature(CacheFeature.class).enable();
+    public void configure(final FeaturesRunner runner, Binder binder) {
+        for (String name : Framework.getService(CacheRegistry.class).configs.keySet()) {
+            binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(new Provider<Cache>() {
+
+                @Override
+                public Cache get() {
+                    return Framework.getService(CacheService.class).getCache(name);
+                }
+
+            });
+        }
     }
 
-    @Override
-    public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(Cache.class).annotatedWith(Names.named(MAXSIZE_TEST_CACHE_NAME)).toProvider(new Provider<Cache>() {
+    protected void bindCache(Binder binder, final String name) {
+        binder.bind(Cache.class).annotatedWith(Names.named(name)).toProvider(new Provider<Cache>() {
 
             @Override
             public Cache get() {
-                return Framework.getService(CacheService.class).getCache(MAXSIZE_TEST_CACHE_NAME);
+                return Framework.getService(CacheService.class).getCache(name);
             }
 
         });

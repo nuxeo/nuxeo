@@ -19,7 +19,6 @@ package org.nuxeo.ecm.core.transientstore.api;
 import java.io.IOException;
 
 /**
- *
  * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  * @since 7.2
  */

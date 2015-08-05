@@ -1,5 +1,5 @@
-/*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+/*******************************************************************************
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -10,92 +10,68 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
- *
- * Contributors:
- *     Maxime Hilaire
- *
- */
+ ******************************************************************************/
 package org.nuxeo.ecm.core.cache;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.common.xmap.Context;
+import org.nuxeo.common.xmap.annotation.XContext;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.runtime.api.Framework;
+import org.w3c.dom.Element;
 
-/**
- * Descriptor of cache contrib
- *
- * @since 6.0
- */
 @XObject("cache")
 public class CacheDescriptor {
+
+    @XContext()
+    Context context;
+
+    @XNode()
+    Element document;
 
     @XNode("@name")
     public String name;
 
     @XNode("@remove")
-    public boolean remove = false;
+    boolean remove = false;
+
+    @XNode("@type")
+    String type;
+
+    @XNode(value="ttl",context="nuxeo.cache.ttl")
+    public int ttl;
 
     @XNode("@class")
-    protected Class<? extends Cache> implClass = InMemoryCacheImpl.class;
-
-    @XNode("ttl")
-    protected int ttl = 1;
+    @Deprecated
+    void injectFactory(Class<? extends Cache> clazz) {
+        type = Framework.getService(CacheFactoryRegistry.class).getType(clazz);
+    }
 
     @XNodeMap(value = "option", key = "@name", type = HashMap.class, componentType = String.class)
-    protected Map<String, String> options = new HashMap<String, String>();
-
-    protected CacheAttributesChecker cacheChecker;
-
-    public CacheDescriptor() {
-        super();
+    @Deprecated
+    void injectOptions(Map<String, String> options) {
+        for (Map.Entry<String, String> option : options.entrySet()) {
+            injectOption(option.getKey(), option.getValue());
+        }
     }
 
-    protected CacheDescriptor(String name, Class<? extends Cache> implClass, Integer ttl, Map<String, String> options) {
-        this.name = name;
-        this.implClass = implClass;
-        this.ttl = ttl;
-        this.options.putAll(options);
+    protected void injectOption(String name, String option) {
+
     }
 
-    @Override
-    public CacheDescriptor clone() {
-        return new CacheDescriptor(name, implClass, ttl, options);
+    public String getName() {
+        return name;
     }
 
-    public Class<?> getImplClass() {
-        return implClass;
-    }
-
-    public void setImplClass(Class<Cache> implClass) {
-        this.implClass = implClass;
-    }
+    transient Cache cache;
 
     @Override
     public String toString() {
-        return name + ": " + implClass + ": " + ttl + ": " + options;
-    }
-
-    public void start() {
-        try {
-            cacheChecker = new CacheAttributesChecker(this);
-            cacheChecker.setCache(implClass.getConstructor(CacheDescriptor.class).newInstance(this));
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-                | NoSuchMethodException | SecurityException e) {
-            throw new NuxeoException("Failed to instantiate class " + implClass, e);
-        }
-    }
-
-    public void stop() {
-        if (cacheChecker == null) {
-            return;
-        }
-        cacheChecker.cache = null;
-        cacheChecker = null;
+        return name + ":type=" + (type != null ? type : "default") + ",ttl=" + ttl;
     }
 
 }

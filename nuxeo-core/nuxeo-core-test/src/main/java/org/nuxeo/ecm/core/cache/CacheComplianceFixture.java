@@ -37,15 +37,8 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class CacheComplianceFixture {
 
     @Inject
-    @Named(CacheFeature.DEFAULT_TEST_CACHE_NAME)
+    @Named("default")
     Cache defaultCache;
-
-    @Test
-    public void getValue() throws IOException {
-        String cachedVal = (String) defaultCache.get(CacheFeature.KEY);
-        Assert.assertTrue(defaultCache.hasEntry(CacheFeature.KEY));
-        Assert.assertEquals(CacheFeature.VAL, cachedVal);
-    }
 
     @Test
     public void keyNotExist() throws IOException {
@@ -55,10 +48,8 @@ public class CacheComplianceFixture {
 
     @Test
     public void putUpdateGet() throws IOException {
-        String val2 = "val2";
-        defaultCache.put(CacheFeature.KEY, val2);
-        val2 = (String) defaultCache.get(CacheFeature.KEY);
-        Assert.assertEquals("val2", val2);
+        defaultCache.put("key", "val2");
+        Assert.assertEquals("val2", defaultCache.get("key"));
     }
 
     @Test
@@ -82,27 +73,34 @@ public class CacheComplianceFixture {
     @Test
     @Ignore
     public void ttlExpire() throws InterruptedException, IOException {
+        defaultCache.put("key", "value");
         // Default config test set the TTL to 1mn, so wait 1mn and 1s
         Thread.sleep(61000);
-        String expiredVal = (String) defaultCache.get(CacheFeature.KEY);
+        String expiredVal = (String) defaultCache.get("key");
         Assert.assertNull(expiredVal);
     }
 
     @Test
     public void invalidateKey() throws IOException {
-        Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
-        defaultCache.invalidate(CacheFeature.KEY);
-        Assert.assertNull(defaultCache.get(CacheFeature.KEY));
+        defaultCache.put("key","value");
+        Assert.assertNotNull(defaultCache.get("key"));
+        defaultCache.invalidate("key");
+        Assert.assertNull(defaultCache.get("key"));
     }
 
     @Test
     public void invalidateAll() throws IOException {
-        Assert.assertNotNull(defaultCache.get(CacheFeature.KEY));
+        defaultCache.put("key","value");
+        Assert.assertNotNull(defaultCache.get("key"));
         defaultCache.put("key2", "val2");
         Assert.assertNotNull(defaultCache.get("key2"));
         defaultCache.invalidateAll();
-        Assert.assertNull(defaultCache.get(CacheFeature.KEY));
+        Assert.assertNull(defaultCache.get("key"));
         Assert.assertNull(defaultCache.get("key2"));
     }
 
+    @Test
+    public void invalidateEmptyAll() throws IOException {
+        defaultCache.invalidateAll();
+    }
 }

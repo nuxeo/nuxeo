@@ -19,8 +19,6 @@ package org.nuxeo.ecm.core.transientstore;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.nuxeo.ecm.core.cache.Cache;
-import org.nuxeo.ecm.core.cache.InMemoryCacheImpl;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 
 /**
@@ -33,7 +31,8 @@ public class SimpleTransientStore extends AbstractTransientStore {
 
     protected AtomicLong storageSize = new AtomicLong(0);
 
-    public SimpleTransientStore() {
+    public SimpleTransientStore(TransientStoreConfig config) {
+        super(config);
     }
 
     @Override
@@ -57,8 +56,9 @@ public class SimpleTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    public Class<? extends Cache> getCacheImplClass() {
-        return InMemoryCacheImpl.class;
+    protected String getCacheType() {
+        return null;
     }
+
 
 }

@@ -14,22 +14,15 @@
  * Contributors:
  *     <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
  */
-package org.nuxeo.transientstore.test;
+package org.nuxeo.ecm.core.transientstore;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
-import org.nuxeo.runtime.test.runner.ContributableFeaturesRunner;
+import org.nuxeo.ecm.core.cache.CacheFeature;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.SimpleFeature;
 
-/**
- * Run the test suite against the InMemory Implementation
- *
- * @author <a href="mailto:tdelprat@nuxeo.com">Tiry</a>
- * @since 7.2
- */
-@RunWith(ContributableFeaturesRunner.class)
-@Features({InMemoryTransientStoreFeature.class})
-@SuiteClasses(TransientStorageComplianceFixture.class)
-public class TestInMemoryTransientStorage {
+
+@Features({CoreFeature.class, CacheFeature.class})
+public class TransientStoreFeature extends SimpleFeature {
 
 }

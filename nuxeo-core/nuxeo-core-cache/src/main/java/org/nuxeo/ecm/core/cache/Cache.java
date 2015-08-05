@@ -36,6 +36,14 @@ public interface Cache {
     public String getName();
 
     /**
+     * Get configuration
+     *
+     * @since 7.4
+     * @return
+     */
+    public CacheDescriptor getConfig();
+
+    /**
      * Get method to retrieve value from cache Must not raise exception if the key is null, but return null
      *
      * @param key the string key

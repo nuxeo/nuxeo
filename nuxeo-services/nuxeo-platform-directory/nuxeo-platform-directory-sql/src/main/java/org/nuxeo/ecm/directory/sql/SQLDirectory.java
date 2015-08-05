@@ -134,6 +134,12 @@ public class SQLDirectory extends AbstractDirectory {
         addReferences(config.getTableReferences());
 
         // cache parameterization
+        if (config.cacheEntryName == null) {
+            config.cacheEntryName = config.name;
+        }
+        if (config.cacheEntryWithoutReferencesName == null) {
+            config.cacheEntryName = config.name + "without-refnames";
+        }
         cache.setEntryCacheName(config.cacheEntryName);
         cache.setEntryCacheWithoutReferencesName(config.cacheEntryWithoutReferencesName);
 

@@ -21,11 +21,11 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.cache.Cache;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
 import org.nuxeo.ecm.core.transientstore.AbstractTransientStore;
+import org.nuxeo.ecm.core.transientstore.TransientStoreConfig;
 import org.nuxeo.ecm.core.transientstore.api.TransientStore;
 import org.nuxeo.runtime.api.Framework;
 
@@ -40,24 +40,19 @@ import redis.clients.jedis.Jedis;
 
 public class RedisTransientStore extends AbstractTransientStore {
 
-    protected RedisExecutor redisExecutor;
-
     protected String namespace;
-
-    protected RedisAdmin redisAdmin;
 
     protected Log log = LogFactory.getLog(RedisTransientStore.class);
 
-    public RedisTransientStore() {
-        redisExecutor = Framework.getService(RedisExecutor.class);
-        redisAdmin = Framework.getService(RedisAdmin.class);
-        namespace = redisAdmin.namespace("transientCache", getConfig().getName(), "size");
+    public RedisTransientStore(TransientStoreConfig config) {
+        super(config);
+        namespace = Framework.getService(RedisAdmin.class).namespace("transientCache", getConfig().getName(), "size");
     }
 
     @Override
     protected void incrementStorageSize(final long size) {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
+            Framework.getService(RedisExecutor.class).execute(new RedisCallable<Void>() {
                 @Override
                 public Void call(Jedis jedis) throws IOException {
                     jedis.incrBy(namespace, size);
@@ -72,7 +67,7 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     protected void decrementStorageSize(final long size) {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
+            Framework.getService(RedisExecutor.class).execute(new RedisCallable<Void>() {
                 @Override
                 public Void call(Jedis jedis) throws IOException {
                     jedis.decrBy(namespace, size);
@@ -87,7 +82,7 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     public long getStorageSize() {
         try {
-            return redisExecutor.execute(new RedisCallable<Long>() {
+            return Framework.getService(RedisExecutor.class).execute(new RedisCallable<Long>() {
                 @Override
                 public Long call(Jedis jedis) throws IOException {
                     String value = jedis.get(namespace);
@@ -103,10 +98,10 @@ public class RedisTransientStore extends AbstractTransientStore {
     @Override
     protected void setStorageSize(final long newSize) {
         try {
-            redisExecutor.execute(new RedisCallable<Void>() {
+            Framework.getService(RedisExecutor.class).execute(new RedisCallable<Void>() {
                 @Override
                 public Void call(Jedis jedis) throws IOException {
-                    jedis.set(namespace, ""+newSize);
+                    jedis.set(namespace, "" + newSize);
                     return null;
                 }
             });
@@ -116,8 +111,8 @@ public class RedisTransientStore extends AbstractTransientStore {
     }
 
     @Override
-    public Class<? extends Cache> getCacheImplClass() {
-        return RedisCache.class;
+    protected String getCacheType() {
+        return "redis";
     }
 
 }

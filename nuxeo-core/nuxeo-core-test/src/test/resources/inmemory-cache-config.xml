@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.core.cache.testsConfig">
+
+
+	<extension target="org.nuxeo.ecm.core.cache.CacheService"
+		point="caches">
+
+		<parameters>
+			<override name="nuxeo.cache.ttl">1</override>
+			<override name="nuxeo.cache.maxsize">3</override>
+			<override name="nuxeo.cache.concurrencylevel">1</override>
+		</parameters>
+
+		<cache name="default"/>
+
+		<cache name="maxsize">
+			<maxSize>0</maxSize>
+		</cache>
+
+	</extension>
+
+</component>

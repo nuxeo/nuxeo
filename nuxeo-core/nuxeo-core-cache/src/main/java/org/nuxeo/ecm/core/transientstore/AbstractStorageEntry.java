@@ -111,23 +111,23 @@ public abstract class AbstractStorageEntry implements StorageEntry {
 
     @Override
     public void persist(File directory) throws IOException {
-        lastStorageSize = getSize();
-        if (hasBlobs) {
-            cachedBlobs = new ArrayList<Map<String, String>>();
-            for (Blob blob : blobs) {
-                Map<String, String> cached = new HashMap<String, String>();
-                File cachedFile = new File(directory,
-                        UUID.randomUUID().toString());
-                blob.transferTo(cachedFile);
-                cachedFile.deleteOnExit();
-                cached.put("file", cachedFile.getAbsolutePath());
-                cached.put("filename", blob.getFilename());
-                cached.put("encoding", blob.getEncoding());
-                cached.put("mimetype", blob.getMimeType());
-                cachedBlobs.add(cached);
-            }
-            blobs = null;
+        if (!hasBlobs) {
+            return;
         }
+        long size = getSize();
+        cachedBlobs = new ArrayList<Map<String, String>>();
+        for (Blob blob : blobs) {
+            Map<String, String> cached = new HashMap<String, String>();
+            File cachedFile = new File(directory, UUID.randomUUID().toString());
+            blob.transferTo(cachedFile);
+            cached.put("file", cachedFile.getAbsolutePath());
+            cached.put("filename", blob.getFilename());
+            cached.put("encoding", blob.getEncoding());
+            cached.put("mimetype", blob.getMimeType());
+            cachedBlobs.add(cached);
+        }
+        blobs = null;
+        lastStorageSize = size;
     }
 
     @Override
