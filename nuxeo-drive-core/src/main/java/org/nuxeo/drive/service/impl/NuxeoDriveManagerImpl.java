@@ -446,12 +446,12 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         RepositoryManager repositoryManager = Framework.getLocalService(RepositoryManager.class);
         for (String repositoryName : repositoryManager.getRepositoryNames()) {
             CoreSession session = fsManager.getSession(repositoryName, principal);
-            syncRoots.putAll(queryAndFecthSynchronizationRoots(session, query));
+            syncRoots.putAll(queryAndFetchSynchronizationRoots(session, query));
         }
         return syncRoots;
     }
 
-    protected Map<String, SynchronizationRoots> queryAndFecthSynchronizationRoots(CoreSession session, String query)
+    protected Map<String, SynchronizationRoots> queryAndFetchSynchronizationRoots(CoreSession session, String query)
             throws ClientException {
         Map<String, SynchronizationRoots> syncRoots = new HashMap<String, SynchronizationRoots>();
         Set<IdRef> references = new LinkedHashSet<IdRef>();
