@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.PathRef;
@@ -61,6 +62,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.audit.service.NXAuditEventsService;
 import org.nuxeo.ecm.platform.ec.notification.NotificationConstants;
@@ -457,8 +459,23 @@ public class NuxeoDriveManagerImpl extends DefaultComponent implements NuxeoDriv
         IterableQueryResult results = session.queryAndFetch(query, NXQL.NXQL);
         for (Map<String, Serializable> result : results) {
             IdRef docRef = new IdRef(result.get("ecm:uuid").toString());
-            references.add(docRef);
-            paths.add(session.getDocument(docRef).getPathAsString());
+            try {
+                DocumentModel doc = session.getDocument(docRef);
+                references.add(docRef);
+                paths.add(doc.getPathAsString());
+            } catch (ClientException e) {
+                if (e.getCause() instanceof NoSuchDocumentException) {
+                    log.warn(String.format(
+                            "Document %s not found, not adding it to the list of synchronization roots for user %s.",
+                            docRef, session.getPrincipal().getName()));
+                } else if (e.getCause() instanceof DocumentSecurityException) {
+                    log.warn(String.format(
+                            "User %s cannot access document %s, not adding it to the list of synchronization roots.",
+                            session.getPrincipal().getName(), docRef));
+                } else {
+                    throw e;
+                }
+            }
         }
         results.close();
         SynchronizationRoots repoSyncRoots = new SynchronizationRoots(session.getRepositoryName(), paths, references);
