@@ -243,6 +243,10 @@ public class UserRegistrationConfiguration {
             this.validationRelUrl = other.validationRelUrl;
         }
 
+        if (!StringUtils.isEmpty(other.enterPasswordUrl)) {
+            this.enterPasswordUrl = other.enterPasswordUrl;
+        }
+
         if (!StringUtils.isEmpty(other.invitationLayout)) {
             this.invitationLayout = other.invitationLayout;
         }
