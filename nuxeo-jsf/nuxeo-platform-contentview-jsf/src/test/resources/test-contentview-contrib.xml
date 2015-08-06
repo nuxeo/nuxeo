@@ -14,8 +14,8 @@
         <property name="checkQueryCache">true</property>
         <pattern>
           SELECT * FROM Document WHERE ecm:parentId = ? AND
-          ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'
-          AND ecm:currentLifeCycleState != 'deleted' AND ecm:parentId != ?
+          ecm:isCheckedInVersion = ? AND ecm:mixinType != 'HiddenInNavigation'
+          AND ecm:parentId != ? AND ecm:currentLifeCycleState NOT IN ?
         </pattern>
         <sort column="dc:title" ascending="true" />
         <pageSize>2</pageSize>
@@ -26,7 +26,9 @@
           <option>20</option>
         </pageSizeOptions>
         <parameter>#{currentDocument.id}</parameter>
+        <parameter>#{booleanParam}</parameter>
         <parameter>#{dummy.param}</parameter>
+        <parameter>#{listParam}</parameter>
       </coreQueryPageProvider>
 
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -105,7 +107,9 @@
         <property name="coreSession">#{documentManager}</property>
         <property name="checkQueryCache">true</property>
         <parameter>#{currentDocument.id}</parameter>
+        <parameter>#{booleanParam}</parameter>
         <parameter>#{dummy.param}</parameter>
+        <parameter>#{listParam}</parameter>
       </pageProvider>
 
       <cacheKey>#{currentDocument.id}</cacheKey>
@@ -249,9 +253,8 @@
     <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_PP">
       <pattern>
         SELECT * FROM Document WHERE ecm:parentId = ? AND
-        ecm:isCheckedInVersion
-        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
-        ecm:currentLifeCycleState != 'deleted' AND ecm:parentId != ?
+        ecm:isCheckedInVersion = ? AND ecm:mixinType != 'HiddenInNavigation'
+        AND ecm:parentId != ? AND ecm:currentLifeCycleState NOT IN ?
       </pattern>
       <sort column="dc:title" ascending="true" />
       <pageSize>2</pageSize>

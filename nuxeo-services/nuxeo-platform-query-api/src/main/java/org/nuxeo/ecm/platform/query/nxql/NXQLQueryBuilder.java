@@ -214,7 +214,7 @@ public class NXQLQueryBuilder {
                     if (quoteParameters) {
                         pattern = pattern.replaceAll(key, "'" + parameter + "'");
                     } else {
-                        pattern = pattern.replaceAll(key, (String) parameter);
+                        pattern = pattern.replaceAll(key, parameter != null ? parameter.toString() : null);
                     }
                 }
             }
@@ -348,7 +348,7 @@ public class NXQLQueryBuilder {
         String operatorSchema = predicateDescriptor.getOperatorSchema();
         String parameter = predicateDescriptor.getParameter();
         String hint = predicateDescriptor.getHint();
-        if (hint != null && ! hint.isEmpty()) {
+        if (hint != null && !hint.isEmpty()) {
             parameter = String.format("/*+%s */ %s", hint.trim(), parameter);
         }
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
