@@ -1464,6 +1464,17 @@ public class TestSQLRepositoryQuery {
         folder1.setACP(acp, true);
         session.save();
 
+        // update the begin and end dates from the one being stored in the DB to correctly match them after
+        ACP updatedACP = session.getACP(folder1.getRef());
+        ACL updatedACL = updatedACP.getACL(ACL.LOCAL_ACL);
+        for (ACE ace : updatedACL) {
+            if ("leela".equals(ace.getUsername())) {
+                begin = ace.getBegin();
+                end = ace.getEnd();
+                break;
+            }
+        }
+
         IterableQueryResult res;
         // simple query
         res = session.queryAndFetch(

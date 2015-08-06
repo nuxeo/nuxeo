@@ -83,12 +83,14 @@ public class TestPermissionListener {
             DocumentModelList entries = session.query(filter);
             assertEquals(2, entries.size());
 
-            DocumentModel entry = entries.get(0);
+            String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, fryACE.getId());
+            DocumentModel entry = session.getEntry(id);
             assertEquals(doc.getRepositoryName(), entry.getPropertyValue("aceinfo:repositoryName"));
             assertEquals("local", entry.getPropertyValue("aceinfo:aclName"));
             assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
 
-            entry = entries.get(1);
+            id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, leelaACE.getId());
+            entry = session.getEntry(id);
             assertEquals(doc.getRepositoryName(), entry.getPropertyValue("aceinfo:repositoryName"));
             assertEquals("local", entry.getPropertyValue("aceinfo:aclName"));
             assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
@@ -110,7 +112,6 @@ public class TestPermissionListener {
         acp.addACE(ACL.LOCAL_ACL, fryACE, false);
         acp.addACE(ACL.LOCAL_ACL, leelaACE, false);
         doc.setACP(acp, true);
-
 
         acp = doc.getACP();
         acp.removeACE(ACL.LOCAL_ACL, leelaACE);
@@ -161,12 +162,14 @@ public class TestPermissionListener {
             DocumentModelList entries = session.query(filter);
             assertEquals(2, entries.size());
 
-            DocumentModel entry = entries.get(0);
+            String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, fryACE.getId());
+            DocumentModel entry = session.getEntry(id);
             assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
 
-            entry = entries.get(1);
+            id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, leelaACE.getId());
+            entry = session.getEntry(id);
             assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertNull(entry.getPropertyValue("aceinfo:comment"));
@@ -194,12 +197,14 @@ public class TestPermissionListener {
             DocumentModelList entries = dirSession.query(filter);
             assertEquals(2, entries.size());
 
-            DocumentModel entry = entries.get(0);
+            String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, fryACE.getId());
+            DocumentModel entry = dirSession.getEntry(id);
             assertEquals(fryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
 
-            entry = entries.get(1);
+            id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, leelaACE.getId());
+            entry = dirSession.getEntry(id);
             assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertNull(entry.getPropertyValue("aceinfo:comment"));
@@ -214,12 +219,14 @@ public class TestPermissionListener {
             DocumentModelList entries = dirSession.query(filter);
             assertEquals(2, entries.size());
 
-            DocumentModel entry = entries.get(0);
+            String id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, newFryACE.getId());
+            DocumentModel entry = dirSession.getEntry(id);
             assertEquals(newFryACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertTrue((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertEquals("fry comment", entry.getPropertyValue("aceinfo:comment"));
 
-            entry = entries.get(1);
+            id = PermissionHelper.computeDirectoryId(doc, ACL.LOCAL_ACL, leelaACE.getId());
+            entry = dirSession.getEntry(id);
             assertEquals(leelaACE.getId(), entry.getPropertyValue("aceinfo:aceId"));
             assertFalse((Boolean) entry.getPropertyValue("aceinfo:notify"));
             assertNull(entry.getPropertyValue("aceinfo:comment"));
