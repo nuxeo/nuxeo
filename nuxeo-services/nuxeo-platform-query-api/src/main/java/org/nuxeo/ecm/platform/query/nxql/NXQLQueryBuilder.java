@@ -108,8 +108,7 @@ public class NXQLQueryBuilder {
         return queryBuilder.toString().trim();
     }
 
-    public static String getQueryElement(DocumentModel model, WhereClauseDefinition whereClause, Object[] params)
-            {
+    public static String getQueryElement(DocumentModel model, WhereClauseDefinition whereClause, Object[] params) {
         List<String> elements = new ArrayList<String>();
         PredicateDefinition[] predicates = whereClause.getPredicates();
         if (predicates != null) {
@@ -213,7 +212,7 @@ public class NXQLQueryBuilder {
                     if (quoteParameters) {
                         pattern = pattern.replaceAll(key, "'" + parameter + "'");
                     } else {
-                        pattern = pattern.replaceAll(key, (String) parameter);
+                        pattern = pattern.replaceAll(key, parameter != null ? parameter.toString() : null);
                     }
                 }
             }
@@ -305,8 +304,7 @@ public class NXQLQueryBuilder {
         }
     }
 
-    public static String getQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor, Escaper escaper)
-            {
+    public static String getQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor, Escaper escaper) {
         String type = predicateDescriptor.getType();
         if (PredicateDefinition.ATOMIC_PREDICATE.equals(type)) {
             return atomicQueryElement(model, predicateDescriptor, escaper);
@@ -317,8 +315,7 @@ public class NXQLQueryBuilder {
         throw new NuxeoException("Unknown predicate type: " + type);
     }
 
-    protected static String subClauseQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor)
-            {
+    protected static String subClauseQueryElement(DocumentModel model, PredicateDefinition predicateDescriptor) {
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
         if (values == null || values.length != 1) {
             throw new NuxeoException("subClause predicate needs exactly one field");
@@ -347,7 +344,7 @@ public class NXQLQueryBuilder {
         String operatorSchema = predicateDescriptor.getOperatorSchema();
         String parameter = predicateDescriptor.getParameter();
         String hint = predicateDescriptor.getHint();
-        if (hint != null && ! hint.isEmpty()) {
+        if (hint != null && !hint.isEmpty()) {
             parameter = String.format("/*+%s */ %s", hint.trim(), parameter);
         }
         PredicateFieldDefinition[] values = predicateDescriptor.getValues();
@@ -559,8 +556,7 @@ public class NXQLQueryBuilder {
         }
     }
 
-    public static String getFieldType(DocumentModel model, PredicateFieldDefinition fieldDescriptor)
-            {
+    public static String getFieldType(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         String xpath = fieldDescriptor.getXpath();
         String schema = fieldDescriptor.getSchema();
         String name = fieldDescriptor.getName();
@@ -623,8 +619,7 @@ public class NXQLQueryBuilder {
         return null;
     }
 
-    public static String getStringValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor)
-            {
+    public static String getStringValue(DocumentModel model, PredicateFieldDefinition fieldDescriptor) {
         Object rawValue = getRawValue(model, fieldDescriptor);
         if (rawValue == null) {
             return null;

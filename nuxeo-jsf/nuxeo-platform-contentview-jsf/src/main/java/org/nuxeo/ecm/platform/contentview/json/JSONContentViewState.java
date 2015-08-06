@@ -25,6 +25,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import java.util.List;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
+import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
@@ -39,6 +41,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.query.sql.model.Literal;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayout;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewLayoutImpl;
 import org.nuxeo.ecm.platform.contentview.jsf.ContentViewState;
@@ -63,8 +66,7 @@ public class JSONContentViewState {
      * @param encode if true, the resulting String will be zipped and encoded in Base-64 format.
      * @throws UnsupportedEncodingException
      */
-    public static String toJSON(ContentViewState state, boolean encode) throws
-            UnsupportedEncodingException {
+    public static String toJSON(ContentViewState state, boolean encode) throws UnsupportedEncodingException {
         if (state == null) {
             return null;
         }
@@ -82,16 +84,21 @@ public class JSONContentViewState {
         JSONArray jsonQueryParams = new JSONArray();
         Object[] queryParams = state.getQueryParameters();
         if (queryParams != null) {
-            // serialize to String before
-            List<String> stringParams = new ArrayList<String>();
+            // NXP-10347 + NXP-17544: serialize to String all params that will be serialized to String by
+            // NXQLQueryBuilder anyway, for consistency
+            List<Object> serParams = new ArrayList<Object>();
             for (Object queryParam : queryParams) {
                 if (queryParam == null) {
-                    stringParams.add(null);
+                    serParams.add(null);
+                } else if (queryParam instanceof Object[] || queryParam instanceof Collection
+                        || queryParam instanceof Boolean || queryParam instanceof Number
+                        || queryParam instanceof Literal) {
+                    serParams.add(queryParam);
                 } else {
-                    stringParams.add(queryParam.toString());
+                    serParams.add(queryParam.toString());
                 }
             }
-            jsonQueryParams.addAll(stringParams);
+            jsonQueryParams.addAll(serParams);
         }
         jsonObject.element("queryParameters", jsonQueryParams);
 
@@ -159,11 +166,16 @@ public class JSONContentViewState {
         state.setCurrentPage(Long.valueOf(jsonObject.optLong("currentPage", -1)));
 
         JSONArray jsonQueryParams = jsonObject.getJSONArray("queryParameters");
-
         if (jsonQueryParams != null && !jsonQueryParams.isEmpty()) {
             List<Object> queryParams = new ArrayList<Object>();
             for (Object item : jsonQueryParams) {
-                queryParams.add(item);
+                if (item instanceof JSONNull) {
+                    queryParams.add(null);
+                } else if (item instanceof JSONArray) {
+                    queryParams.add(JSONArray.toCollection((JSONArray) item));
+                } else {
+                    queryParams.add(item);
+                }
             }
             state.setQueryParameters(queryParams.toArray(new Object[queryParams.size()]));
         }

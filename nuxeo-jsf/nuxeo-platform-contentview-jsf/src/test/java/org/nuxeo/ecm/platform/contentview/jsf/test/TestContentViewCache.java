@@ -16,11 +16,8 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import javax.faces.context.FacesContext;
@@ -47,6 +44,11 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @author Anahide Tchertchian
  */
@@ -71,11 +73,19 @@ public class TestContentViewCache {
 
     DocumentModel container2;
 
+    String dummyParam = UUID.randomUUID().toString();
+
+    Boolean booleanParam = Boolean.FALSE;
+
+    List<String> listParam = Arrays.asList(new String[] { "deleted", "validated" });
+
     @Before
     public void setUp() {
         // set mock faces context for needed properties resolution
         facesContext = new MockFacesContext();
-        facesContext.mapExpression("#{dummy.param}", UUID.randomUUID().toString());
+        facesContext.mapExpression("#{dummy.param}", dummyParam);
+        facesContext.mapExpression("#{booleanParam}", booleanParam);
+        facesContext.mapExpression("#{listParam}", listParam);
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
 

@@ -16,13 +16,6 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -66,6 +59,14 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assume.assumeTrue;
+
 /**
  * @author Anahide Tchertchian
  */
@@ -94,7 +95,11 @@ public class TestDefaultPageProviders {
 
     DocumentModel searchDocument;
 
-    private String dummyParam = UUID.randomUUID().toString();
+    String dummyParam = UUID.randomUUID().toString();
+
+    Boolean booleanParam = Boolean.FALSE;
+
+    List<String> listParam = Arrays.asList(new String[] { "deleted", "validated" });
 
     @Before
     public void setUp() throws Exception {
@@ -118,6 +123,8 @@ public class TestDefaultPageProviders {
         facesContext.mapVariable("documentManager", session);
         facesContext.mapVariable("searchDocument", searchDocument);
         facesContext.mapVariable("currentDocument", rootDoc);
+        facesContext.mapVariable("booleanParam", booleanParam);
+        facesContext.mapVariable("listParam", listParam);
         facesContext.setCurrent();
         assertNotNull(FacesContext.getCurrentInstance());
 
@@ -183,7 +190,7 @@ public class TestDefaultPageProviders {
         assertEquals(parentIdParam, contentView.getCacheKey());
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(
-                parentIdParam, dummyParam);
+                parentIdParam, booleanParam, dummyParam, listParam);
         checkCoreQuery(parentIdParam, pp);
 
         // check page size options
@@ -214,7 +221,7 @@ public class TestDefaultPageProviders {
         assertEquals(parentIdParam, contentView.getCacheKey());
 
         PageProvider<DocumentModel> pp = (PageProvider<DocumentModel>) contentView.getPageProviderWithParams(
-                parentIdParam, dummyParam);
+                parentIdParam, booleanParam, dummyParam, listParam);
         checkCoreQuery(parentIdParam, pp);
 
         // check page size options
@@ -254,10 +261,10 @@ public class TestDefaultPageProviders {
 
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
-        assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
-                        + " AND ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:currentLifeCycleState != 'deleted'"
-                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title", parentIdParam, dummyParam),
+        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
+                + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -273,10 +280,10 @@ public class TestDefaultPageProviders {
         pp.nextPage();
         docs = pp.getCurrentPage();
 
-        assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
-                        + " AND ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:currentLifeCycleState != 'deleted'"
-                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title", parentIdParam, dummyParam),
+        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
+                + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -319,7 +326,7 @@ public class TestDefaultPageProviders {
         facesContext.mapExpression("#{dummy.param}", UUID.randomUUID().toString());
         PageProvider<DocumentModel> pp2 = (PageProvider<DocumentModel>) contentView.getPageProvider();
         assertTrue(!pp2.equals(pp));
-        assertTrue(!pp2.getParameters()[1].equals(pp.getParameters()[1]));
+        assertTrue(!pp2.getParameters()[2].equals(pp.getParameters()[2]));
     }
 
     @SuppressWarnings("unchecked")
@@ -345,10 +352,10 @@ public class TestDefaultPageProviders {
 
         // check query
         assertTrue(pp instanceof CoreQueryDocumentPageProvider);
-        assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
-                        + " AND ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:currentLifeCycleState != 'deleted'"
-                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title", parentIdParam, dummyParam),
+        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
+                + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -364,10 +371,10 @@ public class TestDefaultPageProviders {
         pp.nextPage();
         docs = pp.getCurrentPage();
 
-        assertEquals(
-                String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'" + " AND ecm:isCheckedInVersion = 0"
-                        + " AND ecm:mixinType != 'HiddenInNavigation'" + " AND ecm:currentLifeCycleState != 'deleted'"
-                        + " AND ecm:parentId != '%s'" + " ORDER BY dc:title", parentIdParam, dummyParam),
+        assertEquals(String.format("SELECT * FROM Document WHERE ecm:parentId = '%s'"
+                + " AND ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation'"
+                + " AND ecm:parentId != '%s' AND ecm:currentLifeCycleState NOT IN ('deleted', 'validated')"
+                + " ORDER BY dc:title", parentIdParam, dummyParam),
                 ((CoreQueryDocumentPageProvider) pp).getCurrentQuery());
 
         assertEquals(5, pp.getResultsCount());
@@ -401,7 +408,7 @@ public class TestDefaultPageProviders {
         assertEquals(parentIdParam, contentView.getCacheKey());
 
         CoreQueryDocumentPageProvider pp = (CoreQueryDocumentPageProvider) contentView.getPageProviderWithParams(
-                parentIdParam, dummyParam);
+                parentIdParam, booleanParam, dummyParam, listParam);
         pp.setMaxResults(2);
         assertEquals(2, pp.getPageSize());
 
@@ -587,8 +594,9 @@ public class TestDefaultPageProviders {
 
         assertEquals(-1, pp.getResultsCount());
         assertNotNull(pp.getError());
-        assertEquals("Failed to execute query: NXQL: SELECT dc:title FROM Document WHERE ecm:parentId = ORDER BY dc:title, "
-                + "Syntax error: Invalid token <ORDER BY> at offset 51", pp.getErrorMessage());
+        assertEquals(
+                "Failed to execute query: NXQL: SELECT dc:title FROM Document WHERE ecm:parentId = ORDER BY dc:title, "
+                        + "Syntax error: Invalid token <ORDER BY> at offset 51", pp.getErrorMessage());
     }
 
     @SuppressWarnings("unchecked")
