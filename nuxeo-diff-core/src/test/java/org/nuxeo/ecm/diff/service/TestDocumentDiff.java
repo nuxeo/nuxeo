@@ -70,7 +70,6 @@ public class TestDocumentDiff extends DiffTestCase {
 
     /**
      * Tests doc diff.
-     *
      */
     @Test
     public void testDocDiff() {
@@ -221,8 +220,8 @@ public class TestDocumentDiff extends DiffTestCase {
                         String.valueOf(Boolean.FALSE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, "10", null));
         String expectedRightDateItem = keepTimeZone ? "2011-12-29T23:00:00.00Z" : "2011-12-29T22:00:00.00Z";
-        expectedComplexFieldDiff.putDiff("dateItem",
-                new SimplePropertyDiff(PropertyType.DATE, null, expectedRightDateItem));
+        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, null,
+                expectedRightDateItem));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"), expectedComplexFieldDiff);
 
         // complexList =>
@@ -289,7 +288,6 @@ public class TestDocumentDiff extends DiffTestCase {
 
     /**
      * Tests inverse doc diff.
-     *
      */
     @Test
     public void testInverseDocDiff() {
