@@ -18,7 +18,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +32,6 @@ import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
-import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.ReloadableComponent;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -255,13 +254,12 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     @Override
-    public String[] getPropertyNames() {
-        Set<String> set = ri.getProperties().keySet();
-        return set.toArray(new String[set.size()]);
+    public Properties getProperties() {
+        return ri.getProperties();
     }
 
     @Override
-    public Property getProperty(String property) {
+    public Object getProperty(String property) {
         return ri.getProperties().get(property);
     }
 
@@ -271,15 +269,10 @@ public class ComponentInstanceImpl implements ComponentInstance {
     }
 
     @Override
-    public Object getPropertyValue(String property) {
-        return getPropertyValue(property, null);
-    }
-
-    @Override
-    public Object getPropertyValue(String property, Object defValue) {
-        Property prop = getProperty(property);
+    public Object getProperty(String property, Object defValue) {
+        Object prop = getProperty(property);
         if (prop != null) {
-            return prop.getValue();
+            return prop;
         } else {
             return defValue;
         }

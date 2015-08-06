@@ -20,6 +20,11 @@
 
 package org.nuxeo.common.xmap;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+import org.nuxeo.common.xmap.annotation.XContext;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.w3c.dom.Element;
 
@@ -40,6 +45,9 @@ public class XAnnotatedMember {
     /** Not null if the described object is an xannotated object. */
     protected XAnnotatedObject xao;
 
+    /** Not null if the described element has a default value in context. */
+    protected XAnnotatedContext xac;
+
     /**
      * The value factory used to transform strings in objects compatible with this member type. In the case of
      * collection types this factory is used for collection components.
@@ -51,14 +59,7 @@ public class XAnnotatedMember {
     protected XAnnotatedMember(XMap xmap, XAccessor accessor) {
         this.xmap = xmap;
         this.accessor = accessor;
-    }
-
-    public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
-        this.xmap = xmap;
-        accessor = setter;
-        path = new Path(anno.value());
-        trim = anno.trim();
-        type = setter.getType();
+        type = accessor.getType();
         valueFactory = xmap.getValueFactory(type);
         if (valueFactory == null && type.isEnum()) {
             valueFactory = new XValueFactory() {
@@ -76,6 +77,15 @@ public class XAnnotatedMember {
             xmap.setValueFactory(type, valueFactory);
         }
         xao = xmap.register(type);
+    }
+
+    public XAnnotatedMember(XMap xmap, XAccessor setter, XNode anno) {
+        this(xmap, setter);
+        path = new Path(anno.value());
+        if (!anno.context().isEmpty()) {
+            xac = new XAnnotatedContext(xmap, setter, XContextProxy.of(anno.context()));
+        }
+        trim = anno.trim();
     }
 
     protected void setValue(Object instance, Object value) {
@@ -104,6 +114,9 @@ public class XAnnotatedMember {
     }
 
     public void process(Context ctx, Element element) {
+        if (xac != null) {
+            xac.process(ctx, element);
+        }
         Object value = getValue(ctx, element);
         if (value != null) {
             setValue(ctx.getObject(), value);
@@ -137,4 +150,26 @@ public class XAnnotatedMember {
         return null;
     }
 
+}
+
+class XContextProxy implements InvocationHandler {
+
+    final String value;
+
+    XContextProxy(String value) {
+        this.value = value;
+    }
+
+    public static XContext of(String value) {
+        return XContext.class.cast(Proxy.newProxyInstance(XContext.class.getClassLoader(),
+                new Class[] { XContext.class }, new XContextProxy(value)));
+    }
+
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        if ("value".equals(method.getName())) {
+            return value;
+        }
+        return method.getDefaultValue();
+    }
 }

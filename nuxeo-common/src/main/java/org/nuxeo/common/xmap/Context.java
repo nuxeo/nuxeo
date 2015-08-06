@@ -24,7 +24,7 @@ package org.nuxeo.common.xmap;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Properties;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -33,7 +33,16 @@ public class Context extends ArrayList<Object> {
 
     private static final long serialVersionUID = 1L;
 
-    private final HashMap<String, Object> properties = new HashMap<String, Object>();
+    private final Properties properties;
+
+    public Context() {
+        this(null);
+
+    }
+
+    public Context(Properties defaults) {
+        properties = new Properties(defaults);
+    }
 
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         if (className.startsWith("[")) {
@@ -75,7 +84,7 @@ public class Context extends ArrayList<Object> {
     }
 
     public Object getProperty(String key) {
-        return properties.get(key);
+        return properties.getProperty(key);
     }
 
     public void setProperty(String key, Object value) {

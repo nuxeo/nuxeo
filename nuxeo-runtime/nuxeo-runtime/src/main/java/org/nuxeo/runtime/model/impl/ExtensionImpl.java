@@ -24,6 +24,7 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.Extension;
+import org.nuxeo.runtime.model.Parameters;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.w3c.dom.Element;
 
@@ -55,6 +56,9 @@ public class ExtensionImpl implements Extension {
     @XNode("")
     transient Element element;
 
+    @XNode("parameters")
+    ParametersImpl.Extended parameters = new ParametersImpl.Extended();
+
     transient Object[] contributions;
 
     // declaring component
@@ -64,6 +68,7 @@ public class ExtensionImpl implements Extension {
     public void dispose() {
         element = null;
         contributions = null;
+        parameters = null;
     }
 
     @Override
@@ -129,16 +134,19 @@ public class ExtensionImpl implements Extension {
     }
 
     @Override
+    public Parameters getParameters() {
+        return parameters;
+    }
+
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
         buf.append(ExtensionImpl.class.getSimpleName());
         buf.append(" {");
-        buf.append("target: ");
-        buf.append(target);
-        buf.append(", point:");
-        buf.append(extensionPoint);
-        buf.append(", contributor:");
-        buf.append(component);
+        buf.append("target: ").append(target);
+        buf.append(", point:").append(extensionPoint);
+        buf.append(", parameters:").append(parameters);
+        buf.append(", contributor:").append(component);
         buf.append('}');
         return buf.toString();
     }

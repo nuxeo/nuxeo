@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     bstefanescu
  *
@@ -22,9 +22,6 @@
 package org.nuxeo.runtime;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -32,23 +29,28 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 /** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
 public class TestExtensionPoint extends NXRuntimeTestCase {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
+    @Test
+    public void testOverride() throws Exception {
         deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
         deployContrib("org.nuxeo.runtime.test.tests", "OverridingXPoint.xml");
+        ComponentWithXPoint co = ComponentWithXPoint.instance;
+        assertEquals(2, co.contribs.size());
+        DummyContributionOverriden overxpContrib = (DummyContributionOverriden) co.contribs.get("OverXP contrib");
+        assertEquals("My duty is to override", overxpContrib.name);
     }
 
     @Test
-    public void testOverride() {
-        ComponentWithXPoint co = (ComponentWithXPoint) Framework.getRuntime().getComponent(ComponentWithXPoint.NAME);
-        DummyContribution[] contribs = co.getContributions();
-        assertEquals(2, contribs.length);
-        assertSame(contribs[0].getClass(), DummyContribution.class);
-        assertSame(contribs[1].getClass(), DummyContributionOverriden.class);
-        assertEquals("XP contrib", contribs[0].message);
-        assertEquals("OverXP contrib", contribs[1].message);
-        assertEquals("My duty is to override", ((DummyContributionOverriden) contribs[1]).name);
+    public void testParameters() throws Exception {
+        Framework.getProperties().put("comp1", "set in fmw scope");
+        deployContrib("org.nuxeo.runtime.test.tests", "BaseXPoint.xml");
+        deployContrib("org.nuxeo.runtime.test.tests", "BaseExtensionParameters.xml");
+        ComponentWithXPoint co = ComponentWithXPoint.instance;
+        DummyContribution contrib = co.contribs.get("test");
+        assertEquals("set in fmw scope", contrib.comp1); // fmw is defined in comp and taken from runtime
+        assertEquals("set in xp scope", contrib.comp2); // comp is defined in cimp and  overriden in xp
+        assertEquals("set in xt scope", contrib.xp); // xp is defined in xp and  overriden in xt
+        assertEquals("set in xt scope", contrib.xt1); // xt is defined in xt
+        assertEquals("set in descriptor", contrib.xt2); // xt is defined in descriptor
     }
 
 }

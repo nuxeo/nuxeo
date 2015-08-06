@@ -57,5 +57,4 @@ public interface ExtensionPoint {
      * @return the base extension point if this extension point is extending another extension point, or null if none
      */
     String getSuperComponent();
-
 }

@@ -21,30 +21,46 @@
 
 package org.nuxeo.runtime;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 
-/** @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a> */
+/**
+ * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ */
 public class ComponentWithXPoint extends DefaultComponent {
 
     public static final ComponentName NAME = new ComponentName("BaseXPoint");
 
-    private static final Log log = LogFactory.getLog(ComponentWithXPoint.class);
+    final Map<String,DummyContribution> contribs = new HashMap<>();
 
-    final List<DummyContribution> contribs = new ArrayList<DummyContribution>();
+    static ComponentWithXPoint instance;
+
+    @Override
+    public void activate(ComponentContext context) {
+        super.activate(context);
+        instance = this;
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) {
+        try {
+            super.deactivate(context);
+        } finally {
+            instance = null;
+        }
+    }
 
     @Override
     public void registerExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Registering: " + ((DummyContribution) contrib).message);
-            this.contribs.add((DummyContribution) contrib);
+            DummyContribution dummy = (DummyContribution) contrib;
+            this.contribs.put(dummy.message, dummy);
         }
     }
 
@@ -52,13 +68,13 @@ public class ComponentWithXPoint extends DefaultComponent {
     public void unregisterExtension(Extension extension) {
         Object[] contribs = extension.getContributions();
         for (Object contrib : contribs) {
-            log.debug("Un-Registering: " + ((DummyContribution) contrib).message);
-            this.contribs.add((DummyContribution) contrib);
+            DummyContribution dummy = (DummyContribution) contrib;
+            this.contribs.remove(dummy.message);
         }
     }
 
     public DummyContribution[] getContributions() {
-        return contribs.toArray(new DummyContribution[contribs.size()]);
+        return contribs.values().toArray(new DummyContribution[contribs.size()]);
     }
 
 }

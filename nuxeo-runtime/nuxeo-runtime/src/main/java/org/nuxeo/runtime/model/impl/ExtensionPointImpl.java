@@ -47,10 +47,24 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
     @XNodeList(value = "object@class", type = Class[].class, componentType = Class.class)
     public transient Class[] contributions;
 
-    public transient XMap xmap;
+    ParametersImpl.Extended parameters = new ParametersImpl.Extended();
+
+    transient XMap xmap;
+
+    transient RegistrationInfo ri;
+
+    @XNode("parameters")
+    void injectParameters(ParametersImpl.Extended value) {
+        // TODO check override
+        parameters.properties.putAll(value.properties);
+        parameters.descriptors.putAll(value.descriptors);
+    }
 
     @XParent
-    public transient RegistrationInfo ri;
+    void injectParent(RegistrationInfo parent) {
+        ri = parent;
+        parameters.override(ri.getParameters());
+    }
 
     @Override
     public Class[] getContributions() {
@@ -86,16 +100,18 @@ public class ExtensionPointImpl implements ExtensionPoint, Serializable {
         if (contributions != null) {
             if (xmap == null) {
                 xmap = new XMap();
-                for (Class contrib : contributions) {
+                for (Class<?> contrib : contributions) {
                     if (contrib != null) {
                         xmap.register(contrib);
                     } else {
-                        throw new RuntimeException("Unknown implementation class when contributing to "
-                                + owner.getComponent().getName());
+                        throw new RuntimeException(
+                                "Unknown implementation class when contributing to " + owner.getComponent().getName());
                     }
                 }
             }
-            contribs = xmap.loadAll(new XMapContext(extension.getContext()), extension.getElement());
+            ((ParametersImpl.Extended)extension.getParameters()).override(parameters);
+            contribs = xmap.loadAll(new XMapContext(extension.getContext(), extension.getParameters().getProperties()),
+                    extension.getElement());
             extension.setContributions(contribs);
         }
         return contribs;

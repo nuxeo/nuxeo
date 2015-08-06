@@ -18,11 +18,10 @@ package org.nuxeo.ecm.platform.management.adapters;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.nuxeo.runtime.model.ExtensionPoint;
-import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 
 /**
@@ -36,14 +35,17 @@ public class ComponentInventoryAdapter implements ComponentInventoryMBean {
         this.info = info;
     }
 
+    @Override
     public String getDescription() {
         return info.getDocumentation();
     }
 
+    @Override
     public Integer getExtensionPointsCount() {
         return info.getExtensionPoints().length;
     }
 
+    @Override
     public Set<String> getExtensionPointsName() {
         Set<String> names = new HashSet<String>();
         for (ExtensionPoint extensionPoint : info.getExtensionPoints()) {
@@ -52,24 +54,29 @@ public class ComponentInventoryAdapter implements ComponentInventoryMBean {
         return names;
     }
 
+    @Override
     public String getName() {
         return info.getName().getRawName();
     }
 
-    public Map<String, Property> getProperties() {
+    @Override
+    public Properties getProperties() {
         return info.getProperties();
     }
 
+    @Override
     public Set<String> getProvidedServices() {
         Set<String> names = new HashSet<String>();
         names.addAll(Arrays.asList(info.getProvidedServiceNames()));
         return names;
     }
 
+    @Override
     public Integer getProvidedServicesCount() {
         return info.getProvidedServiceNames().length;
     }
 
+    @Override
     public String getVersion() {
         return info.getVersion().toString();
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<component name="BaseExtensionParameters" version="1.0.0">
+
+  <extension target="BaseXPoint" point="xp">
+    <parameters>
+      <define name="xt" documentation="xt scope">set in xt scope</define>
+      <override name="xp">set in xt scope</override>
+    </parameters>
+    <printer>
+      <message>test</message>
+      <xt2>set in descriptor</xt2>
+    </printer>
+  </extension>
+
+</component>

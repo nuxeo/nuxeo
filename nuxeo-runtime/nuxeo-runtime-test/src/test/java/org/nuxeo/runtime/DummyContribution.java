@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -21,17 +21,58 @@
 
 package org.nuxeo.runtime;
 
+import org.nuxeo.common.xmap.annotation.XContext;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-@XObject("printer")
+@XObject(value="printer")
 public class DummyContribution {
 
     @XNode("message")
-    public String message;
+    String message;
+
+    @XNode("comp1")
+    String comp1;
+
+    @XNode("comp2")
+    String comp2;
+
+    @XNode("xp")
+    String xp;
+
+    @XNode("xt1")
+    String xt1;
+
+    @XNode("xt2")
+    String xt2;
+
+    @XContext("comp1")
+    void injectDefaultComp1(String value) {
+        comp1 = value;
+    }
+
+    @XContext("comp2")
+    void injectDefaultComp2(String value) {
+        comp2 = value;
+    }
+
+    @XContext("xp")
+    void injectDefaultXp(String value) {
+        xp = value;
+    }
+
+    @XContext("xt")
+    void injectDefaultXt(String value) {
+        xt1 = value;
+    }
+
+    @XContext("xt")
+    void injectOverridenDefaultXt(String value) {
+        xt2 = value;
+    }
 
     public DummyContribution() {
     }

@@ -16,10 +16,8 @@
  */
 package org.nuxeo.ecm.platform.management.adapters;
 
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
-
-import org.nuxeo.runtime.model.Property;
 
 /**
  * @author Stephane Lacoin (Nuxeo EP Software Engineer)
@@ -32,7 +30,7 @@ public interface ComponentInventoryMBean {
 
     String getVersion();
 
-    Map<String, Property> getProperties();
+    Properties getProperties();
 
     Set<String> getProvidedServices();
 

@@ -33,8 +33,8 @@ public class MyTestComponent extends DefaultComponent {
 
     @Override
     public void activate(ComponentContext context) {
-        assertEquals("value", context.getProperty("myString").getValue());
-        assertEquals(2, context.getProperty("myInt").getValue());
+        assertEquals("value", context.getProperty("myString"));
+        assertEquals(2, Integer.valueOf(context.getProperty("myInt").toString()).intValue());
     }
 
 }

@@ -36,7 +36,14 @@ public class XAnnotatedContext extends XAnnotatedMember {
 
     @Override
     protected Object getValue(Context ctx, Element base) {
-        return ctx.getProperty(path.path);
+        if (path.path.isEmpty()) {
+            return ctx;
+        }
+        Object value = ctx.getProperty(path.path);
+        if (value instanceof String) {
+            value = valueFactory.deserialize(ctx, (String)value);
+        }
+        return value;
     }
 
 }

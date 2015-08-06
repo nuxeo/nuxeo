@@ -23,7 +23,10 @@ import org.nuxeo.runtime.model.impl.PropertyDecoder;
 
 /**
  * @author Bogdan Stefanescu
+ * @deprecated {@link Parameters}
+ * @since 7.4
  */
+@Deprecated
 @XObject(value = "property", order = { "@name", "@type" })
 public class Property implements Serializable {
 

@@ -16,7 +16,7 @@ package org.nuxeo.runtime.model;
 
 import java.io.Serializable;
 import java.net.URL;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.nuxeo.runtime.Version;
@@ -73,9 +73,19 @@ public interface RegistrationInfo extends Serializable {
     /**
      * Gets the component properties.
      *
+     * @deprecated see {@link #getParameters}
+     * @since 7.4
      * @return the component properties
      */
-    Map<String, Property> getProperties();
+    @Deprecated
+    Properties getProperties();
+
+    /**
+     * Gets the component parameters.
+     *
+     * @since 7.4
+     */
+    Parameters getParameters();
 
     /**
      * Gets the list of aliases.
@@ -201,4 +211,5 @@ public interface RegistrationInfo extends Serializable {
      * Notify the component instance that the Nuxeo application started
      */
     void notifyApplicationStarted();
+
 }

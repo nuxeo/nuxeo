@@ -55,14 +55,11 @@ public class XAnnotatedObject {
         try {
             this.xmap = xmap;
             this.klass = klass;
-            this.ctor = this.klass.getDeclaredConstructor();
+            ctor = this.klass.getDeclaredConstructor();
             ctor.setAccessible(true);
             path = new Path(xob.value());
             members = new ArrayList<XAnnotatedMember>();
-            String[] order = xob.order();
-            if (order.length > 0) {
-                sorter = new Sorter(order);
-            }
+            sorter = new Sorter(xob.order());
         } catch (SecurityException e) {
             throw new IllegalArgumentException(e);
         } catch (NoSuchMethodException e) {
@@ -120,14 +117,19 @@ class Sorter implements Comparator<XAnnotatedMember>, Serializable {
         }
     }
 
+    @Override
     public int compare(XAnnotatedMember o1, XAnnotatedMember o2) {
         String p1 = o1.path == null ? "" : o1.path.path;
         String p2 = o2.path == null ? "" : o2.path.path;
         Integer order1 = order.get(p1);
         Integer order2 = order.get(p2);
-        int n1 = order1 == null ? Integer.MAX_VALUE : order1;
-        int n2 = order2 == null ? Integer.MAX_VALUE : order2;
-        return n1 - n2;
+        if (order1 == null) {
+            order1 = o1 instanceof XAnnotatedContext ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+        if (order2 == null) {
+            order2 = o2 instanceof XAnnotatedContext ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        }
+        return order1 - order2;
     }
 
 }

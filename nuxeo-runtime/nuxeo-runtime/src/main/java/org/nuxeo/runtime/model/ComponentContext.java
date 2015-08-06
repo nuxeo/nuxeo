@@ -14,18 +14,18 @@
 
 package org.nuxeo.runtime.model;
 
+import java.util.Properties;
+
 /**
  * @author Bogdan Stefanescu
  */
 public interface ComponentContext {
 
-    Property getProperty(String property);
+    Object getProperty(String property);
 
-    Object getPropertyValue(String property, Object defValue);
+    Object getProperty(String property, Object defValue);
 
-    Object getPropertyValue(String property);
-
-    String[] getPropertyNames();
+    Properties getProperties();
 
     RuntimeContext getRuntimeContext();
 

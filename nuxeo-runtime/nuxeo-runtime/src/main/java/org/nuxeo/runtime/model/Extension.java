@@ -125,6 +125,14 @@ public interface Extension extends Serializable {
     String getDocumentation();
 
     /**
+     * Get overriden extension point parameters
+     *
+     * @since 7.4
+     * @return
+     */
+    Parameters getParameters();
+
+    /**
      * Gets the XML representation for this extension.
      */
     String toXML();

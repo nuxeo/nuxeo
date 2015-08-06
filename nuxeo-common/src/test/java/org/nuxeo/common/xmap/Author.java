@@ -81,7 +81,7 @@ public class Author {
     double[] doubleArray2;
 
     @XNodeMap(value = "properties/property", key = "@name", type = HashMap.class, componentType = String.class)
-    Map<String, String> properties;
+    Map<String, String> properties = new HashMap<>();
 
     int age;
 
@@ -156,10 +156,10 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author {\n" + "  title: " + title + '\n' + "  description: " + description + '\n' + "  id: " + id
-                + '\n' + "  nameType: " + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age + '\n'
-                + "  items: " + items + '\n' + "  itemIds: " + itemIds + '\n' + "  content: <" + content + '>' + '\n'
-                + "  friends: " + friends + '\n' + "  properties: " + properties + '\n' + '}';
+        return "Author {\n" + "  title: " + title + '\n' + "  description: " + description + '\n' + "  id: " + id + '\n'
+                + "  nameType: " + nameType + '\n' + "  name: " + name + '\n' + "  age: " + age + '\n' + "  items: "
+                + items + '\n' + "  itemIds: " + itemIds + '\n' + "  content: <" + content + '>' + '\n' + "  friends: "
+                + friends + '\n' + "  properties: " + properties + '\n' + '}';
     }
 
     // getter used to reverse xmap

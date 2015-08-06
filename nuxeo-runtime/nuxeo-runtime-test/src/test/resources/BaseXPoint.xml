@@ -3,13 +3,22 @@
 
   <documentation>
     This component is declaring one extension point that will be
-    overrided by another extension point from OverrindingXPoint.xml
+    overridden by another extension point from OverrindingXPoint.xml
   </documentation>
 
   <implementation class="org.nuxeo.runtime.ComponentWithXPoint"/>
 
+  <parameters>
+    <define name="comp1" documentation="overridden by framework">set in comp scope</define>
+	<define name="comp2" documentation="component scope">set in comp scope</define> 
+  </parameters>
+      
   <extension-point name="xp">
     <object class="org.nuxeo.runtime.DummyContribution"/>
+    <parameters>
+      <define name="xp" documentation="xp scope">set in xp</define>
+      <override name="comp2">set in xp scope</override>
+    </parameters>
   </extension-point>
 
 </component>

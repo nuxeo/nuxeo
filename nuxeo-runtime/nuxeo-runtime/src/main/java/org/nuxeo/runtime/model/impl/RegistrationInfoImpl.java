@@ -15,10 +15,10 @@ package org.nuxeo.runtime.model.impl;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.xmap.annotation.XContent;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
-import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.ComponentEvent;
 import org.nuxeo.runtime.Version;
@@ -38,6 +37,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.ConfigurationDescriptor;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.ExtensionPoint;
+import org.nuxeo.runtime.model.Parameters;
 import org.nuxeo.runtime.model.Property;
 import org.nuxeo.runtime.model.RegistrationInfo;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -90,11 +90,23 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     @XNodeList(value = "extension", type = ExtensionImpl[].class, componentType = ExtensionImpl.class)
     ExtensionImpl[] extensions = new ExtensionImpl[0];
 
-    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = Property.class)
-    Map<String, Property> properties = new HashMap<>();
-
     @XNode("@version")
     Version version = Version.ZERO;
+
+    ParametersImpl.Base parameters = new ParametersImpl.Base();
+
+    @XNode("parameters")
+    void injectParameters(ParametersImpl.Base value) {
+        parameters.properties.putAll(value.properties);
+        parameters.descriptors.putAll(value.descriptors);
+    }
+
+    @XNodeList(value = "property", type = LinkedList.class, componentType = Property.class)
+    void injectProperties(List<Property> properties) {
+        for (Property each : properties) {
+            parameters.properties.put(each.getName(), each.getValue());
+        }
+    }
 
     /**
      * To be set when deploying configuration components that are not in a bundle (e.g. from config. dir). Represent the
@@ -144,7 +156,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public void setContext(RuntimeContext rc) {
-        this.context = rc;
+        context = rc;
     }
 
     @Override
@@ -165,7 +177,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     public void destroy() {
         requires.clear();
         aliases.clear();
-        properties.clear();
+        parameters = new ParametersImpl.Base();
         extensionPoints = new ExtensionPointImpl[0];
         extensions = new ExtensionImpl[0];
         version = null;
@@ -203,8 +215,13 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     @Override
-    public Map<String, Property> getProperties() {
-        return properties;
+    public Properties getProperties() {
+        return parameters.properties;
+    }
+
+    @Override
+    public Parameters getParameters() {
+        return parameters;
     }
 
     public ExtensionPointImpl getExtensionPoint(String name) {
@@ -405,9 +422,8 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     manager.unregisterExtension(xt);
                 } catch (RuntimeException e) {
-                    log.error(
-                            "Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
-                                    + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint(), e);
+                    log.error("Failed to unregister extension. Contributor: " + xt.getComponent() + " to "
+                            + xt.getTargetComponent() + "; xpoint: " + xt.getExtensionPoint(), e);
                     Framework.handleDevError(e);
                 }
             }

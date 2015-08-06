@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
@@ -48,4 +48,10 @@ public @interface XNode {
      */
     boolean trim() default true;
 
+    /**
+     * An xpath expression specifying the Context node to bind default value to.
+     *
+     * @since 7.4
+     */
+    String context() default "";
 }

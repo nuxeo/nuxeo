@@ -15,6 +15,7 @@
 package org.nuxeo.runtime.model.impl;
 
 import java.net.URL;
+import java.util.Properties;
 
 import org.nuxeo.common.xmap.Context;
 import org.nuxeo.runtime.model.RuntimeContext;
@@ -26,10 +27,15 @@ public class XMapContext extends Context {
 
     private static final long serialVersionUID = -7194560385886298218L;
 
-    final RuntimeContext ctx;
+    final RuntimeContext runtime;
 
     public XMapContext(RuntimeContext ctx) {
-        this.ctx = ctx;
+        this(ctx, null);
+    }
+
+    public XMapContext(RuntimeContext ctx, Properties properties) {
+        super(properties);
+        runtime = ctx;
     }
 
     @Override
@@ -37,12 +43,12 @@ public class XMapContext extends Context {
         if (className.startsWith("[")) {
             return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
         }
-        return ctx.loadClass(className);
+        return runtime.loadClass(className);
     }
 
     @Override
     public URL getResource(String name) {
-        return ctx.getResource(name);
+        return runtime.getResource(name);
     }
 
 }
