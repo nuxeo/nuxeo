@@ -313,13 +313,21 @@ public class TestDocumentDiff extends DiffTestCase {
         // description => different
         checkSimpleFieldDiff(schemaDiff.getFieldDiff("description"), PropertyType.STRING, null, "description");
         // created => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, "2011-12-29T11:24:50.00Z",
-                "2011-12-29T11:24:25.00Z");
+        // db storage normalization may give us different timezones...
+        boolean keepTimeZone = ((SimplePropertyDiff) schemaDiff.getFieldDiff("created")).getLeftValue().equals(
+                "2011-12-29T11:24:50.00Z");
+        String expectedLeftCreated = keepTimeZone ? "2011-12-29T11:24:50.00Z" : "2011-12-29T10:24:50.00Z";
+        String expectedRightCreated = keepTimeZone ? "2011-12-29T11:24:25.00Z" : "2011-12-29T10:24:25.00Z";
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("created"), PropertyType.DATE, expectedLeftCreated,
+                expectedRightCreated);
         // creator => same
         checkIdenticalField(schemaDiff.getFieldDiff("creator"));
         // modified => different
-        checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, "2011-12-30T12:05:02.00Z",
-                "2011-12-29T11:24:25.00Z");
+        String expectedLeftModified = keepTimeZone ? "2011-12-30T12:05:02.00Z" : "2011-12-30T11:05:02.00Z";
+        String expectedRightModified = keepTimeZone ? "2011-12-29T11:24:25.00Z" : "2011-12-29T10:24:25.00Z";
+        checkSimpleFieldDiff(schemaDiff.getFieldDiff("modified"), PropertyType.DATE, expectedLeftModified,
+                expectedRightModified);
+
         // lastContributor => same once trimmed
         checkIdenticalField(schemaDiff.getFieldDiff("lastContributor"));
         // contributors => different (update) / same / different (remove)
@@ -432,8 +440,9 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         expectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "10"));
-        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE,
-                "2011-12-29T23:00:00.00Z", null));
+        String expectedLeftDateItem = keepTimeZone ? "2011-12-29T23:00:00.00Z" : "2011-12-29T22:00:00.00Z";
+        expectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE, expectedLeftDateItem,
+                null));
         checkComplexFieldDiff(schemaDiff.getFieldDiff("complex"), expectedComplexFieldDiff);
 
         // complexList =>
@@ -448,8 +457,9 @@ public class TestDocumentDiff extends DiffTestCase {
                 new SimplePropertyDiff(PropertyType.BOOLEAN, String.valueOf(Boolean.FALSE),
                         String.valueOf(Boolean.TRUE)));
         item1ExpectedComplexFieldDiff.putDiff("integerItem", new SimplePropertyDiff(PropertyType.LONG, null, "12"));
+        expectedLeftDateItem = keepTimeZone ? "2011-12-30T23:00:00.00Z" : "2011-12-30T22:00:00.00Z";
         item1ExpectedComplexFieldDiff.putDiff("dateItem", new SimplePropertyDiff(PropertyType.DATE,
-                "2011-12-30T23:00:00.00Z", null));
+                expectedLeftDateItem, null));
 
         item2ExpectedComplexFieldDiff = new ComplexPropertyDiff();
         item2ExpectedComplexFieldDiff.putDiff("stringItem", new SimplePropertyDiff(PropertyType.STRING,
