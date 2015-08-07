@@ -23,7 +23,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,26 +35,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.api.security.UserEntry;
-import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteStep;
-import org.nuxeo.ecm.platform.routing.api.DocumentRouteTableElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
-import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteAlredayLockedException;
-import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteNotLockedException;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 // sets step chainId to setWaiting instead of setDone
@@ -175,9 +162,10 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
         assertEquals(0, waiting.size());
         routeInstance = session.getDocument(routeInstance.getDocument().getRef()).getAdapter(DocumentRoute.class);
         assertTrue(routeInstance.isDone());
-        assertEquals(6/* route */+ 4 /* number of steps */* 3 /*
-                                                               * number of event per waiting step
-                                                               */, CounterListener.getCounter());
+        assertEquals((6/* route */ + 4 /* number of steps */ * 3 /*
+                                                                  * number of event per waiting step
+                                                                  */ + 1 /* workflow started */),
+                CounterListener.getCounter());
     }
 
     @Test
@@ -341,8 +329,8 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
             assertEquals(0, waiting.size());
             routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
             assertTrue(routeInstance.isDone());
-            assertEquals(6/* route */+ 4 /* number of steps */* 3 /* number of event per waiting step */,
-                    CounterListener.getCounter());
+            assertEquals((6/* route */ + 4 /* number of steps */ * 3 /* number of event per waiting step */
+                    + 1 /* workflow started */), CounterListener.getCounter());
         }
     }
 

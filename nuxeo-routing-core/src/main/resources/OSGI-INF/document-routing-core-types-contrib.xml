@@ -1,8 +1,10 @@
+
 <component name="org.nuxeo.ecm.platform.routing.CoreExtensions"
   version="1.0">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
   <require>org.nuxeo.ecm.plateform.task.type</require>
+  <require>org.nuxeo.ecm.platform.audit.core.types-contrib</require>
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService"
     point="schema">
@@ -68,6 +70,7 @@
     </doctype>
 
     <doctype name="DocumentRoute" extends="StepFolder">
+      <facet name="ForceAudit" />
       <facet name="DocumentRoute" />
       <facet name="SystemDocument" />
       <schema name="document_route_instance" />

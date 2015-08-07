@@ -69,7 +69,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 })
 @LocalDeploy({ "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml",
         "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-sql-directories-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-graph-types-contrib.xml", })
+        "org.nuxeo.ecm.platform.routing.core.test:OSGI-INF/test-graph-types-contrib.xml",
+        "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml"})
 public class DocumentRoutingTestCase {
 
     public static final String ROOT_PATH = "/";

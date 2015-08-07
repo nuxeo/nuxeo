@@ -18,6 +18,7 @@ package org.nuxeo.ecm.platform.routing.core.impl;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -132,5 +133,12 @@ public interface GraphRoute extends DocumentRoute {
      * @since 5.7.2
      */
     void resumeParentRoute(CoreSession session);
+
+    /**
+     * Get the list of nodes of which the State is suspended.
+     *
+     * @since 7.4
+     */
+    List<GraphNode> getSuspendedNodes();
 
 }

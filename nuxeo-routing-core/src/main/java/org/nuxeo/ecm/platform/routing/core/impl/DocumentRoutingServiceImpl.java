@@ -215,6 +215,7 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     DocumentRoutingEngineService routingEngine = Framework.getLocalService(
                             DocumentRoutingEngineService.class);
                     routingEngine.start(route, map, session);
+                    fireEventAfterWorkflowStarted(route, session);
                 }
                 res[0] = instance.getId();
             }
@@ -276,8 +277,22 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                 DocumentRoutingEngineService routingEngine = Framework.getLocalService(
                         DocumentRoutingEngineService.class);
                 routingEngine.start(route, map, session);
+                fireEventAfterWorkflowStarted(route, session);
             }
+
         }.runUnrestricted();
+    }
+
+    protected void fireEventAfterWorkflowStarted(DocumentRoute route, CoreSession session) {
+        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        eventProperties.put("initiator", route.getInitiator());
+        eventProperties.put("modelId", route.getModelId());
+        eventProperties.put("modelName", route.getModelName());
+        if (route instanceof GraphRoute) {
+            eventProperties.put("variables", (Serializable) ((GraphRoute) route).getVariables());
+        }
+        fireEvent(DocumentRoutingConstants.Events.afterWorkflowStarted.name(), eventProperties,
+                route, session);
     }
 
     @Override
@@ -288,21 +303,50 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
 
     @Override
     public void completeTask(String routeId, String taskId, Map<String, Object> data, String status, CoreSession session) {
-        completeTask(routeId, null, taskId, data, status, session);
+        DocumentModel task = session.getDocument(new IdRef(taskId));
+        completeTask(routeId, null, task != null ? task.getAdapter(Task.class) : null, data, status, session);
     }
 
-    protected void completeTask(final String routeId, final String nodeId, final String taskId,
+    protected void completeTask(final String routeId, final String nodeId, final Task task,
             final Map<String, Object> data, final String status, CoreSession session) {
-        new UnrestrictedSessionRunner(session) {
-            @Override
-            public void run() {
-                DocumentRoutingEngineService routingEngine = Framework.getLocalService(
-                        DocumentRoutingEngineService.class);
-                DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
-                DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
-                routingEngine.resume(routeInstance, nodeId, taskId, data, status, session);
-            }
-        }.runUnrestricted();
+        CompleteTaskRunner runner = new CompleteTaskRunner(routeId, nodeId, task, data, status, session);
+        runner.runUnrestricted();
+    }
+
+    /**
+     * @since 7.4
+     */
+    private class CompleteTaskRunner extends UnrestrictedSessionRunner {
+
+        String routeId;
+
+        String nodeId;
+
+        Task task;
+
+        Map<String, Object> data;
+
+        String status;
+
+        protected CompleteTaskRunner(final String routeId, final String nodeId, final Task task,
+                final Map<String, Object> data, final String status, CoreSession session) {
+            super(session);
+            this.routeId = routeId;
+            this.nodeId = nodeId;
+            this.task = task;
+            this.data = data;
+            this.status = status;
+        }
+
+        @Override
+        public void run() {
+            DocumentRoutingEngineService routingEngine = Framework.getLocalService(
+                    DocumentRoutingEngineService.class);
+            DocumentModel routeDoc = session.getDocument(new IdRef(routeId));
+            DocumentRoute routeInstance = routeDoc.getAdapter(DocumentRoute.class);
+            routingEngine.resume(routeInstance, nodeId, task != null ? task.getId() : null, data, status, session);
+        }
+
     }
 
     @Override
@@ -794,11 +838,12 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
         if (StringUtils.isEmpty(routeInstanceId)) {
             throw new DocumentRouteException("Can not resume workflow, no related route");
         }
-        completeTask(routeInstanceId, null, task.getId(), data, status, session);
+        completeTask(routeInstanceId, null, task, data, status, session);
         final Map<String, Serializable> extraEventProperties = new HashMap<String, Serializable>();
         extraEventProperties.put(DocumentRoutingConstants.WORKFLOW_TASK_COMPLETION_ACTION_KEY, status);
         TaskEventNotificationHelper.notifyTaskEnded(session, (NuxeoPrincipal) session.getPrincipal(), task, comment,
                 TaskEventNames.WORKFLOW_TASK_COMPLETED, extraEventProperties);
+
     }
 
     @Override
@@ -1091,6 +1136,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     task.getDocument().refresh();
                     // grant permission to the new assignees
                     grantPermissionToTaskAssignees(session, node.getTaskAssigneesPermission(), docs, task);
+
+                    // Audit task reassignment
+                    Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+                    eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                    eventProperties.put("taskName", task.getName());
+                    eventProperties.put("actors", (Serializable) actors);
+                    eventProperties.put("modelId", routeInstance.getModelId());
+                    eventProperties.put("modelName", routeInstance.getModelName());
+                    eventProperties.put("comment", comment);
+                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+                    envContext.setProperties(eventProperties);
+                    EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                    eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskReassigned.name()));
                 }
             }
         }.runUnrestricted();
@@ -1128,6 +1187,20 @@ public class DocumentRoutingServiceImpl extends DefaultComponent implements Docu
                     task.getDocument().refresh();
                     // grant permission to the new assignees
                     grantPermissionToTaskDelegatedActors(session, node.getTaskAssigneesPermission(), docs, task);
+
+                    // Audit task delegation
+                    Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                    eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+                    eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                    eventProperties.put("taskName", task.getName());
+                    eventProperties.put("delegatedActors", (Serializable) delegatedActors);
+                    eventProperties.put("modelId", routeInstance.getModelId());
+                    eventProperties.put("modelName", routeInstance.getModelName());
+                    eventProperties.put("comment", comment);
+                    DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+                    envContext.setProperties(eventProperties);
+                    EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                    eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskDelegated.name()));
                 }
             }
         }.runUnrestricted();

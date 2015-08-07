@@ -66,6 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
         "org.nuxeo.ecm.platform.task.core", //
         "org.nuxeo.ecm.platform.task.testing", //
         "org.nuxeo.ecm.platform.routing.dm", //
+        "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml", //
 })
 @LocalDeploy("org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml")
 public class TestRoutingTaskService {

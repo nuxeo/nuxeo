@@ -39,6 +39,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
+import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.State;
 import org.nuxeo.ecm.platform.routing.core.impl.GraphNode.Transition;
 import org.nuxeo.runtime.api.Framework;
 
@@ -266,6 +267,17 @@ public class GraphRouteImpl extends DocumentRouteImpl implements GraphRoute {
         String parentRouteInstanceId = (String) document.getPropertyValue(PROP_PARENT_ROUTE);
         String parentRouteNodeId = (String) document.getPropertyValue(PROP_PARENT_NODE);
         routing.resumeInstance(parentRouteInstanceId, parentRouteNodeId, null, null, session);
+    }
+
+    @Override
+    public List<GraphNode> getSuspendedNodes() {
+        List<GraphNode> result = new ArrayList<GraphNode>();
+        for (GraphNode node : getNodes()) {
+            if (State.SUSPENDED.equals(node.getState())) {
+                result.add(node);
+            }
+        }
+        return result;
     }
 
 }

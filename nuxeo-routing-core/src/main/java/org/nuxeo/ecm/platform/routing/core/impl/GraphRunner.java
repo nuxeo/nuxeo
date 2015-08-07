@@ -36,6 +36,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -121,6 +123,21 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
         if (task != null) {
             finishTask(session, graph, node, task, false, status);
             // don't delete (yet)
+            if (task != null) {
+                Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+                eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+                eventProperties.put("taskName", task.getName());
+                eventProperties.put("modelName", graph.getModelName());
+                eventProperties.put("action", status);
+                eventProperties.put("data", (Serializable) varData);
+                eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
+                eventProperties.put("nodeVariables", (Serializable) node.getVariables());
+                eventProperties.put("workflowVariables", (Serializable) graph.getVariables());
+                DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+                envContext.setProperties(eventProperties);
+                EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+                eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskEnded.name()));
+            }
         } else {
             // cancel any remaing tasks on this node
             node.cancelTasks();
@@ -144,12 +161,27 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
 
     @Override
     public void cancel(CoreSession session, DocumentRouteElement element) {
+        GraphRoute graph = element instanceof GraphRoute ? (GraphRoute) element : null;
+
+        Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+        if (graph != null) {
+            eventProperties.put("modelId", graph.getModelId());
+            eventProperties.put("modelName", graph.getModelName());
+            eventProperties.put("variables", (Serializable) graph.getVariables());
+            // Get the list of pending node
+            List<String> pendingNodeNames = new ArrayList<String>();
+            for (GraphNode suspendedNode : graph.getSuspendedNodes()) {
+                pendingNodeNames.add(suspendedNode.getId());
+            }
+            eventProperties.put("pendingNodes", (Serializable) pendingNodeNames);
+        }
+        EventFirer.fireEvent(session, element, eventProperties, DocumentRoutingConstants.Events.beforeWorkflowCanceled.name());
+
         super.cancel(session, element);
-        if (!(element instanceof GraphRoute)) {
+        if (graph == null) {
             return;
         }
         // also cancel tasks
-        GraphRoute graph = (GraphRoute) element;
         // also cancel sub-workflows
         for (GraphNode node : graph.getNodes()) {
             node.cancelTasks();
@@ -339,6 +371,25 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 node.getTaskDocType(), node.getDocument().getTitle(), node.getId(), routeInstance.getDocument().getId(),
                 new ArrayList<String>(actors), node.hasMultipleTasks(), node.getTaskDirective(), null, dueDate,
                 taskVariables, null, node.getWorkflowContextualInfo(session, true));
+
+        // Audit task assignment
+        for (Task task : tasks) {
+            Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
+            eventProperties.put(DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY);
+            eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getOriginatingUser());
+            eventProperties.put("taskName", node.getDocument().getTitle());
+            eventProperties.put("actors", actors);
+            eventProperties.put("modelId", graph.getModelId());
+            eventProperties.put("modelName", graph.getModelName());
+            eventProperties.put("nodeVariables", (Serializable) node.getVariables());
+            if (routeInstance instanceof GraphRoute) {
+                eventProperties.put("workflowVariables", (Serializable) ((GraphRoute) routeInstance).getVariables());
+            }
+            DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
+            envContext.setProperties(eventProperties);
+            EventProducer eventProducer = Framework.getLocalService(EventProducer.class);
+            eventProducer.fireEvent(envContext.newEvent(DocumentRoutingConstants.Events.afterWorkflowTaskCreated.name()));
+        }
 
         // routing.makeRoutingTasks(session, tasks);
         for (Task task : tasks) {

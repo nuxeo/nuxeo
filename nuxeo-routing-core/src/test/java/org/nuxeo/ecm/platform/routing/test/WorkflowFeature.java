@@ -21,7 +21,8 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 })
 @LocalDeploy({ "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-sql-directories-contrib.xml",
         "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-operations-contrib.xml",
-        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml" })
+        "org.nuxeo.ecm.platform.routing.core:OSGI-INF/test-graph-types-contrib.xml",
+        "org.nuxeo.ecm.platform.audit:OSGI-INF/core-type-contrib.xml"})
 public class WorkflowFeature extends SimpleFeature {
 
 }

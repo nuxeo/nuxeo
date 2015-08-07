@@ -180,7 +180,35 @@ public interface DocumentRoutingConstants {
         /**
          * @since 2.7.2
          */
-        workflowCanceled
+        workflowCanceled,
+        /**
+         * @since 7.4
+         */
+        afterWorkflowFinish,
+        /**
+         * @since 7.4
+         */
+        afterWorkflowStarted,
+        /**
+         * @since 7.4
+         */
+        beforeWorkflowCanceled,
+        /**
+         * @since 7.4
+         */
+        afterWorkflowTaskEnded,
+        /**
+         * @since 7.4
+         */
+        afterWorkflowTaskCreated,
+        /**
+         * @since 7.4
+         */
+        afterWorkflowTaskReassigned,
+        /**
+         * @since 7.4
+         */
+        afterWorkflowTaskDelegated
     }
 
     String DOCUMENT_ELEMENT_EVENT_CONTEXT_KEY = "documentElementEventContextKey";
