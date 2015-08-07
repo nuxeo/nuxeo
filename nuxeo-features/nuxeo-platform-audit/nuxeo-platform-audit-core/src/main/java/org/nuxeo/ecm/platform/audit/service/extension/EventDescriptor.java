@@ -19,7 +19,11 @@
 
 package org.nuxeo.ecm.platform.audit.service.extension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
@@ -36,16 +40,33 @@ public class EventDescriptor {
     @XNode("@enabled")
     private boolean enabled = true;
 
+    @XNodeList(value = "extendedInfos/extendedInfo", type = ArrayList.class, componentType = ExtendedInfoDescriptor.class)
+    protected List<ExtendedInfoDescriptor> extendedInfoDescriptors;
+
     public boolean getEnabled() {
         return enabled;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public List<ExtendedInfoDescriptor> getExtendedInfoDescriptors() {
+        return extendedInfoDescriptors;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
 
-    public String getName() {
-        return name;
+    /**
+     * @since 7.4
+     */
+    public void setExtendedInfoDescriptors(List<ExtendedInfoDescriptor> extendedInfoDescriptors) {
+        this.extendedInfoDescriptors = extendedInfoDescriptors;
     }
 
     public void setName(String name) {

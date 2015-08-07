@@ -19,7 +19,11 @@
 
 package org.nuxeo.ecm.platform.audit.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -63,6 +67,8 @@ public class NXAuditEventsService extends DefaultComponent {
     protected static final Log log = LogFactory.getLog(NXAuditEventsService.class);
 
     protected final Set<ExtendedInfoDescriptor> extendedInfoDescriptors = new HashSet<ExtendedInfoDescriptor>();
+
+    protected final Map<String, List<ExtendedInfoDescriptor>> eventExtendedInfoDescriptors = new HashMap<String, List<ExtendedInfoDescriptor>>();
 
     // the adapters that will injected in the EL context for extended
     // information
@@ -108,6 +114,21 @@ public class NXAuditEventsService extends DefaultComponent {
             if (log.isDebugEnabled()) {
                 log.debug("Registered event: " + eventName);
             }
+            for (ExtendedInfoDescriptor extInfoDesc : desc.getExtendedInfoDescriptors()) {
+                if (extInfoDesc.getEnabled()) {
+                    if (eventExtendedInfoDescriptors.containsKey(eventName)) {
+                        eventExtendedInfoDescriptors.get(eventName).add(extInfoDesc);
+                    } else {
+                        List<ExtendedInfoDescriptor> toBeAdded = new ArrayList<ExtendedInfoDescriptor>();
+                        toBeAdded.add(extInfoDesc);
+                        eventExtendedInfoDescriptors.put(eventName, toBeAdded);
+                    }
+                } else {
+                    if (eventExtendedInfoDescriptors.containsKey(eventName)) {
+                        eventExtendedInfoDescriptors.get(eventName).remove(extInfoDesc);
+                    }
+                }
+            }
         } else if (eventNames.contains(eventName) && !eventEnabled) {
             doUnregisterEvent(desc);
         }
@@ -130,6 +151,7 @@ public class NXAuditEventsService extends DefaultComponent {
 
     protected void doUnregisterEvent(EventDescriptor desc) {
         eventNames.remove(desc.getName());
+        eventExtendedInfoDescriptors.remove(desc.getName());
         if (log.isDebugEnabled()) {
             log.debug("Unregistered event: " + desc.getName());
         }
@@ -167,6 +189,13 @@ public class NXAuditEventsService extends DefaultComponent {
 
     public Set<AdapterDescriptor> getDocumentAdapters() {
         return documentAdapters;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public Map<String, List<ExtendedInfoDescriptor>> getEventExtendedInfoDescriptors() {
+        return eventExtendedInfoDescriptors;
     }
 
     public Set<ExtendedInfoDescriptor> getExtendedInfoDescriptors() {

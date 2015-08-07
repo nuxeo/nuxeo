@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -55,7 +56,6 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
-import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
 import org.nuxeo.ecm.platform.audit.service.extension.AdapterDescriptor;
 import org.nuxeo.ecm.platform.audit.service.extension.ExtendedInfoDescriptor;
@@ -70,6 +70,8 @@ import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
 public abstract class AbstractAuditBackend implements AuditBackend {
 
     protected static final Log log = LogFactory.getLog(AbstractAuditBackend.class);
+
+    public static final String FORCE_AUDIT_FACET = "ForceAudit";
 
     protected NXAuditEventsService component;
 
@@ -143,35 +145,50 @@ public abstract class AbstractAuditBackend implements AuditBackend {
             expressionEvaluator.bindValue(context, "principal", principal);
         }
 
-        Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
-        for (ExtendedInfoDescriptor descriptor : component.getExtendedInfoDescriptors()) {
-            String exp = descriptor.getExpression();
-            Serializable value = null;
-            try {
-                value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
-            } catch (PropertyException | UnsupportedOperationException e) {
-                if (source instanceof DeletedDocumentModel) {
-                    log.debug("Can not evaluate the expression: " + exp + " on a DeletedDocumentModel, skipping.");
-                }
-                continue;
-            } catch (ELException e) {
-                continue;
-            }
-            if (value == null) {
-                continue;
-            }
-            extendedInfos.put(descriptor.getKey(), newExtendedInfo(value));
-        }
+        // Global extended info
+        populateExtendedInfo(entry, source, context,  component.getExtendedInfoDescriptors());
+        // Event id related extended info
+        populateExtendedInfo(entry, source, context,  component.getEventExtendedInfoDescriptors().get(entry.getEventId()));
+
         if (eventContext != null) {
             @SuppressWarnings("unchecked")
             Map<String, Serializable> map = (Map<String, Serializable>) eventContext.getProperty("extendedInfos");
             if (map != null) {
+                Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
                 for (Entry<String, Serializable> en : map.entrySet()) {
                     Serializable value = en.getValue();
                     if (value != null) {
                         extendedInfos.put(en.getKey(), newExtendedInfo(value));
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * @since 7.4
+     */
+    protected void populateExtendedInfo(LogEntry entry, DocumentModel source, ExpressionContext context,
+            Collection<ExtendedInfoDescriptor> extInfos) {
+        if (extInfos != null) {
+            Map<String, ExtendedInfo> extendedInfos = entry.getExtendedInfos();
+            for (ExtendedInfoDescriptor descriptor : extInfos) {
+                String exp = descriptor.getExpression();
+                Serializable value = null;
+                try {
+                    value = expressionEvaluator.evaluateExpression(context, exp, Serializable.class);
+                } catch (PropertyException | UnsupportedOperationException e) {
+                    if (source instanceof DeletedDocumentModel) {
+                        log.debug("Can not evaluate the expression: " + exp + " on a DeletedDocumentModel, skipping.");
+                    }
+                    continue;
+                } catch (ELException e) {
+                    continue;
+                }
+                if (value == null) {
+                    continue;
+                }
+                extendedInfos.put(descriptor.getKey(), newExtendedInfo(value));
             }
         }
     }
@@ -197,8 +214,9 @@ public abstract class AbstractAuditBackend implements AuditBackend {
         if (ctx instanceof DocumentEventContext) {
             DocumentEventContext docCtx = (DocumentEventContext) ctx;
             DocumentModel document = docCtx.getSourceDocument();
-            if (document.hasFacet(SYSTEM_DOCUMENT)) {
+            if (document.hasFacet(SYSTEM_DOCUMENT) && !document.hasFacet(FORCE_AUDIT_FACET)) {
                 // do not log event on System documents
+               // unless it has the FORCE_AUDIT_FACET facet
                 return null;
             }
 
@@ -286,9 +304,7 @@ public abstract class AbstractAuditBackend implements AuditBackend {
     }
 
     @Override
-    public ExtendedInfo newExtendedInfo(Serializable value) {
-        return ExtendedInfoImpl.createExtendedInfo(value);
-    }
+    public abstract ExtendedInfo newExtendedInfo(Serializable value);
 
     protected long syncLogCreationEntries(BaseLogEntryProvider provider, String repoId, String path, Boolean recurs) {
 

@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.audit.service;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,10 @@ import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -340,6 +343,11 @@ public class DefaultAuditBackend extends AbstractAuditBackend implements AuditBa
     @Override
     public void onApplicationStarted() {
         // Nothing to do
+    }
+
+    @Override
+    public ExtendedInfo newExtendedInfo(Serializable value) {
+        return ExtendedInfoImpl.createExtendedInfo(value);
     }
 
 }
