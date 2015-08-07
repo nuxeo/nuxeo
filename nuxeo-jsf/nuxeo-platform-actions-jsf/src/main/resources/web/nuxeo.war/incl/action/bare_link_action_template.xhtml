@@ -7,17 +7,19 @@
   <nxu:set var="actionLink" value="#{action.getLink()}"
     resolveTwice="true"
     cache="#{action.properties.cacheLink != null ? action.properties.cacheLink : false}">
-    <nxu:set var="onclick"
-      value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
-      cache="true">
-      <h:outputLink value="#{actionLink}"
-        target="#{action.properties.target}" onclick="#{onclick}"
-        immediate="#{action.immediate}" disabled="#{!action.available}"
-        styleClass="#{actionStyleClass} #{action.properties.styleClass}"
-        accesskey="#{action.accessKey}">
-        <ui:include src="/incl/action/action_icon_label_template.xhtml" />
-        <ui:insert name="inside_action" />
-      </h:outputLink>
-    </nxu:set>
+    <ui:fragment rendered="#{not empty actionLink}">
+      <nxu:set var="onclick"
+        value="#{nxu:test(not empty action.properties.confirmMessage, actionConfirmMessageJs, '')}#{action.confirm};#{action.properties.onclick};"
+        cache="true">
+        <h:outputLink value="#{actionLink}"
+          target="#{action.properties.target}" onclick="#{onclick}"
+          immediate="#{action.immediate}" disabled="#{!action.available}"
+          styleClass="#{actionStyleClass} #{action.properties.styleClass}"
+          accesskey="#{action.accessKey}">
+          <ui:include src="/incl/action/action_icon_label_template.xhtml" />
+          <ui:insert name="inside_action" />
+        </h:outputLink>
+      </nxu:set>
+    </ui:fragment>
   </nxu:set>
 </c:if>
