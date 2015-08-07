@@ -29,6 +29,13 @@
       <filter-id>has_one_auth_token</filter-id>
     </action>
 
+    <action id="driveEditListing" link="#{nuxeoDriveActions.getDriveEditURL(actionContextDocument)}"
+      order="200" label="command.driveEdit" type="bare_link" icon="/icons/drive_edit.png">
+      <category>BLOB_ACTIONS_LISTING</category>
+      <filter-id>has_one_auth_token</filter-id>
+      <filter-id>can_drive_edit</filter-id>
+    </action>
+
     <action id="driveEditUserCenterNuxeoDrive" link="#{nuxeoDriveActions.navigateToUserCenterNuxeoDrive}" order="27"
       label="command.driveEdit" icon="/icons/drive_edit.png">
       <category>DRIVE_EDIT</category>
