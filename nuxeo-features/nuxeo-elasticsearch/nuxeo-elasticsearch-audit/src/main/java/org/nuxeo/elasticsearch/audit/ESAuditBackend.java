@@ -20,6 +20,7 @@ package org.nuxeo.elasticsearch.audit;
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.platform.audit.api.AuditLogger;
 import org.nuxeo.ecm.platform.audit.api.AuditReader;
+import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.api.query.AuditQueryException;
@@ -80,7 +82,6 @@ import org.nuxeo.ecm.platform.uidgen.service.UIDGeneratorService;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONReader;
 import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter;
-import org.nuxeo.elasticsearch.seqgen.ESUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -590,4 +591,35 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
     }
 
+    @Override
+    public ExtendedInfo newExtendedInfo(Serializable value) {
+        return new ExtendedInfo() {
+
+            /**
+             *
+             */
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public Long getId() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void setId(Long id) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Serializable getSerializableValue() {
+                return value;
+            }
+
+            @Override
+            public <T> T getValue(Class<T> clazz) {
+                return clazz.cast(this.getSerializableValue());
+            }
+
+        };
+    }
 }
