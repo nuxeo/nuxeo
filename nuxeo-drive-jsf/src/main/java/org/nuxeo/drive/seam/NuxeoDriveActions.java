@@ -165,16 +165,31 @@ public class NuxeoDriveActions extends InputController implements Serializable {
     }
 
     /**
+     * Returns the Drive edit URL for the current document.
+     *
+     * @see #getDriveEditURL(DocumentModel)
+     */
+    public String getDriveEditURL() {
+        DocumentModel currentDocument = navigationContext.getCurrentDocument();
+        return getDriveEditURL(currentDocument);
+    }
+
+    /**
+     * Returns the Drive edit URL for the given document.
+     * <p>
      * {@link #NXDRIVE_PROTOCOL} must be handled by a protocol handler configured on the client side (either on the
      * browser, or on the OS).
      *
+     * @since 7.4
      * @return Drive edit URL in the form "{@link #NXDRIVE_PROTOCOL}:// {@link #PROTOCOL_COMMAND_EDIT}
      *         /protocol/server[:port]/webappName/[user/userName/]repo/repoName/nxdocid/docId/filename/fileName[/
      *         downloadUrl/downloadUrl]"
      */
-    public String getDriveEditURL() {
+    public String getDriveEditURL(DocumentModel currentDocument) {
+        if (currentDocument == null) {
+            return null;
+        }
         // TODO NXP-15397: handle Drive not started exception
-        DocumentModel currentDocument = navigationContext.getCurrentDocument();
         BlobHolder bh = currentDocument.getAdapter(BlobHolder.class);
         if (bh == null) {
             throw new NuxeoException(String.format("Document %s (%s) is not a BlobHolder, cannot get Drive Edit URL.",
