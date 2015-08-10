@@ -1,18 +1,18 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-        xmlns:ui="http://java.sun.com/jsf/facelets"
-        class="nx-elements">
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  class="nx-elements">
 
-    <script type="text/javascript"
-            src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <script type="text/javascript"
+    src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
 
-    <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
-    <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
-    <link rel="import" href="#{baseURL}permissions/components/document-permissions/document-permissions.html"></link>
+  <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
+  <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
+  <link rel="import" href="#{baseURL}permissions/components/document-permissions/document-permissions.html"></link>
 
-    <template is="dom-bind">
+  <template is="dom-bind">
 
-        <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
-        <document-permissions doc-id="#{currentDocument.id}"></document-permissions>
+    <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>
+    <document-permissions doc-id="#{currentDocument.id}"></document-permissions>
 
-    </template>
+  </template>
 </div>
