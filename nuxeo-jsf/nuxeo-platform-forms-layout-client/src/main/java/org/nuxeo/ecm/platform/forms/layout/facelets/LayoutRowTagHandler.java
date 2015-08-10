@@ -39,6 +39,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+
+import com.sun.faces.facelets.tag.TagAttributeImpl;
 
 /**
  * Layout row recursion tag handler.
@@ -49,7 +53,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class LayoutRowTagHandler extends TagHandler {
+public class LayoutRowTagHandler extends RepeatTagHandler {
 
     private static final Log log = LogFactory.getLog(LayoutRowTagHandler.class);
 
@@ -58,6 +62,10 @@ public class LayoutRowTagHandler extends TagHandler {
     public LayoutRowTagHandler(TagConfig config) {
         super(config);
         this.config = config;
+        if (ComponentUtils.isOptimEnabled()) {
+            items = new TagAttributeImpl(config.getTag().getLocation(), "", "items", "items", "#{layout.rows}");
+            var = new TagAttributeImpl(config.getTag().getLocation(), "", "var", "var", "layoutRow");
+        }
     }
 
     /**
@@ -71,6 +79,10 @@ public class LayoutRowTagHandler extends TagHandler {
      * {@link RenderVariables.columnVariables#layoutColumnIndex}, that act are aliases.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        if (ComponentUtils.isOptimEnabled()) {
+            super.apply(ctx, parent);
+            return;
+        }
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();

@@ -14,13 +14,13 @@
     <table class="dataInput fullWidth">
       <tbody>
 
-      <nxl:layoutRow>
+      <nxl:layoutRow varStatus="rowStatus">
         <tr>
-          <nxl:layoutRowWidget>
+          <nxl:layoutRowWidget varStatus="rowWidgetStatus">
             <c:set var="bulkEditCheckBoxId"
-              value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
+              value="bulkEdit_checkbox_#{rowStatus.index}_#{rowWidgetStatus.index}" />
             <c:set var="bulkEditCheckBoxStyleClass"
-              value="bulkEdit_checkbox_#{layoutRowIndex}_#{widgetIndex}" />
+              value="bulkEdit_checkbox_#{rowStatus.index}_#{rowWidgetStatus.index}" />
             <c:set var="contextDataKey"
               value="bulkEdit/#{nxl:fieldDefinitionsAsString(widget.fieldDefinitions)}" />
             <td class="iconColumn">

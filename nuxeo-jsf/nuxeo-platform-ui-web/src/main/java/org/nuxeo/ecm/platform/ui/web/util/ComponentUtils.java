@@ -71,6 +71,10 @@ public final class ComponentUtils {
     private ComponentUtils() {
     }
 
+    public static final boolean isOptimEnabled() {
+        return Framework.isBooleanPropertyTrue("nuxeo.jsf.optimEnabled");
+    }
+
     /**
      * Calls a component encodeBegin/encodeChildren/encodeEnd methods.
      */

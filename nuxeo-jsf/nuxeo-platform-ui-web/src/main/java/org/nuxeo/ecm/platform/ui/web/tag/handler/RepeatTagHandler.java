@@ -75,14 +75,14 @@ public class RepeatTagHandler extends TagHandler {
     /**
      * @since 5.7
      */
-    protected final TagAttribute items;
+    protected TagAttribute items;
 
     /**
      * @since 5.7
      */
-    protected final TagAttribute itemsId;
+    protected TagAttribute itemsId;
 
-    protected final TagAttribute var;
+    protected TagAttribute var;
 
     protected final TagAttribute index;
 
@@ -125,6 +125,9 @@ public class RepeatTagHandler extends TagHandler {
         var = getAttribute("var");
         index = getAttribute("index");
         status = getAttribute("status");
+        if (status != null) {
+            System.err.println(status);
+        }
         begin = getAttribute("begin");
         end = getAttribute("end");
         step = getAttribute("step");

@@ -35,11 +35,14 @@ import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
-import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+
+import com.sun.faces.facelets.tag.TagAttributeImpl;
 
 /**
  * SubWidget tag handler.
@@ -50,7 +53,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class SubWidgetTagHandler extends TagHandler {
+public class SubWidgetTagHandler extends RepeatTagHandler {
 
     private static final Log log = LogFactory.getLog(SubWidgetTagHandler.class);
 
@@ -65,6 +68,10 @@ public class SubWidgetTagHandler extends TagHandler {
         super(config);
         this.config = config;
         recomputeIds = getAttribute("recomputeIds");
+        if (ComponentUtils.isOptimEnabled()) {
+            items = new TagAttributeImpl(config.getTag().getLocation(), "", "items", "items", "#{widget.subWidgets}");
+            var = new TagAttributeImpl(config.getTag().getLocation(), "", "var", "var", "widget");
+        }
     }
 
     /**
@@ -76,6 +83,10 @@ public class SubWidgetTagHandler extends TagHandler {
      * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+        if (ComponentUtils.isOptimEnabled()) {
+            super.apply(ctx, parent);
+            return;
+        }
         // resolve subwidgets from widget in context
         Widget widget = null;
         String widgetVariableName = RenderVariables.widgetVariables.widget.name();

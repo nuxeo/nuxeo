@@ -42,6 +42,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
+
+import com.sun.faces.facelets.tag.TagAttributeImpl;
 
 /**
  * Layout widget recursion tag handler.
@@ -52,7 +56,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class LayoutRowWidgetTagHandler extends TagHandler {
+public class LayoutRowWidgetTagHandler extends RepeatTagHandler {
 
     private static final Log log = LogFactory.getLog(LayoutRowWidgetTagHandler.class);
 
@@ -67,6 +71,10 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
         super(config);
         this.config = config;
         recomputeIds = getAttribute("recomputeIds");
+        if (ComponentUtils.isOptimEnabled()) {
+            items = new TagAttributeImpl(config.getTag().getLocation(), "", "items", "items", "#{layoutRow.widgets}");
+            var = new TagAttributeImpl(config.getTag().getLocation(), "", "var", "var", "widget");
+        }
     }
 
     /**
@@ -79,6 +87,10 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
+        if (ComponentUtils.isOptimEnabled()) {
+            super.apply(ctx, parent);
+            return;
+        }
 
         // resolve widgets from row in context
         LayoutRow row = null;

@@ -47,6 +47,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
@@ -200,12 +201,14 @@ public class WidgetTagHandler extends MetaTagHandler {
                 }
             }
             VariableMapper orig = ctx.getVariableMapper();
-            if (widgetInstanceBuilt) {
-                // expose widget variable to the context as layout row has not done it already, and set unique id on
-                // widget before exposing it to the context
+
+            // set unique id on widget before exposing it to the context, but do not generate id again if already set
+            if (widgetInstance != null && widgetInstance.getId() == null) {
                 FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
                 WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
+            }
 
+            if (widgetInstanceBuilt) {
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
@@ -284,9 +287,11 @@ public class WidgetTagHandler extends MetaTagHandler {
             }
 
             variables.put(RenderVariables.globalVariables.value.name(), valueExpr);
-            variables.put(
-                    String.format("%s_%s", RenderVariables.globalVariables.value.name(),
-                            Integer.valueOf(widget.getLevel())), valueExpr);
+            if (!ComponentUtils.isOptimEnabled()) {
+                variables.put(
+                        String.format("%s_%s", RenderVariables.globalVariables.value.name(),
+                                Integer.valueOf(widget.getLevel())), valueExpr);
+            }
             // document as alias to value
             // variables.put(RenderVariables.globalVariables.document.name(),
             // valueExpr);

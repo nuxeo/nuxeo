@@ -38,8 +38,8 @@
       <nxl:layoutColumn>
         <th dir="auto">
           <c:choose>
-            <c:when test="#{layoutColumn.properties.isListingSelectionBox}">
-              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+            <c:when test="#{layoutRow.properties.isListingSelectionBox}">
+              <h:selectBooleanCheckbox id="#{layoutRow.widgets[0].name}_header"
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
                 onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
@@ -50,8 +50,8 @@
                   render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')} #{nxu:componentAbsoluteId(component, 'ajax_selection_upper_buttons')}" />
               </h:selectBooleanCheckbox>
             </c:when>
-            <c:when test="#{layoutColumn.properties.isListingSelectionBoxWithCurrentDocument}">
-              <h:selectBooleanCheckbox id="#{layoutColumn.widgets[0].name}_header"
+            <c:when test="#{layoutRow.properties.isListingSelectionBoxWithCurrentDocument}">
+              <h:selectBooleanCheckbox id="#{layoutRow.widgets[0].name}_header"
                 styleClass="tipsyShow tipsyGravitySW"
                 title="#{messages['tooltip.content.select.all']}"
                 onchange="javascript:handleAllCheckBoxes(this.form.name, this.checked)"
@@ -62,38 +62,38 @@
                   render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')} #{nxu:componentAbsoluteId(component, 'ajax_selection_upper_buttons')}" />
               </h:selectBooleanCheckbox>
             </c:when>
-            <c:when test="#{layoutColumn.properties.useFirstWidgetLabelAsColumnHeader}">
+            <c:when test="#{layoutRow.properties.useFirstWidgetLabelAsColumnHeader}">
               <c:choose>
-                <c:when test="#{provider.sortable and !empty layoutColumn.properties.sortPropertyName}">
+                <c:when test="#{provider.sortable and !empty layoutRow.properties.sortPropertyName}">
                   <nxu:set var="ascIndex"
-                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, true)}"
+                    value="#{provider.getSortInfoIndex(layoutRow.properties.sortPropertyName, true)}"
                     cache="true">
                   <nxu:set var="descIndex"
-                    value="#{provider.getSortInfoIndex(layoutColumn.properties.sortPropertyName, false)}"
+                    value="#{provider.getSortInfoIndex(layoutRow.properties.sortPropertyName, false)}"
                     cache="true">
                     <span class="contentViewHeaderSortTooltip tipsyShow tipsyGravityS" title="#{messages['contentview.setSort.help']}">
                       <c:if test="#{useAjaxForm}">
                         <a4j:commandLink execute="@this" immediate="true"
                           render="#{contentIdToBeReRendered}"
-                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
-                          id="#{layoutColumn.widgets[0].name}_header_sort">
-                          <h:outputText value="#{layoutColumn.widgets[0].label}"
-                            rendered="#{!layoutColumn.widgets[0].translated}"
+                          action="#{provider.setSortInfo(layoutRow.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                          id="#{layoutRow.widgets[0].name}_header_sort">
+                          <h:outputText value="#{layoutRow.widgets[0].label}"
+                            rendered="#{!layoutRow.widgets[0].translated}"
                             styleClass="colHeader"/>
-                          <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
-                            rendered="#{layoutColumn.widgets[0].translated}"
+                          <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
+                            rendered="#{layoutRow.widgets[0].translated}"
                             styleClass="colHeader"/>
                         </a4j:commandLink>
                       </c:if>
                       <c:if test="#{not useAjaxForm}">
                         <h:commandLink immediate="true"
-                          action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
-                          id="#{layoutColumn.widgets[0].name}_header_sort">
-                          <h:outputText value="#{layoutColumn.widgets[0].label}"
-                            rendered="#{!layoutColumn.widgets[0].translated}"
+                          action="#{provider.setSortInfo(layoutRow.properties.sortPropertyName, nxu:test(ascIndex != -1, false, true), true)}"
+                          id="#{layoutRow.widgets[0].name}_header_sort">
+                          <h:outputText value="#{layoutRow.widgets[0].label}"
+                            rendered="#{!layoutRow.widgets[0].translated}"
                             styleClass="colHeader" />
-                          <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
-                            rendered="#{layoutColumn.widgets[0].translated}"
+                          <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
+                            rendered="#{layoutRow.widgets[0].translated}"
                             styleClass="colHeader" />
                         </h:commandLink>
                       </c:if>
@@ -104,8 +104,8 @@
                         <c:if test="#{useAjaxForm}">
                           <a4j:commandLink execute="@this" immediate="true"
                             render="#{contentIdToBeReRendered}"
-                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
-                            id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                            action="#{provider.setSortInfo(layoutRow.properties.sortPropertyName, false, false)}"
+                            id="#{layoutRow.widgets[0].name}_header_sort_desc">
                             <h:graphicImage value="/icons/sort_selected_up.png" />
                             <c:if test="#{hasSeveralSorts}">
                               #{ascIndex + 1}
@@ -114,8 +114,8 @@
                         </c:if>
                         <c:if test="#{not useAjaxForm}">
                           <h:commandLink immediate="true"
-                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, false, false)}"
-                            id="#{layoutColumn.widgets[0].name}_header_sort_desc">
+                            action="#{provider.setSortInfo(layoutRow.properties.sortPropertyName, false, false)}"
+                            id="#{layoutRow.widgets[0].name}_header_sort_desc">
                             <h:graphicImage value="/icons/sort_selected_up.png" />
                             <c:if test="#{hasSeveralSorts}">
                               #{ascIndex + 1}
@@ -129,8 +129,8 @@
                         <c:if test="#{useAjaxForm}">
                           <a4j:commandLink execute="@this" immediate="true"
                             render="#{contentIdToBeReRendered}"
-                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
-                            id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                            action="#{provider.setSortInfo(layoutRow.properties.sortPropertyName, true, false)}"
+                            id="#{layoutRow.widgets[0].name}_header_sort_asc">
                             <h:graphicImage value="/icons/sort_selected_down.png" />
                             <c:if test="#{hasSeveralSorts}">
                               #{descIndex + 1}
@@ -139,8 +139,8 @@
                         </c:if>
                         <c:if test="#{not useAjaxForm}">
                           <h:commandLink immediate="true"
-                            action="#{provider.setSortInfo(layoutColumn.properties.sortPropertyName, true, false)}"
-                            id="#{layoutColumn.widgets[0].name}_header_sort_asc">
+                            action="#{provider.setSortInfo(layoutRow.properties.sortPropertyName, true, false)}"
+                            id="#{layoutRow.widgets[0].name}_header_sort_asc">
                             <h:graphicImage value="/icons/sort_selected_down.png" />
                             <c:if test="#{hasSeveralSorts}">
                               #{descIndex + 1}
@@ -154,15 +154,15 @@
                         <c:if test="#{useAjaxForm}">
                           <a4j:commandLink execute="@this" immediate="true"
                             render="#{contentIdToBeReRendered}"
-                            action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
-                            id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                            action="#{provider.addSortInfo(layoutRow.properties.sortPropertyName, true)}"
+                            id="#{layoutRow.widgets[0].name}_header_sort_add">
                             <h:graphicImage value="/icons/sort_up.png" />
                           </a4j:commandLink>
                         </c:if>
                         <c:if test="#{not useAjaxForm}">
                           <h:commandLink immediate="true"
-                            action="#{provider.addSortInfo(layoutColumn.properties.sortPropertyName, true)}"
-                            id="#{layoutColumn.widgets[0].name}_header_sort_add">
+                            action="#{provider.addSortInfo(layoutRow.properties.sortPropertyName, true)}"
+                            id="#{layoutRow.widgets[0].name}_header_sort_add">
                             <h:graphicImage value="/icons/sort_up.png" />
                           </h:commandLink>
                         </c:if>
@@ -172,11 +172,11 @@
                   </nxu:set>
                 </c:when>
                 <c:otherwise>
-                  <h:outputText value="#{layoutColumn.widgets[0].label}"
-                    rendered="#{!layoutColumn.widgets[0].translated}"
+                  <h:outputText value="#{layoutRow.widgets[0].label}"
+                    rendered="#{!layoutRow.widgets[0].translated}"
                     styleClass="colHeader" />
-                  <h:outputText value="#{messages[layoutColumn.widgets[0].label]}"
-                    rendered="#{layoutColumn.widgets[0].translated}"
+                  <h:outputText value="#{messages[layoutRow.widgets[0].label]}"
+                    rendered="#{layoutRow.widgets[0].translated}"
                     styleClass="colHeader" />
                 </c:otherwise>
               </c:choose>
@@ -195,10 +195,10 @@
 <c:set var="trStyleClass" value="#{nxu:test(layoutListingStatus.index%2 ==0, 'dataRowEven', 'dataRowOdd')}" />
 <tr class="#{nxu:test(layout.properties.showRowEvenOddClass, trStyleClass, '')}">
   <nxl:layoutColumn>
-    <td class="#{layoutColumn.properties.columnStyleClass}" dir="auto">
+    <td class="#{layoutRow.properties.columnStyleClass}" dir="auto">
       <nxl:layoutColumnWidget>
         <nxl:widget widget="#{widget}" value="#{value}" />
-        <c:if test="#{layoutColumn.size > 1 and layoutColumn.size > widgetIndex + 1}">
+        <c:if test="#{layoutRow.size > 1 and layoutRow.size > widgetIndex + 1}">
           <br />
         </c:if>
       </nxl:layoutColumnWidget>
