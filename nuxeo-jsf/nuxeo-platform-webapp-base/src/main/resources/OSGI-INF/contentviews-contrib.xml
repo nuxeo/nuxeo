@@ -34,7 +34,19 @@
         </whereClause>
         <parameter>#{currentDocument.id}</parameter>
         <sort column="dc:title" ascending="true" />
-        <pageSize>20</pageSize>
+        <pageSize>100</pageSize>
+        <maxPageSize>3000</maxPageSize>
+        <pageSizeOptions>
+          <option>10</option>
+          <option>20</option>
+          <option>50</option>
+          <option>100</option>
+          <option>200</option>
+          <option>500</option>
+          <option>1000</option>
+          <option>1500</option>
+          <option>2000</option>
+        </pageSizeOptions>
       </coreQueryPageProvider>
 
       <searchLayout name="document_content_filter"
