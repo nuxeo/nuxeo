@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.relations.api.Graph;
@@ -52,9 +53,10 @@ public class AnnotationImpl implements Annotation, Serializable {
 
     @Override
     public Resource getSubject() {
-        QueryResult result = graph.query("SELECT ?s WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
+        QueryResult result = graph.query("SELECT ?s WHERE {?s ?p ?o}", "sparql",
                 null);
-        Node node = result.getResults().get(0).get("s");
+        List<Map<String, Node>> results = result.getResults();
+        Node node = results.get(0).get("s");
         return node.isBlank() ? null : (Resource) node;
     }
 
@@ -67,7 +69,11 @@ public class AnnotationImpl implements Annotation, Serializable {
     public URI getAnnotates() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_ANNOTATES + "> ?o}",
                 "sparql", null);
-        Node node = result.getResults().get(0).get("o");
+        List<Map<String, Node>> results = result.getResults();
+        if (results.isEmpty()) {
+            return null;
+        }
+        Node node = results.get(0).get("o");
         try {
             return node.isBlank() ? null : new URI(((Resource) node).getUri());
         } catch (URISyntaxException e) {
@@ -79,7 +85,11 @@ public class AnnotationImpl implements Annotation, Serializable {
     public URI getBody() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
                 null);
-        Node node = result.getResults().get(0).get("o");
+        List<Map<String, Node>> results = result.getResults();
+        if (results.isEmpty()) {
+            return null;
+        }
+        Node node = results.get(0).get("o");
         try {
             return node.isBlank() ? null : new URI(((Resource) node).getUri());
         } catch (URISyntaxException e) {
@@ -91,7 +101,11 @@ public class AnnotationImpl implements Annotation, Serializable {
     public String getBodyAsText() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_BODY + "> ?o}", "sparql",
                 null);
-        Node node = result.getResults().get(0).get("o");
+        List<Map<String, Node>> results = result.getResults();
+        if (results.isEmpty()) {
+            return null;
+        }
+        Node node = results.get(0).get("o");
         if (node.isLiteral()) {
             Literal literal = (Literal) node;
             return literal.getValue();
@@ -119,7 +133,11 @@ public class AnnotationImpl implements Annotation, Serializable {
     public String getContext() {
         QueryResult result = graph.query("SELECT ?o WHERE {?s <" + AnnotationsConstants.A_CONTEXT + "> ?o}", "sparql",
                 null);
-        Node node = result.getResults().get(0).get("o");
+        List<Map<String, Node>> results = result.getResults();
+        if (results.isEmpty()) {
+            return null;
+        }
+        Node node = results.get(0).get("o");
         return node.isBlank() ? null : ((Literal) node).getValue();
     }
 

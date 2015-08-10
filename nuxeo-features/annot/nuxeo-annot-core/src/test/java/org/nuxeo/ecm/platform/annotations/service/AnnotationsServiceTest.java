@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,29 +13,55 @@
  *
  * Contributors:
  *     Alexandre Russel
- *
- * $Id$
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.InputStream;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
+import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
+import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
+import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
-/**
- * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- */
-public class AnnotationsServiceTest extends AbstractAnnotationTest {
+@RunWith(FeaturesRunner.class)
+@Features(AnnotationFeature.class)
+public class AnnotationsServiceTest {
+
     private static final String HTTP_MYEXEMPLE_COM_NUXEO_ANNOTATIONS = "http://myexemple.com/nuxeo/Annotations/";
+
+    @Inject
+    protected AnnotationsService service;
+
+    @Inject
+    protected EventService eventService;
 
     @Test
     public void testAddAnnotation() throws Exception {
+        NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(), false, false);
+
+        Annotation annotation;
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf.xml")) {
+            assertNotNull(is);
+            annotation = new AnnotationManager().getAnnotation(is);
+        }
+
         assertNotNull(annotation);
 
         Annotation result = service.addAnnotation(annotation, user, HTTP_MYEXEMPLE_COM_NUXEO_ANNOTATIONS);
@@ -68,4 +94,11 @@ public class AnnotationsServiceTest extends AbstractAnnotationTest {
                 "http://www.w3.org/2005/Incubator/#xpointer(string-range(/html[1]/body[1]/div[3]/div[2]/p[1],\"\", 225, 17))",
                 queriedAnnotation.getContext());
     }
+
+    protected void waitForAsyncCompletion() {
+        TransactionHelper.commitOrRollbackTransaction();
+        eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
+    }
+
 }

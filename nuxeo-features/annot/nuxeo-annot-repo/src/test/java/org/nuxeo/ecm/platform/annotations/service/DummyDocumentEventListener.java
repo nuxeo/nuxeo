@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
@@ -28,46 +31,55 @@ import org.nuxeo.ecm.platform.annotations.repository.service.AnnotatedDocumentEv
  * @author Alexandre Russel
  */
 public class DummyDocumentEventListener implements AnnotatedDocumentEventListener {
-    private static int test;
 
+    private static Set<String> test = new HashSet<>();
+
+    @Override
     public void afterAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1 << 1;
+        test.add("ac");
     }
 
+    @Override
     public void afterAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1 << 7;
+        test.add("ad");
     }
 
+    @Override
     public void afterAnnotationRead(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1 << 3;
-
+        test.add("ar");
     }
 
+    @Override
     public void afterAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1 << 5;
+        test.add("au");
     }
 
+    @Override
     public void beforeAnnotationCreated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1;
+        test.add("bc");
     }
 
+    @Override
     public void beforeAnnotationDeleted(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1 << 6;
+        test.add("bd");
     }
 
+    @Override
     public void beforeAnnotationRead(NuxeoPrincipal principal, String annotationId) {
-        test |= 1 << 2;
+        test.add("br");
     }
 
+    @Override
     public void beforeAnnotationUpdated(NuxeoPrincipal principal, DocumentLocation documentLoc, Annotation annotation) {
-        test |= 1 << 4;
+        test.add("bu");
     }
 
-    public static int getTest() {
+    public static Set<String> getTest() {
         return test;
     }
 
     public static void resetTest() {
-        test = 0;
+        test.clear();
     }
+
 }

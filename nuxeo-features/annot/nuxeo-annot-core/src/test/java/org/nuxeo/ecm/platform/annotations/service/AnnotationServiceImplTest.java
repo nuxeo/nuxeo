@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -13,35 +13,44 @@
  *
  * Contributors:
  *     Alexandre Russel
- *
- * $Id$
+ *     Florent Guillaume
  */
-
 package org.nuxeo.ecm.platform.annotations.service;
 
-import org.junit.Before;
+import static org.junit.Assert.assertNotNull;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
+import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
+import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.relations.api.Resource;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-/**
- * @author <a href="mailto:arussel@nuxeo.com">Alexandre Russel</a>
- */
-public class AnnotationServiceImplTest extends AbstractAnnotationTest {
+@RunWith(FeaturesRunner.class)
+@Features(AnnotationFeature.class)
+public class AnnotationServiceImplTest {
 
-    private AnnotationsServiceImpl service;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        service = new AnnotationsServiceImpl();
-    }
+    @Inject
+    protected AnnotationsService service;
 
     @Test
     public void testAddAnnotation() throws Exception {
-        assertNotNull(annotation);
+        NuxeoPrincipal user = new UserPrincipal("bob", new ArrayList<String>(), false, false);
+
+        Annotation annotation;
+        try (InputStream is = getClass().getResourceAsStream("/post-rdf.xml")) {
+            assertNotNull(is);
+            annotation = new AnnotationManager().getAnnotation(is);
+        }
 
         Annotation result = service.addAnnotation(annotation, user, "http://myexemple.com/nuxeo/Annotations/");
         assertNotNull(result);

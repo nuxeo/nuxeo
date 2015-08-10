@@ -611,47 +611,63 @@ public class CoreGraph implements Graph {
         }
     }
 
-    public static final Pattern SPARQL_PAT1 = Pattern.compile("SELECT \\?s \\?p \\?o WHERE \\{ \\?s \\?p \\?o . \\?s <(.*)> <(.*)> . \\}");
+    public static final Pattern SPARQL_SPO_PO = Pattern.compile("SELECT \\?s \\?p \\?o WHERE \\{ \\?s \\?p \\?o . \\?s <(.*)> <(.*)> . \\}");
+
+    public static final Pattern SPARQL_PO_S = Pattern.compile("SELECT \\?p \\?o WHERE \\{ <(.*)> \\?p \\?o \\}");
 
     @Override
     public QueryResult query(String queryString, String language, String baseURI) {
         // language is ignored, assume SPARQL
-        Matcher matcher = SPARQL_PAT1.matcher(queryString);
-        if (!matcher.matches()) {
-            throw new UnsupportedOperationException("Cannot parse query: " + queryString);
+        Matcher matcher = SPARQL_SPO_PO.matcher(queryString);
+        if (matcher.matches()) {
+            Node predicate = NodeFactory.createResource(matcher.group(1));
+            Node object = NodeFactory.createResource(matcher.group(2));
+            // find subjects with this predicate and object
+            List<Node> subjects = getSubjects(predicate, object);
+            List<Map<String, Node>> results = new ArrayList<>();
+            if (!subjects.isEmpty()) {
+                // find all statements with these subjects
+                List<Statement> statements = getStatements(new Subjects(subjects), null, null);
+                for (Statement st : statements) {
+                    Map<String, Node> map = new HashMap<>();
+                    map.put("s", st.getSubject());
+                    map.put("p", st.getPredicate());
+                    map.put("o", st.getObject());
+                    results.add(map);
+                }
+            }
+            return new QueryResultImpl(Integer.valueOf(results.size()), Arrays.asList("s", "p", "o"), results);
         }
-        Node predicate = NodeFactory.createResource(matcher.group(1));
-        Node object = NodeFactory.createResource(matcher.group(2));
-        // find subjects with this predicate and object
-        List<Node> subjects = getSubjects(predicate, object);
-        List<Map<String, Node>> results = new ArrayList<>();
-        if (!subjects.isEmpty()) {
-            // find all statements with these subjects
-            List<Statement> statements = getStatements(new Subjects(subjects), null, null);
+        matcher = SPARQL_PO_S.matcher(queryString);
+        if (matcher.matches()) {
+            Node subject = NodeFactory.createResource(matcher.group(1));
+            // find predicates and objects with this subject
+            List<Statement> statements = getStatements(new StatementImpl(subject, null, null));
+            List<Map<String, Node>> results = new ArrayList<>();
             for (Statement st : statements) {
                 Map<String, Node> map = new HashMap<>();
-                map.put("s", st.getSubject());
                 map.put("p", st.getPredicate());
                 map.put("o", st.getObject());
                 results.add(map);
             }
+            return new QueryResultImpl(Integer.valueOf(results.size()), Arrays.asList("p", "o"), results);
         }
-        return new QueryResultImpl(Integer.valueOf(results.size()), Arrays.asList("s", "p", "o"), results);
+        throw new UnsupportedOperationException("Cannot parse query: " + queryString);
     }
 
-    public static final Pattern SPARQL_PAT2 = Pattern.compile("SELECT \\?s WHERE \\{ \\?s <(.*)> <(.*)> \\}");
+    public static final Pattern SPARQL_S_PO = Pattern.compile("SELECT \\?s WHERE \\{ \\?s <(.*)> <(.*)> \\}");
 
     @Override
     public int queryCount(String queryString, String language, String baseURI) {
         // language is ignored, assume SPARQL
-        Matcher matcher = SPARQL_PAT2.matcher(queryString);
-        if (!matcher.matches()) {
-            throw new UnsupportedOperationException("Cannot parse query: " + queryString);
+        Matcher matcher = SPARQL_S_PO.matcher(queryString);
+        if (matcher.matches()) {
+            Node predicate = NodeFactory.createResource(matcher.group(1));
+            Node object = NodeFactory.createResource(matcher.group(2));
+            List<Node> subjects = getSubjects(predicate, object);
+            return subjects.size();
         }
-        Node predicate = NodeFactory.createResource(matcher.group(1));
-        Node object = NodeFactory.createResource(matcher.group(2));
-        List<Node> subjects = getSubjects(predicate, object);
-        return subjects.size();
+        throw new UnsupportedOperationException("Cannot parse query: " + queryString);
     }
 
     @Override
