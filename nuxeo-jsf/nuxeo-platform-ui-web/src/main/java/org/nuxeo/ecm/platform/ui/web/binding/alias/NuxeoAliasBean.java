@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.ui.web.binding.alias;
 
 import java.io.Serializable;
+import java.lang.instrument.Instrumentation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +27,8 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.javaagent.AgentLoader;
+import org.nuxeo.runtime.javaagent.ObjectSizer;
 
 /**
  * Keep alias variable mappers in request on a managed bean.
@@ -44,6 +47,10 @@ public class NuxeoAliasBean implements Serializable {
 
     protected Map<String, AliasVariableMapper> vms;
 
+    protected int nbVars = 0;
+
+    protected static Instrumentation ins;
+
     public NuxeoAliasBean() {
         super();
     }
@@ -54,9 +61,24 @@ public class NuxeoAliasBean implements Serializable {
      * @since 7.1
      */
     @PostConstruct
-    @PreDestroy
     public void init() {
         vms = new HashMap<>();
+        nbVars = 0;
+    }
+
+    @PreDestroy
+    public void stop() {
+        log.error("Nb mappers = " + vms.size());
+        log.error("Nb vars = " + nbVars);
+        ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
+        if (sizer != null) {
+            long size = sizer.sizeOf(vms);
+            long deepsize = sizer.deepSizeOf(vms);
+            log.error("Size = " + size);
+            log.error("DeepSize = " + deepsize);
+        }
+        vms = new HashMap<>();
+        nbVars = 0;
     }
 
     public Map<String, AliasVariableMapper> getValues() {
@@ -79,6 +101,17 @@ public class NuxeoAliasBean implements Serializable {
             log.trace(String.format("Overriding alias variable mapper with id '%s'", id));
         }
         vms.put(id, vm);
+        int nb = vm.vars.size();
+        nbVars += nb;
+        ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
+        if (sizer != null) {
+            long deepsize = sizer.deepSizeOf(vm);
+            if (deepsize > 600000) {
+                log.error("Nb vars = " + nb);
+                log.error("DeepSize = " + deepsize);
+                log.error(vm.getVariables());
+            }
+        }
         if (log.isTraceEnabled()) {
             log.trace(String.format("Expose alias variable mapper with id '%s': %s", id, vm.getVariables()));
         }
@@ -91,7 +124,10 @@ public class NuxeoAliasBean implements Serializable {
         if (id == null) {
             log.debug("Remove alias variable mapper with null id");
         }
-        vms.remove(id);
+        AliasVariableMapper vm = vms.remove(id);
+        if (vm != null) {
+            nbVars -= vm.vars.size();
+        }
     }
 
 }
