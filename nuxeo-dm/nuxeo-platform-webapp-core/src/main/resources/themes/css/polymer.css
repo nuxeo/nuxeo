@@ -14,6 +14,7 @@ author: lkemen@nuxeo.com
 .nx-elements .dataOutput tr:hover paper-dialog .content.paper-button  {
   background-color: #f1f4f8;
   box-shadow: none;
+  color: #213f7d;
   padding: .7em .57em;
   min-height: initial; }
 
@@ -35,11 +36,17 @@ author: lkemen@nuxeo.com
   color: #fff; }
 
 /* Dialog */
+iron-overlay-backdrop {
+  z-index: 1050 !important; }
+
+.nx-elements paper-dialog {
+  z-index: 1100 !important; }
+
 .nx-elements paper-dialog > * {
   margin-top: 20px;
   padding: 0 24px; }
 
- .nx-elements paper-dialog span {
+.nx-elements paper-dialog span {
   margin: 0;
   padding: 0; }
 
@@ -47,9 +54,6 @@ author: lkemen@nuxeo.com
   margin: 0;
   padding: 8px 8px 8px 24px;
   position: relative; }
-
-.nx-elements paper-dialog > *:last-child {
-  margin-bottom: 24px; }
 
 /* Bubble Boxes */
 .nx-elements .bubbleBox .bubbleHeader h3 {
@@ -64,6 +68,12 @@ author: lkemen@nuxeo.com
   box-shadow: none;
   margin: auto;
   min-height: auto; }
+
+.nx-elements .floated-label-placeholder {
+  display: none; }
+
+.nx-elements .paper-dialog-scrollable > .popup-permission {
+  padding-bottom: 1.5em; }
 
 iron-autogrow-textarea {
   border-color: #888;
