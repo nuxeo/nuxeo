@@ -23,9 +23,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
+import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
+import org.nuxeo.ecm.platform.forms.layout.api.service.LayoutStore;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.ComponentName;
@@ -242,7 +246,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("actions".equals(extensionPoint)) {
-            actions.addContribution((Action) contribution);
+            registerAction((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
             if (contribution.getClass() == FilterFactory.class) {
                 registerFilterFactory((FilterFactory) contribution);
@@ -257,7 +261,7 @@ public class ActionService extends DefaultComponent implements ActionManager {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if ("actions".equals(extensionPoint)) {
-            actions.removeContribution((Action) contribution);
+            unregisterAction((Action) contribution);
         } else if ("filters".equals(extensionPoint)) {
             if (contribution.getClass() == FilterFactory.class) {
                 unregisterFilterFactory((FilterFactory) contribution);
@@ -265,6 +269,29 @@ public class ActionService extends DefaultComponent implements ActionManager {
                 filters.removeContribution((DefaultActionFilter) contribution);
             }
         }
+    }
+
+    protected void registerAction(Action action) {
+        actions.addContribution(action);
+        LayoutStore store = Framework.getService(LayoutStore.class);
+        if (store == null) {
+            log.error("Cannot register widget for action " + action);
+            return;
+        }
+        // get action again to benefit from compat logics on type
+        Action regAction = getAction(action.getId());
+        String type = regAction.getType();
+        if (StringUtils.isBlank(type)) {
+            type = "link";
+        }
+        WidgetDefinitionImpl widgetDef = new WidgetDefinitionImpl(regAction.getId(), type, regAction.getLabel(),
+                regAction.getHelp(), true, null, null, regAction.getAllProperties(), null);
+        widgetDef.setTypeCategory("jsfAction");
+        store.registerWidget("jsfAction", widgetDef);
+    }
+
+    protected void unregisterAction(Action action) {
+        actions.removeContribution(action);
     }
 
     /**
