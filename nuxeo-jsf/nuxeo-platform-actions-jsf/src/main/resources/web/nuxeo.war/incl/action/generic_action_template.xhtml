@@ -69,14 +69,13 @@ Templating zones that can be filled when useAjaxForm is set to true:
   <nxu:set var="actionReRender"
     value="#{action.properties.ajaxReRender}"
     resolveTwice="true">
-  <nxl:widgetType category="jsfAction"
-    name="#{nxu:test(empty action.type, nxu:test(empty actionType, 'link', actionType), action.type)}"
+  <nxl:widget
+    category="jsfAction"
+    name="#{action.id}"
     mode="#{empty mode?'view':mode}"
-    widgetName="#{actionWidgetName}"
     hideIcon="#{hideIcon}"
     hideLabel="#{hideLabel}"
     useButton="#{useButton}"
-    useAjaxForm="#{useAjaxForm and action.properties.ajaxSupport}"
     formAdded="#{formAdded}"
     actionStyleClass="#{actionStyleClass}"
     clickedActionIdHolder="#{clickedActionIdHolder}"
@@ -85,25 +84,22 @@ Templating zones that can be filled when useAjaxForm is set to true:
     <nxu:set var="ajaxReRender"
       value="#{nxu:joinRender(ajaxReRender, nxu:componentAbsoluteId(component, actionReRender))}">
     <nxu:set var="addForm"
-      value="#{action.properties.containsKey('addForm') ? action.properties.addForm : addForm}"
-      resolveTwice="true">
-    <nxu:set var="useAjaxForm"
-      value="#{empty useAjaxForm and action.properties.containsKey('useAjaxForm') ? action.properties.useAjaxForm : useAjaxForm}"
+      value="#{widget.properties.containsKey('addForm') ? widget.properties.addForm : addForm}"
       resolveTwice="true">
     <nxu:set var="discardForm"
-      value="#{action.properties.containsKey('discardSurroundingForm') ? discardSurroundingForm : widget.properties.discardSurroundingForm}"
+      value="#{widget.properties.discardSurroundingForm}"
       resolveTwice="true">
     <nxu:set var="supportAjax"
-      value="#{action.properties.containsKey('ajaxSupport') ? action.properties.ajaxSupport : widget.properties.supportAjax}"
+      value="#{widget.properties.supportAjax and widget.properties.ajaxSupport}"
       resolveTwice="true">
     <nxu:set var="disableMultipartForm"
-      value="#{action.properties.containsKey('disableMultipartForm') ? action.properties.disableMultipartForm : widget.properties.disableMultipartForm}"
+      value="#{widget.properties.disableMultipartForm}"
       resolveTwice="true">
     <nxu:set var="disableDoubleClickShield"
-      value="#{action.properties.containsKey('disableDoubleClickShield') ? action.properties.disableDoubleClickShield : widget.properties.disableDoubleClickShield}"
+      value="#{widget.properties.disableDoubleClickShield}"
       resolveTwice="true" >
       <ui:decorate template="/widgets/incl/form_template.xhtml">
-        <ui:param name="addForm" value="#{addForm and (!discardForm or useAjaxForm)}" />
+        <ui:param name="addForm" value="#{addForm and !discardForm}" />
         <ui:param name="formId" value="#{widget.id}_form" />
         <ui:param name="useAjaxForm" value="#{useAjaxForm and supportAjax}" />
         <ui:param name="disableMultipartForm" value="#{disableMultipartForm}" />
@@ -119,8 +115,7 @@ Templating zones that can be filled when useAjaxForm is set to true:
     </nxu:set>
     </nxu:set>
     </nxu:set>
-    </nxu:set>
-  </nxl:widgetType>
+  </nxl:widget>
   </nxu:set>
 
 </nxu:set>

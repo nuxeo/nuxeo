@@ -645,7 +645,7 @@ class FolderPage(BasePage):
              file_path and 'upload' or 'none'],
             ['document_create:nxl_file:nxw_file:nxw_file_file:upload',
              Upload(file_path or '')],
-            ['document_create:nxw_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create file: Submit")
