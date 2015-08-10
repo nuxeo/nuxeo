@@ -550,7 +550,7 @@ class FolderPage(BasePage):
             ['document_create', 'document_create'],
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
-            ['document_create:nxw_documentCreateButtons_CREATE_WORKSPACE', 'Create'],
+            ['document_create:nxw_CREATE_WORKSPACE', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
                 description="Create workspace submit")
@@ -572,7 +572,7 @@ class FolderPage(BasePage):
             ['javax.faces.ViewState', fl.getLastJsfState()],
             ['document_create:nxl_heading:nxw_description', description],
             ['document_create:nxl_heading:nxw_title', title],
-            ['document_create:nxw_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create']],
             description="Create a section submit")
         fl.assert_('Section saved' in fl.getBody())
@@ -607,7 +607,7 @@ class FolderPage(BasePage):
             ['document_create:nxl_heading:nxw_title', title],
             ['document_create:nxl_heading:nxw_description', description],
             #['parentDocumentPath', '/default-domain/workspaces/flnxtest-page-workspace.1237992970017'],
-            ['document_create:nxw_documentCreateButtons_CREATE_DOCUMENT', 'Create'],
+            ['document_create:nxw_CREATE_DOCUMENT', 'Create'],
             ['document_create', 'document_create'],
             ['javax.faces.ViewState', fl.getLastJsfState()]],
             description="Create folder: Submit")
