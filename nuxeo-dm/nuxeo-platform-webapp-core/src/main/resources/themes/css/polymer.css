@@ -7,59 +7,59 @@ author: lkemen@nuxeo.com
 /* =Reset inherited styles from the Nuxeo UI Framework */
 
 /* Buttons */
-.nx-wc .content.paper-button,
-.nx-wc paper-dialog .buttons .content.paper-button,
-.nx-wc .dataTable tr:hover paper-dialog .content.paper-button,
-.nx-wc .dataList tr:hover paper-dialog .content.paper-button,
-.nx-wc .dataOutput tr:hover paper-dialog .content.paper-button  {
+.nx-elements .content.paper-button,
+.nx-elements paper-dialog .buttons .content.paper-button,
+.nx-elements .dataTable tr:hover paper-dialog .content.paper-button,
+.nx-elements .dataList tr:hover paper-dialog .content.paper-button,
+.nx-elements .dataOutput tr:hover paper-dialog .content.paper-button  {
   background-color: #f1f4f8;
   box-shadow: none;
   padding: .7em .57em;
   min-height: initial; }
 
-.nx-wc .dataTable tr:hover .content.paper-button,
-.nx-wc .dataList tr:hover .content.paper-button,
-.nx-wc .dataOutput tr:hover .content.paper-button {
+.nx-elements .dataTable tr:hover .content.paper-button,
+.nx-elements .dataList tr:hover .content.paper-button,
+.nx-elements .dataOutput tr:hover .content.paper-button {
   background-color: #fff; }
 
-.nx-wc .content.paper-button:hover,
-.nx-wc .colorful .content.paper-button,
-.nx-wc paper-dialog .colorful .content.paper-button,
-.nx-wc .dataTable tr:hover paper-dialog .colorful .content.paper-button,
-.nx-wc .dataList tr:hover paper-dialog .colorful .content.paper-button,
-.nx-wc .dataOutput tr:hover paper-dialog .colorful .content.paper-button,
-.nx-wc .dataTable tr:hover .content.paper-button:hover,
-.nx-wc .dataList tr:hover .content.paper-button:hover,
-.nx-wc .dataOutput tr:hover .content.paper-button:hover  {
+.nx-elements .content.paper-button:hover,
+.nx-elements .colorful .content.paper-button,
+.nx-elements paper-dialog .colorful .content.paper-button,
+.nx-elements .dataTable tr:hover paper-dialog .colorful .content.paper-button,
+.nx-elements .dataList tr:hover paper-dialog .colorful .content.paper-button,
+.nx-elements .dataOutput tr:hover paper-dialog .colorful .content.paper-button,
+.nx-elements .dataTable tr:hover .content.paper-button:hover,
+.nx-elements .dataList tr:hover .content.paper-button:hover,
+.nx-elements .dataOutput tr:hover .content.paper-button:hover  {
   background-color: #00adff;
   color: #fff; }
 
 /* Dialog */
-.nx-wc paper-dialog > * {
+.nx-elements paper-dialog > * {
   margin-top: 20px;
   padding: 0 24px; }
 
- .nx-wc paper-dialog span {
+ .nx-elements paper-dialog span {
   margin: 0;
   padding: 0; }
 
-.nx-wc paper-dialog .buttons {
+.nx-elements paper-dialog .buttons {
   margin: 0;
   padding: 8px 8px 8px 24px;
   position: relative; }
 
-.nx-wc paper-dialog > *:last-child {
+.nx-elements paper-dialog > *:last-child {
   margin-bottom: 24px; }
 
 /* Bubble Boxes */
-.nx-wc .bubbleBox .bubbleHeader h3 {
+.nx-elements .bubbleBox .bubbleHeader h3 {
   float: left; }
 
-.nx-wc .bubbleBox .bubbleHeader paper-button {
+.nx-elements .bubbleBox .bubbleHeader paper-button {
   float: right; }
 
 /* Forms */
-.nx-wc textarea {
+.nx-elements textarea {
   border: medium none;
   box-shadow: none;
   margin: auto;
