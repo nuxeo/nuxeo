@@ -407,6 +407,28 @@ public class Action implements Serializable, Cloneable, Comparable<Action> {
         return propertiesCache;
     }
 
+    public Map<String, Serializable> getAllProperties() {
+        Map<String, Serializable> allProps = new HashMap<String, Serializable>();
+        if (link != null) {
+            allProps.put("link", link);
+        }
+        if (icon != null) {
+            allProps.put("icon", getIcon());
+        }
+        if (confirm != null) {
+            allProps.put("confirm", categories);
+        }
+        if (immediate != null) {
+            allProps.put("immediate", immediate);
+        }
+        if (accessKey != null) {
+            allProps.put("accessKey", accessKey);
+        }
+        Map<String, Serializable> props = getProperties();
+        allProps.putAll(props);
+        return allProps;
+    }
+
     /**
      * @since 5.6
      */

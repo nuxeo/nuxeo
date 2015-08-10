@@ -11,10 +11,12 @@
     @author Anahide Tchertchian (at@nuxeo.com)
   </documentation>
 
+  <require>org.nuxeo.ecm.platform.forms.layout.LayoutStore</require>
+
   <implementation class="org.nuxeo.ecm.platform.actions.ActionService" />
 
   <service>
-          <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
+    <provide interface="org.nuxeo.ecm.platform.actions.ejb.ActionManager" />
   </service>
 
   <extension-point name="filters">
