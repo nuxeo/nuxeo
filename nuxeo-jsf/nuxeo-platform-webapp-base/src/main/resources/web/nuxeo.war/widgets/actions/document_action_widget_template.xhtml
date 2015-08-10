@@ -5,11 +5,9 @@
   xmlns:c="http://java.sun.com/jstl/core">
 
 <nxu:set var="actionContextDocument"
-  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}"
-  cache="true">
+  value="#{nxu:test(empty widgetProperty_actionContextDocument, fieldOrValue, widgetProperty_actionContextDocument)}">
 <nxu:set var="widgetProperty_action"
-  value="#{webActions.getActionForDocument(widgetProperty_actionId, actionContextDocument, not widgetProperty_disableFiltered)}"
-  cache="true">
+  value="#{webActions.getActionForDocument(widgetProperty_actionId, actionContextDocument, not widgetProperty_disableFiltered)}">
 <nxu:set var="widgetProperty_addForm"
   value="false"
   cache="true">
