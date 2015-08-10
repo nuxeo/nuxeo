@@ -28,11 +28,13 @@ public class TestNXQLEscaping {
         assertEquals("a\\'b", NXQL.escapeStringInner("a'b"));
         assertEquals("a\\\\b", NXQL.escapeStringInner("a\\b"));
         assertEquals("a\\\\\\'b", NXQL.escapeStringInner("a\\'b"));
+        assertEquals("a\\nb", NXQL.escapeStringInner("a\nb"));
 
         assertEquals("''", NXQL.escapeString(""));
         assertEquals("'a\\'b'", NXQL.escapeString("a'b"));
         assertEquals("'a\\\\b'", NXQL.escapeString("a\\b"));
         assertEquals("'a\\\\\\'b'", NXQL.escapeString("a\\'b"));
+        assertEquals("'a\\nb'", NXQL.escapeString("a\nb"));
     }
 
 }

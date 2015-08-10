@@ -223,7 +223,8 @@ public class NXQL {
     public static String escapeStringInner(String s) {
         // backslash -> backslash backslash
         // quote -> backslash quote
-        return s.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
+        // newline -> backslash n
+        return s.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'").replaceAll("\n", "\\\\n");
     }
 
 }
