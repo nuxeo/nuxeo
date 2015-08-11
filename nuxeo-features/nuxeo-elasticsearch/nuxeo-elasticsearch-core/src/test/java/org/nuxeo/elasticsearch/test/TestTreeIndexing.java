@@ -16,19 +16,6 @@
  */
 package org.nuxeo.elasticsearch.test;
 
-import static org.junit.Assume.assumeTrue;
-
-import java.io.Serializable;
-import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Inject;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -59,6 +46,19 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+
+import java.io.Serializable;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Inject;
+
+import static org.junit.Assume.assumeTrue;
 
 @RunWith(FeaturesRunner.class)
 @Features({ RepositoryElasticSearchFeature.class })
@@ -337,42 +337,44 @@ public class TestTreeIndexing {
 
         // check for user with no rights
         CoreSession restrictedSession = getRestrictedSession("toto");
-        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
-        Assert.assertEquals(0, docs.totalSize());
+        try {
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
+            Assert.assertEquals(0, docs.totalSize());
 
-        // add READ rights and check that user now has access
-        DocumentRef ref = new PathRef("/folder0/folder1/folder2");
-        ACP acp = new ACPImpl();
-        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        acl.add(new ACE("toto", SecurityConstants.READ, true));
-        acp.addACL(acl);
-        session.setACP(ref, acp, true);
+            // add READ rights and check that user now has access
+            DocumentRef ref = new PathRef("/folder0/folder1/folder2");
+            ACP acp = new ACPImpl();
+            ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+            acl.add(new ACE("toto", SecurityConstants.READ, true));
+            acp.addACL(acl);
+            session.setACP(ref, acp, true);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
+            TransactionHelper.commitOrRollbackTransaction();
+            waitForCompletion();
 
-        startTransaction();
-        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
-        Assert.assertEquals(8, docs.totalSize());
+            startTransaction();
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
+            Assert.assertEquals(8, docs.totalSize());
 
-        // Add an unsupported negative ACL
-        ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
-        acp = new ACPImpl();
-        acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        acl.add(new ACE("bob", SecurityConstants.EVERYTHING, false));
+            // Add an unsupported negative ACL
+            ref = new PathRef("/folder0/folder1/folder2/folder3/folder4/folder5");
+            acp = new ACPImpl();
+            acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+            acl.add(new ACE("bob", SecurityConstants.EVERYTHING, false));
 
-        acp.addACL(acl);
-        session.setACP(ref, acp, true);
-        session.save();
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
+            acp.addACL(acl);
+            session.setACP(ref, acp, true);
+            session.save();
+            TransactionHelper.commitOrRollbackTransaction();
+            waitForCompletion();
 
-        startTransaction();
-        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
-        // can view folder2, folder3 and folder4
-        Assert.assertEquals(3, docs.totalSize());
-
-        restrictedSession.close();
+            startTransaction();
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
+            // can view folder2, folder3 and folder4
+            Assert.assertEquals(3, docs.totalSize());
+        } finally {
+            restrictedSession.close();
+        }
     }
 
     @Test
@@ -383,41 +385,45 @@ public class TestTreeIndexing {
         Assert.assertEquals(10, docs.totalSize());
 
         CoreSession restrictedSession = getRestrictedSession("toto");
-        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
-        Assert.assertEquals(0, docs.totalSize());
+        try {
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document"));
+            Assert.assertEquals(0, docs.totalSize());
 
-        DocumentRef ref = new PathRef("/folder0");
-        ACP acp = new ACPImpl();
-        ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        acl.add(ACE.builder("toto", SecurityConstants.READ).build());
-        acp.addACL(acl);
-        session.setACP(ref, acp, true);
+            DocumentRef ref = new PathRef("/folder0");
+            ACP acp = new ACPImpl();
+            ACL acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+            acl.add(ACE.builder("toto", SecurityConstants.READ).build());
+            acp.addACL(acl);
+            session.setACP(ref, acp, true);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
+            TransactionHelper.commitOrRollbackTransaction();
+            waitForCompletion();
 
-        startTransaction();
-        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
-        Assert.assertEquals(10, docs.totalSize());
+            startTransaction();
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
+            Assert.assertEquals(10, docs.totalSize());
 
-        acp = new ACPImpl();
-        acl = ACPImpl.newACL(ACL.LOCAL_ACL);
-        // make the ACE archived
-        Date now = new Date();
-        Calendar begin = new GregorianCalendar();
-        begin.setTimeInMillis(now.toInstant().minus(10, ChronoUnit.DAYS).toEpochMilli());
-        Calendar end = new GregorianCalendar();
-        end.setTimeInMillis(now.toInstant().minus(2, ChronoUnit.DAYS).toEpochMilli());
-        acl.add(ACE.builder("toto", SecurityConstants.READ).begin(begin).end(end).build());
-        acp.addACL(acl);
-        session.setACP(ref, acp, true);
+            acp = new ACPImpl();
+            acl = ACPImpl.newACL(ACL.LOCAL_ACL);
+            // make the ACE archived
+            Date now = new Date();
+            Calendar begin = new GregorianCalendar();
+            begin.setTimeInMillis(now.toInstant().minus(10, ChronoUnit.DAYS).toEpochMilli());
+            Calendar end = new GregorianCalendar();
+            end.setTimeInMillis(now.toInstant().minus(2, ChronoUnit.DAYS).toEpochMilli());
+            acl.add(ACE.builder("toto", SecurityConstants.READ).begin(begin).end(end).build());
+            acp.addACL(acl);
+            session.setACP(ref, acp, true);
 
-        TransactionHelper.commitOrRollbackTransaction();
-        waitForCompletion();
+            TransactionHelper.commitOrRollbackTransaction();
+            waitForCompletion();
 
-        startTransaction();
-        docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
-        Assert.assertEquals(0, docs.totalSize());
+            startTransaction();
+            docs = ess.query(new NxQueryBuilder(restrictedSession).nxql("select * from Document order by dc:title"));
+            Assert.assertEquals(0, docs.totalSize());
+        } finally {
+            restrictedSession.close();
+        }
     }
 
     @Test
