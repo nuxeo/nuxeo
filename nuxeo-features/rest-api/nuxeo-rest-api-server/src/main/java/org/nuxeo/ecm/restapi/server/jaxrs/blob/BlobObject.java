@@ -33,12 +33,13 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.storage.StorageBlob;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.platform.web.common.ServletHelper;
+
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
-
+import com.google.common.net.MediaType;
 /**
  * @since 5.8
  */
@@ -111,9 +112,14 @@ public class BlobObject extends DefaultObject {
                 }
             }
             String contentDisposition = ServletHelper.getRFC2231ContentDisposition(ctx.getRequest(), fileName);
+            String mimetype = blob.getMimeType();
+            if(mimetype.equals("???"))
+            {
+                mimetype = MediaType.OCTET_STREAM.toString();
+            }
             // cached resource did change or no ETag -> serve updated content
             Response.ResponseBuilder builder = Response.ok(blob).header("Content-Disposition", contentDisposition).type(
-                    blob.getMimeType());
+                    mimetype);
             if (etag != null) {
                 builder.tag(etag);
             }
