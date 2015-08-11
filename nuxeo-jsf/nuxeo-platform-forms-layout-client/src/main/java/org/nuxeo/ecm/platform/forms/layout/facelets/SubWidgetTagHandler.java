@@ -116,7 +116,7 @@ public class SubWidgetTagHandler extends RepeatTagHandler {
             // set unique id on widget before exposing it to the context, but assumes iteration could be done several
             // times => do not generate id again if already set, unless specified by attribute "recomputeIds"
             if (subWidget != null && (subWidget.getId() == null || recomputeIdsBool)) {
-                WidgetTagHandler.generateWidgetId(helper, subWidget, false);
+                WidgetTagHandler.generateWidgetId(helper, subWidget, ComponentUtils.isOptimEnabled());
             }
 
             // expose widget variables

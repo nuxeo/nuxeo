@@ -202,13 +202,11 @@ public class WidgetTagHandler extends MetaTagHandler {
             }
             VariableMapper orig = ctx.getVariableMapper();
 
-            // set unique id on widget before exposing it to the context, but do not generate id again if already set
-            if (widgetInstance != null && widgetInstance.getId() == null) {
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-                WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
-            }
-
             if (widgetInstanceBuilt) {
+                // expose widget variable to the context as layout row has not done it already, and set unique id on
+                // it before exposing it to the context
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                WidgetTagHandler.generateWidgetId(helper, widgetInstance, ComponentUtils.isOptimEnabled());
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
                 ExpressionFactory eFactory = ctx.getExpressionFactory();
@@ -222,6 +220,13 @@ public class WidgetTagHandler extends MetaTagHandler {
                             key);
                     vm.setVariable(name, eFactory.createValueExpression(ctx, value, Object.class));
                 }
+            }
+
+            if (ComponentUtils.isOptimEnabled() && widgetInstance != null && widgetInstance.getId() == null) {
+                // set unique id on widget before exposing it to the context, but do not generate id again if already
+                // set
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                WidgetTagHandler.generateWidgetId(helper, widgetInstance, true);
             }
 
             try {

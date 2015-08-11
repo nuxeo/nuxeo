@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
@@ -262,7 +263,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         try {
             // set unique id on widget before exposing it to the context
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            WidgetTagHandler.generateWidgetId(helper, widget, false);
+            WidgetTagHandler.generateWidgetId(helper, widget, ComponentUtils.isOptimEnabled());
 
             boolean resolveOnlyBool = false;
             if (resolveOnly != null) {

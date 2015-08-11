@@ -47,11 +47,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.LayoutDevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.el.VariableMapperWrapper;
@@ -310,6 +313,20 @@ public class LayoutTagHandler extends TagHandler {
         // set unique id on layout, unless layout is only resolved
         if (!resolveOnly) {
             layoutInstance.setId(helper.generateLayoutId(layoutInstance.getName()));
+            if (ComponentUtils.isOptimEnabled()) {
+                // set unique id on all widgets before exposing them to the context
+                LayoutRow[] rows = layoutInstance.getRows();
+                if (rows != null) {
+                    for (LayoutRow row : rows) {
+                        Widget[] widgets = row.getWidgets();
+                        if (widgets != null) {
+                            for (Widget widget : widgets) {
+                                WidgetTagHandler.generateWidgetId(helper, widget, true);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // add additional properties put on tag

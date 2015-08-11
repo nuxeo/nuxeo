@@ -125,9 +125,6 @@ public class RepeatTagHandler extends TagHandler {
         var = getAttribute("var");
         index = getAttribute("index");
         status = getAttribute("status");
-        if (status != null) {
-            System.err.println(status);
-        }
         begin = getAttribute("begin");
         end = getAttribute("end");
         step = getAttribute("step");
