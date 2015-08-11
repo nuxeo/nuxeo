@@ -27,7 +27,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
 import org.nuxeo.runtime.javaagent.AgentLoader;
 import org.nuxeo.runtime.javaagent.ObjectSizer;
 
@@ -69,7 +69,7 @@ public class NuxeoAliasBean implements Serializable {
 
     @PreDestroy
     public void stop() {
-        if (Framework.isDevModeSet()) {
+        if (ComponentUtils.isOptimDebugEnabled()) {
             log.error("Nb mappers = " + vms.size());
             log.error("Nb vars = " + nbVars);
             try {
@@ -107,7 +107,7 @@ public class NuxeoAliasBean implements Serializable {
         vms.put(id, vm);
         int nb = vm.vars.size();
         nbVars += nb;
-        if (Framework.isDevModeSet()) {
+        if (ComponentUtils.isOptimDebugEnabled()) {
             try {
                 ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
                 long deepsize = sizer.deepSizeOf(vm);
