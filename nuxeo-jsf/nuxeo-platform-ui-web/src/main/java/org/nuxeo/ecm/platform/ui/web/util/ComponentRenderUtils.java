@@ -46,7 +46,7 @@ public class ComponentRenderUtils {
             return targetId;
         }
         String id = targetId;
-        UIComponent target = findComponentFor(base, id, true);
+        UIComponent target = findComponentFor(base, id, ComponentUtils.isOptimEnabled());
         if (target != null) {
             id = getAbsoluteId(target);
         }
@@ -79,7 +79,9 @@ public class ComponentRenderUtils {
 
         while (target == null && parent != null) {
             target = findUIComponentBelow(parent, scanned, id);
-            scanned.add(parent.getClientId());
+            if (ComponentUtils.isOptimEnabled()) {
+                scanned.add(parent.getClientId());
+            }
             root = parent;
             parent = parent.getParent();
             if (onlyBelow) {
@@ -92,7 +94,7 @@ public class ComponentRenderUtils {
         return target;
     }
 
-    protected static UIComponent findUIComponentBelow(UIComponent root,List<String> scanned, String id) {
+    protected static UIComponent findUIComponentBelow(UIComponent root, List<String> scanned, String id) {
         UIComponent target = null;
         for (Iterator<UIComponent> iter = root.getFacetsAndChildren(); iter.hasNext();) {
             UIComponent child = iter.next();
