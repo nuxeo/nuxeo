@@ -27,6 +27,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.javaagent.AgentLoader;
 import org.nuxeo.runtime.javaagent.ObjectSizer;
 
@@ -68,14 +69,17 @@ public class NuxeoAliasBean implements Serializable {
 
     @PreDestroy
     public void stop() {
-        log.error("Nb mappers = " + vms.size());
-        log.error("Nb vars = " + nbVars);
-        ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
-        if (sizer != null) {
-            long size = sizer.sizeOf(vms);
-            long deepsize = sizer.deepSizeOf(vms);
-            log.error("Size = " + size);
-            log.error("DeepSize = " + deepsize);
+        if (Framework.isDevModeSet()) {
+            log.error("Nb mappers = " + vms.size());
+            log.error("Nb vars = " + nbVars);
+            try {
+                ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
+                long deepsize = sizer.deepSizeOf(vms);
+                log.error("DeepSize = " + deepsize);
+            } catch (ExceptionInInitializerError e) {
+                log.error("Cannot log object sizes: " + e.getMessage());
+            }
+
         }
         vms = new HashMap<>();
         nbVars = 0;
@@ -103,13 +107,17 @@ public class NuxeoAliasBean implements Serializable {
         vms.put(id, vm);
         int nb = vm.vars.size();
         nbVars += nb;
-        ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
-        if (sizer != null) {
-            long deepsize = sizer.deepSizeOf(vm);
-            if (deepsize > 600000) {
-                log.error("Nb vars = " + nb);
-                log.error("DeepSize = " + deepsize);
-                log.error(vm.getVariables());
+        if (Framework.isDevModeSet()) {
+            try {
+                ObjectSizer sizer = AgentLoader.INSTANCE.getSizer();
+                long deepsize = sizer.deepSizeOf(vm);
+                if (deepsize > 600000) {
+                    log.error("Nb vars = " + nb);
+                    log.error("DeepSize = " + deepsize);
+                    log.error(vm.getVariables());
+                }
+            } catch (ExceptionInInitializerError e) {
+                log.error("Cannot log object sizes: " + e.getMessage());
             }
         }
         if (log.isTraceEnabled()) {
