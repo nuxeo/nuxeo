@@ -76,7 +76,8 @@ public final class ComponentUtils {
     }
 
     public static final boolean isOptimEnabled() {
-        return Framework.isBooleanPropertyTrue("nuxeo.jsf.optimEnabled");
+        return true;
+        //return Framework.isBooleanPropertyTrue("nuxeo.jsf.optimEnabled");
     }
 
     /**
