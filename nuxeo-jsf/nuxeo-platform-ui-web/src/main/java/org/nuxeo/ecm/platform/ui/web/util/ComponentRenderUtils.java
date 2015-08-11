@@ -23,7 +23,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
@@ -44,10 +46,11 @@ public class ComponentRenderUtils {
             return targetId;
         }
         String id = targetId;
-        UIComponent target = findComponentFor(base, id);
+        UIComponent target = findComponentFor(base, id, true);
         if (target != null) {
             id = getAbsoluteId(target);
         }
+
         return id;
     }
 
@@ -59,6 +62,10 @@ public class ComponentRenderUtils {
     }
 
     public static UIComponent findComponentFor(UIComponent component, String id) {
+        return findComponentFor(component, id, false);
+    }
+
+    protected static UIComponent findComponentFor(UIComponent component, String id, boolean onlyBelow) {
         if (id == null) {
             throw new NullPointerException("id is null!");
         }
@@ -68,21 +75,30 @@ public class ComponentRenderUtils {
         UIComponent target = null;
         UIComponent parent = component;
         UIComponent root = component;
+        List<String> scanned = new ArrayList<String>();
+
         while (target == null && parent != null) {
-            target = findUIComponentBelow(parent, id);
+            target = findUIComponentBelow(parent, scanned, id);
+            scanned.add(parent.getClientId());
             root = parent;
             parent = parent.getParent();
+            if (onlyBelow) {
+                return target;
+            }
         }
         if (target == null) {
-            target = findUIComponentBelow(root, id);
+            target = findUIComponentBelow(root, scanned, id);
         }
         return target;
     }
 
-    protected static UIComponent findUIComponentBelow(UIComponent root, String id) {
+    protected static UIComponent findUIComponentBelow(UIComponent root,List<String> scanned, String id) {
         UIComponent target = null;
         for (Iterator<UIComponent> iter = root.getFacetsAndChildren(); iter.hasNext();) {
             UIComponent child = iter.next();
+            if (scanned.contains(child.getClientId())) {
+                continue;
+            }
             if (child instanceof NamingContainer) {
                 try {
                     target = child.findComponent(id);
@@ -91,7 +107,7 @@ public class ComponentRenderUtils {
                 }
             }
             if (target == null && child.getChildCount() > 0) {
-                target = findUIComponentBelow(child, id);
+                target = findUIComponentBelow(child, scanned, id);
             }
             if (target != null) {
                 break;
