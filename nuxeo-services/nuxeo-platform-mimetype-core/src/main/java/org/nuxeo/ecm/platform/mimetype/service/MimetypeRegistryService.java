@@ -47,6 +47,8 @@ import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.model.RuntimeContext;
 
+import com.google.common.net.MediaType;
+
 /**
  * MimetypeEntry registry service.
  * <p>
@@ -173,6 +175,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         return bundle;
     }
 
+    @Override
     public List<String> getExtensionsFromMimetypeName(String mimetypeName) {
         List<String> extensions = new ArrayList<String>();
         for (String key : mimetypeByNormalisedRegistry.keySet()) {
@@ -184,10 +187,12 @@ public class MimetypeRegistryService extends DefaultComponent implements
         return extensions;
     }
 
+    @Override
     public MimetypeEntry getMimetypeEntryByName(String name) {
         return mimetypeByNormalisedRegistry.get(name);
     }
 
+    @Override
     @SuppressWarnings({"unchecked"})
     public String getMimetypeFromFile(File file)
             throws MimetypeNotFoundException, MimetypeDetectionException {
@@ -241,6 +246,12 @@ public class MimetypeRegistryService extends DefaultComponent implements
                     }
                 }
             }
+
+            if(mimeType.equals("???"))
+            {
+                //Do not return question marks by default
+                mimeType = MediaType.OCTET_STREAM.toString();
+            }
             return mimeType;
         } catch (MagicMatchNotFoundException e) {
             if (file.getAbsolutePath() != null) {
@@ -293,6 +304,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
     // the stream based detection is deprecated and should be replaced by
     // StreamingBlob detection instead to make serialization efficient for
     // remote call
+    @Override
     @Deprecated
     public String getMimetypeFromStream(InputStream stream)
             throws MimetypeNotFoundException, MimetypeDetectionException {
@@ -320,6 +332,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
      * @throws MimetypeDetectionException
      * @author lgodard
      */
+    @Override
     @Deprecated
     // use getMimetypeFromBlobWithDefault instead
     public String getMimetypeFromStreamWithDefault(InputStream is,
@@ -331,6 +344,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         }
     }
 
+    @Override
     public String getMimetypeFromBlob(Blob blob)
             throws MimetypeNotFoundException, MimetypeDetectionException {
         File file = null;
@@ -357,6 +371,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         }
     }
 
+    @Override
     public MimetypeEntry getMimetypeEntryByMimeType(String mimetype) {
         MimetypeEntry mtype = mimetypeByNormalisedRegistry.get("application/octet-stream");
         if (mimetype != null) {
@@ -382,6 +397,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
      * @author lgodard
      * @throws MimetypeDetectionException
      */
+    @Override
     public String getMimetypeFromBlobWithDefault(Blob blob,
             String defaultMimetype) throws MimetypeDetectionException {
         try {
@@ -402,6 +418,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
      * @throws MimetypeDetectionException
      * @author lgodard
      */
+    @Override
     public String getMimetypeFromFilenameAndBlobWithDefault(String filename,
             Blob blob, String defaultMimetype)
             throws MimetypeDetectionException {
@@ -418,6 +435,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         }
     }
 
+    @Override
     public Blob updateMimetype(Blob blob, String filename)
             throws MimetypeDetectionException {
         if (!blob.isPersistent()) {
@@ -438,6 +456,7 @@ public class MimetypeRegistryService extends DefaultComponent implements
         return blob;
     }
 
+    @Override
     public Blob updateMimetype(Blob blob) throws MimetypeDetectionException {
         return updateMimetype(blob, null);
     }

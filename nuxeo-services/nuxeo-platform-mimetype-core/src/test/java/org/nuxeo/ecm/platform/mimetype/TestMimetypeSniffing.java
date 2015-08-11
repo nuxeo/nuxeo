@@ -23,8 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -43,6 +41,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
 
     private MimetypeRegistryService mimetypeRegistry;
 
+    @Override
     @Test
     public void setUp() throws Exception {
         super.setUp();
@@ -51,6 +50,7 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
         mimetypeRegistry = NXMimeType.getMimetypeRegistryService();
     }
 
+    @Override
     @Test
     public void tearDown() throws Exception {
         mimetypeRegistry = null;
@@ -71,6 +71,13 @@ public class TestMimetypeSniffing extends NXRuntimeTestCase {
     public void testZeroesDocumentFromFile() throws Exception {
         assertEquals("application/octet-stream",
                 mimetypeRegistry.getMimetypeFromFile(getZeroesDocument()));
+    }
+
+    @Test
+    public void testMidFromFile() throws Exception {
+        File midFile = FileUtils.getResourceFileFromContext("test-data/christmas.mid");
+        assertEquals("application/octet-stream",
+                mimetypeRegistry.getMimetypeFromFile(midFile));
     }
 
     @Test
