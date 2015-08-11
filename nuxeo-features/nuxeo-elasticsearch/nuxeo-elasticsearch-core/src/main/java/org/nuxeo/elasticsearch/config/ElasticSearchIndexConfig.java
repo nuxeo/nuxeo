@@ -221,7 +221,7 @@ public class ElasticSearchIndexConfig {
     }
 
     public String getRepositoryName() {
-        if (DOC_TYPE.equals(type) && repositoryName == null) {
+        if (isDocumentIndex() && repositoryName == null) {
             repositoryName = DEFAULT_REPOSITORY_NAME;
         }
         return repositoryName;
@@ -233,6 +233,16 @@ public class ElasticSearchIndexConfig {
 
     public void setEnabled(boolean isEnabled) {
         this.isEnabled = isEnabled;
+    }
+
+
+    /**
+     * Return true if the index/mapping is associated with a Nuxeo document repository
+     *
+     * @since 7.4
+     */
+    public boolean isDocumentIndex() {
+        return DOC_TYPE.equals(getType());
     }
 
     /**

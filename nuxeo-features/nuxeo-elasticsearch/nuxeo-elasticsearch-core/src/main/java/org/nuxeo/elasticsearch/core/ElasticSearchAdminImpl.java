@@ -19,7 +19,6 @@
 package org.nuxeo.elasticsearch.core;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ALL_FIELDS;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -227,7 +226,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
 
     private void initializeIndexes() {
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
-            if (DOC_TYPE.equals(conf.getType())) {
+            if (conf.isDocumentIndex()) {
                 log.info("Associate index " + conf.getName() + " with repository: " + conf.getRepositoryName());
                 indexNames.put(conf.getRepositoryName(), conf.getName());
                 repoNames.put(conf.getName(), conf.getRepositoryName());
@@ -350,7 +349,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
         log.info("Drop and init index of repository: " + repositoryName);
         indexInitDone = false;
         for (ElasticSearchIndexConfig conf : indexConfig.values()) {
-            if (DOC_TYPE.equals(conf.getType()) && repositoryName.equals(conf.getRepositoryName())) {
+            if (conf.isDocumentIndex() && repositoryName.equals(conf.getRepositoryName())) {
                 initIndex(conf, true);
             }
         }
@@ -373,7 +372,7 @@ public class ElasticSearchAdminImpl implements ElasticSearchAdmin {
             if (!dropIfExists) {
                 log.debug("Index " + conf.getName() + " already exists");
                 mappingExists = getClient().admin().indices().prepareGetMappings(conf.getName()).execute().actionGet().getMappings().get(
-                        conf.getName()).containsKey(DOC_TYPE);
+                        conf.getName()).containsKey(conf.getType());
             } else {
                 if (!Framework.isTestModeSet()) {
                     log.warn(String.format("Initializing index: %s, type: %s with "
