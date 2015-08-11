@@ -32,6 +32,10 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Helper methods for manipulating components thanks to given ids.
  * <p>
@@ -41,16 +45,27 @@ import javax.faces.context.FacesContext;
  */
 public class ComponentRenderUtils {
 
+    private static final Log log = LogFactory.getLog(ComponentRenderUtils.class);
+
+    public static final boolean isOptimEnabled() {
+        return ComponentUtils.isOptimEnabled();
+        //return false;
+    }
+
     public static String getComponentAbsoluteId(UIComponent base, String targetId) {
-        if (targetId == null || targetId.startsWith(":")) {
+        if (StringUtils.isBlank(targetId) || targetId.startsWith(":")) {
             return targetId;
         }
+        long t0 = System.currentTimeMillis();
         String id = targetId;
-        UIComponent target = findComponentFor(base, id, ComponentUtils.isOptimEnabled());
+        UIComponent target = findComponentFor(base, id, false);
         if (target != null) {
             id = getAbsoluteId(target);
         }
-
+        long t1 = System.currentTimeMillis();
+        if (t1 - t0 > 0) {
+            log.error(String.format("getComponentAbsoluteId took %sms for '%s': '%s'", t1 - t0, targetId, id));
+        }
         return id;
     }
 
@@ -79,7 +94,7 @@ public class ComponentRenderUtils {
 
         while (target == null && parent != null) {
             target = findUIComponentBelow(parent, scanned, id);
-            if (ComponentUtils.isOptimEnabled()) {
+            if (isOptimEnabled()) {
                 scanned.add(parent.getClientId());
             }
             root = parent;
