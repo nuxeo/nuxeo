@@ -118,6 +118,14 @@ public interface ComponentManager {
      */
     Collection<ComponentName> getActivatingRegistrations();
 
+
+    /**
+     * Gets the components that fail on applicationStarted notification
+     *
+     * @since 7.4
+     */
+    Collection<ComponentName> getStartFailureRegistrations();
+
     /**
      * Gets the number of registered objects in this registry.
      *

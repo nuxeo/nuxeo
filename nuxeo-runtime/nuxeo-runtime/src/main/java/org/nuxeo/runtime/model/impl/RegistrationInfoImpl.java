@@ -278,7 +278,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         if (state == UNREGISTERED) {
             return;
         }
-        if (state == ACTIVATED || state == RESOLVED) {
+        if (state == ACTIVATED || state == RESOLVED || state == START_FAILURE ) {
             unresolve();
         }
         state = UNREGISTERED;
@@ -324,8 +324,9 @@ public class RegistrationInfoImpl implements RegistrationInfo {
                 try {
                     ((Component) ci).applicationStarted(component);
                 } catch (RuntimeException e) {
-                    log.error("Component notification of application started failed.", e);
-                    state = RESOLVED;
+                    log.error(String.format("Component %s notification of application started failed.",
+                            component.getName()), e);
+                    state = START_FAILURE;
                 }
             }
         }
@@ -392,7 +393,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
     }
 
     public synchronized void deactivate() {
-        if (state != ACTIVATED) {
+        if (state != ACTIVATED && state != START_FAILURE) {
             return;
         }
 
@@ -443,7 +444,7 @@ public class RegistrationInfoImpl implements RegistrationInfo {
         // un-register services
         manager.unregisterServices(this);
 
-        if (state == ACTIVATED) {
+        if (state == ACTIVATED || state == START_FAILURE) {
             deactivate();
         }
         state = REGISTERED;

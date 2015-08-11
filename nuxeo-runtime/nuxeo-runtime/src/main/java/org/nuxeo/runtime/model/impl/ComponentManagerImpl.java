@@ -201,7 +201,7 @@ public class ComponentManagerImpl implements ComponentManager {
         if (ri.isActivated()) {
             return ri.getComponent();
         }
-        log.debug("The component exposing the service " + serviceClass + " is not resolved");
+        log.debug("The component exposing the service " + serviceClass + " is not resolved or not started");
         return null;
     }
 
@@ -213,17 +213,26 @@ public class ComponentManagerImpl implements ComponentManager {
 
     @Override
     public Collection<ComponentName> getActivatingRegistrations() {
+        return getRegistrations(RegistrationInfo.ACTIVATING);
+    }
+
+    @Override
+    public Collection<ComponentName> getStartFailureRegistrations() {
+        return getRegistrations(RegistrationInfo.START_FAILURE);
+    }
+
+    protected Collection<ComponentName> getRegistrations(int state) {
         RegistrationInfo[] comps = null;
         synchronized (this) {
             comps = reg.getComponentsArray();
         }
-        Collection<ComponentName> activating = new ArrayList<ComponentName>();
+        Collection<ComponentName> ret = new ArrayList<ComponentName>();
         for (RegistrationInfo ri : comps) {
-            if (ri.getState() == RegistrationInfo.ACTIVATING) {
-                activating.add(ri.getName());
+            if (ri.getState() == state) {
+                ret.add(ri.getName());
             }
         }
-        return activating;
+        return ret;
     }
 
     void sendEvent(ComponentEvent event) {

@@ -294,18 +294,19 @@ public abstract class AbstractRuntimeService implements RuntimeService {
             }
         }
         Map<ComponentName, Set<ComponentName>> pendingRegistrations = manager.getPendingRegistrations();
-        Collection<ComponentName> activatingRegistrations = manager.getActivatingRegistrations();
+        Collection<ComponentName> unstartedRegistrations = manager.getActivatingRegistrations();
+        unstartedRegistrations.addAll(manager.getStartFailureRegistrations());
         msg.append(hr).append("\n= Component Loading Status: Pending: ").append(pendingRegistrations.size()).append(
-                " / Unstarted: ").append(activatingRegistrations.size()).append(" / Total: ").append(
+                " / Unstarted: ").append(unstartedRegistrations.size()).append(" / Total: ").append(
                 manager.getRegistrations().size()).append('\n');
         for (Entry<ComponentName, Set<ComponentName>> e : pendingRegistrations.entrySet()) {
             msg.append("  * ").append(e.getKey()).append(" requires ").append(e.getValue()).append('\n');
         }
-        for (ComponentName componentName : activatingRegistrations) {
+        for (ComponentName componentName : unstartedRegistrations) {
             msg.append("  - ").append(componentName).append('\n');
         }
         msg.append(hr);
-        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && activatingRegistrations.isEmpty());
+        return (warnings.isEmpty() && pendingRegistrations.isEmpty() && unstartedRegistrations.isEmpty());
     }
 
 }

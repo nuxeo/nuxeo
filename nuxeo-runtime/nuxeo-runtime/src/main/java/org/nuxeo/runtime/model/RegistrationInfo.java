@@ -38,13 +38,29 @@ public interface RegistrationInfo extends Serializable {
 
     int REGISTERED = 1;
 
+    /**
+     * Component dependencies are resolved
+     */
     int RESOLVED = 2;
 
+    /**
+     * Component activation successful
+     */
     int ACTIVATED = 3;
 
+    /**
+     * Before component activation
+     */
     int ACTIVATING = 4;
 
     int DEACTIVATING = 5;
+
+    /**
+     * Notification of applicationStarted fails
+     *
+     * @since 7.4
+     */
+    int START_FAILURE = 6;
 
     /**
      * Gets the component version.
