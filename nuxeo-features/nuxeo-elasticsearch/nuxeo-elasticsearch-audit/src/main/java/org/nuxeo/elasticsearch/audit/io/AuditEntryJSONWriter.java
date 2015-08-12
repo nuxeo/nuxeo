@@ -3,8 +3,11 @@ package org.nuxeo.elasticsearch.audit.io;
 import java.io.IOException;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.JsonSerializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializerProvider;
@@ -12,17 +15,19 @@ import org.codehaus.jackson.map.module.SimpleModule;
 import org.elasticsearch.common.jackson.core.JsonProcessingException;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 
 public class AuditEntryJSONWriter {
 
+    protected static final Log log = LogFactory.getLog(AuditEntryJSONWriter.class);
+
     public static void asJSON(JsonGenerator jg, LogEntry logEntry) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule("esAuditJson", org.codehaus.jackson.Version.unknownVersion());
         module.addSerializer(Map.class, new MapEntrySerializer());
-        module.addSerializer(BinaryBlob.class, new BinaryBlobEntrySerializer());
+        module.addSerializer(AbstractBlob.class, new BinaryBlobEntrySerializer());
         objectMapper.registerModule(module);
         jg.setCodec(objectMapper);
 
@@ -46,8 +51,11 @@ public class AuditEntryJSONWriter {
         for (String key : extended.keySet()) {
             ExtendedInfo ei = extended.get(key);
             if (ei != null && ei.getSerializableValue() != null) {
-
-                jg.writeObjectField(key, ei.getSerializableValue());
+                try {
+                    jg.writeObjectField(key, ei.getSerializableValue());
+                } catch (JsonMappingException e) {
+                    log.error("No Serializer found.", e);
+                }
             } else {
                 jg.writeNullField(key);
             }
@@ -78,11 +86,12 @@ public class AuditEntryJSONWriter {
         }
     }
 
-    static class BinaryBlobEntrySerializer extends JsonSerializer<BinaryBlob> {
+    static class BinaryBlobEntrySerializer extends JsonSerializer<AbstractBlob> {
 
         @Override
-        public void serialize(BinaryBlob binaryBlob, JsonGenerator jgen, SerializerProvider provider) throws JsonGenerationException, IOException {
-            // Not supported
+        public void serialize(AbstractBlob blob, JsonGenerator jgen, SerializerProvider provider)
+                throws JsonGenerationException, IOException {
+            // Do not serizalize
             jgen.writeNull();
         }
     }
