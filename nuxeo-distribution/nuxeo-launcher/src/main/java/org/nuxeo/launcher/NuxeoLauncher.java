@@ -188,7 +188,15 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_FORCE = "force";
 
-    private static final String OPTION_FORCE_DESC = "Force option can be used on start command to return an error if a server is already running.";
+    private static final String OPTION_FORCE_DESC = "Deprecated use --strict instead.";
+
+    /**
+     * @since 7.4
+     */
+    protected static final String OPTION_STRICT = "strict";
+
+    private static final String OPTION_STRICT_DESC = "Abort in error the start command when a component can not " +
+            "be activated or if a server is already running.";
 
     /**
      * @since 5.6
@@ -394,7 +402,7 @@ public abstract class NuxeoLauncher {
 
     private static boolean debug = false;
 
-    private static boolean force = false;
+    private static boolean strict = false;
 
     private boolean xmlOutput = false;
 
@@ -820,6 +828,10 @@ public abstract class NuxeoLauncher {
             OptionBuilder.withLongOpt(OPTION_FORCE);
             OptionBuilder.withDescription(OPTION_FORCE_DESC);
             launcherOptions.addOption(OptionBuilder.create("f"));
+            // Strict option
+            OptionBuilder.withLongOpt(OPTION_STRICT);
+            OptionBuilder.withDescription(OPTION_STRICT_DESC);
+            launcherOptions.addOption(OptionBuilder.create());
             // Ignore missing option
             OptionBuilder.withLongOpt(OPTION_IGNORE_MISSING);
             OptionBuilder.withDescription(OPTION_IGNORE_MISSING_DESC);
@@ -1222,6 +1234,12 @@ public abstract class NuxeoLauncher {
                 }
             } else {
                 System.err.println(startSummary);
+                if (strict) {
+                    errorValue = EXIT_CODE_ERROR;
+                    log.error("Shutting down because of unstarted component in strict mode...");
+                    stop();
+                    return false;
+                }
             }
             return true;
         } else if (deltaTime >= startMaxWait) {
@@ -1327,7 +1345,7 @@ public abstract class NuxeoLauncher {
             log.error("Could not start process: " + e.getMessage());
             log.debug(e, e);
         } catch (IllegalStateException e) {
-            if (force) {
+            if (strict) {
                 // assume program is not configured because of http port binding
                 // conflict
                 errorValue = EXIT_CODE_NOT_CONFIGURED;
@@ -1629,8 +1647,8 @@ public abstract class NuxeoLauncher {
         if (cmdLine.hasOption(OPTION_DEBUG) || cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
             setDebug(cmdLine.getOptionValue(OPTION_DEBUG_CATEGORY, "org.nuxeo.launcher"));
         }
-        if (cmdLine.hasOption(OPTION_FORCE)) {
-            setForce(true);
+        if (cmdLine.hasOption(OPTION_FORCE) || cmdLine.hasOption(OPTION_STRICT)) {
+            setStrict(true);
         }
         NuxeoLauncher launcher;
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
@@ -1745,11 +1763,11 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param set a launcher force option
-     * @since 5.9
+     * @param set a launcher strict option
+     * @since 7.4
      */
-    protected static void setForce(boolean value) {
-        force = value;
+    protected static void setStrict(boolean value) {
+        strict = value;
     }
 
     protected void setXMLOutput() {
