@@ -50,7 +50,6 @@ public class RequestValidator {
             types.add(ElasticSearchConstants.DOC_TYPE);
             indexTypes.put(esa.getIndexNameForRepository(name), types);
         }
-        // TODO handle non repository index types
     }
 
     public void checkValidDocumentId(String documentId) {

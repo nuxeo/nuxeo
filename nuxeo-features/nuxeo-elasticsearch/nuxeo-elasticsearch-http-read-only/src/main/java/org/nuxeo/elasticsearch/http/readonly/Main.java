@@ -38,6 +38,7 @@ import org.json.JSONException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -56,6 +57,8 @@ public class Main extends ModuleRoot {
 
     public Main() {
         super();
+        if (getContext() == null) {
+        }
         validator = new RequestValidator();
         if (log.isDebugEnabled()) {
             log.debug("New instance of ES module");
@@ -78,6 +81,23 @@ public class Main extends ModuleRoot {
     @Produces(MediaType.APPLICATION_JSON)
     public String searchWithPost(@Context UriInfo uriInf, String payload) throws IOException, JSONException {
         return doSearchWithPayload("_all", "_all", uriInf.getRequestUri().getRawQuery(), payload);
+    }
+
+
+    @GET
+    @Path(ESAuditBackend.IDX_NAME + "/_search")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String searchAuditWithPayload(@Context UriInfo uriInf, MultivaluedMap<String, String> formParams)
+            throws IOException, JSONException {
+        if (!getPrincipal().isAdministrator()) {
+            throw new IllegalArgumentException("Invalid index submitted: " + ESAuditBackend.IDX_NAME);
+        }
+        NuxeoPrincipal principal = getPrincipal();
+        SearchRequestFilter req = new SearchRequestFilter(principal, ESAuditBackend.IDX_NAME, ESAuditBackend.IDX_TYPE,
+                uriInf.getRequestUri().getRawQuery(), formParams.keySet().iterator().next());
+        log.warn(req);
+        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
     }
 
     @GET
