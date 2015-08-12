@@ -29,6 +29,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
@@ -148,16 +149,16 @@ public class MongoDBQueryBuilder {
         } else if (op == Operator.NOTBETWEEN) {
             return walkBetween(lvalue, rvalue, false);
         } else {
-            throw new RuntimeException("Unknown operator: " + op);
+            throw new QueryParseException("Unknown operator: " + op);
         }
     }
 
     protected DBObject walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_PATH + " requires = or <> operator");
+            throw new QueryParseException(NXQL.ECM_PATH + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_PATH + " requires literal path as right argument");
+            throw new QueryParseException(NXQL.ECM_PATH + " requires literal path as right argument");
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -179,10 +180,10 @@ public class MongoDBQueryBuilder {
 
     protected DBObject walkAncestorId(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
+            throw new QueryParseException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
+            throw new QueryParseException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
         }
         String ancestorId = ((StringLiteral) rvalue).value;
         if (op == Operator.EQ) {
@@ -194,10 +195,10 @@ public class MongoDBQueryBuilder {
 
     protected DBObject walkEcmFulltext(String name, Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.LIKE) {
-            throw new RuntimeException(NXQL.ECM_FULLTEXT + " requires = or LIKE operator");
+            throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires = or LIKE operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
+            throw new QueryParseException(NXQL.ECM_FULLTEXT + " requires literal string as right argument");
         }
         String fulltextQuery = ((StringLiteral) rvalue).value;
         if (name.equals(NXQL.ECM_FULLTEXT)) {
@@ -216,7 +217,7 @@ public class MongoDBQueryBuilder {
             // secondary index match with explicit field
             // do a regexp on the field
             if (name.charAt(NXQL.ECM_FULLTEXT.length()) != '.') {
-                throw new RuntimeException(name + " has incorrect syntax" + " for a secondary fulltext index");
+                throw new QueryParseException(name + " has incorrect syntax" + " for a secondary fulltext index");
             }
             String prop = name.substring(NXQL.ECM_FULLTEXT.length() + 1);
             String ft = fulltextQuery.replace(" ", "%");
@@ -290,19 +291,19 @@ public class MongoDBQueryBuilder {
         Object val = walkOperand(value);
         Object not = pushDownNot(val);
         if (!(not instanceof DBObject)) {
-            throw new RuntimeException("Cannot do NOT on: " + val);
+            throw new QueryParseException("Cannot do NOT on: " + val);
         }
         return (DBObject) not;
     }
 
     protected Object pushDownNot(Object object) {
         if (!(object instanceof DBObject)) {
-            throw new RuntimeException("Cannot do NOT on: " + object);
+            throw new QueryParseException("Cannot do NOT on: " + object);
         }
         DBObject ob = (DBObject) object;
         Set<String> keySet = ob.keySet();
         if (keySet.size() != 1) {
-            throw new RuntimeException("Cannot do NOT on: " + ob);
+            throw new QueryParseException("Cannot do NOT on: " + ob);
         }
         String key = keySet.iterator().next();
         Object value = ob.get(key);
@@ -339,7 +340,7 @@ public class MongoDBQueryBuilder {
                 || QueryOperators.GTE.equals(key)) {
             return new BasicDBObject(QueryOperators.NOT, ob);
         }
-        throw new RuntimeException("Unknown operator for NOT: " + key);
+        throw new QueryParseException("Unknown operator for NOT: " + key);
     }
 
     public DBObject walkIsNull(Operand value) {
@@ -385,7 +386,7 @@ public class MongoDBQueryBuilder {
                 } else if (ONE.equals(right)) {
                     right = TRUE;
                 } else {
-                    throw new RuntimeException("Invalid boolean: " + right);
+                    throw new QueryParseException("Invalid boolean: " + right);
                 }
             }
         }
@@ -463,7 +464,7 @@ public class MongoDBQueryBuilder {
     public DBObject walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
         String field = walkReference(lvalue).field;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
+            throw new QueryParseException("Invalid LIKE/ILIKE, right hand side must be a string: " + rvalue);
         }
         // TODO check list fields
         String like = walkStringLiteral((StringLiteral) rvalue);
@@ -495,7 +496,7 @@ public class MongoDBQueryBuilder {
         } else if (op instanceof Reference) {
             return walkReference((Reference) op);
         } else {
-            throw new RuntimeException("Unknown operand: " + op);
+            throw new QueryParseException("Unknown operand: " + op);
         }
     }
 
@@ -511,7 +512,7 @@ public class MongoDBQueryBuilder {
         } else if (lit instanceof StringLiteral) {
             return walkStringLiteral((StringLiteral) lit);
         } else {
-            throw new RuntimeException("Unknown literal: " + lit);
+            throw new QueryParseException("Unknown literal: " + lit);
         }
     }
 
@@ -552,16 +553,16 @@ public class MongoDBQueryBuilder {
     }
 
     public Object walkFunction(Function func) {
-        throw new UnsupportedOperationException("Function");
+        throw new UnsupportedOperationException(func.name);
     }
 
     public DBObject walkStartsWith(Operand lvalue, Operand rvalue) {
         if (!(lvalue instanceof Reference)) {
-            throw new RuntimeException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
+            throw new QueryParseException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
+            throw new QueryParseException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -598,7 +599,7 @@ public class MongoDBQueryBuilder {
 
     protected FieldInfo walkReference(Operand value) {
         if (!(value instanceof Reference)) {
-            throw new RuntimeException("Invalid query, left hand side must be a property: " + value);
+            throw new QueryParseException("Invalid query, left hand side must be a property: " + value);
         }
         return walkReference((Reference) value);
     }
@@ -635,7 +636,7 @@ public class MongoDBQueryBuilder {
             Field field = schemaManager.getField(prop);
             if (field == null) {
                 if (prop.indexOf(':') > -1) {
-                    throw new RuntimeException("Unkown property: " + name);
+                    throw new QueryParseException("Unkown property: " + name);
                 }
                 // check without prefix
                 // TODO precompute this in SchemaManagerImpl
@@ -652,7 +653,7 @@ public class MongoDBQueryBuilder {
                     }
                 }
                 if (field == null) {
-                    throw new RuntimeException("Unkown property: " + name);
+                    throw new QueryParseException("Unkown property: " + name);
                 }
             }
             // canonical name

@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
@@ -143,16 +144,16 @@ public abstract class ExpressionEvaluator {
         } else if (op == Operator.NOTBETWEEN) {
             return walkBetween(lvalue, rvalue, false);
         } else {
-            throw new RuntimeException("Unknown operator: " + op);
+            throw new QueryParseException("Unknown operator: " + op);
         }
     }
 
     protected Boolean walkEcmPath(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_PATH + " requires = or <> operator");
+            throw new QueryParseException(NXQL.ECM_PATH + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_PATH + " requires literal path as right argument");
+            throw new QueryParseException(NXQL.ECM_PATH + " requires literal path as right argument");
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -168,10 +169,10 @@ public abstract class ExpressionEvaluator {
 
     protected Boolean walkAncestorId(Operator op, Operand rvalue) {
         if (op != Operator.EQ && op != Operator.NOTEQ) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
+            throw new QueryParseException(NXQL.ECM_ANCESTORID + " requires = or <> operator");
         }
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
+            throw new QueryParseException(NXQL.ECM_ANCESTORID + " requires literal id as right argument");
         }
         String ancestorId = ((StringLiteral) rvalue).value;
         Object[] ancestorIds = (Object[]) walkReference(new Reference(NXQL_ECM_ANCESTOR_IDS));
@@ -288,7 +289,7 @@ public abstract class ExpressionEvaluator {
         } else if (op instanceof Reference) {
             return walkReference((Reference) op);
         } else {
-            throw new RuntimeException("Unknown operand: " + op);
+            throw new QueryParseException("Unknown operand: " + op);
         }
     }
 
@@ -304,7 +305,7 @@ public abstract class ExpressionEvaluator {
         } else if (lit instanceof StringLiteral) {
             return walkStringLiteral((StringLiteral) lit);
         } else {
-            throw new RuntimeException("Unknown literal: " + lit);
+            throw new QueryParseException("Unknown literal: " + lit);
         }
     }
 
@@ -340,7 +341,7 @@ public abstract class ExpressionEvaluator {
         Object left = walkOperand(lvalue);
         Object right = walkOperand(rvalue);
         if (!(right instanceof String)) {
-            throw new RuntimeException("Invalid LIKE rhs: " + rvalue);
+            throw new QueryParseException("Invalid LIKE rhs: " + rvalue);
         }
         return likeMaybeList(left, (String) right, positive, caseInsensitive);
     }
@@ -351,11 +352,11 @@ public abstract class ExpressionEvaluator {
 
     public Boolean walkStartsWith(Operand lvalue, Operand rvalue) {
         if (!(lvalue instanceof Reference)) {
-            throw new RuntimeException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
+            throw new QueryParseException("Invalid STARTSWITH query, left hand side must be a property: " + lvalue);
         }
         String name = ((Reference) lvalue).name;
         if (!(rvalue instanceof StringLiteral)) {
-            throw new RuntimeException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
+            throw new QueryParseException("Invalid STARTSWITH query, right hand side must be a literal path: " + rvalue);
         }
         String path = ((StringLiteral) rvalue).value;
         if (path.length() > 1 && path.endsWith("/")) {
@@ -421,7 +422,7 @@ public abstract class ExpressionEvaluator {
             return null;
         }
         if (!(value instanceof Boolean)) {
-            throw new RuntimeException("Not a boolean: " + value);
+            throw new QueryParseException("Not a boolean: " + value);
         }
         return (Boolean) value;
     }
@@ -488,7 +489,7 @@ public abstract class ExpressionEvaluator {
             return null;
         }
         if (!(left instanceof Comparable)) {
-            throw new RuntimeException("Not a comparable: " + left);
+            throw new QueryParseException("Not a comparable: " + left);
         }
         return ((Comparable<Object>) left).compareTo(right);
     }
@@ -499,7 +500,7 @@ public abstract class ExpressionEvaluator {
             return null;
         }
         if (!(left instanceof String)) {
-            throw new RuntimeException("Invalid LIKE lhs: " + left);
+            throw new QueryParseException("Invalid LIKE lhs: " + left);
         }
         String value = (String) left;
         if (caseInsensitive) {

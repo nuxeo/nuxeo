@@ -25,6 +25,7 @@ import java.util.Comparator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -128,7 +129,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             Field field = schemaManager.getField(prop);
             if (field == null) {
                 if (prop.indexOf(':') > -1) {
-                    throw new RuntimeException("Unkown property: " + name);
+                    throw new QueryParseException("Unkown property: " + name);
                 }
                 // check without prefix
                 // TODO precompute this in SchemaManagerImpl
@@ -145,7 +146,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                     }
                 }
                 if (field == null) {
-                    throw new RuntimeException("Unkown property: " + name);
+                    throw new QueryParseException("Unkown property: " + name);
                 }
             }
             prop = field.getName().getPrefixedName();
@@ -163,7 +164,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 return null;
             }
             if (!(value instanceof State)) {
-                throw new RuntimeException("Unkown property (no State): " + name);
+                throw new QueryParseException("Unkown property (no State): " + name);
             }
             value = ((State) value).get(split[i]);
         }
@@ -186,9 +187,9 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
         protected final OrderByClause orderByClause;
 
-        protected ExpressionEvaluator matcher;
+        protected DBSExpressionEvaluator evaluator;
 
-        public OrderByComparator(OrderByClause orderByClause, ExpressionEvaluator matcher) {
+        public OrderByComparator(OrderByClause orderByClause, DBSExpressionEvaluator evaluator) {
             // replace ecm:path with ecm:__path for evaluation
             // (we don't want to allow ecm:path to be usable anywhere else
             // and resolve to a null value)
@@ -201,7 +202,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 obl.add(ob);
             }
             this.orderByClause = new OrderByClause(obl);
-            this.matcher = matcher;
+            this.evaluator = evaluator;
         }
 
         @Override
@@ -210,15 +211,15 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 Reference ref = ob.reference;
                 boolean desc = ob.isDescending;
                 int sign = desc ? -1 : 1;
-                Object v1 = matcher.evaluateReference(ref, s1);
-                Object v2 = matcher.evaluateReference(ref, s2);
+                Object v1 = evaluator.evaluateReference(ref, s1);
+                Object v2 = evaluator.evaluateReference(ref, s2);
                 if (v1 == null) {
                     return v2 == null ? 0 : -sign;
                 } else if (v2 == null) {
                     return sign;
                 } else {
                     if (!(v1 instanceof Comparable)) {
-                        throw new RuntimeException("Not a comparable: " + v1);
+                        throw new QueryParseException("Not a comparable: " + v1);
                     }
                     int cmp = ((Comparable<Object>) v1).compareTo(v2);
                     return desc ? -cmp : cmp;
