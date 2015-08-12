@@ -247,9 +247,8 @@ public class MimetypeRegistryService extends DefaultComponent implements
                 }
             }
 
-            if(mimeType.equals("???"))
-            {
-                //Do not return question marks by default
+            if ("???".equals(mimeType)) {
+                // Do not return question marks by default
                 mimeType = MediaType.OCTET_STREAM.toString();
             }
             return mimeType;

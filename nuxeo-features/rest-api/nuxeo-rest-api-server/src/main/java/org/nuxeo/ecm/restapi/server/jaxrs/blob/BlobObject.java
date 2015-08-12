@@ -40,6 +40,8 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import com.google.common.net.MediaType;
+
+
 /**
  * @since 5.8
  */
@@ -113,8 +115,7 @@ public class BlobObject extends DefaultObject {
             }
             String contentDisposition = ServletHelper.getRFC2231ContentDisposition(ctx.getRequest(), fileName);
             String mimetype = blob.getMimeType();
-            if(mimetype.equals("???"))
-            {
+            if ("???".equals(mimetype)) {
                 mimetype = MediaType.OCTET_STREAM.toString();
             }
             // cached resource did change or no ETag -> serve updated content
