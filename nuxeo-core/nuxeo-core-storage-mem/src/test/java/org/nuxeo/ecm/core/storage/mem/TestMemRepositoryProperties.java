@@ -494,6 +494,7 @@ public class TestMemRepositoryProperties extends MemRepositoryTestCase {
     }
 
     @Test
+    @Ignore("MemRepository is not persistent and cannot be reloaded")
     public void testComplexPropertySchemaUpdate() throws Exception {
         deployBundle("org.nuxeo.runtime.reload");
 

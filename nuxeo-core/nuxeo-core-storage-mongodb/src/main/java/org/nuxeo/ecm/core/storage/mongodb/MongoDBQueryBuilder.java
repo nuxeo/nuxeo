@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -45,6 +46,7 @@ import org.nuxeo.ecm.core.query.sql.model.Operator;
 import org.nuxeo.ecm.core.query.sql.model.Predicate;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
 import org.nuxeo.ecm.core.query.sql.model.StringLiteral;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -75,6 +77,8 @@ public class MongoDBQueryBuilder {
     private static final Long ONE = Long.valueOf(1);
 
     protected final SchemaManager schemaManager;
+
+    protected List<String> documentTypes;
 
     protected final PathResolver pathResolver;
 
@@ -401,6 +405,12 @@ public class MongoDBQueryBuilder {
     public DBObject walkEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
+        if (isMixinTypes(fieldInfo)) {
+            if (!(right instanceof String)) {
+                throw new QueryParseException("Invalid EQ rhs: " + rvalue);
+            }
+            return walkMixinTypes(Collections.singletonList((String) right), true);
+        }
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
         return new BasicDBObject(fieldInfo.field, right);
@@ -409,6 +419,12 @@ public class MongoDBQueryBuilder {
     public DBObject walkNotEq(Operand lvalue, Operand rvalue) {
         FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
+        if (isMixinTypes(fieldInfo)) {
+            if (!(right instanceof String)) {
+                throw new QueryParseException("Invalid NE rhs: " + rvalue);
+            }
+            return walkMixinTypes(Collections.singletonList((String) right), false);
+        }
         right = checkBoolean(fieldInfo, right);
         // TODO check list fields
         return new BasicDBObject(fieldInfo.field, new BasicDBObject(QueryOperators.NE, right));
@@ -456,14 +472,17 @@ public class MongoDBQueryBuilder {
     }
 
     public DBObject walkIn(Operand lvalue, Operand rvalue, boolean positive) {
-        String field = walkReference(lvalue).field;
+        FieldInfo fieldInfo = walkReference(lvalue);
         Object right = walkOperand(rvalue);
         if (!(right instanceof List)) {
-            throw new RuntimeException("Invalid IN, right hand side must be a list: " + rvalue);
+            throw new QueryParseException("Invalid IN, right hand side must be a list: " + rvalue);
+        }
+        if (isMixinTypes(fieldInfo)) {
+            return walkMixinTypes((List<String>) right, positive);
         }
         // TODO check list fields
         List<Object> list = (List<Object>) right;
-        return new BasicDBObject(field, new BasicDBObject(positive ? QueryOperators.IN : QueryOperators.NIN, list));
+        return new BasicDBObject(fieldInfo.field, new BasicDBObject(positive ? QueryOperators.IN : QueryOperators.NIN, list));
     }
 
     public DBObject walkLike(Operand lvalue, Operand rvalue, boolean positive, boolean caseInsensitive) {
@@ -673,6 +692,94 @@ public class MongoDBQueryBuilder {
             name = StringUtils.join(split, '.');
             return new FieldInfo(name, isBoolean, false);
         }
+    }
+
+    protected boolean isMixinTypes(FieldInfo fieldInfo) {
+        return fieldInfo.field.equals(DBSDocument.KEY_MIXIN_TYPES);
+    }
+
+    protected Set<String> getMixinDocumentTypes(String mixin) {
+        return schemaManager.getDocumentTypeNamesForFacet(mixin);
+    }
+
+    protected List<String> getDocumentTypes() {
+        // TODO precompute in SchemaManager
+        if (documentTypes == null) {
+            documentTypes = new ArrayList<>();
+            for (DocumentType docType : schemaManager.getDocumentTypes()) {
+                documentTypes.add(docType.getName());
+            }
+        }
+        return documentTypes;
+    }
+
+    protected boolean isNeverPerInstanceMixin(String mixin) {
+        return schemaManager.getNoPerDocumentQueryFacets().contains(mixin);
+    }
+
+    /**
+     * Matches the mixin types against a list of values.
+     * <p>
+     * Used for:
+     * <ul>
+     * <li>ecm:mixinTypes = 'Foo'
+     * <li>ecm:mixinTypes != 'Foo'
+     * <li>ecm:mixinTypes IN ('Foo', 'Bar')
+     * <li>ecm:mixinTypes NOT IN ('Foo', 'Bar')
+     * </ul>
+     * <p>
+     * ecm:mixinTypes IN ('Foo', 'Bar')
+     *
+     * <pre>
+     * { "$or" : [ { "ecm:primaryType" : { "$in" : [ ... types with Foo or Bar ...]}} ,
+     *             { "ecm:mixinTypes" : { "$in" : [ "Foo" , "Bar]}}]}
+     * </pre>
+     *
+     * ecm:mixinTypes NOT IN ('Foo', 'Bar')
+     * <p>
+     *
+     * <pre>
+     * { "$and" : [ { "ecm:primaryType" : { "$in" : [ ... types without Foo nor Bar ...]}} ,
+     *              { "ecm:mixinTypes" : { "$nin" : [ "Foo" , "Bar]}}]}
+     * </pre>
+     */
+    public DBObject walkMixinTypes(List<String> mixins, boolean include) {
+        /*
+         * Primary types that match.
+         */
+        Set<String> matchPrimaryTypes;
+        if (include) {
+            matchPrimaryTypes = new HashSet<String>();
+            for (String mixin : mixins) {
+                matchPrimaryTypes.addAll(getMixinDocumentTypes(mixin));
+            }
+        } else {
+            matchPrimaryTypes = new HashSet<String>(getDocumentTypes());
+            for (String mixin : mixins) {
+                matchPrimaryTypes.removeAll(getMixinDocumentTypes(mixin));
+            }
+        }
+        /*
+         * Instance mixins that match.
+         */
+        Set<String> matchMixinTypes = new HashSet<String>();
+        for (String mixin : mixins) {
+            if (!isNeverPerInstanceMixin(mixin)) {
+                matchMixinTypes.add(mixin);
+            }
+        }
+        /*
+         * MongoDB query generation.
+         */
+        // match on primary type
+        DBObject p = new BasicDBObject(DBSDocument.KEY_PRIMARY_TYPE, new BasicDBObject(QueryOperators.IN, matchPrimaryTypes));
+        // match on mixin types
+        // $in/$nin with an array matches if any/no element of the array matches
+        String innin = include ? QueryOperators.IN : QueryOperators.NIN;
+        DBObject m = new BasicDBObject(DBSDocument.KEY_MIXIN_TYPES, new BasicDBObject(innin, matchMixinTypes));
+        // and/or between those
+        String op = include ? QueryOperators.OR : QueryOperators.AND;
+        return new BasicDBObject(op, Arrays.asList(p, m));
     }
 
 }

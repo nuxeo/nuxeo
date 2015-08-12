@@ -16,11 +16,17 @@
  */
 package org.nuxeo.ecm.core.storage.dbs;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -32,6 +38,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
@@ -59,6 +66,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     protected final SchemaManager schemaManager;
 
+    protected List<String> documentTypes;
+
     protected State state;
 
     public DBSExpressionEvaluator(DBSSession session, Expression expr, String[] principals) {
@@ -78,6 +87,25 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         public String getIdForPath(String path) {
             return session.getDocumentIdByPath(path);
         }
+    }
+
+    protected List<String> getDocumentTypes() {
+        // TODO precompute in SchemaManager
+        if (documentTypes == null) {
+            documentTypes = new ArrayList<>();
+            for (DocumentType docType : schemaManager.getDocumentTypes()) {
+                documentTypes.add(docType.getName());
+            }
+        }
+        return documentTypes;
+    }
+
+    protected Set<String> getMixinDocumentTypes(String mixin) {
+        return schemaManager.getDocumentTypeNamesForFacet(mixin);
+    }
+
+    protected boolean isNeverPerInstanceMixin(String mixin) {
+        return schemaManager.getNoPerDocumentQueryFacets().contains(mixin);
     }
 
     public boolean matches(State state) {
@@ -112,8 +140,13 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
         return evaluateReference(ref, state);
     }
 
-    @Override
-    public Object evaluateReference(Reference ref, State state) {
+    /**
+     * Evaluates a reference over the given state.
+     *
+     * @param ref the reference
+     * @param map the state representation
+     */
+    protected Object evaluateReference(Reference ref, State state) {
         String name = ref.name;
         String[] split = name.split("/");
         String prop = split[0];
@@ -181,6 +214,71 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             }
         }
         return value;
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * ecm:mixinTypes IN ('Foo', 'Bar')
+     * <p>
+     * primarytype IN (... types with Foo or Bar ...) OR mixintypes LIKE '%Foo%' OR mixintypes LIKE '%Bar%'
+     * <p>
+     * ecm:mixinTypes NOT IN ('Foo', 'Bar')
+     * <p>
+     * primarytype IN (... types without Foo nor Bar ...) AND (mixintypes NOT LIKE '%Foo%' AND mixintypes NOT LIKE
+     * '%Bar%' OR mixintypes IS NULL)
+     */
+    @Override
+    public Boolean walkMixinTypes(List<String> mixins, boolean include) {
+        /*
+         * Primary types that match.
+         */
+        Set<String> matchPrimaryTypes;
+        if (include) {
+            matchPrimaryTypes = new HashSet<String>();
+            for (String mixin : mixins) {
+                matchPrimaryTypes.addAll(getMixinDocumentTypes(mixin));
+            }
+        } else {
+            matchPrimaryTypes = new HashSet<String>(getDocumentTypes());
+            for (String mixin : mixins) {
+                matchPrimaryTypes.removeAll(getMixinDocumentTypes(mixin));
+            }
+        }
+        /*
+         * Instance mixins that match.
+         */
+        Set<String> matchMixinTypes = new HashSet<String>();
+        for (String mixin : mixins) {
+            if (!isNeverPerInstanceMixin(mixin)) {
+                matchMixinTypes.add(mixin);
+            }
+        }
+        /*
+         * Evaluation.
+         */
+        String primaryType = (String) state.get(DBSDocument.KEY_PRIMARY_TYPE);
+        List<String> mixinTypes = (List<String>) state.get(DBSDocument.KEY_MIXIN_TYPES);
+        if (mixinTypes == null) {
+            mixinTypes = Collections.emptyList();
+        }
+        if (include) {
+            // primary types
+            if (matchPrimaryTypes.contains(primaryType)) {
+                return TRUE;
+            }
+            // mixin types
+            matchMixinTypes.retainAll(mixinTypes); // intersection
+            return Boolean.valueOf(!matchMixinTypes.isEmpty());
+        } else {
+            // primary types
+            if (!matchPrimaryTypes.contains(primaryType)) {
+                return FALSE;
+            }
+            // mixin types
+            matchMixinTypes.retainAll(mixinTypes); // intersection
+            return Boolean.valueOf(matchMixinTypes.isEmpty());
+        }
     }
 
     public static class OrderByComparator implements Comparator<State> {

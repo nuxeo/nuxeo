@@ -22,6 +22,7 @@ import static java.lang.Boolean.TRUE;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -227,12 +228,25 @@ public abstract class ExpressionEvaluator {
     }
 
     public Boolean walkEq(Operand lvalue, Operand rvalue) {
-        Object left = walkOperand(lvalue);
         Object right = walkOperand(rvalue);
+        if (isMixinTypes(lvalue)) {
+            if (!(right instanceof String)) {
+                throw new QueryParseException("Invalid EQ rhs: " + rvalue);
+            }
+            return walkMixinTypes(Collections.singletonList((String) right), true);
+        }
+        Object left = walkOperand(lvalue);
         return eqMaybeList(left, right);
     }
 
     public Boolean walkNotEq(Operand lvalue, Operand rvalue) {
+        if (isMixinTypes(lvalue)) {
+            Object right = walkOperand(rvalue);
+            if (!(right instanceof String)) {
+                throw new QueryParseException("Invalid NE rhs: " + rvalue);
+            }
+            return walkMixinTypes(Collections.singletonList((String) right), false);
+        }
         return not(walkEq(lvalue, rvalue));
     }
 
@@ -268,11 +282,14 @@ public abstract class ExpressionEvaluator {
     }
 
     public Boolean walkIn(Operand lvalue, Operand rvalue, boolean positive) {
-        Object left = walkOperand(lvalue);
         Object right = walkOperand(rvalue);
         if (!(right instanceof List)) {
-            throw new RuntimeException("Invalid IN rhs: " + rvalue);
+            throw new QueryParseException("Invalid IN rhs: " + rvalue);
         }
+        if (isMixinTypes(lvalue)) {
+            return walkMixinTypes((List<String>) right, positive);
+        }
+        Object left = walkOperand(lvalue);
         Boolean in = inMaybeList(left, (List<Object>) right);
         return positive ? in : not(in);
     }
@@ -409,13 +426,12 @@ public abstract class ExpressionEvaluator {
      */
     public abstract Object walkReference(Reference ref);
 
-    /**
-     * Evaluates a reference over the given state.
-     *
-     * @param ref the reference
-     * @param map the state representation
-     */
-    public abstract Object evaluateReference(Reference ref, State map);
+    protected boolean isMixinTypes(Operand op) {
+        if (!(op instanceof Reference)) {
+            return false;
+        }
+        return ((Reference) op).name.equals(NXQL.ECM_MIXINTYPE);
+    }
 
     protected Boolean bool(Object value) {
         if (value == null) {
@@ -559,5 +575,22 @@ public abstract class ExpressionEvaluator {
             return positive ? like : not(like);
         }
     }
+
+    /**
+     * Matches the mixin types against a list of values.
+     * <p>
+     * Used for:
+     * <ul>
+     * <li>ecm:mixinTypes = 'foo'
+     * <li>ecm:mixinTypes != 'foo'
+     * <li>ecm:mixinTypes IN ('foo', 'bar')
+     * <li>ecm:mixinTypes NOT IN ('foo', 'bar')
+     * </ul>
+     *
+     * @param mixins the mixin(s) to match
+     * @param include {@code true} for = and IN
+     * @since 7.4
+     */
+    public abstract Boolean walkMixinTypes(List<String> mixins, boolean include);
 
 }
