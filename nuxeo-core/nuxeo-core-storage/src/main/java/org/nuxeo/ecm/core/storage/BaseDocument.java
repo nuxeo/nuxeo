@@ -814,7 +814,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                         value = list.toArray(array);
                     } else if (value instanceof Object[]) {
                         Object[] ar = (Object[]) value;
-                        if (ar.length != 0) {
+                        if (ar.length != 0 && ar[0] != null) {
                             // use properly-typed array, useful for mem backend that doesn't re-convert all types
                             Class<?> klass = ar[0].getClass();
                             Object[] array;
