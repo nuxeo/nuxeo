@@ -196,4 +196,9 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         }
     }
 
+    public void reopenSession() {
+        closeSession();
+        openSession();
+    }
+
 }

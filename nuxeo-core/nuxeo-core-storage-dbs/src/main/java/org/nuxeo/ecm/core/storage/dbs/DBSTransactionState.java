@@ -60,6 +60,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.security.SecurityService;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -540,7 +541,12 @@ public class DBSTransactionState {
                 Object[] proxyIds = (Object[]) docState.get(KEY_PROXY_IDS);
                 if (proxyIds != null) {
                     for (Object proxyId : proxyIds) {
-                        updateProxy(docState, (String) proxyId);
+                        try {
+                            updateProxy(docState, (String) proxyId);
+                        } catch (ConcurrentUpdateException e) {
+                            e.addInfo("On doc " + docState.getId());
+                            throw e;
+                        }
                     }
                 }
             }
@@ -553,7 +559,8 @@ public class DBSTransactionState {
     protected void updateProxy(DBSDocumentState target, String proxyId) {
         DBSDocumentState proxy = getStateForUpdate(proxyId);
         if (proxy == null) {
-            throw new NullPointerException(proxyId);
+            rollback(); // XXX
+            throw new ConcurrentUpdateException("Proxy " + proxyId + " concurrently deleted");
         }
         // clear all proxy data
         for (String key : proxy.getState().keySet().toArray(new String[0])) {

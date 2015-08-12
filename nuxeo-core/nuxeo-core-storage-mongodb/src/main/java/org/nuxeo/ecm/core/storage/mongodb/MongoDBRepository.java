@@ -24,6 +24,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -223,7 +224,9 @@ public class MongoDBRepository extends DBSRepositoryBase {
                         }
                         value = (Serializable) l;
                     } else {
-                        Object[] ar = new Object[list.size()];
+                        // turn the list into a properly-typed array
+                        Class<?> klass = list.get(0).getClass();
+                        Object[] ar = (Object[]) Array.newInstance(klass, list.size());
                         int i = 0;
                         for (Object el : list) {
                             ar[i++] = scalarToSerializable(el);

@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -65,6 +66,7 @@ import org.nuxeo.ecm.core.api.impl.FacetFilter;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.impl.VersionModelImpl;
 import org.nuxeo.ecm.core.api.impl.blob.ByteArrayBlob;
+import org.nuxeo.ecm.core.api.impl.blob.URLBlob;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
@@ -133,10 +135,15 @@ public class TestMemRepository extends MemRepositoryTestCase {
         child.setProperty("testList", "participants", new ArrayList<>(Arrays.asList("c", "d")));
         session.saveDocument(child);
         session.save();
-        closeSession();
+
+        child = session.getDocument(child.getRef());
+        Object s = child.getProperty("testList", "strings");
+        assertTrue(s.getClass().isArray());
+        // Objet[] has been normalized to String[] when re-fetched from mapper cache
+        assertEquals(String.class, s.getClass().getComponentType());
 
         // ----- new session -----
-        openSession();
+        reopenSession();
         root = session.getRootDocument();
         child = session.getChild(root.getRef(), "domain");
 
@@ -147,11 +154,15 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertTrue(contributors instanceof String[]);
         assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) contributors));
         Object strings = child.getProperty("testList", "strings");
-        assertTrue(strings instanceof String[]);
-        assertEquals(Arrays.asList("e", "f"), Arrays.asList((String[]) strings));
+        assertTrue(strings.getClass().isArray());
+        // Objet[] has been normalized to String[] when re-read from database
+        assertEquals(String.class, strings.getClass().getComponentType());
+        assertEquals(Arrays.asList("e", "f"), Arrays.asList((Serializable[]) strings));
         Object participants = child.getProperty("testList", "participants");
-        assertTrue(participants instanceof String[]);
-        assertEquals(Arrays.asList("c", "d"), Arrays.asList((String[]) participants));
+        assertTrue(participants.getClass().isArray());
+        // List<> has been normalized to String[] when re-read from database
+        assertEquals(String.class, participants.getClass().getComponentType());
+        assertEquals(Arrays.asList("c", "d"), Arrays.asList((Serializable[]) participants));
     }
 
     @Test
@@ -1420,7 +1431,8 @@ public class TestMemRepository extends MemRepositoryTestCase {
         // set ACP on doc1 to block bob
         acp = new ACPImpl();
         acl = new ACLImpl();
-        acl.add(new ACE("bob", "Everything", false));
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         doc1.setACP(acp, true);
         session.save();
@@ -2299,10 +2311,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         session.save();
 
         byte[] bytes = FileUtils.readBytes(Blob.class.getResourceAsStream("Blob.class"));
-        Blob blob = new ByteArrayBlob(bytes, "java/class");
-        blob.setDigest("XXX");
+        Blob blob = Blobs.createBlob(bytes, "java/class", "UTF8");
         blob.setFilename("blob.txt");
-        blob.setEncoding("UTF8");
+        blob.setDigest("XXX");
         long length = blob.getLength();
         byte[] content = blob.getByteArray();
 
@@ -2316,12 +2327,29 @@ public class TestMemRepository extends MemRepositoryTestCase {
         childFile = session.getDocument(childFile.getRef());
         blob = (Blob) childFile.getProperty("file", "content");
 
+        // digest algorithm is null for any type of blob other than BinaryBlob
+        assertNull(blob.getDigestAlgorithm());
         assertEquals("XXX", blob.getDigest());
         assertEquals("blob.txt", blob.getFilename());
         assertEquals(length, blob.getLength());
         assertEquals("UTF8", blob.getEncoding());
         assertEquals("java/class", blob.getMimeType());
         assertTrue(Arrays.equals(content, blob.getByteArray()));
+
+        // blob from a stream, with no known length
+        URL url = getClass().getClassLoader().getResource("META-INF/MANIFEST.MF");
+        blob = new URLBlob(url, "java/manifest", null);
+        blob.setFilename("manifest.mf");
+        blob.setDigest("YYY");
+        childFile.setPropertyValue("content", (Serializable) blob);
+        session.saveDocument(childFile);
+        childFile = session.getDocument(childFile.getRef());
+        blob = (Blob) childFile.getPropertyValue("content");
+        assertEquals("YYY", blob.getDigest());
+        assertEquals("manifest.mf", blob.getFilename());
+        assertEquals(null, blob.getEncoding());
+        assertEquals("java/manifest", blob.getMimeType());
+        assertEquals(FileUtils.readBytes(url).length, blob.getLength());
     }
 
     @Test
@@ -2910,7 +2938,7 @@ public class TestMemRepository extends MemRepositoryTestCase {
 
         // publish a restored version
         List<DocumentRef> versions = session.getVersionsRefs(doc.getRef());
-        assertEquals(versions.toString(), 2, versions.size());
+        assertEquals(2, versions.size());
         doc = session.restoreToVersion(doc.getRef(), versions.get(0));
         assertEquals("0.1", doc.getVersionLabel());
         proxy = session.publishDocument(doc, folder);
@@ -2987,10 +3015,9 @@ public class TestMemRepository extends MemRepositoryTestCase {
         proxy.setPropertyValue("info:info", "proxyinfo");
         proxy = session.saveDocument(proxy);
         session.save();
-        closeSession();
 
         // new session
-        openSession();
+        reopenSession();
         DocumentModel root = session.getRootDocument();
         proxy = session.getDocument(proxy.getRef());
         assertEquals("proxyinfo", proxy.getPropertyValue("info:info"));

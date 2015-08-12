@@ -32,6 +32,7 @@ import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class MemRepositoryTestCase extends NXRuntimeTestCase {
 
@@ -59,6 +60,7 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.storage");
         deployContrib("org.nuxeo.ecm.core.storage.mem.tests", "OSGI-INF/test-repo-types.xml");
         initRepository();
+        TransactionHelper.startTransaction();
         openSession();
     }
 
@@ -70,6 +72,7 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         }
         waitForAsyncCompletion();
         closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
         closeRepository();
         super.tearDown();
         checkLeaks();
@@ -122,12 +125,17 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public void waitForAsyncCompletion() {
+        TransactionHelper.commitOrRollbackTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     public void waitForFulltextIndexing() {
         waitForAsyncCompletion();
         // DatabaseHelper.DATABASE.sleepForFulltext();
+    }
+
+    public void maybeSleepToNextSecond() {
     }
 
     public void openSession() {
@@ -156,6 +164,11 @@ public class MemRepositoryTestCase extends NXRuntimeTestCase {
         if (session != null) {
             session.close();
         }
+    }
+
+    public void reopenSession() {
+        closeSession();
+        openSession();
     }
 
 }

@@ -504,7 +504,7 @@ public class DBSSession implements Session {
         verState.put(KEY_VERSION_LABEL, label);
         verState.put(KEY_VERSION_DESCRIPTION, checkinComment);
         verState.put(KEY_IS_LATEST_VERSION, TRUE);
-        verState.put(KEY_IS_CHECKED_IN, null);
+        verState.put(KEY_IS_CHECKED_IN, TRUE); // version seen as checked in for the benefit of proxies
         verState.put(KEY_BASE_VERSION_ID, null);
         boolean isMajor = Long.valueOf(0).equals(verState.get(KEY_MINOR_VERSION));
         verState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor ? TRUE : null);

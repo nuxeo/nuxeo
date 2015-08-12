@@ -800,8 +800,34 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     // array
                     Serializable value = property.getValueForWrite();
                     if (value instanceof List) {
-                        value = ((List<?>) value).toArray(new Object[0]);
-                    } else if (!(value == null || value instanceof Object[])) {
+                        List<?> list = (List<?>) value;
+                        Object[] array;
+                        if (list.isEmpty()) {
+                            array = new Object[0];
+                        } else {
+                            // use properly-typed array, useful for mem backend that doesn't re-convert all types
+                            Class<?> klass = list.get(0).getClass();
+                            array = (Object[]) Array.newInstance(klass, list.size());
+                        }
+                        value = list.toArray(array);
+                    } else if (value instanceof Object[]) {
+                        Object[] ar = (Object[]) value;
+                        if (ar.length != 0) {
+                            // use properly-typed array, useful for mem backend that doesn't re-convert all types
+                            Class<?> klass = ar[0].getClass();
+                            Object[] array;
+                            if (ar.getClass().getComponentType() == klass) {
+                                array = ar;
+                            } else {
+                                // copy to array with proper component type
+                                array = (Object[]) Array.newInstance(klass, ar.length);
+                                System.arraycopy(ar, 0, array, 0, ar.length);
+                            }
+                            value = array;
+                        }
+                    } else if (value == null) {
+                        // ok
+                    } else {
                         throw new IllegalStateException(value.toString());
                     }
                     state.setArray(name, (Object[]) value);
