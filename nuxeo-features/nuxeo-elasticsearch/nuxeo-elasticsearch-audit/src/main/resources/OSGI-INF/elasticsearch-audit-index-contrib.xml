@@ -10,15 +10,18 @@
     <elasticSearchIndex name="audit" type="entry" >    
       <mapping>
         {
-          "properties" : {
-	    "eventDate": {
-	      "format": "dateOptionalTime",
-	      "type": "date"
-	    },
-	    "logDate": {
-	      "format": "dateOptionalTime",
-	      "type": "date"
-	    }
+          "properties": {
+            "eventDate": {
+              "format": "dateOptionalTime",
+              "type": "date"
+            },
+            "logDate": {
+              "format": "dateOptionalTime",
+              "type": "date"
+            },
+            "extended": {
+              "type": "nested"
+            }
           }
         }
       </mapping>
