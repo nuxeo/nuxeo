@@ -1915,6 +1915,44 @@
   </tag>
 
   <tag>
+    <tag-name>param</tag-name>
+    <handler-class>org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler</handler-class>
+    <description>
+      <![CDATA[
+      <p>
+        Tag similar to ui:param, except it has the ability to resolve
+        expressions twice.
+      </p>
+      ]]>
+    </description>
+    <attribute>
+      <name>name</name>
+      <required>false</required>
+      <type>java.lang.String</type>
+      <description>Name of the parameter exposed</description>
+    </attribute>
+    <attribute>
+      <name>value</name>
+      <required>false</required>
+      <type>java.lang.Object</type>
+      <description>
+        Value of the parameter exposed. If parameter resolveTwice is
+        set to true, will resolve a second time the expression, if first
+        result is consistent with an EL expression.
+      </description>
+    </attribute>
+    <attribute>
+      <name>resolveTwice</name>
+      <required>false</required>
+      <type>java.lang.Boolean</type>
+      <description>
+        Boolean stating if expression should be resolved again, if first
+        resolution is consistent with an EL expression.
+      </description>
+    </attribute>
+  </tag>
+
+  <tag>
     <tag-name>selectOneRadio</tag-name>
     <component>
       <component-type>javax.faces.SelectOne</component-type>
