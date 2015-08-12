@@ -51,22 +51,6 @@ Create in `$NUXEO_HOME/nxserver/config` the following shibboleth-config.xml file
 
   <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
 
-  <extension
-      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
-      point="specificChains">
-
-    <specificAuthenticationChain name="Shibboleth">
-        <urlPatterns>
-            <url>(.*)/shibboleth.*</url>
-        </urlPatterns>
-
-        <replacementChain>
-            <plugin>SHIB_AUTH</plugin>
-        </replacementChain>
-    </specificAuthenticationChain>
-
-  </extension>
-
   <extension target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
     point="config">
     <config>
