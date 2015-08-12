@@ -31,7 +31,7 @@ The **Nuxeo** addon _nuxeo-shibboleth-invitation_ provides the ability to invite
 
 Note: Your machine needs internet access. If you have a proxy setting, skip the mp-init and mp-install steps at first, just do nuxeoctl start and run the wizzard where you will be asked your proxy settings.
 
-# Building
+## Building
 
     mvn clean install
 
@@ -39,6 +39,51 @@ Note: Your machine needs internet access. If you have a proxy setting, skip the 
 
 Install [the Nuxeo Shibboleth Invitation Marketplace Package](https://connect.nuxeo.com/nuxeo/site/marketplace/package/nuxeo-shibboleth-invitation).
 Or manually copy the built artifacts into `$NUXEO_HOME/templates/custom/bundles/` and activate the "custom" template.
+
+## Configuring
+
+Create in `$NUXEO_HOME/nxserver/config` the following shibboleth-config.xml file:
+
+````
+<component name="sample.shibboleth.config">
+
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+
+  <extension
+      target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+      point="specificChains">
+
+    <specificAuthenticationChain name="Shibboleth">
+        <urlPatterns>
+            <url>(.*)/shibboleth.*</url>
+        </urlPatterns>
+
+        <replacementChain>
+            <plugin>SHIB_AUTH</plugin>
+        </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.shibboleth.service.ShibbolethAuthenticationService"
+    point="config">
+    <config>
+      <uidHeaders>
+        <default>uid</default>
+      </uidHeaders>
+
+      <loginURL>http://host/Shibboleth.sso/WAYF</loginURL>
+      <logoutURL>http://host/Shibboleth.sso/logout</logoutURL>
+
+      <!-- Add others fieldMappings if needed -->
+      <fieldMapping header="uid">username</fieldMapping>
+      <fieldMapping header="mail">email</fieldMapping>
+    </config>
+  </extension>
+</component>
+````
 
 ## QA results
 
