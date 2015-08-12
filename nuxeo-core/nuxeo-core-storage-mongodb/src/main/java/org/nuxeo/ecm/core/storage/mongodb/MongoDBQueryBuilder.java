@@ -308,8 +308,13 @@ public class MongoDBQueryBuilder {
         String key = keySet.iterator().next();
         Object value = ob.get(key);
         if (!key.startsWith("$")) {
-            // k = v -> k != v
-            return new BasicDBObject(key, new BasicDBObject(QueryOperators.NE, value));
+            if (value instanceof DBObject) {
+                // push down inside dbobject
+                return new BasicDBObject(key, pushDownNot(value));
+            } else {
+                // k = v -> k != v
+                return new BasicDBObject(key, new BasicDBObject(QueryOperators.NE, value));
+            }
         }
         if (QueryOperators.NE.equals(key)) {
             // NOT k != v -> k = v

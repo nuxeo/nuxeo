@@ -214,6 +214,9 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         dml = session.query("SELECT * FROM File WHERE dc:title = 'testfile1_Title'");
         assertEquals(1, dml.size());
 
+        dml = session.query("SELECT * FROM File WHERE NOT dc:title != 'testfile1_Title'");
+        assertEquals(1, dml.size());
+
         dml = session.query("SELECT * FROM File WHERE NOT dc:title = 'testfile1_Title'");
         assertEquals(2, dml.size());
 
