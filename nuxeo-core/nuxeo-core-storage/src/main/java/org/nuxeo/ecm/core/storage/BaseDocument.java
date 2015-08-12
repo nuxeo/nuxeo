@@ -317,6 +317,10 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
         xpath = canonicalXPath(xpath);
         String[] segments = xpath.split("/");
 
+        /*
+         * During this loop state may become null if we read an uninitialized complex property (DBS), in that case the
+         * code must treat it as reading uninitialized values for its children.
+         */
         ComplexType parentType = getType();
         for (int i = 0; i < segments.length; i++) {
             String segment = segments[i];
@@ -354,7 +358,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 if (!type.isListType() || ((ListType) type).getFieldType().isSimpleType()) {
                     throw new PropertyNotFoundException(xpath, "Cannot use index after segment: " + segment);
                 }
-                List<T> list = getChildAsList(state, name);
+                List<T> list = state == null ? Collections.emptyList() : getChildAsList(state, name);
                 if (index >= list.size()) {
                     throw new PropertyNotFoundException(xpath, "Index out of bounds: " + index);
                 }
@@ -372,7 +376,7 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
 
             if (i == segments.length - 1) {
                 // last segment
-                return getValueField(state, field);
+                return state == null ? null : getValueField(state, field);
             } else {
                 // not last segment
                 if (type.isSimpleType()) {
@@ -380,10 +384,8 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                     throw new PropertyNotFoundException(xpath, "Segment must be last: " + segment);
                 } else if (type.isComplexType()) {
                     // complex property
-                    state = getChild(state, name, type);
-                    if (state == null) {
-                        throw new PropertyNotFoundException(xpath, "Missing value at segment: " + segment);
-                    }
+                    state = state == null ? null : getChild(state, name, type);
+                    // here state can be null (DBS), continue loop with it, meaning uninitialized for read
                     parentType = (ComplexType) type;
                 } else {
                     // list

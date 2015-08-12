@@ -167,6 +167,13 @@ public class TestMemDocument extends MemRepositoryTestCase {
     }
 
     @Test
+    public void testComplexUnset() throws Exception {
+        Document root = session.getRootDocument();
+        Document doc = root.addChild("doc", "TestDocument");
+        assertNull(doc.getValue("tp:complexChain/string"));
+    }
+
+    @Test
     public void testComplex() throws Exception {
         Document root = session.getRootDocument();
         Document doc = root.addChild("doc", "ComplexDoc");
