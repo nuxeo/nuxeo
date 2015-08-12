@@ -1,0 +1,23 @@
+<component name="authentication.shibboleth.invitation.config">
+
+  <require>org.nuxeo.ecm.platform.usermanager.UserManagerImpl</require>
+
+  <require>org.nuxeo.ecm.platform.ui.web.auth.WebEngineConfig</require>
+
+  <extension
+          target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
+          point="specificChains">
+
+    <specificAuthenticationChain name="Shibboleth">
+      <urlPatterns>
+        <url>(.*)/shibboleth.*</url>
+      </urlPatterns>
+
+      <replacementChain>
+        <plugin>SHIB_AUTH</plugin>
+      </replacementChain>
+    </specificAuthenticationChain>
+
+  </extension>
+
+</component>
