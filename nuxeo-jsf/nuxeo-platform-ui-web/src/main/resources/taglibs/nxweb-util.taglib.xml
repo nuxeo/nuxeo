@@ -1942,7 +1942,7 @@
 
   <tag>
     <tag-name>param</tag-name>
-    <handler-class>org.nuxeo.ecm.platform.ui.web.tag.handler.RepeatTagHandler</handler-class>
+    <handler-class>org.nuxeo.ecm.platform.ui.web.tag.handler.ParamHandler</handler-class>
     <description>
       <![CDATA[
       <p>
