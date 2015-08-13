@@ -20,17 +20,14 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
@@ -39,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
 
 /**
  * Layout row recursion tag handler.
@@ -90,28 +88,31 @@ public class LayoutRowTagHandler extends TagHandler {
             return;
         }
 
-        int rowCounter = 0;
-        for (LayoutRow row : rows) {
-            // expose row variables
-            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-            ValueExpression rowVe = ctx.getExpressionFactory().createValueExpression(row, LayoutRow.class);
-            variables.put(RenderVariables.rowVariables.layoutRow.name(), rowVe);
-            variables.put(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
-            ValueExpression rowIndexVe = ctx.getExpressionFactory().createValueExpression(Integer.valueOf(rowCounter),
-                    Integer.class);
-            variables.put(RenderVariables.rowVariables.layoutRowIndex.name(), rowIndexVe);
-            variables.put(RenderVariables.columnVariables.layoutColumnIndex.name(), rowIndexVe);
+        VariableMapper orig = ctx.getVariableMapper();
+        try {
+            int rowCounter = 0;
+            for (LayoutRow row : rows) {
+                MetaVariableMapper vm = new MetaVariableMapper(orig);
+                ctx.setVariableMapper(vm);
 
-            List<String> blockedPatterns = new ArrayList<String>();
-            blockedPatterns.add(RenderVariables.rowVariables.layoutRow.name());
-            blockedPatterns.add(RenderVariables.rowVariables.layoutRowIndex.name());
-            blockedPatterns.add(RenderVariables.columnVariables.layoutColumn.name());
-            blockedPatterns.add(RenderVariables.columnVariables.layoutColumnIndex.name());
+                // expose row variables
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression rowVe = eFactory.createValueExpression(row, LayoutRow.class);
+                vm.setVariable(RenderVariables.rowVariables.layoutRow.name(), rowVe);
+                vm.addBlockedPattern(RenderVariables.rowVariables.layoutRow.name());
+                vm.setVariable(RenderVariables.columnVariables.layoutColumn.name(), rowVe);
+                vm.addBlockedPattern(RenderVariables.columnVariables.layoutColumn.name());
+                ValueExpression rowIndexVe = eFactory.createValueExpression(rowCounter, Integer.class);
+                vm.setVariable(RenderVariables.rowVariables.layoutRowIndex.name(), rowIndexVe);
+                vm.addBlockedPattern(RenderVariables.rowVariables.layoutRowIndex.name());
+                vm.setVariable(RenderVariables.columnVariables.layoutColumnIndex.name(), rowIndexVe);
+                vm.addBlockedPattern(RenderVariables.columnVariables.layoutColumnIndex.name());
 
-            FaceletHandler handler = helper.getAliasTagHandler(row.getTagConfigId(), variables, blockedPatterns,
-                    nextHandler);
-            handler.apply(ctx, parent);
-            rowCounter++;
+                nextHandler.apply(ctx, parent);
+                rowCounter++;
+            }
+        } finally {
+            ctx.setVariableMapper(orig);
         }
     }
 }

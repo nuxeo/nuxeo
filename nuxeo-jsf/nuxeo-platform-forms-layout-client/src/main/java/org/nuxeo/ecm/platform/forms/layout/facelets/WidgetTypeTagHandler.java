@@ -31,9 +31,7 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.component.UIComponent;
-import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
@@ -47,12 +45,9 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.SetTagHandler;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
-
-import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
  * Widget type tag handler.
@@ -250,16 +245,16 @@ public class WidgetTypeTagHandler extends TagHandler {
 
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();
-        VariableMapper vm = new VariableMapperWrapper(orig);
-        ctx.setVariableMapper(vm);
-        ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(widget, Widget.class);
-        vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-        vm.setVariable(
-                String.format("%s_%s", RenderVariables.widgetVariables.widget.name(),
-                        Integer.valueOf(widget.getLevel())), widgetVe);
-        // TODO NXP-13280: expose widget controls too when they can be
-        // retrieved from tag attributes
         try {
+            MetaVariableMapper vm = new MetaVariableMapper(orig);
+            ctx.setVariableMapper(vm);
+
+            ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(widget, Widget.class);
+            vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
+            vm.setVariable(RenderVariables.widgetVariables.widget.name() + "_" + widget.getLevel(), widgetVe);
+            // TODO NXP-13280: expose widget controls too when they can be
+            // retrieved from tag attributes
+
             // set unique id on widget before exposing it to the context
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
             WidgetTagHandler.generateWidgetId(helper, widget, false);
@@ -269,19 +264,7 @@ public class WidgetTypeTagHandler extends TagHandler {
                 resolveOnlyBool = resolveOnly.getBoolean(ctx);
             }
             if (resolveOnlyBool) {
-                // NXP-12882: wrap handler in an nxu:set tag to avoid duplicate
-                // id issue when widget definition changes, as component ids
-                // can be cached and not generated-again on ajax re-render,
-                // this is a quick fix that can be optimized, as the widget
-                // variable is already exposed in the current variable mapper.
-                // Update after NXP-15050: this does not seem to be necessary
-                // anymore, could not reproduce the corresponding bug, to
-                // remove after complementary tests.
-                String setTagConfigId = widget.getTagConfigId();
-                ComponentConfig aliasConfig = TagConfigFactory.createAliasTagConfig(this.config, setTagConfigId,
-                        RenderVariables.widgetVariables.widget.name(), "#{widget}", "true", "true", nextHandler);
-                FaceletHandler handler = new SetTagHandler(aliasConfig);
-                handler.apply(ctx, parent);
+                nextHandler.apply(ctx, parent);
             } else {
                 WidgetTagHandler.applyWidgetHandler(ctx, parent, config, widget, value, true, nextHandler);
             }

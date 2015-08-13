@@ -16,6 +16,7 @@
  */
 package org.nuxeo.ecm.platform.ui.web.binding;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ValueExpressionLiteral;
@@ -60,7 +62,7 @@ public class MetaVariableMapper extends VariableMapper {
                 // is supposed to be blocked
                 if (variable != null && blockedPatterns != null) {
                     for (String blockedPattern : blockedPatterns) {
-                        if (blockedPattern == null) {
+                        if (StringUtils.isBlank(blockedPattern)) {
                             continue;
                         }
                         boolean doBlock = false;
@@ -113,7 +115,22 @@ public class MetaVariableMapper extends VariableMapper {
     }
 
     public void setBlockedPatterns(List<String> blockedPatterns) {
-        this.blockedPatterns = blockedPatterns;
+        if (blockedPatterns != null) {
+            this.blockedPatterns = new ArrayList<String>();
+            this.blockedPatterns.addAll(blockedPatterns);
+        } else {
+            this.blockedPatterns = null;
+        }
+    }
+
+    public void addBlockedPattern(String blockedPattern) {
+        if (StringUtils.isBlank(blockedPattern)) {
+            return;
+        }
+        if (this.blockedPatterns == null) {
+            this.blockedPatterns = new ArrayList<String>();
+        }
+        this.blockedPatterns.add(blockedPattern);
     }
 
     @Override

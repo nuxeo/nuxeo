@@ -22,7 +22,6 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,10 +45,10 @@ import org.jboss.el.ValueExpressionLiteral;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
+import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
-
-import com.sun.faces.facelets.el.VariableMapperWrapper;
 
 /**
  * Widget tag handler.
@@ -199,29 +198,32 @@ public class WidgetTagHandler extends MetaTagHandler {
                     widgetInstance.setProperty(localName, var.getValue());
                 }
             }
+
             VariableMapper orig = ctx.getVariableMapper();
-            if (widgetInstanceBuilt) {
-                // expose widget variable to the context as layout row has not done it already, and set unique id on
-                // widget before exposing it to the context
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-                WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
-
-                VariableMapper vm = new VariableMapperWrapper(orig);
-                ctx.setVariableMapper(vm);
-                ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression widgetVe = eFactory.createValueExpression(widgetInstance, Widget.class);
-                vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-                // expose widget controls too
-                for (Map.Entry<String, Serializable> ctrl : widgetInstance.getControls().entrySet()) {
-                    String key = ctrl.getKey();
-                    String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
-                    String value = String.format("#{%s.controls.%s}", RenderVariables.widgetVariables.widget.name(),
-                            key);
-                    vm.setVariable(name, eFactory.createValueExpression(ctx, value, Object.class));
-                }
-            }
-
             try {
+                MetaVariableMapper vm = new MetaVariableMapper(orig);
+                ctx.setVariableMapper(vm);
+
+                if (widgetInstanceBuilt) {
+                    // expose widget variable to the context as layout row has not done it already, and set unique id on
+                    // widget before exposing it to the context
+                    FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                    WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
+                    ExpressionFactory eFactory = ctx.getExpressionFactory();
+                    ValueExpression widgetVe = eFactory.createValueExpression(widgetInstance, Widget.class);
+                    vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
+                    vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name());
+                    // expose widget controls too
+                    for (Map.Entry<String, Serializable> ctrl : widgetInstance.getControls().entrySet()) {
+                        String key = ctrl.getKey();
+                        String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
+                        String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
+                        ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
+                        vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
+                    }
+                    vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
+                }
+
                 boolean resolveOnlyBool = false;
                 if (resolveOnly != null) {
                     resolveOnlyBool = resolveOnly.getBoolean(ctx);
@@ -267,39 +269,28 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         FaceletHandler handler = layoutService.getFaceletHandler(ctx, config, widget, nextHandler);
         if (handler == null) {
             return;
         }
         if (fillVariables) {
             // expose widget variables
-            Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-
+            VariableMapper cvm = ctx.getVariableMapper();
+            if (!(cvm instanceof MetaVariableMapper)) {
+                throw new IllegalArgumentException(
+                        "Current context variable mapper should be an instance of MetaVariableMapper");
+            }
+            MetaVariableMapper vm = (MetaVariableMapper) cvm;
             ValueExpression valueExpr;
             if (value == null) {
                 valueExpr = new ValueExpressionLiteral(null, Object.class);
             } else {
                 valueExpr = value.getValueExpression(ctx, Object.class);
             }
-
-            variables.put(RenderVariables.globalVariables.value.name(), valueExpr);
-            variables.put(
-                    String.format("%s_%s", RenderVariables.globalVariables.value.name(),
-                            Integer.valueOf(widget.getLevel())), valueExpr);
-            // document as alias to value
-            // variables.put(RenderVariables.globalVariables.document.name(),
-            // valueExpr);
-
-            FaceletHandler handlerWithVars = helper.getAliasTagHandler(widget.getTagConfigId(), variables, null,
-                    handler);
-            // apply
-            handlerWithVars.apply(ctx, parent);
-
-        } else {
-            // just apply
-            handler.apply(ctx, parent);
+            vm.setVariable(RenderVariables.globalVariables.value.name(), valueExpr);
+            vm.setVariable(RenderVariables.globalVariables.value.name() + "_" + widget.getLevel(), valueExpr);
         }
+        handler.apply(ctx, parent);
     }
 
     @Override
