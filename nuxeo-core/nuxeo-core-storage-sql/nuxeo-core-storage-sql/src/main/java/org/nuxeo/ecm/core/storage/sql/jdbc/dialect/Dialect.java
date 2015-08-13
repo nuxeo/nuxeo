@@ -627,7 +627,7 @@ public abstract class Dialect {
                 buf.append(')');
                 return;
             } else {
-                                String word = ft.word.toLowerCase();
+                                String word = ft.word;
                                 if (ft.isPhrase()) {
                                     if (quotePhraseWords) {
                                         boolean first = true;
