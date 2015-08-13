@@ -200,6 +200,7 @@ public class TestDialectQuerySyntax {
         dialect = new DialectH2(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "");
         assertDialectFT("foo", "foo");
+        assertDialectFT("FOO", "FOO");
         assertDialectFT("foo", "foo :");
         assertDialectFT("foo", "foo :)");
         assertDialectFT("foo", "foo -+-");
@@ -265,6 +266,7 @@ public class TestDialectQuerySyntax {
         dialect = new DialectPostgreSQL(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("FOO", "FOO");
         assertDialectFT("foo", "foo :");
         assertDialectFT("foo", "foo :)");
         assertDialectFT("foo", "foo -+-");
@@ -298,6 +300,7 @@ public class TestDialectQuerySyntax {
         dialect = new DialectMySQL(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("foo", "foo");
+        assertDialectFT("FOO", "FOO");
         assertDialectFT("foo", "foo :");
         assertDialectFT("foo", "foo :)");
         assertDialectFT("foo", "foo -+-");
@@ -323,6 +326,7 @@ public class TestDialectQuerySyntax {
         dialect = new DialectOracle(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("{foo}", "foo");
+        assertDialectFT("{FOO}", "FOO");
         assertDialectFT("{foo}", "foo :");
         assertDialectFT("{foo}", "foo :)");
         assertDialectFT("{foo}", "foo -+-");
@@ -341,6 +345,10 @@ public class TestDialectQuerySyntax {
         assertDialectFT("(({foo} {bar} AND {baz}) OR {gee} {man})", "\"foo bar\" baz OR \"gee man\"");
         assertDialectFT("({foo} {bar} NOT {gee} {man})", "\"foo bar\" -\"gee man\"");
         assertDialectFT("foo%", "foo*");
+        assertDialectFT("foo%", "foo%");
+        assertDialectFT("$foo", "$foo");
+        assertDialectFT("${foo}", "${foo}");
+        assertDialectFT("{fooBAR}", "{fooBAR}");
         assertDialectFT("({foo} AND bar%)", "foo bar*");
         assertDialectFT("{foo} bar%", "\"foo bar*\"");
         // reserved words
@@ -353,6 +361,7 @@ public class TestDialectQuerySyntax {
         dialect = new DialectSQLServer(metadata, binaryManager, repositoryDescriptor);
         assertDialectFT("DONTMATCHANYTHINGFOREMPTYQUERY", "-foo");
         assertDialectFT("\"foo\"", "foo");
+        assertDialectFT("\"FOO\"", "FOO");
         assertDialectFT("\"foo\"", "foo :");
         assertDialectFT("\"foo\"", "foo :)");
         assertDialectFT("\"foo\"", "foo -+-");
