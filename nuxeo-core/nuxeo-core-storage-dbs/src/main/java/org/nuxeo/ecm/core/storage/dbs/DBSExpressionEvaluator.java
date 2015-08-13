@@ -258,10 +258,8 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
          * Evaluation.
          */
         String primaryType = (String) state.get(DBSDocument.KEY_PRIMARY_TYPE);
-        List<String> mixinTypes = (List<String>) state.get(DBSDocument.KEY_MIXIN_TYPES);
-        if (mixinTypes == null) {
-            mixinTypes = Collections.emptyList();
-        }
+        Object[] mixinTypesArray = (Object[]) state.get(DBSDocument.KEY_MIXIN_TYPES);
+        List<Object> mixinTypes = mixinTypesArray == null ? Collections.emptyList() : Arrays.asList(mixinTypesArray);
         if (include) {
             // primary types
             if (matchPrimaryTypes.contains(primaryType)) {
