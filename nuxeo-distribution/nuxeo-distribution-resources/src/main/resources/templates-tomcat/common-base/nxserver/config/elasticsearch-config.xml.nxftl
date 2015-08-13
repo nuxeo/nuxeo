@@ -51,6 +51,10 @@
            "type" : "word_delimiter",
            "preserve_original" : true
          },
+         "asciifolding_filter" : {
+            "type" : "asciifolding",
+            "preserve_original" : true
+         },
          "en_stem_filter" : {
             "name" : "minimal_english",
             "type" : "stemmer"
@@ -94,23 +98,25 @@
       "analyzer" : {
          "en_analyzer" : {
             "alias" : "fulltext",
+            "char_filter":  [ "html_strip"],
             "filter" : [
                "word_delimiter_filter",
                "lowercase",
                "en_stop_filter",
                "en_stem_filter",
-               "asciifolding"
+               "asciifolding_filter"
             ],
             "type" : "custom",
             "tokenizer" : "standard"
          },
          "fr_analyzer" : {
+            "char_filter":  [ "html_strip"],
             "filter" : [
                "word_delimiter_filter",
                "lowercase",
                "fr_stop_filter",
                "fr_stem_filter",
-               "asciifolding",
+               "asciifolding_filter",
                "fr_elision_filter"
             ],
             "type" : "custom",
