@@ -132,7 +132,7 @@ public class SetTagHandler extends AliasTagHandler {
     public FaceletHandler getAliasVariableMapper(FaceletContext ctx, AliasVariableMapper target) {
         String varStr = var.getValue(ctx);
         // avoid overriding variable already in the mapper
-        if (target.hasVariables(varStr)) {
+        if (target.hasVariable(varStr)) {
             return nextHandler;
         }
 
