@@ -31,7 +31,6 @@ import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.view.facelets.ComponentConfig;
 import javax.faces.view.facelets.ComponentHandler;
@@ -40,9 +39,6 @@ import javax.faces.view.facelets.FaceletException;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
-
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
@@ -134,12 +130,6 @@ public class AliasTagHandler extends ComponentHandler {
 
     protected void apply(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
-        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
-        if (configurationService.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptims")) {
-            applyCompat(ctx, parent, alias, nextHandler);
-            return;
-        }
-
         // resolve the "anchor" attribute to decide whether variable should be
         // anchored in the tree as a UIAliasHolder
         boolean createComponent = isAnchored(ctx);
@@ -187,67 +177,6 @@ public class AliasTagHandler extends ComponentHandler {
             AliasVariableMapper.removeAliasesExposedToRequest(facesContext, id);
             ctx.setVariableMapper(orig);
         }
-    }
-
-    /**
-     * Compatibility application of facelet handler, used to preserve behaviour while optimizing and improving variables
-     * exposure and resolution.
-     */
-    protected void applyCompat(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias,
-            FaceletHandler nextHandler) throws IOException, FacesException, FaceletException, ELException {
-        String id = alias.getId();
-
-        VariableMapper orig = ctx.getVariableMapper();
-        VariableMapper vm = alias.getVariableMapperForBuild(orig);
-        ctx.setVariableMapper(vm);
-
-        // create component
-        UIComponent c = ComponentSupport.findChildByTagId(parent, id);
-        boolean componentFound = false;
-        if (c != null) {
-            componentFound = true;
-            // mark all children for cleaning
-            ComponentSupport.markForDeletion(c);
-        } else {
-            c = new UIAliasHolder();
-
-            // mark it owned by a facelet instance
-            c.getAttributes().put(ComponentSupport.MARK_CREATED, id);
-
-            // assign our unique id
-            if (this.id != null) {
-                c.setId(this.id.getValue(ctx));
-            } else {
-                UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
-                if (root != null) {
-                    String uid = root.createUniqueId();
-                    c.setId(uid);
-                }
-            }
-        }
-
-        // update value held by component
-        ((UIAliasHolder) c).setAlias(alias);
-
-        FacesContext facesContext = ctx.getFacesContext();
-        try {
-            AliasVariableMapper.exposeAliasesToRequest(facesContext, alias);
-            // first allow c to get populated
-            nextHandler.apply(ctx, c);
-        } finally {
-            AliasVariableMapper.removeAliasesExposedToRequest(facesContext, id);
-            ctx.setVariableMapper(orig);
-        }
-
-        // finish cleaning up orphaned children
-        if (componentFound) {
-            ComponentSupport.finalizeForDeletion(c);
-        }
-
-        // add to the tree afterwards
-        // this allows children to determine if it's
-        // been part of the tree or not yet
-        parent.getChildren().add(c);
     }
 
 }
