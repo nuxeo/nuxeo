@@ -18,24 +18,18 @@ Accepted parameters:
 - labelStyleClass: CSS style class for the label item, optional
 </c:if>
 
-  <nxu:set var="translatedLabel"
-    value="#{nxu:test(translated, messages[label], label)}">
-
-    <c:if test="#{empty helpLabel or hideHelp}">
-      <h:outputText value="#{translatedLabel}"
+  <c:choose>
+    <c:when test="#{empty helpLabel or hideHelp}">
+      <h:outputText value="#{nxu:test(translated, messages[label], label)}"
         styleClass="widgetLabel #{labelStyleClass} #{nxu:test(required and isEditMode, 'required', '')}" />
-    </c:if>
-    <c:if test="#{not empty helpLabel and not hideHelp}">
+    </c:when>
+    <c:otherwise>
       <div class="widgetHelpLabel">
-        <nxu:set var="translatedHelpLabel"
-          value="#{nxu:test(translated, messages[helpLabel], helpLabel)}">
-          <h:outputText value="#{translatedLabel}"
-            title="#{translatedHelpLabel}"
-            styleClass="widgetLabel tipsyShow tipsyGravityNW #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
-        </nxu:set>
+        <h:outputText value="#{nxu:test(translated, messages[label], label)}"
+          title="#{nxu:test(translated, messages[helpLabel], helpLabel)}"
+          styleClass="widgetLabel tipsyShow tipsyGravityNW #{labelStyleClass} #{nxu:test(widget.required and isEditMode, 'required', '')}" />
       </div>
-    </c:if>
-
-  </nxu:set>
+    </c:otherwise>
+  </c:choose>
 
 </c:if>

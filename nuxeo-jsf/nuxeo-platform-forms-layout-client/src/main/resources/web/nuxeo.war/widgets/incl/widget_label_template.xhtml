@@ -18,17 +18,15 @@ Accepted parameters:
   (available since 5.9.5)
 </c:if>
 
-  <nxu:set var="widgetLabel" value="#{widget.label}"
-    resolveTwice="true" cache="true">
-    <nxu:set var="widgetHelpLabel" value="#{widget.helpLabel}"
-      resolveTwice="true" cache="true">
-      <ui:include src="/widgets/incl/label_template.xhtml">
-        <ui:param name="label" value="#{nxu:test(empty widgetLabel, defaultLabel, widgetLabel)}" />
-        <ui:param name="helpLabel" value="#{widgetHelpLabel}" />
-        <ui:param name="translated" value="#{widget.translated}" />
-        <ui:param name="required" value="#{widget.required}" />
-      </ui:include>
-    </nxu:set>
-  </nxu:set>
+  <ui:include src="/widgets/incl/label_template.xhtml">
+    <nxu:param name="widgetLabel" value="#{widget.label}"
+      resolveTwice="true" cache="true" />
+    <nxu:param name="widgetHelpLabel" value="#{widget.helpLabel}"
+      resolveTwice="true" cache="true" />
+    <ui:param name="label" value="#{nxu:test(empty widgetLabel, defaultLabel, widgetLabel)}" />
+    <ui:param name="helpLabel" value="#{widgetHelpLabel}" />
+    <ui:param name="translated" value="#{widget.translated}" />
+    <ui:param name="required" value="#{widget.required}" />
+  </ui:include>
 
 </c:if>
