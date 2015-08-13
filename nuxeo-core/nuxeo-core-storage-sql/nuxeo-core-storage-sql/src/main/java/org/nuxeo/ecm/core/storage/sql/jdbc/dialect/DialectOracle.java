@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -39,6 +40,7 @@ import java.util.Set;
 
 import javax.transaction.xa.XAException;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.StringUtils;
@@ -429,7 +431,10 @@ public class DialectOracle extends Dialect {
                 columns.get(0).getQuotedName(), fulltextParameters);
     }
 
-    protected static Set<Character> CHARS_RESERVED = Collections.singleton(Character.valueOf('%'));
+    protected static final String CHARS_RESERVED_STR = "%${";
+
+    protected static final Set<Character> CHARS_RESERVED = new HashSet<>(
+            Arrays.asList(ArrayUtils.toObject(CHARS_RESERVED_STR.toCharArray())));
 
     @Override
     public String getDialectFulltextQuery(String query) {
