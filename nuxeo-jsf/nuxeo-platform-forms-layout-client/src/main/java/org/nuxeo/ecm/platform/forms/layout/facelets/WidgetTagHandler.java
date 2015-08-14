@@ -45,7 +45,6 @@ import org.jboss.el.ValueExpressionLiteral;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
