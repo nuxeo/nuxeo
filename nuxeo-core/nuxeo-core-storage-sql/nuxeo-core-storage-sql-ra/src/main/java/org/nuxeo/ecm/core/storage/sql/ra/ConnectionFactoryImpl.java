@@ -158,8 +158,8 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
     }
 
     @Override
-    public org.nuxeo.ecm.core.model.Session getSession(String sessionId) {
-        return new SQLSession(getConnection(), this, sessionId);
+    public org.nuxeo.ecm.core.model.Session getSession() {
+        return new SQLSession(getConnection(), this);
     }
 
     @Override

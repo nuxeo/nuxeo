@@ -55,8 +55,8 @@ public class SQLRepository implements Repository {
      * Called by LocalSession.createSession
      */
     @Override
-    public Session getSession(String sessionId) {
-        return new SQLSession(repository.getConnection(), this, sessionId);
+    public Session getSession() {
+        return new SQLSession(repository.getConnection(), this);
     }
 
     @Override

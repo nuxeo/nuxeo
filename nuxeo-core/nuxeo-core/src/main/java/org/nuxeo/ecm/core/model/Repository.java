@@ -21,7 +21,7 @@ public interface Repository {
 
     String getName();
 
-    Session getSession(String sessionId);
+    Session getSession();
 
     void shutdown();
 

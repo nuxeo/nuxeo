@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +33,7 @@ import javax.transaction.Transaction;
 
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
@@ -83,7 +85,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
      * Initializes the root and its ACP.
      */
     public void initRoot() {
-        Session session = getSession(null);
+        Session session = getSession();
         Document root = session.importDocument(getRootId(), null, "", TYPE_ROOT, new HashMap<String, Serializable>());
         ACLImpl acl = new ACLImpl();
         acl.add(new ACE(SecurityConstants.ADMINISTRATORS, SecurityConstants.EVERYTHING, true));
@@ -121,7 +123,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     }
 
     @Override
-    public Session getSession(String sessionId) {
+    public Session getSession() {
         Transaction transaction;
         try {
             transaction = TransactionHelper.lookupTransactionManager().getTransaction();
@@ -134,23 +136,27 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         if (transaction == null) {
             // no active transaction, use a regular session
-            return newSession(sessionId);
+            return newSession();
         }
 
         TransactionContext context = transactionContexts.get(transaction);
         if (context == null) {
-            context = new TransactionContext(transaction, newSession(sessionId));
+            context = new TransactionContext(transaction, newSession());
             context.init();
         }
-        return context.newSession(sessionId);
+        return context.newSession();
     }
 
-    protected DBSSession newSession(String sessionId) {
-        return new DBSSession(this, sessionId);
+    protected DBSSession newSession() {
+        return new DBSSession(this);
     }
 
     public Map<Transaction, TransactionContext> transactionContexts = new ConcurrentHashMap<>();
 
+    /**
+     * Context maintained during a transaction, holding the base session used, and all session proxy handles that have
+     * been returned to callers.
+     */
     public class TransactionContext implements Synchronization {
 
         protected final Transaction transaction;
@@ -175,9 +181,9 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
         }
 
-        public Session newSession(String sessionId) {
+        public Session newSession() {
             ClassLoader cl = getClass().getClassLoader();
-            DBSSessionInvoker invoker = new DBSSessionInvoker(this, sessionId);
+            DBSSessionInvoker invoker = new DBSSessionInvoker(this);
             Session proxy = (Session) Proxy.newProxyInstance(cl, new Class[] { Session.class }, invoker);
             add(proxy);
             return proxy;
@@ -200,14 +206,15 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         public void afterCompletion(int status) {
             baseSession.close();
             for (Session proxy : proxies.toArray(new Session[0])) {
-                proxy.close();
+                proxy.close(); // so that users of the session proxy see it's not live anymore
             }
             transactionContexts.remove(transaction);
         }
     }
 
     /**
-     * An indirection to a {@link DBSSession} that has a different sessionId.
+     * An indirection to a base {@link DBSSession} intercepting {@code close()} to not close the base session until the
+     * transaction itself is closed.
      */
     public static class DBSSessionInvoker implements InvocationHandler {
 
@@ -215,21 +222,16 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         private static final String METHOD_EQUALS = "equals";
 
-        private static final String METHOD_GETSESSIONID = "getSessionId";
-
         private static final String METHOD_CLOSE = "close";
 
         private static final String METHOD_ISLIVE = "isLive";
 
         protected final TransactionContext context;
 
-        protected final String sessionId;
-
         protected boolean closed;
 
-        public DBSSessionInvoker(TransactionContext context, String sessionId) {
+        public DBSSessionInvoker(TransactionContext context) {
             this.context = context;
-            this.sessionId = sessionId;
         }
 
         @Override
@@ -241,9 +243,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             if (methodName.equals(METHOD_EQUALS)) {
                 return doEquals(args);
             }
-            if (methodName.equals(METHOD_GETSESSIONID)) {
-                return doGetSessionId();
-            }
             if (methodName.equals(METHOD_CLOSE)) {
                 return doClose(proxy);
             }
@@ -252,7 +251,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
 
             if (closed) {
-                throw new NuxeoException("Cannot use closed connection handle: " + sessionId);
+                throw new NuxeoException("Cannot use closed connection handle");
             }
 
             try {
@@ -276,10 +275,6 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             }
             InvocationHandler otherInvoker = Proxy.getInvocationHandler(other);
             return Boolean.valueOf(this.equals(otherInvoker));
-        }
-
-        protected String doGetSessionId() {
-            return sessionId;
         }
 
         protected Object doClose(Object proxy) {

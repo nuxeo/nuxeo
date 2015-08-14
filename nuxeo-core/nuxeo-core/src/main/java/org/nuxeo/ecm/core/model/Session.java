@@ -13,13 +13,13 @@
 package org.nuxeo.ecm.core.model;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -33,13 +33,6 @@ public interface Session {
     String USER_NAME = "username";
 
     /**
-     * Gets the session id.
-     *
-     * @return the session id
-     */
-    String getSessionId();
-
-    /**
      * Gets the repository that created this session.
      *
      * @return the repository
@@ -51,7 +44,7 @@ public interface Session {
      *
      * @since 5.9.4
      */
-    DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
+    PartialList<Document> query(String query, String queryType, QueryFilter queryFilter, long countUpTo);
 
     /**
      * Does a query and fetch the individual results as maps.
@@ -153,7 +146,7 @@ public interface Session {
      * @return the list of proxies if any is found otherwise an empty list
      * @since 1.4.1 for the case where doc is a proxy
      */
-    Collection<Document> getProxies(Document doc, Document folder);
+    List<Document> getProxies(Document doc, Document folder);
 
     /**
      * Sets a proxies' target.

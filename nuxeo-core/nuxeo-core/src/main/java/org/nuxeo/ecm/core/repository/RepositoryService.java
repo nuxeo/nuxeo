@@ -209,13 +209,13 @@ public class RepositoryService extends DefaultComponent {
      *
      * @since 7.2
      */
-    public Session getSession(String repositoryName, String sessionId) {
+    public Session getSession(String repositoryName) {
         synchronized (repositories) {
             Repository repository = doGetRepository(repositoryName);
             if (repository == null) {
                 throw new LocalException("No such repository: " + repositoryName);
             }
-            return repository.getSession(sessionId);
+            return repository.getSession();
         }
     }
 

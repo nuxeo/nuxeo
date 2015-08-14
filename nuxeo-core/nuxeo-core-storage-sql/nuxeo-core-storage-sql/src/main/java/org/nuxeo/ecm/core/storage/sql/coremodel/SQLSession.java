@@ -17,7 +17,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -36,15 +35,11 @@ import javax.resource.ResourceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelFactory;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -96,17 +91,14 @@ public class SQLSession implements Session {
 
     private Document root;
 
-    private final String sessionId;
-
     private final boolean negativeAclAllowed;
 
     private final boolean copyFindFreeNameDisabled;
 
-    public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session, Repository repository, String sessionId) {
+    public SQLSession(org.nuxeo.ecm.core.storage.sql.Session session, Repository repository) {
         this.session = session;
         this.repository = repository;
         Node rootNode = session.getRootNode();
-        this.sessionId = sessionId;
         root = newDocument(rootNode);
         negativeAclAllowed = Framework.isBooleanPropertyTrue(ALLOW_NEGATIVE_ACL_PROPERTY);
         copyFindFreeNameDisabled = Framework.isBooleanPropertyTrue(COPY_FINDFREENAME_DISABLED_PROP);
@@ -152,11 +144,6 @@ public class SQLSession implements Session {
     @Override
     public boolean isStateSharedByAllThreadSessions() {
         return session.isStateSharedByAllThreadSessions();
-    }
-
-    @Override
-    public String getSessionId() {
-        return sessionId;
     }
 
     @Override
@@ -278,8 +265,8 @@ public class SQLSession implements Session {
     }
 
     @Override
-    public Collection<Document> getProxies(Document document, Document parent) {
-        Collection<Node> proxyNodes = session.getProxies(((SQLDocument) document).getNode(),
+    public List<Document> getProxies(Document document, Document parent) {
+        List<Node> proxyNodes = session.getProxies(((SQLDocument) document).getNode(),
                 parent == null ? null : ((SQLDocument) parent).getNode());
         List<Document> proxies = new ArrayList<Document>(proxyNodes.size());
         for (Node proxyNode : proxyNodes) {
@@ -376,7 +363,7 @@ public class SQLSession implements Session {
             "(.*)\\s+ORDER\\s+BY\\s+" + NXQL.ECM_PATH + "\\s+DESC\\s*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
     @Override
-    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
+    public PartialList<Document> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         // do ORDER BY ecm:path by hand in SQLQueryResult as we can't
         // do it in SQL (and has to do limit/offset as well)
         Boolean orderByPath;
@@ -400,17 +387,9 @@ public class SQLSession implements Session {
             queryFilter = QueryFilter.withoutLimitOffset(queryFilter);
         }
         PartialList<Serializable> pl = session.query(query, queryType, queryFilter, countUpTo);
-        List<Serializable> ids = pl.list;
 
-        // get Documents in bulk
-        List<Document> docs = getDocumentsById(ids);
-
-        // build DocumentModels from Documents
-        String[] schemas = { "common" };
-        List<DocumentModel> list = new ArrayList<DocumentModel>(ids.size());
-        for (Document doc : docs) {
-            list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
-        }
+        // get Documents in bulk, returns a newly-allocated ArrayList
+        List<Document> list = getDocumentsById(pl.list);
 
         // order / limit
         if (orderByPath != null) {
@@ -425,10 +404,10 @@ public class SQLSession implements Session {
                 list.subList((int) limit, size).clear();
             }
         }
-        return new DocumentModelListImpl(list, pl.totalSize);
+        return new PartialList<>(list, pl.totalSize);
     }
 
-    public static class PathComparator implements Comparator<DocumentModel> {
+    public static class PathComparator implements Comparator<Document> {
 
         private final int sign;
 
@@ -437,11 +416,11 @@ public class SQLSession implements Session {
         }
 
         @Override
-        public int compare(DocumentModel doc1, DocumentModel doc2) {
-            String p1 = doc1.getPathAsString();
-            String p2 = doc2.getPathAsString();
+        public int compare(Document doc1, Document doc2) {
+            String p1 = doc1.getPath();
+            String p2 = doc2.getPath();
             if (p1 == null && p2 == null) {
-                return sign * doc1.getId().compareTo(doc2.getId());
+                return sign * doc1.getUUID().compareTo(doc2.getUUID());
             } else if (p1 == null) {
                 return sign;
             } else if (p2 == null) {

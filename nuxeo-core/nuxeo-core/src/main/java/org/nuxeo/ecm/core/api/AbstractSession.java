@@ -338,7 +338,7 @@ public abstract class AbstractSession implements CoreSession, Serializable {
      * @return the document model
      */
     protected DocumentModel readModel(Document doc) {
-        return DocumentModelFactory.createDocumentModel(doc, null);
+        return DocumentModelFactory.createDocumentModel(doc, getSessionId(), null);
     }
 
     /**
@@ -351,14 +351,6 @@ public abstract class AbstractSession implements CoreSession, Serializable {
         DocumentModel newModel = readModel(doc);
         newModel.copyContextData(docModel);
         return newModel;
-    }
-
-    /**
-     * @deprecated unused
-     */
-    @Deprecated
-    protected DocumentModel readModel(Document doc, String[] schemas) {
-        return DocumentModelFactory.createDocumentModel(doc, schemas);
     }
 
     protected DocumentModel writeModel(Document doc, DocumentModel docModel) {
@@ -643,6 +635,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     @Override
     public DocumentModel createDocument(DocumentModel docModel) {
+        if (docModel.getSessionId() == null) {
+            // docModel was created using constructor instead of CoreSession.createDocumentModel
+            docModel.attach(getSessionId());
+        }
         String typeName = docModel.getType();
         DocumentRef parentRef = docModel.getParentRef();
         if (typeName == null) {
@@ -1128,7 +1124,14 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                     securityService.getPoliciesQueryTransformers(repoName), postFilter ? 0 : limit,
                     postFilter ? 0 : offset);
 
-            DocumentModelList dms = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
+            // get document list with total size
+            PartialList<Document> pl = getSession().query(query, queryType, queryFilter, postFilter ? -1 : countUpTo);
+            // convert to DocumentModelList
+            DocumentModelListImpl dms = new DocumentModelListImpl(pl.list.size());
+            dms.setTotalSize(pl.totalSize);
+            for (Document doc : pl.list) {
+                dms.add(readModel(doc));
+            }
 
             if (!postFilter) {
                 // the backend has done all the needed filtering

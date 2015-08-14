@@ -63,7 +63,6 @@ import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
@@ -83,15 +82,11 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentExistsException;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelFactory;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.VersionModel;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -130,21 +125,13 @@ public class DBSSession implements Session {
 
     protected final DBSRepository repository;
 
-    protected final String sessionId;
-
     protected final DBSTransactionState transaction;
 
     protected boolean closed;
 
-    public DBSSession(DBSRepository repository, String sessionId) {
+    public DBSSession(DBSRepository repository) {
         this.repository = repository;
-        this.sessionId = sessionId;
         transaction = new DBSTransactionState(repository, this);
-    }
-
-    @Override
-    public String getSessionId() {
-        return sessionId;
     }
 
     @Override
@@ -913,7 +900,7 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public Collection<Document> getProxies(Document doc, Document folder) {
+    public List<Document> getProxies(Document doc, Document folder) {
         List<DBSDocumentState> docStates;
         String docId = doc.getUUID();
         if (doc.isVersion()) {
@@ -1332,21 +1319,14 @@ public class DBSSession implements Session {
     }
 
     @Override
-    public DocumentModelList query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
+    public PartialList<Document> query(String query, String queryType, QueryFilter queryFilter, long countUpTo) {
         // query
         PartialList<String> pl = doQuery(query, queryType, queryFilter, (int) countUpTo);
 
         // get Documents in bulk
         List<Document> docs = getDocuments(pl.list);
 
-        // build DocumentModels from Documents
-        String[] schemas = { "common" };
-        List<DocumentModel> list = new ArrayList<DocumentModel>(docs.size());
-        for (Document doc : docs) {
-            list.add(DocumentModelFactory.createDocumentModel(doc, schemas));
-        }
-
-        return new DocumentModelListImpl(list, pl.totalSize);
+        return new PartialList<>(docs, pl.totalSize);
     }
 
     protected PartialList<String> doQuery(String query, String queryType, QueryFilter queryFilter, int countUpTo) {

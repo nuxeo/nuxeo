@@ -54,32 +54,20 @@ public class DocumentModelFactory {
     private DocumentModelFactory() {
     }
 
-    public static DocumentModelImpl createDocumentModel(Document doc) {
-        DocumentType docType = doc.getType();
-        String[] schemas;
-        if (docType == null) {
-            schemas = null;
-        } else {
-            schemas = docType.getSchemaNames();
-        }
-        return createDocumentModel(doc, schemas);
-    }
-
     /**
      * Creates a document model for an existing document.
      *
      * @param doc the document
+     * @param sid the session id for this document
      * @param schemas the schemas to prefetch (deprecated), or {@code null}
      * @return the new document model
      */
-    public static DocumentModelImpl createDocumentModel(Document doc, String[] schemas) {
+    public static DocumentModelImpl createDocumentModel(Document doc, String sid, String[] schemas) {
 
         DocumentType type = doc.getType();
         if (type == null) {
             throw new NuxeoException("Type not found for doc " + doc);
         }
-
-        String sid = doc.getSession().getSessionId();
 
         DocumentRef docRef = new IdRef(doc.getUUID());
         Document parent = doc.getParent();
@@ -256,7 +244,7 @@ public class DocumentModelFactory {
         }
 
         // TODO: here we can optimize document part doesn't need to be read
-        DocumentModel newModel = createDocumentModel(doc, null);
+        DocumentModel newModel = createDocumentModel(doc, docModel.getSessionId(), null);
         newModel.copyContextData(docModel);
         return newModel;
     }

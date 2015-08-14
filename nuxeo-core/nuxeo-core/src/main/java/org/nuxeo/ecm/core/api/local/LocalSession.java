@@ -113,7 +113,7 @@ public class LocalSession extends AbstractSession implements Synchronization {
      */
     protected SessionInfo createSession() {
         RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
-        Session session = repositoryService.getSession(repositoryName, sessionId);
+        Session session = repositoryService.getSession(repositoryName);
         TransactionHelper.registerSynchronization(this);
         SessionInfo si = new SessionInfo(session);
         sessionHolder.set(si);
