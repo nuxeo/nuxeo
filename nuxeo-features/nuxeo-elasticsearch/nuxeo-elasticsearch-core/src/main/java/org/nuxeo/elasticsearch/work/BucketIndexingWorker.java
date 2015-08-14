@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,8 +50,7 @@ public class BucketIndexingWorker extends BaseIndexingWorker implements Work {
 
     private final int documentCount;
 
-    public BucketIndexingWorker(IndexingMonitor monitor, String repositoryName, List<String> docIds, boolean warnAtEnd) {
-        super(monitor);
+    public BucketIndexingWorker(String repositoryName, List<String> docIds, boolean warnAtEnd) {
         setDocuments(repositoryName, docIds);
         documentCount = docIds.size();
         this.warnAtEnd = warnAtEnd;

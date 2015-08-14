@@ -102,4 +102,7 @@ final public class ElasticSearchConstants {
 
     public static final String REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY = "elasticsearch.reindex.useChildrenTraversal";
 
+    /** @since 7.4 */
+    public static final String INDEXING_QUEUE_ID = "elasticSearchIndexing";
+
 }

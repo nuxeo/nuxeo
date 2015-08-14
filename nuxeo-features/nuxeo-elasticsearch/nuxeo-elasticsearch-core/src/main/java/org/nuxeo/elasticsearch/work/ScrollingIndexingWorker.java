@@ -32,7 +32,6 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -55,8 +54,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
 
     protected long documentCount = 0;
 
-    public ScrollingIndexingWorker(IndexingMonitor monitor, String repositoryName, String nxql) {
-        super(monitor);
+    public ScrollingIndexingWorker(String repositoryName, String nxql) {
         this.repositoryName = repositoryName;
         this.nxql = nxql;
     }
@@ -115,7 +113,7 @@ public class ScrollingIndexingWorker extends BaseIndexingWorker implements Work 
         if (bucket.isEmpty()) {
             return;
         }
-        BucketIndexingWorker subWorker = new BucketIndexingWorker(monitor, repositoryName, bucket, isLast);
+        BucketIndexingWorker subWorker = new BucketIndexingWorker(repositoryName, bucket, isLast);
         getWorkManager().schedule(subWorker);
     }
 

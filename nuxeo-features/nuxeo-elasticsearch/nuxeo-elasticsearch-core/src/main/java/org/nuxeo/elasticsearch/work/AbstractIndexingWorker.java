@@ -19,7 +19,6 @@ package org.nuxeo.elasticsearch.work;
 
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 import java.util.ArrayList;
@@ -36,16 +35,14 @@ public abstract class AbstractIndexingWorker extends BaseIndexingWorker {
 
     protected final List<IndexingCommand> cmds;
 
-    public AbstractIndexingWorker(IndexingMonitor monitor,  IndexingCommand cmd) {
-        super(monitor);
+    public AbstractIndexingWorker(IndexingCommand cmd) {
         this.cmds = new ArrayList<>(1);
         this.cmds.add(cmd);
         this.repositoryName = cmd.getRepositoryName();
         this.docId = cmd.getTargetDocumentId();
     }
 
-    public AbstractIndexingWorker(IndexingMonitor monitor,  String repositoryName, List<IndexingCommand> cmds) {
-        super(monitor);
+    public AbstractIndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
         this.cmds = cmds;
         this.repositoryName = repositoryName;
         if (! cmds.isEmpty()) {
