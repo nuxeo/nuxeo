@@ -46,7 +46,7 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetDefinitionImpl;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -247,7 +247,7 @@ public class WidgetTypeTagHandler extends TagHandler {
         // expose widget variable
         VariableMapper orig = ctx.getVariableMapper();
         try {
-            MetaVariableMapper vm = new MetaVariableMapper(orig);
+            BlockingVariableMapper vm = new BlockingVariableMapper(orig);
             ctx.setVariableMapper(vm);
 
             // set unique id on widget before exposing it to the context
