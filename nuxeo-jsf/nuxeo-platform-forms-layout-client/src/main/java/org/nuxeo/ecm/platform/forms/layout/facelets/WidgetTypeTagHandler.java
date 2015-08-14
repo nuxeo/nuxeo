@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.el.ELException;
-import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
@@ -249,15 +248,12 @@ public class WidgetTypeTagHandler extends TagHandler {
             MetaVariableMapper vm = new MetaVariableMapper(orig);
             ctx.setVariableMapper(vm);
 
-            ValueExpression widgetVe = ctx.getExpressionFactory().createValueExpression(widget, Widget.class);
-            vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-            vm.setVariable(RenderVariables.widgetVariables.widget.name() + "_" + widget.getLevel(), widgetVe);
-            // TODO NXP-13280: expose widget controls too when they can be
-            // retrieved from tag attributes
-
             // set unique id on widget before exposing it to the context
             FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
             WidgetTagHandler.generateWidgetId(helper, widget, false);
+
+            // TODO NXP-13280: retrieve widget controls from tag attributes before exposure
+            WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, null, true);
 
             boolean resolveOnlyBool = false;
             if (resolveOnly != null) {

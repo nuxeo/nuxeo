@@ -209,19 +209,7 @@ public class WidgetTagHandler extends MetaTagHandler {
                     // widget before exposing it to the context
                     FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
                     WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
-                    ExpressionFactory eFactory = ctx.getExpressionFactory();
-                    ValueExpression widgetVe = eFactory.createValueExpression(widgetInstance, Widget.class);
-                    vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-                    vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name());
-                    // expose widget controls too
-                    for (Map.Entry<String, Serializable> ctrl : widgetInstance.getControls().entrySet()) {
-                        String key = ctrl.getKey();
-                        String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
-                        String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
-                        ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
-                        vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
-                    }
-                    vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
+                    exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
                 }
 
                 boolean resolveOnlyBool = false;
@@ -291,6 +279,45 @@ public class WidgetTagHandler extends MetaTagHandler {
             vm.setVariable(RenderVariables.globalVariables.value.name() + "_" + widget.getLevel(), valueExpr);
         }
         handler.apply(ctx, parent);
+    }
+
+    public static void exposeWidgetVariables(FaceletContext ctx, MetaVariableMapper vm, Widget widget,
+            Integer widgetIndex, boolean exposeLevel) {
+        ExpressionFactory eFactory = ctx.getExpressionFactory();
+        ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
+        vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name());
+
+        ValueExpression widgetIndexVe = null;
+        if (widgetIndex != null) {
+            widgetIndexVe = eFactory.createValueExpression(widgetIndex, Integer.class);
+            vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(), widgetIndexVe);
+        }
+
+        if (exposeLevel) {
+            Integer level = null;
+            if (widget != null) {
+                level = widget.getLevel();
+            }
+            vm.setVariable(RenderVariables.widgetVariables.widget.name() + "_" + level, widgetVe);
+            if (widgetIndexVe != null) {
+                vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name() + "_" + level, widgetIndexVe);
+            }
+        }
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name() + "*");
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widgetIndex.name() + "*");
+
+        // expose widget controls too
+        if (widget != null) {
+            for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
+                String key = ctrl.getKey();
+                String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
+                String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
+                ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
+                vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
+            }
+        }
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
     }
 
     @Override

@@ -20,12 +20,8 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 
 import javax.el.ELException;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
@@ -39,7 +35,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
 
 /**
@@ -106,45 +101,18 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
         try {
             int widgetCounter = 0;
             for (Widget widget : widgets) {
+                MetaVariableMapper vm = new MetaVariableMapper(orig);
+                ctx.setVariableMapper(vm);
+
                 // set unique id on widget before exposing it to the context, but assumes iteration could be done
-                // several
-                // times => do not generate id again if already set, unless specified by attribute "recomputeIds"
+                // several times => do not generate id again if already set, unless specified by attribute
+                // "recomputeIds"
                 if (widget != null && (widget.getId() == null || recomputeIdsBool)) {
                     WidgetTagHandler.generateWidgetId(helper, widget, false);
                 }
 
-                MetaVariableMapper vm = new MetaVariableMapper(orig);
-                ctx.setVariableMapper(vm);
+                WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, widgetCounter, true);
 
-                // expose widget variables
-                ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
-                vm.setVariable(RenderVariables.widgetVariables.widget.name(), widgetVe);
-                Integer level = null;
-                if (widget != null) {
-                    level = Integer.valueOf(widget.getLevel());
-                }
-                vm.setVariable(RenderVariables.widgetVariables.widget.name() + "_" + level, widgetVe);
-                vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name() + "*");
-                ValueExpression widgetIndexVe = eFactory.createValueExpression(Integer.valueOf(widgetCounter),
-                        Integer.class);
-                vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(), widgetIndexVe);
-                vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name() + "_" + level, widgetIndexVe);
-                vm.addBlockedPattern(RenderVariables.widgetVariables.widgetIndex.name() + "*");
-
-                // expose widget controls too
-                if (widget != null) {
-                    for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
-                        String key = ctrl.getKey();
-                        String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
-                        String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
-                        ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
-                        vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
-                    }
-                    vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
-                }
-
-                // apply
                 nextHandler.apply(ctx, parent);
                 widgetCounter++;
             }

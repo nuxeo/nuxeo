@@ -20,12 +20,8 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
-import java.io.Serializable;
-import java.util.Map;
 
 import javax.el.ELException;
-import javax.el.ExpressionFactory;
-import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
@@ -37,7 +33,6 @@ import javax.faces.view.facelets.TagHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaValueExpression;
 import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
 
 /**
@@ -113,32 +108,7 @@ public class SubWidgetTagHandler extends TagHandler {
                     WidgetTagHandler.generateWidgetId(helper, subWidget, false);
                 }
 
-                // expose widget variables
-                ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression subWidgetVe = eFactory.createValueExpression(subWidget, Widget.class);
-                Integer level = null;
-                if (subWidget != null) {
-                    level = Integer.valueOf(subWidget.getLevel());
-                }
-                vm.setVariable(RenderVariables.widgetVariables.widget.name(), subWidgetVe);
-                ValueExpression subWidgetIndexVe = eFactory.createValueExpression(Integer.valueOf(subWidgetCounter),
-                        Integer.class);
-                vm.addBlockedPattern(RenderVariables.widgetVariables.widget.name());
-                vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name(), subWidgetIndexVe);
-                vm.setVariable(RenderVariables.widgetVariables.widgetIndex.name() + "_" + level, subWidgetIndexVe);
-                vm.addBlockedPattern(RenderVariables.widgetVariables.widgetIndex.name() + "*");
-
-                // expose widget controls too
-                if (widget != null) {
-                    for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
-                        String key = ctrl.getKey();
-                        String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
-                        String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
-                        ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
-                        vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
-                    }
-                    vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
-                }
+                WidgetTagHandler.exposeWidgetVariables(ctx, vm, subWidget, subWidgetCounter, true);
 
                 nextHandler.apply(ctx, parent);
                 subWidgetCounter++;
