@@ -84,6 +84,9 @@ public class Main extends ModuleRoot {
     }
 
 
+    /**
+     * @since 7.4
+     */
     @GET
     @Path(ESAuditBackend.IDX_NAME + "/_search")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -96,6 +99,25 @@ public class Main extends ModuleRoot {
         NuxeoPrincipal principal = getPrincipal();
         SearchRequestFilter req = new SearchRequestFilter(principal, ESAuditBackend.IDX_NAME, ESAuditBackend.IDX_TYPE,
                 uriInf.getRequestUri().getRawQuery(), formParams.keySet().iterator().next());
+        log.warn(req);
+        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
+    }
+
+    /**
+     * @since 7.4
+     */
+    @POST
+    @Path(ESAuditBackend.IDX_NAME + "/_search")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String searchAuditWithPost(@Context UriInfo uriInf, String payload)
+            throws IOException, JSONException {
+        if (!getPrincipal().isAdministrator()) {
+            throw new IllegalArgumentException("Invalid index submitted: " + ESAuditBackend.IDX_NAME);
+        }
+        NuxeoPrincipal principal = getPrincipal();
+        SearchRequestFilter req = new SearchRequestFilter(principal, ESAuditBackend.IDX_NAME, ESAuditBackend.IDX_TYPE,
+                uriInf.getRequestUri().getRawQuery(), payload);
         log.warn(req);
         return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
     }
