@@ -31,6 +31,8 @@ import javax.transaction.Synchronization;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
@@ -50,6 +52,8 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  * @since 5.9.4
  */
 public abstract class DBSRepositoryBase implements DBSRepository {
+
+    private static final Log log = LogFactory.getLog(DBSRepositoryBase.class);
 
     public static final String TYPE_ROOT = "Root";
 
@@ -173,6 +177,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
         public void init() {
             transactionContexts.put(transaction, this);
+            begin();
             // make sure it's closed (with handles) at transaction end
             try {
                 transaction.registerSynchronization(this);
@@ -197,14 +202,28 @@ public abstract class DBSRepositoryBase implements DBSRepository {
             return proxies.remove(proxy);
         }
 
+        public void begin() {
+            baseSession.begin();
+        }
+
         @Override
         public void beforeCompletion() {
-            baseSession.commit();
         }
 
         @Override
         public void afterCompletion(int status) {
+            if (status == Status.STATUS_COMMITTED) {
+                baseSession.commit();
+            } else if (status == Status.STATUS_ROLLEDBACK) {
+                baseSession.rollback();
+            } else {
+                log.error("Unexpected afterCompletion status: " + status);
+            }
             baseSession.close();
+            removeTransaction();
+        }
+
+        protected void removeTransaction() {
             for (Session proxy : proxies.toArray(new Session[0])) {
                 proxy.close(); // so that users of the session proxy see it's not live anymore
             }

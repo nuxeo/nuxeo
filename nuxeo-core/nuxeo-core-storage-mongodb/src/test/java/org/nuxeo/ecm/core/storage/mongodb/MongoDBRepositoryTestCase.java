@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -66,6 +67,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     public void setUp() throws Exception {
         initCheckLeaks();
         super.setUp();
+        deployBundle("org.nuxeo.runtime.jtajca");
         deployBundle("org.nuxeo.ecm.core.schema");
         deployBundle("org.nuxeo.ecm.core.api");
         deployBundle("org.nuxeo.ecm.core");
@@ -74,12 +76,8 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         deployBundle("org.nuxeo.ecm.core.storage.mongodb");
         deployContrib("org.nuxeo.ecm.core.storage.mongodb.tests", "OSGI-INF/test-repo-types.xml");
         initRepository();
-        setUpTx();
+        TransactionHelper.startTransaction();
         openSession();
-    }
-
-    protected void setUpTx() throws Exception {
-        // to be subclassed
     }
 
     @Override
@@ -90,6 +88,7 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
         }
         waitForAsyncCompletion();
         closeSession();
+        TransactionHelper.commitOrRollbackTransaction();
         closeRepository();
         super.tearDown();
         checkLeaks();
@@ -160,7 +159,15 @@ public class MongoDBRepositoryTestCase extends NXRuntimeTestCase {
     }
 
     public void waitForAsyncCompletion() {
+        nextTransaction();
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
+    }
+
+    protected void nextTransaction() {
+        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
+            TransactionHelper.commitOrRollbackTransaction();
+            TransactionHelper.startTransaction();
+        }
     }
 
     public void waitForFulltextIndexing() {

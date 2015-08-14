@@ -157,8 +157,16 @@ public class DBSSession implements Session {
         }
     }
 
+    public void begin() {
+        transaction.begin();
+    }
+
     public void commit() {
         transaction.commit();
+    }
+
+    public void rollback() {
+        transaction.rollback();
     }
 
     @Override

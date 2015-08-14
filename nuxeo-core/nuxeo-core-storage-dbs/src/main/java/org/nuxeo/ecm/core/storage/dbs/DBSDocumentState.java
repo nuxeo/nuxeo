@@ -123,6 +123,16 @@ public class DBSDocumentState {
         return diff;
     }
 
+    /**
+     * Gets the original state for this, needed when creating an undo log.
+     *
+     * @return a state that must not be modified
+     * @since 7.4
+     */
+    public State getOriginalState() {
+        return originalState == null ? state : originalState;
+    }
+
     public Serializable get(String key) {
         return state.get(key);
     }

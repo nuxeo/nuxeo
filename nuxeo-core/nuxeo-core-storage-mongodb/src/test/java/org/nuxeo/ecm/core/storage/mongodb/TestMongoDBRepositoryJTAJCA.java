@@ -40,14 +40,9 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 import org.nuxeo.runtime.transaction.TransactionRuntimeException;
 
-public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
+public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTestCase {
 
     private static final String NO_TX_CANNOT_RECONN = "No transaction active, cannot reconnect";
-
-    @Before
-    public void checkAssumptions() {
-        assumeTrue(hasPoolingConfig());
-    }
 
     /**
      * Test that connection sharing allows use of several sessions at the same time.
@@ -140,22 +135,6 @@ public class TestMongoDBRepositoryJTAJCA extends MongoDBRepositoryTXTestCase {
             }
         }
 
-    }
-
-    /**
-     * Cannot use session after close if no tx.
-     */
-    @Test
-    public void testAccessWithoutTx() {
-        TransactionHelper.commitOrRollbackTransaction();
-        TxWarnChecker checker = new TxWarnChecker();
-        Logger.getRootLogger().addAppender(checker);
-        try {
-            session.getRootDocument();
-            fail("should throw");
-        } catch (LocalException e) {
-            assertTrue(e.getMessage(), e.getMessage().contains(NO_TX_CANNOT_RECONN));
-        }
     }
 
     /**

@@ -92,6 +92,8 @@ public class DBSTransactionState {
 
     private static final Log log = LogFactory.getLog(DBSTransactionState.class);
 
+    private static final String KEY_UNDOLOG_CREATE = "__UNDOLOG_CREATE__\0\0";
+
     protected final DBSRepository repository;
 
     protected final DBSSession session;
@@ -102,7 +104,16 @@ public class DBSTransactionState {
     /** Ids of documents created but not yet saved. */
     protected Set<String> transientCreated = new LinkedHashSet<String>();
 
-    /* TODO undo log */
+    /**
+     * Undo log.
+     * <p>
+     * A map of document ids to null or State. The value is null when the document has to be deleted when applying the
+     * undo log. Otherwise the value is a State. If the State contains the key {@link #KEY_UNDOLOG_CREATE} then the
+     * state must be re-created completely when applying the undo log, otherwise just applied as an update.
+     * <p>
+     * Null when there is no active transaction.
+     */
+    protected Map<String, State> undoLog;
 
     protected final Set<String> browsePermissions;
 
@@ -476,6 +487,26 @@ public class DBSTransactionState {
      * Called after a {@link #save} has been done.
      */
     public void removeStates(Set<String> ids) {
+        if (undoLog != null) {
+            for (String id : ids) {
+                if (undoLog.containsKey(id)) {
+                    // there's already a create or an update in the undo log
+                    State oldUndo = undoLog.get(id);
+                    if (oldUndo == null) {
+                        // create + delete -> forget
+                        undoLog.remove(id);
+                    } else {
+                        // update + delete -> original old state to re-create
+                        oldUndo.put(KEY_UNDOLOG_CREATE, TRUE);
+                    }
+                } else {
+                    // just delete -> store old state to re-create
+                    State oldState = StateHelper.deepCopy(getStateForRead(id));
+                    oldState.put(KEY_UNDOLOG_CREATE, TRUE);
+                    undoLog.put(id, oldState);
+                }
+            }
+        }
         for (String id : ids) {
             transientStates.remove(id);
         }
@@ -499,8 +530,10 @@ public class DBSTransactionState {
         for (String id : transientCreated) { // ordered
             DBSDocumentState docState = transientStates.get(id);
             docState.setNotDirty();
+            if (undoLog != null) {
+                undoLog.put(id, null); // marker to denote create
+            }
             repository.createState(docState.getState());
-            // TODO undo log
         }
         for (DBSDocumentState docState : transientStates.values()) {
             String id = docState.getId();
@@ -508,14 +541,49 @@ public class DBSTransactionState {
                 continue; // already done
             }
             StateDiff diff = docState.getStateChange();
-            docState.setNotDirty();
             if (diff != null) {
+                if (undoLog != null) {
+                    if (!undoLog.containsKey(id)) {
+                        undoLog.put(id, StateHelper.deepCopy(docState.getOriginalState()));
+                    }
+                    // else there's already a create or an update in the undo log so original info is enough
+                }
                 repository.updateState(id, diff);
-                // TODO undo log
             }
+            docState.setNotDirty();
         }
         transientCreated.clear();
         scheduleWork(works);
+    }
+
+    protected void applyUndoLog() {
+        Set<String> deletes = new HashSet<>();
+        for (Entry<String, State> es : undoLog.entrySet()) {
+            String id = es.getKey();
+            State state = es.getValue();
+            if (state == null) {
+                deletes.add(id);
+            } else {
+                boolean recreate = state.remove(KEY_UNDOLOG_CREATE) != null;
+                if (recreate) {
+                    repository.createState(state);
+                } else {
+                    // undo update
+                    State currentState = repository.readState(id);
+                    if (currentState != null) {
+                        StateDiff diff = StateHelper.diff(currentState, state);
+                        if (!diff.isEmpty()) {
+                            repository.updateState(id, diff);
+                        }
+                    }
+                    // else we expected to read a current state but it was concurrently deleted...
+                    // in that case leave it deleted
+                }
+            }
+        }
+        if (!deletes.isEmpty()) {
+            repository.deleteStates(deletes);
+        }
     }
 
     /**
@@ -604,6 +672,15 @@ public class DBSTransactionState {
     }
 
     /**
+     * Called when created in a transaction.
+     *
+     * @since 7.4
+     */
+    public void begin() {
+        undoLog = new HashMap<String, State>();
+    }
+
+    /**
      * Saves and flushes to database.
      */
     public void commit() {
@@ -615,11 +692,11 @@ public class DBSTransactionState {
      * Commits the saved state to the database.
      */
     protected void commitSave() {
-        // clear transient, this means that after this references to states
-        // will be stale
+        // clear transient, this means that after this references to states will be stale
         // TODO mark states as invalid
         clearTransient();
-        // TODO clear undo log
+        // the transaction ended, the proxied DBSSession will disappear and cannot be reused anyway
+        undoLog = null;
     }
 
     /**
@@ -627,7 +704,9 @@ public class DBSTransactionState {
      */
     public void rollback() {
         clearTransient();
-        // TODO apply undo log
+        applyUndoLog();
+        // the transaction ended, the proxied DBSSession will disappear and cannot be reused anyway
+        undoLog = null;
     }
 
     protected void clearTransient() {

@@ -3666,4 +3666,66 @@ public class TestSQLRepositoryAPI {
         assertNull(ver.getPathAsString());
     }
 
+    @Test
+    public void testRollback() {
+        DocumentModel file1 = session.createDocumentModel("/", "file1", "File");
+        file1.setPropertyValue("dc:title", "foo");
+        file1 = session.createDocument(file1);
+        DocumentModel file2 = session.createDocumentModel("/", "file2", "File");
+        file2.setPropertyValue("dc:title", "smurf");
+        file2 = session.createDocument(file2);
+        DocumentModel file3 = session.createDocumentModel("/", "file3", "File");
+        file3 = session.createDocument(file3);
+        session.save();
+        nextTransaction();
+
+        // start some changes
+        // modify file1 title
+        file1.setPropertyValue("dc:title", "bar");
+        session.saveDocument(file1);
+        // modify file2 title
+        file2.setPropertyValue("dc:title", "zap");
+        session.saveDocument(file2);
+        // remove file3
+        session.removeDocument(file3.getRef());
+        // create file4
+        DocumentModel file4 = session.createDocumentModel("/", "file4", "File");
+        file4 = session.createDocument(file4);
+        // create file5
+        DocumentModel file5 = session.createDocumentModel("/", "file5", "File");
+        file5 = session.createDocument(file5);
+        session.save();
+
+        // more changes
+        // modify again file1 title
+        file1.setPropertyValue("dc:title", "gee");
+        session.saveDocument(file1);
+        // remove file2
+        session.removeDocument(file2.getRef());
+        // modify file4
+        file4.setPropertyValue("dc:title", "moo");
+        session.saveDocument(file4);
+        // remove file5
+        session.removeDocument(file5.getRef());
+        session.save();
+
+        // abort the transaction
+        TransactionHelper.setTransactionRollbackOnly();
+        nextTransaction();
+
+        // check what we now have
+        // file1 title unchanged
+        file1 = session.getDocument(file1.getRef());
+        assertEquals("foo", file1.getPropertyValue("dc:title"));
+        // file2 title unchanged
+        file2 = session.getDocument(file2.getRef());
+        assertEquals("smurf", file2.getPropertyValue("dc:title"));
+        // file3 still present
+        assertTrue(session.exists(file3.getRef()));
+        // file4 not present
+        assertFalse(session.exists(file4.getRef()));
+        // file5 not present
+        assertFalse(session.exists(file5.getRef()));
+    }
+
 }
