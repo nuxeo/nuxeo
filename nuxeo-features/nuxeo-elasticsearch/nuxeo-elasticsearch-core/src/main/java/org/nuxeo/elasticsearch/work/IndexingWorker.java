@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -36,8 +35,8 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
 
     private static final long serialVersionUID = -5141471452954319812L;
 
-    public IndexingWorker(IndexingMonitor monitor, String repositoryName, List<IndexingCommand> cmds) {
-        super(monitor, repositoryName, cmds);
+    public IndexingWorker(String repositoryName, List<IndexingCommand> cmds) {
+        super(repositoryName, cmds);
     }
 
     @Override
@@ -70,9 +69,9 @@ public class IndexingWorker extends AbstractIndexingWorker implements Work {
                 boolean useChildrenWorker = Boolean.parseBoolean(Framework.getProperty(REINDEX_USING_CHILDREN_TRAVERSAL_PROPERTY,
                         "false"));
                 if (useChildrenWorker) {
-                    subWorker = new ChildrenIndexingWorker(monitor, cmd);
+                    subWorker = new ChildrenIndexingWorker(cmd);
                 } else {
-                    subWorker = new ScrollingIndexingWorker(monitor, cmd.getRepositoryName(), String.format(
+                    subWorker = new ScrollingIndexingWorker(cmd.getRepositoryName(), String.format(
                             "SELECT ecm:uuid FROM Document WHERE ecm:ancestorId = '%s'", cmd.getTargetDocumentId()));
                 }
                 wm.schedule(subWorker);

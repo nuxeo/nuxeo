@@ -18,6 +18,7 @@
 package org.nuxeo.elasticsearch;
 
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.ES_ENABLED_PROPERTY;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 import static org.nuxeo.elasticsearch.ElasticSearchConstants.REINDEX_ON_STARTUP_PROPERTY;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
@@ -61,7 +63,6 @@ import org.nuxeo.elasticsearch.config.ElasticSearchRemoteConfig;
 import org.nuxeo.elasticsearch.core.ElasticSearchAdminImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchIndexingImpl;
 import org.nuxeo.elasticsearch.core.ElasticSearchServiceImpl;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.elasticsearch.query.NxQueryBuilder;
 import org.nuxeo.elasticsearch.work.IndexingWorker;
 import org.nuxeo.elasticsearch.work.ScrollingIndexingWorker;
@@ -115,7 +116,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     private ListeningExecutorService waiterExecutorService;
 
-    private IndexingMonitor indexingMonitor;
 
     // Nuxeo Component impl ======================================é=============
     @Override
@@ -176,7 +176,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
             log.info("Elasticsearch service is disabled");
             return;
         }
-        indexingMonitor = new IndexingMonitor();
         esa = new ElasticSearchAdminImpl(localConfig, remoteConfig, indexConfig);
         esi = new ElasticSearchIndexingImpl(esa, jsonESDocumentWriter);
         ess = new ElasticSearchServiceImpl(esa);
@@ -289,12 +288,14 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public int getPendingWorkerCount() {
-        return indexingMonitor.getPendingWorkerCount();
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
     }
 
     @Override
     public int getRunningWorkerCount() {
-        return indexingMonitor.getRunningWorkerCount();
+        WorkManager wm = Framework.getLocalService(WorkManager.class);
+        return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
     }
 
     @Override
@@ -308,13 +309,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public IndexingMonitor getIndexingMonitor() {
-        return indexingMonitor;
-    }
-
-    @Override
     public boolean isIndexingInProgress() {
-        return indexingMonitor.getTotalWorkerCount() > 0;
+        return (getPendingWorkerCount() + getRunningWorkerCount()) >  0;
     }
 
     @Override
@@ -322,7 +318,8 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         return waiterExecutorService.submit(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                indexingMonitor.waitForWorkerToComplete();
+                WorkManager wm = Framework.getLocalService(WorkManager.class);
+                wm.awaitCompletion(INDEXING_QUEUE_ID, 300, TimeUnit.SECONDS);
                 return true;
             }
         });
@@ -452,8 +449,9 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         }
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         for (String repositoryName : asyncCommands.keySet()) {
-            IndexingWorker idxWork = new IndexingWorker(indexingMonitor, repositoryName,
+            IndexingWorker idxWork = new IndexingWorker(repositoryName,
                     asyncCommands.get(repositoryName));
+            // we are in afterCompletion don't wait for a commit
             wm.schedule(idxWork, false);
         }
     }
@@ -465,7 +463,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         Transaction transaction = TransactionHelper.suspendTransaction();
         try {
             for (String repositoryName : syncCommands.keySet()) {
-                IndexingWorker idxWork = new IndexingWorker(indexingMonitor, repositoryName,
+                IndexingWorker idxWork = new IndexingWorker(repositoryName,
                         syncCommands.get(repositoryName));
                 idxWork.run();
             }
@@ -482,7 +480,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         if (nxql == null || nxql.isEmpty()) {
             throw new IllegalArgumentException("Expecting an NXQL query");
         }
-        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(indexingMonitor, repositoryName, nxql);
+        ScrollingIndexingWorker worker = new ScrollingIndexingWorker(repositoryName, nxql);
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         wm.schedule(worker);
     }

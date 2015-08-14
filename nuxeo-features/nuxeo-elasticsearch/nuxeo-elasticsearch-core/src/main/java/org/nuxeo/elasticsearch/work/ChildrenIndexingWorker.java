@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -39,8 +38,8 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
 
     private static final long serialVersionUID = 724369727479693496L;
 
-    public ChildrenIndexingWorker(IndexingMonitor monitor,  IndexingCommand cmd) {
-        super(monitor, cmd);
+    public ChildrenIndexingWorker(IndexingCommand cmd) {
+        super(cmd);
     }
 
     @Override
@@ -70,7 +69,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
                 esi.indexNonRecursive(childCommand);
             }
             if (child.isFolder()) {
-                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(monitor, childCommand);
+                ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);
                 WorkManager wm = Framework.getLocalService(WorkManager.class);
                 wm.schedule(subWorker);
             }

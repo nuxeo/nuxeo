@@ -17,12 +17,9 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import javax.validation.constraints.NotNull;
-
 import org.nuxeo.ecm.core.work.AbstractWork;
-import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
-import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.INDEXING_QUEUE_ID;
 
 /**
  * Abstract class for sharing the worker state
@@ -31,35 +28,16 @@ public abstract class BaseIndexingWorker extends AbstractWork {
 
     private static final long serialVersionUID = 1L;
 
-    protected transient IndexingMonitor monitor;
-
-    BaseIndexingWorker(IndexingMonitor monitor) {
-        monitor.incrementWorker();
-        this.monitor = monitor;
-    }
-
     @Override
     public String getCategory() {
-        return "elasticSearchIndexing";
+        return INDEXING_QUEUE_ID;
     }
 
     @Override
     public void work() throws Exception {
-        getMonitor().incrementRunningWorker();
-        try {
-            doWork();
-        } finally {
-            getMonitor().decrementWorker();
-        }
+       doWork();
     }
 
     protected abstract void doWork() throws Exception;
 
-    public @NotNull IndexingMonitor getMonitor() {
-        if (monitor == null) {
-            ElasticSearchAdmin esa = Framework.getLocalService(ElasticSearchAdmin.class);
-            monitor = esa.getIndexingMonitor();
-        }
-        return monitor;
-    }
 }

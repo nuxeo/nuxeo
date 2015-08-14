@@ -22,7 +22,6 @@ import java.util.List;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.elasticsearch.client.Client;
-import org.nuxeo.elasticsearch.core.IndexingMonitor;
 
 /**
  * Administration interface for Elasticsearch service
@@ -182,11 +181,5 @@ public interface ElasticSearchAdmin {
      */
     boolean isEmbedded();
 
-    /**
-     * Return the indexing job synchronizer, for internal use only.
-     *
-     * @since 7.3
-     */
-    IndexingMonitor getIndexingMonitor();
 
 }
