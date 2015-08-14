@@ -36,7 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutRow;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 
 /**
  * Layout row recursion tag handler.
@@ -92,7 +92,7 @@ public class LayoutRowTagHandler extends TagHandler {
         try {
             int rowCounter = 0;
             for (LayoutRow row : rows) {
-                MetaVariableMapper vm = new MetaVariableMapper(orig);
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
                 ctx.setVariableMapper(vm);
 
                 // expose row variables

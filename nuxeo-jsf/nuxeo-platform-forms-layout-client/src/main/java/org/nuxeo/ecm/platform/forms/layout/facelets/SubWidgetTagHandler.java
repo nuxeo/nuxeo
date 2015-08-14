@@ -33,7 +33,7 @@ import javax.faces.view.facelets.TagHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
-import org.nuxeo.ecm.platform.ui.web.binding.MetaVariableMapper;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 
 /**
  * SubWidget tag handler.
@@ -98,7 +98,7 @@ public class SubWidgetTagHandler extends TagHandler {
         try {
             int subWidgetCounter = 0;
             for (Widget subWidget : subWidgets) {
-                MetaVariableMapper vm = new MetaVariableMapper(orig);
+                BlockingVariableMapper vm = new BlockingVariableMapper(orig);
                 ctx.setVariableMapper(vm);
 
                 // set unique id on widget before exposing it to the context, but assumes iteration could be done

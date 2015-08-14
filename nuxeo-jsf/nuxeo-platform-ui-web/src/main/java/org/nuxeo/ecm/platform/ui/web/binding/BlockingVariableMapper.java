@@ -36,9 +36,9 @@ import org.nuxeo.ecm.platform.ui.web.binding.alias.AliasVariableMapper;
  *
  * @since 7.4
  */
-public class MetaVariableMapper extends VariableMapper {
+public class BlockingVariableMapper extends VariableMapper {
 
-    private static final Log log = LogFactory.getLog(MetaVariableMapper.class);
+    private static final Log log = LogFactory.getLog(BlockingVariableMapper.class);
 
     protected final VariableMapper orig;
 
@@ -46,7 +46,7 @@ public class MetaVariableMapper extends VariableMapper {
 
     protected List<String> blockedPatterns;
 
-    public MetaVariableMapper(VariableMapper orig) {
+    public BlockingVariableMapper(VariableMapper orig) {
         super();
         this.orig = orig;
     }
