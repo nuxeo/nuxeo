@@ -312,9 +312,8 @@ public class WidgetTagHandler extends MetaTagHandler {
             for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
                 String key = ctrl.getKey();
                 String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
-                String value = "#{" + RenderVariables.widgetVariables.widget.name() + ".controls." + key + "}";
-                ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
-                vm.setVariable(name, new MetaValueExpression(ve, ctx.getFunctionMapper(), vm));
+                ValueExpression ve = eFactory.createValueExpression(ctrl.getValue(), Object.class);
+                vm.setVariable(name, ve);
             }
         }
         vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
