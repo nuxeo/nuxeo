@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -10,19 +10,14 @@
  *     Florent Guillaume
  */
 
-package org.nuxeo.ecm.core.storage;
+package org.nuxeo.ecm.core.api;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
  * The bundling of a list and a total size.
- * <p>
- * The list MUST be {@link Serializable}.
  */
-public class PartialList<E> implements Serializable {
-
-    private static final long serialVersionUID = 1L;
+public class PartialList<E> {
 
     public final List<E> list;
 
@@ -30,10 +25,8 @@ public class PartialList<E> implements Serializable {
 
     /**
      * Constructs a partial list.
-     * <p>
-     * The list MUST be {@link Serializable}.
      *
-     * @param list the list (MUST be {@link Serializable})
+     * @param list the list
      * @param totalSize the total size
      */
     public PartialList(List<E> list, long totalSize) {

@@ -20,8 +20,8 @@ import javax.resource.cci.Connection;
 
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.query.QueryFilter;
-import org.nuxeo.ecm.core.storage.PartialList;
 
 /**
  * The session is the main high level access point to data from the underlying database.
