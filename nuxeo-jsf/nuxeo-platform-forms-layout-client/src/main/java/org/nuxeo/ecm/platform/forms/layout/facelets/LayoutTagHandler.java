@@ -50,11 +50,11 @@ import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.LayoutDevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
-import com.sun.faces.facelets.el.VariableMapperWrapper;
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
 /**
@@ -167,14 +167,16 @@ public class LayoutTagHandler extends TagHandler {
             }
         }
 
-        // expose some layout variables before layout creation so that they
-        // can be used in mode expressions
         VariableMapper orig = ctx.getVariableMapper();
-        VariableMapper vm = new VariableMapperWrapper(orig);
-        ctx.setVariableMapper(vm);
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
         try {
+            // expose some layout variables before layout creation so that they
+            // can be used in mode expressions
+            BlockingVariableMapper vm = new BlockingVariableMapper(orig);
+            ctx.setVariableMapper(vm);
+
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            ExpressionFactory eFactory = ctx.getExpressionFactory();
             Layout layoutInstance = null;
 
             String valueName = value.getValue();
@@ -199,13 +201,10 @@ public class LayoutTagHandler extends TagHandler {
                     String errMsg = String.format("Layout not found");
                     applyErrorHandler(ctx, parent, helper, errMsg);
                 } else {
-                    Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, layoutInstance.getMode());
-                    for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
-                        vm.setVariable(var.getKey(), var.getValue());
-                    }
+                    fillVariablesForLayoutBuild(ctx, eFactory, vm, layoutInstance.getMode());
                     layoutInstance.setValueName(valueName);
                     applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                            additionalProps, vars, resolveOnlyValue);
+                            additionalProps, vm, resolveOnlyValue);
                 }
             } else {
                 // build layout instance from other attributes
@@ -214,10 +213,7 @@ public class LayoutTagHandler extends TagHandler {
                 List<String> selectedRowsValue = null;
                 boolean selectAllByDefaultValue = false;
 
-                Map<String, ValueExpression> vars = getVariablesForLayoutBuild(ctx, modeValue);
-                for (Map.Entry<String, ValueExpression> var : vars.entrySet()) {
-                    vm.setVariable(var.getKey(), var.getValue());
-                }
+                fillVariablesForLayoutBuild(ctx, eFactory, vm, modeValue);
 
                 if (selectedRows != null || selectedColumns != null) {
                     if (selectedRows != null) {
@@ -252,7 +248,7 @@ public class LayoutTagHandler extends TagHandler {
                             applyErrorHandler(ctx, parent, helper, errMsg);
                         } else {
                             applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                                    additionalProps, vars, resolveOnlyValue);
+                                    additionalProps, vm, resolveOnlyValue);
                         }
                     }
                 }
@@ -267,7 +263,7 @@ public class LayoutTagHandler extends TagHandler {
                         layoutInstance = layoutService.getLayout(ctx, layoutDef, modeValue, valueName,
                                 selectedRowsValue, selectAllByDefaultValue);
                         applyLayoutHandler(ctx, parent, helper, layoutService, layoutInstance, templateValue,
-                                additionalProps, vars, resolveOnlyValue);
+                                additionalProps, vm, resolveOnlyValue);
                     }
                 }
             }
@@ -304,7 +300,7 @@ public class LayoutTagHandler extends TagHandler {
 
     protected void applyLayoutHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper,
             WebLayoutManager layoutService, Layout layoutInstance, String templateValue,
-            Map<String, Serializable> additionalProps, Map<String, ValueExpression> vars, boolean resolveOnly)
+            Map<String, Serializable> additionalProps, BlockingVariableMapper vm, boolean resolveOnly)
             throws IOException, FacesException, ELException {
 
         // set unique id on layout, unless layout is only resolved
@@ -343,26 +339,19 @@ public class LayoutTagHandler extends TagHandler {
         ValueExpression layoutVe = eFactory.createValueExpression(layoutInstance, Layout.class);
         ctx.getVariableMapper().setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
 
-        // expose all variables through an alias tag handler
-        vars.putAll(getVariablesForLayoutRendering(ctx, layoutService, layoutInstance));
-
-        List<String> blockedPatterns = new ArrayList<String>();
-        blockedPatterns.add(RenderVariables.layoutVariables.layout.name());
-        blockedPatterns.add(RenderVariables.layoutVariables.layoutProperty.name() + "_*");
+        // expose rendering variables
+        fillVariablesForLayoutRendering(ctx, eFactory, layoutService, vm, layoutInstance);
 
         final String layoutTagConfigId = layoutInstance.getTagConfigId();
 
         if (resolveOnly) {
-            FaceletHandler handler = helper.getAliasTagHandler(layoutTagConfigId, vars, blockedPatterns, nextHandler);
-            // apply
-            handler.apply(ctx, parent);
+            nextHandler.apply(ctx, parent);
         } else {
             if (!StringUtils.isBlank(templateValue)) {
                 TagAttribute srcAttr = helper.createAttribute("template", templateValue);
                 TagConfig config = TagConfigFactory.createTagConfig(this.config, layoutTagConfigId,
                         FaceletHandlerHelper.getTagAttributes(srcAttr), nextHandler);
                 FaceletHandler includeHandler = new DecorateHandler(config);
-                FaceletHandler handler;
                 if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
                     // decorate handler with dev handler
                     FaceletHandler devHandler = getDevFaceletHandler(ctx, helper, config, layoutInstance);
@@ -372,12 +361,10 @@ public class LayoutTagHandler extends TagHandler {
                     } else {
                         nextHandler = new DevTagHandler(config, layoutInstance.getName(), includeHandler, devHandler);
                     }
-                    handler = helper.getAliasTagHandler(layoutTagConfigId, vars, blockedPatterns, nextHandler);
+                    nextHandler.apply(ctx, parent);
                 } else {
-                    handler = helper.getAliasTagHandler(layoutTagConfigId, vars, blockedPatterns, includeHandler);
+                    includeHandler.apply(ctx, parent);
                 }
-                // apply
-                handler.apply(ctx, parent);
             } else {
                 String errMsg = String.format("Missing template property for layout '%s'", layoutInstance.getName());
                 applyErrorHandler(ctx, parent, helper, errMsg);
@@ -385,51 +372,34 @@ public class LayoutTagHandler extends TagHandler {
         }
     }
 
-    protected Map<String, ValueExpression> getVariablesForLayoutBuild(FaceletContext ctx, String modeValue) {
-        Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
+    protected void fillVariablesForLayoutBuild(FaceletContext ctx, ExpressionFactory eFactory,
+            BlockingVariableMapper vm, String modeValue) {
         ValueExpression valueExpr = value.getValueExpression(ctx, Object.class);
-        vars.put(RenderVariables.globalVariables.value.name(), valueExpr);
-        // vars.put(RenderVariables.globalVariables.document.name(),
-        // valueExpr);
-        vars.put(RenderVariables.globalVariables.layoutValue.name(), valueExpr);
-        ExpressionFactory eFactory = ctx.getExpressionFactory();
+        vm.setVariable(RenderVariables.globalVariables.value.name(), valueExpr);
+        vm.setVariable(RenderVariables.globalVariables.layoutValue.name(), valueExpr);
         ValueExpression modeVe = eFactory.createValueExpression(modeValue, String.class);
-        vars.put(RenderVariables.globalVariables.layoutMode.name(), modeVe);
+        vm.setVariable(RenderVariables.globalVariables.layoutMode.name(), modeVe);
         // mode as alias to layoutMode
-        vars.put(RenderVariables.globalVariables.mode.name(), modeVe);
-        return vars;
+        vm.setVariable(RenderVariables.globalVariables.mode.name(), modeVe);
     }
 
     /**
      * Computes variables for rendering, making available the layout instance and its properties to the context.
      */
-    protected Map<String, ValueExpression> getVariablesForLayoutRendering(FaceletContext ctx,
-            WebLayoutManager layoutService, Layout layoutInstance) {
-        Map<String, ValueExpression> vars = new HashMap<String, ValueExpression>();
-        ExpressionFactory eFactory = ctx.getExpressionFactory();
-
+    protected void fillVariablesForLayoutRendering(FaceletContext ctx, ExpressionFactory eFactory,
+            WebLayoutManager layoutService, BlockingVariableMapper vm, Layout layoutInstance) {
         // expose layout value
         ValueExpression layoutVe = eFactory.createValueExpression(layoutInstance, Layout.class);
-        vars.put(RenderVariables.layoutVariables.layout.name(), layoutVe);
+        vm.setVariable(RenderVariables.layoutVariables.layout.name(), layoutVe);
+        vm.addBlockedPattern(RenderVariables.layoutVariables.layout.name());
 
         // expose layout properties too
         for (Map.Entry<String, Serializable> prop : layoutInstance.getProperties().entrySet()) {
             String key = prop.getKey();
-            String name = String.format("%s_%s", RenderVariables.layoutVariables.layoutProperty.name(), key);
-            String value;
-            Serializable valueInstance = prop.getValue();
-            if (!layoutService.referencePropertyAsExpression(key, valueInstance, null, null, null, null)) {
-                // FIXME: this will not be updated correctly using ajax
-                value = (String) valueInstance;
-            } else {
-                // create a reference so that it's a real expression and it's
-                // not kept (cached) in a component value on ajax refresh
-                value = String.format("#{%s.properties.%s}", RenderVariables.layoutVariables.layout.name(), key);
-            }
-            vars.put(name, eFactory.createValueExpression(ctx, value, Object.class));
+            String name = RenderVariables.layoutVariables.layoutProperty.name() + "_" + key;
+            vm.setVariable(name, eFactory.createValueExpression(prop.getValue(), Object.class));
         }
-
-        return vars;
+        vm.addBlockedPattern(RenderVariables.layoutVariables.layoutProperty.name() + "_*");
     }
 
     protected void applyErrorHandler(FaceletContext ctx, UIComponent parent, FaceletHandlerHelper helper, String message)
