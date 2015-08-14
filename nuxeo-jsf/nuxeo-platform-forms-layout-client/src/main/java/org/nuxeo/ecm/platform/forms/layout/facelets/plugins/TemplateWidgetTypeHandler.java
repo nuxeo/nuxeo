@@ -20,13 +20,12 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
@@ -42,11 +41,10 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
-import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
-import org.nuxeo.runtime.api.Framework;
 
 import com.sun.faces.facelets.tag.ui.DecorateHandler;
 
@@ -97,29 +95,23 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
 
-        Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, subHandlers,
-                widgetTagConfigId, template);
+        VariableMapper cvm = ctx.getVariableMapper();
+        if (!(cvm instanceof BlockingVariableMapper)) {
+            throw new IllegalArgumentException(
+                    "Current context variable mapper should be an instance of MetaVariableMapper");
+        }
+        BlockingVariableMapper vm = (BlockingVariableMapper) cvm;
+        fillVariablesForRendering(ctx, vm, widget, subHandlers, widgetTagConfigId, template);
 
-        List<String> blockedPatterns = new ArrayList<String>();
-        blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
-        blockedPatterns.add(RenderVariables.widgetVariables.fieldOrValue.name());
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetProperties.name());
-        blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
-
-        DecorateHandler includeHandler = new DecorateHandler(config);
-        FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns,
-                includeHandler);
-        return handler;
+        return new DecorateHandler(config);
     }
 
     /**
      * Computes variables for rendering, making available the field values in templates using the format "field_0",
      * "field_1", etc. and also the widget properties using the format "widgetProperty_thePropertyName".
      */
-    protected Map<String, ValueExpression> getVariablesForRendering(FaceletContext ctx, FaceletHandlerHelper helper,
-            Widget widget, FaceletHandler[] subHandlers, String widgetTagConfigId, String template) {
-        Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+    protected void fillVariablesForRendering(FaceletContext ctx, BlockingVariableMapper vm, Widget widget,
+            FaceletHandler[] subHandlers, String widgetTagConfigId, String template) {
         ExpressionFactory eFactory = ctx.getExpressionFactory();
 
         FieldDefinition[] fieldDefs = widget.getFieldDefinitions();
@@ -128,68 +120,57 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (fieldDefs != null && fieldDefs.length > 0) {
             for (int i = 0; i < fieldDefs.length; i++) {
                 if (i == 0) {
-                    addFieldVariable(variables, ctx, widget, fieldDefs[i], null);
+                    addFieldVariable(ctx, eFactory, vm, widget, fieldDefs[i], null);
                     firstField = fieldDefs[i];
                 }
-                addFieldVariable(variables, ctx, widget, fieldDefs[i], Integer.valueOf(i));
+                addFieldVariable(ctx, eFactory, vm, widget, fieldDefs[i], Integer.valueOf(i));
             }
         } else if (getBindValueIfNoFieldValue(widget)) {
             // expose value as first parameter
-            addFieldVariable(variables, ctx, widget, null, null);
-            addFieldVariable(variables, ctx, widget, null, Integer.valueOf(0));
+            addFieldVariable(ctx, eFactory, vm, widget, null, null);
+            addFieldVariable(ctx, eFactory, vm, widget, null, Integer.valueOf(0));
         }
+        vm.addBlockedPattern(RenderVariables.widgetVariables.field.name() + "*");
 
         // add binding "fieldOrValue" available since 5.6, in case template
         // widget is always supposed to bind value when no field is defined
         String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), firstField);
-        variables.put(RenderVariables.widgetVariables.fieldOrValue.name(),
+        vm.setVariable(RenderVariables.widgetVariables.fieldOrValue.name(),
                 eFactory.createValueExpression(ctx, computedValue, Object.class));
+        vm.addBlockedPattern(RenderVariables.widgetVariables.fieldOrValue.name());
 
         // expose widget properties too
-        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
         Map<String, ValueExpression> mappedExpressions = new HashMap<String, ValueExpression>();
         for (Map.Entry<String, Serializable> prop : widget.getProperties().entrySet()) {
             String key = prop.getKey();
-            String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetProperty.name(), key);
-            String value;
-            Serializable valueInstance = prop.getValue();
-            if (!layoutService.referencePropertyAsExpression(key, valueInstance, widget.getType(),
-                    widget.getTypeCategory(), widget.getMode(), template)) {
-                // FIXME: this will not be updated correctly using ajax
-                value = (String) valueInstance;
-            } else {
-                // create a reference so that it's a real expression and it's
-                // not kept (cached) in a component value on ajax refresh
-                value = String.format("#{%s.properties.%s}", RenderVariables.widgetVariables.widget.name(), key);
-            }
-            ValueExpression ve = eFactory.createValueExpression(ctx, value, Object.class);
-            variables.put(name, ve);
+            String name = RenderVariables.widgetVariables.widgetProperty.name() + "_" + key;
+            ValueExpression ve = eFactory.createValueExpression(prop.getValue(), Object.class);
+            vm.setVariable(name, ve);
             mappedExpressions.put(key, ve);
         }
-        variables.put(RenderVariables.widgetVariables.widgetProperties.name(),
-                new MapValueExpression(mappedExpressions));
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widgetProperty.name() + "_*");
+        vm.setVariable(RenderVariables.widgetVariables.widgetProperties.name(), new MapValueExpression(
+                mappedExpressions));
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widgetProperties.name());
         // expose widget controls too
         for (Map.Entry<String, Serializable> ctrl : widget.getControls().entrySet()) {
             String key = ctrl.getKey();
-            String name = String.format("%s_%s", RenderVariables.widgetVariables.widgetControl.name(), key);
-            String value = String.format("#{%s.controls.%s}", RenderVariables.widgetVariables.widget.name(), key);
-            variables.put(name, eFactory.createValueExpression(ctx, value, Object.class));
+            String name = RenderVariables.widgetVariables.widgetControl.name() + "_" + key;
+            vm.setVariable(name, eFactory.createValueExpression(ctrl.getValue(), Object.class));
         }
-        return variables;
+        vm.addBlockedPattern(RenderVariables.widgetVariables.widgetControl.name() + "_*");
     }
 
-    protected void addFieldVariable(Map<String, ValueExpression> variables, FaceletContext ctx, Widget widget,
-            FieldDefinition fieldDef, Integer index) {
+    protected void addFieldVariable(FaceletContext ctx, ExpressionFactory eFactory, BlockingVariableMapper vm,
+            Widget widget, FieldDefinition fieldDef, Integer index) {
         String computedName;
         if (index == null) {
             computedName = RenderVariables.widgetVariables.field.name();
         } else {
-            computedName = String.format("%s_%s", RenderVariables.widgetVariables.field.name(), index);
+            computedName = RenderVariables.widgetVariables.field.name() + "_" + index;
         }
         String computedValue = ValueExpressionHelper.createExpressionString(widget.getValueName(), fieldDef);
-
-        ExpressionFactory eFactory = ctx.getExpressionFactory();
-        variables.put(computedName, eFactory.createValueExpression(ctx, computedValue, Object.class));
+        vm.setVariable(computedName, eFactory.createValueExpression(ctx, computedValue, Object.class));
     }
 
     /**
