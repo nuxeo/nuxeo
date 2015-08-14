@@ -39,6 +39,7 @@ public class NuxeoResourceHandler extends ResourceHandlerWrapper {
 
     @Override
     public ViewResource createViewResource(FacesContext facesContext, String resourceName) {
+        // TODO: track most wanted resources
         if (resourceName.startsWith(NuxeoUnknownResource.MARKER)) {
             return new NuxeoUnknownResource(resourceName.substring(NuxeoUnknownResource.MARKER.length()));
         }

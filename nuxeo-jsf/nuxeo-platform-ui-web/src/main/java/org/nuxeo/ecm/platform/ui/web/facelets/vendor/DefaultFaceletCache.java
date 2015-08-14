@@ -127,6 +127,7 @@ final class DefaultFaceletCache extends FaceletCache<Facelet> {
 
     @Override
     public Facelet getFacelet(URL url) throws IOException {
+        // TODO: track most retrieved facelets
         com.sun.faces.util.Util.notNull("url", url);
 
         Facelet f = null;
