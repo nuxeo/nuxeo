@@ -15,7 +15,7 @@
         <title>Shibboleth Invitation Requests Container</title>
       </container>
       <validationEmail>
-        <title>Hi ${userinfo.firstName} ${userinfo.lastName}! You are invited to access ${productName}</title>
+        <title>You are invited to access Nuxeo</title>
         <template>skin/views/userRegistration/EmailInviteDocTemplate.ftl</template>
       </validationEmail>
       <reviveEmail>

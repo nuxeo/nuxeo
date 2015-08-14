@@ -5,16 +5,14 @@
     </@block>
 
     <@block name="content">
-    <form action="${data['ValidationUrl']}" method="post"
+    <form action="${This.path}/validate" method="post"
           enctype="application/x-www-form-urlencoded" name="submitNewPassword">
         <input type="hidden" id="RequestId" value="${data['RequestId']}"
                name="RequestId"/>
-        <input type="hidden" id="ConfigurationName"
-               value="${data['ConfigurationName']}" name="ConfigurationName"/>
         <#if err??>
             <div class="errorMessage">
             ${Context.getMessage("label.connect.trial.form.errvalidation")}
-        ${err}
+	    ${err}
             </div>
         </#if>
         <#if info??>
@@ -43,8 +41,10 @@
                    value="${Context.getMessage('label.registerForm.submit')}"/>
         </div>
         <br/>
+
         <div>
-            <a class="info" href="${This.path}/shibboleth">${Context.getMessage('label.welcome.shibboleth')}</a>
+            <a class="info"
+               href="${This.path}/shibboleth">${Context.getMessage('label.welcome.shibboleth')}</a>
         </div>
     </form>
 
