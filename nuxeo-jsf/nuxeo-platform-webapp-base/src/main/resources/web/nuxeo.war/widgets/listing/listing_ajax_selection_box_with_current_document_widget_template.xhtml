@@ -5,8 +5,8 @@
   xmlns:f="http://java.sun.com/jsf/core"
   id="#{widget.id}"
   value="#{field_0}">
-  <f:ajax id="#{widget.id}_ajax_onclick" event="click"
+  <a4j:ajax id="#{widget.id}_ajax_onclick" event="click"
     execute="@this"
     listener="#{documentListingActions.checkCurrentDocAndProcessSelectRow(field_1, contentView.name, contentView.selectionListName, field_0, currentDocument.ref)}"
-    render="#{nxu:componentAbsoluteId(component, 'ajax_selection_buttons')} #{nxu:componentAbsoluteId(component, 'ajax_selection_upper_buttons')}" />
+    render="#{formId}_upper_buttons:ajax_selection_upper_buttons #{formId}_buttons:ajax_selection_buttons" />
 </h:selectBooleanCheckbox>
