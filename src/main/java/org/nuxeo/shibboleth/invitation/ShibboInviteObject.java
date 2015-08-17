@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -34,6 +35,7 @@ import org.nuxeo.ecm.user.invite.AlreadyProcessedRegistrationException;
 import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
 import org.nuxeo.ecm.user.invite.UserInvitationService;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
+import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.ecm.webengine.forms.FormData;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -41,14 +43,14 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 @Path("/shibboInvite")
-@Produces("text/html;charset=UTF-8")
 @WebObject(type = "shibboInvite")
+@Produces("text/html;charset=UTF-8")
 public class ShibboInviteObject extends ModuleRoot {
     private static final Log log = LogFactory.getLog(ShibboInviteObject.class);
 
     @POST
     @Path("validate")
-    public Object validateTrialForm() throws Exception {
+    public Object validateTrialForm(@FormParam("isShibbo") boolean isShibbo) throws Exception {
         UserInvitationService usr = fetchService();
 
         FormData formData = getContext().getForm();
@@ -67,45 +69,33 @@ public class ShibboInviteObject extends ModuleRoot {
                     ctx.getMessage("label.error.requestNotExisting", requestId));
         }
 
-        // Check if both entered passwords are correct
-        if (password == null || "".equals(password.trim())) {
-            return redisplayFormWithErrorMessage("EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.password"),
-                    formData);
+        if (!isShibbo) {
+            // Check if both entered passwords are correct
+            if (password == null || "".equals(password.trim())) {
+                return redisplayFormWithErrorMessage("EnterPassword",
+                        ctx.getMessage("label.registerForm.validation.password"), formData);
+
+            }
+            if (passwordConfirmation == null || "".equals(passwordConfirmation.trim()) && !isShibbo) {
+                return redisplayFormWithErrorMessage("EnterPassword",
+                        ctx.getMessage("label.registerForm.validation.passwordconfirmation"), formData);
+            }
+            password = password.trim();
+            passwordConfirmation = passwordConfirmation.trim();
+            if (!password.equals(passwordConfirmation) && !isShibbo) {
+                return redisplayFormWithErrorMessage("EnterPassword",
+                        ctx.getMessage("label.registerForm.validation.passwordvalidation"), formData);
+            }
         }
-        if (passwordConfirmation == null
-                || "".equals(passwordConfirmation.trim())) {
-            return redisplayFormWithErrorMessage(
-                    "EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.passwordconfirmation"),
-                    formData);
-        }
-        password = password.trim();
-        passwordConfirmation = passwordConfirmation.trim();
-        if (!password.equals(passwordConfirmation)) {
-            return redisplayFormWithErrorMessage(
-                    "EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.passwordvalidation"),
-                    formData);
-        }
-        Map<String, Serializable> registrationData = new HashMap<String, Serializable>();
+        Map<String, Serializable> registrationData;
         try {
             Map<String, Serializable> additionalInfo = buildAdditionalInfos();
 
             // Add the entered password to the document model
             additionalInfo.put(DefaultInvitationUserFactory.PASSWORD_KEY, password);
             // Validate the creation of the user
-            registrationData = usr.validateRegistration(requestId,
-                    additionalInfo);
+            registrationData = usr.validateRegistration(requestId, additionalInfo);
 
-            /*
-             * DocumentModel regDoc = (DocumentModel)
-             * registrationData.get(REGISTRATION_DATA_DOC); String docId =
-             * (String)
-             * regDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD
-             * ); if (!StringUtils.isEmpty(docId)) { redirectUrl = new
-             * DocumentUrlFinder(docId).getDocumentUrl(); }
-             */
         } catch (AlreadyProcessedRegistrationException ape) {
             log.info("Try to validate an already processed registration");
             return getView("ValidationErrorTemplate").arg("exceptionMsg",
@@ -121,13 +111,19 @@ public class ShibboInviteObject extends ModuleRoot {
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
         String logoutUrl = "/" + webappName + "/logout";
-        return getView("UserCreated").arg("data", registrationData).arg(
-                "logout", logoutUrl);
+        if (isShibbo) {
+            // The redirect url is 'logout' variable: when Shibboleth auth is activated, redirect to the url configured
+            // in authentication-contrib 
+            return getView("UserCreated").arg("data", registrationData)
+                                         .arg("logout", 
+                                                 "/nuxeo/site/shibboleth")
+                                         .arg("isShibbo", isShibbo);
+        }
+        return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl).arg("isShibbo", isShibbo);
     }
 
     protected UserInvitationService fetchService() {
-        UserInvitationService usr = Framework.getLocalService(UserInvitationService.class);
-        return usr;
+        return Framework.getLocalService(UserRegistrationService.class);
     }
 
     @GET

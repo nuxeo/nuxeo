@@ -10,8 +10,12 @@
 </script>
   
 <div class="info">
-Welcome! You account is now created.
-You are going to be redirected to access the platform.
+    Welcome! You account is now created.
+    <#if isShibbo>
+        You are going to be redirected to access the platform through Shibboleth.
+        <#else>
+        You are going to be redirected to access the platform.
+    </#if>
 </div>
 
 </@block>

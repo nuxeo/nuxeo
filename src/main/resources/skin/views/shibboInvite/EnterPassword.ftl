@@ -9,6 +9,8 @@
           enctype="application/x-www-form-urlencoded" name="submitNewPassword">
         <input type="hidden" id="RequestId" value="${data['RequestId']}"
                name="RequestId"/>
+        <input type="hidden" id="isShibbo"
+               value="false" name="isShibbo"/>
         <#if err??>
             <div class="errorMessage">
             ${Context.getMessage("label.connect.trial.form.errvalidation")}
@@ -41,10 +43,16 @@
                    value="${Context.getMessage('label.registerForm.submit')}"/>
         </div>
         <br/>
-
+    </form>
+    <form action="${This.path}/validate" method="post"
+          enctype="application/x-www-form-urlencoded" name="submitShibboleth">
         <div>
-            <a class="info"
-               href="${This.path}/shibboleth">${Context.getMessage('label.welcome.shibboleth')}</a>
+            <input type="hidden" id="RequestId" value="${data['RequestId']}"
+                   name="RequestId"/>
+            <input type="hidden" id="isShibbo"
+                   value="true" name="isShibbo"/>
+            <input type="submit" name="submitShibbo"
+                   value="${Context.getMessage('label.welcome.shibboleth')}"/>
         </div>
     </form>
 
