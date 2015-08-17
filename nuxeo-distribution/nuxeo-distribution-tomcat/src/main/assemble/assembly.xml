@@ -82,26 +82,21 @@
     </copy>
 
     <unzip dest="${tomcat}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="doc" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:doc" />
     </unzip>
     <copy todir="${tomcat}">
       <fileset dir="src/main/resources/common" />
     </copy>
     <unzip dest="${tomcat}">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="root" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:root" />
     </unzip>
     <unzip dest="${tomcat}/bin">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="bin" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:bin" />
     </unzip>
 
     <unzip dest="${tomcat}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-common" />
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
-                            classifier="templates-tomcat" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:templates-common" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:templates-tomcat" />
     </unzip>
 
     <echo message="tomcat.version=${tomcat.version}"
@@ -109,7 +104,7 @@
           file="${tomcat}/templates/nuxeo.defaults" />
 
     <copy tofile="${tomcat}/templates/nuxeo-wizard.war">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard::war" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-startup-wizard:${nuxeo.distribution.version}:war" />
     </copy>
 
     <mkdir dir="${tomcat}/client" />
@@ -187,7 +182,7 @@ install nuxeo-dam</echo>
 
     <!-- Nuxeo CAP -->
     <unzip dest="${distribution.dir}/nxserver">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap::zip" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-cap:${nuxeo.distribution.version}:zip" />
     </unzip>
 
     <antcall target="set-distribution-properties">
