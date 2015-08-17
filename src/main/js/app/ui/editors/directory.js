@@ -19,6 +19,62 @@ import {Directory} from '../../nuxeo/rpc/directory';
 
 class DirectoryEditor extends Select2Editor {
 
+  // Let's override prepare and just pass set the select2 options ourselves
+  prepare(row, col, prop, td, originalValue, cellProperties) {
+    // setup the label cache
+    this._labels = {};
+
+    // flatten our values to a list of ids
+    var value = (Array.isArray(originalValue)) ? originalValue.map(this.prepareEntity.bind(this)) : this.prepareEntity(originalValue);
+
+    super.prepare(row, col, prop, td, value, cellProperties);
+  }
+
+  // flatten entities to plain ids and cache the labels
+  prepareEntity(entity) {
+    if (!entity) {
+      return;
+    }
+    if (entity['entity-type'] !== 'directoryEntry') {
+      return entity;
+    }
+    var id;
+    if (entity.properties.parent) {
+      id = `${entity.properties.parent.properties.id}/${entity.properties.id}`;
+    } else {
+      id = entity.properties.id;
+    }
+    this._labels[id] = getEntryLabel(entity);
+    return id;
+  }
+
+  // create directory entries again on save
+  saveValue(val, ctrlDown) {
+    var value = val[0][0];
+
+    if (value) {
+      value = value.split(',').map(function (id) {
+        return {
+          'entity-type': 'directoryEntry',
+          directoryName: this.directoryName,
+          properties: {
+            id: id
+            // TOOD: store label to use in renderer
+            // label: this._labels[id]
+          }
+        };
+      }.bind(this));
+      // unwrap the map result if not multiple
+      if (!this.column.multiple) {
+        value = value[0];
+      }
+    } else {
+      value = this.column.multiple ? [] : null;
+    }
+
+    super.saveValue([[value]], ctrlDown);
+  }
+
   query(connection, properties, term) {
     var directory = new Directory(connection); // Directory name is a widget property
     // Set the properties
@@ -30,23 +86,7 @@ class DirectoryEditor extends Select2Editor {
   // When a dbl10n entry is selected we'll cache the labels to be used
   // by our renderer
   onSelected(evt) {
-
-    // skip if this is not dbl10n
-    if (!this.isDbl10n) {
-      return;
-    }
-
-    var choice = evt.choice;
-    var ctx = this.sourceData.contextParameters;
-    var labels = ctx[this.directoryName][this.field];
-    // Check if we already have this label in context parameters
-    for (var e of labels) {
-      if (choice.id === e.id) {
-        return;
-      }
-    }
-    // If not add then add it
-    labels.push({id: choice.computedId, label_en: choice.absoluteLabel});
+    this._labels[evt.choice.computedId] = evt.choice.absoluteLabel;
   }
 
   get column() {
@@ -73,12 +113,20 @@ class DirectoryEditor extends Select2Editor {
     return this.instance.getSourceDataAtRow(this.row);
   }
 
+  resultFormatter(entry) {
+    return entry.displayLabel;
+  }
+
+  selectionFormatter(entry) {
+    var id = this.getEntryId(entry);
+    return this._labels[id] || entry.absoluteLabel;
+  }
+
   formatter(entry) {
-    var label = entry.displayLabel;
+    var label = this._labels[entry.id] || entry.absoluteLabel;
     // This is used in initSelection and in this case we don't have 'displayLabel'
     if (!label && this.isDbl10n) {
-      var ctx = this.sourceData.contextParameters;
-      label = getLabel(ctx, this.column, entry.id);
+      label = getEntryLabel(entry);
     }
     return label || entry.text;
   }
@@ -92,41 +140,27 @@ class DirectoryEditor extends Select2Editor {
   }
 }
 
+// l10n Label helpers
+function getEntryLabel(entry) {
+  if (entry.properties) {
+    var label = '';
+    if (entry.properties.parent) {
+      label = getEntryLabel(entry.properties.parent) + '/';
+    }
+    label += (entry.properties.label_en || entry.properties.label || entry.properties.id);
+    return label;
+  }
+  return entry;
+}
+
 function DirectoryRenderer(instance, td, row, col, prop, value, cellProperties) {
-  var ctx = instance.getSourceDataAtRow(row).contextParameters;
   if (value) {
     if (!Array.isArray(value)) {
-      value = value.split(',');
+      value = [value];
     }
-    arguments[5] = getLabels(ctx, cellProperties, value).join(','); // jshint ignore:line
+    arguments[5] = value.map((v) => getEntryLabel(v)).join(','); // jshint ignore:line
   }
   cellProperties.defaultRenderer.apply(this, arguments);
-}
-
-// l10n Label helpers
-function findLabel(id, entries) {
-  for (var e of entries) {
-    if (id === e.id) {
-      return e.label_en;
-    }
-  }
-  return id;
-}
-
-function getLabels(ctx, column, ids) {
-  var field = column.widget.field,
-      directoryName = column.widget.properties.directoryName;
-
-  if(!ctx[directoryName]) {
-    return ids;
-  }
-  var directoryEntries = ctx[directoryName][field];
-  return ids.map((id) => findLabel(id, directoryEntries));
-
-}
-
-function getLabel(ctx, column, id) {
-  return getLabels(ctx, column, [id])[0];
 }
 
 export {DirectoryEditor, DirectoryRenderer};

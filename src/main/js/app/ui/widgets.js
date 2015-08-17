@@ -16,7 +16,7 @@
  */
 import {DirectoryEditor, DirectoryRenderer} from './editors/directory';
 import {DocumentEditor} from './editors/document';
-import {UserEditor} from './editors/user';
+import {UserEditor, UserRenderer} from './editors/user';
 
 Handsontable.editors.registerEditor('directory', DirectoryEditor);
 Handsontable.editors.registerEditor('document', DocumentEditor);
@@ -48,6 +48,13 @@ export const WIDGETS = {
   listing_version: {
     type: 'text',
     field: 'versionLabel'
+  },
+  listing_last_contributor: {
+    type: 'singleUserSuggestion',
+    renderer: UserRenderer
+  },
+  listing_title_link: {
+    type: 'text'
   }
 };
 
@@ -70,9 +77,11 @@ export const WIDGET_TYPES = {
   },
   // SELECT
   selectOneDirectory: {
+    renderer: DirectoryRenderer,
     editor: 'directory'
   },
   selectManyDirectory: {
+    renderer: DirectoryRenderer,
     editor: 'directory',
     multiple: true
   },
@@ -88,9 +97,11 @@ export const WIDGET_TYPES = {
     multiple: true
   },
   singleUserSuggestion: {
+    renderer: UserRenderer,
     editor: 'user'
   },
   multipleUsersSuggestion: {
+    renderer: UserRenderer,
     editor: 'user',
     multiple: true
   },
@@ -100,13 +111,5 @@ export const WIDGET_TYPES = {
   multipleDocumentsSuggestion: {
     editor: 'document',
     multiple: true
-  },
-
-  // LISTING
-  listing_title_link: {
-    type: 'text'
-  },
-  listing_last_contributor: {
-    type: 'text'
   }
 };

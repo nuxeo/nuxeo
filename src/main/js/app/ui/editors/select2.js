@@ -43,8 +43,8 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
       allowClear: true,
       width: 'resolve',
       minimumInputLength: 0,
-      formatResult: this.formatter.bind(this),
-      formatSelection: this.formatter.bind(this),
+      formatResult: this.resultFormatter.bind(this),
+      formatSelection: this.selectionFormatter.bind(this),
       multiple: isMultiple,
       placeholder: 'Select a value',
       initSelection: this.initSelection(isMultiple).bind(this),
@@ -56,6 +56,7 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
   open() {
     super.open();
     this.$textarea.on('selected', this.onSelected.bind(this));
+    this.$textarea.on('select2-selected', this.onSelected.bind(this));
     this.$textarea.on('select2-removed', this.onRemoved.bind(this));
   }
 
@@ -66,6 +67,10 @@ class Select2Editor extends Handsontable.editors.Select2Editor {
   onRemoved(evt) {
     //
   }
+
+  // use same formatter by default
+  resultFormatter(entry) { return this.formatter(entry); }
+  selectionFormatter(entry) { return this.formatter(entry); }
 
   initSelection(isMultiple) {
     if (!isMultiple) {

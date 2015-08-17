@@ -18,12 +18,41 @@ import {Select2Editor} from './select2';
 import {Operation} from '../../nuxeo/rpc/operation';
 
 class UserEditor extends Select2Editor {
+
+  prepare(row, col, prop, td, originalValue, cellProperties) {
+    // flatten our values to a list of ids
+    var value = (Array.isArray(originalValue)) ? originalValue.map((u) => u.id) : originalValue.id;
+    super.prepare(row, col, prop, td, value, cellProperties);
+  }
+
+  saveValue(val, ctrlDown) {
+    // create directory entries again on save
+    var value = val[0][0];
+
+    if (value) {
+      value = value.split(',').map(function (id) {
+        return {
+          'entity-type': 'user',
+          id: id
+        };
+      }.bind(this));
+      // unwrap the map result if not multiple
+      if (!this.cellProperties.multiple) {
+        value = value[0];
+      }
+    } else {
+      value = this.cellProperties.multiple ? [] : null;
+    }
+
+    super.saveValue([[value]], ctrlDown);
+  }
+
   query(connection, properties, term) {
     var op = new Operation(connection, 'UserGroup.Suggestion');
     // Set the properties
     Object.assign(op.params, properties);
     op.params.searchTerm = term;
-    op.params.searchType = properties.userSuggestionSearchType;
+    op.params.searchType = 'USER_TYPE';
     // Perform the search
     return op.execute();
   }
@@ -33,4 +62,14 @@ class UserEditor extends Select2Editor {
   }
 }
 
-export {UserEditor};
+function UserRenderer(instance, td, row, col, prop, value, cellProperties) {
+  if (value) {
+    if (!Array.isArray(value)) {
+      value = [value];
+    }
+    arguments[5] = value.map((u) =>  u.id).join(','); // jshint ignore:line
+  }
+  cellProperties.defaultRenderer.apply(this, arguments);
+}
+
+export {UserEditor, UserRenderer};

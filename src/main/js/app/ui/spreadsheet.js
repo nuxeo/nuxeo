@@ -46,8 +46,17 @@ class Spreadsheet {
     };
 
     this.query = new Query(connection);
-    this.query.enrichers = ['permissions', 'vocabularies'];
-    this.query.headers['fetch.document'] = 'versionLabel';
+    // include the user's permission on each document
+    this.query.enrich('document', 'permissions');
+    // fetch every property and versioning information
+    this.query.fetch('document', 'properties', 'versionLabel');
+    // fetch parent for directory entries
+    this.query.fetch('directoryEntry', 'parent');
+    // request max depth
+    this.query.depth = 'max';
+    // translate directory labels
+    this.query.translate('directoryEntry', 'label');
+
     this.query.pageProvider = pageProvider;
 
     new Layout(connection, layout).fetch().then((layout) => {
@@ -184,7 +193,7 @@ class Spreadsheet {
           continue;
         }
         var uid = this.data[idx].uid;
-        var doc = this._dirty[uid] = this._dirty[uid] || {'entity-type': 'document'};
+        var doc = this._dirty[uid] = this._dirty[uid] || {'entity-type': 'document', uid: uid};
 
         // Split csv values into array
         var column = this._columnsByField[field];

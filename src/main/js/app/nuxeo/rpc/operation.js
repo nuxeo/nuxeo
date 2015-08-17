@@ -32,8 +32,20 @@ class Operation {
     return this._headers;
   }
 
-  set enrichers(lst) {
-    this.headers['X-NXContext-Category'] = lst.join(',');
+  set depth(value) {
+    this.headers[`depth`] = value;
+  }
+
+  enrich(objectType, ...enrichers) {
+    this.headers[`enrichers.${objectType}`] = enrichers.join(',');
+  }
+
+  fetch(objectType, ...parts) {
+    this.headers[`fetch.${objectType}`] = parts.join(',');
+  }
+
+  translate(objectType, ...elements) {
+    this.headers[`translate.${objectType}`] = elements.join(',');
   }
 
   execute() {
