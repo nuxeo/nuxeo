@@ -35,6 +35,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.transaction.Transaction;
 
@@ -115,6 +116,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     private ListeningExecutorService waiterExecutorService;
 
+    private final AtomicInteger runIndexingWorkerCount = new AtomicInteger(0);
 
     // Nuxeo Component impl ======================================é=============
     @Override
@@ -292,7 +294,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public int getRunningWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
-        return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
+        return runIndexingWorkerCount.get() + wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.RUNNING);
     }
 
     @Override
@@ -307,7 +309,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
 
     @Override
     public boolean isIndexingInProgress() {
-        return (getPendingWorkerCount() + getRunningWorkerCount()) >  0;
+        return (runIndexingWorkerCount.get() > 0) || (getPendingWorkerCount() > 0) || (getRunningWorkerCount() >  0);
     }
 
     @Override
@@ -386,11 +388,7 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     @Override
     public void indexNonRecursive(List<IndexingCommand> cmds) {
         if (!isReady()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Delaying indexing commands: Waiting for Index to be initialized."
-                        + Arrays.toString(cmds.toArray()));
-            }
-            stackedCommands.addAll(cmds);
+            stackCommands(cmds);
             return;
         }
         if (log.isDebugEnabled()) {
@@ -400,16 +398,32 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         esi.indexNonRecursive(cmds);
     }
 
+    protected void stackCommands(List<IndexingCommand> cmds) {
+        if (log.isDebugEnabled()) {
+            log.debug("Delaying indexing commands: Waiting for Index to be initialized."
+                    + Arrays.toString(cmds.toArray()));
+        }
+        stackedCommands.addAll(cmds);
+    }
+
     @Override
     public void runIndexingWorker(List<IndexingCommand> cmds) {
         if (!isReady()) {
-            if (log.isDebugEnabled()) {
-                log.debug("Delaying indexing commands: Waiting for Index to be initialized."
-                        + Arrays.toString(cmds.toArray()));
-            }
-            stackedCommands.addAll(cmds);
+            stackCommands(cmds);
             return;
         }
+        runIndexingWorkerCount.incrementAndGet();
+        try {
+            dispatchWork(cmds);
+        } finally {
+            runIndexingWorkerCount.decrementAndGet();
+        }
+    }
+
+    /**
+     * Dispatch jobs between sync and async worker
+     */
+    protected void dispatchWork(List<IndexingCommand> cmds) {
         Map<String, List<IndexingCommand>> syncCommands = new HashMap<>();
         Map<String, List<IndexingCommand>> asyncCommands = new HashMap<>();
         for (IndexingCommand cmd : cmds) {
