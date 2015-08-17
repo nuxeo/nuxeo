@@ -35,10 +35,10 @@
   </target>
 
   <target name="download" unless="no.download">
-    <echo level="info" message="Downloading for tests ${groupId}:${artifactId}::zip:${classifier}" />
+    <echo level="info" message="Downloading for tests ${groupId}:${artifactId}:${nuxeo.distribution.version}:zip:${classifier}" />
     <delete failonerror="false" dir="${nuxeo.home}" />
     <unzip dest="${nuxeo.home}/">
-      <artifact:resolveFile key="${groupId}:${artifactId}::zip:${classifier}" />
+      <artifact:file key="${groupId}:${artifactId}:${nuxeo.distribution.version}:zip:${classifier}" />
       <cutdirsmapper dirs="1" />
     </unzip>
     <copy todir="${nuxeo.nxserver}/bundles/">
