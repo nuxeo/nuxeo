@@ -29,6 +29,8 @@ import org.nuxeo.ecm.user.invite.DefaultInvitationUserFactory;
 import org.nuxeo.ecm.user.invite.UserRegistrationConfiguration;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 
+import java.util.Calendar;
+
 public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory implements RegistrationUserFactory {
 
     private static final Log log = LogFactory.getLog(DefaultRegistrationUserFactory.class);
@@ -44,13 +46,15 @@ public class DefaultRegistrationUserFactory extends DefaultInvitationUserFactory
         }
         String login = (String) registrationDoc.getPropertyValue(configuration.getUserInfoUsernameField());
         String permission = (String) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_RIGHT_FIELD);
+        Calendar beginCal = (Calendar) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_BEGIN_FIELD);
+        Calendar endCal = (Calendar) registrationDoc.getPropertyValue(DocumentRegistrationInfo.DOCUMENT_END_FIELD);
         if (StringUtils.isEmpty(permission)) {
             throw new UserRegistrationException("Permission must be specified");
         }
 
         DocumentModel document = session.getDocument(new IdRef(docId));
         if (!document.getACP().getAccess(login, permission).toBoolean()) {
-            ACE ace = new ACE(login, permission, true);
+            ACE ace = ACE.builder(login, permission).isGranted(true).begin(beginCal).end(endCal).build();
             // Always append ACL to the first place to be after the block
             // rights inheritance ACE.
             document.getACP().getOrCreateACL(ACL_NAME).add(0, ace);

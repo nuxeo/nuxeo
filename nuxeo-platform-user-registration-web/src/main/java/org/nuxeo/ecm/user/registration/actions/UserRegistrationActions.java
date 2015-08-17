@@ -360,7 +360,7 @@ public class UserRegistrationActions implements Serializable {
         } catch (NuxeoException e) {
             log.info("Unable to register user: " + e.getMessage());
             log.debug(e, e);
-            facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.invite.user"));
+            facesMessages.add(ERROR, resourcesAccessor.getMessages().get("label.unable.invite"), userinfo.getLogin());
         }
     }
 

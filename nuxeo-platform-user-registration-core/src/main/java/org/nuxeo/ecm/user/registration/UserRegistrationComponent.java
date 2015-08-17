@@ -120,6 +120,8 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
             doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_ID_FIELD, docInfo.getDocumentId());
             doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_RIGHT_FIELD, docInfo.getPermission());
             doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_TITLE_FIELD, docInfo.getDocumentTitle());
+            doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_BEGIN_FIELD, docInfo.getBegin());
+            doc.setPropertyValue(DocumentRegistrationInfo.DOCUMENT_END_FIELD, docInfo.getEnd());
 
             // additionnal infos
             for (String key : additionnalInfo.keySet()) {

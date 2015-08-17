@@ -147,6 +147,8 @@
           <widget>doc_request_permission</widget>
         </row>
         <row>
+          <widget>doc_request_date_range</widget>
+        </row>
           <widget>user_request_comment</widget>
         </row>
         <row>
@@ -297,6 +299,21 @@
       </properties>
     </widget>
 
+    <widget name="doc_request_date_range" type="datetimeRange">
+      <labels>
+        <label mode="any">label.request.date.range</label>
+      </labels>
+      <helpLabels>
+        <label mode="edit">label.request.help.range</label>
+      </helpLabels>
+      <fields>
+        <field>data.docinfo.begin</field>
+        <field>data.docinfo.end</field>
+      </fields>
+      <properties widgetMode="edit">
+        <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
     <widget name="multiple_request_emails" type="textarea">
       <labels>
         <label mode="any">label.request.multiple.emails</label>

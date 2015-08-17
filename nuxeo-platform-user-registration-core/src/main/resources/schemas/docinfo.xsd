@@ -5,5 +5,7 @@
   <xs:element name="documentId" type="xs:string"/>
   <xs:element name="documentTitle" type="xs:string"/>
   <xs:element name="permission" type="xs:string"/>
+  <xs:element name="begin" type="xs:date"/>
+  <xs:element name="end" type="xs:date"/>
 
 </xs:schema>

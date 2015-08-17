@@ -15,6 +15,8 @@
  */
 package org.nuxeo.ecm.user.registration;
 
+import java.util.Date;
+
 /**
  * Simple POJO to hold document relative information
  *
@@ -30,6 +32,10 @@ public class DocumentRegistrationInfo {
 
     public static final String DOCUMENT_RIGHT_FIELD = SCHEMA_NAME + ":permission";
 
+    public static final String DOCUMENT_BEGIN_FIELD = SCHEMA_NAME + ":begin";
+
+    public static final String DOCUMENT_END_FIELD = SCHEMA_NAME + ":end";
+
     public static final String ACL_NAME = "local";
 
     protected String documentId;
@@ -37,6 +43,32 @@ public class DocumentRegistrationInfo {
     protected String permission;
 
     protected String documentTitle;
+
+    /**
+     * @since 7.4
+     */
+    protected Date begin;
+
+    /**
+     * @since 7.4
+     */
+    protected Date end;
+
+    public Date getBegin() {
+        return begin;
+    }
+
+    public void setBegin(Date begin) {
+        this.begin = begin;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
+
+    public void setEnd(Date end) {
+        this.end = end;
+    }
 
     public String getDocumentTitle() {
         return documentTitle;
