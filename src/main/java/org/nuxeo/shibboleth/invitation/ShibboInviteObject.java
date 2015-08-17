@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -48,7 +49,7 @@ public class ShibboInviteObject extends ModuleRoot {
 
     @POST
     @Path("validate")
-    public Object validateTrialForm() {
+    public Object validateTrialForm(@FormParam("isShibbo") boolean isShibbo) {
         UserInvitationService usr = fetchService();
 
         FormData formData = getContext().getForm();
@@ -67,20 +68,23 @@ public class ShibboInviteObject extends ModuleRoot {
                     ctx.getMessage("label.error.requestNotExisting", requestId));
         }
 
-        // Check if both entered passwords are correct
-        if (password == null || "".equals(password.trim())) {
-            return redisplayFormWithErrorMessage("EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.password"), formData);
-        }
-        if (passwordConfirmation == null || "".equals(passwordConfirmation.trim())) {
-            return redisplayFormWithErrorMessage("EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.passwordconfirmation"), formData);
-        }
-        password = password.trim();
-        passwordConfirmation = passwordConfirmation.trim();
-        if (!password.equals(passwordConfirmation)) {
-            return redisplayFormWithErrorMessage("EnterPassword",
-                    ctx.getMessage("label.registerForm.validation.passwordvalidation"), formData);
+        if (!isShibbo) {
+            // Check if both entered passwords are correct
+            if (password == null || "".equals(password.trim())) {
+                return redisplayFormWithErrorMessage("EnterPassword",
+                        ctx.getMessage("label.registerForm.validation.password"), formData);
+
+            }
+            if (passwordConfirmation == null || "".equals(passwordConfirmation.trim()) && !isShibbo) {
+                return redisplayFormWithErrorMessage("EnterPassword",
+                        ctx.getMessage("label.registerForm.validation.passwordconfirmation"), formData);
+            }
+            password = password.trim();
+            passwordConfirmation = passwordConfirmation.trim();
+            if (!password.equals(passwordConfirmation) && !isShibbo) {
+                return redisplayFormWithErrorMessage("EnterPassword",
+                        ctx.getMessage("label.registerForm.validation.passwordvalidation"), formData);
+            }
         }
         Map<String, Serializable> registrationData;
         try {
@@ -103,7 +107,15 @@ public class ShibboInviteObject extends ModuleRoot {
         // User redirected to the logout page after validating the password
         String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
         String logoutUrl = "/" + webappName + "/logout";
-        return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl);
+        if (isShibbo) {
+            // The redirect url is 'logout' variable: when Shibboleth auth is activated, redirect to the url configured
+            // in authentication-contrib 
+            return getView("UserCreated").arg("data", registrationData)
+                                         .arg("logout", 
+                                                 "/nuxeo/site/shibboleth")
+                                         .arg("isShibbo", isShibbo);
+        }
+        return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl).arg("isShibbo", isShibbo);
     }
 
     protected UserInvitationService fetchService() {
