@@ -58,9 +58,9 @@ class Column {
     if (!this.field) {
       return null;
     }
-    // Check for special fields
-    if (SPECIAL_FIELDS[this.field] && SPECIAL_FIELDS[this.field].field) {
-      return SPECIAL_FIELDS[this.field].field;
+    // Check for special field overrides
+    if (SPECIAL_FIELDS[this.field]) {
+      return SPECIAL_FIELDS[this.field].field || this.field;
     }
     return `properties.${this.field}`;
   }
@@ -112,11 +112,15 @@ const SPECIAL_FIELDS = {
     },
     field: 'state'
   },
+  'type': {
+    widget: {
+      readOnly: true
+    }
+  },
   'versionLabel': {
     widget: {
       readOnly: true
-    },
-    field: 'versionLabel'
+    }
   }
 };
 
