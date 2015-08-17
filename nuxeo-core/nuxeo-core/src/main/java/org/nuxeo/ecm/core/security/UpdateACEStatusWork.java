@@ -110,7 +110,7 @@ public class UpdateACEStatusWork extends AbstractWork {
     }
 
     protected void fireACEStatusUpdatedEvent(List<DocumentRef> docRefs) {
-        EventContext eventContext = new EventContextImpl(session);
+        EventContext eventContext = new EventContextImpl(session, session.getPrincipal());
         eventContext.setProperty(DOCUMENT_REFS, (Serializable) docRefs);
         eventContext.setProperty(REPOSITORY_NAME, session.getRepositoryName());
         Framework.getService(EventService.class).fireEvent(ACE_STATUS_UPDATED, eventContext);
