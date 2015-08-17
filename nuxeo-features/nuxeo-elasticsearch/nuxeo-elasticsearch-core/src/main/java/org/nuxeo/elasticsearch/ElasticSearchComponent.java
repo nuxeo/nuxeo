@@ -228,27 +228,10 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     void processStackedCommands() {
         if (!stackedCommands.isEmpty()) {
             log.info(String.format("Processing %d indexing commands stacked during startup", stackedCommands.size()));
-            boolean txCreated = false;
-            if (!TransactionHelper.isTransactionActive()) {
-                txCreated = TransactionHelper.startTransaction();
-            }
-            try {
-                new UnrestrictedSessionRunner(stackedCommands.get(0).getRepositoryName()) {
-                    @Override
-                    public void run() throws ClientException {
-                        esi.indexNonRecursive(stackedCommands);
-                    }
-                }.runUnrestricted();
-            } catch (ClientException e) {
-                log.error("Unable to flush pending indexing commands: " + e.getMessage(), e);
-            } finally {
-                if (txCreated) {
-                    TransactionHelper.commitOrRollbackTransaction();
-                }
-                stackedCommands.clear();
-                log.debug("Done");
-            }
-        }
+            runIndexingWorker(stackedCommands);
+            stackedCommands.clear();
+            log.debug("Done");
+       }
     }
 
     // Es Admin ================================================================
