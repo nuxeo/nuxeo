@@ -14,8 +14,13 @@ for i = 2, #ARGV do
     local del = true
     if beforeTime ~= 0 then
         local state = redis.call('HGET', stateKey, workId)
-        local time = 0 + string.sub(state, 2, -1) -- format is 'C' + completion time
-        del = time < beforeTime
+        assert(type(state) == "string", tostring(state) .. " is no a string")
+        del = string.match(state,"C.*")
+        if del then
+          local stime = string.sub(state, 2) -- format is 'C' + completion time
+          local time = tonumber(stime)
+          del = time < beforeTime
+        end
     end
     if del then
         redis.call('SREM', completedKey, workId)
