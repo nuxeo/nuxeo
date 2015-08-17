@@ -32,10 +32,15 @@
     </antcall>
   </target>
 
-  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss"
-    description="prepare all ressources for test">
+  <target name="download" unless="no.download">
+    <echo level="info" message="Downloading for tests ${groupId}:${artifactId}::zip:${classifier}" />
+    <delete failonerror="false" dir="${nuxeo.home}" />
+    <unzip dest="${nuxeo.home}/">
+      <artifact:resolveFile key="${groupId}:${artifactId}::zip:${classifier}" />
+      <cutdirsmapper dirs="1" />
+    </unzip>
     <copy todir="${nuxeo.nxserver}/bundles/">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${project.version}:jar" />
     </copy>
   </target>
 
