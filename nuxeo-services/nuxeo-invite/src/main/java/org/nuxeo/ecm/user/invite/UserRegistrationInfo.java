@@ -16,6 +16,8 @@
 
 package org.nuxeo.ecm.user.invite;
 
+import java.util.List;
+
 public class UserRegistrationInfo {
 
     protected String login;
@@ -39,6 +41,19 @@ public class UserRegistrationInfo {
     protected String documentId;
 
     protected String documentRight;
+
+    /**
+     * @since 7.4
+     */
+    protected List<String> groups;
+
+    public List<String> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<String> groups) {
+        this.groups = groups;
+    }
 
     public String getLogin() {
         return login;
