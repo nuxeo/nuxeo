@@ -149,6 +149,10 @@
         <row>
           <widget>doc_request_date_range</widget>
         </row>
+        <row>
+          <widget>user_request_group</widget>
+        </row>
+        <row>
           <widget>user_request_comment</widget>
         </row>
         <row>
@@ -314,6 +318,7 @@
         <property name="styleClass">dataInputText</property>
       </properties>
     </widget>
+
     <widget name="multiple_request_emails" type="textarea">
       <labels>
         <label mode="any">label.request.multiple.emails</label>
@@ -342,6 +347,27 @@
       </fields>
       <properties widgetMode="edit">
         <property name="styleClass">dataInputText</property>
+      </properties>
+    </widget>
+
+    <widget name="user_request_group" type="multipleUsersSuggestion">
+      <labels>
+        <label mode="any">label.request.groups</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field>data.userinfo.groups</field>
+      </fields>
+      <widgetModes>
+        <mode value="edit">
+          #{nxu:test(webActions.checkFilter('usersGroupsManagementAccess'),
+          'edit', 'view')}
+        </mode>
+        <mode value="editPassword">hidden</mode>
+      </widgetModes>
+      <properties widgetMode="any">
+        <property name="hideVirtualGroups">true</property>
+        <property name="userSuggestionSearchType">GROUP_TYPE</property>
       </properties>
     </widget>
 

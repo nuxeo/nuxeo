@@ -112,6 +112,7 @@ public class UserRegistrationComponent extends UserInvitationComponent implement
             doc.setPropertyValue(configuration.getUserInfoLastnameField(), userInfo.getLastName());
             doc.setPropertyValue(configuration.getUserInfoEmailField(), userInfo.getEmail());
             doc.setPropertyValue(configuration.getUserInfoCompanyField(), userInfo.getCompany());
+            doc.setPropertyValue(configuration.getUserInfoGroupsField(), (Serializable) userInfo.getGroups());
 
             // validation method
             doc.setPropertyValue("registration:validationMethod", validationMethod.toString());
