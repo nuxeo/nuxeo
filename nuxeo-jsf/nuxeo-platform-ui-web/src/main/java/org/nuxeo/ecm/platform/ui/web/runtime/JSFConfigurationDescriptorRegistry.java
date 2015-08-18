@@ -19,6 +19,8 @@ package org.nuxeo.ecm.platform.ui.web.runtime;
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
+ * Registry for JSF configuration contributions.
+ *
  * @since 7.4
  */
 public class JSFConfigurationDescriptorRegistry extends SimpleContributionRegistry<JSFConfigurationDescriptor> {

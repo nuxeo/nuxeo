@@ -20,6 +20,8 @@ import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
 /**
+ * Descriptor for JSF configuration contributions.
+ *
  * @since 7.4
  */
 @XObject("parameter")
