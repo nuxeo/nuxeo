@@ -1,0 +1,13 @@
+<component name="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService.default">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService"
+             point="configuration">
+
+    <parameter name="nuxeo.jsf.enableDoubleClickShield" value="${nuxeo.jsf.enableDoubleClickShield:=true}" />
+    <parameter name="nuxeo.jsf.useAjaxTabs" value="${nuxeo.jsf.useAjaxTabs:=false}" />
+    <parameter name="nuxeo.jsf.listWidget.compatEnabled" value="${nuxeo.jsf.listWidget.compatEnabled:=false}" />
+    <parameter name="nuxeo.jsf.removeAliasOptims" value="${nuxeo.jsf.removeAliasOptims:=false}" />
+
+  </extension>
+
+</component>
