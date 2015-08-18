@@ -55,6 +55,54 @@
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
     </dependency>
+    <!-- Assembly dependencies -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>doc</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>root</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>bin</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>templates-common</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>templates-tomcat</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-startup-wizard</artifactId>
+      <type>war</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-cap</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
     <!-- Marketplace packages embedded in Tomcat distribution -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
