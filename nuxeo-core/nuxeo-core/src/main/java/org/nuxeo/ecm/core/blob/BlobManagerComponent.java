@@ -272,20 +272,21 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         return key;
     }
 
-    protected ExtendedBlobProvider getExtendedBlobProvider(Blob blob) {
+    @Override
+    public BlobProvider getBlobProvider(Blob blob) {
         if (!(blob instanceof ManagedBlob)) {
             return null;
         }
         ManagedBlob managedBlob = (ManagedBlob) blob;
-        BlobProvider blobProvider = getBlobProvider(managedBlob.getProviderId());
-        if (blobProvider == null) {
-            log.error("No registered blob provider for key: " + managedBlob.getKey());
-            return null;
+        return getBlobProvider(managedBlob.getProviderId());
+    }
+
+    protected ExtendedBlobProvider getExtendedBlobProvider(Blob blob) {
+        BlobProvider blobProvider = getBlobProvider(blob);
+        if (blobProvider != null && blobProvider instanceof ExtendedBlobProvider) {
+            return (ExtendedBlobProvider) blobProvider;
         }
-        if (!(blobProvider instanceof ExtendedBlobProvider)) {
-            return null;
-        }
-        return (ExtendedBlobProvider) blobProvider;
+        return null;
     }
 
     @Override

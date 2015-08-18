@@ -79,6 +79,14 @@ public interface BlobManager {
     BlobProvider getBlobProvider(String id);
 
     /**
+     * Gets the blob provider for the given blob.
+     *
+     * @return the blob provider
+     * @since 7.4
+     */
+    BlobProvider getBlobProvider(Blob blob);
+
+    /**
      * Reads a {@link Blob} from storage.
      *
      * @param blobInfo the blob information
