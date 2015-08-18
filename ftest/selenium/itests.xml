@@ -45,7 +45,7 @@
       <cutdirsmapper dirs="1" />
     </unzip>
     <copy todir="${nuxeo.nxserver}/bundles/">
-      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${project.version}:jar" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
     </copy>
   </target>
 
