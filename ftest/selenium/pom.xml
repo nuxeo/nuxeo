@@ -24,6 +24,7 @@
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <type>zip</type>
       <classifier>nuxeo-cap</classifier>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
