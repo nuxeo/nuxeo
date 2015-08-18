@@ -7,8 +7,8 @@
     <version>7.4-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.tool</groupId>
-  <artifactId>selenium-utility</artifactId>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-error-web-selenium-tests</artifactId>
   <packaging>pom</packaging>
 
   <name>Error Web Functional Tests with Selenium</name>
@@ -18,6 +18,12 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-tomcat</artifactId>
+      <type>zip</type>
+      <classifier>nuxeo-cap</classifier>
     </dependency>
   </dependencies>
 
