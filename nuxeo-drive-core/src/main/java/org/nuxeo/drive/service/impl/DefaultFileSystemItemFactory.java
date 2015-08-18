@@ -36,6 +36,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.ExtendedBlobProvider;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -146,6 +149,22 @@ public class DefaultFileSystemItemFactory extends AbstractFileSystemItemFactory 
             }
             return false;
         }
+
+        // Check for blobs backed by extended blob providers (ex: Google Drive)
+        if (!doc.isFolder()) {
+            BlobManager blobManager = Framework.getService(BlobManager.class);
+            BlobHolder bh = doc.getAdapter(BlobHolder.class);
+            BlobProvider blobProvider = blobManager.getBlobProvider(bh.getBlob());
+            if (blobProvider != null && blobProvider instanceof ExtendedBlobProvider) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                        "Blob for Document %s is backed by an ExtendedBlobProvider, it cannot be adapted as a FileSystemItem.",
+                        doc.getId()));
+                }
+                return false;
+            }
+        }
+
         if (!relaxSyncRootConstraint) {
             // Check not a synchronization root registered for the current user
             NuxeoDriveManager nuxeoDriveManager = Framework.getLocalService(NuxeoDriveManager.class);
