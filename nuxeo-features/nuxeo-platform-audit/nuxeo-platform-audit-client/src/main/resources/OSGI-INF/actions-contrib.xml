@@ -54,6 +54,7 @@
       label="command.restore" order="20">
       <category>VERSION_LIST_ITEM</category>
       <filter-id>canRestoreVersion</filter-id>
+      <filter-id>canRestoreMainBlob</filter-id>
     </action>
 
     <action id="CURRENT_VERSION_SELECTION_DELETE" link="#{versionedActions.removeSelectedArchivedVersions}"
@@ -113,6 +114,13 @@
       <rule grant="true">
         <condition>#{versionedActions.canRestore}
         </condition>
+      </rule>
+    </filter>
+
+    <filter id="canRestoreMainBlob">
+      <rule grant="false">
+        <type>File</type>
+        <condition>#{blobHolderGenerator.getBlobHolder(document).blob.length lt 0}</condition>
       </rule>
     </filter>
 
