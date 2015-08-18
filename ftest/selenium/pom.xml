@@ -7,8 +7,8 @@
     <version>6.0-HF19-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.nuxeo.tool</groupId>
-  <artifactId>selenium-utility</artifactId>
+  <groupId>org.nuxeo.ecm.platform</groupId>
+  <artifactId>nuxeo-platform-forms-layout-demo-selenium-tests</artifactId>
   <packaging>pom</packaging>
   <name>Utility POM for running Selenium tests</name>
   <description>This POM uses an assembly for running functional tests.</description>
@@ -17,6 +17,13 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-tomcat</artifactId>
+      <type>zip</type>
+      <classifier>nuxeo-cap</classifier>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
