@@ -20,7 +20,7 @@
       <cutdirsmapper dirs="1" />
     </unzip>
     <copy todir="${nuxeo.nxserver}/bundles/">
-      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-error-web:${project.version}:jar" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-error-web:${maven.project.version}:jar" />
     </copy>
   </target>
 
