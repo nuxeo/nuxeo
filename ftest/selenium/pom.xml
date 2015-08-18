@@ -8,7 +8,7 @@
     <relativePath></relativePath>
   </parent>
 
-  <groupId>org.nuxeo.tool</groupId>
+  <groupId>org.nuxeo.ecm.platform</groupId>
   <artifactId>nuxeo-platform-forms-layout-demo-selenium-tests</artifactId>
   <packaging>pom</packaging>
   <name>Layout Demo Functional Tests with Selenium</name>
@@ -18,6 +18,13 @@
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
       <artifactId>selenium-server-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-tomcat</artifactId>
+      <type>zip</type>
+      <classifier>nuxeo-cap</classifier>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
