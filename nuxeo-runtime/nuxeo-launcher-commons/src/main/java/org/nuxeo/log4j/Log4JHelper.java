@@ -128,16 +128,21 @@ public class Log4JHelper {
      * @param appenderNames Appender names on which to set a detailed pattern layout. Ignored if null.
      */
     public static void setDebug(String categories, boolean debug, boolean includeChildren, String[] appenderNames) {
-        Level newLevel;
-        if (debug) {
-            newLevel = Level.DEBUG;
-        } else {
-            newLevel = Level.INFO;
-        }
+        setDebug(categories.split(","), debug, includeChildren, appenderNames);
+    }
+
+    /**
+     * @param categories
+     * @param debug
+     * @param includeChildren
+     * @param appenderNames
+     * @since 7.4
+     */
+    public static void setDebug(String[] categories, boolean debug, boolean includeChildren, String[] appenderNames) {
+        Level newLevel = debug ? Level.DEBUG : Level.INFO;
 
         // Manage categories
-        String[] categoriesArray = categories.split(",");
-        for (String category : categoriesArray) { // Create non existing loggers
+        for (String category : categories) { // Create non existing loggers
             Logger logger = Logger.getLogger(category);
             logger.setLevel(newLevel);
             log.info("Log level set to " + newLevel + " for: " + logger.getName());
@@ -148,7 +153,7 @@ public class Log4JHelper {
                 if (logger.getLevel() == newLevel) {
                     continue;
                 }
-                for (String category : categoriesArray) {
+                for (String category : categories) {
                     if (logger.getName().startsWith(category)) {
                         logger.setLevel(newLevel);
                         log.info("Log level set to " + newLevel + " for: " + logger.getName());
@@ -171,8 +176,8 @@ public class Log4JHelper {
                 }
                 if (filter != null) {
                     LevelRangeFilter levelRangeFilter = (LevelRangeFilter) filter;
-                    levelRangeFilter.setLevelMin(Level.DEBUG);
-                    log.debug("Log level filter set to DEBUG for appender " + appenderName);
+                    levelRangeFilter.setLevelMin(newLevel);
+                    log.debug(String.format("Log level filter set to %s for appender %s", newLevel, appenderName));
                 }
                 String patternLayout = debug ? FULL_PATTERN_LAYOUT : LIGHT_PATTERN_LAYOUT;
                 consoleAppender.setLayout(new PatternLayout(patternLayout));

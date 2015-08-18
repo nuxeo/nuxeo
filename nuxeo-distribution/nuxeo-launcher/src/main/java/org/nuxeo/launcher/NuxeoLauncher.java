@@ -49,14 +49,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
@@ -137,14 +135,20 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_DEBUG = "debug";
 
-    private static final String OPTION_DEBUG_DESC = "Activate debug messages. " + "See 'category' option.";
+    private static final String OPTION_DEBUG_DESC = "Activate debug messages.\n"
+            + "Categories: comma-separated Java categories to debug (default: \"org.nuxeo.launcher\").";
+
+    /**
+     * @since 7.4
+     */
+    private static final String OPTION_DEBUG_CATEGORY_ARG_NAME = "categories";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_DEBUG_CATEGORY = "dc";
 
-    private static final String OPTION_DEBUG_CATEGORY_DESC = "Comma separated root categories for 'debug' option (default: \"org.nuxeo.launcher\").";
+    private static final String OPTION_DEBUG_CATEGORY_DESC = "Deprecated: see categories on 'debug' option.";
 
     /**
      * @since 5.6
@@ -188,14 +192,14 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_FORCE = "force";
 
-    private static final String OPTION_FORCE_DESC = "Deprecated use --strict instead.";
+    private static final String OPTION_FORCE_DESC = "Deprecated: use '--strict' option instead.";
 
     /**
      * @since 7.4
      */
     protected static final String OPTION_STRICT = "strict";
 
-    private static final String OPTION_STRICT_DESC = "Abort in error the start command when a component can not " +
+    private static final String OPTION_STRICT_DESC = "Abort in error the start command when a component cannot " +
             "be activated or if a server is already running.";
 
     /**
@@ -272,7 +276,7 @@ public abstract class NuxeoLauncher {
 
     private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
-            "mp-update", "status", "showconf", "mp-show", "mp-set" };
+            "mp-update", "status", "showconf", "mp-show", "mp-set", "config", "encrypt", "decrypt", OPTION_HELP };
 
     private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-init", "mp-purge", "mp-add", "mp-install",
             "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
@@ -351,6 +355,49 @@ public abstract class NuxeoLauncher {
      * @since 5.7
      */
     public static final int EXIT_CODE_NOT_RUNNING = 7;
+
+    private static final String OPTION_HELP_DESC_COMMANDS = "\nJava usage:\n"
+            + String.format("\tjava [-D%s=\"JVM options\"]"
+                    + " [-D%s=\"/path/to/nuxeo\"] [-D%s=\"/path/to/nuxeo.conf\"]"
+                    + " [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\" \\\n"
+                    + "\t\t[options] <command> [command parameters]\n\n", JAVA_OPTS_PROPERTY, Environment.NUXEO_HOME,
+                    ConfigurationGenerator.NUXEO_CONF)
+            + String.format("\t%s\tParameters for the server JVM (default are %s).\n", JAVA_OPTS_PROPERTY,
+                    JAVA_OPTS_DEFAULT)
+            + String.format("\t%s\t\tNuxeo server root path (default is parent of called script).\n",
+                    Environment.NUXEO_HOME)
+            + String.format("\t%s\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).\n",
+                    ConfigurationGenerator.NUXEO_CONF)
+            + "\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.\n"
+            + "\nCommands list:\n"
+            + "\thelp\t\t\tPrint this message.\n"
+            + "\tgui\t\t\tStart the user graphical interface.\n"
+            + "\tstart\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.\n"
+            + "\tstop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.\n"
+            + "\trestart\t\t\tRestart Nuxeo server.\n"
+            + "\tconfigure\t\tConfigure Nuxeo server with parameters from nuxeo.conf.\n"
+            + "\twizard\t\t\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).\n"
+            + "\tconsole\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.\n"
+            + "\tstatus\t\t\tPrint server status (running or not).\n"
+            + "\tstartbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.\n"
+            + "\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
+            + "\tpack <target>\t\tBuild a static archive (the \"pack\" Shell script is deprecated).\n"
+            + "\tshowconf\t\tDisplay the instance configuration.\n"
+            + "\tmp-list\t\t\tList local Marketplace packages.\n"
+            + "\tmp-listall\t\tList all Marketplace packages (requires a registered instance).\n"
+            + "\tmp-init\t\t\tPre-cache Marketplace packages locally available in the distribution.\n"
+            + "\tmp-update\t\tUpdate cache of marketplace packages list.\n"
+            + "\tmp-add\t\t\tAdd Marketplace package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "\tmp-install\t\tRun Marketplace package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "\tmp-uninstall\t\tUninstall Marketplace package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
+            + "\tmp-set\t\t\tInstalls a list of Marketplace packages and removes those not in the list.\n"
+            + "\tmp-request\t\tInstall + uninstall Marketplace package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
+            + "\tmp-remove\t\tRemove Marketplace package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
+            + "\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.\n"
+            + "\tmp-purge\t\tUninstall and remove all packages from the local cache.\n"
+            + "\tmp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
+            + "\tmp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).\n"
+            + "\tmp-show\t\t\tShow Marketplace package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.";
 
     protected ConfigurationGenerator configurationGenerator;
 
@@ -764,78 +811,80 @@ public abstract class NuxeoLauncher {
         if (launcherOptions == null) {
             launcherOptions = new Options();
             // help option
-            OptionBuilder.withLongOpt(OPTION_HELP);
-            OptionBuilder.withDescription(OPTION_HELP_DESC);
-            launcherOptions.addOption(OptionBuilder.create("h"));
+            launcherOptions.addOption(Option.builder("h").longOpt(OPTION_HELP).desc(OPTION_HELP_DESC).build());
             // Quiet option
-            OptionBuilder.withLongOpt(OPTION_QUIET);
-            OptionBuilder.withDescription(OPTION_QUIET_DESC);
-            launcherOptions.addOption(OptionBuilder.create("q"));
-            // Debug option
-            OptionBuilder.withLongOpt(OPTION_DEBUG);
-            OptionBuilder.withDescription(OPTION_DEBUG_DESC);
-            launcherOptions.addOption(OptionBuilder.create("d"));
-            // Debug category option
-            OptionBuilder.withDescription(OPTION_DEBUG_CATEGORY_DESC);
-            OptionBuilder.hasArg();
-            launcherOptions.addOption(OptionBuilder.create(OPTION_DEBUG_CATEGORY));
+            launcherOptions.addOption(Option.builder("q").longOpt(OPTION_QUIET).desc(OPTION_QUIET_DESC).build());
+            { // Debug options (mutually exclusive)
+                OptionGroup debugOptions = new OptionGroup();
+                // Debug option
+                debugOptions.addOption(Option.builder("d")
+                                             .longOpt(OPTION_DEBUG)
+                                             .desc(OPTION_DEBUG_DESC)
+                                             .hasArgs()
+                                             .argName(OPTION_DEBUG_CATEGORY_ARG_NAME)
+                                             .optionalArg(true)
+                                             .valueSeparator(',')
+                                             .build());
+                // Debug category option
+                debugOptions.addOption(Option.builder(OPTION_DEBUG_CATEGORY)
+                                             .desc(OPTION_DEBUG_CATEGORY_DESC)
+                                             .hasArgs()
+                                             .argName(OPTION_DEBUG_CATEGORY_ARG_NAME)
+                                             .optionalArg(true)
+                                             .valueSeparator(',')
+                                             .build());
+                launcherOptions.addOptionGroup(debugOptions);
+            }
             // Instance CLID option
-            OptionBuilder.withLongOpt(OPTION_CLID);
-            OptionBuilder.withDescription(OPTION_CLID_DESC);
-            OptionBuilder.hasArg();
-            launcherOptions.addOption(OptionBuilder.create());
-            OptionGroup outputOptions = new OptionGroup();
-            // Hide deprecation warnings option
-            OptionBuilder.withLongOpt(OPTION_HIDE_DEPRECATION);
-            OptionBuilder.withDescription(OPTION_HIDE_DEPRECATION_DESC);
-            outputOptions.addOption(OptionBuilder.create());
-            // XML option
-            OptionBuilder.withLongOpt(OPTION_XML);
-            OptionBuilder.withDescription(OPTION_XML_DESC);
-            outputOptions.addOption(OptionBuilder.create());
-            // JSON option
-            OptionBuilder.withLongOpt(OPTION_JSON);
-            OptionBuilder.withDescription(OPTION_JSON_DESC);
-            outputOptions.addOption(OptionBuilder.create());
-            launcherOptions.addOptionGroup(outputOptions);
+            launcherOptions.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
+            { // Output options (mutually exclusive)
+                OptionGroup outputOptions = new OptionGroup();
+                // XML option
+                outputOptions.addOption(Option.builder().longOpt(OPTION_XML).desc(OPTION_XML_DESC).build());
+                // JSON option
+                outputOptions.addOption(Option.builder().longOpt(OPTION_JSON).desc(OPTION_JSON_DESC).build());
+                launcherOptions.addOptionGroup(outputOptions);
+            }
             // GUI option
-            OptionBuilder.withLongOpt(OPTION_GUI);
-            OptionBuilder.hasArg();
-            OptionBuilder.withArgName("true|false|yes|no");
-            OptionBuilder.withDescription(OPTION_GUI_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOption(Option.builder()
+                                            .longOpt(OPTION_GUI)
+                                            .desc(OPTION_GUI_DESC)
+                                            .hasArg()
+                                            .argName("true|false|yes|no")
+                                            .build());
             // Package management option
-            OptionBuilder.withLongOpt(OPTION_NODEPS);
-            OptionBuilder.withDescription(OPTION_NODEPS_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOption(Option.builder().longOpt(OPTION_NODEPS).desc(OPTION_NODEPS_DESC).build());
             // Relax on target platform option
-            OptionBuilder.withLongOpt(OPTION_RELAX);
-            OptionBuilder.hasArg();
-            OptionBuilder.withArgName("true|false|yes|no|ask");
-            OptionBuilder.withDescription(OPTION_RELAX_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOption(Option.builder()
+                                            .longOpt(OPTION_RELAX)
+                                            .desc(OPTION_RELAX_DESC)
+                                            .hasArg()
+                                            .argName("true|false|yes|no|ask")
+                                            .build());
             // Accept option
-            OptionBuilder.withLongOpt(OPTION_ACCEPT);
-            OptionBuilder.hasArg();
-            OptionBuilder.withArgName("true|false|yes|no|ask");
-            OptionBuilder.withDescription(OPTION_ACCEPT_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOption(Option.builder()
+                                            .longOpt(OPTION_ACCEPT)
+                                            .desc(OPTION_ACCEPT_DESC)
+                                            .hasArg()
+                                            .argName("true|false|yes|no|ask")
+                                            .build());
             // Allow SNAPSHOT option
-            OptionBuilder.withLongOpt(OPTION_SNAPSHOT);
-            OptionBuilder.withDescription(OPTION_SNAPSHOT_DESC);
-            launcherOptions.addOption(OptionBuilder.create("s"));
+            launcherOptions.addOption(Option.builder("s").longOpt(OPTION_SNAPSHOT).desc(OPTION_SNAPSHOT_DESC).build());
             // Force option
-            OptionBuilder.withLongOpt(OPTION_FORCE);
-            OptionBuilder.withDescription(OPTION_FORCE_DESC);
-            launcherOptions.addOption(OptionBuilder.create("f"));
+            launcherOptions.addOption(Option.builder("f").longOpt(OPTION_FORCE).desc(OPTION_FORCE_DESC).build());
             // Strict option
-            OptionBuilder.withLongOpt(OPTION_STRICT);
-            OptionBuilder.withDescription(OPTION_STRICT_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOption(Option.builder().longOpt(OPTION_STRICT).desc(OPTION_STRICT_DESC).build());
+
             // Ignore missing option
-            OptionBuilder.withLongOpt(OPTION_IGNORE_MISSING);
-            OptionBuilder.withDescription(OPTION_IGNORE_MISSING_DESC);
-            launcherOptions.addOption(OptionBuilder.create());
+            launcherOptions.addOption(Option.builder("im")
+                                            .longOpt(OPTION_IGNORE_MISSING)
+                                            .desc(OPTION_IGNORE_MISSING_DESC)
+                                            .build());
+            // Hide deprecation warnings option
+            launcherOptions.addOption(Option.builder("hdw")
+                                            .longOpt(OPTION_HIDE_DEPRECATION)
+                                            .desc(OPTION_HIDE_DEPRECATION_DESC)
+                                            .build());
         }
     }
 
@@ -844,31 +893,27 @@ public abstract class NuxeoLauncher {
      */
     protected static CommandLine parseOptions(String[] args) throws ParseException {
         initParserOptions();
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
         CommandLine cmdLine = null;
-        Boolean stopAfterParsing = true;
-        try {
-            cmdLine = parser.parse(launcherOptions, args);
-            if (cmdLine.hasOption(OPTION_HELP) || cmdLine.getArgList().contains(OPTION_HELP)) {
-                printLongHelp();
-            } else if (cmdLine.getArgList().isEmpty()) {
-                printShortHelp();
-            } else {
-                stopAfterParsing = false;
-            }
-        } catch (UnrecognizedOptionException e) {
-            log.error(e.getMessage());
-            printShortHelp();
-        } catch (MissingArgumentException e) {
-            log.error(e.getMessage());
-            printShortHelp();
-        } catch (ParseException e) {
-            log.error("Error while parsing command line: " + e.getMessage());
-            printShortHelp();
-        } finally {
-            if (stopAfterParsing) {
-                throw new ParseException("Invalid command line");
-            }
+        cmdLine = parser.parse(launcherOptions, args);
+        if (cmdLine.hasOption(OPTION_HELP)) {
+            cmdLine.getArgList().add(OPTION_HELP);
+            setQuiet();
+        } else if (cmdLine.getArgList().isEmpty()) {
+            throw new ParseException("Missing command.");
+        }
+        // Common options to the Launcher and the ConfigurationGenerator
+        if (cmdLine.hasOption(OPTION_QUIET) || cmdLine.hasOption(OPTION_XML) || cmdLine.hasOption(OPTION_JSON)) {
+            setQuiet();
+        }
+        if (cmdLine.hasOption(OPTION_DEBUG)) {
+            setDebug(cmdLine.getOptionValues(OPTION_DEBUG), "org.nuxeo.launcher");
+        }
+        if (cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
+            setDebug(cmdLine.getOptionValues(OPTION_DEBUG_CATEGORY), "org.nuxeo.launcher");
+        }
+        if (cmdLine.hasOption(OPTION_FORCE) || cmdLine.hasOption(OPTION_STRICT)) {
+            setStrict(true);
         }
         return cmdLine;
     }
@@ -884,7 +929,9 @@ public abstract class NuxeoLauncher {
             }
             launch(launcher);
         } catch (ParseException e) {
-            System.exit(1);
+            log.error("Invalid command line. " + e.getMessage());
+            printShortHelp();
+            System.exit(EXIT_CODE_INVALID);
         } catch (Exception e) {
             log.error("Cannot execute command. " + e.getMessage());
             log.debug(e, e);
@@ -907,7 +954,9 @@ public abstract class NuxeoLauncher {
         if (Arrays.asList(COMMANDS_NO_RUNNING_SERVER).contains(launcher.command)) {
             launcher.checkNoRunningServer();
         }
-        if ("status".equalsIgnoreCase(launcher.command)) {
+        if (OPTION_HELP.equalsIgnoreCase(launcher.command)) {
+            printLongHelp();
+        } else if ("status".equalsIgnoreCase(launcher.command)) {
             String statusMsg = launcher.status();
             if (!quiet) {
                 log.warn(statusMsg);
@@ -1023,22 +1072,19 @@ public abstract class NuxeoLauncher {
         } else if ("mp-show".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgShow(params);
         } else {
+            log.error("Unknown command " + launcher.command);
             printLongHelp();
             commandSucceeded = false;
+            launcher.errorValue = EXIT_CODE_INVALID;
         }
-        if (launcher.command.startsWith("mp-")) {
+        if (launcher.xmlOutput && launcher.command.startsWith("mp-")) {
             launcher.printXMLOutput();
         }
-        if (!commandSucceeded) {
-            if (!quiet && !debug) {
-                log.error("\nSome commands failed:");
-                launcher.cset.log();
-            }
-            exitStatus = launcher.errorValue;
+        if (!commandSucceeded && !quiet || debug) {
+            launcher.cset.log(commandSucceeded && debug);
         }
-        if (debug) {
-            log.debug("\nCommands debug dump:");
-            launcher.cset.log(true);
+        if (!commandSucceeded) {
+            exitStatus = launcher.errorValue;
         }
         if (exitStatus != EXIT_CODE_OK) {
             System.exit(exitStatus);
@@ -1373,9 +1419,6 @@ public abstract class NuxeoLauncher {
      * @since 5.6
      */
     protected void printXMLOutput(JAXBContext jaxbContext, Object objectToOutput) {
-        if (!xmlOutput) {
-            return;
-        }
         try {
             Writer xml = new StringWriter();
             Marshaller marshaller = jaxbContext.createMarshaller();
@@ -1640,21 +1683,11 @@ public abstract class NuxeoLauncher {
      */
     public static NuxeoLauncher createLauncher(String[] args) throws ConfigurationException, ParseException {
         CommandLine cmdLine = parseOptions(args);
-        // Common options to the Launcher and the ConfigurationGenerator
-        if (cmdLine.hasOption(OPTION_QUIET) || cmdLine.hasOption(OPTION_XML) || cmdLine.hasOption(OPTION_JSON)) {
-            setQuiet();
-        }
-        if (cmdLine.hasOption(OPTION_DEBUG) || cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
-            setDebug(cmdLine.getOptionValue(OPTION_DEBUG_CATEGORY, "org.nuxeo.launcher"));
-        }
-        if (cmdLine.hasOption(OPTION_FORCE) || cmdLine.hasOption(OPTION_STRICT)) {
-            setStrict(true);
-        }
-        NuxeoLauncher launcher;
         ConfigurationGenerator cg = new ConfigurationGenerator(quiet, debug);
         if (cmdLine.hasOption(OPTION_HIDE_DEPRECATION)) {
             cg.hideDeprecationWarnings(true);
         }
+        NuxeoLauncher launcher;
         if (cg.isJetty) {
             launcher = new NuxeoJettyLauncher(cg);
         } else if (cg.isTomcat) {
@@ -1737,6 +1770,18 @@ public abstract class NuxeoLauncher {
 
     /**
      * @param categories Root categories to switch DEBUG on.
+     * @since 7.4
+     */
+    protected static void setDebug(String[] categories, String defaultCategory) {
+        debug = true;
+        if (categories == null) {
+            categories = new String[] { defaultCategory };
+        }
+        Log4JHelper.setDebug(categories, true, true, new String[] { Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
+    }
+
+    /**
+     * @param categories Root categories to switch DEBUG on.
      * @since 5.6
      */
     protected static void setDebug(String categories) {
@@ -1780,58 +1825,16 @@ public abstract class NuxeoLauncher {
     }
 
     public static void printShortHelp() {
+        System.out.println();
         HelpFormatter help = new HelpFormatter();
         help.setSyntaxPrefix("Usage: ");
+        help.setOptionComparator(null);
         help.printHelp("nuxeoctl [options] <command> [command parameters]", launcherOptions);
     }
 
     public static void printLongHelp() {
         printShortHelp();
-        log.error("\n\nJava usage:\n\tjava [-D" + JAVA_OPTS_PROPERTY + "=\"JVM options\"] [-D" + Environment.NUXEO_HOME
-                + "=\"/path/to/nuxeo\"] [-D" + ConfigurationGenerator.NUXEO_CONF
-                + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
-                + " \\ \n\t\t[options] <command> [command parameters]");
-        log.error("\n\t" + JAVA_OPTS_PROPERTY + "\tParameters for the server JVM (default are " + JAVA_OPTS_DEFAULT
-                + ").");
-        log.error("\t" + Environment.NUXEO_HOME + "\t\tNuxeo server root path (default is parent of called script).");
-        log.error("\t" + ConfigurationGenerator.NUXEO_CONF
-                + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
-        log.error("\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.");
-        log.error("\n\nCommands list:");
-        log.error("\thelp\t\t\tPrint this message.");
-        log.error("\tgui\t\t\tStart the user graphical interface.");
-        log.error("\tstart\t\t\tStart Nuxeo server in background, waiting for effective start. "
-                + "Useful for batch executions requiring the server being immediately available after the script returned.");
-        log.error("\tstop\t\t\tStop any Nuxeo server started with the same nuxeo.conf file.");
-        log.error("\trestart\t\t\tRestart Nuxeo server.");
-        log.error("\tconfigure\t\tConfigure Nuxeo server with parameters from nuxeo.conf.");
-        log.error("\twizard\t\t\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).");
-        log.error("\tconsole\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.");
-        log.error("\tstatus\t\t\tPrint server status (running or not).");
-        log.error("\tstartbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.");
-        log.error("\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".");
-        log.error("\tpack <target>\t\tBuild a static archive (the \"pack\" Shell script is deprecated).");
-        log.error("\tshowconf\t\tDisplay the instance configuration.");
-        log.error("\tmp-list\t\t\tList local Marketplace packages.");
-        log.error("\tmp-listall\t\tList all Marketplace packages (requires a registered instance).");
-        log.error("\tmp-init\t\t\tPre-cache Marketplace packages locally available in the distribution.");
-        log.error("\tmp-update\t\tUpdate cache of marketplace packages list.");
-        log.error("\tmp-add\t\t\tAdd Marketplace package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.");
-        log.error("\tmp-install\t\tRun Marketplace package installation. "
-                + "It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. "
-                + "Else you must provide the package file(s), name(s) or ID(s) as parameter.");
-        log.error("\tmp-uninstall\t\tUninstall Marketplace package(s). "
-                + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
-        log.error("\tmp-set\t\t\tInstalls a list of Marketplace packages and removes those not in the list.");
-        log.error("\tmp-request\t\tInstall + uninstall Marketplace package(s) in one command. "
-                + "You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).");
-        log.error("\tmp-remove\t\tRemove Marketplace package(s) from the local cache. "
-                + "You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).");
-        log.error("\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.");
-        log.error("\tmp-purge\t\tUninstall and remove all packages from the local cache.");
-        log.error("\tmp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).");
-        log.error("\tmp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).");
-        log.error("\tmp-show\t\t\tShow Marketplace package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.");
+        System.out.println(OPTION_HELP_DESC_COMMANDS);
     }
 
     /**
@@ -2102,7 +2105,9 @@ public abstract class NuxeoLauncher {
         }
         nxInstance.config = nxConfig;
         log.info("****************************************");
-        printInstanceXMLOutput(nxInstance);
+        if (xmlOutput) {
+            printInstanceXMLOutput(nxInstance);
+        }
         return nxInstance;
     }
 
