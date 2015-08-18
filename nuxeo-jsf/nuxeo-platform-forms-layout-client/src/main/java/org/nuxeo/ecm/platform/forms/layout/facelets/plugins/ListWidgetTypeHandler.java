@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
+import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,7 +36,8 @@ public class ListWidgetTypeHandler extends TemplateWidgetTypeHandler {
 
     @Override
     protected String getTemplateValue(Widget widget) {
-        boolean useCompat = Framework.isBooleanPropertyTrue("nuxeo.jsf.listWidget.compatEnabled");
+        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
+        boolean useCompat = configurationService.isBooleanPropertyTrue("nuxeo.jsf.listWidget.compatEnabled");
         if (useCompat) {
             return lookupProperty(COMPAT_TEMPLATE_PROPERTY_NAME, widget);
         } else {

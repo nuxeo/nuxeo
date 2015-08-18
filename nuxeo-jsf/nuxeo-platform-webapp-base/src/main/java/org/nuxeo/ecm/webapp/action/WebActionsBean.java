@@ -52,6 +52,7 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
+import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
 
@@ -462,7 +463,8 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
-        if (Framework.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
+        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
+        if (configurationService.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
             return canUseAjaxTabs();
         }
         return false;
