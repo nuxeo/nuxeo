@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService">
+
+  <documentation>
+    The JSFConfigurationService service holds application configuration properties that are used at runtime. This
+    service should not include properties that are needed at startup.
+
+    By default, default values are retrieved. However, these values can be overridden if specified in the nuxeo.conf
+    file.
+
+    @since 7.4
+  </documentation>
+
+  <implementation
+      class="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationServiceImpl"/>
+
+  <service>
+    <provide
+        interface="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService"/>
+  </service>
+
+  <extension-point name="configuration">
+    <documentation>
+      The configuration extension point allows to define a set of properties. Each property can have a default value
+      specified.
+
+      Example:
+
+      <code>
+        <configuration>
+          <property name="nuxeo.jsf.enableDoubleClickShield">${nuxeo.jsf.enableDoubleClickShield:=true}</property>
+          <property name="nuxeo.jsf.useAjaxTabs">${nuxeo.jsf.useAjaxTabs:=false}</property>
+        </configuration>
+      </code>
+    </documentation>
+    <object
+        class="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationDescriptor"/>
+  </extension-point>
+
+</component>

@@ -35,8 +35,7 @@ public class JSFConfigurationServiceImpl extends DefaultComponent implements JSF
 
     @Override
     public String getProperty(String key) {
-        JSFConfigurationDescriptor property = registry.lookup(key);
-        return property == null ? null : property.getValue();
+        return registry.getProperty(key);
     }
 
     @Override

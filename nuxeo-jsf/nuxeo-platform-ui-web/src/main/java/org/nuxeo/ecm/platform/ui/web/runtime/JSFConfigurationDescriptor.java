@@ -16,44 +16,31 @@
  */
 package org.nuxeo.ecm.platform.ui.web.runtime;
 
-import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XNodeMap;
 import org.nuxeo.common.xmap.annotation.XObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Descriptor for JSF configuration contributions.
  *
  * @since 7.4
  */
-@XObject("parameter")
+@XObject("configuration")
 public class JSFConfigurationDescriptor {
 
-    @XNode("@name")
-    private String name;
-
-    @XNode("@value")
-    private String value;
+    @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
+    protected Map<String, String> properties;
 
     public JSFConfigurationDescriptor() {}
 
-    public JSFConfigurationDescriptor(JSFConfigurationDescriptor other) {
-        name = other.name;
-        value = other.value;
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 
     @Override
@@ -64,16 +51,12 @@ public class JSFConfigurationDescriptor {
     }
 
     protected void doClone(JSFConfigurationDescriptor clone) {
-        clone.name = name;
-        clone.value = value;
+        clone.properties = new HashMap<>(properties);
     }
 
     public void merge(JSFConfigurationDescriptor other) {
-        if (other.name != null) {
-            name = other.name;
-        }
-        if (other.value != null) {
-            value = other.value;
+        if (other.properties != null) {
+            properties.putAll(other.properties);
         }
     }
 }

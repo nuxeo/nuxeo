@@ -18,6 +18,9 @@ package org.nuxeo.ecm.platform.ui.web.runtime;
 
 import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Registry for JSF configuration contributions.
  *
@@ -25,18 +28,19 @@ import org.nuxeo.runtime.model.SimpleContributionRegistry;
  */
 public class JSFConfigurationDescriptorRegistry extends SimpleContributionRegistry<JSFConfigurationDescriptor> {
 
+    protected static final String CONTRIBUTION_ID = "JSFConfigurationsContrib";
+
+    protected Map<String, String> properties = new HashMap<>();
+
     @Override
     public String getContributionId(JSFConfigurationDescriptor contrib) {
-        return contrib.getName();
+        return CONTRIBUTION_ID;
     }
 
     @Override
     public void contributionUpdated(String key, JSFConfigurationDescriptor contrib,
         JSFConfigurationDescriptor newOrigContrib) {
-        if (currentContribs.containsKey(key)) {
-            currentContribs.remove(key);
-        }
-        currentContribs.put(key, contrib);
+        properties.putAll(contrib.getProperties());
     }
 
     @Override
@@ -54,7 +58,7 @@ public class JSFConfigurationDescriptorRegistry extends SimpleContributionRegist
         return true;
     }
 
-    public JSFConfigurationDescriptor lookup(String key) {
-        return currentContribs.get(key);
+    public String getProperty(String key) {
+        return properties.get(key);
     }
 }
