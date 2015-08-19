@@ -4,10 +4,6 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <themePage name="userCenter/default" charset="utf-8">
-      <links>
-        <icon name="icon">/icons/favicon.png</icon>
-        <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
