@@ -85,12 +85,12 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <configuration>
-            <usedDependencies combine.children="append">
+            <ignoredUnusedDeclaredDependencies combine.children="append">
               <artifact>org.nuxeo.common:nuxeo-common</artifact>
               <artifact>org.nuxeo.runtime:nuxeo-runtime</artifact>
               <artifact>org.nuxeo.runtime:nuxeo-runtime-test</artifact>
               <artifact>org.nuxeo.ecm.core:nuxeo-core-test</artifact>
-            </usedDependencies>
+            </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
       </plugins>

@@ -121,10 +121,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <configuration>
-            <usedDependencies combine.children="append">
+            <ignoredUnusedDeclaredDependencies combine.children="append">
               <artifact>org.jmock:jmock-junit4</artifact>
               <artifact>org.nuxeo.runtime:nuxeo-runtime-test</artifact>
-            </usedDependencies>
+            </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
       </plugins>

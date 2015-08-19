@@ -45,10 +45,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
           <configuration>
-            <usedDependencies combine.children="append">
+            <ignoredUnusedDeclaredDependencies combine.children="append">
               <artifact>org.nuxeo.build:nuxeo-apt-extensions</artifact>
               <artifact>org.nuxeo.build:nuxeo-webengine-apt</artifact>
-            </usedDependencies>
+            </ignoredUnusedDeclaredDependencies>
           </configuration>
         </plugin>
       </plugins>
