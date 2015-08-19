@@ -17,8 +17,8 @@
     when iterating over a list of content views, optional
     when only one content view is displayed in the page.
   - hideEmpty: if set to true, nothing is displayed when there is no
-    item to list (even the sentence saying that there are no items in the
-    list). optional, defaults to false.
+    item to list and if no filter is set (even the sentence saying that there
+    are no items in the list). Optional, defaults to false.
   - foldable: if set to true, shows the content view in a foldable box.
     optional, defaults to false.
   - foldedByDefault: if set to true and foldable, foldable box is folded by
@@ -109,7 +109,7 @@
   <nxu:set var="provider" value="#{contentView.currentPageProvider}"
     cache="true">
     #{provider.setSelectedEntries(documentsListsManager.getWorkingList(contentView.selectionListName))}
-  <c:if test="#{not hideEmpty or not empty provider.currentPage}">
+  <c:if test="#{not hideEmpty or not empty provider.currentPage or (contentView.showFilterForm and nxd:isDirty(contentView.searchDocumentModel))}">
     <nxu:set var="finalFolded"
       value="#{nxu:test(foldedByDefault or (foldedIfEmpty and empty provider.currentPage), true, false)}"
       cache="true">
