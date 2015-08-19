@@ -69,17 +69,6 @@ public class QueryOptimizer {
         toplevelOperands = new LinkedList<Operand>();
     }
 
-    public boolean hasSelectFulltextScore(SQLQuery query) {
-        SelectClause node = query.select;
-        SelectList elements = node.elements;
-        for (int i = 0; i < elements.size(); i++) {
-            if (NXQL.ECM_FULLTEXT_SCORE.equals(elements.getKey(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public MultiExpression getOptimizedQuery(SQLQuery query, FacetFilter facetFilter) {
         if (facetFilter != null) {
             addFacetFilterClauses(facetFilter);

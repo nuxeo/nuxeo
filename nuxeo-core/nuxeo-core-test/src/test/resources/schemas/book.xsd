@@ -9,7 +9,7 @@
 
   <xs:element name="title" type="xs:string"/>
   <xs:element name="price" type="xs:long"/>
-  <xs:element name="author" type="nxs:Person"/>
+  <xs:element name="author" type="nxs:mylibPerson"/>
 
 </xs:schema>
 

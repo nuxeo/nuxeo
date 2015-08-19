@@ -9,16 +9,16 @@
       </xs:restriction>
   </xs:simpleType>
 
-  <xs:complexType name="Name">
+  <xs:complexType name="libName">
     <xs:sequence>
       <xs:element name="FirstName" type="MyString"/>
       <xs:element name="LastName" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="Person">
+  <xs:complexType name="libPerson">
     <xs:sequence>
-      <xs:element name="pName" type="Name"/>
+      <xs:element name="pName" type="libName"/>
       <xs:element name="pAge" type="xs:long"/>
       <xs:element name="pJob" type="xs:string"/>
     </xs:sequence>

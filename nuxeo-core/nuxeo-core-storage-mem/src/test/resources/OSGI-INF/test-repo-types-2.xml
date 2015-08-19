@@ -14,7 +14,6 @@
       <schema name="common" />
       <schema name="info" />
     </doctype>
-    <facet name="NotPerDocFacet"/> <!-- in repo config -->
     <facet name="NotPerDocFacet2" perDocumentQuery="false"/>
   </extension>
 

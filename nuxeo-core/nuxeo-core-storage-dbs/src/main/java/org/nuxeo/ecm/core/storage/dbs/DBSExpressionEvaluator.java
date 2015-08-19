@@ -38,6 +38,7 @@ import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.OrderByList;
 import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.Field;
@@ -62,7 +63,9 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     private static final Long ONE = Long.valueOf(1);
 
-    protected final Expression expr;
+    protected final SelectClause selectClause;
+
+    protected final Expression expression;
 
     protected final SchemaManager schemaManager;
 
@@ -70,9 +73,10 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
 
     protected State state;
 
-    public DBSExpressionEvaluator(DBSSession session, Expression expr, String[] principals) {
+    public DBSExpressionEvaluator(DBSSession session, SelectClause selectClause, Expression expression, String[] principals) {
         super(new DBSPathResolver(session), principals);
-        this.expr = expr;
+        this.selectClause = selectClause;
+        this.expression = expression;
         schemaManager = Framework.getLocalService(SchemaManager.class);
     }
 
@@ -128,7 +132,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 }
             }
         }
-        return TRUE.equals(walkExpression(expr));
+        return TRUE.equals(walkExpression(expression));
     }
 
     public boolean matches(DBSDocumentState docState) {
@@ -162,7 +166,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
             Field field = schemaManager.getField(prop);
             if (field == null) {
                 if (prop.indexOf(':') > -1) {
-                    throw new QueryParseException("Unkown property: " + name);
+                    throw new QueryParseException("No such property: " + name);
                 }
                 // check without prefix
                 // TODO precompute this in SchemaManagerImpl
@@ -179,7 +183,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                     }
                 }
                 if (field == null) {
-                    throw new QueryParseException("Unkown property: " + name);
+                    throw new QueryParseException("No such property: " + name);
                 }
             }
             prop = field.getName().getPrefixedName();
@@ -197,7 +201,7 @@ public class DBSExpressionEvaluator extends ExpressionEvaluator {
                 return null;
             }
             if (!(value instanceof State)) {
-                throw new QueryParseException("Unkown property (no State): " + name);
+                throw new QueryParseException("No such property (no State): " + name);
             }
             value = ((State) value).get(split[i]);
         }

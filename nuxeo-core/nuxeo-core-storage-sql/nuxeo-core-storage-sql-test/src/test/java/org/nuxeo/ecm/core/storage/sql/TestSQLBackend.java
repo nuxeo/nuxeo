@@ -3360,18 +3360,6 @@ public class TestSQLBackend extends SQLBackendTestCase {
         // LEFT JOIN person p ON p.id = h2.id
         // WHERE h2.name = 'tst:friends'
         // AND p.firstname = 'John'
-        clause = "tst:friends/*/firstname = 'John'";
-        res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);
-        assertEquals(oneDoc, res.list);
-        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL", QueryFilter.EMPTY);
-        assertEquals(2, it.size()); // two uncorrelated stars
-        it.close();
-
-        // hierarchy h
-        // JOIN hierarchy h2 ON h2.parentid = h.id
-        // LEFT JOIN person p ON p.id = h2.id
-        // WHERE h2.name = 'tst:friends'
-        // AND p.firstname = 'John'
         // AND p.lastname = 'Smith'
         clause = "tst:friends/*1/firstname = 'John'" + " AND tst:friends/*1/lastname = 'Smith'";
         res = session.query(SELECT_WHERE + clause, QueryFilter.EMPTY, false);

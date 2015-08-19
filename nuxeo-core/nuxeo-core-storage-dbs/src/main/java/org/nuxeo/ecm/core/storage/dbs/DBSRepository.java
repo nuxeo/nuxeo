@@ -20,6 +20,7 @@ import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 
@@ -127,7 +128,19 @@ public interface DBSRepository extends Repository {
      * @param ignored a set of document ids that should not be considered
      * @return the document states matching the query
      */
-    List<State> queryKeyValue(String key, String value, Set<String> ignored);
+    List<State> queryKeyValue(String key, Object value, Set<String> ignored);
+
+    /**
+     * Queries the repository for documents having key1 = value1 and key2 = value2.
+     *
+     * @param key1 the first key
+     * @param value1 the first value
+     * @param key2 the second key
+     * @param value2 the second value
+     * @param ignored a set of document ids that should not be considered
+     * @return the document states matching the query
+     */
+    List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored);
 
     /**
      * Queries the repository for document ids having value in key (an array).
@@ -155,7 +168,7 @@ public interface DBSRepository extends Repository {
      * Queries the repository for documents matching a query.
      *
      * @param expression the query expression
-     * @param evaluator the map-based evaluator for the query
+     * @param selectClause the projection to return (selected values)
      * @param orderByClause an ORDER BY clause
      * @param limit the limit on the number of documents to return
      * @param offset the offset in the list of documents to return
@@ -163,11 +176,11 @@ public interface DBSRepository extends Repository {
      *            If {@code 0}, don't count the total size, set it to {@code -1} .<br>
      *            If {@code n}, count the total number if there are less than n documents otherwise set the total size
      *            to {@code -2}.
+     * @param evaluator the map-based evaluator for the query
      * @param deepCopy whether returned state should be a copy
-     * @param fulltextScore whether returned state should include the fulltext score
      * @return a partial list containing the limited documents required, and the total size according to countUpTo
      */
-    PartialList<State> queryAndFetch(Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo, boolean deepCopy, boolean fulltextScore);
+    PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
+            int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy);
 
 }

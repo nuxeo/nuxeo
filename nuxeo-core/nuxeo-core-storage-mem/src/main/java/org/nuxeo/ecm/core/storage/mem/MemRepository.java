@@ -42,6 +42,7 @@ import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.StateHelper;
@@ -180,7 +181,7 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public List<State> queryKeyValue(String key, String value, Set<String> ignored) {
+    public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
         List<State> list = new ArrayList<>();
         for (State state : states.values()) {
             String id = (String) state.get(KEY_ID);
@@ -188,6 +189,22 @@ public class MemRepository extends DBSRepositoryBase {
                 continue;
             }
             if (!value.equals(state.get(key))) {
+                continue;
+            }
+            list.add(state);
+        }
+        return list;
+    }
+
+    @Override
+    public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
+        List<State> list = new ArrayList<>();
+        for (State state : states.values()) {
+            String id = (String) state.get(KEY_ID);
+            if (ignored.contains(id)) {
+                continue;
+            }
+            if (!(value1.equals(state.get(key1)) && value2.equals(state.get(key2)))) {
                 continue;
             }
             list.add(state);
@@ -237,8 +254,9 @@ public class MemRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<State> queryAndFetch(Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo, boolean deepCopy, boolean fulltextScore) {
+    public PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
+            int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy) {
+        // TODO projection
         List<State> maps = new ArrayList<>();
         for (State state : states.values()) {
             if (evaluator.matches(state)) {

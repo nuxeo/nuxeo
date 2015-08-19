@@ -105,6 +105,7 @@ import org.nuxeo.ecm.core.query.sql.model.MultiExpression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
 import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -499,7 +500,7 @@ public class DBSSession implements Session {
         verState.put(KEY_VERSION_LABEL, label);
         verState.put(KEY_VERSION_DESCRIPTION, checkinComment);
         verState.put(KEY_IS_LATEST_VERSION, TRUE);
-        verState.put(KEY_IS_CHECKED_IN, TRUE); // version seen as checked in for the benefit of proxies
+        verState.put(KEY_IS_CHECKED_IN, null);
         verState.put(KEY_BASE_VERSION_ID, null);
         boolean isMajor = Long.valueOf(0).equals(verState.get(KEY_MINOR_VERSION));
         verState.put(KEY_IS_LATEST_MAJOR_VERSION, isMajor ? TRUE : null);
@@ -518,7 +519,8 @@ public class DBSSession implements Session {
      * Recomputes isLatest / isLatestMajor on all versions.
      */
     protected void recomputeVersionSeries(String versionSeriesId) {
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
+                KEY_IS_VERSION, TRUE);
         Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
         Collections.reverse(docStates);
         boolean isLatest = true;
@@ -855,16 +857,6 @@ public class DBSSession implements Session {
         proxy.put(KEY_IS_PROXY, TRUE);
         proxy.put(KEY_PROXY_TARGET_ID, targetId);
         proxy.put(KEY_PROXY_VERSION_SERIES_ID, versionSeriesId);
-        proxy.put(KEY_IS_VERSION, null);
-        proxy.put(KEY_BASE_VERSION_ID, null);
-        // remove version-related props
-        proxy.put(KEY_IS_VERSION, null);
-        proxy.put(KEY_IS_LATEST_VERSION, null);
-        proxy.put(KEY_IS_LATEST_MAJOR_VERSION, null);
-        proxy.put(KEY_VERSION_CREATED, null);
-        proxy.put(KEY_VERSION_LABEL, null);
-        proxy.put(KEY_VERSION_DESCRIPTION, null);
-        proxy.put(KEY_VERSION_SERIES_ID, null);
 
         // copy target state to proxy
         transaction.updateProxy(target, proxyId);
@@ -1047,7 +1039,8 @@ public class DBSSession implements Session {
     }
 
     protected DBSDocumentState getVersionByLabel(String versionSeriesId, String label) {
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
+                KEY_IS_VERSION, TRUE);
         for (DBSDocumentState docState : docStates) {
             if (label.equals(docState.get(KEY_VERSION_LABEL))) {
                 return docState;
@@ -1058,7 +1051,8 @@ public class DBSSession implements Session {
 
     protected List<String> getVersionsIds(String versionSeriesId) {
         // order by creation date
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
+                KEY_IS_VERSION, TRUE);
         Collections.sort(docStates, VERSION_CREATED_COMPARATOR);
         List<String> ids = new ArrayList<String>(docStates.size());
         for (DBSDocumentState docState : docStates) {
@@ -1068,10 +1062,8 @@ public class DBSSession implements Session {
     }
 
     protected Document getLastVersion(String versionSeriesId) {
-        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId);
-        if (docStates.isEmpty()) {
-            return null;
-        }
+        List<DBSDocumentState> docStates = transaction.getKeyValuedStates(KEY_VERSION_SERIES_ID, versionSeriesId,
+                KEY_IS_VERSION, TRUE);
         // find latest one
         Calendar latest = null;
         DBSDocumentState latestState = null;
@@ -1082,7 +1074,7 @@ public class DBSSession implements Session {
                 latestState = docState;
             }
         }
-        return getDocument(latestState);
+        return latestState == null ? null : getDocument(latestState);
     }
 
     private static final Comparator<DBSDocumentState> VERSION_CREATED_COMPARATOR = new Comparator<DBSDocumentState>() {
@@ -1360,20 +1352,25 @@ public class DBSSession implements Session {
             return new PartialList<Map<String, Serializable>>(Collections.<Map<String, Serializable>> emptyList(), 0);
         }
         if (!NXQL.NXQL.equals(queryType)) {
-            throw new QueryParseException("No QueryMaker accepts query type: " + queryType);
+            throw new NuxeoException("No QueryMaker accepts query type: " + queryType);
         }
         // transform the query according to the transformers defined by the
         // security policies
         SQLQuery sqlQuery = SQLQueryParser.parse(query);
+        if (sqlQuery.select.distinct) {
+            // TODO allow DISTINCT ecm:uuid
+            throw new QueryParseException("SELECT DISTINCT not supported on DBS");
+        }
+        SelectClause selectClause = sqlQuery.select;
         for (SQLQuery.Transformer transformer : queryFilter.getQueryTransformers()) {
             sqlQuery = transformer.transform(queryFilter.getPrincipal(), sqlQuery);
         }
         OrderByClause orderByClause = sqlQuery.orderBy;
 
         QueryOptimizer optimizer = new QueryOptimizer();
-        boolean fulltextScore = optimizer.hasSelectFulltextScore(sqlQuery);
         MultiExpression expression = optimizer.getOptimizedQuery(sqlQuery, queryFilter.getFacetFilter());
-        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, expression, queryFilter.getPrincipals());
+        DBSExpressionEvaluator evaluator = new DBSExpressionEvaluator(this, selectClause, expression,
+                queryFilter.getPrincipals());
 
         int limit = (int) queryFilter.getLimit();
         int offset = (int) queryFilter.getOffset();
@@ -1403,8 +1400,8 @@ public class DBSSession implements Session {
 
         // query the repository
         boolean deepCopy = !onlyId;
-        PartialList<State> pl = repository.queryAndFetch(expression, evaluator, repoOrderByClause, repoLimit,
-                repoOffset, countUpTo, deepCopy, fulltextScore);
+        PartialList<State> pl = repository.queryAndFetch(expression, selectClause, repoOrderByClause, repoLimit,
+                repoOffset, countUpTo, evaluator, deepCopy);
 
         List<State> states = pl.list;
         long totalSize = pl.totalSize;
@@ -1501,13 +1498,14 @@ public class DBSSession implements Session {
     protected List<Map<String, Serializable>> flatten(List<State> states) {
         List<Map<String, Serializable>> flatList = new ArrayList<>(states.size());
         for (State state : states) {
-            flatList.add(flatten(state));
+            Map<String, Serializable> map = new HashMap<>();
+            flatten(map, state, null);
+            flatList.add(map);
         }
         return flatList;
     }
 
-    protected Map<String, Serializable> flatten(State state) {
-        Map<String, Serializable> flat = new HashMap<>();
+    protected void flatten(Map<String, Serializable> map, State state, String prefix) {
         for (Entry<String, Serializable> en : state.entrySet()) {
             String key = en.getKey();
             Serializable value = en.getValue();
@@ -1521,10 +1519,31 @@ public class DBSSession implements Session {
             } else {
                 name = key;
             }
-            // TODO XXX complex props
-            flat.put(name, value);
+            name = prefix == null ? name : prefix + name;
+            if (value instanceof State) {
+                flatten(map, (State) value, name + '/');
+            } else if (value instanceof List) {
+                String nameSlash = name + '/';
+                int i = 0;
+                for (Object v : (List<?>) value) {
+                    if (v instanceof State) {
+                        flatten(map, (State) v, nameSlash + i + '/');
+                    } else {
+                        map.put(nameSlash + i, (Serializable) v);
+                    }
+                    i++;
+                }
+            } else if (value instanceof Object[]) {
+                String nameSlash = name + '/';
+                int i = 0;
+                for (Object v : (Object[]) value) {
+                    map.put(nameSlash + i, (Serializable) v);
+                    i++;
+                }
+            } else {
+                map.put(name, value);
+            }
         }
-        return flat;
     }
 
     @Override

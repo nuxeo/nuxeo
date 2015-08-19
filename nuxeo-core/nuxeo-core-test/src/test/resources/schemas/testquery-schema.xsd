@@ -15,7 +15,7 @@
   <xs:element name="double" type="xs:double"/>
   <xs:element name="date" type="xs:date"/>
   <xs:element name="content" type="nxs:content"/>
-  <xs:element name="name" type="nxs:Name"/>
+  <xs:element name="name" type="nxs:libName"/>
 
   <xs:simpleType name="list">
       <xs:list itemType="xs:string"/>
@@ -34,9 +34,9 @@
   </xs:complexType>
 
   <xs:element name="participants" type="nxs:theList"/>
-  <xs:element name="attachments" type="nxs:attachments"/>  
+  <xs:element name="attachments" type="nxs:attachments"/>
   <xs:element name="strings" type="nxs:list"/>
-  
+
   <xs:element name="testDefault" type="xs:string" default="the default value"/>
 
 </xs:schema>

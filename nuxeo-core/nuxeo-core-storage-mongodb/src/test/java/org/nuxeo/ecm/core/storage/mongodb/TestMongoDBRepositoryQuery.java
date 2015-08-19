@@ -22,10 +22,14 @@ import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,6 +44,8 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.AbstractSession;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
@@ -56,6 +62,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -101,14 +108,14 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
      * Creates the following structure of documents:
      *
      * <pre>
-     *  root (UUID_1)
-     *  |- testfolder1 (UUID_2)
-     *  |  |- testfile1 (UUID_3) (content UUID_4)
-     *  |  |- testfile2 (UUID_5) (content UUID_6)
-     *  |  \- testfile3 (UUID_7) (Note)
-     *  \- tesfolder2 (UUID_8)
-     *     \- testfolder3 (UUID_9)
-     *        \- testfile4 (UUID_10) (content UUID_11)
+     *  root (UUID_0)
+     *  |- testfolder1 (UUID_1)
+     *  |  |- testfile1 (UUID_2)
+     *  |  |- testfile2 (UUID_3)
+     *  |  \- testfile3 (UUID_4) (Note)
+     *  \- tesfolder2 (UUID_5)
+     *     \- testfolder3 (UUID_6)
+     *        \- testfile4 (UUID_7)
      * </pre>
      */
     protected void createDocs() throws Exception {
@@ -167,9 +174,9 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     /**
      * Publishes testfile4 to testfolder1:
      * <p>
-     * version (UUID_12, content UUID_13)
+     * version (UUID_8)
      * <p>
-     * proxy (UUID_14)
+     * proxy (UUID_9)
      */
     protected DocumentModel publishDoc() throws Exception {
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
@@ -779,6 +786,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertTrue(dml.totalSize() < 0);
     }
 
+    @Ignore("Cannot work on MongoDB")
     @Test
     public void testQueryConstantsLeft() throws Exception {
         String sql;
@@ -1205,16 +1213,17 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         DocumentModel folder1 = session.getDocument(new PathRef("/testfolder1"));
         acp = new ACPImpl();
         acl = new ACLImpl();
-        acl.add(new ACE("bob", "Browse", false));
+        acl.add(new ACE("Administrator", "Everything", true));
+        acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
         session.save();
-        closeSession();
-        session = openSessionAs("bob");
 
-        IterableQueryResult res = session.queryAndFetch("SELECT * FROM Document", "NXQL");
-        assertEquals(3, res.size());
-        res.close();
+        try (CoreSession bobSession = CoreInstance.openCoreSession(session.getRepositoryName(), "bob")) {
+            IterableQueryResult res = bobSession.queryAndFetch("SELECT * FROM Document", "NXQL");
+            assertEquals(3, res.size());
+            res.close();
+        }
     }
 
     @Test
@@ -1312,6 +1321,13 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         acl.add(new ACE("Administrator", "Everything", true));
         acl.add(new ACE("bob", "Browse", true));
         acl.add(new ACE("steve", "Read", true));
+        Date now = new Date();
+        Calendar begin = new GregorianCalendar();
+        begin.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
+        Calendar end = new GregorianCalendar();
+        end.setTimeInMillis(now.toInstant().plus(5, ChronoUnit.DAYS).toEpochMilli());
+        acl.add(ACE.builder("leela", "Write").creator("Administrator").begin(begin).end(end).build());
+
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
         folder1.setACP(acp, true);
@@ -1345,9 +1361,31 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         // a bob and a Read
         checkQueryACL(1, queryBase + "ecm:acl/*/principal = 'bob' AND ecm:acl/*/permission = 'Read'");
 
+        // creator is Administrator
+        checkQueryACL(1, queryBase + "ecm:acl/*/creator = 'Administrator'");
+
+        // document for leela with a begin date after 2007-01-01
+        checkQueryACL(1, queryBase
+                + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end <= DATE '2020-01-01'");
+
+        // document for leela with an end date after 2020-01-01, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/principal = 'leela' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+
+        // document with valid begin date but not end date, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/begin >= DATE '2007-01-01' AND ecm:acl/*1/end >= DATE '2020-01-01'");
+
+        // document with effective acl
+        checkQueryACL(1, queryBase + "ecm:acl/*1/status = 1");
+
+        // document with pending or archived acl, no match
+        checkQueryACL(0, queryBase + "ecm:acl/*1/status <> 1");
+
         // block
         checkQueryACL(1, queryBase
                 + "ecm:acl/*1/principal = 'Everyone' AND ecm:acl/*1/permission = 'Everything' AND ecm:acl/*1/grant = 0");
+
+        // explicit array index
+        checkQueryACL(1, queryBase + "ecm:acl/1/principal = 'bob'");
     }
 
     protected void checkQueryACL(int expected, String query) {
@@ -1500,17 +1538,13 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     public void testQueryMixinTypeNotPerDocument() throws Exception {
         createDocs();
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
-        file1.addFacet("NotPerDocFacet");
         file1.addFacet("NotPerDocFacet2");
         file1 = session.saveDocument(file1);
         session.save();
 
+        // don't test on NotPerDocFacet which is only defined as no-per-instance in VCS repo config
         // doc has facet but not found by search
-        // because of repository config
-        DocumentModelList dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet'");
-        assertEquals(0, dml.size());
-        // same thing with type service
-        dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet2'");
+        DocumentModelList dml = session.query("SELECT * FROM Document WHERE ecm:mixinType = 'NotPerDocFacet2'");
         assertEquals(0, dml.size());
     }
 
@@ -1619,14 +1653,6 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertEquals(9, dml.size());
 
         /*
-         * ecm:lock (deprecated, uses ecm:lockOwner actually)
-         */
-        dml = session.query("SELECT * FROM Document WHERE ecm:lock <> '_'");
-        assertIdSet(dml, file1.getId());
-        dml = session.query("SELECT * FROM Document ORDER BY ecm:lock");
-        assertEquals(9, dml.size());
-
-        /*
          * ecm:lockOwner
          */
         // don't use a '' here for Oracle, for which '' IS NULL
@@ -1646,7 +1672,7 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
     public void testQuerySpecialFieldsVersioning() throws Exception {
         createDocs();
         DocumentModel doc = session.getDocument(new PathRef("/testfolder2/testfolder3/testfile4"));
-        DocumentModel proxy = publishDoc(); // testfile4 to testfolder1
+        DocumentModel proxy = publishDoc();
         DocumentModel version = session.getDocument(new IdRef(proxy.getSourceId()));
         DocumentModel file1 = session.getDocument(new PathRef("/testfolder1/testfile1"));
         DocumentRef v1 = session.checkIn(file1.getRef(), VersioningOption.MAJOR, "comment1");
@@ -2283,6 +2309,567 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
             set.add((String) map.get(prop));
         }
         assertEquals(new HashSet<String>(Arrays.asList(expected)), set);
+    }
+
+    /**
+     * Make sure that even when we use a sequence, the id is a String, for compat with the rest of the framework.
+     */
+    @Test
+    public void testIdType() throws Exception {
+        createDocs();
+        IterableQueryResult res = session.queryAndFetch("SELECT ecm:uuid, ecm:parentId FROM File", NXQL.NXQL);
+        assertEquals(3, res.size());
+        for (Map<String, Serializable> map : res) {
+            Serializable id = map.get(NXQL.ECM_UUID);
+            assertTrue(id.getClass().getName(), id instanceof String);
+            Serializable parentId = map.get(NXQL.ECM_PARENTID);
+            assertTrue(parentId.getClass().getName(), parentId instanceof String);
+        }
+        res.close();
+    }
+
+    protected DocumentModel makeComplexDoc() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "TestDoc");
+
+        // tst:title = 'hello world'
+        doc.setPropertyValue("tst:title", "hello world");
+
+        // tst:subjects = ['foo', 'bar', 'moo']
+        // tst:subjects/item[0] = 'foo'
+        // tst:subjects/0 = 'foo'
+        doc.setPropertyValue("tst:subjects", new String[] { "foo", "bar", "moo" });
+
+        Map<String, Object> owner = new HashMap<>();
+        // tst:owner/firstname = 'Bruce'
+        owner.put("firstname", "Bruce");
+        // tst:owner/lastname = 'Willis'
+        owner.put("lastname", "Willis");
+        doc.setPropertyValue("tst:owner", (Serializable) owner);
+
+        Map<String, Object> first = new HashMap<>();
+        // tst:couple/first/firstname = 'Steve'
+        first.put("firstname", "Steve");
+        // tst:couple/first/lastname = 'Jobs'
+        first.put("lastname", "Jobs");
+        Map<String, Object> second = new HashMap<>();
+        // tst:couple/second/firstname = 'Steve'
+        second.put("firstname", "Steve");
+        // tst:couple/second/lastname = 'McQueen'
+        second.put("lastname", "McQueen");
+        Map<String, Object> couple = new HashMap<>();
+        couple.put("first", first);
+        couple.put("second", second);
+        doc.setPropertyValue("tst:couple", (Serializable) couple);
+
+        Map<String, Object> friend0 = new HashMap<>();
+        // tst:friends/item[0]/firstname = 'John'
+        // tst:friends/0/firstname = 'John'
+        friend0.put("firstname", "John");
+        // tst:friends/0/lastname = 'Lennon'
+        friend0.put("lastname", "Lennon");
+        Map<String, Object> friend1 = new HashMap<>();
+        // tst:friends/1/firstname = 'John'
+        friend1.put("firstname", "John");
+        // tst:friends/1/lastname = 'Smith'
+        friend1.put("lastname", "Smith");
+        List<Map<String, Object>> friends = Arrays.asList(friend0, friend1);
+        doc.setPropertyValue("tst:friends", (Serializable) friends);
+
+        // this one doesn't have a schema prefix
+        Map<String, Object> animal = new HashMap<>();
+        // animal/race = 'dog'
+        animal.put("race", "dog");
+        // animal/name = 'Scooby'
+        animal.put("name", "Scooby");
+        doc.setPropertyValue("animal", (Serializable) animal);
+
+        doc = session.createDocument(doc);
+        session.save();
+        return doc;
+    }
+
+    protected List<String> getIds(DocumentModelList list) {
+        List<String> ids = new ArrayList<>(list.size());
+        for (DocumentModel doc : list) {
+            ids.add(doc.getId());
+        }
+        return ids;
+    }
+
+    protected static String FROM_WHERE = " FROM TestDoc WHERE ecm:isProxy = 0 AND ";
+
+    protected static String SELECT_WHERE = "SELECT *" + FROM_WHERE;
+
+    protected static String SELECT_TITLE_WHERE = "SELECT tst:title" + FROM_WHERE;
+
+    @Test
+    public void testQueryComplexWhere() throws Exception {
+        DocumentModel doc = makeComplexDoc();
+        String docId = doc.getId();
+
+        String clause;
+        DocumentModelList res;
+        IterableQueryResult it;
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:owner'
+        // AND p.firstname = 'Bruce'
+        clause = "tst:owner/firstname = 'Bruce'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:title, tst:owner/lastname" + FROM_WHERE + clause, "NXQL");
+        assertEquals(1, it.size());
+        assertEquals("Willis", it.iterator().next().get("tst:owner/lastname"));
+        it.close();
+
+        // check other operators
+
+        clause = "tst:owner/firstname LIKE 'B%'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        clause = "tst:owner/firstname IS NOT NULL";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        clause = "tst:owner/firstname IN ('Bruce', 'Bilbo')";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // JOIN hierarchy h3 ON h3.parentid = h2.id
+        // LEFT JOIN person p ON p.id = h3.id
+        // WHERE h2.name = 'tst:couple'
+        // AND h3.name = 'first'
+        // AND p.firstname = 'Steve'
+        clause = "tst:couple/first/firstname = 'Steve'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:title, tst:couple/first/lastname" + FROM_WHERE + clause, "NXQL");
+        assertEquals(1, it.size());
+        assertEquals("Jobs", it.iterator().next().get("tst:couple/first/lastname"));
+        it.close();
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends' AND h2.pos = 0
+        // AND p.firstname = 'John'
+        clause = "tst:friends/0/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:title, tst:friends/0/lastname" + FROM_WHERE + clause, "NXQL");
+        assertEquals(1, it.size());
+        assertEquals("Lennon", it.iterator().next().get("tst:friends/0/lastname"));
+        it.close();
+
+        // alternate xpath syntax
+        clause = "tst:friends/item[0]/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        // AND p.firstname = 'John'
+        clause = "tst:friends/*/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch(SELECT_TITLE_WHERE + clause, "NXQL");
+        assertEquals(2, it.size()); // two uncorrelated stars
+        it.close();
+
+        // alternate xpath syntax
+        clause = "tst:friends/item[*]/firstname = 'John'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        // AND p.firstname = 'John'
+        // AND p.lastname = 'Smith'
+        clause = "tst:friends/*1/firstname = 'John'" + " AND tst:friends/*1/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:title, tst:friends/*1/lastname" + FROM_WHERE + clause, "NXQL");
+        assertEquals(1, it.size()); // correlated stars
+        assertEquals("Smith", it.iterator().next().get("tst:friends/*1/lastname"));
+        it.close();
+
+        // alternate xpath syntax
+        clause = "tst:friends/item[*1]/firstname = 'John'" + " AND tst:friends/item[*1]/lastname = 'Smith'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+    }
+
+    @Test
+    public void testQueryComplexPrefix() throws Exception {
+        DocumentModel doc = makeComplexDoc();
+        String docId = doc.getId();
+
+        String clause;
+        DocumentModelList res;
+
+        // schema with a prefix
+        clause = "tst:owner/firstname = 'Bruce'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // use of prefix is mandatory if defined
+        try {
+            clause = "owner/firstname = 'Bruce'";
+            session.query(SELECT_WHERE + clause);
+            fail("Should fail on missing prefix");
+        } catch (QueryParseException e) {
+            assertEquals("Failed to execute query: "
+                    + "SELECT * FROM TestDoc WHERE ecm:isProxy = 0 AND owner/firstname = 'Bruce'" + ", "
+                    + "No such property: owner/firstname", e.getMessage());
+        }
+
+        // schema without a prefix
+        clause = "animal/race = 'dog'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // allow use with schema-name-as-prefix
+        clause = "testschema3:animal/race = 'dog'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+    }
+
+    @Test
+    public void testQueryComplexReturned() throws Exception {
+        DocumentModel doc = makeComplexDoc();
+        String docId = doc.getId();
+
+        String clause;
+        DocumentModelList res;
+        IterableQueryResult it;
+        Set<String> set;
+
+        // SELECT p.lastname
+        // FROM hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        clause = "tst:title = 'hello world'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:friends/*/lastname" + FROM_WHERE + clause, "NXQL");
+        assertEquals(2, it.size());
+        set = new HashSet<>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:friends/*/lastname"));
+        }
+        assertEquals(new HashSet<>(Arrays.asList("Lennon", "Smith")), set);
+        it.close();
+
+        // SELECT p.firstname, p.lastname
+        // FROM hierarchy h
+        // JOIN hierarchy h2 ON h2.parentid = h.id
+        // LEFT JOIN person p ON p.id = h2.id
+        // WHERE h2.name = 'tst:friends'
+        clause = "tst:title = 'hello world'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:friends/*1/firstname, tst:friends/*1/lastname" + FROM_WHERE + clause,
+                "NXQL");
+        assertEquals(2, it.size());
+        Set<String> fn = new HashSet<>();
+        Set<String> ln = new HashSet<>();
+        for (Map<String, Serializable> map : it) {
+            fn.add((String) map.get("tst:friends/*1/firstname"));
+            ln.add((String) map.get("tst:friends/*1/lastname"));
+        }
+        assertEquals(Collections.singleton("John"), fn);
+        assertEquals(new HashSet<>(Arrays.asList("Lennon", "Smith")), ln);
+        it.close();
+    }
+
+    @Test
+    public void testQueryComplexListElement() throws Exception {
+        DocumentModel doc = makeComplexDoc();
+        String docId = doc.getId();
+
+        String clause;
+        DocumentModelList res;
+        IterableQueryResult it;
+        Set<String> set;
+
+        // hierarchy h
+        // JOIN tst_subjects s ON h.id = s.id // not LEFT JOIN
+        // WHERE s.pos = 0
+        // AND s.item = 'foo'
+        clause = "tst:subjects/0 = 'foo'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        clause = "tst:subjects/0 = 'bar'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(0, res.size());
+
+        // SELECT s.item
+        // FROM hierarchy h
+        // JOIN tst_subjects s ON h.id = s.id // not LEFT JOIN
+        // WHERE s.pos = 0
+        // AND s.item = 'bar'
+        clause = "tst:subjects/0 = 'foo'";
+        it = session.queryAndFetch("SELECT tst:subjects/0" + FROM_WHERE + clause, "NXQL");
+        assertEquals(1, it.size());
+        assertEquals("foo", it.iterator().next().get("tst:subjects/0"));
+        it.close();
+
+        // SELECT s1.item
+        // FROM hierarchy h
+        // JOIN tst_subjects s0 ON h.id = s0.id // not LEFT JOIN
+        // JOIN tst_subjects s1 ON h.id = s1.id // not LEFT JOIN
+        // WHERE s0.pos = 0 AND s1.pos = 1
+        // AND s0.item LIKE 'foo%'
+        clause = "tst:subjects/0 LIKE 'foo%'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:subjects/1" + FROM_WHERE + clause, "NXQL");
+        assertEquals(1, it.size());
+        assertEquals("bar", it.iterator().next().get("tst:subjects/1"));
+        it.close();
+
+        // SELECT s.item
+        // FROM hierarchy h
+        // LEFT JOIN tst_subjects s ON h.id = s.id
+        // WHERE s.item LIKE '%oo'
+        clause = "tst:subjects/*1 LIKE '%oo'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
+        assertEquals(2, it.size());
+        set = new HashSet<>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*1"));
+        }
+        assertEquals(new HashSet<>(Arrays.asList("foo", "moo")), set);
+        it.close();
+
+        clause = "tst:subjects/* LIKE '%oo'";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE + clause, "NXQL");
+        // two uncorrelated stars, resulting in a cross join
+        assertEquals(6, it.size());
+        set = new HashSet<>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*"));
+        }
+        assertEquals(new HashSet<>(Arrays.asList("foo", "moo", "bar")), set);
+        it.close();
+
+        // WHAT
+        clause = "tst:title = 'hello world'";
+        it = session.queryAndFetch("SELECT tst:subjects/*" + FROM_WHERE + clause, "NXQL");
+        assertEquals(3, it.size());
+        set = new HashSet<>();
+        for (Map<String, Serializable> map : it) {
+            set.add((String) map.get("tst:subjects/*"));
+        }
+        assertEquals(new HashSet<>(Arrays.asList("foo", "bar", "moo")), set);
+        it.close();
+    }
+
+    @Test
+    public void testQueryComplexOrderBy() throws Exception {
+        DocumentModel doc = makeComplexDoc();
+        String docId = doc.getId();
+
+        String clause;
+        DocumentModelList res;
+        IterableQueryResult it;
+
+        clause = "tst:title LIKE '%' ORDER BY tst:owner/firstname";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:title";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        clause = "tst:owner/firstname = 'Bruce' ORDER BY tst:owner/firstname";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // this produces a DISTINCT and adds tst:title to the select list
+        clause = "tst:subjects/* = 'foo' ORDER BY tst:title";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // no wildcard index so no DISTINCT needed
+        clause = "tst:title LIKE '%' ORDER BY tst:friends/0/lastname";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+        clause = "tst:title LIKE '%' ORDER BY tst:subjects/0";
+        res = session.query(SELECT_WHERE + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+
+        // SELECT * statement cannot ORDER BY array or complex list element
+        clause = "tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1";
+        try {
+            session.query(SELECT_WHERE + clause);
+            // fail(); // ORDER BY tst:subjects works on MongoDB
+        } catch (QueryParseException e) {
+            String expected = "Failed to execute query: "
+                    + "SELECT * FROM TestDoc WHERE ecm:isProxy = 0 AND tst:subjects/*1 = 'foo' ORDER BY tst:subjects/*1"
+                    + ", " + "For SELECT * the ORDER BY columns cannot use wildcard indexes";
+            assertEquals(expected, e.getMessage());
+        }
+
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        it = session.queryAndFetch("SELECT tst:title" + FROM_WHERE + clause, "NXQL");
+        assertEquals(3, it.size());
+        it.close();
+    }
+
+    @Ignore("No DISTINCT on MongoDB")
+    @Test
+    public void testQueryDistinct() throws Exception {
+        makeComplexDoc();
+
+        String clause;
+        IterableQueryResult it;
+        List<String> list;
+
+        // same with DISTINCT, cannot work
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        try {
+            session.queryAndFetch("SELECT DISTINCT tst:title" + FROM_WHERE + clause, "NXQL");
+            fail();
+        } catch (QueryParseException e) {
+            String expected = "Failed to execute query: "
+                    + "NXQL: SELECT DISTINCT tst:title FROM TestDoc WHERE ecm:isProxy = 0 AND tst:title = 'hello world' ORDER BY tst:subjects/*1"
+                    + ", "
+                    + "For SELECT DISTINCT the ORDER BY columns must be in the SELECT list, missing: [tst:subjects/*1]";
+            assertEquals(expected, e.getMessage());
+        }
+
+        // ok if ORDER BY column added to SELECT columns
+        it = session.queryAndFetch("SELECT DISTINCT tst:title, tst:subjects/*1" + FROM_WHERE + clause, "NXQL",
+                QueryFilter.EMPTY);
+        assertEquals(3, it.size());
+        it.close();
+
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        it = session.queryAndFetch("SELECT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
+        assertEquals(3, it.size());
+        list = new LinkedList<>();
+        for (Map<String, Serializable> map : it) {
+            list.add((String) map.get("tst:subjects/*1"));
+        }
+        assertEquals(Arrays.asList("bar", "foo", "moo"), list);
+        it.close();
+
+        clause = "tst:title = 'hello world' ORDER BY tst:subjects/*1";
+        it = session.queryAndFetch("SELECT DISTINCT tst:subjects/*1" + FROM_WHERE + clause, "NXQL");
+        assertEquals(3, it.size());
+        it.close();
+    }
+
+    @Test
+    public void testQueryComplexOrderByProxies() throws Exception {
+        DocumentModel doc = makeComplexDoc();
+        String docId = doc.getId();
+
+        String clause;
+        DocumentModelList res;
+
+        clause = "tst:friends/*/firstname = 'John' ORDER BY tst:title";
+        res = session.query("SELECT * FROM TestDoc WHERE " + clause);
+        assertEquals(Arrays.asList(docId), getIds(res));
+    }
+
+    @Test
+    public void testQueryComplexOr() throws Exception {
+        // doc1 tst:title = 'hello world'
+        DocumentModel doc1 = session.createDocumentModel("/", "doc1", "TestDoc");
+        doc1.setPropertyValue("tst:title", "hello world");
+        doc1 = session.createDocument(doc1);
+
+        // doc2 tst:owner/firstname = 'Bruce'
+        DocumentModel doc2 = session.createDocumentModel("/", "doc2", "TestDoc");
+        doc2.setPropertyValue("tst:owner", (Serializable) Collections.singletonMap("firstname", "Bruce"));
+        doc2 = session.createDocument(doc2);
+
+        // doc3 tst:friends/0/firstname = 'John'
+        DocumentModel doc3 = session.createDocumentModel("/", "doc3", "TestDoc");
+        doc3.setPropertyValue("tst:friends",
+                (Serializable) Arrays.asList(Collections.singletonMap("firstname", "John")));
+        doc3 = session.createDocument(doc3);
+
+        // doc4 tst:subjects/0 = 'foo'
+        DocumentModel doc4 = session.createDocumentModel("/", "doc4", "TestDoc");
+        doc4.setPropertyValue("tst:subjects", new String[] { "foo" });
+        doc4 = session.createDocument(doc4);
+
+        session.save();
+
+        String s1 = "SELECT * FROM TestDoc WHERE ecm:isProxy = 0 AND (";
+        String s2 = ")";
+        String o = " OR ";
+        String c1 = "tst:title = 'hello world'";
+        String c2 = "tst:owner/firstname = 'Bruce'";
+        String c3 = "tst:friends/0/firstname = 'John'";
+        String c4 = "tst:subjects/0 = 'foo'";
+        DocumentModelList res;
+
+        res = session.query(s1 + c1 + s2);
+        assertEquals(Arrays.asList(doc1.getId()), getIds(res));
+
+        res = session.query(s1 + c2 + s2);
+        assertEquals(Arrays.asList(doc2.getId()), getIds(res));
+
+        res = session.query(s1 + c3 + s2);
+        assertEquals(Arrays.asList(doc3.getId()), getIds(res));
+
+        res = session.query(s1 + c4 + s2);
+        assertEquals(Arrays.asList(doc4.getId()), getIds(res));
+
+        res = session.query(s1 + c1 + o + c2 + s2);
+        assertEquals(2, res.size());
+
+        res = session.query(s1 + c1 + o + c3 + s2);
+        assertEquals(2, res.size());
+
+        res = session.query(s1 + c1 + o + c4 + s2);
+        assertEquals(2, res.size());
+
+        res = session.query(s1 + c2 + o + c3 + s2);
+        assertEquals(2, res.size());
+
+        res = session.query(s1 + c2 + o + c4 + s2);
+        assertEquals(2, res.size());
+
+        res = session.query(s1 + c3 + o + c4 + s2);
+        assertEquals(2, res.size());
+
+        res = session.query(s1 + c1 + o + c2 + o + c3 + s2);
+        assertEquals(3, res.size());
+
+        res = session.query(s1 + c1 + o + c2 + o + c4 + s2);
+        assertEquals(3, res.size());
+
+        res = session.query(s1 + c1 + o + c3 + o + c4 + s2);
+        assertEquals(3, res.size());
+
+        res = session.query(s1 + c2 + o + c3 + o + c4 + s2);
+        assertEquals(3, res.size());
+
+        res = session.query(s1 + c1 + o + c2 + o + c3 + o + c4 + s2);
+        assertEquals(4, res.size());
     }
 
 }

@@ -462,7 +462,7 @@ public class DBSTransactionState {
         return ids;
     }
 
-    public List<DBSDocumentState> getKeyValuedStates(String key, String value) {
+    public List<DBSDocumentState> getKeyValuedStates(String key, Object value) {
         List<DBSDocumentState> docStates = new LinkedList<DBSDocumentState>();
         Set<String> seen = new HashSet<String>();
         // check transient state
@@ -475,6 +475,25 @@ public class DBSTransactionState {
         }
         // fetch from repository
         List<State> states = repository.queryKeyValue(key, value, seen);
+        for (State state : states) {
+            docStates.add(newTransientState(state));
+        }
+        return docStates;
+    }
+
+    public List<DBSDocumentState> getKeyValuedStates(String key1, Object value1, String key2, Object value2) {
+        List<DBSDocumentState> docStates = new LinkedList<DBSDocumentState>();
+        Set<String> seen = new HashSet<String>();
+        // check transient state
+        for (DBSDocumentState docState : transientStates.values()) {
+            seen.add(docState.getId());
+            if (!(value1.equals(docState.get(key1)) && value2.equals(docState.get(key2)))) {
+                continue;
+            }
+            docStates.add(docState);
+        }
+        // fetch from repository
+        List<State> states = repository.queryKeyValue(key1, value1, key2, value2, seen);
         for (State state : states) {
             docStates.add(newTransientState(state));
         }
@@ -663,8 +682,6 @@ public class DBSTransactionState {
         case KEY_PROXY_TARGET_ID:
         case KEY_PROXY_VERSION_SERIES_ID:
         case KEY_IS_VERSION:
-        case KEY_BASE_VERSION_ID:
-        case KEY_VERSION_SERIES_ID:
         case KEY_PROXY_IDS:
             return true;
         }

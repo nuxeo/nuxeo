@@ -14,7 +14,6 @@ package org.nuxeo.ecm.core.storage.mongodb;
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
-import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SCORE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
@@ -44,11 +43,9 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.model.Repository;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
-import org.nuxeo.ecm.core.query.sql.model.OrderByExpr;
-import org.nuxeo.ecm.core.query.sql.model.Reference;
+import org.nuxeo.ecm.core.query.sql.model.SelectClause;
 import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.State.ListDiff;
 import org.nuxeo.ecm.core.storage.State.StateDiff;
@@ -79,8 +76,6 @@ public class MongoDBRepository extends DBSRepositoryBase {
     private static final Long ZERO = Long.valueOf(0);
 
     private static final Long ONE = Long.valueOf(1);
-
-    private static final Long MINUS_ONE = Long.valueOf(-1);
 
     public static final String DB_DEFAULT = "nuxeo";
 
@@ -526,8 +521,16 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public List<State> queryKeyValue(String key, String value, Set<String> ignored) {
+    public List<State> queryKeyValue(String key, Object value, Set<String> ignored) {
         DBObject query = new BasicDBObject(key, value);
+        addIgnoredIds(query, ignored);
+        return findAll(query, 0);
+    }
+
+    @Override
+    public List<State> queryKeyValue(String key1, Object value1, String key2, Object value2, Set<String> ignored) {
+        DBObject query = new BasicDBObject(key1, value1);
+        query.put(key2, value2);
         addIgnoredIds(query, ignored);
         return findAll(query, 0);
     }
@@ -598,63 +601,22 @@ public class MongoDBRepository extends DBSRepositoryBase {
     }
 
     @Override
-    public PartialList<State> queryAndFetch(Expression expression, DBSExpressionEvaluator evaluator,
-            OrderByClause orderByClause, int limit, int offset, int countUpTo, boolean deepCopy, boolean fulltextScore) {
-        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(evaluator.pathResolver);
-        DBObject query = builder.walkExpression(expression);
+    public PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
+            int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy) {
+        MongoDBQueryBuilder builder = new MongoDBQueryBuilder(expression, selectClause, orderByClause,
+                evaluator.pathResolver);
+        builder.walk();
         if (builder.hasFulltext && fulltextDisabled) {
             throw new RuntimeException("Fulltext disabled by configuration");
         }
+        DBObject query = builder.getQuery();
         addPrincipals(query, evaluator.principals);
-
-        // order by
-
-        BasicDBObject orderBy;
-        boolean sortScore = false;
-        if (orderByClause == null) {
-            orderBy = null;
-        } else {
-            orderBy = new BasicDBObject();
-            for (OrderByExpr ob : orderByClause.elements) {
-                Reference ref = ob.reference;
-                boolean desc = ob.isDescending;
-                String field = builder.walkReference(ref).field;
-                if (!orderBy.containsField(field)) {
-                    Object value;
-                    if (KEY_FULLTEXT_SCORE.equals(field)) {
-                        if (!desc) {
-                            throw new RuntimeException("Cannot sort by " + NXQL.ECM_FULLTEXT_SCORE + " ascending");
-                        }
-                        sortScore = true;
-                        value = new BasicDBObject(MONGODB_META, MONGODB_TEXT_SCORE);
-                    } else {
-                        value = desc ? MINUS_ONE : ONE;
-                    }
-                    orderBy.put(field, value);
-                }
-            }
-            if (sortScore && orderBy.size() > 1) {
-                throw new RuntimeException("Cannot sort by " + NXQL.ECM_FULLTEXT_SCORE + " and other criteria");
-            }
-        }
-
-        // projection
-
-        DBObject keys;
-        if (fulltextScore || sortScore) {
-            if (!builder.hasFulltext) {
-                throw new RuntimeException(NXQL.ECM_FULLTEXT_SCORE + " cannot be used without " + NXQL.ECM_FULLTEXT);
-            }
-            // because it's a $meta, it won't prevent all other keys
-            // from being returned
-            keys = new BasicDBObject(KEY_FULLTEXT_SCORE, new BasicDBObject(MONGODB_META, MONGODB_TEXT_SCORE));
-        } else {
-            keys = null; // all
-        }
+        DBObject orderBy = builder.getOrderBy();
+        DBObject keys = builder.getProjection();
 
         if (log.isTraceEnabled()) {
-            log.trace("MongoDB: QUERY " + query + (orderBy == null ? "" : " ORDER BY " + orderBy) + " OFFSET " + offset
-                    + " LIMIT " + limit);
+            log.trace("MongoDB: QUERY " + query + " KEYS " + keys + (orderBy == null ? "" : " ORDER BY " + orderBy)
+                    + " OFFSET " + offset + " LIMIT " + limit);
         }
 
         List<State> list;
