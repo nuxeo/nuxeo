@@ -61,7 +61,7 @@ public class ThemeActionsBean implements ThemeActions {
 
     @Override
     public LogoDescriptor getLogo() {
-        if (currentLogo != null) {
+        if (currentLogo == null) {
             String flavor = getCurrentFlavor();
             currentLogo = getLogo(flavor);
         }
