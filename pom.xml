@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>6.0-HF18-SNAPSHOT</version>
+    <version>6.0-HF19-SNAPSHOT</version>
   </parent>
 
   <groupId>org.nuxeo.shibboleth.invitation</groupId>
@@ -17,18 +17,6 @@
     This addon provides the ability to invite external users to join Nuxeo
     through Nuxeo Authentication and/or Shibboleth Authentication
   </description>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution</artifactId>
-        <scope>import</scope>
-        <type>pom</type>
-        <version>6.0-HF18-SNAPSHOT</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
