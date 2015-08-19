@@ -27,6 +27,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.IconDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PageDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.PalettePreview;
@@ -249,6 +250,13 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("36", logo.getHeight());
         assertEquals("Nuxeo", logo.getTitle());
 
+        List<IconDescriptor> icons = flavor.getFavicons();
+        assertEquals(2, icons.size());
+        assertEquals("icon", icons.get(0).getName());
+        assertEquals("/icons/favicon.png", icons.get(0).getValue());
+        assertEquals("shortcut icon", icons.get(1).getName());
+        assertEquals("/icons/favicon.ico", icons.get(1).getValue());
+
         flavor = service.getFlavor("dark");
         assertEquals("dark", flavor.getName());
         assertEquals("Dark flavor", flavor.getLabel());
@@ -261,6 +269,13 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         // title merged
         assertEquals("Darxeo", logo.getTitle());
 
+        icons = flavor.getFavicons();
+        assertEquals(2, icons.size());
+        assertEquals("icon", icons.get(0).getName());
+        assertEquals("/icons/dark_favicon.png", icons.get(0).getValue());
+        assertEquals("shortcut icon", icons.get(1).getName());
+        assertEquals("/icons/dark_favicon.ico", icons.get(1).getValue());
+
         flavor = service.getFlavor("subDark");
         assertEquals("subDark", flavor.getName());
         assertEquals("SubDark flavor", flavor.getLabel());
@@ -272,6 +287,13 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("666", logo.getHeight());
         // title merged
         assertEquals("Darxeo", logo.getTitle());
+
+        icons = flavor.getFavicons();
+        assertEquals(2, icons.size());
+        assertEquals("icon", icons.get(0).getName());
+        assertEquals("/icons/dark_favicon.png", icons.get(0).getValue());
+        assertEquals("shortcut icon", icons.get(1).getName());
+        assertEquals("/icons/dark_favicon.ico", icons.get(1).getValue());
 
         // undeploy, check theme styling is back to first definition
         undeployContrib("org.nuxeo.theme.styling.tests", "theme-styling-test-config3.xml");
@@ -335,11 +357,6 @@ public class TestThemeStylingService extends NXRuntimeTestCase {
         assertEquals("addon_style.css", page.getResources().get(1));
         assertEquals("jquery.fancybox.js", page.getResources().get(2));
         assertEquals("jquery.addon.js", page.getResources().get(3));
-        assertEquals(2, page.getFavicons().size());
-        assertEquals("icon", page.getFavicons().get(0).getName());
-        assertEquals("/nuxeo/icons/favicon.png", page.getFavicons().get(0).getValue());
-        assertEquals("shortcut icon", page.getFavicons().get(1).getName());
-        assertEquals("/nuxeo/icons/favicon.ico", page.getFavicons().get(1).getValue());
     }
 
     @Test

@@ -45,6 +45,11 @@ public class FlavorRegistry extends ContributionFragmentRegistry<FlavorDescripto
     }
 
     @Override
+    public synchronized void removeContribution(FlavorDescriptor contrib) {
+        removeContribution(contrib, true);
+    }
+
+    @Override
     public void contributionRemoved(String id, FlavorDescriptor origContrib) {
         themePageFlavors.remove(id);
     }

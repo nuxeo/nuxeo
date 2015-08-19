@@ -25,10 +25,6 @@
 
       <code>
         <page name="galaxy/default" charset="utf-8">
-          <links>
-            <icon name="icon">/icons/favicon.png</icon>
-            <icon name="shortcut icon">/icons/favicon.ico</icon>
-          </links>
           <defaultFlavor>default</defaultFlavor>
           <flavors>
             <flavor>default</flavor>
@@ -53,9 +49,8 @@
       flavors or resources, the attribute append="true" should be added,
       otherwise existing configurations will be overridden.
 
-      Attribute "charset" and elements "links" are available only since 7.4
-      (they were previously defined by the Theme extension point layout
-      configuration).
+      Attribute "charset" is available only since 7.4 (it was previously
+      defined by the Theme extension point layout configuration).
 
       Deprecation note: since 7.4, the 'themePage' element is deprecated: just
       change it to use the 'page' element instead.
@@ -93,6 +88,10 @@
             <height>20</height>
             <title>Nuxeo</title>
           </logo>
+          <links>
+            <icon name="icon">/icons/favicon.png</icon>
+            <icon name="shortcut icon">/icons/favicon.ico</icon>
+          </links>
           <presetsList>
             <presets category="border" src="themes/palettes/default-borders.properties" />
             <presets category="background" src="themes/palettes/default-backgrounds.properties" />
@@ -142,6 +141,10 @@
 
       The default flavor defined for a given page will be used if
       the page does not accept this flavor in its configuration.
+
+      Attribute "links" is available only since 7.4 and allows to define
+      favicons visible on the page (it was previously defined by the Theme
+      extension point layout configuration).
     </documentation>
     <object class="org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor" />
   </extension-point>

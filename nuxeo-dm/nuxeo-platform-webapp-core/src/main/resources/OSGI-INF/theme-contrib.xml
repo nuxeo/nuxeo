@@ -460,10 +460,6 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
 
     <page name="galaxy/print" charset="utf-8">
-      <links>
-        <icon name="icon">/icons/favicon.png</icon>
-        <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -477,10 +473,6 @@
     </page>
 
     <page name="galaxy/popup" charset="utf-8">
-      <links>
-        <icon name="icon">/icons/favicon.png</icon>
-        <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -495,10 +487,6 @@
     </page>
 
     <page name="galaxy/default" charset="utf-8">
-      <links>
-        <icon name="icon">/icons/favicon.png</icon>
-        <icon name="shortcut icon">/icons/favicon.ico</icon>
-      </links>
       <defaultFlavor>default</defaultFlavor>
       <flavors>
         <flavor>default</flavor>
@@ -525,6 +513,10 @@
         <height>20</height>
         <title>Nuxeo</title>
       </logo>
+      <links>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
+      </links>
       <presetsList>
         <presets category="border" src="themes/palettes/default-borders.properties" />
         <presets category="background"
@@ -556,6 +548,10 @@
         <height>20</height>
         <title>Nuxeo</title>
       </logo>
+      <links>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
+      </links>
       <presetsList append="true">
         <presets category="border" src="themes/palettes/rainbow-borders.properties" />
         <presets category="background"

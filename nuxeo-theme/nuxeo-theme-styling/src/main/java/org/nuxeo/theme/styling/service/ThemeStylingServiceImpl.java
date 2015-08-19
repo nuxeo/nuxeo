@@ -42,6 +42,7 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.theme.styling.negotiation.Negotiator;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.FlavorPresets;
+import org.nuxeo.theme.styling.service.descriptors.IconDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.NegotiationDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.NegotiatorDescriptor;
@@ -282,25 +283,13 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
     public FlavorDescriptor getFlavor(String flavorName) {
         if (flavorReg != null) {
             FlavorDescriptor flavor = flavorReg.getFlavor(flavorName);
-            FlavorDescriptor clone = null;
             if (flavor != null) {
-                if (flavor.getLogo() == null) {
-                    // resolve and attach the computed logo from extended
-                    // flavor
-                    clone = flavor.clone();
-                    clone.setLogo(computeLogo(flavor, new ArrayList<String>()));
-                }
-                if (flavor.getPalettePreview() == null) {
-                    if (clone == null) {
-                        clone = flavor.clone();
-                    }
-                    clone.setPalettePreview(computePalettePreview(flavor, new ArrayList<String>()));
-                }
-            }
-            if (clone != null) {
+                FlavorDescriptor clone = flavor.clone();
+                clone.setLogo(computeLogo(flavor, new ArrayList<String>()));
+                clone.setPalettePreview(computePalettePreview(flavor, new ArrayList<String>()));
+                clone.setFavicons(computeIcons(flavor, new ArrayList<String>()));
                 return clone;
             }
-            return flavor;
         }
         return null;
     }
@@ -364,6 +353,33 @@ public class ThemeStylingServiceImpl extends DefaultComponent implements ThemeSt
                 }
             }
             return localPalette;
+        }
+        return null;
+    }
+
+    protected List<IconDescriptor> computeIcons(FlavorDescriptor flavor, List<String> flavors) {
+        if (flavor != null) {
+            List<IconDescriptor> localIcons = flavor.getFavicons();
+            if (localIcons == null || localIcons.isEmpty()) {
+                String extendsFlavorName = flavor.getExtendsFlavor();
+                if (!StringUtils.isBlank(extendsFlavorName)) {
+                    if (flavors.contains(extendsFlavorName)) {
+                        // cyclic dependency => abort
+                        log.error(String.format("Cyclic dependency detected in flavor '%s' hierarchy", flavor.getName()));
+                        return null;
+                    } else {
+                        // retrieved the extended icons
+                        flavors.add(flavor.getName());
+                        FlavorDescriptor extendedFlavor = getFlavor(extendsFlavorName);
+                        if (extendedFlavor != null) {
+                            localIcons = computeIcons(extendedFlavor, flavors);
+                        } else {
+                            log.warn(String.format("Extended flavor '%s' " + "not found", extendsFlavorName));
+                        }
+                    }
+                }
+            }
+            return localIcons;
         }
         return null;
     }

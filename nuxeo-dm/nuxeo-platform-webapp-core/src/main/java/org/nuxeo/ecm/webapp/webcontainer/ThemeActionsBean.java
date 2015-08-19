@@ -17,6 +17,9 @@
 
 package org.nuxeo.ecm.webapp.webcontainer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -26,6 +29,7 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.theme.styling.service.ThemeStylingService;
 import org.nuxeo.theme.styling.service.descriptors.FlavorDescriptor;
+import org.nuxeo.theme.styling.service.descriptors.IconDescriptor;
 import org.nuxeo.theme.styling.service.descriptors.LogoDescriptor;
 
 @Name("themeActions")
@@ -41,6 +45,8 @@ public class ThemeActionsBean implements ThemeActions {
     protected String currentFlavor;
 
     protected LogoDescriptor currentLogo;
+
+    protected List<IconDescriptor> currentFavicons;
 
     @In(create = true, required = false)
     protected transient ThemeStylingService themeStylingService;
@@ -60,6 +66,24 @@ public class ThemeActionsBean implements ThemeActions {
             currentLogo = getLogo(flavor);
         }
         return currentLogo;
+    }
+
+    /**
+     * Returns favicons for current flavor.
+     *
+     * @since 7.4
+     */
+    public List<IconDescriptor> getFavicons() {
+        if (currentFavicons == null) {
+            String flavor = getCurrentFlavor();
+            FlavorDescriptor f = themeStylingService.getFlavor(flavor);
+            currentFavicons = new ArrayList<IconDescriptor>();
+            if (f != null) {
+                List<IconDescriptor> icons = f.getFavicons();
+                currentFavicons.addAll(icons);
+            }
+        }
+        return currentFavicons;
     }
 
     public String getCurrentFlavor() {

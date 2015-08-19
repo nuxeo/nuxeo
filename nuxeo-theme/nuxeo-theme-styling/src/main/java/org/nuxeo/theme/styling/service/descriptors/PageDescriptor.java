@@ -46,12 +46,6 @@ public class PageDescriptor {
     @XNode("@charset")
     String charset;
 
-    /**
-     * @since 7.4
-     */
-    @XNodeList(value = "links/icon", type = ArrayList.class, componentType = IconDescriptor.class)
-    List<IconDescriptor> favicons;
-
     @XNode("defaultFlavor")
     String defaultFlavor;
 
@@ -231,20 +225,6 @@ public class PageDescriptor {
         this.charset = charset;
     }
 
-    /**
-     * @since 7.4
-     */
-    public List<IconDescriptor> getFavicons() {
-        return favicons;
-    }
-
-    /**
-     * @since 7.4
-     */
-    public void setFavicons(List<IconDescriptor> favicons) {
-        this.favicons = favicons;
-    }
-
     public void merge(PageDescriptor src) {
         String newFlavor = src.getDefaultFlavor();
         if (newFlavor != null) {
@@ -254,11 +234,6 @@ public class PageDescriptor {
         String newCharset = src.getCharset();
         if (newCharset != null) {
             setCharset(newCharset);
-        }
-
-        List<IconDescriptor> newFavicons = src.getFavicons();
-        if (newFavicons != null && !newFavicons.isEmpty()) {
-            setFavicons(newFavicons);
         }
 
         List<String> newStyles = src.getStyles();
@@ -327,14 +302,6 @@ public class PageDescriptor {
         PageDescriptor clone = new PageDescriptor();
         clone.setName(getName());
         clone.setCharset(getCharset());
-        List<IconDescriptor> favicons = getFavicons();
-        if (favicons != null) {
-            List<IconDescriptor> icons = new ArrayList<IconDescriptor>();
-            for (IconDescriptor icon : favicons) {
-                icons.add(icon.clone());
-            }
-            clone.setFavicons(icons);
-        }
         clone.setDefaultFlavor(getDefaultFlavor());
         clone.setAppendStyles(getAppendStyles());
         List<String> styles = getStyles();
@@ -365,9 +332,9 @@ public class PageDescriptor {
             return true;
         }
         PageDescriptor p = (PageDescriptor) obj;
-        return new EqualsBuilder().append(name, p.name).append(charset, p.charset).append(favicons, p.favicons).append(
-                defaultFlavor, p.defaultFlavor).append(appendStyles, p.appendStyles).append(styles, p.styles).append(
-                appendFlavors, p.appendFlavors).append(flavors, p.flavors).append(appendResources, p.appendResources).append(
+        return new EqualsBuilder().append(name, p.name).append(charset, p.charset).append(defaultFlavor,
+                p.defaultFlavor).append(appendStyles, p.appendStyles).append(styles, p.styles).append(appendFlavors,
+                p.appendFlavors).append(flavors, p.flavors).append(appendResources, p.appendResources).append(
                 resources, p.resources).append(bundles, p.bundles).isEquals();
     }
 

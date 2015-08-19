@@ -16,6 +16,7 @@
  */
 package org.nuxeo.theme.styling.service.descriptors;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -66,6 +67,19 @@ public class FlavorPresets {
         clone.setCategory(category);
         clone.setContent(content);
         return clone;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FlavorPresets)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        FlavorPresets f = (FlavorPresets) obj;
+        // do not take content into account for overrides
+        return new EqualsBuilder().append(category, f.category).append(src, f.src).isEquals();
     }
 
 }

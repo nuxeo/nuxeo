@@ -19,6 +19,7 @@ package org.nuxeo.theme.styling.service.descriptors;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
 
@@ -48,4 +49,17 @@ public class PalettePreview {
         }
         return clone;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PalettePreview)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        PalettePreview p = (PalettePreview) obj;
+        return new EqualsBuilder().append(colors, p.colors).isEquals();
+    }
+
 }

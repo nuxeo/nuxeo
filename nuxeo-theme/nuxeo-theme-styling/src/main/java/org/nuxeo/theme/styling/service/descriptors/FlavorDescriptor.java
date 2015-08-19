@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
@@ -43,8 +44,6 @@ public class FlavorDescriptor implements Serializable {
     @XNode("@name")
     String name;
 
-    // TODO: add palette preview
-
     @XNode("label")
     String label;
 
@@ -62,6 +61,12 @@ public class FlavorDescriptor implements Serializable {
 
     @XNodeList(value = "presetsList/presets", type = ArrayList.class, componentType = FlavorPresets.class)
     List<FlavorPresets> presets;
+
+    /**
+     * @since 7.4
+     */
+    @XNodeList(value = "links/icon", type = ArrayList.class, componentType = IconDescriptor.class)
+    List<IconDescriptor> favicons;
 
     public String getName() {
         return name;
@@ -119,6 +124,20 @@ public class FlavorDescriptor implements Serializable {
         this.palettePreview = palettePreview;
     }
 
+    /**
+     * @since 7.4
+     */
+    public List<IconDescriptor> getFavicons() {
+        return favicons;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public void setFavicons(List<IconDescriptor> favicons) {
+        this.favicons = favicons;
+    }
+
     public void merge(FlavorDescriptor src) {
         String newExtend = src.getExtendsFlavor();
         if (newExtend != null) {
@@ -169,6 +188,12 @@ public class FlavorDescriptor implements Serializable {
             }
             setPresets(merged);
         }
+
+        List<IconDescriptor> newFavicons = src.getFavicons();
+        if (newFavicons != null && !newFavicons.isEmpty()) {
+            setFavicons(newFavicons);
+        }
+
     }
 
     @Override
@@ -194,7 +219,29 @@ public class FlavorDescriptor implements Serializable {
             }
             clone.setPresets(newPresets);
         }
+        List<IconDescriptor> favicons = getFavicons();
+        if (favicons != null) {
+            List<IconDescriptor> icons = new ArrayList<IconDescriptor>();
+            for (IconDescriptor icon : favicons) {
+                icons.add(icon.clone());
+            }
+            clone.setFavicons(icons);
+        }
         return clone;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof FlavorDescriptor)) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        FlavorDescriptor f = (FlavorDescriptor) obj;
+        return new EqualsBuilder().append(name, f.name).append(label, f.label).append(extendsFlavor, f.extendsFlavor).append(
+                logo, f.logo).append(palettePreview, f.palettePreview).append(appendPresets, f.appendPresets).append(
+                presets, f.presets).append(favicons, f.favicons).isEquals();
     }
 
 }

@@ -4,10 +4,6 @@
   <extension target="org.nuxeo.theme.styling.service" point="pages">
     <page name="testStyling/default" charset="utf-8">
       <defaultFlavor>default</defaultFlavor>
-      <links>
-        <icon name="icon">${org.nuxeo.ecm.contextPath}/icons/favicon.png</icon>
-        <icon name="shortcut icon">${org.nuxeo.ecm.contextPath}/icons/favicon.ico</icon>
-      </links>
       <flavors>
         <flavor>default</flavor>
         <flavor>dark</flavor>
@@ -48,6 +44,10 @@
         <height>36</height>
         <title>Nuxeo</title>
       </logo>
+      <links>
+        <icon name="icon">/icons/favicon.png</icon>
+        <icon name="shortcut icon">/icons/favicon.ico</icon>
+      </links>
       <presetsList>
         <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/default-borders.properties" />
@@ -88,6 +88,10 @@
         <height>666</height>
         <title>Dark Nuxeo</title>
       </logo>
+      <links>
+        <icon name="icon">/icons/dark_favicon.png</icon>
+        <icon name="shortcut icon">/icons/dark_favicon.ico</icon>
+      </links>
       <presetsList>
         <!-- TODO: use one file for all categories with a custom parser -->
         <presets category="border" src="themes/palettes/dark-borders.properties" />
