@@ -96,7 +96,6 @@ public class TestCompareCoreWithES {
         esa.prepareWaitForIndexing().get(20, TimeUnit.SECONDS);
         esa.refresh();
         Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
         TransactionHelper.startTransaction();
     }
 

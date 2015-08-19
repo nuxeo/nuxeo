@@ -47,7 +47,6 @@ import org.nuxeo.ecm.automation.jaxrs.io.documents.JsonESDocumentWriter;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.SortInfo;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.work.api.Work;
 import org.nuxeo.ecm.core.work.api.WorkManager;
@@ -93,9 +92,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     private static final String EP_DOC_WRITER = "elasticSearchDocWriter";
 
     private static final long REINDEX_TIMEOUT = 20;
-
-    // List command signature used for deduplicate indexing command, this does not work at cluster level
-    private final Set<String> scheduledCommands = Collections.synchronizedSet(new HashSet<>());
 
     // Indexing commands that where received before the index initialization
     private final List<IndexingCommand> stackedCommands = Collections.synchronizedList(new ArrayList<>());
@@ -266,11 +262,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     }
 
     @Override
-    public int getPendingCommandCount() {
-        return scheduledCommands.size();
-    }
-
-    @Override
     public int getPendingWorkerCount() {
         WorkManager wm = Framework.getLocalService(WorkManager.class);
         return  wm.getQueueSize(INDEXING_QUEUE_ID, Work.State.SCHEDULED);
@@ -359,11 +350,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     // ES Indexing =============================================================
 
     @Override
-    public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        return scheduledCommands.contains(cmd.getSignature());
-    }
-
-    @Override
     public void indexNonRecursive(IndexingCommand cmd) {
         List<IndexingCommand> cmds = new ArrayList<>(1);
         cmds.add(cmd);
@@ -379,7 +365,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         if (log.isDebugEnabled()) {
             log.debug("Process indexing commands: " + Arrays.toString(cmds.toArray()));
         }
-        markCommandInProgress(cmds);
         esi.indexNonRecursive(cmds);
     }
 
@@ -412,13 +397,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
         Map<String, List<IndexingCommand>> syncCommands = new HashMap<>();
         Map<String, List<IndexingCommand>> asyncCommands = new HashMap<>();
         for (IndexingCommand cmd : cmds) {
-            if (isAlreadyScheduled(cmd)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Cancel indexing command, because it is already scheduled: " + cmd);
-                }
-                continue;
-            }
-            scheduledCommands.add(cmd.getSignature());
             if (cmd.isSync()) {
                 List<IndexingCommand> syncCmds = syncCommands.get(cmd.getRepositoryName());
                 if (syncCmds == null) {
@@ -512,16 +490,6 @@ public class ElasticSearchComponent extends DefaultComponent implements ElasticS
     // misc ====================================================================
     private boolean isReady() {
         return (esa != null) && esa.isReady();
-    }
-
-    int markCommandInProgress(List<IndexingCommand> cmds) {
-        int ret = 0;
-        for (IndexingCommand cmd : cmds) {
-            if (scheduledCommands.remove(cmd.getSignature())) {
-                ret += 1;
-            }
-        }
-        return ret;
     }
 
 }

@@ -17,8 +17,6 @@
 
 package org.nuxeo.elasticsearch.work;
 
-import java.util.List;
-
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.work.api.Work;
@@ -26,6 +24,8 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.elasticsearch.api.ElasticSearchIndexing;
 import org.nuxeo.elasticsearch.commands.IndexingCommand;
 import org.nuxeo.runtime.api.Framework;
+
+import java.util.List;
 
 /**
  * Worker to index children recursively
@@ -62,10 +62,7 @@ public class ChildrenIndexingWorker extends AbstractIndexingWorker implements Wo
             DocumentModel child = iter.next();
 
             IndexingCommand childCommand = cmd.clone(child);
-
-            if (!esi.isAlreadyScheduled(childCommand)) {
-                esi.indexNonRecursive(childCommand);
-            }
+            esi.indexNonRecursive(childCommand);
             if (child.isFolder()) {
                 ChildrenIndexingWorker subWorker = new ChildrenIndexingWorker(childCommand);
                 WorkManager wm = Framework.getLocalService(WorkManager.class);

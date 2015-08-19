@@ -18,14 +18,10 @@
 
 package org.nuxeo.elasticsearch.core;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
-import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
-
-import java.io.IOException;
-import java.util.List;
-
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SharedMetricRegistries;
+import com.codahale.metrics.Timer;
+import com.codahale.metrics.Timer.Context;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -54,10 +50,13 @@ import org.nuxeo.elasticsearch.commands.IndexingCommand.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.metrics.MetricsService;
 
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.SharedMetricRegistries;
-import com.codahale.metrics.Timer;
-import com.codahale.metrics.Timer.Context;
+import java.io.IOException;
+import java.util.List;
+
+import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.CHILDREN_FIELD;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.DOC_TYPE;
+import static org.nuxeo.elasticsearch.ElasticSearchConstants.PATH_FIELD;
 
 /**
  * @since 6.0
@@ -311,11 +310,6 @@ public class ElasticSearchIndexingImpl implements ElasticSearchIndexing {
         } catch (IOException e) {
             throw new NuxeoException("Unable to create index request for Document " + cmd.getTargetDocumentId(), e);
         }
-    }
-
-    @Override
-    public boolean isAlreadyScheduled(IndexingCommand cmd) {
-        throw new UnsupportedOperationException("Not implemented");
     }
 
 }

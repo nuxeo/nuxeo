@@ -147,14 +147,7 @@ public interface ElasticSearchAdmin {
     void optimizeIndex(String indexName);
 
     /**
-     * Returns the number of command scheduled for indexing.
-     *
-     * @since 7.1
-     */
-    int getPendingCommandCount();
-
-    /**
-     * Returns the number of indexing worker pending waiting to be executed.
+     * Returns the number of indexing worker scheduled waiting to be executed.
      *
      * @since 7.1
      */
@@ -168,7 +161,8 @@ public interface ElasticSearchAdmin {
     int getRunningWorkerCount();
 
     /**
-     * Returns the total number of command processed by Elasticsearch. Useful for test assertion.
+     * Returns the total number of command processed by Elasticsearch for this Nuxeo instance.
+     * Useful for test assertion.
      *
      * @since 5.9.4
      */
