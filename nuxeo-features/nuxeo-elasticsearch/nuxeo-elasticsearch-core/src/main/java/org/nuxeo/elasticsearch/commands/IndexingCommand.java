@@ -17,16 +17,6 @@
  */
 package org.nuxeo.elasticsearch.commands;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonFactory;
@@ -38,6 +28,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Holds information about what type of indexing operation must be processed. IndexingCommands are create "on the fly"
@@ -326,22 +326,6 @@ public class IndexingCommand implements Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * Return a command signature used for deduplication
-     */
-    public String getSignature() {
-        String action;
-        switch (type) {
-        case UPDATE:
-        case INSERT:
-            action = Type.INSERT.toString();
-            break;
-        default:
-            action = type.toString();
-        }
-        return repositoryName + ":" + targetDocumentId + ":" + recurse + ":" + action;
     }
 
 }

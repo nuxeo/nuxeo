@@ -67,7 +67,6 @@ public class TestService {
         Client client = esa.getClient();
         Assert.assertNotNull(client);
 
-        Assert.assertEquals(0, esa.getPendingCommandCount());
         Assert.assertEquals(0, esa.getTotalCommandProcessed());
         Assert.assertEquals(0, esa.getPendingWorkerCount());
         Assert.assertEquals(0, esa.getRunningWorkerCount());

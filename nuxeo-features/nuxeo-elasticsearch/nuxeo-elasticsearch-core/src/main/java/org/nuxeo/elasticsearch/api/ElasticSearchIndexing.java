@@ -47,18 +47,11 @@ public interface ElasticSearchIndexing {
     void runIndexingWorker(List<IndexingCommand> cmds);
 
     /**
-     * Reindex documents matching the NXQL query, This is asynchronous.
+     * Reindex documents matching the NXQL query, This is done in an asynchronous job.
      *
      * @since 7.1
      */
     void runReindexingWorker(String repositoryName, String nxql);
-
-    /**
-     * {true} if a command has already been submitted for indexing.
-     *
-     * @since 5.9.5
-     */
-    boolean isAlreadyScheduled(IndexingCommand cmd);
 
     /**
      * Process the {@link IndexingCommand}.

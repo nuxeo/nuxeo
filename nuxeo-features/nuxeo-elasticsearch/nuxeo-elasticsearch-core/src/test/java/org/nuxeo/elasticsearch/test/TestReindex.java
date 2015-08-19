@@ -109,7 +109,6 @@ public class TestReindex {
             TransactionHelper.startTransaction();
         }
         Assert.assertEquals(0, esa.getPendingWorkerCount());
-        Assert.assertEquals(0, esa.getPendingCommandCount());
         commandProcessed = esa.getTotalCommandProcessed();
     }
 
