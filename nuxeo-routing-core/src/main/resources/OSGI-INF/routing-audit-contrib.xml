@@ -39,9 +39,10 @@
         <extendedInfo expression="${message.properties.modelName}" key="modelName" />
         <extendedInfo expression="${message.properties.taskName}" key="taskName" />
         <extendedInfo expression="${message.properties.data}" key="data" />
-        <extendedInfo expression="${message.properties.status}" key="status" />
+        <extendedInfo expression="${message.properties.action}" key="action" />
         <extendedInfo expression="${message.properties.nodeVariables}" key="nodeVariables" />
         <extendedInfo expression="${message.properties.workflowVariables}" key="workflowVariables" />
+        <extendedInfo expression="${message.properties.duration}" key="duration" />
       </extendedInfos>
     </event>
     <event name="afterWorkflowTaskCreated">

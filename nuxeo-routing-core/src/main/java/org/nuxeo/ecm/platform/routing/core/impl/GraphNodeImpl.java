@@ -357,7 +357,7 @@ public class GraphNodeImpl extends DocumentRouteElementImpl implements GraphNode
             }
         }
 
-        if (true) {
+        if (!allowGlobalVariablesAssignement) {
             // Validation
             final DocumentModel transientDocumentModel = new DocumentModelImpl(getDocument().getType());
             transientDocumentModel.copyContent(document);

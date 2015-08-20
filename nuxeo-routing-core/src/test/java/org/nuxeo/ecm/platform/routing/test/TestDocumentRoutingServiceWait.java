@@ -164,7 +164,7 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
         assertTrue(routeInstance.isDone());
         assertEquals((6/* route */ + 4 /* number of steps */ * 3 /*
                                                                   * number of event per waiting step
-                                                                  */ + 1 /* workflow started */),
+                                                                  */ + 2 /* workflow started + first task audit */),
                 CounterListener.getCounter());
     }
 
@@ -330,7 +330,7 @@ public class TestDocumentRoutingServiceWait extends DocumentRoutingTestCase {
             routeInstance = bobSession.getDocument(routeInstanceRef).getAdapter(DocumentRoute.class);
             assertTrue(routeInstance.isDone());
             assertEquals((6/* route */ + 4 /* number of steps */ * 3 /* number of event per waiting step */
-                    + 1 /* workflow started */), CounterListener.getCounter());
+                    + 2 /* workflow started + first task audit */), CounterListener.getCounter());
         }
     }
 

@@ -38,6 +38,10 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.platform.audit.api.BuiltinLogEntryData;
+import org.nuxeo.ecm.platform.audit.api.FilterMapEntry;
+import org.nuxeo.ecm.platform.audit.api.LogEntry;
+import org.nuxeo.ecm.platform.audit.api.Logs;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRouteElement;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingConstants;
@@ -133,6 +137,29 @@ public class GraphRunner extends AbstractRunner implements ElementRunner, Serial
                 eventProperties.put("user", ((NuxeoPrincipal) session.getPrincipal()).getActingUser());
                 eventProperties.put("nodeVariables", (Serializable) node.getVariables());
                 eventProperties.put("workflowVariables", (Serializable) graph.getVariables());
+
+                // Compute duration
+                Logs logs = Framework.getService(Logs.class);
+                if (logs != null) {
+                    Map<String, FilterMapEntry> filterMap = new HashMap<String, FilterMapEntry>();
+                    FilterMapEntry categoryFilterMapEntry = new FilterMapEntry();
+                    categoryFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_CATEGORY);
+                    categoryFilterMapEntry.setObject(DocumentRoutingConstants.ROUTING_CATEGORY);
+                    filterMap.put(BuiltinLogEntryData.LOG_CATEGORY, categoryFilterMapEntry);
+                    FilterMapEntry eventIdFilterMapEntry = new FilterMapEntry();
+                    eventIdFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
+                    eventIdFilterMapEntry.setObject(DocumentRoutingConstants.Events.afterWorkflowTaskCreated.name());
+                    filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, eventIdFilterMapEntry);
+                    List<LogEntry> logEntries = logs.getLogEntriesFor(task.getDocument().getId(), null, true);
+                    for (LogEntry logEntry : logEntries) {
+                        // Compute the duration of the workflow according to the date of the logged afterRouteStarted event
+                        Date start = logEntry.getEventDate();
+                        long duration = new Date().getTime() - start.getTime();
+                        eventProperties.put("duration", duration);
+                        break;
+                    }
+                }
+
                 DocumentEventContext envContext = new DocumentEventContext(session, session.getPrincipal(), task.getDocument());
                 envContext.setProperties(eventProperties);
                 EventProducer eventProducer = Framework.getLocalService(EventProducer.class);

@@ -58,28 +58,28 @@ public class DocumentRouteImpl extends DocumentRouteStepsContainerImpl implement
 
         // First retrieve associated worklfow started event
         Logs logs = Framework.getService(Logs.class);
-        if (logs == null) {
-            return;
-        }
-        Map<String, FilterMapEntry> filterMap = new HashMap<String, FilterMapEntry>();
-        FilterMapEntry categoryFilterMapEntry = new FilterMapEntry();
-        categoryFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_CATEGORY);
-        categoryFilterMapEntry.setObject(DocumentRoutingConstants.ROUTING_CATEGORY);
-        filterMap.put(BuiltinLogEntryData.LOG_CATEGORY, categoryFilterMapEntry);
-        FilterMapEntry eventIdFilterMapEntry = new FilterMapEntry();
-        eventIdFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
-        eventIdFilterMapEntry.setObject(DocumentRoutingConstants.Events.afterWorkflowStarted.name());
-        filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, eventIdFilterMapEntry);
-        List<LogEntry> logEntries = logs.getLogEntriesFor(this.getDocument().getId(), null, true);
-
         Map<String, Serializable> eventProperties = new HashMap<String, Serializable>();
-        for (LogEntry logEntry : logEntries) {
-            // Compute the duration of the workflow according to the date of the logged afterRouteStarted event
-            Date start = logEntry.getEventDate();
-            long duration = new Date().getTime() - start.getTime();
-            eventProperties.put("duration", duration);
-            break;
+        if (logs != null) {
+            Map<String, FilterMapEntry> filterMap = new HashMap<String, FilterMapEntry>();
+            FilterMapEntry categoryFilterMapEntry = new FilterMapEntry();
+            categoryFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_CATEGORY);
+            categoryFilterMapEntry.setObject(DocumentRoutingConstants.ROUTING_CATEGORY);
+            filterMap.put(BuiltinLogEntryData.LOG_CATEGORY, categoryFilterMapEntry);
+            FilterMapEntry eventIdFilterMapEntry = new FilterMapEntry();
+            eventIdFilterMapEntry.setColumnName(BuiltinLogEntryData.LOG_EVENT_ID);
+            eventIdFilterMapEntry.setObject(DocumentRoutingConstants.Events.afterWorkflowStarted.name());
+            filterMap.put(BuiltinLogEntryData.LOG_EVENT_ID, eventIdFilterMapEntry);
+            List<LogEntry> logEntries = logs.getLogEntriesFor(this.getDocument().getId(), null, true);
+
+            for (LogEntry logEntry : logEntries) {
+                // Compute the duration of the workflow according to the date of the logged afterRouteStarted event
+                Date start = logEntry.getEventDate();
+                long duration = new Date().getTime() - start.getTime();
+                eventProperties.put("duration", duration);
+                break;
+            }
         }
+
         eventProperties.put("initiator", this.getInitiator());
 
         // Add common info about workflow
