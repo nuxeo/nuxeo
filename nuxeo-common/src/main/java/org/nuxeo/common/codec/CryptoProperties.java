@@ -348,7 +348,8 @@ public class CryptoProperties extends Properties {
 
     /**
      * @param key
-     * @param raw if the value must be decrypted or not
+     * @param raw if the encrypted values must be returned encrypted ({@code raw==true}) or decrypted ({@code raw==false}
+     *            )
      * @return the property value or null
      */
     public String getProperty(String key, boolean raw) {
@@ -361,7 +362,7 @@ public class CryptoProperties extends Properties {
                 value = ((CryptoProperties) defaults).getProperty(key, raw);
             } else {
                 value = defaults.getProperty(key);
-                if (value != null && Crypto.isEncrypted(value)) {
+                if (Crypto.isEncrypted(value)) {
                     encrypted.put(key, value);
                     if (!raw) {
                         value = new String(crypto.decrypt(value));

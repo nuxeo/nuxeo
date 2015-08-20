@@ -57,16 +57,34 @@ import freemarker.template.TemplateException;
 /**
  * Text template processing.
  * <p>
- * Copy files or directories replacing parameters matching pattern '${[a-zA-Z_0-9\-\.]+}' with values from a {@link Map}
- * (deprecated) or a {@link Properties}.
+ * Copy files or directories replacing parameters matching pattern '${[a-zA-Z_0-9\-\.]+}' with values from a
+ * {@link CryptoProperties}.
+ * <p>
+ * If the value of a variable is encrypted:
+ *
+ * <pre>
+ * setVariable(&quot;var&quot;, Crypto.encrypt(value.getBytes))
+ * </pre>
+ *
+ * then "<code>${var}</code>" will be replaced with:
+ * <ul>
+ * <li>its decrypted value by default: "<code>value</code>"</li>
+ * <li>"<code>${var}</code>" after a call to "<code>setKeepEncryptedAsVar(true)}</code>"
+ * </ul>
+ * and "<code>${#var}</code>" will always be replaced with its decrypted value.
  * <p>
  * Since 5.7.2, variables can have a default value using syntax ${parameter:=defaultValue}. The default value will be
  * used if parameter is null or unset.
  * <p>
- * Method {@link #setTextParsingExtensions(String)} allow to set the list of files being processed when using
- * {@link #processDirectory(File, File)}, based on their extension; others being simply copied.
+ * Methods {@link #setTextParsingExtensions(String)} and {@link #setFreemarkerParsingExtensions(String)} allow to set
+ * the list of files being processed when using {@link #processDirectory(File, File)}, based on their extension; others
+ * being simply copied.
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * @see CryptoProperties
+ * @see #setKeepEncryptedAsVar(boolean)
+ * @see #setFreemarkerParsingExtensions(String)
+ * @see #setTextParsingExtensions(String)
  */
 public class TextTemplate {
 
@@ -74,7 +92,18 @@ public class TextTemplate {
 
     private static final int MAX_RECURSION_LEVEL = 10;
 
-    private static final Pattern PATTERN = Pattern.compile("(?<!\\$)\\$\\{([a-zA-Z_0-9\\-\\.]+)(:=(.*))?\\}");
+    private static final String PATTERN_GROUP_DECRYPT = "decrypt";
+
+    private static final String PATTERN_GROUP_VAR = "var";
+
+    private static final String PATTERN_GROUP_DEFAULT = "default";
+
+    /**
+     * matches variables of the form "${[#]embeddedVar[:=defaultValue]}" but not those starting with "$${"
+     */
+    private static final Pattern PATTERN = Pattern.compile("(?<!\\$)\\$\\{(?<" + PATTERN_GROUP_DECRYPT + ">#)?" //
+            + "(?<" + PATTERN_GROUP_VAR + ">[a-zA-Z_0-9\\-\\.]+)" // embeddedVar
+            + "(:=(?<" + PATTERN_GROUP_DEFAULT + ">.*))?\\}"); // defaultValue
 
     private final CryptoProperties vars;
 
@@ -189,9 +218,61 @@ public class TextTemplate {
         }
     }
 
+    /**
+     * That method is not recursive. It processes the given text only once.
+     *
+     * @param props CryptoProperties containing the variable values
+     * @param text Text to process
+     * @return the processed text
+     * @since 7.4
+     */
+    protected String processString(CryptoProperties props, String text) {
+        Matcher m = PATTERN.matcher(text);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            // newVarsValue == ${[#]embeddedVar[:=default]}
+            String embeddedVar = m.group(PATTERN_GROUP_VAR);
+            String value = props.getProperty(embeddedVar, keepEncryptedAsVar);
+            if (value == null) {
+                value = m.group(PATTERN_GROUP_DEFAULT);
+            }
+            if (value != null) {
+                if (trim) {
+                    value = value.trim();
+                }
+                if (Crypto.isEncrypted(value)) {
+                    if (keepEncryptedAsVar && m.group(PATTERN_GROUP_DECRYPT) == null) {
+                        value = "${" + embeddedVar + "}";
+                    } else {
+                        value = new String(vars.getCrypto().decrypt(value));
+                    }
+                }
+
+                // Allow use of backslash and dollars characters
+                value = Matcher.quoteReplacement(value);
+                m.appendReplacement(sb, value);
+            }
+        }
+        m.appendTail(sb);
+        return sb.toString();
+    }
+
+    /**
+     * unescape variables
+     */
+    protected Properties unescape(Properties props) {
+        for (Object key : props.keySet()) {
+            props.put(key, unescape((String) props.get(key)));
+        }
+        return props;
+    }
+
+    protected String unescape(String value) {
+        return value.replaceAll("(?<!\\{)\\$\\$", "\\$");
+    }
+
     private void preprocessVars() {
         processedVars = preprocessVars(vars);
-        freemarkerConfiguration = null;
     }
 
     public Properties preprocessVars(Properties unprocessedVars) {
@@ -206,40 +287,14 @@ public class TextTemplate {
                     continue;
                 }
                 if (Crypto.isEncrypted(newVarsValue)) {
-                    if (keepEncryptedAsVar) {
-                        newVarsValue = "${" + newVarsKey + "}";
-                    } else {
-                        newVarsValue = new String(newVars.getCrypto().decrypt(newVarsValue));
-                    }
+                    // newVarsValue == {$[...]$...}
+                    assert (keepEncryptedAsVar);
+                    newVarsValue = "${" + newVarsKey + "}";
                     newVars.put(newVarsKey, newVarsValue);
                     continue;
                 }
-                Matcher m = PATTERN.matcher(newVarsValue);
-                StringBuffer sb = new StringBuffer();
-                while (m.find()) {
-                    String embeddedVar = m.group(1);
-                    String value = newVars.getProperty(embeddedVar, keepEncryptedAsVar);
-                    if (m.groupCount() >= 3 && value == null) {
-                        value = m.group(3);
-                    }
-                    if (value != null) {
-                        if (trim) {
-                            value = value.trim();
-                        }
-                        if (Crypto.isEncrypted(value)) {
-                            if (keepEncryptedAsVar) {
-                                value = "${" + embeddedVar + "}";
-                            } else {
-                                value = new String(vars.getCrypto().decrypt(value));
-                            }
-                        }
 
-                        value = Matcher.quoteReplacement(value);
-                        m.appendReplacement(sb, value);
-                    }
-                }
-                m.appendTail(sb);
-                String replacementValue = sb.toString();
+                String replacementValue = processString(newVars, newVarsValue);
                 if (!replacementValue.equals(newVarsValue)) {
                     doneProcessing = false;
                     newVars.put(newVarsKey, replacementValue);
@@ -248,70 +303,45 @@ public class TextTemplate {
             recursionLevel++;
             // Avoid infinite replacement loops
             if ((!doneProcessing) && (recursionLevel > MAX_RECURSION_LEVEL)) {
+                log.warn("Detected potential infinite loop when processing the following properties\n" + newVars);
                 break;
             }
         }
         return unescape(newVars);
     }
 
-    protected Properties unescape(Properties props) {
-        // unescape variables
-        for (Object key : props.keySet()) {
-            props.put(key, unescape((String) props.get(key)));
-        }
-        return props;
-    }
-
-    protected String unescape(String value) {
-        return value.replaceAll("(?<!\\{)\\$\\$", "\\$");
-    }
-
+    /**
+     * @deprecated Since 7.4. Use {@link #processText(String)}
+     */
+    @Deprecated
     public String processText(CharSequence text) {
+        return processText(text.toString());
+    }
+
+    /**
+     * @since 7.4
+     */
+    public String processText(String text) {
         if (text == null) {
             return null;
         }
-        Matcher m = PATTERN.matcher(text);
-        StringBuffer sb = new StringBuffer();
-        while (m.find()) {
-            String var = m.group(1);
-            String value = vars.getProperty(var, keepEncryptedAsVar);
-            if (m.groupCount() >= 3 && value == null) {
-                value = m.group(3);
+        boolean doneProcessing = false;
+        int recursionLevel = 0;
+        while (!doneProcessing) {
+            doneProcessing = true;
+            String processedText = processString(vars, text);
+            if (!processedText.equals(text)) {
+                doneProcessing = false;
+                text = processedText;
             }
-            if (value != null) {
-                if (trim) {
-                    value = value.trim();
-                }
-
-                // process again the value if it still contains variable to replace
-                String oldValue = value;
-                int recursionLevel = 0;
-                while (!(value = processText(oldValue)).equals(oldValue)) {
-                    oldValue = value;
-                    recursionLevel++;
-                    // Avoid infinite replacement loops
-                    if (recursionLevel > MAX_RECURSION_LEVEL) {
-                        log.warn(String.format("Detected potential infinite loop on variable processing\n"
-                                + "Text: %s\nVariable: %s\nValue %d: %s\nValue %d: %s", text, var, MAX_RECURSION_LEVEL,
-                                oldValue, recursionLevel, value));
-                        break;
-                    }
-                }
-                if (Crypto.isEncrypted(value)) {
-                    if (keepEncryptedAsVar) {
-                        value = "${" + var + "}";
-                    } else {
-                        value = new String(vars.getCrypto().decrypt(value));
-                    }
-                }
-
-                // Allow use of backslash and dollars characters
-                value = Matcher.quoteReplacement(value);
-                m.appendReplacement(sb, value);
+            recursionLevel++;
+            // Avoid infinite replacement loops
+            if ((!doneProcessing) && (recursionLevel > MAX_RECURSION_LEVEL)) {
+                log.warn("Detected potential infinite loop when processing the following text\n" + text);
+                break;
             }
         }
-        m.appendTail(sb);
-        return unescape(sb.toString());
+        return unescape(text);
     }
 
     public String processText(InputStream in) throws IOException {
@@ -325,43 +355,52 @@ public class TextTemplate {
         os.write(text.getBytes(Charsets.UTF_8));
     }
 
+    /**
+     * Initialize FreeMarker data model from Java properties.
+     * <p>
+     * Variables in the form "{@code foo.bar}" (String with dots) are transformed to "{@code foo[bar]}" (arrays).<br>
+     * So there will be conflicts if a variable name is equal to the prefix of another variable. For instance, "
+     * {@code foo.bar}" and "{@code foo.bar.qux}" will conflict.<br>
+     * When a conflict occurs, the conflicting variable is ignored and a warning is logged. The ignored variable will
+     * usually be the shortest one (without any contract on this behavior).
+     */
     @SuppressWarnings("unchecked")
     public void initFreeMarker() {
-        // Initialize FreeMarker
         freemarkerConfiguration = new Configuration(Configuration.getVersion());
-        // Initialize data model
         preprocessVars();
         freemarkerVars = new HashMap<>();
         Map<String, Object> currentMap;
         String currentString;
-        for (String key : processedVars.stringPropertyNames()) {
+        KEYS: for (String key : processedVars.stringPropertyNames()) {
             String value = processedVars.getProperty(key);
             String[] keyparts = key.split("\\.");
             currentMap = freemarkerVars;
             currentString = "";
-            boolean setKeyVal = true;
             for (int i = 0; i < (keyparts.length - 1); i++) {
-                currentString = currentString + (currentString.equals("") ? "" : ".") + keyparts[i];
+                currentString = currentString + ("".equals(currentString) ? "" : ".") + keyparts[i];
                 if (!currentMap.containsKey(keyparts[i])) {
                     Map<String, Object> nextMap = new HashMap<>();
                     currentMap.put(keyparts[i], nextMap);
                     currentMap = nextMap;
+                } else if (currentMap.get(keyparts[i]) instanceof Map<?, ?>) {
+                    currentMap = (Map<String, Object>) currentMap.get(keyparts[i]);
                 } else {
-                    if (currentMap.get(keyparts[i]) instanceof Map<?, ?>) {
-                        currentMap = (Map<String, Object>) currentMap.get(keyparts[i]);
-                    } else {
-                        // silently ignore known conflicts in java properties
-                        if (!key.startsWith("java.vendor")) {
-                            log.warn("FreeMarker templates: " + currentString + " is already defined - " + key
-                                    + " will not be available in the data model.");
-                        }
-                        setKeyVal = false;
-                        break;
+                    // silently ignore known conflicts between Java properties and FreeMarker model
+                    if (!key.startsWith("java.vendor") && !key.startsWith("file.encoding")
+                            && !key.startsWith("audit.elasticsearch")) {
+                        log.warn(String.format("FreeMarker variables: ignored '%s' conflicting with '%s'", key,
+                                currentString));
                     }
+                    continue KEYS;
                 }
             }
-            if (setKeyVal) {
+            if (!currentMap.containsKey(keyparts[keyparts.length - 1])) {
                 currentMap.put(keyparts[keyparts.length - 1], value);
+            } else if (!key.startsWith("java.vendor") && !key.startsWith("file.encoding")
+                    && !key.startsWith("audit.elasticsearch")) {
+                Map<String, Object> currentValue = (Map<String, Object>) currentMap.get(keyparts[keyparts.length - 1]);
+                log.warn(String.format("FreeMarker variables: ignored '%2$s' conflicting with '%2$s.%1$s'",
+                        currentValue.keySet(), key));
             }
         }
     }

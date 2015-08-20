@@ -42,19 +42,30 @@ import freemarker.template.TemplateException;
  */
 public class TestTextTemplate {
 
+    private final String templateText = "test ${var1} and ${var2} and ${var3}";
+
+    private final String processedText = "test value1 and value2 and value3";
+
+    private final String templateText2 = "test ${var.decrypt.var1}"; // will value ${#var1}
+
+    private final String templateText2bis = "test ${#var1}"; // that format is not usable in FreeMarker
+
+    private final String processedText2 = "test value1";
+
     @Test
     public void test1() {
         Map<String, String> testVariables = new HashMap<>();
         testVariables.put("var1", "value1");
         testVariables.put("var2", "value2");
         testVariables.put("var3", "value3");
+        testVariables.put("var.decrypt.var1", "${#var1}");
         TextTemplate tt = new TextTemplate(testVariables);
-        String templateText = "test ${var1} and ${var2} and ${var3}";
-        assertEquals("test value1 and value2 and value3", tt.processText(templateText));
+        assertEquals(processedText, tt.processText(templateText));
+        assertEquals(processedText2, tt.processText(templateText2));
+        assertEquals(processedText2, tt.processText(templateText2bis));
     }
 
-    @Test
-    public void testCrypto() throws IOException, TemplateException {
+    private TextTemplate getTextTemplateWithCryptoVariables() {
         CryptoProperties props = new CryptoProperties();
         props.setProperty(Environment.CRYPT_KEY,
                 org.apache.commons.codec.binary.Base64.encodeBase64String("secret".getBytes()));
@@ -62,23 +73,41 @@ public class TestTextTemplate {
         testVariables.put("var1", "{$$Ab5uGXsjB3DHqBfkn6LKuQ==}"); // "value1"
         testVariables.put("var2", "{$$36YqHApithKHOJ+UkfIDJQ==}"); // "value2"
         testVariables.put("var3", "{$$h+/aMIx9fttICp0g8oLZyw==}"); // "value3"
+        testVariables.put("var.decrypt.var1", "${#var1}");
         TextTemplate tt = new TextTemplate(props);
         tt.setVariables(testVariables);
-        String templateText = "test ${var1} and ${var2} and ${var3}";
-        assertEquals("test value1 and value2 and value3", tt.processText(templateText));
+        return tt;
+    }
 
+    @Test
+    public void testCryptoText() {
+        TextTemplate tt = getTextTemplateWithCryptoVariables();
+        assertEquals(processedText, tt.processText(templateText));
+        assertEquals(processedText2, tt.processText(templateText2));
+        assertEquals(processedText2, tt.processText(templateText2bis));
+
+        tt.setKeepEncryptedAsVar(true);
+        assertEquals("Encrypted variables must not be replaced", templateText, tt.processText(templateText));
+        assertEquals(processedText2, tt.processText(templateText2));
+        assertEquals(processedText2, tt.processText(templateText2bis));
+    }
+
+    @Test
+    public void testCryptoFreemarker() throws IOException, TemplateException {
+        TextTemplate tt = getTextTemplateWithCryptoVariables();
         File ftl = new File(getClass().getClassLoader().getResource("freemarkerTemplate.ftl").getPath());
         File tmpFile = File.createTempFile("ftl", null);
         tt.processFreemarker(ftl, tmpFile);
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
-            assertEquals("test value1 and value2 and value3", reader.readLine());
+            assertEquals(processedText, reader.readLine());
+            assertEquals(processedText2, reader.readLine());
         }
 
         tt.setKeepEncryptedAsVar(true);
-        assertEquals("Encrypted variables must not be replaced", templateText, tt.processText(templateText));
         tt.processFreemarker(ftl, tmpFile);
         try (BufferedReader reader = new BufferedReader(new FileReader(tmpFile))) {
             assertEquals("Encrypted variables must not be replaced", templateText, reader.readLine());
+            assertEquals("Encrypted #variables must be replaced", processedText2, reader.readLine());
         }
         tmpFile.delete();
     }
@@ -99,11 +128,13 @@ public class TestTextTemplate {
 
     @Test
     public void testParameterExpansion() {
-        TextTemplate emptytt = new TextTemplate(new Properties());
+        // Empty TextTemplate
+        TextTemplate tt = new TextTemplate();
+        assertEquals("baz", tt.processText("${foo:=baz}"));
         Properties vars = new Properties();
         vars.setProperty("foo", "bar");
-        TextTemplate tt = new TextTemplate(vars);
-        assertEquals("baz", emptytt.processText("${foo:=baz}"));
+        // TextTemplate with var "foo"
+        tt = new TextTemplate(vars);
         assertEquals("bar", tt.processText("${foo:=baz}"));
         assertEquals("<foo>${myUnresolvedExpression}</foo>", tt.processText("<foo>${myUnresolvedExpression}</foo>"));
         vars.setProperty("myUnresolvedExpression", "");
