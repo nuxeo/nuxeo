@@ -40,7 +40,7 @@ public class JSFConfigurationDescriptorRegistry extends SimpleContributionRegist
     @Override
     public void contributionUpdated(String key, JSFConfigurationDescriptor contrib,
         JSFConfigurationDescriptor newOrigContrib) {
-        properties.putAll(contrib.getProperties());
+        properties = contrib.getProperties();
     }
 
     @Override

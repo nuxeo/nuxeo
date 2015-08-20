@@ -53,6 +53,7 @@ public class TestJSFConfigurationService extends NXRuntimeTestCase {
         assertNotNull(configurationService.getProperty("nuxeo.test.jsf.dummyBooleanProperty"));
         assertNotNull(configurationService.getProperty("nuxeo.test.jsf.anotherDummyBooleanProperty"));
         assertNotNull(configurationService.getProperty("nuxeo.test.jsf.dummyStringProperty"));
+        assertNotNull(configurationService.getProperty("nuxeo.test.jsf.dummyStaticProperty"));
         assertNull(configurationService.getProperty("nuxeo.test.jsf.invalidDummyProperty"));
     }
 
@@ -62,6 +63,7 @@ public class TestJSFConfigurationService extends NXRuntimeTestCase {
         assertTrue(configurationService.isBooleanPropertyTrue("nuxeo.test.jsf.dummyBooleanProperty"));
         assertFalse(configurationService.isBooleanPropertyTrue("nuxeo.test.jsf.anotherDummyBooleanProperty"));
         assertEquals("dummyValue", configurationService.getProperty("nuxeo.test.jsf.dummyStringProperty"));
+        assertEquals("staticValue", configurationService.getProperty("nuxeo.test.jsf.dummyStaticProperty"));
     }
 
     @Test
@@ -72,5 +74,22 @@ public class TestJSFConfigurationService extends NXRuntimeTestCase {
         deployContrib("org.nuxeo.ecm.platform.ui.test", "OSGI-INF/jsfconfiguration-test-contrib.xml");
         // Assert property has overridden value
         assertEquals("anotherDummyValue", configurationService.getProperty("nuxeo.test.jsf.dummyStringProperty"));
+        // Assert property don't exist
+        assertNull(configurationService.getProperty("nuxeo.test.jsf.overrideContribDummyProperty"));
+        // Deploy another contrib with a new property and override existing properties
+        deployContrib("org.nuxeo.ecm.platform.ui.test", "OSGI-INF/jsfconfiguration-override-contrib.xml");
+        // Assert new property was added
+        assertEquals("overrideContrib", configurationService.getProperty("nuxeo.test.jsf.overrideContribDummyProperty"));
+        // Assert old properties have overridden values
+        assertEquals("dummyStringValueOverridden", configurationService.getProperty("nuxeo.test.jsf.dummyStringProperty"));
+        assertTrue(configurationService.isBooleanPropertyFalse("nuxeo.test.jsf.dummyBooleanProperty"));
+
+        // Undeploy contrib
+        undeployContrib("org.nuxeo.ecm.platform.ui.test", "OSGI-INF/jsfconfiguration-override-contrib.xml");
+        // Assert property was removed
+        assertNull(configurationService.getProperty("nuxeo.test.jsf.overrideContribDummyProperty"));
+        // Assert overridden values were restored
+        assertEquals("anotherDummyValue", configurationService.getProperty("nuxeo.test.jsf.dummyStringProperty"));
+        assertTrue(configurationService.isBooleanPropertyTrue("nuxeo.test.jsf.dummyBooleanProperty"));
     }
 }

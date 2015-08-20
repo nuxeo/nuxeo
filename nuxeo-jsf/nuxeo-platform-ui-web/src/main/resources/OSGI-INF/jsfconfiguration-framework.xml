@@ -30,6 +30,7 @@
         <configuration>
           <property name="nuxeo.jsf.enableDoubleClickShield">${nuxeo.jsf.enableDoubleClickShield:=true}</property>
           <property name="nuxeo.jsf.useAjaxTabs">${nuxeo.jsf.useAjaxTabs:=false}</property>
+          <property name="nuxeo.jsf.exampleProp">staticValue</property>
         </configuration>
       </code>
     </documentation>

@@ -1,0 +1,14 @@
+<component name="org.nuxeo.ecm.platform.ui.JSFConfigurationService.test.override">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService"
+             point="configuration">
+
+    <configuration>
+      <property name="nuxeo.test.jsf.dummyBooleanProperty">false</property>
+      <property name="nuxeo.test.jsf.dummyStringProperty">dummyStringValueOverridden</property>
+      <property name="nuxeo.test.jsf.overrideContribDummyProperty">overrideContrib</property>
+    </configuration>
+
+  </extension>
+
+</component>

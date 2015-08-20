@@ -7,6 +7,7 @@
       <property name="nuxeo.test.jsf.dummyBooleanProperty">${nuxeo.test.jsf.dummyBooleanProperty:=true}</property>
       <property name="nuxeo.test.jsf.anotherDummyBooleanProperty">${nuxeo.test.jsf.anotherDummyBooleanProperty:=false}</property>
       <property name="nuxeo.test.jsf.dummyStringProperty">${nuxeo.test.jsf.dummyStringProperty:=dummyValue}</property>
+      <property name="nuxeo.test.jsf.dummyStaticProperty">staticValue</property>
     </configuration>
 
   </extension>
