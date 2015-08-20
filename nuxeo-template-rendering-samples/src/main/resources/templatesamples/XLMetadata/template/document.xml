@@ -2,7 +2,7 @@
 <document repository="default" id="61ccf205-986a-4e9f-865c-54e88dc0d433">
   <system>
     <type>TemplateSource</type>
-    <path>default-domain/templates/XL MetaData render</path>
+    <path>default-domain/workspaces/templatesamples/rawsamples/XL MetaData render</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>

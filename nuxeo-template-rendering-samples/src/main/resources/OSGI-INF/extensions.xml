@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<component name="studio.extensions.template-module-demo" version="1.0.0">
+<component name="studio.extensions.template-module-rawsamples" version="1.0.0">
   <require>org.nuxeo.runtime.started</require>
+  <require>studio.extensions.template-module-demo</require>
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="customer_reference" prefix="cr" src="data/schemas/customer_reference.xsd"/>
     <schema name="InterventionStatement" prefix="is" src="data/schemas/InterventionStatement.xsd"/>

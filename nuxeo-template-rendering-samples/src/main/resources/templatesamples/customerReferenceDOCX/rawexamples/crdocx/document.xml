@@ -3,7 +3,7 @@
 <document repository="default" id="ee70538b-1bef-470d-9d0a-239c67b920f2">
   <system>
     <type>CustomerReference</type>
-    <path>default-domain/workspaces/templatesamples/crdocx</path>
+    <path>default-domain/workspaces/templatesamples/rawsamples/crdocx</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>

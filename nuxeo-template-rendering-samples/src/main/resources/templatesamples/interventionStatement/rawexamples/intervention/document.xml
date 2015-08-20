@@ -2,7 +2,7 @@
 <document repository="default" id="1067dc41-e89a-4a4d-821b-25757d0e2449">
   <system>
     <type>InterventionStatement</type>
-    <path>default-domain/workspaces/templateSamples/Sample Intervention</path>
+    <path>default-domain/workspaces/templatesamples/rawsamples/Sample Intervention</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>

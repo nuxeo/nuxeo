@@ -77,9 +77,13 @@ public class ModelImporter {
 
     public static final String EXAMPLES_ROOT = "examples";
 
+    public static final String RAW_EXAMPLES_ROOT = "rawexamples";
+
     public static final String TEMPLATE_ROOT = "template";
 
     protected static final String RESOURCES_ROOT = "templatesamples";
+
+    protected static final String RAW_RESOURCES_ROOT = "rawsamples";
 
     protected static final String DOMAIN_QUERY = "select * from Domain where ecm:isCheckedInVersion=0  AND  ecm:currentLifeCycleState != 'deleted' order by dc:created ASC";
 
@@ -134,15 +138,33 @@ public class ModelImporter {
                 PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getTemplateResourcesRootPath());
                 if (!session.exists(targetPath)) {
                     container = session.createDocumentModel(WSRoot.getPathAsString(), getTemplateResourcesRootPath(),
-                            "Workspace");
-                    container.setPropertyValue("dc:title", "Template usage samples");
+                            "nxtrSamplesContainer");
+                    container.setPropertyValue("dc:title", "Discover Customization Samples");
                     container.setPropertyValue("dc:description",
-                            "This workspace contains some sample usage of the template rendition system");
+                            "The BigCorp company wants to showcase their expertise to their prospects. They used Nuxeo Studio and Template Rendering to be able to generate portfolios on the fly, based on existing projects.\n\nIt's your turn now! Open the \"Accelerating a Rigid Process\" project and follow the instructions.");
                     container = session.createDocument(container);
                 } else {
                     container = session.getDocument(targetPath);
                 }
             }
+        }
+        return container;
+    }
+
+    private DocumentModel getOrCreateRawSampleContainer() {
+        DocumentModel container = null;
+        DocumentModel parentContainer = getOrCreateSampleContainer();
+
+        PathRef targetPath = new PathRef(getOrCreateSampleContainer().getPathAsString() + "/" + RAW_RESOURCES_ROOT);
+        if (!session.exists(targetPath)) {
+            container = session.createDocumentModel(parentContainer.getPathAsString(), "rawsamples",
+                    "Folder");
+            container.setPropertyValue("dc:title", "Raw Examples");
+            container.setPropertyValue("dc:description",
+                    "This space contains raw examples to demonstrate the Nuxeo Template Rendering's advanced possibilities. Go to the \"Discover Customization Samples\" folder first if you did not follow its instructions yet.");
+            container = session.createDocument(container);
+        } else {
+            container = session.getDocument(targetPath);
         }
         return container;
     }
@@ -227,6 +249,9 @@ public class ModelImporter {
                 } else if (file.getName().equals(EXAMPLES_ROOT)) {
                     roots.put(EXAMPLES_ROOT, file);
                     return true;
+                } else if (file.getName().equals(RAW_EXAMPLES_ROOT)) {
+                    roots.put(RAW_EXAMPLES_ROOT, file);
+                    return true;
                 }
 
                 return false;
@@ -237,6 +262,7 @@ public class ModelImporter {
             if (roots.get(TEMPLATE_ROOT) != null) {
                 DocumentModel templatesContainer = getOrCreateTemplateContainer();
                 DocumentModel samplesContainer = getOrCreateSampleContainer();
+                DocumentModel rawSamplesContainer = getOrCreateRawSampleContainer();
                 if (templatesContainer != null) {
                     DocumentRef modelRef = importModel(root.getName(), roots.get(TEMPLATE_ROOT), templatesContainer);
                     nbImportedDocs++;
@@ -244,6 +270,10 @@ public class ModelImporter {
                         if (roots.get(EXAMPLES_ROOT) != null) {
                             nbImportedDocs = nbImportedDocs
                                     + importSamples(roots.get(EXAMPLES_ROOT), modelRef, samplesContainer);
+                        }
+                        if (roots.get(RAW_EXAMPLES_ROOT) != null) {
+                            nbImportedDocs = nbImportedDocs
+                                    + importSamples(roots.get(RAW_EXAMPLES_ROOT), modelRef, rawSamplesContainer);
                         }
                     }
                 }
