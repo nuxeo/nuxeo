@@ -8,6 +8,8 @@ The **Nuxeo** addon _nuxeo-shibboleth-invitation_ provides the ability to invite
 
 - Unzip it
 
+- See Configuring Part
+
 - Install nuxeo-shibboleth-invitation plugin from command line
   - Linux/Mac:
     - `NUXEO_HOME/bin/nuxeoctl mp-init`
