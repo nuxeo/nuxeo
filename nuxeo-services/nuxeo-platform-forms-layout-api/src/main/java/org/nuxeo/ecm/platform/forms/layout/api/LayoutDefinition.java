@@ -78,6 +78,13 @@ public interface LayoutDefinition extends Serializable {
     WidgetDefinition getWidgetDefinition(String name);
 
     /**
+     * Returns the map of widgets defined inside this layout.
+     *
+     * @since 8.1
+     */
+    Map<String, WidgetDefinition> getWidgetDefinitions();
+
+    /**
      * Returns the list of widget names to use at a given row.
      * <p>
      * For instance, this could describe a layout like: [['title'], ['description'], ['creationDate', '',

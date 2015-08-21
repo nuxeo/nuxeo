@@ -22,6 +22,7 @@ package org.nuxeo.ecm.platform.forms.layout.descriptors;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -190,7 +191,7 @@ public class LayoutDescriptor {
         LayoutRowDefinition[] crows = getRows();
         Map<String, WidgetDefinition> cwidgets = null;
         if (widgets != null) {
-            cwidgets = new HashMap<String, WidgetDefinition>();
+            cwidgets = new LinkedHashMap<String, WidgetDefinition>();
             for (Map.Entry<String, WidgetDescriptor> entry : widgets.entrySet()) {
                 WidgetDescriptor w = entry.getValue();
                 cwidgets.put(entry.getKey(), getWidgetDefinition(w));

@@ -107,6 +107,24 @@ public class LayoutImpl implements Layout {
         this.definitionId = definitionId;
     }
 
+    /**
+     * @since 8.1
+     */
+    public LayoutImpl(String name, String mode, String template, Map<String, Widget> widgets,
+            Map<String, Serializable> properties, String definitionId) {
+        this.name = name;
+        this.mode = mode;
+        this.template = template;
+        this.rows = new LayoutRow[0];
+        this.columns = 0;
+        this.properties = properties;
+        this.widgetMap = new HashMap<String, Widget>();
+        if (widgets != null) {
+            this.widgetMap.putAll(widgets);
+        }
+        this.definitionId = definitionId;
+    }
+
     protected void computeWidgetMap() {
         if (rows == null || rows.length == 0) {
             return;

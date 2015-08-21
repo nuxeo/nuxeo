@@ -47,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.LayoutDevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -335,6 +336,21 @@ public class LayoutTagHandler extends TagHandler {
 
         if (StringUtils.isBlank(templateValue)) {
             templateValue = layoutInstance.getTemplate();
+        }
+
+        if (!resolveOnly) {
+            boolean scaffold = Boolean.parseBoolean(String.valueOf(layoutInstance.getProperty("scaffold")));
+            if (scaffold) {
+                // generate ids on widgets
+                Map<String, Widget> widgetMap = layoutInstance.getWidgetMap();
+                if (widgetMap != null) {
+                    for (Widget widget : widgetMap.values()) {
+                        if (widget != null && (widget.getId() == null)) {
+                            WidgetTagHandler.generateWidgetId(helper, widget, false);
+                        }
+                    }
+                }
+            }
         }
 
         // expose layout instance to variable mapper to ensure good

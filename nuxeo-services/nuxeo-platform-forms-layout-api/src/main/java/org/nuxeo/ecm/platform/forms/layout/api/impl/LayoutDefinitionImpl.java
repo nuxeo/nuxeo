@@ -19,6 +19,7 @@ package org.nuxeo.ecm.platform.forms.layout.api.impl;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -227,6 +228,11 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
     }
 
     @Override
+    public Map<String, WidgetDefinition> getWidgetDefinitions() {
+        return widgets;
+    }
+
+    @Override
     public Map<String, List<RenderingInfo>> getRenderingInfos() {
         return renderingInfos;
     }
@@ -304,7 +310,7 @@ public class LayoutDefinitionImpl implements LayoutDefinition {
         }
         Map<String, WidgetDefinition> cwidgets = null;
         if (widgets != null) {
-            cwidgets = new HashMap<String, WidgetDefinition>();
+            cwidgets = new LinkedHashMap<String, WidgetDefinition>();
             for (Map.Entry<String, WidgetDefinition> entry : widgets.entrySet()) {
                 WidgetDefinition w = entry.getValue();
                 if (w != null) {

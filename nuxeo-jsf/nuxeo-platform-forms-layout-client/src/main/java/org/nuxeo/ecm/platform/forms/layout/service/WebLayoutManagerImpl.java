@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -473,70 +474,106 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             props.putAll(lprops);
         }
 
-        LayoutRowDefinition[] rowsDef = lDef.getRows();
-        List<LayoutRow> rows = new ArrayList<LayoutRow>();
-        Set<String> foundRowNames = new HashSet<String>();
-        int rowIndex = -1;
-        for (LayoutRowDefinition rowDef : rowsDef) {
-            rowIndex++;
-            String rowName = rowDef.getName();
-            if (rowName == null) {
-                rowName = rowDef.getDefaultName(rowIndex);
-                if (selectedRows != null && log.isDebugEnabled()) {
-                    log.debug("Generating default name '" + rowName + "' in layout '" + layoutName
-                            + "' for row or column at index " + rowIndex);
+        LayoutImpl layout;
+        boolean scaffold = Boolean.parseBoolean(String.valueOf(props.get("scaffold")));
+        if (scaffold) {
+            // ignore rows, retrieve all widgets from the definition, and put them in a map held by layout
+            Map<String, Widget> widgetsMap = new LinkedHashMap<String, Widget>();
+            Map<String, WidgetDefinition> widgetDefs = lDef.getWidgetDefinitions();
+            if (widgetDefs != null) {
+                for (WidgetDefinition widgetDef : widgetDefs.values()) {
+                    String widgetName = widgetDef.getName();
+                    if (StringUtils.isBlank(widgetName)) {
+                        // no widget at this place
+                        continue;
+                    }
+                    // TODO: handle category for global widgets
+                    String cat = null;
+                    if (StringUtils.isBlank(cat)) {
+                        cat = getDefaultStoreCategory();
+                    }
+                    WidgetDefinition wDef = lookupWidget(lDef, new WidgetReferenceImpl(cat, widgetName));
+                    if (wDef == null) {
+                        log.error("Widget '" + widgetName + "' not found in layout " + layoutName);
+                        continue;
+                    }
+                    Widget widget = getWidget(ctx, lctx, conversionCat, layoutName, lDef, wDef, cat, mode, valueName,
+                            0);
+                    if (widget != null) {
+                        widgetsMap.put(widgetName, widget);
+                    }
                 }
             }
-            boolean emptyRow = true;
-            if (selectedRows != null && !selectedRows.contains(rowName) && !rowDef.isAlwaysSelected()) {
-                continue;
-            }
-            if (selectedRows == null && !selectAllRowsByDefault && !rowDef.isSelectedByDefault()
-                    && !rowDef.isAlwaysSelected()) {
-                continue;
-            }
-            List<Widget> widgets = new ArrayList<Widget>();
-            for (WidgetReference widgetRef : rowDef.getWidgetReferences()) {
-                String widgetName = widgetRef.getName();
-                if (widgetName == null || widgetName.length() == 0) {
-                    // no widget at this place
-                    widgets.add(null);
+            layout = new LayoutImpl(lDef.getName(), mode, template, widgetsMap, props,
+                    LayoutFunctions.computeLayoutDefinitionId(lDef));
+        } else {
+            LayoutRowDefinition[] rowsDef = lDef.getRows();
+            List<LayoutRow> rows = new ArrayList<LayoutRow>();
+            Set<String> foundRowNames = new HashSet<String>();
+            int rowIndex = -1;
+            for (LayoutRowDefinition rowDef : rowsDef) {
+                rowIndex++;
+                String rowName = rowDef.getName();
+                if (rowName == null) {
+                    rowName = rowDef.getDefaultName(rowIndex);
+                    if (selectedRows != null && log.isDebugEnabled()) {
+                        log.debug("Generating default name '" + rowName + "' in layout '" + layoutName
+                                + "' for row or column at index " + rowIndex);
+                    }
+                }
+                boolean emptyRow = true;
+                if (selectedRows != null && !selectedRows.contains(rowName) && !rowDef.isAlwaysSelected()) {
                     continue;
                 }
-                String cat = widgetRef.getCategory();
-                if (StringUtils.isBlank(cat)) {
-                    cat = getDefaultStoreCategory();
-                }
-                WidgetDefinition wDef = lookupWidget(lDef, new WidgetReferenceImpl(cat, widgetName));
-                if (wDef == null) {
-                    log.error("Widget '" + widgetName + "' not found in layout " + layoutName);
-                    widgets.add(null);
+                if (selectedRows == null && !selectAllRowsByDefault && !rowDef.isSelectedByDefault()
+                        && !rowDef.isAlwaysSelected()) {
                     continue;
                 }
-                Widget widget = getWidget(ctx, lctx, conversionCat, layoutName, lDef, wDef, cat, mode, valueName, 0);
-                if (widget != null) {
-                    emptyRow = false;
+                List<Widget> widgets = new ArrayList<Widget>();
+                for (WidgetReference widgetRef : rowDef.getWidgetReferences()) {
+                    String widgetName = widgetRef.getName();
+                    if (StringUtils.isBlank(widgetName)) {
+                        // no widget at this place
+                        widgets.add(null);
+                        continue;
+                    }
+                    String cat = widgetRef.getCategory();
+                    if (StringUtils.isBlank(cat)) {
+                        cat = getDefaultStoreCategory();
+                    }
+                    WidgetDefinition wDef = lookupWidget(lDef, new WidgetReferenceImpl(cat, widgetName));
+                    if (wDef == null) {
+                        log.error("Widget '" + widgetName + "' not found in layout " + layoutName);
+                        widgets.add(null);
+                        continue;
+                    }
+                    Widget widget = getWidget(ctx, lctx, conversionCat, layoutName, lDef, wDef, cat, mode, valueName,
+                            0);
+                    if (widget != null) {
+                        emptyRow = false;
+                    }
+                    widgets.add(widget);
                 }
-                widgets.add(widget);
+                if (!emptyRow) {
+                    rows.add(new LayoutRowImpl(rowName, rowDef.isSelectedByDefault(), rowDef.isAlwaysSelected(),
+                            widgets, rowDef.getProperties(mode), LayoutFunctions.computeLayoutRowDefinitionId(rowDef)));
+                }
+                foundRowNames.add(rowName);
             }
-            if (!emptyRow) {
-                rows.add(new LayoutRowImpl(rowName, rowDef.isSelectedByDefault(), rowDef.isAlwaysSelected(), widgets,
-                        rowDef.getProperties(mode), LayoutFunctions.computeLayoutRowDefinitionId(rowDef)));
-            }
-            foundRowNames.add(rowName);
-        }
-        if (selectedRows != null) {
-            Collections.sort(rows, new LayoutRowComparator(selectedRows));
-            for (String selectedRow : selectedRows) {
-                if (!foundRowNames.contains(selectedRow)) {
-                    log.warn("Selected row or column named '" + selectedRow + "' " + "was not found in layout '"
-                            + layoutName + "'");
+            if (selectedRows != null) {
+                Collections.sort(rows, new LayoutRowComparator(selectedRows));
+                for (String selectedRow : selectedRows) {
+                    if (!foundRowNames.contains(selectedRow)) {
+                        log.warn("Selected row or column named '" + selectedRow + "' " + "was not found in layout '"
+                                + layoutName + "'");
+                    }
                 }
             }
+
+            layout = new LayoutImpl(lDef.getName(), mode, template, rows, lDef.getColumns(), props,
+                    LayoutFunctions.computeLayoutDefinitionId(lDef));
         }
 
-        LayoutImpl layout = new LayoutImpl(lDef.getName(), mode, template, rows, lDef.getColumns(), props,
-                LayoutFunctions.computeLayoutDefinitionId(lDef));
         layout.setValueName(valueName);
         layout.setType(layoutType);
         layout.setTypeCategory(actualLayoutTypeCategory);

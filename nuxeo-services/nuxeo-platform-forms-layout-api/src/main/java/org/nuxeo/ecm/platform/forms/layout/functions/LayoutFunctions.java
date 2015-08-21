@@ -135,6 +135,13 @@ public class LayoutFunctions {
             builder.append(properties.toString());
         }
         builder.append(";");
+        Map<String, WidgetDefinition> widgetDefs = layoutDef.getWidgetDefinitions();
+        if (widgetDefs != null) {
+            for (WidgetDefinition widgetDef : widgetDefs.values()) {
+                builder.append(computeWidgetDefinitionId(widgetDef)).append(",");
+            }
+        }
+        builder.append(";");
 
         Integer intValue = new Integer(builder.toString().hashCode());
         return intValue.toString();
