@@ -31,6 +31,8 @@ import org.nuxeo.ecm.platform.auth.saml.slo.SLOProfileImpl;
 import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfile;
 import org.nuxeo.ecm.platform.auth.saml.sso.WebSSOProfileImpl;
 import org.nuxeo.ecm.platform.auth.saml.user.EmailBasedUserResolver;
+import org.nuxeo.ecm.platform.auth.saml.user.UserMapperBasedResolver;
+import org.nuxeo.ecm.platform.auth.saml.user.AbstractUserResolver;
 import org.nuxeo.ecm.platform.auth.saml.user.UserResolver;
 import org.nuxeo.ecm.platform.ui.web.auth.LoginScreenHelper;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
@@ -38,6 +40,7 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.ui.web.auth.service.LoginProviderLinkComputer;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.usermapper.service.UserMapperService;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.common.SAMLException;
 import org.opensaml.common.SAMLObject;
@@ -89,6 +92,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -115,6 +119,8 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
     // User Resolver
     private static final Class<? extends UserResolver> DEFAULT_USER_RESOLVER_CLASS = EmailBasedUserResolver.class;
+    private static final Class<? extends UserResolver> USERMAPPER_USER_RESOLVER_CLASS = UserMapperBasedResolver.class;
+
 
     // SAML Constants
     static final String SAML_SESSION_KEY = "SAML_SESSION";
@@ -153,13 +159,28 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
 
         // Initialize the User Resolver
         String userResolverClassname = parameters.get("userResolverClass");
+        Class<? extends UserResolver> userResolverClass = null;
+        if (StringUtils.isBlank(userResolverClassname)) {
+            UserMapperService ums = Framework.getService(UserMapperService.class);
+            if (ums!=null) {
+                userResolverClass = USERMAPPER_USER_RESOLVER_CLASS;
+            } else {
+                userResolverClass = DEFAULT_USER_RESOLVER_CLASS;
+            }
+        } else {
+            try {
+                userResolverClass = Class.forName(userResolverClassname).asSubclass(AbstractUserResolver.class);
+            } catch (ClassNotFoundException e) {
+                log.error("Failed get user resolver class " + userResolverClassname);
+            }
+
+        }
         try {
-            Class<? extends UserResolver> userResolverClass = StringUtils.isBlank(userResolverClassname) ?
-                DEFAULT_USER_RESOLVER_CLASS : Class.forName(userResolverClassname).asSubclass(UserResolver.class);
             userResolver = userResolverClass.newInstance();
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             log.error("Failed to initialize user resolver " + userResolverClassname);
         }
+
 
         // Initialize the OpenSAML library
         try {
@@ -419,7 +440,7 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
             return null;
         }
 
-        String userId = userResolver.findNuxeoUser(credential);
+        String userId = userResolver.findOrCreateNuxeoUser(credential);
 
         if (userId == null) {
             log.warn("Failed to resolve user with NameID \"" + credential.getNameID().getValue() + "\".");

@@ -16,6 +16,10 @@
  */
 package org.nuxeo.ecm.platform.auth.saml.user;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -25,11 +29,7 @@ import org.nuxeo.ecm.platform.auth.saml.SAMLCredential;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-public class EmailBasedUserResolver extends UserResolver {
+public class EmailBasedUserResolver extends AbstractUserResolver {
 
     private static final Log log = LogFactory.getLog(EmailBasedUserResolver.class);
 
@@ -66,6 +66,12 @@ public class EmailBasedUserResolver extends UserResolver {
             return null;
         }
         return user;
+    }
+
+    @Override
+    public String getLoginName(SAMLCredential userInfo) {
+        String email = userInfo.getNameID().getValue();
+        return email;
     }
 
 }

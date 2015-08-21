@@ -13,6 +13,7 @@
   <description>Nuxeo Platform login parent</description>
 
   <modules>
+    <module>nuxeo-usermapper</module>
     <module>nuxeo-platform-login-cas2</module>
     <module>nuxeo-platform-login-mod_sso</module>
     <module>nuxeo-platform-login-ntlm</module>
