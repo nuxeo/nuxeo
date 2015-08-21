@@ -16,7 +16,7 @@ package org.nuxeo.ecm.core.redis;
  *     bdelbosc
  */
 
-import org.junit.Ignore;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.redis.contribs.RedisClusterInvalidator;
@@ -31,8 +31,6 @@ import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 /**
  * @since 7.4
@@ -48,6 +46,7 @@ public class TestRedisClusterInvalidator {
     }
 
     private RedisClusterInvalidator createRedisClusterInvalidator(String node) {
+        assumeTrueRedisServer();
         RepositoryImpl repository = getDefaultRepository();
         RedisClusterInvalidator rci = new RedisClusterInvalidator();
         rci.initialize(node, repository);
@@ -59,27 +58,13 @@ public class TestRedisClusterInvalidator {
         return repositoryService.getRepositoryImpl(repositoryService.getRepositoryNames().get(0));
     }
 
-    @Test
-    public void testRedisInvalidations() throws Exception {
-        Invalidations invals = new Invalidations();
-        invals.addModified(new RowId("dublincore", "docid1"));
-
-        RedisInvalidations srcInvals = new RedisInvalidations("node1", invals);
-        assertEquals("RedisInvalidationsInvalidations(fromNode=node1, Invalidations(modified=[RowId(dublincore, docid1)]))",
-                srcInvals.toString());
-
-        RedisInvalidations destInvals = new RedisInvalidations("node1", srcInvals.serialize());
-        assertEquals("RedisInvalidationsInvalidations(local, discarded)", destInvals.toString());
-        assertNull(destInvals.getInvalidations());
-
-        destInvals = new RedisInvalidations("node2", srcInvals.serialize());
-        assertNotNull(destInvals.getInvalidations());
-        assertEquals(invals.toString(), destInvals.getInvalidations().toString());
+    private void assumeTrueRedisServer() {
+        Assume.assumeTrue("Require a true Redis server with pipelined and pubsub support",
+                "server".equals(Framework.getProperty("nuxeo.test.redis.mode")));
     }
 
-    @Ignore("This requires a true Redis server with pub/sub support to work")
     @Test
-    public void testSendInvalidations() throws Exception {
+    public void testSendReceiveInvalidations() throws Exception {
         RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
         RedisClusterInvalidator rci2 = createRedisClusterInvalidator("node2");
         try {
@@ -87,6 +72,7 @@ public class TestRedisClusterInvalidator {
             invals.addModified(new RowId("dublincore", "docid1"));
             invals.addModified(new RowId("dublincore", "docid2"));
             rci1.sendInvalidations(invals);
+            Thread.sleep((1000));
             Invalidations invalsReceived = rci2.receiveInvalidations();
             assertEquals(invals.toString(), invalsReceived.toString());
         } finally {
@@ -94,4 +80,25 @@ public class TestRedisClusterInvalidator {
             rci2.close();
         }
     }
+
+    @Test
+    public void testSendReceiveMultiInvalidations() throws Exception {
+        RedisClusterInvalidator rci1 = createRedisClusterInvalidator("node1");
+        RedisClusterInvalidator rci2 = createRedisClusterInvalidator("node2");
+        try {
+            Invalidations invals = new Invalidations();
+            invals.addModified(new RowId("dublincore", "docid1"));
+            rci1.sendInvalidations(invals);
+            invals = new Invalidations();
+            invals.addModified(new RowId("dublincore", "docid2"));
+            rci1.sendInvalidations(invals);
+            Thread.sleep((1000));
+            Invalidations invalsReceived = rci2.receiveInvalidations();
+            assertEquals(2, invalsReceived.modified.size());
+        } finally {
+            rci1.close();
+            rci2.close();
+        }
+    }
+
 }

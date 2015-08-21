@@ -122,10 +122,6 @@ public class RedisClusterInvalidator implements ClusterInvalidator {
     protected void registerNode() {
         startedDateTime = getCurrentDateTime();
         log.info("Registering node: " + nodeId);
-        if (Framework.isTestModeSet()) {
-            // need a true redis server, pipelined is not supported on NoSQLUnit-redis
-            return;
-        }
         try {
             redisExecutor.execute(jedis -> {
                 String key = getNodeKey();
