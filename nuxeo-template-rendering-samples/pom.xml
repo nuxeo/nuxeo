@@ -12,7 +12,33 @@
   <artifactId>nuxeo-template-rendering-samples</artifactId>
   <name>Template Rendering Samples package</name>
 
+  <repositories>
+    <repository>
+      <id>nuxeo-studio</id>
+      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
+    <dependency>
+    <groupId>nuxeo-studio</groupId>
+    <artifactId>template-module-demo</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.nuxeo.template.rendering</groupId>
+      <artifactId>nuxeo-template-rendering-web</artifactId>
+      <scope>test</scope>
+    </dependency>
+  
     <dependency>
       <groupId>org.nuxeo.template.rendering</groupId>
       <artifactId>nuxeo-template-rendering-api</artifactId>
