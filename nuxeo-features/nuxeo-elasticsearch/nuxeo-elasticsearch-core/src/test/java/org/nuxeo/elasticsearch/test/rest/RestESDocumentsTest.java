@@ -17,8 +17,10 @@
 package org.nuxeo.elasticsearch.test.rest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -39,11 +41,17 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.platform.query.api.PageProvider;
+import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
+import org.nuxeo.ecm.platform.query.api.PageProviderService;
+import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.ecm.restapi.server.jaxrs.QueryObject;
+import org.nuxeo.ecm.restapi.server.jaxrs.adapters.SearchAdapter;
 import org.nuxeo.ecm.restapi.test.BaseTest;
 import org.nuxeo.ecm.restapi.test.RestServerFeature;
 import org.nuxeo.ecm.restapi.test.RestServerInit;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
+import org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider;
 import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -66,9 +74,16 @@ import com.sun.jersey.api.client.ClientResponse;
 @LocalDeploy({ "org.nuxeo.ecm.platform.restapi.test:pageprovider-test-contrib.xml",
         "org.nuxeo.ecm.platform.restapi.test:elasticsearch-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:contentviews-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml" })
+        "org.nuxeo.elasticsearch.core:contentviews-coretype-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:pageprovider-search-test-contrib.xml" })
 @RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 public class RestESDocumentsTest extends BaseTest {
+
+    public static final String QUERY = "select * from Document where " +
+            "ecm:currentLifeCycleState <> 'deleted'";
+
+    @Inject
+    PageProviderService pageProviderService;
 
     @Inject
     AutomationService automationService;
@@ -108,6 +123,28 @@ public class RestESDocumentsTest extends BaseTest {
         assertEquals(15, getLogEntries(node).size());
         // And verify contributed aggregates
         assertEquals("terms", node.get("aggregations").get("coverage").get("type").getTextValue());
+    }
+
+    /**
+     * Testing the REST_API_SEARCH_ADAPTER page provider when using elasticsearch.override.pageproviders conf variable
+     * to replace the core page provider by ES generic.
+     *
+     * @since 7.4
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void isQueryEndpointCanSwitchToES(){
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) session);
+                PageProviderDefinition ppdefinition = pageProviderService.getPageProviderDefinition(SearchAdapter.pageProviderName);
+        ppdefinition.setPattern(QUERY);
+        ppdefinition.getProperties().put("maxResults", "1");
+        PaginableDocumentModelListImpl res = new PaginableDocumentModelListImpl(
+                (PageProvider<DocumentModel>) pageProviderService.getPageProvider(SearchAdapter.pageProviderName,
+                        ppdefinition, null, null, null, null, props, null), null);
+        if (!(res.getProvider() instanceof ElasticSearchNxqlPageProvider)) {
+            fail("Should be an elastic search page provider");
+        }
     }
 
     @Test
