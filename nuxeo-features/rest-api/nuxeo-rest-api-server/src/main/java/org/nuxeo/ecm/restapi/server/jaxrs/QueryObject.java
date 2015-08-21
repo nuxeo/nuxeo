@@ -197,8 +197,11 @@ public class QueryObject extends AbstractResource<ResourceTypeImpl> {
                 // set the maxResults to avoid slowing down queries
                 ppdefinition.getProperties().put("maxResults", maxResults);
             }
+            if(StringUtils.isBlank(providerName)){
+                providerName = SearchAdapter.pageProviderName;
+            }
             res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
-                    StringUtils.EMPTY, ppdefinition, searchDocumentModel, sortInfoList, targetPageSize, targetPage,
+                    providerName, ppdefinition, searchDocumentModel, sortInfoList, targetPageSize, targetPage,
                     props, parameters), null);
         } else {
             res = new PaginableDocumentModelListImpl((PageProvider<DocumentModel>) pageProviderService.getPageProvider(
