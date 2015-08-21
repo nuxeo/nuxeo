@@ -56,6 +56,10 @@ public abstract class AbstractLayoutManager extends DefaultComponent implements 
         WidgetDefinition wDef = null;
         if (layoutDef != null) {
             wDef = layoutDef.getWidgetDefinition(widgetName);
+            if (wDef != null && wDef.getType() == null) {
+                // consider it's a reference for a global widget
+                wDef = null;
+            }
         }
         if (wDef == null) {
             // try in global registry
