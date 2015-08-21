@@ -557,6 +557,31 @@ public abstract class AbstractTest {
     }
 
     public static <T> T get(String url, Class<T> pageClassToProxy) {
+        if (driver != null) {
+            List<JavaScriptError> jsErrors = JavaScriptError.readErrors(driver);
+            if (jsErrors != null && !jsErrors.isEmpty()) {
+                StringBuilder msg = new StringBuilder();
+                msg.append(jsErrors.size()).append(" Javascript error(s) detected: ");
+                msg.append("[");
+                int i = 0;
+                for (JavaScriptError jsError : jsErrors) {
+                    if (i != 0) {
+                        msg.append(", ");
+                    }
+                    i++;
+                    msg.append("\"").append(jsError.getErrorMessage()).append("\"");
+                    msg.append(" at ").append(jsError.getSourceName());
+                    msg.append(" line ").append(jsError.getLineNumber());
+                }
+                msg.append("]");
+                if (driver != null) {
+                    ScreenshotTaker taker = new ScreenshotTaker();
+                    taker.takeScreenshot(driver, "NXP-17647-");
+                    taker.dumpPageSource(driver, "NXP-17647-");
+                }
+                fail(msg.toString());
+            }
+        }
         driver.get(url);
         return asPage(pageClassToProxy);
     }
