@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<document repository="default" id="88e11122-5afc-42d3-a378-aaa33d97d6fc">
+<document repository="default" id="660ef0eb-cfdc-4003-8a71-ab3dd8770896">
   <system>
     <type>TemplateSource</type>
-    <path>default-domain/templates/ProjectFrontPage</path>
+    <path>ProjectFrontPage</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
-    <facet>Versionable</facet>
-    <facet>Commentable</facet>
-    <facet>HasRelatedText</facet>
-    <facet>Thumbnail</facet>
     <facet>Downloadable</facet>
     <facet>Template</facet>
+    <facet>Commentable</facet>
+    <facet>Versionable</facet>
+    <facet>HasRelatedText</facet>
     <access-control>
       <acl name="inherited">
         <entry principal="Administrator" permission="Everything" grant="true"/>
@@ -19,21 +18,39 @@
       </acl>
     </access-control>
   </system>
-  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
-    <uid:major_version><![CDATA[0]]></uid:major_version>
-    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
+    <dc:creator><![CDATA[Administrator]]></dc:creator>
+    <dc:source/>
+    <dc:contributors>
+      <item><![CDATA[Administrator]]></item>
+    </dc:contributors>
+    <dc:nature />
+    <dc:created><![CDATA[2012-06-21T16:04:39.71Z]]></dc:created>
+    <dc:description><![CDATA[Used to generate a portfolio's front page.]]></dc:description>
+    <dc:rights/>
+    <dc:subjects/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:modified><![CDATA[2012-06-21T16:30:55.00Z]]></dc:modified>
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
+    <dc:title><![CDATA[ProjectFrontPage]]></dc:title>
   </schema>
-  <schema xmlns:thumb="http://www.nuxeo.org/ecm/schemas/thumbnail" name="thumbnail">
-    <thumb:thumbnail>
-      <encoding></encoding>
-      <mime-type>image/png</mime-type>
-      <filename>ProjectFrontPage.png</filename>
-      <data>64ede13.blob</data>
-      <digest>c513161d79db19b31b1f2739e443c97e</digest>
-    </thumb:thumbnail>
+  <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:uid/>
+    <uid:minor_version><![CDATA[0]]></uid:minor_version>
+    <uid:major_version><![CDATA[0]]></uid:major_version>
+  </schema>
+  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
+    <common:icon><![CDATA[/icons/odt.png]]></common:icon>
+    <common:icon-expanded/>
+    <common:size><![CDATA[38735]]></common:size>
   </schema>
   <schema xmlns:file="http://www.nuxeo.org/ecm/schemas/file/" name="file">
-    <file:filename><![CDATA[ProjectFrontPage.odt]]></file:filename>
     <file:content>
       <encoding></encoding>
       <mime-type>application/vnd.oasis.opendocument.text</mime-type>
@@ -41,37 +58,22 @@
       <data>bf065d4e.blob</data>
       <digest>7e69d4f54e9b3784a1a51602fb4328a1</digest>
     </file:content>
-  </schema>
-  <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
-    <common:size><![CDATA[38735]]></common:size>
-    <common:icon><![CDATA[/icons/odt.png]]></common:icon>
-  </schema>
-  <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
-    <dc:description><![CDATA[Used to generate a portfolio's front page.]]></dc:description>
-    <dc:creator><![CDATA[Administrator]]></dc:creator>
-    <dc:modified><![CDATA[2015-07-27T11:08:03.00Z]]></dc:modified>
-    <dc:lastContributor><![CDATA[Administrator]]></dc:lastContributor>
-    <dc:created><![CDATA[2015-07-27T11:07:36.00Z]]></dc:created>
-    <dc:title><![CDATA[ProjectFrontPage]]></dc:title>
-    <dc:subjects/>
-    <dc:contributors>
-      <item><![CDATA[Administrator]]></item>
-    </dc:contributors>
+    <file:filename><![CDATA[Customer reference model.docx]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>
       <item><![CDATA[nxtrPortfolio]]></item>
     </tmpl:forcedTypes>
+    <tmpl:templateData><![CDATA[]]></tmpl:templateData>
+    <tmpl:allowOverride><![CDATA[false]]></tmpl:allowOverride>
+    <tmpl:templateType><![CDATA[XDocReportProcessor]]></tmpl:templateType>
+    <tmpl:useAsMainContent><![CDATA[false]]></tmpl:useAsMainContent>
+    <tmpl:templateName><![CDATA[ProjectFrontPage]]></tmpl:templateName>
     <tmpl:applicableTypes>
       <item><![CDATA[nxtrPortfolio]]></item>
     </tmpl:applicableTypes>
     <tmpl:outputFormat><![CDATA[pdf]]></tmpl:outputFormat>
-    <tmpl:templateData><![CDATA[<nxdt:templateParams xmlns:nxdt="http://www.nuxeo.org/DocumentTemplate"/>]]></tmpl:templateData>
     <tmpl:targetRenditionName><![CDATA[none]]></tmpl:targetRenditionName>
-    <tmpl:allowOverride><![CDATA[false]]></tmpl:allowOverride>
-    <tmpl:useAsMainContent><![CDATA[false]]></tmpl:useAsMainContent>
-    <tmpl:templateName><![CDATA[ProjectFrontPage]]></tmpl:templateName>
-    <tmpl:templateType><![CDATA[XDocReportProcessor]]></tmpl:templateType>
   </schema>
   <schema xmlns:relatedtext="http://www.nuxeo.org/ecm/schemas/relatedtext/" name="relatedtext">
     <relatedtext:relatedtextresources/>

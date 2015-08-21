@@ -9,7 +9,6 @@
     <facet>Versionable</facet>
     <facet>Commentable</facet>
     <facet>HasRelatedText</facet>
-    <facet>Thumbnail</facet>
     <facet>Downloadable</facet>
     <facet>Template</facet>
     <access-control>
@@ -36,6 +35,7 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:size><![CDATA[33278]]></common:size>
     <common:icon><![CDATA[/icons/docx.png]]></common:icon>
+    <common:icon-expanded/>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:description><![CDATA[Used to generate a project showcase in a portfolio.]]></dc:description>

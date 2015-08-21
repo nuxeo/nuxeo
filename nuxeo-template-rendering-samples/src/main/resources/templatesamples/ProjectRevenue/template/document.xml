@@ -9,7 +9,6 @@
     <facet>Versionable</facet>
     <facet>Commentable</facet>
     <facet>HasRelatedText</facet>
-    <facet>Thumbnail</facet>
     <facet>Downloadable</facet>
     <facet>Template</facet>
     <access-control>
@@ -20,6 +19,7 @@
     </access-control>
   </system>
   <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+  	<uid:uid/>
     <uid:major_version><![CDATA[0]]></uid:major_version>
     <uid:minor_version><![CDATA[0]]></uid:minor_version>
   </schema>
@@ -36,6 +36,7 @@
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:size><![CDATA[11063]]></common:size>
     <common:icon><![CDATA[/icons/xlsx.png]]></common:icon>
+    <common:icon-expanded/>
   </schema>
   <schema xmlns:dc="http://www.nuxeo.org/ecm/schemas/dublincore/" name="dublincore">
     <dc:description><![CDATA[Used to generate a financial report for a project.]]></dc:description>
@@ -48,6 +49,16 @@
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
     </dc:contributors>
+    <dc:source/>
+    <dc:nature />
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:rights/>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>

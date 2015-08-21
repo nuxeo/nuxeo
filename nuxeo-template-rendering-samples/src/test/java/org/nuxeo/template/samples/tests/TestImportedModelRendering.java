@@ -51,12 +51,7 @@ import org.nuxeo.template.api.adapters.TemplateBasedDocument;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.convert",
         "org.nuxeo.ecm.platform.preview", "org.nuxeo.ecm.platform.dublincore", "org.nuxeo.template.manager.api",
         "org.nuxeo.template.manager", "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.manager.xdocreport",
-        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples",
-        "studio.extensions.template-module-demo",
-        "org.nuxeo.ecm.platform.rendition.core:OSGI-INF/rendition-contrib.xml",
-        "org.nuxeo.ecm.platform.commandline.executor:OSGI-INF/commandline-default-contrib.xml",
-        "org.nuxeo.template.manager.web:OSGI-INF/types-contrib.xml"
-         })
+        "org.nuxeo.template.manager.jxls", "org.nuxeo.template.manager.samples" })
 public class TestImportedModelRendering {
 
     DocumentModel rootDocument;
@@ -74,11 +69,11 @@ public class TestImportedModelRendering {
     @Test
     public void testNote4Web() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/templatesamples/webnote");
+        ref = new PathRef("default-domain/workspaces/rawsamples/webnote");
         DocumentModel note4Web = session.getDocument(ref);
 
         TemplateBasedDocument note4WebTemplate = note4Web.getAdapter(TemplateBasedDocument.class);
@@ -100,11 +95,11 @@ public class TestImportedModelRendering {
     @Test
     public void testSampleNote() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/templatesamples/note");
+        ref = new PathRef("default-domain/workspaces/rawsamples/note");
         DocumentModel note = session.getDocument(ref);
 
         TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
@@ -140,11 +135,11 @@ public class TestImportedModelRendering {
     @Test
     public void testXLrendering() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/templatesamples/note4XL");
+        ref = new PathRef("default-domain/workspaces/rawsamples/note4XL");
         DocumentModel note = session.getDocument(ref);
 
         TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
@@ -170,11 +165,11 @@ public class TestImportedModelRendering {
     @Test
     public void testInterventionStatement() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/templatesamples/intervention");
+        ref = new PathRef("default-domain/workspaces/rawsamples/intervention");
         DocumentModel intervention = session.getDocument(ref);
 
         TemplateBasedDocument interventionTemplate = intervention.getAdapter(TemplateBasedDocument.class);
