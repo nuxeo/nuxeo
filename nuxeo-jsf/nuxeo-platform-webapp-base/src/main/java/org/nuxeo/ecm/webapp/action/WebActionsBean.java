@@ -19,9 +19,6 @@
 
 package org.nuxeo.ecm.webapp.action;
 
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +39,8 @@ import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Observer;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.intercept.BypassInterceptors;
+import org.jboss.seam.contexts.Context;
+import org.jboss.seam.contexts.Contexts;
 import org.nuxeo.common.utils.UserAgentMatcher;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,6 +54,9 @@ import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
 
 /**
  * Component that handles actions retrieval as well as current tab(s) selection.
@@ -477,6 +479,15 @@ public class WebActionsBean implements WebActions, Serializable {
         HttpServletRequest request = (HttpServletRequest) econtext.getRequest();
         String ua = request.getHeader("User-Agent");
         return UserAgentMatcher.isHistoryPushStateSupported(ua);
+    }
+
+    @Observer(value = { EventNames.FLUSH_EVENT }, create = false)
+    @BypassInterceptors
+    public void onHotReloadFlush() {
+        // reset above caches
+        Context seamContext = Contexts.getSessionContext();
+        seamContext.remove("useAjaxTabs");
+        seamContext.remove("canUseAjaxTabs");
     }
 
 }
