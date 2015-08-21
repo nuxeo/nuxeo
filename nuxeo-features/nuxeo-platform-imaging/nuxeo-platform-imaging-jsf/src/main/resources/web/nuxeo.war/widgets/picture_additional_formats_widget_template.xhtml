@@ -35,7 +35,7 @@
           </td>
           <td class="fieldColumn">
             <c:if test="#{!empty view.content}">
-              <span class="detail">#{nxu:printFormatedFileSize(view.content.length, 'JEDEC', true)}</span>
+              <span class="detail">#{nxu:printFileSize(view.content.length)}</span>
             </c:if>
           </td>
           <td class="fieldColumn">
