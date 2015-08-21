@@ -950,8 +950,10 @@ public abstract class NuxeoLauncher {
                 launcherOptions.addOptionGroup(debugOptions);
             }
             // For help output purpose only: that option is managed and swallowed by the nuxeoctl Shell script
-            launcherOptions.addOption(Option.builder().longOpt("--debug-launcher").desc(
-                    "Linux-only. Activate Java debugging mode on the Launcher.").build());
+            launcherOptions.addOption(Option.builder()
+                                            .longOpt("--debug-launcher")
+                                            .desc("Linux-only. Activate Java debugging mode on the Launcher.")
+                                            .build());
             // Instance CLID option
             launcherOptions.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
             { // Output options (mutually exclusive)
@@ -982,11 +984,18 @@ public abstract class NuxeoLauncher {
             launcherOptions.addOption(Option.builder("im").longOpt(OPTION_IGNORE_MISSING).desc(
                     OPTION_IGNORE_MISSING_DESC).build());
             // Hide deprecation warnings option
-            launcherOptions.addOption(Option.builder("hdw").longOpt(OPTION_HIDE_DEPRECATION).desc(
-                    OPTION_HIDE_DEPRECATION_DESC).build());
+            launcherOptions.addOption(Option.builder("hdw")
+                                            .longOpt(OPTION_HIDE_DEPRECATION)
+                                            .desc(OPTION_HIDE_DEPRECATION_DESC)
+                                            .build());
             // Encrypt option
-            launcherOptions.addOption(Option.builder().longOpt(OPTION_ENCRYPT).desc(OPTION_ENCRYPT_DESC).hasArg().argName(
-                    OPTION_ENCRYPT_ARG_NAME).optionalArg(true).build());
+            launcherOptions.addOption(Option.builder()
+                                            .longOpt(OPTION_ENCRYPT)
+                                            .desc(OPTION_ENCRYPT_DESC)
+                                            .hasArg()
+                                            .argName(OPTION_ENCRYPT_ARG_NAME)
+                                            .optionalArg(true)
+                                            .build());
             { // Config options (mutually exclusive)
                 OptionGroup configOptions = new OptionGroup();
                 // Set option
