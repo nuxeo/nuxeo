@@ -578,6 +578,8 @@ public abstract class AbstractTest {
                     ScreenshotTaker taker = new ScreenshotTaker();
                     taker.takeScreenshot(driver, "NXP-17647-");
                     taker.dumpPageSource(driver, "NXP-17647-");
+                    driver.get(NUXEO_URL + "/wro/api/v1/resource/bundle/nuxeo_includes.js");
+                    taker.dumpPageSource(driver, "NXP-17647-includes-js");
                 }
                 fail(msg.toString());
             }
