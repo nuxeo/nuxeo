@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.usermapper.service.UserMapperComponent" version="1.0">
+
+  <implementation class="org.nuxeo.usermapper.service.UserMapperComponent" />
+
+  <service>
+      <provide interface="org.nuxeo.usermapper.service.UserMapperService" />
+  </service>
+
+  <documentation>
+    This component expose a service to help mapping NuxeoPrincipal to userObject provided by an external system.
+    
+    The mapping itself is configurable using an extension point.
+    
+    Typical use cases include :
+    
+    <ul>
+      <li> SSO plugin that are able to do Just In Time provisionning </li>
+         <ul>
+            <li> SAML </li>
+            <li> Shibboleth </li>
+         </ul>
+      <li> User provisioning API (such as SCIM) </li>
+    </ul>  
+  </documentation>
+
+
+  <extension-point name="mapper">
+    <documentation>
+      Allow to contribute mapper classes that will be responsible for handling the mapping between the NuxeoPrincipal and the userObject as seen in the external system.
+      
+      Here is an example to contribute a custom class : 
+      <code>
+      
+          <mapper name="javaDummy" 
+                  class="org.nuxeo.usermapper.test.dummy.DummyUserMapper">
+             <parameters>
+                <param name="param1">value1</param>
+             </parameters>
+          </mapper>
+      
+      </code>
+      
+      The contributed class has to implement the UserMapper interface.
+      
+      You can also contribute the implementation via a groovy script, in this case, simply omit the class attribute and add a script tag:
+       
+      <code>
+      
+		    <mapper name="groovyDummy">
+		      <script>
+		          attributes.put("username", userObject.login);
+		          attributes.put("firstName", userObject.name.firstName);
+		          attributes.put("lastName", userObject.name.lastName);
+		      </script>
+		    </mapper>
+      
+      </code>
+
+      In the script : 
+      <ul>
+        <li> userObject : represent the object passed to the  <pre>getCreateOrUpdateNuxeoPrincipal</pre> method </li>
+        <li> attributes : is the Map&lt;String,String&gt; that will be used to search and create/update the NuxeoPrincipal</li>
+      </ul>      
+    </documentation>
+    
+    <object
+      class="org.nuxeo.usermapper.service.UserMapperDescriptor" />
+  </extension-point>
+
+</component>
