@@ -97,6 +97,10 @@ public class ModelImporter {
         return RESOURCES_ROOT;
     }
 
+    protected String getRawTemplateResourcesRootPath() {
+        return RAW_RESOURCES_ROOT;
+    }
+
     protected DocumentModel getTargetDomain() {
         return getTargetDomain(true);
     }
@@ -127,19 +131,31 @@ public class ModelImporter {
         return null;
     }
 
-    protected DocumentModel getOrCreateSampleContainer() {
+    protected DocumentModel getWSRoot() {
         DocumentModel rootDomain = getTargetDomain();
-        DocumentModel container = null;
 
         if (rootDomain != null) {
             DocumentModelList roots = session.getChildren(rootDomain.getRef(), "WorkspaceRoot");
             if (roots.size() > 0) {
                 DocumentModel WSRoot = roots.get(0);
+                return WSRoot;
+            }
+        }
+        return null;
+    }
+
+    protected DocumentModel getOrCreateSampleContainer() {
+        DocumentModel rootDomain = getTargetDomain();
+        DocumentModel container = null;
+
+        if (rootDomain != null) {
+            DocumentModel WSRoot = getWSRoot();
+            if (WSRoot != null) {
                 PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getTemplateResourcesRootPath());
                 if (!session.exists(targetPath)) {
                     container = session.createDocumentModel(WSRoot.getPathAsString(), getTemplateResourcesRootPath(),
                             "nxtrSamplesContainer");
-                    container.setPropertyValue("dc:title", "Discover Customization Samples");
+                    container.setPropertyValue("dc:title", "Discover Customization Examples");
                     container.setPropertyValue("dc:description",
                             "The BigCorp company wants to showcase their expertise to their prospects. They used Nuxeo Studio and Template Rendering to be able to generate portfolios on the fly, based on existing projects.\n\nIt's your turn now! Open the \"Accelerating a Rigid Process\" project and follow the instructions.");
                     container = session.createDocument(container);
@@ -152,19 +168,23 @@ public class ModelImporter {
     }
 
     private DocumentModel getOrCreateRawSampleContainer() {
+        DocumentModel rootDomain = getTargetDomain();
         DocumentModel container = null;
-        DocumentModel parentContainer = getOrCreateSampleContainer();
 
-        PathRef targetPath = new PathRef(getOrCreateSampleContainer().getPathAsString() + "/" + RAW_RESOURCES_ROOT);
-        if (!session.exists(targetPath)) {
-            container = session.createDocumentModel(parentContainer.getPathAsString(), "rawsamples",
-                    "Folder");
-            container.setPropertyValue("dc:title", "Raw Examples");
-            container.setPropertyValue("dc:description",
-                    "This space contains raw examples to demonstrate the Nuxeo Template Rendering's advanced possibilities. Go to the \"Discover Customization Samples\" folder first if you did not follow its instructions yet.");
-            container = session.createDocument(container);
-        } else {
-            container = session.getDocument(targetPath);
+        if (rootDomain != null) {
+            DocumentModel WSRoot = getWSRoot();
+            if (WSRoot != null) {
+                PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getRawTemplateResourcesRootPath());
+                if (!session.exists(targetPath)) {
+                    container = session.createDocumentModel(WSRoot.getPathAsString(), "rawsamples", "Workspace");
+                    container.setPropertyValue("dc:title", "Raw Examples");
+                    container.setPropertyValue("dc:description",
+                            "This space contains raw examples to demonstrate the Nuxeo Template Rendering's advanced possibilities. Go to the \"Discover Customization Examples\" folder first if you did not follow its instructions yet.");
+                    container = session.createDocument(container);
+                } else {
+                    container = session.getDocument(targetPath);
+                }
+            }
         }
         return container;
     }

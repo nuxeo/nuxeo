@@ -45,7 +45,7 @@ import org.nuxeo.template.deckjs.DeckJSConverterConstants;
 @Deploy({ "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.core.event",
         "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
         "org.nuxeo.ecm.platform.commandline.executor", "org.nuxeo.template.manager.api", "org.nuxeo.template.manager",
-        "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.deckjs" })
+        "org.nuxeo.template.manager.jaxrs", "org.nuxeo.template.deckjs", "org.nuxeo.template.manager.samples:OSGI-INF/extensions.xml" })
 public class TestDeckJSPDFConverter {
 
     @Inject
@@ -59,11 +59,11 @@ public class TestDeckJSPDFConverter {
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
         assumeTrue("phantomjs not available", commandAvailability.isAvailable());
 
-        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/templatesamples/roadmap");
+        ref = new PathRef("default-domain/workspaces/rawsamples/roadmap");
         DocumentModel sampleDoc = session.getDocument(ref);
 
         TemplateBasedDocument sampleTemplate = sampleDoc.getAdapter(TemplateBasedDocument.class);
