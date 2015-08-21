@@ -559,7 +559,7 @@ public abstract class AbstractTest {
     }
 
     @Before
-    public void setUp() {
+    public void setUpAbstract() {
         if (driver != null) {
             ScreenshotTaker taker = new ScreenshotTaker();
             long start = new Date().getTime();
