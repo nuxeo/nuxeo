@@ -1,6 +1,6 @@
-<component name="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService.default">
+<component name="org.nuxeo.ecm.platform.ui.web.configuration.default">
 
-  <extension target="org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService"
+  <extension target="org.nuxeo.ecm.platform.ui.web.configuration"
              point="configuration">
 
     <configuration>
