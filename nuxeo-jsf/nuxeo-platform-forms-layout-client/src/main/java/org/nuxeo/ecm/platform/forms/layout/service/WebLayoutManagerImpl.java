@@ -441,6 +441,38 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             }
         }
         String layoutName = lDef.getName();
+
+        String layoutTypeCategory = lDef.getTypeCategory();
+        String actualLayoutTypeCategory = getStoreCategory(layoutTypeCategory);
+        LayoutTypeDefinition layoutTypeDef = null;
+        String layoutType = lDef.getType();
+        if (!StringUtils.isBlank(layoutType)) {
+            // retrieve type for templates and props mapping
+            layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(actualLayoutTypeCategory, layoutType);
+            if (layoutTypeDef == null) {
+                log.warn("Layout type '" + layoutType + "' not found for category '" + layoutTypeCategory + "'");
+            }
+        }
+
+        String template = lDef.getTemplate(mode);
+        Map<String, Serializable> props = new HashMap<>();
+        if (layoutTypeDef != null) {
+            if (StringUtils.isEmpty(template)) {
+                template = layoutTypeDef.getTemplate(mode);
+            }
+            LayoutTypeConfiguration conf = layoutTypeDef.getConfiguration();
+            if (conf != null) {
+                Map<String, Serializable> typeProps = conf.getDefaultPropertyValues(mode);
+                if (typeProps != null) {
+                    props.putAll(typeProps);
+                }
+            }
+        }
+        Map<String, Serializable> lprops = lDef.getProperties(mode);
+        if (lprops != null) {
+            props.putAll(lprops);
+        }
+
         LayoutRowDefinition[] rowsDef = lDef.getRows();
         List<LayoutRow> rows = new ArrayList<LayoutRow>();
         Set<String> foundRowNames = new HashSet<String>();
@@ -503,36 +535,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             }
         }
 
-        String layoutTypeCategory = lDef.getTypeCategory();
-        String actualLayoutTypeCategory = getStoreCategory(layoutTypeCategory);
-        LayoutTypeDefinition layoutTypeDef = null;
-        String layoutType = lDef.getType();
-        if (!StringUtils.isBlank(layoutType)) {
-            // retrieve type for templates and props mapping
-            layoutTypeDef = getLayoutStore().getLayoutTypeDefinition(actualLayoutTypeCategory, layoutType);
-            if (layoutTypeDef == null) {
-                log.warn("Layout type '" + layoutType + "' not found for category '" + layoutTypeCategory + "'");
-            }
-        }
-
-        String template = lDef.getTemplate(mode);
-        Map<String, Serializable> props = new HashMap<>();
-        if (layoutTypeDef != null) {
-            if (StringUtils.isEmpty(template)) {
-                template = layoutTypeDef.getTemplate(mode);
-            }
-            LayoutTypeConfiguration conf = layoutTypeDef.getConfiguration();
-            if (conf != null) {
-                Map<String, Serializable> typeProps = conf.getDefaultPropertyValues(mode);
-                if (typeProps != null) {
-                    props.putAll(typeProps);
-                }
-            }
-        }
-        Map<String, Serializable> lprops = lDef.getProperties(mode);
-        if (lprops != null) {
-            props.putAll(lprops);
-        }
         LayoutImpl layout = new LayoutImpl(lDef.getName(), mode, template, rows, lDef.getColumns(), props,
                 LayoutFunctions.computeLayoutDefinitionId(lDef));
         layout.setValueName(valueName);
