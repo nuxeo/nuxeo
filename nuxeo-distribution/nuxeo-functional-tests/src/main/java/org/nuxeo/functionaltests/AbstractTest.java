@@ -38,6 +38,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.jar.Attributes;
@@ -561,9 +562,12 @@ public abstract class AbstractTest {
     public void setUp() {
         if (driver != null) {
             ScreenshotTaker taker = new ScreenshotTaker();
+            long start = new Date().getTime();
             driver.get(NUXEO_URL + "/wro/api/v1/resource/bundle/nuxeo_includes.js");
+            long stop = new Date().getTime();
             String path = taker.dumpPageSource(driver, "NXP-17647-includes-js-before-" + getClass().getSimpleName()).getAbsolutePath();
-            log.warn("NXP-17647: includes.js dumped in : " + path);
+            log.warn("NXP-17647: nuxeo_includes.js dumped in : " + path);
+            log.warn("NXP-17647: nuxeo_includes.js took  : " + (stop - start) + " ms");
         }
     }
 
