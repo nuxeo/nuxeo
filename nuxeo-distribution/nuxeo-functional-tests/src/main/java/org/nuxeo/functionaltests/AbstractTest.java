@@ -51,6 +51,7 @@ import org.apache.commons.logging.LogFactory;
 import org.browsermob.proxy.ProxyServer;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.rules.MethodRule;
@@ -553,6 +554,16 @@ public abstract class AbstractTest {
             }
             proxyServer.getHar().writeTo(harFile);
             proxyServer.stop();
+        }
+    }
+
+    @Before
+    public void setUp() {
+        if (driver != null) {
+            ScreenshotTaker taker = new ScreenshotTaker();
+            driver.get(NUXEO_URL + "/wro/api/v1/resource/bundle/nuxeo_includes.js");
+            String path = taker.dumpPageSource(driver, "NXP-17647-includes-js-before-" + getClass().getSimpleName()).getAbsolutePath();
+            log.warn("NXP-17647: includes.js dumped in : " + path);
         }
     }
 
