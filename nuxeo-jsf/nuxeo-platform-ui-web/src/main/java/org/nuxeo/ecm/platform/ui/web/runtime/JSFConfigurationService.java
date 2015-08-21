@@ -24,12 +24,19 @@ package org.nuxeo.ecm.platform.ui.web.runtime;
 public interface JSFConfigurationService {
 
     /**
-     * Gets the given property value if any, otherwise null.
+     * Returns the given property value if any, otherwise null.
      *
      * @param key the property key
-     * @return the property value if any or null otherwise
      */
     String getProperty(String key);
+
+    /**
+     * Returns the given property value if any, otherwise returns the given default value.
+     *
+     * @param key the property key
+     * @param defaultValue the default value for this key
+     */
+    String getProperty(String key, String defaultValue);
 
     /**
      * Returns true if given property is true when compared to a boolean value.

@@ -16,10 +16,10 @@
  */
 package org.nuxeo.ecm.platform.ui.web.runtime;
 
-import org.nuxeo.runtime.model.SimpleContributionRegistry;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.nuxeo.runtime.model.SimpleContributionRegistry;
 
 /**
  * Registry for JSF configuration contributions.
@@ -39,7 +39,7 @@ public class JSFConfigurationDescriptorRegistry extends SimpleContributionRegist
 
     @Override
     public void contributionUpdated(String key, JSFConfigurationDescriptor contrib,
-        JSFConfigurationDescriptor newOrigContrib) {
+            JSFConfigurationDescriptor newOrigContrib) {
         properties = contrib.getProperties();
     }
 
@@ -56,6 +56,10 @@ public class JSFConfigurationDescriptorRegistry extends SimpleContributionRegist
     @Override
     public boolean isSupportingMerge() {
         return true;
+    }
+
+    public boolean hasProperty(String key) {
+        return properties.containsKey(key);
     }
 
     public String getProperty(String key) {

@@ -35,7 +35,15 @@ public class JSFConfigurationServiceImpl extends DefaultComponent implements JSF
 
     @Override
     public String getProperty(String key) {
-        return registry.getProperty(key);
+        return getProperty(key, null);
+    }
+
+    @Override
+    public String getProperty(String key, String defaultValue) {
+        if (registry.hasProperty(key)) {
+            return registry.getProperty(key);
+        }
+        return defaultValue;
     }
 
     @Override
@@ -66,4 +74,5 @@ public class JSFConfigurationServiceImpl extends DefaultComponent implements JSF
             registry.removeContribution((JSFConfigurationDescriptor) contribution);
         }
     }
+
 }
