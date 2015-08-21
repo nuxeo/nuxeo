@@ -1,13 +1,57 @@
 <component name="org.nuxeo.ecm.platform.ui.web.configuration.default">
 
   <extension target="org.nuxeo.ecm.platform.ui.web.configuration"
-             point="configuration">
+    point="configuration">
+
+    <documentation>
+      This contribution is the default contribution for JSF
+      configurations.
+
+      Default values are expressions of the form
+      "#{propertyName:=defaultValue}"
+      so that a property
+      with the given name can be defined in a nuxeo.conf file,
+      but static
+      values can also be set for these properties.
+
+      Here are more details about some of them:
+      <ul>
+        <li>
+          <strong>nuxeo.jsf.enableDoubleClickShield</strong>
+          : enables a shield on forms to prevent users from
+          submitting twice the
+          same form (accidental double-click).
+        </li>
+        <li>
+          <strong>nuxeo.jsf.useAjaxTabs</strong>
+          : enables ajaxified tabs on document views.
+          Activation also relies on
+          the user's browser because this feature
+          requires manipulating the
+          browser's session history in JavaScript to
+          preserve bookmarkable URLs
+          (see compatibility table at
+          http://caniuse.com/#search=pushstate, for
+          instance).
+        </li>
+      </ul>
+
+      @since 7.4
+    </documentation>
 
     <configuration>
-      <property name="nuxeo.jsf.enableDoubleClickShield">${nuxeo.jsf.enableDoubleClickShield:=true}</property>
-      <property name="nuxeo.jsf.useAjaxTabs">${nuxeo.jsf.useAjaxTabs:=false}</property>
-      <property name="nuxeo.jsf.listWidget.compatEnabled">${nuxeo.jsf.listWidget.compatEnabled:=false}</property>
-      <property name="nuxeo.jsf.removeAliasOptims">${nuxeo.jsf.removeAliasOptims:=false}</property>
+      <property name="nuxeo.jsf.enableDoubleClickShield">
+        ${nuxeo.jsf.enableDoubleClickShield:=true}
+      </property>
+      <property name="nuxeo.jsf.useAjaxTabs">
+        ${nuxeo.jsf.useAjaxTabs:=false}
+      </property>
+      <property name="nuxeo.jsf.listWidget.compatEnabled">
+        ${nuxeo.jsf.listWidget.compatEnabled:=false}
+      </property>
+      <property name="nuxeo.jsf.removeAliasOptims">
+        ${nuxeo.jsf.removeAliasOptims:=false}
+      </property>
     </configuration>
 
   </extension>
