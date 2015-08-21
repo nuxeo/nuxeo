@@ -207,7 +207,11 @@
     <function-class>org.nuxeo.ecm.platform.ui.web.tag.fn.Functions</function-class>
     <function-signature>java.lang.String printFileSize(java.lang.String)</function-signature>
     <description>
-      Same as nxu:printFormatedFileSize(size, "SI", true).
+      <![CDATA[
+      Same as nxu:printFormatedFileSize(size, "SI", true). Since 7.4, the default
+      format can be controlled thanks to the JSF configuration property
+      <strong>nuxeo.jsf.defaultBytePrefixFormat</strong>.
+      ]]>
     </description>
   </function>
 
@@ -221,7 +225,7 @@
     <description>
       <![CDATA[
         Displays a pretty print of the size of a file, using the format given
-        in its short or long form. The format available are "SI", "IEC" or
+        in its short or long form. Available formats are "SI", "IEC" or
         "JEDEC". See <a href="http://en.wikipedia.org/wiki/Byte"
         target="_blank">the Wikipedia article on Byte</a> for more information
         on those formats.

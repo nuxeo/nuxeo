@@ -14,7 +14,8 @@
       but static
       values can also be set for these properties.
 
-      Here are more details about some of them:
+      Here are more
+      details about some of them:
       <ul>
         <li>
           <strong>nuxeo.jsf.enableDoubleClickShield</strong>
@@ -31,8 +32,24 @@
           browser's session history in JavaScript to
           preserve bookmarkable URLs
           (see compatibility table at
-          http://caniuse.com/#search=pushstate, for
+          <a href="http://caniuse.com/#search=pushstate" target="_blank">
+            http://caniuse.com/#search=pushstate
+          </a>
+          , for
           instance).
+        </li>
+        <li>
+          <strong>nuxeo.jsf.defaultBytePrefixFormat</strong>
+          : defines the default byte prefix format used by the printFileSize
+          JSF
+          function, that displays a pretty print of the size of a file,
+          Available formats are "SI", "IEC" or
+          "JEDEC". See
+          <a href="http://en.wikipedia.org/wiki/Byte" target="_blank">
+            the Wikipedia
+            article on Byte
+          </a>
+          for more information on those formats.
         </li>
       </ul>
 
@@ -45,6 +62,9 @@
       </property>
       <property name="nuxeo.jsf.useAjaxTabs">
         ${nuxeo.jsf.useAjaxTabs:=false}
+      </property>
+      <property name="nuxeo.jsf.defaultBytePrefixFormat">
+        ${nuxeo.jsf.defaultBytePrefixFormat:=SI}
       </property>
       <property name="nuxeo.jsf.listWidget.compatEnabled">
         ${nuxeo.jsf.listWidget.compatEnabled:=false}

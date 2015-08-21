@@ -39,14 +39,13 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.i18n.I18NUtils;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
+import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentRenderUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -69,8 +68,14 @@ public final class Functions {
 
     public static final long DEFAULT_BIG_FILE_SIZE_LIMIT = 5 * 1024 * 1024;
 
-    public static final String BYTE_PREFIX_FORMAT_PROPERTY = "org.nuxeo.defaultBytePrefixFormat";
+    /**
+     * @since 7.4
+     */
+    public static final String BYTE_PREFIX_FORMAT_PROPERTY = "nuxeo.jsf.defaultBytePrefixFormat";
 
+    /**
+     * @since 7.4
+     */
     public static final String DEFAULT_BYTE_PREFIX_FORMAT = "SI";
 
     public static final Pattern YEAR_PATTERN = Pattern.compile("y+");
@@ -132,15 +137,6 @@ public final class Functions {
 
     // Utility class.
     private Functions() {
-    }
-
-    /**
-     * Returns the default byte prefix configured for the system
-     *
-     * @since 7.3
-     */
-    public static BytePrefix getDefaultBytePrefix() {
-        return BytePrefix.valueOf(Framework.getProperty(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
     }
 
     public static Object test(Boolean test, Object onSuccess, Object onFailure) {
@@ -233,7 +229,6 @@ public final class Functions {
      * <p>
      * Since 5.5, returns null if given username is null (instead of returning the current user full name).
      */
-    @SuppressWarnings("unchecked")
     public static String userFullName(String username) {
         if (SecurityConstants.SYSTEM_USERNAME.equals(username)) {
             // avoid costly and useless calls to the user directory
@@ -439,6 +434,17 @@ public final class Functions {
      */
     public static String basicDateAndTimeFormatter() {
         return dateAndTimeFormatter("shortWithCentury");
+    }
+
+    /**
+     * Returns the default byte prefix.
+     *
+     * @since 7.4
+     */
+    public static BytePrefix getDefaultBytePrefix() {
+        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
+        return BytePrefix.valueOf(configurationService.getProperty(BYTE_PREFIX_FORMAT_PROPERTY,
+                DEFAULT_BYTE_PREFIX_FORMAT));
     }
 
     public static String printFileSize(String size) {

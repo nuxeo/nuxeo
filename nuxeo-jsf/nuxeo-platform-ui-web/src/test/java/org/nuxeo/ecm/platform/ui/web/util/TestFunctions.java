@@ -16,37 +16,65 @@
  */
 package org.nuxeo.ecm.platform.ui.web.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author arussel
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
+@LocalDeploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-framework.xml",
+        "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-default.xml" })
 public class TestFunctions {
 
+    @Inject
+    protected RuntimeHarness harness;
+
     @Test
-    public void testPrintFileSize() {
+    public void testPrintFileSize() throws Exception {
         String bytePrefixFormat = Functions.getDefaultBytePrefix().name();
         assertEquals(Functions.DEFAULT_BYTE_PREFIX_FORMAT, bytePrefixFormat);
         assertEquals("123 kB", Functions.printFileSize("123456"));
-        Framework.getProperties().setProperty(Functions.BYTE_PREFIX_FORMAT_PROPERTY, "JEDEC");
-        assertEquals("120 KB", Functions.printFileSize("123456"));
-        Framework.getProperties().setProperty(Functions.BYTE_PREFIX_FORMAT_PROPERTY, "IEC");
-        assertEquals("120 KiB", Functions.printFileSize("123456"));
-        Framework.getProperties().setProperty(Functions.BYTE_PREFIX_FORMAT_PROPERTY, bytePrefixFormat);
+
+        String contrib = "OSGI-INF/print-jsfconfiguration-test-contrib.xml";
+        URL url = getClass().getClassLoader().getResource(contrib);
+        RuntimeContext ctx = null;
+        try {
+            ctx = harness.deployTestContrib("org.nuxeo.ecm.platform.ui", url);
+            assertEquals("120 KB", Functions.printFileSize("123456"));
+        } finally {
+            if (ctx != null) {
+                ctx.undeploy(url);
+            }
+        }
+
+        contrib = "OSGI-INF/print-jsfconfiguration-test-override-contrib.xml";
+        url = getClass().getClassLoader().getResource(contrib);
+        try {
+            ctx = harness.deployTestContrib("org.nuxeo.ecm.platform.ui", url);
+            assertEquals("120 KiB", Functions.printFileSize("123456"));
+        } finally {
+            if (ctx != null) {
+                ctx.undeploy(url);
+            }
+        }
     }
 
     @Test

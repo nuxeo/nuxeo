@@ -1,0 +1,14 @@
+<component name="org.nuxeo.ecm.platform.ui.JSFConfigurationService.test.print">
+
+  <extension target="org.nuxeo.ecm.platform.ui.web.configuration"
+    point="configuration">
+
+    <configuration>
+      <property name="nuxeo.jsf.defaultBytePrefixFormat">
+        JEDEC
+      </property>
+    </configuration>
+
+  </extension>
+
+</component>
