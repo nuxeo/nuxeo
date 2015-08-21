@@ -124,21 +124,21 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_GUI = "gui";
 
-    private static final String OPTION_GUI_DESC = "Use graphical user interface (default depends on OS).";
+    private static final String OPTION_GUI_DESC = "Start graphical user interface (default is true on Windows and false on other platforms).";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_JSON = "json";
 
-    private static final String OPTION_JSON_DESC = "Output JSON for mp-commands.";
+    private static final String OPTION_JSON_DESC = "Output JSON for mp-* commands.";
 
     /**
      * @since 5.6
      */
     protected static final String OPTION_XML = "xml";
 
-    private static final String OPTION_XML_DESC = "Output XML for mp-commands.";
+    private static final String OPTION_XML_DESC = "Output XML for mp-* commands.";
 
     /**
      * @since 5.6
@@ -146,7 +146,7 @@ public abstract class NuxeoLauncher {
     protected static final String OPTION_DEBUG = "debug";
 
     private static final String OPTION_DEBUG_DESC = "Activate debug messages.\n"
-            + "Categories: comma-separated Java categories to debug (default: \"org.nuxeo.launcher\").";
+            + "<categories>: comma-separated Java categories to debug (default: \"org.nuxeo.launcher\").";
 
     /**
      * @since 7.4
@@ -188,14 +188,18 @@ public abstract class NuxeoLauncher {
     protected static final String OPTION_ACCEPT = "accept";
 
     private static final String OPTION_ACCEPT_DESC = "Accept, refuse or ask confirmation for all changes (default: "
-            + ConnectBroker.OPTION_ACCEPT_DEFAULT + ").";
+            + ConnectBroker.OPTION_ACCEPT_DEFAULT + ").\n"
+            + "In non interactive mode, '--accept=true' also sets '--relax=true' if needed.";
 
     /**
      * @since 5.9.1
      */
     protected static final String OPTION_SNAPSHOT = "snapshot";
 
-    private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Marketplace packages.";
+    private static final String OPTION_SNAPSHOT_DESC = "Allow use of SNAPSHOT Marketplace packages.\n"
+            + "This option is implicit:\n" //
+            + "\t- on SNAPSHOT distributions (daily builds),\n"
+            + "\t- if the command explicitly requests a SNAPSHOT package.";
 
     /**
      * @since 5.9.1
@@ -217,14 +221,14 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_HIDE_DEPRECATION = "hide-deprecation-warnings";
 
-    protected static final String OPTION_HIDE_DEPRECATION_DESC = "Hide deprecation warnings. Not advised on production platforms.";
+    protected static final String OPTION_HIDE_DEPRECATION_DESC = "Hide deprecation warnings.";
 
     /**
      * @since 6.0
      */
     protected static final String OPTION_IGNORE_MISSING = "ignore-missing";
 
-    protected static final String OPTION_IGNORE_MISSING_DESC = "Ignore unknown packages on mp-add/install/set commands.";
+    protected static final String OPTION_IGNORE_MISSING_DESC = "Ignore unknown packages on mp-add, mp-install and mp-set commands.";
 
     /**
      * @since 6.0
@@ -236,23 +240,15 @@ public abstract class NuxeoLauncher {
     /**
      * @since 7.4
      */
-    protected static final String OPTION_ALGORITHM = "algorithm";
-
-    private static final String OPTION_ALGORITHM_DESC = String.format(
-            "<%s> is a cipher transformation of the form: \"algorithm/mode/padding\" or \"algorithm\".\n"
-                    + "Default value is \"%s\" (Advanced Encryption Standard, Electronic Cookbook Mode, PKCS5-style padding).",
-            OPTION_ALGORITHM, Crypto.DEFAULT_ALGO);
-
-    /**
-     * @since 7.4
-     */
     protected static final String OPTION_ENCRYPT = "encrypt";
+
+    private static final String OPTION_ENCRYPT_ARG_NAME = "algorithm";
 
     private static final String OPTION_ENCRYPT_DESC = String.format(
             "Activate key value symmetric encryption.\n"
                     + "The algorithm can be configured: <%s> is a cipher transformation of the form: \"algorithm/mode/padding\" or \"algorithm\".\n"
                     + "Default value is \"%s\" (Advanced Encryption Standard, Electronic Cookbook Mode, PKCS5-style padding).",
-            OPTION_ALGORITHM, Crypto.DEFAULT_ALGO);
+            OPTION_ENCRYPT, Crypto.DEFAULT_ALGO);
 
     /**
      * @since 7.4
@@ -428,67 +424,93 @@ public abstract class NuxeoLauncher {
      */
     public static final int EXIT_CODE_NOT_RUNNING = 7;
 
-    private static final String OPTION_HELP_DESC_COMMANDS = "\nEnvironment variables:\n"
-            + "\tNUXEO_HOME\t\tPath to server root directory.\n" + "\tNUXEO_CONF\t\tPath to {{nuxeo.conf}} file.\n"
-            + "\tPATH\n" + "\tJAVA\t\t\tPath to the {{java}} executable.\n"
-            + "\tJAVA_HOME\t\tPath to the Java home directory. Can also be defined in {{nuxeo.conf}}.\n"
-            + "\tJAVA_OPTS\t\tOptional values passed to the JVM. Can also be defined in {{nuxeo.conf}}.\n"
-            + "\tREQUIRED_JAVA_VERSION\tNuxeo requirement on Java version.\n" + "\nJava usage:\n"
-            + String.format("\tjava [-D%s=\"JVM options\"]"
+    private static final String OPTION_HELP_DESC_ENV = "\nENVIRONMENT VARIABLES\n"
+            + "        NUXEO_HOME\t\tPath to server root directory.\n" //
+            + "        NUXEO_CONF\t\tPath to {{nuxeo.conf}} file.\n"
+            + "        PATH\n"
+            + "\tJAVA\t\t\tPath to the {{java}} executable.\n"
+            + "        JAVA_HOME\t\tPath to the Java home directory. Can also be defined in {{nuxeo.conf}}.\n"
+            + "        JAVA_OPTS\t\tOptional values passed to the JVM. Can also be defined in {{nuxeo.conf}}.\n"
+            + "        REQUIRED_JAVA_VERSION\tNuxeo requirement on Java version.\n" //
+            + "\nJAVA USAGE\n"
+            + String.format("        java [-D%s=\"JVM options\"]"
                     + " [-D%s=\"/path/to/nuxeo\"] [-D%s=\"/path/to/nuxeo.conf\"]"
                     + " [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\" \\\n"
-                    + "\t\t[options] <command> [command parameters]\n\n", JAVA_OPTS_PROPERTY, Environment.NUXEO_HOME,
-                    ConfigurationGenerator.NUXEO_CONF)
-            + String.format("\t%s\tParameters for the server JVM (default are %s).\n", JAVA_OPTS_PROPERTY,
+                    + "        \t[options] <command> [command parameters]\n\n", JAVA_OPTS_PROPERTY,
+                    Environment.NUXEO_HOME, ConfigurationGenerator.NUXEO_CONF)
+            + String.format("        %s\tParameters for the server JVM (default are %s).\n", JAVA_OPTS_PROPERTY,
                     JAVA_OPTS_DEFAULT)
-            + String.format("\t%s\t\tNuxeo server root path (default is parent of called script).\n",
+            + String.format("        %s\t\tNuxeo server root path (default is parent of called script).\n",
                     Environment.NUXEO_HOME)
-            + String.format("\t%s\t\tPath to {{%1$s}} file (default is \"$NUXEO_HOME/bin/%1$s\").\n",
+            + String.format("        %s\t\tPath to {{%1$s}} file (default is \"$NUXEO_HOME/bin/%1$s\").\n",
                     ConfigurationGenerator.NUXEO_CONF)
-            + "\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.\n"
-            + "\nCommands list:\n"
-            + "\thelp\t\t\tPrint this message.\n"
-            + "\tgui\t\t\tStart the user graphical interface.\n"
-            + "\tstart\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.\n"
-            + "\tstop\t\t\tStop any Nuxeo server started with the same {{nuxeo.conf}} file.\n"
-            + "\trestart\t\t\tRestart Nuxeo server.\n"
-            + "\tconfigure\t\tConfigure Nuxeo server with parameters from {{nuxeo.conf}}.\n"
-            + "\twizard\t\t\tEnable the wizard (force the wizard to be played again in case the wizard configuration has already been done).\n"
-            + "\tconsole\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.\n"
-            + "\tstatus\t\t\tPrint server status (running or not).\n"
-            + "\tstartbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.\n"
-            + "\trestartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
-            + "\tpack <target>\t\tBuild a static archive (the \"pack\" Shell script is deprecated).\n"
-            + "\tshowconf\t\tDisplay the instance configuration.\n"
-            + "\tmp-list\t\t\tList local Marketplace packages.\n"
-            + "\tmp-listall\t\tList all Marketplace packages (requires a registered instance).\n"
-            + "\tmp-init\t\t\tPre-cache Marketplace packages locally available in the distribution.\n"
-            + "\tmp-update\t\tUpdate cache of marketplace packages list.\n"
-            + "\tmp-add\t\t\tAdd Marketplace package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "\tmp-install\t\tRun Marketplace package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n"
-            + "\tmp-uninstall\t\tUninstall Marketplace package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
-            + "\tmp-set\t\t\tInstalls a list of Marketplace packages and removes those not in the list.\n"
-            + "\tmp-request\t\tInstall + uninstall Marketplace package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
-            + "\tmp-remove\t\tRemove Marketplace package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
-            + "\tmp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.\n"
-            + "\tmp-purge\t\tUninstall and remove all packages from the local cache.\n"
-            + "\tmp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
-            + "\tmp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).\n"
-            + "\tmp-show\t\t\tShow Marketplace package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.";
+            + "        jvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.\n";
 
-    private static final String OPTION_HELP_USAGE = "nuxeoctl [options] <command> [command parameters]\n\n"
-            + "nuxeoctl encrypt [--algorithm <algorithm>] [<clearValue>..]"
-            + "\tOutput encrypted value for <clearValue>.\tIf <clearValue> is not provided, it is read from stdin.\n\n"
-            + "nuxeoctl decrypt '<cryptedValue>'.." //
-            + "\tOutput decrypted value for <cryptedValue>. The secret key is read from stdin.\n\n"
-            + "nuxeoctl config [--encrypt [<algorithm>]] [--set [<template>]] [<key> <value>].. <key> [<value>]"
-            + "\tSet template or global parameters."
-            + "\tIf <value> is not provided and the --set 'option' is used, then the value is read from stdin.\n\n"
-            + "nuxeoctl config [--get] <key>.." + "\tGet value for the given key(s).\n\n"
-            + "nuxeoctl config [--get-regexp] <regexp>.."
-            + "\tGet value for the keys matching the given regular expression(s).\n\n";
+    private static final String OPTION_HELP_DESC_COMMANDS = "\nCOMMANDS\n"
+            + "        help\t\t\tPrint this message.\n"
+            + "        gui\t\t\tDeprecated: use '--gui' option instead.\n"
+            + "        start\t\t\tStart Nuxeo server in background, waiting for effective start. Useful for batch executions requiring the server being immediately available after the script returned.\n"
+            + "        stop\t\t\tStop any Nuxeo server started with the same {{nuxeo.conf}} file.\n"
+            + "        restart\t\t\tRestart Nuxeo server.\n"
+            + "        config\t\t\tGet and set template or global parameters.\n"
+            + "        encrypt\t\t\tOutput encrypted value for a given parameter.\n"
+            + "        decrypt\t\t\tOutput decrypted value for a given parameter.\n"
+            + "        configure\t\tConfigure Nuxeo server with parameters from {{nuxeo.conf}}.\n"
+            + "        wizard\t\t\tStart the wizard.\n"
+            + "        console\t\t\tStart Nuxeo server in a console mode. Ctrl-C will stop it.\n"
+            + "        status\t\t\tPrint server running status.\n"
+            + "        startbg\t\t\tStart Nuxeo server in background, without waiting for effective start. Useful for starting Nuxeo as a service.\n"
+            + "        restartbg\t\tRestart Nuxeo server with a call to \"startbg\" after \"stop\".\n"
+            + "        pack\t\t\tBuild a static archive.\n"
+            + "        showconf\t\tDisplay the instance configuration.\n"
+            + "        mp-list\t\t\tList local Marketplace packages.\n"
+            + "        mp-listall\t\tList all Marketplace Packages.\n"
+            + "        mp-init\t\t\tPre-cache Marketplace packages locally available in the distribution.\n"
+            + "        mp-update\t\tUpdate cache of marketplace packages list.\n"
+            + "        mp-add\t\t\tAdd Marketplace package(s) to local cache. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "        mp-install\t\tRun Marketplace package installation. It is automatically called at startup if {{installAfterRestart.log}} file exists in data directory. Else you must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "        mp-uninstall\t\tUninstall Marketplace package(s). You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
+            + "        mp-remove\t\tRemove Marketplace package(s) from the local cache. You must provide the package name(s) or ID(s) as parameter (see \"mp-list\" command).\n"
+            + "        mp-reset\t\tReset all packages to DOWNLOADED state. May be useful after a manual server upgrade.\n"
+            + "        mp-set\t\t\tInstall a list of Marketplace Packages and remove those not in the list.\n"
+            + "        mp-request\t\tInstall and uninstall Marketplace Package(s) in one command. You must provide a *quoted* list of package names or IDs prefixed with + (install) or - (uninstall).\n"
+            + "        mp-purge\t\tUninstall and remove all packages from the local cache.\n"
+            + "        mp-hotfix\t\tInstall all the available hotfixes for the current platform (requires a registered instance).\n"
+            + "        mp-upgrade\t\tGet all the available upgrades for the Marketplace packages currently installed (requires a registered instance).\n"
+            + "        mp-show\t\t\tShow Marketplace package(s) information. You must provide the package file(s), name(s) or ID(s) as parameter.\n"
+            + "\nThe following commands are always executed in console/headless mode (no GUI): "
+            + "\"configure\", \"mp-init\", \"mp-purge\", \"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", "
+            + "\"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", \"mp-reset\", \"mp-list\", \"mp-listall\", \"mp-update\", "
+            + "\"status\", \"showconf\", \"mp-show\", \"mp-set\", \"config\", \"encrypt\", \"decrypt\", \"help\".\n"
+            + "\nThe following commands cannot be executed on a running server: \"pack\", \"mp-init\", \"mp-purge\", "
+            + "\"mp-add\", \"mp-install\", \"mp-uninstall\", \"mp-request\", \"mp-remove\", \"mp-hotfix\", \"mp-upgrade\", "
+            + "\"mp-reset\".";
 
-    private static final String OPTION_HELP_HEADER = null;
+    private static final String OPTION_HELP_USAGE = "        nuxeoctl <command> [command parameters] [options]\n\n";
+
+    private static final String OPTION_HELP_HEADER = "SYNOPSIS\n"
+            + "        nuxeoctl encrypt [--encrypt <algorithm>] [<clearValue>..] [-d [<categories>]|-q]\n"
+            + "                Output encrypted value for <clearValue>.\n"
+            + "                If <clearValue> is not provided, it is read from stdin.\n\n"
+            + "        nuxeoctl decrypt '<cryptedValue>'.. [-d [<categories>]|-q]\n" //
+            + "                Output decrypted value for <cryptedValue>. The secret key is read from stdin.\n\n"
+            + "        nuxeoctl config [--encrypt [<algorithm>]] [--set [<template>]] [<key> <value>].. <key> [<value>] [-d [<categories>]|-q]\n"
+            + "                Set template or global parameters.\n"
+            + "                If <value> is not provided and the --set 'option' is used, then the value is read from stdin.\n\n"
+            + "        nuxeoctl config [--get] <key>.. [-d [<categories>]|-q]\n"
+            + "                Get value for the given key(s).\n\n"
+            + "        nuxeoctl config [--get-regexp] <regexp>.. [-d [<categories>]|-q]\n"
+            + "                Get value for the keys matching the given regular expression(s).\n\n"
+            + "        nuxeoctl [help|status|showconf] [-d [<categories>]|-q]\n\n"
+            + "        nuxeoctl [configure] [-d [<categories>]|-q|-hdw]\n\n"
+            + "        nuxeoctl [wizard] [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>]\n\n"
+            + "        nuxeoctl [stop] [-d [<categories>]|-q|--gui <true|false|yes|no>]\n\n"
+            + "        nuxeoctl [start|restart|console|startbg|restartbg] [-d [<categories>]|-q|--clid <arg>|--gui <true|false|yes|no>|--strict|-hdw]\n\n"
+            + "        nuxeoctl [mp-show] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
+            + "        nuxeoctl [mp-list|mp-listall|mp-init|mp-update] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json]\n\n"
+            + "        nuxeoctl [mp-reset|mp-purge|mp-hotfix|mp-upgrade] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--accept <true|false|yes|no|ask>]\n\n"
+            + "        nuxeoctl [mp-add|mp-install|mp-uninstall|mp-remove|mp-set|mp-request] [command parameters] [-d [<categories>]|-q|--clid <arg>|--xml|--json|--nodeps|--relax <true|false|yes|no|ask>|--accept <true|false|yes|no|ask>|-s|-im]\n\n"
+            + "        nuxeoctl pack <target> [-d [<categories>]|-q]\n\n" + "OPTIONS";
 
     private static final String OPTION_HELP_FOOTER = "\nSee online documentation \"ADMINDOC/nuxeoctl and Control Panel Usage\": https://doc.nuxeo.com/x/FwNc";
 
@@ -934,6 +956,11 @@ public abstract class NuxeoLauncher {
                                              .build());
                 launcherOptions.addOptionGroup(debugOptions);
             }
+            // For help output purpose only: that option is managed and swallowed by the nuxeoctl Shell script
+            launcherOptions.addOption(Option.builder()
+                                            .longOpt("--debug-launcher")
+                                            .desc("Linux-only. Activate Java debugging mode on the Launcher.")
+                                            .build());
             // Instance CLID option
             launcherOptions.addOption(Option.builder().longOpt(OPTION_CLID).desc(OPTION_CLID_DESC).hasArg().build());
             { // Output options (mutually exclusive)
@@ -984,19 +1011,12 @@ public abstract class NuxeoLauncher {
                                             .longOpt(OPTION_HIDE_DEPRECATION)
                                             .desc(OPTION_HIDE_DEPRECATION_DESC)
                                             .build());
-            // Algorithm option
-            launcherOptions.addOption(Option.builder()
-                                            .longOpt(OPTION_ALGORITHM)
-                                            .desc(OPTION_ALGORITHM_DESC)
-                                            .hasArg()
-                                            .argName(OPTION_ALGORITHM)
-                                            .build());
             // Encrypt option
             launcherOptions.addOption(Option.builder()
                                             .longOpt(OPTION_ENCRYPT)
                                             .desc(OPTION_ENCRYPT_DESC)
                                             .hasArg()
-                                            .argName(OPTION_ALGORITHM)
+                                            .argName(OPTION_ENCRYPT_ARG_NAME)
                                             .optionalArg(true)
                                             .build());
             { // Config options (mutually exclusive)
@@ -1229,7 +1249,7 @@ public abstract class NuxeoLauncher {
      */
     protected void encrypt() throws ConfigurationException, GeneralSecurityException {
         Crypto crypto = configurationGenerator.getCrypto();
-        String algorithm = cmdLine.getOptionValue(OPTION_ALGORITHM, null);
+        String algorithm = cmdLine.getOptionValue(OPTION_ENCRYPT, null);
         if (params.length == 0) {
             Console console = System.console();
             if (console == null) {
@@ -2113,15 +2133,23 @@ public abstract class NuxeoLauncher {
     public static void printShortHelp() {
         System.out.println();
         HelpFormatter help = new HelpFormatter();
-        help.setSyntaxPrefix("Usage: ");
+        help.setSyntaxPrefix("USAGE\n");
         help.setOptionComparator(null);
         help.setWidth(1000);
-        help.printHelp(OPTION_HELP_USAGE, OPTION_HELP_HEADER, launcherOptions, OPTION_HELP_FOOTER);
+        help.printHelp(OPTION_HELP_USAGE, "OPTIONS", launcherOptions, null);
+        System.out.println(OPTION_HELP_DESC_COMMANDS);
     }
 
     public static void printLongHelp() {
-        printShortHelp();
+        System.out.println();
+        HelpFormatter help = new HelpFormatter();
+        help.setSyntaxPrefix("USAGE\n");
+        help.setOptionComparator(null);
+        help.setWidth(1000);
+        help.printHelp(OPTION_HELP_USAGE, OPTION_HELP_HEADER, launcherOptions, null);
+        System.out.println(OPTION_HELP_DESC_ENV);
         System.out.println(OPTION_HELP_DESC_COMMANDS);
+        System.out.println(OPTION_HELP_FOOTER);
     }
 
     /**
