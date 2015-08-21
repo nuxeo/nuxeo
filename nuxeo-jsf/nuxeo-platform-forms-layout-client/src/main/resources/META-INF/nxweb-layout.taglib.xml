@@ -831,6 +831,17 @@
   </function>
 
   <function>
+    <function-name>getWidgetModeFromLayoutMode</function-name>
+    <function-class>org.nuxeo.ecm.platform.forms.layout.api.BuiltinModes</function-class>
+    <function-signature>java.lang.String
+      getWidgetModeFromLayoutMode(java.lang.String)</function-signature>
+    <description>
+      Returns the resolved widget mode for current layout mode.
+      Available since 8.1.
+    </description>
+  </function>
+
+  <function>
     <function-name>joinReRender</function-name>
     <function-class>org.nuxeo.ecm.platform.forms.layout.facelets.library.LayoutTagLibrary</function-class>
     <function-signature>java.lang.String joinReRender(java.lang.String,

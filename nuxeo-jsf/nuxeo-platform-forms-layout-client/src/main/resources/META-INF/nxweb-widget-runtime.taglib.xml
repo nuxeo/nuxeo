@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<facelet-taglib id="nxw" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facelettaglibrary_2_2.xsd"
+  version="2.2">
+  <description>
+    <![CDATA[
+    <p>Nuxeo Runtime Widget Taglib</p>
+    <p>
+      Dynamically defines tags for registered widgets.
+    </p>
+    ]]>
+  </description>
+  <namespace>http://nuxeo.org/nxforms/runtime/widget</namespace>
+
+  <library-class>
+    org.nuxeo.ecm.platform.forms.layout.facelets.library.RuntimeWidgetTagLibrary
+  </library-class>
+
+</facelet-taglib>
