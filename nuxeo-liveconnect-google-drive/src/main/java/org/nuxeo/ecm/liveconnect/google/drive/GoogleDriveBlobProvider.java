@@ -593,6 +593,9 @@ public class GoogleDriveBlobProvider implements ExtendedBlobProvider, BatchUpdat
 
     protected Drive getService(String user) throws IOException {
         Credential credential = getCredential(user);
+        if (credential == null) {
+            throw new IOException("No credentials found for user " + user);
+        }
         HttpTransport httpTransport = credential.getTransport();
         JsonFactory jsonFactory = credential.getJsonFactory();
         return new Drive.Builder(httpTransport, jsonFactory, credential) //
