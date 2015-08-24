@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -51,6 +52,8 @@ public class LocalBinaryManager extends AbstractBinaryManager {
 
     private static final Log log = LogFactory.getLog(LocalBinaryManager.class);
 
+    public static final Pattern WINDOWS_ABSOLUTE_PATH = Pattern.compile("[a-zA-Z]:[/\\\\].*");
+
     public static final String DEFAULT_PATH = "binaries";
 
     public static final String DATA = "data";
@@ -73,7 +76,8 @@ public class LocalBinaryManager extends AbstractBinaryManager {
         path = Framework.expandVars(path);
         path = path.trim();
         File base;
-        if (path.startsWith("/") || path.startsWith("\\") || path.contains("://") || path.contains(":\\")) {
+        if (path.startsWith("/") || path.startsWith("\\") || path.contains("://") || path.contains(":\\")
+                || WINDOWS_ABSOLUTE_PATH.matcher(path).matches()) {
             // absolute
             base = new File(path);
         } else {
