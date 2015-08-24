@@ -3,7 +3,7 @@
 <document repository="default" id="7ebc0ea0-d91c-46dc-8401-cf9f92a05289">
   <system>
     <type>nxtrPortfolio</type>
-    <path>default-domain/workspaces/templatesamples/bankindustry</path>
+    <path>bankindustry</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Versionable</facet>
@@ -22,6 +22,7 @@
     </access-control>
   </system>
   <schema xmlns:uid="http://project.nuxeo.com/geide/schemas/uid/" name="uid">
+    <uid:uid/>
     <uid:major_version><![CDATA[0]]></uid:major_version>
     <uid:minor_version><![CDATA[0]]></uid:minor_version>
   </schema>
@@ -40,6 +41,8 @@ Please feel free to contact our company representative for any further informati
   </schema>
   <schema xmlns:common="http://www.nuxeo.org/ecm/schemas/common/" name="common">
     <common:icon><![CDATA[/img/portfolio-16.png]]></common:icon>
+    <common:size/>
+    <common:icon-expanded/>
   </schema>
   <schema xmlns:files="http://www.nuxeo.org/ecm/schemas/files/" name="files">
     <files:files/>
@@ -55,9 +58,16 @@ Please feel free to contact our company representative for any further informati
     <dc:contributors>
       <item><![CDATA[Administrator]]></item>
     </dc:contributors>
-  </schema>
-  <schema xmlns:collection="http://www.nuxeo.org/ecm/schemas/collection/" name="collection">
-    <collection:documentIds/>
+    <dc:source/>
+    <dc:nature />
+    <dc:language/>
+    <dc:coverage/>
+    <dc:expired/>
+    <dc:publisher/>
+    <dc:valid/>
+    <dc:format/>
+    <dc:issued/>
+    <dc:rights/>
   </schema>
   <schema xmlns:nxts="http://www.nuxeo.org/ecm/schemas/nxts/" name="templatesupport">
     <nxts:bindings>

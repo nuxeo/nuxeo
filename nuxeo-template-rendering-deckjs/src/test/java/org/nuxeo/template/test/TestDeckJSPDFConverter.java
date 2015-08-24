@@ -59,11 +59,11 @@ public class TestDeckJSPDFConverter {
         CommandAvailability commandAvailability = cles.getCommandAvailability(DeckJSConverterConstants.PHANTOM_JS_COMMAND_NAME);
         assumeTrue("phantomjs not available", commandAvailability.isAvailable());
 
-        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/rawsamples/roadmap");
+        ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/roadmap");
         DocumentModel sampleDoc = session.getDocument(ref);
 
         TemplateBasedDocument sampleTemplate = sampleDoc.getAdapter(TemplateBasedDocument.class);

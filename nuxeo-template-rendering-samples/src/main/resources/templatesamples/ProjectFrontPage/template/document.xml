@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <document repository="default" id="660ef0eb-cfdc-4003-8a71-ab3dd8770896">
   <system>
     <type>TemplateSource</type>
-    <path>ProjectFrontPage</path>
+    <path>default-domain/templates/ProjectFrontPage</path>
     <lifecycle-state>project</lifecycle-state>
     <lifecycle-policy>default</lifecycle-policy>
     <facet>Downloadable</facet>
@@ -25,7 +24,7 @@
       <item><![CDATA[Administrator]]></item>
     </dc:contributors>
     <dc:nature />
-    <dc:created><![CDATA[2012-06-21T16:04:39.71Z]]></dc:created>
+    <dc:created><![CDATA[2015-06-21T16:04:39.71Z]]></dc:created>
     <dc:description><![CDATA[Used to generate a portfolio's front page.]]></dc:description>
     <dc:rights/>
     <dc:subjects/>
@@ -33,7 +32,7 @@
     <dc:valid/>
     <dc:format/>
     <dc:issued/>
-    <dc:modified><![CDATA[2012-06-21T16:30:55.00Z]]></dc:modified>
+    <dc:modified><![CDATA[2015-06-21T16:30:55.00Z]]></dc:modified>
     <dc:language/>
     <dc:coverage/>
     <dc:expired/>
@@ -58,13 +57,13 @@
       <data>bf065d4e.blob</data>
       <digest>7e69d4f54e9b3784a1a51602fb4328a1</digest>
     </file:content>
-    <file:filename><![CDATA[Customer reference model.docx]]></file:filename>
+    <file:filename><![CDATA[ProjectFrontPage.odt]]></file:filename>
   </schema>
   <schema xmlns:tmpl="http://www.nuxeo.org/ecm/schemas/dxt/" name="documenttemplate">
     <tmpl:forcedTypes>
       <item><![CDATA[nxtrPortfolio]]></item>
     </tmpl:forcedTypes>
-    <tmpl:templateData><![CDATA[]]></tmpl:templateData>
+    <tmpl:templateData/>
     <tmpl:allowOverride><![CDATA[false]]></tmpl:allowOverride>
     <tmpl:templateType><![CDATA[XDocReportProcessor]]></tmpl:templateType>
     <tmpl:useAsMainContent><![CDATA[false]]></tmpl:useAsMainContent>

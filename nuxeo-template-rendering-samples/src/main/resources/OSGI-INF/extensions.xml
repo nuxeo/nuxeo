@@ -49,21 +49,6 @@
   </extension>
   
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
-  <type id="Folder">
-      <subtypes>
-        <type>nxtrPortfolio</type>
-        <type>nxtrProject</type>
-        <type>nxtrSamplesContainer</type>
-      </subtypes>
-    </type>
-    <type id="Workspace">
-      <subtypes>
-        <type>nxtrPortfolio</type>
-        <type>nxtrProject</type>
-        <type>nxtrSamplesContainer</type>
-      </subtypes>
-    </type>
-  
     <type id="nxtrPortfolio">
       <label>Portfolio</label>
       <category>SimpleDocument</category>
@@ -120,6 +105,7 @@
       <subtypes>
         <type>nxtrPortfolio</type>
         <type>nxtrProject</type>
+        <type>Workspace</type>
       </subtypes>
       <layouts mode="create">
         <layout>layout@nxtrSamplesContainer-create</layout>

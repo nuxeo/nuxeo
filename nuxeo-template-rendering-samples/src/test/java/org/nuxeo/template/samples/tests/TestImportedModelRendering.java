@@ -69,11 +69,11 @@ public class TestImportedModelRendering {
     @Test
     public void testNote4Web() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/rawsamples/webnote");
+        ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/webnote");
         DocumentModel note4Web = session.getDocument(ref);
 
         TemplateBasedDocument note4WebTemplate = note4Web.getAdapter(TemplateBasedDocument.class);
@@ -95,11 +95,11 @@ public class TestImportedModelRendering {
     @Test
     public void testSampleNote() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/rawsamples/note");
+        ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/note");
         DocumentModel note = session.getDocument(ref);
 
         TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
@@ -135,11 +135,11 @@ public class TestImportedModelRendering {
     @Test
     public void testXLrendering() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/rawsamples/note4XL");
+        ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/note4XL");
         DocumentModel note = session.getDocument(ref);
 
         TemplateBasedDocument noteTemplate = note.getAdapter(TemplateBasedDocument.class);
@@ -165,11 +165,11 @@ public class TestImportedModelRendering {
     @Test
     public void testInterventionStatement() throws Exception {
 
-        PathRef ref = new PathRef("default-domain/workspaces/rawsamples/");
+        PathRef ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/");
         DocumentModel sampleFolder = session.getDocument(ref);
         assertNotNull(sampleFolder);
 
-        ref = new PathRef("default-domain/workspaces/rawsamples/intervention");
+        ref = new PathRef("default-domain/workspaces/templatesamples/rawsamples/intervention");
         DocumentModel intervention = session.getDocument(ref);
 
         TemplateBasedDocument interventionTemplate = intervention.getAdapter(TemplateBasedDocument.class);

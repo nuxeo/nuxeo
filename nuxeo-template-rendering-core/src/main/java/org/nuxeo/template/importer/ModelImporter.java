@@ -131,9 +131,7 @@ public class ModelImporter {
         return null;
     }
 
-    protected DocumentModel getWSRoot() {
-        DocumentModel rootDomain = getTargetDomain();
-
+    protected DocumentModel getWSRoot(DocumentModel rootDomain) {
         if (rootDomain != null) {
             DocumentModelList roots = session.getChildren(rootDomain.getRef(), "WorkspaceRoot");
             if (roots.size() > 0) {
@@ -148,43 +146,37 @@ public class ModelImporter {
         DocumentModel rootDomain = getTargetDomain();
         DocumentModel container = null;
 
-        if (rootDomain != null) {
-            DocumentModel WSRoot = getWSRoot();
-            if (WSRoot != null) {
-                PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getTemplateResourcesRootPath());
-                if (!session.exists(targetPath)) {
-                    container = session.createDocumentModel(WSRoot.getPathAsString(), getTemplateResourcesRootPath(),
-                            "nxtrSamplesContainer");
-                    container.setPropertyValue("dc:title", "Discover Customization Examples");
-                    container.setPropertyValue("dc:description",
-                            "The BigCorp company wants to showcase their expertise to their prospects. They used Nuxeo Studio and Template Rendering to be able to generate portfolios on the fly, based on existing projects.\n\nIt's your turn now! Open the \"Accelerating a Rigid Process\" project and follow the instructions.");
-                    container = session.createDocument(container);
-                } else {
-                    container = session.getDocument(targetPath);
-                }
+        DocumentModel WSRoot = getWSRoot(rootDomain);
+        if (WSRoot != null) {
+            PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getTemplateResourcesRootPath());
+            if (!session.exists(targetPath)) {
+                container = session.createDocumentModel(WSRoot.getPathAsString(), getTemplateResourcesRootPath(),
+                        "nxtrSamplesContainer");
+                container.setPropertyValue("dc:title", "Discover Customization Examples");
+                container.setPropertyValue("nxtplsamplescontainer:instructions",
+                        "<span class=\"nxtrExplanations\">The BigCorp company wants to showcase their expertise to their prospects. They used Nuxeo Studio and Template Rendering to be able to generate portfolios on the fly, based on existing projects.<br /><br /><strong>It's your turn now! Open the \"Accelerating a Rigid Process\" project</strong> and follow the instructions.</span>");
+                container = session.createDocument(container);
+            } else {
+                container = session.getDocument(targetPath);
             }
         }
         return container;
     }
 
     private DocumentModel getOrCreateRawSampleContainer() {
-        DocumentModel rootDomain = getTargetDomain();
         DocumentModel container = null;
+        DocumentModel parentContainer = getOrCreateSampleContainer();
 
-        if (rootDomain != null) {
-            DocumentModel WSRoot = getWSRoot();
-            if (WSRoot != null) {
-                PathRef targetPath = new PathRef(WSRoot.getPathAsString() + "/" + getRawTemplateResourcesRootPath());
-                if (!session.exists(targetPath)) {
-                    container = session.createDocumentModel(WSRoot.getPathAsString(), "rawsamples", "Workspace");
-                    container.setPropertyValue("dc:title", "Raw Examples");
-                    container.setPropertyValue("dc:description",
-                            "This space contains raw examples to demonstrate the Nuxeo Template Rendering's advanced possibilities. Go to the \"Discover Customization Examples\" folder first if you did not follow its instructions yet.");
-                    container = session.createDocument(container);
-                } else {
-                    container = session.getDocument(targetPath);
-                }
-            }
+        PathRef targetPath = new PathRef(getOrCreateSampleContainer().getPathAsString() + "/" + getRawTemplateResourcesRootPath());
+        if (!session.exists(targetPath)) {
+            container = session.createDocumentModel(parentContainer.getPathAsString(), "rawsamples",
+                    "Workspace");
+            container.setPropertyValue("dc:title", "More (Raw) Examples");
+            container.setPropertyValue("dc:description",
+                    "This space contains raw examples to demonstrate the Nuxeo Template Rendering's advanced possibilities. Go to the \"Discover Customization Samples\" folder first if you did not follow its instructions yet.");
+            container = session.createDocument(container);
+        } else {
+            container = session.getDocument(targetPath);
         }
         return container;
     }
