@@ -224,11 +224,13 @@ public class WorkManagerImpl extends DefaultComponent implements WorkManager {
     }
 
     protected boolean isQueuingEnabled(String queueId) {
-        return getWorkQueueDescriptor(queueId).isQueuingEnabled();
+        WorkQueueDescriptor wqd = getWorkQueueDescriptor(queueId);
+        return wqd == null ? false : wqd.isQueuingEnabled();
     }
 
     protected boolean isProcessingEnabled(String queueId) {
-        return getWorkQueueDescriptor(queueId).isProcessingEnabled();
+        WorkQueueDescriptor wqd = getWorkQueueDescriptor(queueId);
+        return wqd == null ? false : wqd.isProcessingEnabled();
     }
 
     // ----- WorkManager -----
