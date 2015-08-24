@@ -6,6 +6,8 @@
 <link rel="import" href="../../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../bower_components/iron-icons/editor-icons.html">
 <link rel="import" href="../../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
 <link rel="import" href="../../../bower_components/nuxeo-elements/nx-operation.html">
 
@@ -19,7 +21,7 @@
             <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
         </template>
         <template is="dom-if" if="{{updatingACE}}">
-            <paper-button raised="true" on-click="togglePopup">Update</paper-button>
+            <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-button>
         </template>
 
         <paper-dialog id="popupRight" modal>

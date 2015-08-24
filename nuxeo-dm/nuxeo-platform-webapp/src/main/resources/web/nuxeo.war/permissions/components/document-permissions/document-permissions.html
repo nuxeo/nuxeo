@@ -5,6 +5,8 @@
 <link rel="import" href="../../../bower_components/nuxeo-elements/popup-confirm.html"></link>
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html"></link>
 <link rel="import" href="../../../bower_components/paper-input/paper-input.html"></link>
+<link rel="import" href="../../../bower_components/paper-icon-button/paper-icon-button.html"></link>
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html"></link>
 <link rel="import" href="../../../permissions/components/popup-permission/popup-permission.html"></link>
 
 <dom-module id="document-permissions">
@@ -45,7 +47,7 @@
                                         <template is="dom-if" if="{{hasEverythingRight}}">
                                             <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                                                     on-aceupdated="refresh"></popup-permission>
-                                            <paper-button on-click="localRightsDel" raised="true">delete</paper-button>
+                                            <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
                                         </template>
                                     </td>
                                 </tr>
