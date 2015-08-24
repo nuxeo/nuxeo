@@ -48,7 +48,6 @@
     target="org.nuxeo.ecm.core.scheduler.SchedulerService"
     point="schedule">
     <schedule id="transientStoreGC">
-      <username>Administrator</username>
       <eventId>transientStoreGCStart</eventId>
       <eventCategory>default</eventCategory>
       <!-- cleanup every 15 minutes -->
