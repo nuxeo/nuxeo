@@ -265,6 +265,9 @@ public class ConversionActionBean implements ConversionAction {
      * @since 7.3
      */
     public boolean isPDF(Blob blob) {
+        if (blob == null) {
+            return false;
+        }
         String mimeType = blob.getMimeType();
         if (StringUtils.isNotBlank(mimeType) && PDF_MIMETYPE.equals(mimeType)) {
             return true;
