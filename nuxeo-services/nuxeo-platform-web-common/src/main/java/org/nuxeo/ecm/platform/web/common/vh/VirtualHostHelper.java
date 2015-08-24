@@ -125,7 +125,7 @@ public class VirtualHostHelper {
                             serverPort = Integer.valueOf(forwardedHost.split(":")[1]);
                         } else {
                             serverName = forwardedHost;
-                            serverPort = HTTP_PORT_NUMBER; // fallback
+                            serverPort = "https".equals(scheme) ? HTTPS_PORT_NUMBER : HTTP_PORT_NUMBER;
                         }
                     }
                 }
