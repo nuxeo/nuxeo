@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 
@@ -43,6 +41,7 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
  */
 public class TestCommands extends NXRuntimeTestCase {
 
+    @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
@@ -62,8 +61,6 @@ public class TestCommands extends NXRuntimeTestCase {
 
         CommandLineDescriptor cmdDesc = CommandLineExecutorComponent.getCommandDescriptor("aspell");
 
-        // System.out.println(cmdDesc.getParametersString());
-
         File textFile = File.createTempFile("testMe", "txt");
         String textFilePath = "/tmp/textMe.txt";
 
@@ -80,7 +77,6 @@ public class TestCommands extends NXRuntimeTestCase {
         // test with File param
         params.addNamedParameter("textFile", textFile);
         parsedParamString = AbstractExecutor.getParametersString(cmdDesc, params);
-        // System.out.println("command:" + parsedParamString);
         assertTrue(parsedParamString.startsWith("-a --lang=\"fr_FR\" --encoding=\"utf-8\" -H --rem-sgml-check=alt < "));
         assertTrue(parsedParamString.contains(System.getProperties().getProperty("java.io.tmpdir")));
 

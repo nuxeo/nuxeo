@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,13 +14,9 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
- *
  */
 package org.nuxeo.ecm.platform.picture.magick;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
@@ -34,8 +30,6 @@ import org.nuxeo.runtime.api.Framework;
  * @author tiry
  */
 public class MagickExecutor {
-
-    private static final Log log = LogFactory.getLog(MagickExecutor.class);
 
     protected static ExecResult execCommand(String commandName, CmdParameters params) throws CommandNotAvailable {
         CommandLineExecutorService cles = Framework.getLocalService(CommandLineExecutorService.class);

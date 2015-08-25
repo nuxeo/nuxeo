@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
@@ -28,7 +27,6 @@ import org.apache.jempbox.xmp.XMPMetadata;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
@@ -41,11 +39,11 @@ import org.nuxeo.runtime.test.NXRuntimeTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-public abstract class BaseConverterTest extends Assert {
+import static org.junit.Assert.*;
+
+public abstract class BaseConverterTest extends NXRuntimeTestCase {
 
     private static final Log log = LogFactory.getLog(BaseConverterTest.class);
-
-    final NXRuntimeTestCase tc = new NXRuntimeTestCase();
 
     OOoManagerService oooManagerService;
 
@@ -65,14 +63,15 @@ public abstract class BaseConverterTest extends Assert {
         return getBlobFromPath(path, null);
     }
 
+    @Override
     @Before
     public void setUp() throws Exception {
-        tc.setUp();
-        tc.deployBundle("org.nuxeo.ecm.core.api");
-        tc.deployBundle("org.nuxeo.ecm.core.convert.api");
-        tc.deployBundle("org.nuxeo.ecm.core.convert");
-        tc.deployBundle("org.nuxeo.ecm.core.mimetype");
-        tc.deployBundle("org.nuxeo.ecm.platform.convert");
+        super.setUp();
+        deployBundle("org.nuxeo.ecm.core.api");
+        deployBundle("org.nuxeo.ecm.core.convert.api");
+        deployBundle("org.nuxeo.ecm.core.convert");
+        deployBundle("org.nuxeo.ecm.core.mimetype");
+        deployBundle("org.nuxeo.ecm.platform.convert");
 
         oooManagerService = Framework.getService(OOoManagerService.class);
         try {
@@ -82,13 +81,14 @@ public abstract class BaseConverterTest extends Assert {
         }
     }
 
+    @Override
     @After
     public void tearDown() throws Exception {
         oooManagerService = Framework.getService(OOoManagerService.class);
         if (oooManagerService.isOOoManagerStarted()) {
             oooManagerService.stopOOoManager();
         }
-        tc.tearDown();
+        super.tearDown();
     }
 
     public static String readPdfText(File pdfFile) throws IOException {

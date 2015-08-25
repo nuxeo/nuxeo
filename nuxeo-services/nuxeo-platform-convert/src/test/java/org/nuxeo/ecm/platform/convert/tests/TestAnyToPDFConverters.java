@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2012 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,18 +23,18 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
 import org.junit.Test;
+
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.ecm.platform.convert.plugins.JODBasedConverter;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestAnyToPDFConverters extends BaseConverterTest {
+import static org.junit.Assert.*;
 
-    private static final Log log = LogFactory.getLog(TestAnyToPDFConverters.class);
+public class TestAnyToPDFConverters extends BaseConverterTest {
 
     protected void doTestPDFConverter(String srcMT, String fileName) throws Exception {
         doTestPDFConverter(srcMT, fileName, false); // normal PDF
@@ -55,16 +55,14 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
 
         ConverterCheckResult check = cs.isConverterAvailable(converterName);
         assertNotNull(check);
-        if (!check.isAvailable()) {
-            log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : " + check.getInstallationMessage());
-            log.warn("  converter check output : " + check.getErrorMessage());
-            return null;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
+                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
         if (pdfa) {
             parameters.put(JODBasedConverter.PDFA1_PARAM, Boolean.TRUE);
         }
@@ -94,12 +92,10 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
         assertNotNull(check);
-        if (!check.isAvailable()) {
-            log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : " + check.getInstallationMessage());
-            log.warn("  converter check output : " + check.getErrorMessage());
-            return;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
+                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         doTestPDFConverter("text/html", "hello.html");
         // doTestPDFConverter("text/xml", "hello.xml");
@@ -122,12 +118,10 @@ public class TestAnyToPDFConverters extends BaseConverterTest {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("any2pdf");
         assertNotNull(check);
-        if (!check.isAvailable()) {
-            log.warn("Skipping JOD based converter tests since OOo is not installed");
-            log.warn("  converter check output : " + check.getInstallationMessage());
-            log.warn("  converter check output : " + check.getErrorMessage());
-            return;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
+                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         // generate without TOC
         String textContent = doTestPDFConverter("application/vnd.oasis.opendocument.text", "toc.odt", false, false);

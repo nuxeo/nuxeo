@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,8 +13,6 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
- *
- * $Id$
  *
  */
 package org.nuxeo.ecm.platform.pictures.tiles.service;
@@ -63,19 +61,19 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
 
     public static final String IMAGES_TO_CONVERT_EP = "imagesToConvert";
 
-    protected static Map<String, PictureTilingCacheInfo> cache = new HashMap<String, PictureTilingCacheInfo>();
+    protected static Map<String, PictureTilingCacheInfo> cache = new HashMap<>();
 
     protected static List<String> inprocessTiles = Collections.synchronizedList(new ArrayList<String>());
 
     protected static PictureTiler defaultTiler = new MagickTiler();
 
-    protected static List<PictureTiler> availableTilers = new ArrayList<PictureTiler>();
+    protected static List<PictureTiler> availableTilers = new ArrayList<>();
 
-    protected static Map<String, String> envParameters = new HashMap<String, String>();
+    protected static Map<String, String> envParameters = new HashMap<>();
 
-    protected Map<String, String> blobProperties = new HashMap<String, String>();
+    protected Map<String, String> blobProperties = new HashMap<>();
 
-    protected List<ImageToConvertDescriptor> imagesToConvert = new ArrayList<ImageToConvertDescriptor>();
+    protected List<ImageToConvertDescriptor> imagesToConvert = new ArrayList<>();
 
     protected static Thread gcThread;
 
@@ -114,6 +112,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         }
     }
 
+    @Override
     public void deactivate(ComponentContext context) {
         endGC();
     }
@@ -144,6 +143,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         return path;
     }
 
+    @Override
     public void setWorkingDirPath(String path) {
         workingDirPath = normalizeWorkingDirPath(path);
     }
@@ -160,16 +160,18 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         return pathForBlob;
     }
 
+    @Override
     @Deprecated
     public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles) {
         return getTilesFromBlob(blob, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
 
-    public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles)
-            {
+    @Override
+    public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles) {
         return getTiles(resource, tileWidth, tileHeight, maxTiles, 0, 0, false);
     }
 
+    @Override
     public PictureTiles completeTiles(PictureTiles existingTiles, int xCenter, int yCenter) {
 
         String outputDirPath = existingTiles.getTilesPath();
@@ -181,6 +183,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
                 false);
     }
 
+    @Override
     @Deprecated
     public PictureTiles getTilesFromBlob(Blob blob, int tileWidth, int tileHeight, int maxTiles, int xCenter,
             int yCenter, boolean fullGeneration) {
@@ -189,6 +192,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         return getTiles(resource, tileWidth, tileHeight, maxTiles, xCenter, yCenter, fullGeneration);
     }
 
+    @Override
     public PictureTiles getTiles(ImageResource resource, int tileWidth, int tileHeight, int maxTiles, int xCenter,
             int yCenter, boolean fullGeneration) {
 
@@ -354,8 +358,7 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     protected PictureTiles computeTiles(ImageInfo input, String outputDirPath, int tileWidth, int tileHeight,
-            int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration)
-            {
+            int maxTiles, int xCenter, int yCenter, long lastModificationTime, boolean fullGeneration) {
 
         PictureTiler pt = getDefaultTiler();
         return pt.getTilesFromFile(input, outputDirPath, tileWidth, tileHeight, maxTiles, xCenter, yCenter,
@@ -399,14 +402,17 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
     }
 
     // Blob properties management
+    @Override
     public Map<String, String> getBlobProperties() {
         return blobProperties;
     }
 
+    @Override
     public String getBlobProperty(String docType) {
         return blobProperties.get(docType);
     }
 
+    @Override
     public String getBlobProperty(String docType, String defaultValue) {
         String property = blobProperties.get(docType);
         if (property == null) {
@@ -417,8 +423,8 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
 
     // EP management
 
+    @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-
         if (ENV_PARAMETERS_EP.equals(extensionPoint)) {
             TilingConfigurationDescriptor desc = (TilingConfigurationDescriptor) contribution;
             envParameters.putAll(desc.getParameters());
@@ -432,10 +438,12 @@ public class PictureTilingComponent extends DefaultComponent implements PictureT
         }
     }
 
+    @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         // TODO
     }
 
+    @Override
     public void removeCacheEntry(ImageResource resource) {
         if (cache.containsKey(resource.getHash())) {
             PictureTilingCacheInfo cacheInfo = cache.remove(resource.getHash());

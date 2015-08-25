@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,12 +17,16 @@
 
 package org.nuxeo.ecm.platform.convert.tests;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
+
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.junit.Assert.*;
 
 public class TestWPD2TextConverter extends BaseConverterTest {
 
@@ -30,7 +34,7 @@ public class TestWPD2TextConverter extends BaseConverterTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        tc.deployBundle("org.nuxeo.ecm.platform.commandline.executor");
+        deployBundle("org.nuxeo.ecm.platform.commandline.executor");
     }
 
     @Test
@@ -40,13 +44,10 @@ public class TestWPD2TextConverter extends BaseConverterTest {
         assertNotNull(cs);
         ConverterCheckResult check = cs.isConverterAvailable("wpd2text");
         assertNotNull(check);
-
-        if (!check.isAvailable()) {
-            System.out.print("Skipping Wordperfect conversion test since libpwd-tool is not installed");
-            System.out.print(" converter check output : " + check.getInstallationMessage());
-            System.out.print(" converter check output : " + check.getErrorMessage());
-            return;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping Wordperfect conversion test since libpwd-tool is not installed:\n"
+                        + "- installation message: %s\n" + "- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         String converterName = cs.getConverterName("application/wordperfect", "text/plain");
         assertEquals("wpd2text", converterName);
@@ -57,7 +58,6 @@ public class TestWPD2TextConverter extends BaseConverterTest {
         assertNotNull(result);
 
         String txt = result.getBlob().getString();
-        // System.out.println(txt);
         assertTrue(txt.contains("Zoonotic"));
         assertTrue(txt.contains("Committee"));
     }

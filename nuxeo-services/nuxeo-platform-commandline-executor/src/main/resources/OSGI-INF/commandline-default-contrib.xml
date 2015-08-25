@@ -9,9 +9,8 @@
     </documentation>
 
     <commandTester name="SystemPathTester"
-        class="org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.SystemPathExistTester">
+      class="org.nuxeo.ecm.platform.commandline.executor.service.cmdtesters.SystemPathExistTester">
     </commandTester>
-
   </extension>
 
 </component>

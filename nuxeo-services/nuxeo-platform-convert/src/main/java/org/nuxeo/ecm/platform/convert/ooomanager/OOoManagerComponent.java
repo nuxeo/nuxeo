@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,8 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.ServletException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
@@ -34,6 +32,7 @@ import org.artofsolving.jodconverter.office.OfficeConnectionProtocol;
 import org.artofsolving.jodconverter.office.OfficeException;
 import org.artofsolving.jodconverter.office.OfficeManager;
 import org.artofsolving.jodconverter.office.OfficeTask;
+
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
@@ -88,6 +87,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
         stopOOoManager();
     }
 
+    @Override
     public OfficeDocumentConverter getDocumentConverter() {
         if (isOOoManagerStarted()) {
             return new OfficeDocumentConverter(officeManager);
@@ -105,6 +105,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
         }
     }
 
+    @Override
     public void stopOOoManager() {
         if (isOOoManagerStarted() && !shutingdown) {
             shutingdown = true;
@@ -117,6 +118,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
         }
     }
 
+    @Override
     public void startOOoManager() throws IOException {
         DefaultOfficeManagerConfiguration configuration = new DefaultOfficeManagerConfiguration();
 
@@ -171,7 +173,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
             String[] pipeNames = null;
             if (pipeNamesProperty != null) {
                 String[] unvalidatedPipeNames = pipeNamesProperty.split(",\\s*");
-                ArrayList<String> validatedPipeNames = new ArrayList<String>();
+                ArrayList<String> validatedPipeNames = new ArrayList<>();
                 // Basic validation to avoid empty strings
                 for (int i = 0; i < unvalidatedPipeNames.length; i++) {
                     String tmpPipeName = unvalidatedPipeNames[i].trim();
@@ -190,7 +192,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
             int[] portNumbers = null;
             if (portNumbersProperty != null) {
                 String[] portStrings = portNumbersProperty.split(",\\s*");
-                ArrayList<Integer> portList = new ArrayList<Integer>();
+                ArrayList<Integer> portList = new ArrayList<>();
                 for (int i = 0; i < portStrings.length; i++) {
                     try {
                         portList.add(Integer.parseInt(portStrings[i].trim()));
@@ -244,6 +246,7 @@ public class OOoManagerComponent extends DefaultComponent implements OOoManagerS
         log.info("Started OOo Manager");
     }
 
+    @Override
     public boolean isOOoManagerStarted() {
         if (shutingdown) {
             return false;

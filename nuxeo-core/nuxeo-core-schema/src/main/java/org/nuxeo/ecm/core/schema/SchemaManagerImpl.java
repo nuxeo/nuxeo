@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.types.AnyType;
 import org.nuxeo.ecm.core.schema.types.ComplexType;
@@ -64,53 +65,53 @@ public class SchemaManagerImpl implements SchemaManager {
     protected volatile boolean dirty = true;
 
     /** Basic type registry. */
-    protected Map<String, Type> types = new HashMap<String, Type>();
+    protected Map<String, Type> types = new HashMap<>();
 
     /** All the registered configurations (prefetch). */
-    protected List<TypeConfiguration> allConfigurations = new ArrayList<TypeConfiguration>();
+    protected List<TypeConfiguration> allConfigurations = new ArrayList<>();
 
     /** All the registered schemas. */
-    protected List<SchemaBindingDescriptor> allSchemas = new ArrayList<SchemaBindingDescriptor>();
+    protected List<SchemaBindingDescriptor> allSchemas = new ArrayList<>();
 
     /** All the registered facets. */
-    protected List<FacetDescriptor> allFacets = new ArrayList<FacetDescriptor>();
+    protected List<FacetDescriptor> allFacets = new ArrayList<>();
 
     /** All the registered document types. */
-    protected List<DocumentTypeDescriptor> allDocumentTypes = new ArrayList<DocumentTypeDescriptor>();
+    protected List<DocumentTypeDescriptor> allDocumentTypes = new ArrayList<>();
 
     /** All the registered proxy descriptors. */
-    protected List<ProxiesDescriptor> allProxies = new ArrayList<ProxiesDescriptor>();
+    protected List<ProxiesDescriptor> allProxies = new ArrayList<>();
 
     /** Effective prefetch info. */
     protected PrefetchInfo prefetchInfo;
 
     /** Effective schemas. */
-    protected Map<String, Schema> schemas = new HashMap<String, Schema>();
+    protected Map<String, Schema> schemas = new HashMap<>();
 
-    protected final Map<String, Schema> uriToSchema = new HashMap<String, Schema>();
+    protected final Map<String, Schema> uriToSchema = new HashMap<>();
 
-    protected final Map<String, Schema> prefixToSchema = new HashMap<String, Schema>();
+    protected final Map<String, Schema> prefixToSchema = new HashMap<>();
 
     /** Effective facets. */
-    protected Map<String, CompositeType> facets = new HashMap<String, CompositeType>();
+    protected Map<String, CompositeType> facets = new HashMap<>();
 
-    protected Set<String> noPerDocumentQueryFacets = new HashSet<String>();
+    protected Set<String> noPerDocumentQueryFacets = new HashSet<>();
 
     /** Effective document types. */
-    protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<String, DocumentTypeImpl>();
+    protected Map<String, DocumentTypeImpl> documentTypes = new HashMap<>();
 
-    protected Map<String, Set<String>> documentTypesExtending = new HashMap<String, Set<String>>();
+    protected Map<String, Set<String>> documentTypesExtending = new HashMap<>();
 
-    protected Map<String, Set<String>> documentTypesForFacet = new HashMap<String, Set<String>>();
+    protected Map<String, Set<String>> documentTypesForFacet = new HashMap<>();
 
     /** Effective proxy schemas. */
-    protected List<Schema> proxySchemas = new ArrayList<Schema>();
+    protected List<Schema> proxySchemas = new ArrayList<>();
 
     /** Effective proxy schema names. */
-    protected Set<String> proxySchemaNames = new HashSet<String>();
+    protected Set<String> proxySchemaNames = new HashSet<>();
 
     /** Fields computed lazily. */
-    private Map<String, Field> fields = new ConcurrentHashMap<String, Field>();
+    private Map<String, Field> fields = new ConcurrentHashMap<>();
 
     private File schemaDir;
 
@@ -177,7 +178,7 @@ public class SchemaManagerImpl implements SchemaManager {
     public synchronized void registerSchema(SchemaBindingDescriptor sd) {
         allSchemas.add(sd);
         dirty = true;
-        log.info("Registered schema: " + sd.name); // TODO from foo.xsd
+        log.info("Registered schema: " + sd.name);
     }
 
     public synchronized void unregisterSchema(SchemaBindingDescriptor sd) {
@@ -317,7 +318,7 @@ public class SchemaManagerImpl implements SchemaManager {
         for (SchemaBindingDescriptor sd : resolvedSchemas.values()) {
             try {
                 copySchema(sd);
-            } catch (IOException | SAXException | TypeException error) {
+            } catch (IOException error) {
                 errors.addSuppressed(error);
             }
         }
@@ -333,7 +334,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
     }
 
-    protected void copySchema(SchemaBindingDescriptor sd) throws IOException, SAXException, TypeException {
+    protected void copySchema(SchemaBindingDescriptor sd) throws IOException {
         if (sd.src == null || sd.src.length() == 0) {
             // log.error("INLINE Schemas ARE NOT YET IMPLEMENTED!");
             return;
@@ -380,7 +381,7 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public Schema[] getSchemas() {
         checkDirty();
-        return new ArrayList<Schema>(schemas.values()).toArray(new Schema[0]);
+        return new ArrayList<>(schemas.values()).toArray(new Schema[0]);
     }
 
     @Override
@@ -414,8 +415,8 @@ public class SchemaManagerImpl implements SchemaManager {
     }
 
     protected void recomputeFacet(FacetDescriptor fd) {
-        Set<String> schemas = SchemaDescriptor.getSchemaNames(fd.schemas);
-        registerFacet(fd.name, schemas);
+        Set<String> fdSchemas = SchemaDescriptor.getSchemaNames(fd.schemas);
+        registerFacet(fd.name, fdSchemas);
         if (Boolean.FALSE.equals(fd.perDocumentQuery)) {
             noPerDocumentQueryFacets.add(fd.name);
         }
@@ -423,7 +424,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     // also called when a document type references an unknown facet (WARN)
     protected CompositeType registerFacet(String name, Set<String> schemaNames) {
-        List<Schema> facetSchemas = new ArrayList<Schema>(schemaNames.size());
+        List<Schema> facetSchemas = new ArrayList<>(schemaNames.size());
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
@@ -440,7 +441,7 @@ public class SchemaManagerImpl implements SchemaManager {
     @Override
     public CompositeType[] getFacets() {
         checkDirty();
-        return new ArrayList<CompositeType>(facets.values()).toArray(new CompositeType[facets.size()]);
+        return new ArrayList<>(facets.values()).toArray(new CompositeType[facets.size()]);
     }
 
     @Override
@@ -462,7 +463,7 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void recomputeDocumentTypes() {
         // effective descriptors with override
         // linked hash map to keep order for reproducibility
-        Map<String, DocumentTypeDescriptor> dtds = new LinkedHashMap<String, DocumentTypeDescriptor>();
+        Map<String, DocumentTypeDescriptor> dtds = new LinkedHashMap<>();
         for (DocumentTypeDescriptor dtd : allDocumentTypes) {
             String name = dtd.name;
             DocumentTypeDescriptor newDtd = dtd;
@@ -476,7 +477,7 @@ public class SchemaManagerImpl implements SchemaManager {
         documentTypesExtending.clear();
         registerDocumentType(new DocumentTypeImpl(TypeConstants.DOCUMENT)); // Document
         for (String name : dtds.keySet()) {
-            LinkedHashSet<String> stack = new LinkedHashSet<String>();
+            LinkedHashSet<String> stack = new LinkedHashSet<>();
             recomputeDocumentType(name, stack, dtds);
         }
 
@@ -486,7 +487,7 @@ public class SchemaManagerImpl implements SchemaManager {
             for (String facet : docType.getFacets()) {
                 Set<String> set = documentTypesForFacet.get(facet);
                 if (set == null) {
-                    documentTypesForFacet.put(facet, set = new HashSet<String>());
+                    documentTypesForFacet.put(facet, set = new HashSet<>());
                 }
                 set.add(docType.getName());
             }
@@ -540,7 +541,7 @@ public class SchemaManagerImpl implements SchemaManager {
 
     protected DocumentType recomputeDocumentType(String name, DocumentTypeDescriptor dtd, DocumentType parent) {
         // find the facets and schemas names
-        Set<String> facetNames = new HashSet<String>();
+        Set<String> facetNames = new HashSet<>();
         Set<String> schemaNames = SchemaDescriptor.getSchemaNames(dtd.schemas);
         facetNames.addAll(Arrays.asList(dtd.facets));
 
@@ -562,7 +563,7 @@ public class SchemaManagerImpl implements SchemaManager {
         }
 
         // find the schemas
-        List<Schema> docTypeSchemas = new ArrayList<Schema>();
+        List<Schema> docTypeSchemas = new ArrayList<>();
         for (String schemaName : schemaNames) {
             Schema schema = schemas.get(schemaName);
             if (schema == null) {
@@ -583,7 +584,7 @@ public class SchemaManagerImpl implements SchemaManager {
     protected void registerDocumentType(DocumentTypeImpl docType) {
         String name = docType.getName();
         documentTypes.put(name, docType);
-        documentTypesExtending.put(name, new HashSet<String>(Collections.singleton(name)));
+        documentTypesExtending.put(name, new HashSet<>(Collections.singleton(name)));
     }
 
     @Override
@@ -621,8 +622,8 @@ public class SchemaManagerImpl implements SchemaManager {
         if (docType == null || superType == null) {
             return false;
         }
-        Set<String> types = getDocumentTypeNamesExtending(superType);
-        return types != null && types.contains(docType);
+        Set<String> subTypes = getDocumentTypeNamesExtending(superType);
+        return subTypes != null && subTypes.contains(docType);
     }
 
     /*
@@ -630,8 +631,8 @@ public class SchemaManagerImpl implements SchemaManager {
      */
 
     protected void recomputeProxies() {
-        List<Schema> list = new ArrayList<Schema>();
-        Set<String> nameSet = new HashSet<String>();
+        List<Schema> list = new ArrayList<>();
+        Set<String> nameSet = new HashSet<>();
         for (ProxiesDescriptor pd : allProxies) {
             if (!pd.getType().equals("*")) {
                 log.error("Proxy descriptor for specific type not supported: " + pd);
@@ -657,7 +658,7 @@ public class SchemaManagerImpl implements SchemaManager {
     public List<Schema> getProxySchemas(String docType) {
         // docType unused for now
         checkDirty();
-        return new ArrayList<Schema>(proxySchemas);
+        return new ArrayList<>(proxySchemas);
     }
 
     @Override

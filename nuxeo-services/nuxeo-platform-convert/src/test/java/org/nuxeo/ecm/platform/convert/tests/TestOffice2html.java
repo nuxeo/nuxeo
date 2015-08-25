@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,19 +14,20 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.ecm.platform.convert.tests;
 
+import org.junit.Assume;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.convert.api.ConversionService;
 import org.nuxeo.ecm.core.convert.api.ConverterCheckResult;
 import org.nuxeo.runtime.api.Framework;
 
-public class TestOffice2html extends BaseConverterTest {
+import static org.junit.Assert.*;
 
+public class TestOffice2html extends BaseConverterTest {
     protected void doTestHtmlConverter(String srcMT, String fileName) throws Exception {
 
         ConversionService cs = Framework.getLocalService(ConversionService.class);
@@ -36,12 +37,10 @@ public class TestOffice2html extends BaseConverterTest {
 
         ConverterCheckResult check = cs.isConverterAvailable(converterName);
         assertNotNull(check);
-        if (!check.isAvailable()) {
-            System.out.println("Skipping JOD based converter tests since OOo is not installed");
-            System.out.println(" converter check output : " + check.getInstallationMessage());
-            System.out.println(" converter check output : " + check.getErrorMessage());
-            return;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
+                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         BlobHolder hg = getBlobFromPath("test-docs/" + fileName, srcMT);
 
@@ -57,13 +56,10 @@ public class TestOffice2html extends BaseConverterTest {
         ConversionService cs = Framework.getLocalService(ConversionService.class);
         ConverterCheckResult check = cs.isConverterAvailable("office2html");
         assertNotNull(check);
-
-        if (!check.isAvailable()) {
-            System.out.print("Skipping JOD based converter tests since OOo is not installed");
-            System.out.print(" converter check output : " + check.getInstallationMessage());
-            System.out.print(" converter check output : " + check.getErrorMessage());
-            return;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping JOD based converter tests since OOo is not installed:\n"
+                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         doTestHtmlConverter("application/vnd.ms-excel", "hello.xls");
         doTestHtmlConverter("application/vnd.sun.xml.writer", "hello.sxw");

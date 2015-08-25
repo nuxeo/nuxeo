@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -58,10 +58,10 @@ public class RepositoryDescriptor {
         public String fieldType;
 
         @XNodeList(value = "field", type = HashSet.class, componentType = String.class)
-        public Set<String> fields = new HashSet<String>(0);
+        public Set<String> fields = new HashSet<>(0);
 
         @XNodeList(value = "excludeField", type = HashSet.class, componentType = String.class)
-        public Set<String> excludeFields = new HashSet<String>(0);
+        public Set<String> excludeFields = new HashSet<>(0);
 
         public FulltextIndexDescriptor() {
         }
@@ -72,12 +72,12 @@ public class RepositoryDescriptor {
             analyzer = other.analyzer;
             catalog = other.catalog;
             fieldType = other.fieldType;
-            fields = new HashSet<String>(other.fields);
-            excludeFields = new HashSet<String>(other.excludeFields);
+            fields = new HashSet<>(other.fields);
+            excludeFields = new HashSet<>(other.excludeFields);
         }
 
         public static List<FulltextIndexDescriptor> copyList(List<FulltextIndexDescriptor> other) {
-            List<FulltextIndexDescriptor> copy = new ArrayList<FulltextIndexDescriptor>(other.size());
+            List<FulltextIndexDescriptor> copy = new ArrayList<>(other.size());
             for (FulltextIndexDescriptor fid : other) {
                 copy.add(new FulltextIndexDescriptor(fid));
             }
@@ -118,7 +118,7 @@ public class RepositoryDescriptor {
         }
 
         public static List<FieldDescriptor> copyList(List<FieldDescriptor> other) {
-            List<FieldDescriptor> copy = new ArrayList<FieldDescriptor>(other.size());
+            List<FieldDescriptor> copy = new ArrayList<>(other.size());
             for (FieldDescriptor fd : other) {
                 copy.add(new FieldDescriptor(fd));
             }
@@ -240,7 +240,7 @@ public class RepositoryDescriptor {
     }
 
     @XNodeMap(value = "cachingMapper/property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> cachingMapperProperties = new HashMap<String, String>();
+    public Map<String, String> cachingMapperProperties = new HashMap<>();
 
     @XNode("noDDL")
     private Boolean noDDL;
@@ -250,7 +250,7 @@ public class RepositoryDescriptor {
     }
 
     @XNodeList(value = "sqlInitFile", type = ArrayList.class, componentType = String.class)
-    public List<String> sqlInitFiles = new ArrayList<String>(0);
+    public List<String> sqlInitFiles = new ArrayList<>(0);
 
     @XNode("softDelete@enabled")
     private Boolean softDeleteEnabled;
@@ -307,7 +307,7 @@ public class RepositoryDescriptor {
     }
 
     @XNodeList(value = "schema/field", type = ArrayList.class, componentType = FieldDescriptor.class)
-    public List<FieldDescriptor> schemaFields = new ArrayList<FieldDescriptor>(0);
+    public List<FieldDescriptor> schemaFields = new ArrayList<>(0);
 
     @XNode("schema/arrayColumns")
     private Boolean arrayColumns;
@@ -360,17 +360,17 @@ public class RepositoryDescriptor {
     }
 
     @XNodeList(value = "indexing/fulltext/index", type = ArrayList.class, componentType = FulltextIndexDescriptor.class)
-    public List<FulltextIndexDescriptor> fulltextIndexes = new ArrayList<FulltextIndexDescriptor>(0);
+    public List<FulltextIndexDescriptor> fulltextIndexes = new ArrayList<>(0);
 
     @XNodeList(value = "indexing/excludedTypes/type", type = HashSet.class, componentType = String.class)
-    public Set<String> fulltextExcludedTypes = new HashSet<String>(0);
+    public Set<String> fulltextExcludedTypes = new HashSet<>(0);
 
     @XNodeList(value = "indexing/includedTypes/type", type = HashSet.class, componentType = String.class)
-    public Set<String> fulltextIncludedTypes = new HashSet<String>(0);
+    public Set<String> fulltextIncludedTypes = new HashSet<>(0);
 
     // compat
     @XNodeList(value = "indexing/neverPerDocumentFacets/facet", type = HashSet.class, componentType = String.class)
-    public Set<String> neverPerInstanceMixins = new HashSet<String>(0);
+    public Set<String> neverPerInstanceMixins = new HashSet<>(0);
 
     @XNode("pathOptimizations@enabled")
     private Boolean pathOptimizationsEnabled;
@@ -417,7 +417,7 @@ public class RepositoryDescriptor {
     public String xaDataSourceName;
 
     @XNodeMap(value = "property", key = "@name", type = HashMap.class, componentType = String.class)
-    public Map<String, String> properties = new HashMap<String, String>();
+    public Map<String, String> properties = new HashMap<>();
 
     public RepositoryDescriptor() {
     }
@@ -433,9 +433,9 @@ public class RepositoryDescriptor {
         clusterInvalidatorClass = other.clusterInvalidatorClass;
         cachingMapperClass = other.cachingMapperClass;
         cachingMapperEnabled = other.cachingMapperEnabled;
-        cachingMapperProperties = new HashMap<String, String>(other.cachingMapperProperties);
+        cachingMapperProperties = new HashMap<>(other.cachingMapperProperties);
         noDDL = other.noDDL;
-        sqlInitFiles = new ArrayList<String>(other.sqlInitFiles);
+        sqlInitFiles = new ArrayList<>(other.sqlInitFiles);
         softDeleteEnabled = other.softDeleteEnabled;
         proxiesEnabled = other.proxiesEnabled;
         schemaFields = FieldDescriptor.copyList(other.schemaFields);
@@ -450,8 +450,8 @@ public class RepositoryDescriptor {
         fulltextParser = other.fulltextParser;
         fulltextCatalog = other.fulltextCatalog;
         fulltextIndexes = FulltextIndexDescriptor.copyList(other.fulltextIndexes);
-        fulltextExcludedTypes = new HashSet<String>(other.fulltextExcludedTypes);
-        fulltextIncludedTypes = new HashSet<String>(other.fulltextIncludedTypes);
+        fulltextExcludedTypes = new HashSet<>(other.fulltextExcludedTypes);
+        fulltextIncludedTypes = new HashSet<>(other.fulltextIncludedTypes);
         neverPerInstanceMixins = other.neverPerInstanceMixins;
         pathOptimizationsEnabled = other.pathOptimizationsEnabled;
         pathOptimizationsVersion = other.pathOptimizationsVersion;
@@ -459,7 +459,7 @@ public class RepositoryDescriptor {
         readAclMaxSize = other.readAclMaxSize;
         usersSeparatorKey = other.usersSeparatorKey;
         xaDataSourceName = other.xaDataSourceName;
-        properties = new HashMap<String, String>(other.properties);
+        properties = new HashMap<>(other.properties);
     }
 
     public void merge(RepositoryDescriptor other) {

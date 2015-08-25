@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2002-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2002-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -79,7 +79,6 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-
         String commandName = getCommandName(blobHolder, parameters);
         if (commandName == null) {
             throw new ConversionException("Unable to determine target CommandLine name");
@@ -89,7 +88,6 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         Map<String, String> strParams = getCmdStringParameters(blobHolder, parameters);
 
         CmdReturn result = execOnBlob(commandName, blobParams, strParams);
-
         return buildResult(result.output, result.params);
     }
 
@@ -120,7 +118,6 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             throws ConversionException;
 
     protected class CmdReturn {
-
         protected final CmdParameters params;
 
         protected final List<String> output;
@@ -129,7 +126,6 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             this.params = params;
             this.output = output;
         }
-
     }
 
     protected CmdReturn execOnBlob(String commandName, Map<String, Blob> blobParameters, Map<String, String> parameters)
@@ -140,9 +136,9 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
             if (blobParameters != null) {
                 for (String blobParamName : blobParameters.keySet()) {
                     Blob blob = blobParameters.get(blobParamName);
-                    @SuppressWarnings("resource")
                     // closed in finally block
-                    CloseableFile closeable = blob.getCloseableFile("." + FilenameUtils.getExtension(blob.getFilename()));
+                    CloseableFile closeable = blob.getCloseableFile("."
+                            + FilenameUtils.getExtension(blob.getFilename()));
                     params.addNamedParameter(blobParamName, closeable.getFile());
                     toClose.add(closeable);
                 }
@@ -177,7 +173,6 @@ public abstract class CommandLineBasedConverter implements ExternalConverter {
         if (initParameters == null) {
             initParameters = new HashMap<>();
         }
-        getCommandLineService();
     }
 
     @Override

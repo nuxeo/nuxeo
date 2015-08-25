@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and others.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -30,10 +30,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
 import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
@@ -56,8 +56,6 @@ import org.nuxeo.runtime.test.runner.RuntimeFeature;
 @LocalDeploy("org.nuxeo.ecm.platform.convert:test-command-line-converter-contrib.xml")
 public class TestCommandLineConverter {
 
-    private static final Log log = LogFactory.getLog(TestCommandLineConverter.class);
-
     @Inject
     protected ConversionService cs;
 
@@ -74,21 +72,16 @@ public class TestCommandLineConverter {
     public void testCommandLineConverter() throws Exception {
         ConverterCheckResult check = cs.isConverterAvailable("testCommandLineConverter");
         assertNotNull(check);
-        if (!check.isAvailable()) {
-            log.warn("Skipping PDF2Image tests since commandLine is not installed");
-            log.warn(" converter check output : " + check.getInstallationMessage());
-            log.warn(" converter check output : " + check.getErrorMessage());
-            return;
-        }
+        Assume.assumeTrue(
+                String.format("Skipping PDF2Image tests since commandLine is not installed:\n"
+                        + "- installation message: %s\n- error message: %s", check.getInstallationMessage(),
+                        check.getErrorMessage()), check.isAvailable());
 
         CommandAvailability ca = cles.getCommandAvailability("pdftoimage");
-        if (!ca.isAvailable()) {
-            log.warn("convert command is not available, skipping test");
-            return;
-        }
+        Assume.assumeTrue("convert command is not available, skipping test", ca.isAvailable());
 
         BlobHolder pdfBH = getBlobFromPath("test-docs/hello.pdf");
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        Map<String, Serializable> parameters = new HashMap<>();
         parameters.put("targetFileName", "hello.png");
 
         BlobHolder result = cs.convert("testCommandLineConverter", pdfBH, parameters);

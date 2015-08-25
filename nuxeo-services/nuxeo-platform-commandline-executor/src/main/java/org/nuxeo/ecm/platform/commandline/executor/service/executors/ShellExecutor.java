@@ -95,5 +95,4 @@ public class ShellExecutor extends AbstractExecutor {
         long t1 = System.currentTimeMillis();
         return new ExecResult(commandLine, output, t1 - t0, exitCode);
     }
-
 }

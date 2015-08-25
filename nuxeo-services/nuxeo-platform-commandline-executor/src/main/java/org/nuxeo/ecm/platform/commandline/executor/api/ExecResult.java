@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -57,10 +57,10 @@ public class ExecResult implements Serializable {
         this.returnCode = returnCode;
         success = returnCode == 0;
         if (!success) {
-            this.error = new CommandException(String.format("Error code %d return by command: %s\n%s", returnCode,
+            error = new CommandException(String.format("Error code %d return by command: %s\n%s", returnCode,
                     commandLine, StringUtils.join(output, "\n  ")));
         } else {
-            this.error = null;
+            error = null;
         }
     }
 
