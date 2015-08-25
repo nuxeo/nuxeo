@@ -24,7 +24,6 @@ import javax.transaction.xa.Xid;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
 /**
@@ -149,8 +148,8 @@ public class SoftRefCachingMapper extends SoftRefCachingRowMapper implements Cac
     }
 
     @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) {
-        mapper.markReferencedBinaries(gc);
+    public void markReferencedBinaries() {
+        mapper.markReferencedBinaries();
     }
 
     @Override

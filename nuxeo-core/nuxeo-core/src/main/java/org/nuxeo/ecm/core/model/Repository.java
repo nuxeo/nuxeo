@@ -27,4 +27,11 @@ public interface Repository {
 
     int getActiveSessionsCount();
 
+    /**
+     * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.
+     *
+     * @since 7.4
+     */
+    void markReferencedBinaries();
+
 }

@@ -28,10 +28,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextParser;
 import org.nuxeo.ecm.core.storage.lock.LockManager;
@@ -471,20 +467,11 @@ public class RepositoryImpl implements Repository {
     }
 
     @Override
-    public BinaryGarbageCollector getBinaryGarbageCollector() {
-        BlobManager bm = Framework.getService(BlobManager.class);
-        // XXX TODO due to dispatching there may be several involved providers
-        BinaryBlobProvider bbp = (BinaryBlobProvider) bm.getBlobProvider(repositoryDescriptor.name);
-        BinaryManager binaryManager = bbp.getBinaryManager();
-        return binaryManager.getGarbageCollector();
-    }
-
-    @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+    public void markReferencedBinaries() {
         try {
             SessionImpl conn = getConnection();
             try {
-                conn.markReferencedBinaries(gc);
+                conn.markReferencedBinaries();
             } finally {
                 conn.close();
             }

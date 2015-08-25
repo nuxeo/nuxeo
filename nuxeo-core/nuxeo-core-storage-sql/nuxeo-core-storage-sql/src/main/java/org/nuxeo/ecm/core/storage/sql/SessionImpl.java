@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.FulltextParser;
@@ -1291,9 +1290,9 @@ public class SessionImpl implements Session, XAResource {
         throw new RuntimeException("Not implemented");
     }
 
-    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+    public void markReferencedBinaries() {
         checkLive();
-        mapper.markReferencedBinaries(gc);
+        mapper.markReferencedBinaries();
     }
 
     public int cleanupDeletedDocuments(int max, Calendar beforeTime) {

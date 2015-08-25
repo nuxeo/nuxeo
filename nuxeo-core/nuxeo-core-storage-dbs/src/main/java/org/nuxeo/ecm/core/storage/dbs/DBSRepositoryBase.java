@@ -17,9 +17,11 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +37,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
@@ -43,6 +44,15 @@ import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Session;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.TypeConstants;
+import org.nuxeo.ecm.core.schema.types.ComplexType;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.ListType;
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -74,6 +84,7 @@ public abstract class DBSRepositoryBase implements DBSRepository {
         this.repositoryName = repositoryName;
         this.fulltextDisabled = fulltextDisabled;
         blobManager = Framework.getService(BlobManager.class);
+        initBlobsPaths();
     }
 
     @Override
@@ -83,6 +94,76 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public String getName() {
         return repositoryName;
+    }
+
+    protected abstract void initBlobsPaths();
+
+    /** Finds the paths for all blobs in all document types. */
+    protected static abstract class BlobFinder {
+
+        protected final Set<String> schemaDone = new HashSet<>();
+
+        protected final Deque<String> path = new ArrayDeque<>();
+
+        public void visit() {
+            SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+            // document types
+            for (DocumentType docType : schemaManager.getDocumentTypes()) {
+                visitSchemas(docType.getSchemas());
+            }
+            // mixins
+            for (CompositeType type : schemaManager.getFacets()) {
+                visitSchemas(type.getSchemas());
+            }
+        }
+
+        protected void visitSchemas(Collection<Schema> schemas) {
+            for (Schema schema : schemas) {
+                if (schemaDone.add(schema.getName())) {
+                    visitComplexType(schema);
+                }
+            }
+        }
+
+        protected void visitComplexType(ComplexType complexType) {
+            if (TypeConstants.isContentType(complexType)) {
+                recordBlobPath();
+                return;
+            }
+            for (Field field : complexType.getFields()) {
+                visitField(field);
+            }
+        }
+
+        /** Records a blob path, stored in the {@link #path} field. */
+        protected abstract void recordBlobPath();
+
+        protected void visitField(Field field) {
+            Type type = field.getType();
+            if (type.isSimpleType()) {
+                // scalar
+                // assume no bare binary exists
+            } else if (type.isComplexType()) {
+                // complex property
+                String name = field.getName().getPrefixedName();
+                path.addLast(name);
+                visitComplexType((ComplexType) type);
+                path.removeLast();
+            } else {
+                // array or list
+                Type fieldType = ((ListType) type).getFieldType();
+                if (fieldType.isSimpleType()) {
+                    // array
+                    // assume no array of bare binaries exist
+                } else {
+                    // complex list
+                    String name = field.getName().getPrefixedName();
+                    path.addLast(name);
+                    visitComplexType((ComplexType) fieldType);
+                    path.removeLast();
+                }
+            }
+        }
     }
 
     /**

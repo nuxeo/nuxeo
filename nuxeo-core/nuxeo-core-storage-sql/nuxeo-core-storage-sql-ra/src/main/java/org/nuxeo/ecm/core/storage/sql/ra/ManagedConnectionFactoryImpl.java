@@ -32,7 +32,6 @@ import javax.security.auth.Subject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.RepositoryImpl;
 import org.nuxeo.ecm.core.storage.sql.RepositoryManagement;
@@ -247,18 +246,9 @@ public class ManagedConnectionFactoryImpl implements ManagedConnectionFactory, R
     }
 
     @Override
-    public BinaryGarbageCollector getBinaryGarbageCollector() {
-        if (repository == null) {
-            return null;
-        }
-        return repository.getBinaryGarbageCollector();
-
-    }
-
-    @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+    public void markReferencedBinaries() {
         if (repository != null) {
-            repository.markReferencedBinaries(gc);
+            repository.markReferencedBinaries();
         }
     }
 

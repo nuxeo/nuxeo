@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -1184,10 +1184,12 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
     }
 
     @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) {
+    public void markReferencedBinaries() {
         log.debug("Starting binaries GC mark");
         Statement st = null;
         ResultSet rs = null;
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        String repositoryName = getRepositoryName();
         try {
             st = connection.createStatement();
             int i = -1;
@@ -1202,9 +1204,9 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                 int n = 0;
                 while (rs.next()) {
                     n++;
-                    String digest = (String) col.getFromResultSet(rs, 1);
-                    if (digest != null) {
-                        gc.mark(digest);
+                    String key = (String) col.getFromResultSet(rs, 1);
+                    if (key != null) {
+                        blobManager.markReferencedBinary(key, repositoryName);
                     }
                 }
                 if (logger.isLogEnabled()) {

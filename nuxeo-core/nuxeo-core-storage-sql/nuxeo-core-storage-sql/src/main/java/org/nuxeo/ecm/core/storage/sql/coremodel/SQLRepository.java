@@ -73,4 +73,9 @@ public class SQLRepository implements Repository {
         return repository.getActiveSessionsCount();
     }
 
+    @Override
+    public void markReferencedBinaries() {
+        repository.markReferencedBinaries();
+    }
+
 }

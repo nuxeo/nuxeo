@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,9 +34,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.blob.BlobDispatcher.BlobDispatch;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.model.Document.BlobAccessor;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -217,6 +223,14 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
         if (key == null) {
             return null;
         }
+        BlobProvider blobProvider = getBlobProvider(key, repositoryName);
+        if (blobProvider == null) {
+            throw new NuxeoException("No registered blob provider for key: " + key);
+        }
+        return blobProvider.readBlob(blobInfo);
+    }
+
+    protected BlobProvider getBlobProvider(String key, String repositoryName) {
         int colon = key.indexOf(':');
         String providerId;
         if (colon < 0) {
@@ -226,12 +240,15 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
             // use the prefix as blob provider id
             providerId = key.substring(0, colon);
         }
-        BlobProvider blobProvider = getBlobProvider(providerId);
-        if (blobProvider == null) {
-            throw new NuxeoException(
-                    "No registered blob provider with id: " + providerId + " for key: " + blobInfo.key);
+        return getBlobProvider(providerId);
+    }
+
+    protected BinaryManager getBinaryManager(String key, String repositoryName) {
+        BlobProvider blobProvider = getBlobProvider(key, repositoryName);
+        if (!(blobProvider instanceof BinaryBlobProvider)) {
+            return null;
         }
-        return blobProvider.readBlob(blobInfo);
+        return ((BinaryBlobProvider) blobProvider).getBinaryManager();
     }
 
     /**
@@ -364,6 +381,74 @@ public class BlobManagerComponent extends DefaultComponent implements BlobManage
     @Override
     public void notifyChanges(Document doc, Set<String> xpaths) {
         getBlobDispatcher().notifyChanges(doc, xpaths);
+    }
+
+    // find which GCs to use
+    // only GC the binary managers to which we dispatch blobs
+    protected List<BinaryGarbageCollector> getGarbageCollectors() {
+        List<BinaryGarbageCollector> gcs = new LinkedList<>();
+        for (String providerId : getBlobDispatcher().getBlobProviderIds()) {
+            BlobProvider blobProvider = getBlobProvider(providerId);
+            if (blobProvider instanceof BinaryBlobProvider) {
+                BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
+                gcs.add(binaryManager.getGarbageCollector());
+            }
+        }
+        return gcs;
+    }
+
+    @Override
+    public BinaryManagerStatus garbageCollectBinaries(boolean delete) {
+        List<BinaryGarbageCollector> gcs = getGarbageCollectors();
+        // start gc
+        long start = System.currentTimeMillis();
+        for (BinaryGarbageCollector gc : gcs) {
+            gc.start();
+        }
+        // in all repositories, mark referenced binaries
+        // the marking itself will call back into the appropriate gc's mark method
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+        for (String repositoryName : repositoryService.getRepositoryNames()) {
+            Repository repository = repositoryService.getRepository(repositoryName);
+            repository.markReferencedBinaries();
+        }
+        // stop gc
+        BinaryManagerStatus globalStatus = new BinaryManagerStatus();
+        for (BinaryGarbageCollector gc : gcs) {
+            gc.stop(delete);
+            BinaryManagerStatus status = gc.getStatus();
+            globalStatus.numBinaries += status.numBinaries;
+            globalStatus.sizeBinaries += status.sizeBinaries;
+            globalStatus.numBinariesGC += status.numBinariesGC;
+            globalStatus.sizeBinariesGC += status.sizeBinariesGC;
+        }
+        globalStatus.gcDuration = System.currentTimeMillis() - start;
+        return globalStatus;
+    }
+
+    @Override
+    public void markReferencedBinary(String key, String repositoryName) {
+        BinaryManager binaryManager = getBinaryManager(key, repositoryName);
+        if (binaryManager != null) {
+            int colon = key.indexOf(':');
+            if (colon > 0) {
+                // if the key is in the "providerId:digest" format, keep only the real digest
+                key = key.substring(colon + 1);
+            }
+            binaryManager.getGarbageCollector().mark(key);
+        } else {
+            log.error("Unknown binary manager for key: " + key);
+        }
+    }
+
+    @Override
+    public boolean isBinariesGarbageCollectionInProgress() {
+        for (BinaryGarbageCollector gc : getGarbageCollectors()) {
+            if (gc.isInProgress()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -75,12 +75,22 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
+import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
+import org.nuxeo.ecm.core.model.Repository;
+import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.schema.DocumentTypeDescriptor;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.SchemaManagerImpl;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule;
+import org.nuxeo.runtime.test.runner.ConditionalIgnoreRule.IgnoreWindows;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 public class TestMemRepository extends MemRepositoryTestCase {
@@ -3426,6 +3436,132 @@ public class TestMemRepository extends MemRepositoryTestCase {
         assertFalse(session.exists(file4.getRef()));
         // file5 not present
         assertFalse(session.exists(file5.getRef()));
+    }
+
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
+    public void testBinaryGC() throws Exception {
+        // GC binaries from previous tests
+        Thread.sleep(3 * 1000);
+        runBinariesGC(true, false);
+
+        // store some binaries
+        for (String str : Arrays.asList("ABC", "DEF", "GHI", "JKL")) {
+            addBinary(str, str);
+            addBinary(str, str + "2");
+        }
+        session.save();
+        nextTransaction();
+
+        BinaryManagerStatus status = runBinariesGC(true, false);
+        assertEquals(4, status.numBinaries); // ABC, DEF, GHI, JKL
+        assertEquals(4 * 3, status.sizeBinaries);
+        assertEquals(0, status.numBinariesGC);
+        assertEquals(0, status.sizeBinariesGC);
+
+        // remove some binaries
+        session.removeDocument(new PathRef("/ABC"));
+        session.removeDocument(new PathRef("/ABC2"));
+        session.removeDocument(new PathRef("/DEF"));
+        session.removeDocument(new PathRef("/DEF2"));
+        session.removeDocument(new PathRef("/GHI")); // GHI2 remains
+        // JKL and JKL2 remain
+        session.save();
+        nextTransaction();
+
+        // run GC in non-delete mode
+        Thread.sleep(3 * 1000); // sleep before GC to pass its time threshold
+        status = runBinariesGC(false, false);
+        assertEquals(2, status.numBinaries); // GHI, JKL
+        assertEquals(2 * 3, status.sizeBinaries);
+        assertEquals(2, status.numBinariesGC); // ABC, DEF
+        assertEquals(2 * 3, status.sizeBinariesGC);
+
+        // add a new binary during GC and revive one which was about to die
+        status = runBinariesGC(true, true);
+        assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
+        assertEquals(4 * 3, status.sizeBinaries);
+        assertEquals(1, status.numBinariesGC); // ABC
+        assertEquals(1 * 3, status.sizeBinariesGC);
+
+        Thread.sleep(3 * 1000);
+        status = runBinariesGC(true, false);
+        assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
+        assertEquals(4 * 3, status.sizeBinaries);
+        assertEquals(0, status.numBinariesGC);
+        assertEquals(0, status.sizeBinariesGC);
+    }
+
+    protected void addBinary(String content, String name) {
+        Blob blob = Blobs.createBlob(content);
+        DocumentModel doc = session.createDocumentModel("/", name, "File");
+        doc.setPropertyValue("file:content", (Serializable) blob);
+        session.createDocument(doc);
+    }
+
+    protected BinaryManagerStatus runBinariesGC(boolean delete, boolean addDuringGC) {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        RepositoryService repositoryService = Framework.getService(RepositoryService.class);
+
+        BlobProvider blobProvider = blobManager.getBlobProvider(session.getRepositoryName());
+        BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
+        BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
+        Repository repository = repositoryService.getRepository(session.getRepositoryName());
+
+        assertFalse(gc.isInProgress());
+        gc.start();
+        assertTrue(gc.isInProgress());
+        repository.markReferencedBinaries();
+        if (addDuringGC) {
+            // while GC is in progress, add a new binary
+            addBinary("MNO", "MNO");
+            // and revive one that was about to be deleted
+            // note that this wouldn't work if we didn't recreate the Binary object from an InputStream
+            // and reused an old one
+            addBinary("DEF", "DEF3");
+            session.save();
+            nextTransaction();
+        }
+        gc.stop(delete);
+        return gc.getStatus();
+    }
+
+    /** Test that stores blobs in attachments (complex list). */
+    @Test
+    @ConditionalIgnoreRule.Ignore(condition = IgnoreWindows.class, cause = "Not enough time granularity")
+    public void testBinaryGC2() throws Exception {
+        // GC binaries from previous tests
+        Thread.sleep(3 * 1000);
+        runBinariesGC(true, false);
+
+        DocumentModel doc = session.createDocumentModel("/", "file", "File");
+        Map<String, Object> abc = Collections.singletonMap("file", Blobs.createBlob("ABC"));
+        Map<String, Object> def = Collections.singletonMap("file", Blobs.createBlob("DEF"));
+        Map<String, Object> ghi = Collections.singletonMap("file", Blobs.createBlob("GHI"));
+        doc.setPropertyValue("files", (Serializable) Arrays.asList(abc, def, ghi));
+        doc = session.createDocument(doc);
+        session.save();
+        // remove GHI
+        doc.setPropertyValue("files", (Serializable) Arrays.asList(abc, def));
+        doc = session.saveDocument(doc);
+        session.save();
+        nextTransaction();
+
+        // run GC in non-delete mode
+        Thread.sleep(3 * 1000); // sleep before GC to pass its time threshold
+        BinaryManagerStatus status = runBinariesGC(false, false);
+        assertEquals(2, status.numBinaries); // ABC, DEF
+        assertEquals(1, status.numBinariesGC); // GHI
+
+        // actual GC
+        status = runBinariesGC(true, false);
+        assertEquals(2, status.numBinaries); // ABC, DEF
+        assertEquals(1, status.numBinariesGC); // GHI
+
+        // again
+        status = runBinariesGC(true, false);
+        assertEquals(2, status.numBinaries); // ABC, DEF
+        assertEquals(0, status.numBinariesGC);
     }
 
 }

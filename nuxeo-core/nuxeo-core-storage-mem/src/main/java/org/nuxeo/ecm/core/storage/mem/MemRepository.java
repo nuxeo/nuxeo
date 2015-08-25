@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.storage.mem;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
@@ -39,6 +40,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -50,6 +52,8 @@ import org.nuxeo.ecm.core.storage.State;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator.OrderByComparator;
+import org.nuxeo.runtime.api.Framework;
+
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
 
 /**
@@ -386,6 +390,70 @@ public class MemRepository extends DBSRepositoryBase {
         } else {
             return list.isEmpty() ? null : (Serializable) list;
         }
+    }
+
+    protected List<List<String>> binaryPaths;
+
+    @Override
+    protected void initBlobsPaths() {
+        MemBlobFinder finder = new MemBlobFinder();
+        finder.visit();
+        binaryPaths = finder.binaryPaths;
+    }
+
+    protected static class MemBlobFinder extends BlobFinder {
+        protected List<List<String>> binaryPaths = new ArrayList<>();
+
+        @Override
+        protected void recordBlobPath() {
+            binaryPaths.add(new ArrayList<>(path));
+        }
+    }
+
+    @Override
+    public void markReferencedBinaries() {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        for (State state : states.values()) {
+            for (List<String> path : binaryPaths) {
+                markReferencedBinaries(state, path, 0, blobManager);
+            }
+        }
+    }
+
+    protected void markReferencedBinaries(State state, List<String> path, int start, BlobManager blobManager) {
+        for (int i = start; i < path.size(); i++) {
+            String name = path.get(i);
+            Serializable value = state.get(name);
+            if (value instanceof State) {
+                state = (State) value;
+            } else {
+                if (value instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<Object> list = (List<Object>) value;
+                    for (Object v : list) {
+                        if (v instanceof State) {
+                            markReferencedBinaries((State) v, path, i + 1, blobManager);
+                        } else {
+                            markReferencedBinary(v, blobManager);
+                        }
+                    }
+                }
+                state = null;
+                break;
+            }
+        }
+        if (state != null) {
+            Serializable data = state.get(KEY_BLOB_DATA);
+            markReferencedBinary(data, blobManager);
+        }
+    }
+
+    protected void markReferencedBinary(Object value, BlobManager blobManager) {
+        if (!(value instanceof String)) {
+            return;
+        }
+        String key = (String) value;
+        blobManager.markReferencedBinary(key, repositoryName);
     }
 
 }

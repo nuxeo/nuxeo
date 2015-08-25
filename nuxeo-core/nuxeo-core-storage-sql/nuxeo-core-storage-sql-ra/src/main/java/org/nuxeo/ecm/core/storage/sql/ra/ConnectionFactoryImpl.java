@@ -23,7 +23,6 @@ import javax.resource.spi.ConnectionManager;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.storage.sql.Repository;
 import org.nuxeo.ecm.core.storage.sql.Session;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepository;
@@ -211,13 +210,8 @@ public class ConnectionFactoryImpl implements Repository, org.nuxeo.ecm.core.mod
     }
 
     @Override
-    public BinaryGarbageCollector getBinaryGarbageCollector() {
-        return managedConnectionFactory.getBinaryGarbageCollector();
-    }
-
-    @Override
-    public void markReferencedBinaries(BinaryGarbageCollector gc) {
-        managedConnectionFactory.markReferencedBinaries(gc);
+    public void markReferencedBinaries() {
+        managedConnectionFactory.markReferencedBinaries();
     }
 
     @Override

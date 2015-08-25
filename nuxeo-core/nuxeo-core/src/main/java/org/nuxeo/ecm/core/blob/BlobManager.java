@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.model.Document;
 
 /**
@@ -175,5 +177,33 @@ public interface BlobManager {
      * @since 7.3
      */
     void notifyChanges(Document doc, Set<String> xpaths);
+
+    /**
+     * Garbage collect the unused binaries.
+     *
+     * @param delete if {@code false} don't actually delete the garbage collected binaries (but still return statistics
+     *            about them), if {@code true} delete them
+     * @return a status about the number of garbage collected binaries
+     * @since 7.4
+     */
+    BinaryManagerStatus garbageCollectBinaries(boolean delete);
+
+    /**
+     * Checks if a garbage collection of the binaries in progress.
+     *
+     * @return {@code true} if a garbage collection of the binaries is in progress
+     * @since 7.4
+     */
+    boolean isBinariesGarbageCollectionInProgress();
+
+    /**
+     * INTERNAL. Marks a binary as referenced during garbage collection. Called back by repository implementations
+     * during {@link #garbageCollectBinaries}.
+     *
+     * @param key the binary key
+     * @param repositoryName the repository name
+     * @since 7.4
+     */
+    void markReferencedBinary(String key, String repositoryName);
 
 }

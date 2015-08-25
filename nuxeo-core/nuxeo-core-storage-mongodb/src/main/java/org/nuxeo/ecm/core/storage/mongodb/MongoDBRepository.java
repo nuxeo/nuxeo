@@ -13,6 +13,7 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
@@ -42,6 +43,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.Delta;
+import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -52,6 +54,7 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.dbs.DBSRepositoryBase;
+import org.nuxeo.runtime.api.Framework;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -665,6 +668,74 @@ public class MongoDBRepository extends DBSRepositoryBase {
             DBObject inPrincipals = new BasicDBObject(QueryOperators.IN, new ArrayList<String>(principals));
             query.put(DBSDocument.KEY_READ_ACL, inPrincipals);
         }
+    }
+
+    /** Keys used for document projection when marking all binaries for GC. */
+    protected DBObject binaryKeys;
+
+    @Override
+    protected void initBlobsPaths() {
+        MongoDBBlobFinder finder = new MongoDBBlobFinder();
+        finder.visit();
+        binaryKeys = finder.binaryKeys;
+    }
+
+    protected static class MongoDBBlobFinder extends BlobFinder {
+        protected DBObject binaryKeys = new BasicDBObject(MONGODB_ID, ZERO);
+
+        @Override
+        protected void recordBlobPath() {
+            path.addLast(KEY_BLOB_DATA);
+            binaryKeys.put(StringUtils.join(path, "."), ONE);
+            path.removeLast();
+        }
+    }
+
+    @Override
+    public void markReferencedBinaries() {
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        // TODO add a query to not scan all documents
+        DBCursor cursor = coll.find(new BasicDBObject(), binaryKeys);
+        try {
+            for (DBObject ob : cursor) {
+                markReferencedBinaries(ob, blobManager);
+            }
+        } finally {
+            cursor.close();
+        }
+    }
+
+    protected void markReferencedBinaries(DBObject ob, BlobManager blobManager) {
+        for (String key : ob.keySet()) {
+            Object value = ob.get(key);
+            if (value instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Object> list = (List<Object>) value;
+                for (Object v : list) {
+                    if (v instanceof DBObject) {
+                        markReferencedBinaries((DBObject) v, blobManager);
+                    } else {
+                        markReferencedBinary(v, blobManager);
+                    }
+                }
+            } else if (value instanceof Object[]) {
+                for (Object v : (Object[]) value) {
+                    markReferencedBinary(v, blobManager);
+                }
+            } else if (value instanceof DBObject) {
+                markReferencedBinaries((DBObject) value, blobManager);
+            } else {
+                markReferencedBinary(value, blobManager);
+            }
+        }
+    }
+
+    protected void markReferencedBinary(Object value, BlobManager blobManager) {
+        if (!(value instanceof String)) {
+            return;
+        }
+        String key = (String) value;
+        blobManager.markReferencedBinary(key, repositoryName);
     }
 
 }

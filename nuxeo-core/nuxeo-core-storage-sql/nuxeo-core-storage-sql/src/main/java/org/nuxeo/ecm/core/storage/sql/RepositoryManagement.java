@@ -14,8 +14,6 @@ package org.nuxeo.ecm.core.storage.sql;
 
 import java.util.Calendar;
 
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
-
 /**
  * @author Florent Guillaume
  */
@@ -65,21 +63,9 @@ public interface RepositoryManagement {
     void processClusterInvalidationsNext();
 
     /**
-     * Gets the binary GC for this repository.
-     *
-     * @return the binary garbage collector
+     * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.
      */
-    BinaryGarbageCollector getBinaryGarbageCollector();
-
-    /**
-     * Marks the binaries actually in use with the GC so that they won't be deleted.
-     * <p>
-     * The passed GC may or may not be the one returned by {@link #getBinaryGarbageCollector} in case it's been
-     * determined that another repository's GC is pointing to the same binary data.
-     *
-     * @param gc the binary garbage collector to use for this repository's binaries
-     */
-    void markReferencedBinaries(BinaryGarbageCollector gc);
+    void markReferencedBinaries();
 
     /**
      * Cleans up (hard-deletes) any documents that have been soft-deleted in the database.

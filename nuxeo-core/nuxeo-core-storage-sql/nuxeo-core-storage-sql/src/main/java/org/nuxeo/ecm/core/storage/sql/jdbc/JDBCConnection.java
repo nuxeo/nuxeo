@@ -117,6 +117,10 @@ public class JDBCConnection {
         dialect = null;
     }
 
+    public String getRepositoryName() {
+        return model.getRepositoryDescriptor().name;
+    }
+
     public Identification getIdentification() {
         return new Identification(null, "" + instanceNumber);
     }
@@ -133,14 +137,13 @@ public class JDBCConnection {
             supportsBatchUpdates = connection.getMetaData().supportsBatchUpdates();
             dialect.performPostOpenStatements(connection);
         } catch (SQLException cause) {
-            throw new NuxeoException("Cannot connect to database: " + model.getRepositoryDescriptor().name, cause);
+            throw new NuxeoException("Cannot connect to database: " + getRepositoryName(), cause);
         }
     }
 
     protected void openBaseConnection() throws SQLException {
         // try single-datasource non-XA mode
-        String repositoryName = model.getRepositoryDescriptor().name;
-        String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(repositoryName);
+        String dataSourceName = ConnectionHelper.getPseudoDataSourceNameForRepository(getRepositoryName());
         connection = ConnectionHelper.getConnection(dataSourceName, noSharing);
         if (connection == null) {
             // standard XA mode

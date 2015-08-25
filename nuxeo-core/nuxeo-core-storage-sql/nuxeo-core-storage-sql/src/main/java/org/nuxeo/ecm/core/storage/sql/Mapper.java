@@ -22,7 +22,6 @@ import javax.transaction.xa.XAResource;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
-import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
 import org.nuxeo.ecm.core.query.QueryFilter;
 
 /**
@@ -230,11 +229,9 @@ public interface Mapper extends RowMapper, XAResource {
     Lock removeLock(Serializable id, String owner, boolean force);
 
     /**
-     * Marks the binaries referenced by this mapper with the referenced binary garbage collector.
-     *
-     * @param gc the binary garbage collector
+     * Marks the binaries in use by passing them to the binary manager(s)'s GC mark() method.
      */
-    void markReferencedBinaries(BinaryGarbageCollector gc);
+    void markReferencedBinaries();
 
     /**
      * Cleans up (hard-delete) any rows that have been soft-deleted in the database.

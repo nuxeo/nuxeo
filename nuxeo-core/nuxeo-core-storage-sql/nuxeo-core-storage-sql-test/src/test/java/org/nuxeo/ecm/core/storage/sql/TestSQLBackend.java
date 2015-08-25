@@ -69,7 +69,10 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.blob.BlobProvider;
+import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
 import org.nuxeo.ecm.core.blob.binary.BinaryGarbageCollector;
+import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Document;
@@ -580,11 +583,14 @@ public class TestSQLBackend extends SQLBackendTestCase {
     }
 
     protected BinaryManagerStatus runBinariesGC(int moreWork, Session session, boolean delete) throws Exception {
-        BinaryGarbageCollector gc = repository.getBinaryGarbageCollector();
+        BlobManager blobManager = Framework.getService(BlobManager.class);
+        BlobProvider blobProvider = blobManager.getBlobProvider(DatabaseHelper.DATABASE.repositoryName);
+        BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
+        BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
         assertFalse(gc.isInProgress());
         gc.start();
         assertTrue(gc.isInProgress());
-        repository.markReferencedBinaries(gc);
+        repository.markReferencedBinaries();
         if (moreWork == 1) {
             // while GC is in progress
             // add a new binary
