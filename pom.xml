@@ -26,7 +26,18 @@
     <module>nuxeo-platform-login-openid</module>
     <module>nuxeo-platform-login-kerberos</module>
     <module>nuxeo-platform-login-saml2</module>
+    <module>nuxeo-scim-server</module>
   </modules>
+
+ <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-usermapper</artifactId>
+        <version>7.4-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+ </dependencyManagement>
 
   <repositories>
     <repository>
