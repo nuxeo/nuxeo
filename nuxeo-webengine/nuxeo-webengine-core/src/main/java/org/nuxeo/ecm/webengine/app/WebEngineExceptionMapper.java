@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -43,6 +44,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable cause) {
+        TransactionHelper.setTransactionRollbackOnly();
         if (cause instanceof NotFoundException) {
             NotFoundException nfe = (NotFoundException) cause;
             log.debug("JAX-RS 404 Not Found: " + nfe.getNotFoundUri());
