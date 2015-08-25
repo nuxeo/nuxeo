@@ -15,4 +15,14 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="directory3Refs">
+    <xs:simpleType>
+      <xs:list>
+        <xs:simpleType>
+          <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="referencedDirectory1" />
+        </xs:simpleType>
+      </xs:list>
+    </xs:simpleType>
+  </xs:element>
+
 </xs:schema>

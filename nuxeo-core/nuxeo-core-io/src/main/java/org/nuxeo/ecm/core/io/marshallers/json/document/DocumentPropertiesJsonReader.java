@@ -21,6 +21,7 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -51,6 +52,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
 import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
+import org.nuxeo.ecm.core.schema.types.primitives.StringType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
 
 /**
@@ -135,8 +137,41 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
     }
 
     private void fillScalarProperty(Property property, JsonNode jn) throws IOException {
-        Object value = null;
-        Type type = property.getType();
+        if ((property instanceof ArrayProperty) && jn.isArray()) {
+            List<Object> values = new ArrayList<Object>();
+            Iterator<JsonNode> it = jn.getElements();
+            JsonNode item;
+            Type fieldType = ((ListType) property.getType()).getFieldType();
+            while (it.hasNext()) {
+                item = it.next();
+                values.add(getScalarPropertyValue(property, item, fieldType));
+            }
+            property.setValue(castArrayPropertyValue(((SimpleType) fieldType).getPrimitiveType(), values));
+        } else {
+            property.setValue(getScalarPropertyValue(property, jn, property.getType()));
+        }
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private <T> T[] castArrayPropertyValue(Type type, List<Object> values) throws IOException {
+        if (type instanceof StringType) {
+            return values.toArray((T[]) Array.newInstance(String.class, values.size()));
+        } else if (type instanceof BooleanType) {
+            return values.toArray((T[]) Array.newInstance(Boolean.class, values.size()));
+        } else if (type instanceof LongType) {
+            return values.toArray((T[]) Array.newInstance(Long.class, values.size()));
+        } else if (type instanceof DoubleType) {
+            return values.toArray((T[]) Array.newInstance(Double.class, values.size()));
+        } else if (type instanceof IntegerType) {
+            return values.toArray((T[]) Array.newInstance(Integer.class, values.size()));
+        } else if (type instanceof BinaryType) {
+            return values.toArray((T[]) Array.newInstance(Byte.class, values.size()));
+        }
+        throw new MarshallingException("Primitive type not found: " + type.getName());
+    }
+
+    private Object getScalarPropertyValue(Property property, JsonNode jn, Type type) throws IOException {
+        Object value;
         if (jn.isObject()) {
             ObjectResolver resolver = type.getObjectResolver();
             if (resolver == null) {
@@ -161,7 +196,7 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         } else {
             value = getPropertyValue(((SimpleType) type).getPrimitiveType(), jn);
         }
-        property.setValue(value);
+        return value;
     }
 
     private Object getPropertyValue(Type type, JsonNode jn) throws IOException {
@@ -184,21 +219,10 @@ public class DocumentPropertiesJsonReader extends AbstractJsonReader<List<Proper
         return value;
     }
 
-    @SuppressWarnings("unchecked")
     private void fillListProperty(Property property, JsonNode jn) throws IOException {
         ListType listType = (ListType) property.getType();
         if (property instanceof ArrayProperty) {
-            Type type = listType.getFieldType();
-            @SuppressWarnings("rawtypes")
-            List values = new ArrayList();
-            JsonNode elNode = null;
-            Iterator<JsonNode> it = jn.getElements();
-            while (it.hasNext()) {
-                elNode = it.next();
-                Object value = getPropertyValue(((SimpleType) type).getPrimitiveType(), elNode);
-                values.add(value);
-            }
-            property.setValue(values);
+            fillScalarProperty(property, jn);
         } else {
             JsonNode elNode = null;
             Iterator<JsonNode> it = jn.getElements();
