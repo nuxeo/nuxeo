@@ -21,7 +21,7 @@
 # usage: "gitf [git instructions]"
 gitf() {
   for dir in . *; do
-    if [ -d "$dir"/.git ]; then
+    if [ -a "$dir"/.git ]; then
       echo "[$dir]"
       (cd "$dir" ; git "$@")
       echo
@@ -37,7 +37,7 @@ gitfa() {
   fi
   ADDONS=$(mvn help:effective-pom -N|grep '<module>' |cut -d ">" -f 2 |cut -d "<" -f 1)
   for dir in . $ADDONS; do
-    if [ -d "$dir"/.git ]; then
+    if [ -a "$dir"/.git ]; then
       echo "[$dir]"
       (cd "$dir" ; git "$@")
       echo
