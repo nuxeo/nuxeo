@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationException;
 import org.nuxeo.ecm.webengine.WebException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.sun.jersey.api.NotFoundException;
 
@@ -46,6 +47,7 @@ public class WebEngineExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
     public Response toResponse(Throwable cause) {
+        TransactionHelper.setTransactionRollbackOnly();
         if (headers.getAcceptableMediaTypes().contains(APPLICATION_JSON_TYPE)) {
             if (cause instanceof DocumentValidationException) {
                 DocumentValidationException dve = (DocumentValidationException) cause;
