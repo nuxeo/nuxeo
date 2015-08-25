@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nuxeo</groupId>
   <artifactId>nuxeo-ecm</artifactId>
@@ -3785,31 +3786,31 @@
         <version>${tomcat.version}</version>
         <scope>provided</scope>
       </dependency>
-       <!-- saml -->
-       <dependency>
-           <groupId>org.opensaml</groupId>
-           <artifactId>opensaml</artifactId>
-           <version>2.6.1</version>
-           <scope>compile</scope>
-           <exclusions>
-               <exclusion>
-                   <artifactId>xml-apis</artifactId>
-                   <groupId>org.apache.xerces</groupId>
-               </exclusion>
-               <exclusion>
-                   <artifactId>jcl-over-slf4j</artifactId>
-                   <groupId>org.slf4j</groupId>
-               </exclusion>
-               <exclusion>
-                   <artifactId>serializer</artifactId>
-                   <groupId>org.apache.xerces</groupId>
-               </exclusion>
-               <exclusion>
-                   <artifactId>log4j-over-slf4j</artifactId>
-                   <groupId>org.slf4j</groupId>
-               </exclusion>
-           </exclusions>
-       </dependency>
+      <!-- saml -->
+      <dependency>
+        <groupId>org.opensaml</groupId>
+        <artifactId>opensaml</artifactId>
+        <version>2.6.1</version>
+        <scope>compile</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>xml-apis</artifactId>
+            <groupId>org.apache.xerces</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>serializer</artifactId>
+            <groupId>org.apache.xerces</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
 
       <!-- SCIM -->
       <dependency>
@@ -3819,41 +3820,41 @@
       </dependency>
       <!-- SCIM - Tests -->
       <dependency>
-       <groupId>org.apache.wink</groupId>
-       <artifactId>wink-client-apache-httpclient</artifactId>
-       <version>1.3.0</version>
-       <scope>test</scope>
-       <exclusions>
-         <exclusion>
-           <groupId>org.slf4j</groupId>
-           <artifactId>jcl-over-slf4j</artifactId>
-         </exclusion>
-       </exclusions>
+        <groupId>org.apache.wink</groupId>
+        <artifactId>wink-client-apache-httpclient</artifactId>
+        <version>1.3.0</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
-       <groupId>info.simplecloud</groupId>
-       <artifactId>scimcore</artifactId>
-       <version>0.1</version>
-       <scope>test</scope>
+        <groupId>info.simplecloud</groupId>
+        <artifactId>scimcore</artifactId>
+        <version>0.1</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
-       <groupId>info.simplecloud.scimproxy</groupId>
-       <artifactId>compliance</artifactId>
-       <version>0.1</version>
-       <classifier>classes</classifier>
-       <scope>test</scope>
+        <groupId>info.simplecloud.scimproxy</groupId>
+        <artifactId>compliance</artifactId>
+        <version>0.1</version>
+        <classifier>classes</classifier>
+        <scope>test</scope>
       </dependency>
       <dependency>
-       <groupId>commons-validator</groupId>
-       <artifactId>commons-validator</artifactId>
-       <version>1.4.0</version>
-       <scope>test</scope>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>1.4.0</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
-       <groupId>org.apache.commons</groupId>
-       <artifactId>not-yet-commons-ssl</artifactId>
-       <version>0.3.7</version>
-       <scope>test</scope>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>not-yet-commons-ssl</artifactId>
+        <version>0.3.7</version>
+        <scope>test</scope>
       </dependency>
 
       <!-- Test Scope -->

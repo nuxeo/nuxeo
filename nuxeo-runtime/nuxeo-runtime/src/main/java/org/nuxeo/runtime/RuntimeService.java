@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime;
@@ -25,18 +24,15 @@ import org.nuxeo.runtime.model.RuntimeContext;
 import org.osgi.framework.Bundle;
 
 /**
- * The runtime service: a singleton object that provides access to the Nuxeo
- * Runtime. The runtime service must be started before any other runtime
- * component or object that accesses the runtime.
+ * The runtime service: a singleton object that provides access to the Nuxeo Runtime. The runtime service must be
+ * started before any other runtime component or object that accesses the runtime.
  * <p>
- * This service is usually implemented for each target platform where Nuxeo
- * Runtime should run.
+ * This service is usually implemented for each target platform where Nuxeo Runtime should run.
  * <p>
- * It is recommended to extend the {@link AbstractRuntimeService} class instead
- * of directly implementing this interface.
+ * It is recommended to extend the {@link AbstractRuntimeService} class instead of directly implementing this interface.
  * <p>
- * After the runtime service was initialized, it may be accessed through the
- * facade class {@link org.nuxeo.runtime.api.Framework}.
+ * After the runtime service was initialized, it may be accessed through the facade class
+ * {@link org.nuxeo.runtime.api.Framework}.
  * <p>
  * See: {@link org.nuxeo.runtime.api.Framework}
  *
@@ -127,16 +123,14 @@ public interface RuntimeService {
      * Gets a property value using a default value if the property was not set.
      *
      * @param name the property name
-     * @param defaultValue the default value to use when the property doesn't
-     *            exists
+     * @param defaultValue the default value to use when the property doesn't exists
      * @return the property value
      */
     String getProperty(String name, String defaultValue);
 
     /**
-     * Replaces any substring in the form <code>${property.name}</code> with
-     * the corresponding runtime property value if any, otherwise leaves the
-     * substring unchanged.
+     * Replaces any substring in the form <code>${property.name}</code> with the corresponding runtime property value if
+     * any, otherwise leaves the substring unchanged.
      *
      * @param expression the expression to process
      * @return the expanded expression
@@ -190,11 +184,9 @@ public interface RuntimeService {
     RuntimeContext getContext();
 
     /**
-     * Gets the service of type serviceClass if such a service was declared by
-     * a resolved runtime component.
+     * Gets the service of type serviceClass if such a service was declared by a resolved runtime component.
      * <p>
-     * If the component is not yet activated, it will be prior to return the
-     * service.
+     * If the component is not yet activated, it will be prior to return the service.
      *
      * @param <T> the service type
      * @param serviceClass the service class
@@ -210,23 +202,19 @@ public interface RuntimeService {
     List<String> getWarnings();
 
     /**
-     * OSGi frameworks are using a string {@link Bundle#getLocation()} to
-     * identify bundle locations.
+     * OSGi frameworks are using a string {@link Bundle#getLocation()} to identify bundle locations.
      * <p>
-     * This method try to convert the bundle location to real file if possible.
-     * If this bundle location cannot be converted to a file (e.g. it may be a
-     * remote URL), null is returned.
+     * This method try to convert the bundle location to real file if possible. If this bundle location cannot be
+     * converted to a file (e.g. it may be a remote URL), null is returned.
      * <p>
-     * This method works only for bundles that are installed as files on the
-     * host file system.
+     * This method works only for bundles that are installed as files on the host file system.
      *
      * @return the bundle file, or null
      */
     File getBundleFile(Bundle bundle);
 
     /**
-     * Get an installed bundle given its symbolic name. This method is not
-     * handling versions.
+     * Get an installed bundle given its symbolic name. This method is not handling versions.
      *
      * @param symbolicName
      * @return
@@ -234,8 +222,8 @@ public interface RuntimeService {
     Bundle getBundle(String symbolicName);
 
     /**
-     * Computes the runtime status, adds it to the given string builder, and
-     * return true if some problems have been detected.
+     * Computes the runtime status, adds it to the given string builder, and return true if some problems have been
+     * detected.
      *
      * @since 5.6
      * @param msg

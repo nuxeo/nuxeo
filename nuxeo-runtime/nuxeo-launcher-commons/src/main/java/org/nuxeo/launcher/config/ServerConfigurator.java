@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2010-2012 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -14,7 +14,6 @@
  * Contributors:
  *     Julien Carsique
  *
- * $Id$
  */
 
 package org.nuxeo.launcher.config;
@@ -71,34 +70,29 @@ public abstract class ServerConfigurator {
     /**
      * @since 5.4.2
      */
-    public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList(new String[] {
-            "nuxeo.conf", "nuxeo.home", "log.id" });
+    public static final List<String> NUXEO_SYSTEM_PROPERTIES = Arrays.asList(new String[] { "nuxeo.conf", "nuxeo.home",
+            "log.id" });
 
     protected static final String DEFAULT_CONTEXT_NAME = "/nuxeo";
 
-    private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES
-            + File.separator + "files.list";
+    private static final String NEW_FILES = ConfigurationGenerator.TEMPLATES + File.separator + "files.list";
 
     /**
      * @since 5.4.2
-     * @deprecated Since 5.9.4. Use
-     *             {@link org.nuxeo.common.Environment#DEFAULT_LOG_DIR} instead.
+     * @deprecated Since 5.9.4. Use {@link org.nuxeo.common.Environment#DEFAULT_LOG_DIR} instead.
      */
     @Deprecated
     public static final String DEFAULT_LOG_DIR = org.nuxeo.common.Environment.DEFAULT_LOG_DIR;
 
     /**
-     * @deprecated Since 5.9.4. Use
-     *             {@link org.nuxeo.common.Environment#DEFAULT_DATA_DIR}
-     *             instead.
+     * @deprecated Since 5.9.4. Use {@link org.nuxeo.common.Environment#DEFAULT_DATA_DIR} instead.
      */
     @Deprecated
     public static final String DEFAULT_DATA_DIR = org.nuxeo.common.Environment.DEFAULT_DATA_DIR;
 
     /**
      * @since 5.4.2
-     * @deprecated Since 5.9.4. Use
-     *             {@link org.nuxeo.common.Environment#DEFAULT_TMP_DIR} instead.
+     * @deprecated Since 5.9.4. Use {@link org.nuxeo.common.Environment#DEFAULT_TMP_DIR} instead.
      */
     @Deprecated
     public static final String DEFAULT_TMP_DIR = org.nuxeo.common.Environment.DEFAULT_TMP_DIR;
@@ -113,15 +107,12 @@ public abstract class ServerConfigurator {
     abstract boolean isConfigured();
 
     /**
-     * Generate configuration files from templates and given configuration
-     * parameters
+     * Generate configuration files from templates and given configuration parameters
      *
-     * @param config Properties with configuration parameters for template
-     *            replacement
+     * @param config Properties with configuration parameters for template replacement
      * @throws ConfigurationException
      */
-    protected void parseAndCopy(Properties config) throws IOException,
-            TemplateException, ConfigurationException {
+    protected void parseAndCopy(Properties config) throws IOException, TemplateException, ConfigurationException {
         // FilenameFilter for excluding "nuxeo.defaults" files from copy
         final FilenameFilter filter = new FilenameFilter() {
             @Override
@@ -132,11 +123,9 @@ public abstract class ServerConfigurator {
         final TextTemplate templateParser = new TextTemplate(config);
         templateParser.setTrim(true);
         templateParser.setTextParsingExtensions(config.getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS,
-                "xml,properties,nx"));
+                ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
         templateParser.setFreemarkerParsingExtensions(config.getProperty(
-                ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS,
-                "nxftl"));
+                ConfigurationGenerator.PARAM_TEMPLATES_FREEMARKER_EXTENSIONS, "nxftl"));
 
         deleteTemplateFiles();
         // add included templates directories
@@ -145,30 +134,23 @@ public abstract class ServerConfigurator {
             File[] listFiles = includedTemplate.listFiles(filter);
             if (listFiles != null) {
                 String templateName = includedTemplate.getName();
-                log.debug(String.format("Parsing %s... %s", templateName,
-                        listFiles));
+                log.debug(String.format("Parsing %s... %s", templateName, listFiles));
                 // Check for deprecation
-                Boolean isDeprecated = Boolean.valueOf(config.getProperty(templateName
-                        + ".deprecated"));
+                Boolean isDeprecated = Boolean.valueOf(config.getProperty(templateName + ".deprecated"));
                 if (isDeprecated) {
-                    log.warn("WARNING: Template " + templateName
-                            + " is deprecated.");
-                    String deprecationMessage = config.getProperty(templateName
-                            + ".deprecation");
+                    log.warn("WARNING: Template " + templateName + " is deprecated.");
+                    String deprecationMessage = config.getProperty(templateName + ".deprecation");
                     if (deprecationMessage != null) {
                         log.warn(deprecationMessage);
                     }
                 }
                 // Retrieve optional target directory if defined
-                String outputDirectoryStr = config.getProperty(templateName
-                        + ".target");
-                File outputDirectory = (outputDirectoryStr != null) ? new File(
-                        generator.getNuxeoHome(), outputDirectoryStr)
-                        : getOutputDirectory();
+                String outputDirectoryStr = config.getProperty(templateName + ".target");
+                File outputDirectory = (outputDirectoryStr != null) ? new File(generator.getNuxeoHome(),
+                        outputDirectoryStr) : getOutputDirectory();
                 for (File in : listFiles) {
                     // copy template(s) directories parsing properties
-                    newFilesList.addAll(templateParser.processDirectory(in,
-                            new File(outputDirectory, in.getName())));
+                    newFilesList.addAll(templateParser.processDirectory(in, new File(outputDirectory, in.getName())));
                 }
             }
         }
@@ -176,16 +158,14 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Delete files previously deployed by templates. If a file had been
-     * overwritten by a template, it will be restored.
+     * Delete files previously deployed by templates. If a file had been overwritten by a template, it will be restored.
      * Helps the server returning to the state before any template was applied.
      *
      * @throws IOException
      * @throws ConfigurationException
      */
     @SuppressWarnings("resource")
-    private void deleteTemplateFiles() throws IOException,
-            ConfigurationException {
+    private void deleteTemplateFiles() throws IOException, ConfigurationException {
         File newFiles = new File(generator.getNuxeoHome(), NEW_FILES);
         if (!newFiles.exists()) {
             return;
@@ -199,15 +179,12 @@ public abstract class ServerConfigurator {
                     log.debug("Restore " + line);
                     try {
                         File backup = new File(generator.getNuxeoHome(), line);
-                        File original = new File(generator.getNuxeoHome(),
-                                line.substring(0, line.length() - 4));
+                        File original = new File(generator.getNuxeoHome(), line.substring(0, line.length() - 4));
                         FileUtils.copyFile(backup, original);
                         backup.delete();
                     } catch (IOException e) {
-                        throw new ConfigurationException(String.format(
-                                "Failed to restore %s from %s\nEdit or "
-                                        + "delete %s to bypass that error.",
-                                line.substring(0, line.length() - 4), line,
+                        throw new ConfigurationException(String.format("Failed to restore %s from %s\nEdit or "
+                                + "delete %s to bypass that error.", line.substring(0, line.length() - 4), line,
                                 newFiles), e);
                     }
                 } else {
@@ -222,15 +199,13 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Store into {@link #NEW_FILES} the list of new files deployed by the
-     * templates.
-     * For later use by {@link #deleteTemplateFiles()}
+     * Store into {@link #NEW_FILES} the list of new files deployed by the templates. For later use by
+     * {@link #deleteTemplateFiles()}
      *
      * @param newFilesList
      * @throws IOException
      */
-    private void storeNewFilesList(List<String> newFilesList)
-            throws IOException {
+    private void storeNewFilesList(List<String> newFilesList) throws IOException {
         BufferedWriter writer = null;
         try {
             // Store new files listing
@@ -238,8 +213,7 @@ public abstract class ServerConfigurator {
             writer = new BufferedWriter(new FileWriter(newFiles, false));
             int index = generator.getNuxeoHome().getCanonicalPath().length() + 1;
             for (String filepath : newFilesList) {
-                writer.write(new File(filepath).getCanonicalPath().substring(
-                        index));
+                writer.write(new File(filepath).getCanonicalPath().substring(index));
                 writer.newLine();
             }
         } finally {
@@ -284,8 +258,7 @@ public abstract class ServerConfigurator {
      */
     public File getLogDir() {
         if (logDir == null) {
-            logDir = new File(generator.getNuxeoHome(),
-                    org.nuxeo.common.Environment.DEFAULT_LOG_DIR);
+            logDir = new File(generator.getNuxeoHome(), org.nuxeo.common.Environment.DEFAULT_LOG_DIR);
         }
         return logDir;
     }
@@ -309,8 +282,7 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Initialize logs. This is called before
-     * {@link ConfigurationGenerator#init()} so the {@link #logDir} field is not
+     * Initialize logs. This is called before {@link ConfigurationGenerator#init()} so the {@link #logDir} field is not
      * yet initialized
      *
      * @since 5.4.2
@@ -320,8 +292,7 @@ public abstract class ServerConfigurator {
         try {
             String logDirectory = System.getProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR);
             if (logDirectory == null) {
-                System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR,
-                        getLogDir().getPath());
+                System.setProperty(org.nuxeo.common.Environment.NUXEO_LOG_DIR, getLogDir().getPath());
             }
             if (logFile == null || !logFile.exists()) {
                 System.out.println("No logs configuration, will setup a basic one.");
@@ -337,8 +308,7 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * @return Pid directory (usually known as "run directory"); Returns log
-     *         directory if not set by configuration.
+     * @return Pid directory (usually known as "run directory"); Returns log directory if not set by configuration.
      * @since 5.4.2
      */
     public File getPidDir() {
@@ -358,26 +328,20 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Check server paths; warn if existing deprecated paths. Override this
-     * method to perform server specific checks.
+     * Check server paths; warn if existing deprecated paths. Override this method to perform server specific checks.
      *
      * @throws ConfigurationException If deprecated paths have been detected
-     *
      * @since 5.4.2
      */
     public void checkPaths() throws ConfigurationException {
-        File badInstanceClid = new File(generator.getNuxeoHome(),
-                getDefaultDataDir() + File.separator + "instance.clid");
-        if (badInstanceClid.exists()
-                && !getDataDir().equals(badInstanceClid.getParentFile())) {
-            log.warn(String.format("Moving %s to %s.", badInstanceClid,
-                    getDataDir()));
+        File badInstanceClid = new File(generator.getNuxeoHome(), getDefaultDataDir() + File.separator
+                + "instance.clid");
+        if (badInstanceClid.exists() && !getDataDir().equals(badInstanceClid.getParentFile())) {
+            log.warn(String.format("Moving %s to %s.", badInstanceClid, getDataDir()));
             try {
-                FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(),
-                        true);
+                FileUtils.moveFileToDirectory(badInstanceClid, getDataDir(), true);
             } catch (IOException e) {
-                throw new ConfigurationException("NXP-6722 move failed: "
-                        + e.getMessage(), e);
+                throw new ConfigurationException("NXP-6722 move failed: " + e.getMessage(), e);
             }
         }
 
@@ -443,7 +407,6 @@ public abstract class ServerConfigurator {
 
     /**
      * @param absoluteDirectory
-     *
      * @since 5.9.4
      */
     private void setPackagesDir(String packagesDirStr) {
@@ -452,8 +415,8 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Make absolute the directory passed in parameter. If it was relative, then
-     * store absolute path in user config instead of relative and return value
+     * Make absolute the directory passed in parameter. If it was relative, then store absolute path in user config
+     * instead of relative and return value
      *
      * @param key Directory system key
      * @param directory absolute or relative directory path
@@ -492,15 +455,13 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Check if oldPath exist; if so, then raise a ConfigurationException with
-     * information for fixing issue
+     * Check if oldPath exist; if so, then raise a ConfigurationException with information for fixing issue
      *
      * @param oldPath Path that must NOT exist
      * @param message Error message thrown with exception
      * @throws ConfigurationException If an old path has been discovered
      */
-    protected void checkPath(File oldPath, String message)
-            throws ConfigurationException {
+    protected void checkPath(File oldPath, String message) throws ConfigurationException {
         if (oldPath.exists()) {
             log.error("Deprecated paths used.");
             throw new ConfigurationException(message);
@@ -519,8 +480,7 @@ public abstract class ServerConfigurator {
      * @since 5.4.2
      */
     public void removeExistingLocks() {
-        File lockFile = new File(getDataDir(), "h2" + File.separator
-                + "nuxeo.lucene" + File.separator + "write.lock");
+        File lockFile = new File(getDataDir(), "h2" + File.separator + "nuxeo.lucene" + File.separator + "write.lock");
         if (lockFile.exists()) {
             log.info("Removing lock file " + lockFile);
             lockFile.delete();
@@ -580,8 +540,7 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Extract Nuxeo properties from given Properties (System properties are
-     * removed, except those set by Nuxeo)
+     * Extract Nuxeo properties from given Properties (System properties are removed, except those set by Nuxeo)
      *
      * @param properties Properties to be filtered
      * @return copy of given properties filtered out of System properties
@@ -628,11 +587,9 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Perform server specific checks, not already done by
-     * {@link ConfigurationGenerator#checkAddressesAndPorts()}
+     * Perform server specific checks, not already done by {@link ConfigurationGenerator#checkAddressesAndPorts()}
      *
      * @throws ConfigurationException
-     *
      * @since 5.7
      * @see ConfigurationGenerator#checkAddressesAndPorts()
      */
@@ -640,26 +597,22 @@ public abstract class ServerConfigurator {
     }
 
     /**
-     * Override to add server specific parameters to the list of parameters to
-     * migrate
+     * Override to add server specific parameters to the list of parameters to migrate
      *
      * @param parametersmigration
      * @since 5.7
      */
-    protected void addServerSpecificParameters(
-            Map<String, String> parametersmigration) {
+    protected void addServerSpecificParameters(Map<String, String> parametersmigration) {
         // Nothing to do
     }
 
     /**
      * @return Marketplace Packages directory
-     *
      * @since 5.9.4
      */
     public File getPackagesDir() {
         if (packagesDir == null) {
-            packagesDir = new File(generator.getNuxeoHome(),
-                    getDefaultPackagesDir());
+            packagesDir = new File(generator.getNuxeoHome(), getDefaultPackagesDir());
         }
         return packagesDir;
     }

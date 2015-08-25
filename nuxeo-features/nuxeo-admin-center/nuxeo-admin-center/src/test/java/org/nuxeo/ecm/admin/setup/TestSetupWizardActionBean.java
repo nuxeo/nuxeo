@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -49,7 +49,6 @@ import com.google.inject.Inject;
 
 /**
  * @author jcarsique
- *
  */
 @RunWith(FeaturesRunner.class)
 @Features({ LogCaptureFeature.class, RuntimeFeature.class })
@@ -70,8 +69,7 @@ public class TestSetupWizardActionBean {
     public static class CustomLogFilter implements LogCaptureFeature.Filter {
         @Override
         public boolean accept(LoggingEvent event) {
-            return Level.ERROR.equals(event.getLevel())
-                    || Level.WARN.equals(event.getLevel());
+            return Level.ERROR.equals(event.getLevel()) || Level.WARN.equals(event.getLevel());
         }
     }
 
@@ -84,22 +82,16 @@ public class TestSetupWizardActionBean {
         System.setProperty(Environment.NUXEO_HOME, nuxeoHome.getPath());
 
         // Properties required by ConfigurationGenerator
-        System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome,
-                "data").getPath());
-        System.setProperty(Environment.NUXEO_LOG_DIR,
-                new File(nuxeoHome, "log").getPath());
+        System.setProperty(Environment.NUXEO_DATA_DIR, new File(nuxeoHome, "data").getPath());
+        System.setProperty(Environment.NUXEO_LOG_DIR, new File(nuxeoHome, "log").getPath());
 
         nuxeoConf = new File(nuxeoHome, "bin");
         nuxeoConf.mkdirs();
         nuxeoConf = new File(nuxeoConf, ConfigurationGenerator.NUXEO_CONF);
-        FileUtils.copy(
-                FileUtils.getResourceFileFromContext("configurator/nuxeo.conf"),
-                nuxeoConf);
-        System.setProperty(ConfigurationGenerator.NUXEO_CONF,
-                nuxeoConf.getPath());
+        FileUtils.copy(FileUtils.getResourceFileFromContext("configurator/nuxeo.conf"), nuxeoConf);
+        System.setProperty(ConfigurationGenerator.NUXEO_CONF, nuxeoConf.getPath());
 
-        FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"),
-                new File(nuxeoHome, "templates"));
+        FileUtils.copy(FileUtils.getResourceFileFromContext("templates/jboss"), new File(nuxeoHome, "templates"));
         System.setProperty("jboss.home.dir", nuxeoHome.getPath());
 
         setupWizardActionBean = new SetupWizardActionBean();
@@ -107,13 +99,9 @@ public class TestSetupWizardActionBean {
         setupWizardActionBean.getConfigurationGenerator();
 
         /*
-         * WARN [UnknownServerConfigurator] Unknown server.
-         * WARN [ConfigurationGenerator] Server will be considered as not
-         * configurable.
-         * ERROR [ConfigurationGenerator] Template 'oldchange' not found with
-         * relative or absolute path (...)
-         * WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using
-         * default
+         * WARN [UnknownServerConfigurator] Unknown server. WARN [ConfigurationGenerator] Server will be considered as
+         * not configurable. ERROR [ConfigurationGenerator] Template 'oldchange' not found with relative or absolute
+         * path (...) WARN [ConfigurationGenerator] Missing value for nuxeo.db.type, using default
          */
         capturedLog.assertHasEvent();
         assertEquals(6, capturedLog.getCaughtEvents().size());
@@ -130,8 +118,7 @@ public class TestSetupWizardActionBean {
         assertNull(parameters.get("test.root.nuxeo.defaults"));
         assertEquals("true", advancedParameters.get("test.root.nuxeo.defaults"));
         assertNull(parameters.get("test.default.nuxeo.defaults"));
-        assertEquals("true",
-                advancedParameters.get("test.default.nuxeo.defaults"));
+        assertEquals("true", advancedParameters.get("test.default.nuxeo.defaults"));
     }
 
     @Test
@@ -139,15 +126,13 @@ public class TestSetupWizardActionBean {
         parameters = setupWizardActionBean.getParameters();
         advancedParameters = setupWizardActionBean.getAdvancedParameters();
         parameters.put("nuxeo.bind.address", "127.0.0.1");
-        parameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME,
-                "postgresql");
+        parameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
         advancedParameters.put("test.default.nuxeo.defaults", "false");
         setupWizardActionBean.saveParameters();
         log.debug("Generated nuxeoConf: " + nuxeoConf);
         expectedNuxeoConf = FileUtils.getResourceFileFromContext("configurator/nuxeo.conf.expected");
         BufferedReader bfNew = new BufferedReader(new FileReader(nuxeoConf));
-        BufferedReader bfExp = new BufferedReader(new FileReader(
-                expectedNuxeoConf));
+        BufferedReader bfExp = new BufferedReader(new FileReader(expectedNuxeoConf));
         String newStr, expStr;
         while ((newStr = bfNew.readLine()) != null) {
             expStr = bfExp.readLine();

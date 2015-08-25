@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2010-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2010-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -136,8 +136,7 @@ public abstract class NuxeoLauncher {
      */
     protected static final String OPTION_DEBUG = "debug";
 
-    private static final String OPTION_DEBUG_DESC = "Activate debug messages. "
-            + "See 'category' option.";
+    private static final String OPTION_DEBUG_DESC = "Activate debug messages. " + "See 'category' option.";
 
     /**
      * @since 5.6
@@ -240,8 +239,7 @@ public abstract class NuxeoLauncher {
     private static final String STOP_MAX_WAIT_PARAM = "launcher.stop.max.wait";
 
     /**
-     * Default maximum time to wait for server startup summary in logs (in
-     * seconds).
+     * Default maximum time to wait for server startup summary in logs (in seconds).
      */
     private static final String START_MAX_WAIT_DEFAULT = "300";
 
@@ -267,16 +265,12 @@ public abstract class NuxeoLauncher {
 
     private static final String PARAM_UPDATECENTER_DISABLED = "nuxeo.updatecenter.disabled";
 
-    private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init",
-            "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
-            "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list",
-            "mp-listall", "mp-update", "status", "showconf", "mp-show",
-            "mp-set" };
+    private static final String[] COMMANDS_NO_GUI = { "configure", "mp-init", "mp-purge", "mp-add", "mp-install",
+            "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-list", "mp-listall",
+            "mp-update", "status", "showconf", "mp-show", "mp-set" };
 
-    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-init",
-            "mp-purge", "mp-add", "mp-install", "mp-uninstall", "mp-request",
-            "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update",
-            "mp-set" };
+    private static final String[] COMMANDS_NO_RUNNING_SERVER = { "mp-init", "mp-purge", "mp-add", "mp-install",
+            "mp-uninstall", "mp-request", "mp-remove", "mp-hotfix", "mp-upgrade", "mp-reset", "mp-update", "mp-set" };
 
     /**
      * Program is running or service is OK.
@@ -367,8 +361,8 @@ public abstract class NuxeoLauncher {
 
     protected String pid;
 
-    private ExecutorService executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory(
-            "NuxeoProcessThread", false));
+    private ExecutorService executor = Executors.newSingleThreadExecutor(new DaemonThreadFactory("NuxeoProcessThread",
+            false));
 
     private ShutdownThread shutdownHook;
 
@@ -459,15 +453,12 @@ public abstract class NuxeoLauncher {
         statusServletClient.setKey(configurationGenerator.getUserConfig().getProperty(
                 ConfigurationGenerator.PARAM_STATUS_KEY));
         processManager = getOSProcessManager();
-        processRegex = "^(?!/bin/sh).*"
-                + Pattern.quote(configurationGenerator.getNuxeoConf().getPath())
-                + ".*" + Pattern.quote(getServerPrint()) + ".*$";
+        processRegex = "^(?!/bin/sh).*" + Pattern.quote(configurationGenerator.getNuxeoConf().getPath()) + ".*"
+                + Pattern.quote(getServerPrint()) + ".*$";
 
         // Set OS-specific decorations
         if (PlatformUtils.isMac()) {
-            System.setProperty(
-                    "com.apple.mrj.application.apple.menu.about.name",
-                    "NuxeoCtl");
+            System.setProperty("com.apple.mrj.application.apple.menu.about.name", "NuxeoCtl");
         }
     }
 
@@ -481,8 +472,7 @@ public abstract class NuxeoLauncher {
             return new SolarisProcessManager();
         } else if (PlatformUtils.isWindows()) {
             WindowsProcessManager windowsProcessManager = new WindowsProcessManager();
-            return windowsProcessManager.isUsable() ? windowsProcessManager
-                    : new PureJavaProcessManager();
+            return windowsProcessManager.isUsable() ? windowsProcessManager : new PureJavaProcessManager();
         } else {
             return new PureJavaProcessManager();
         }
@@ -503,14 +493,11 @@ public abstract class NuxeoLauncher {
 
         protected static final String SOLARIS_10 = "5.10";
 
-        protected static final String[] SOLARIS_11_PS = { "/usr/bin/ps",
-                "auxww" };
+        protected static final String[] SOLARIS_11_PS = { "/usr/bin/ps", "auxww" };
 
-        protected static final String[] SOLARIS_10_PS = { "/usr/ucb/ps",
-                "auxww" };
+        protected static final String[] SOLARIS_10_PS = { "/usr/ucb/ps", "auxww" };
 
-        protected static final Pattern PS_OUTPUT_LINE = Pattern.compile("^"
-                + "[^\\s]+\\s+" // USER
+        protected static final Pattern PS_OUTPUT_LINE = Pattern.compile("^" + "[^\\s]+\\s+" // USER
                 + "([0-9]+)\\s+" // PID
                 + "[0-9.\\s]+" // %CPU %MEM SZ RSS (may be collapsed)
                 + "[^\\s]+\\s+" // TT (no starting digit)
@@ -581,16 +568,13 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Do not directly call this method without a call to
-     * {@link #checkNoRunningServer()}
+     * Do not directly call this method without a call to {@link #checkNoRunningServer()}
      *
      * @see #doStart()
      * @throws IOException In case of issue with process.
-     * @throws InterruptedException If any thread has interrupted the current
-     *             thread.
+     * @throws InterruptedException If any thread has interrupted the current thread.
      */
-    protected void start(boolean logProcessOutput) throws IOException,
-            InterruptedException {
+    protected void start(boolean logProcessOutput) throws IOException, InterruptedException {
         List<String> startCommand = new ArrayList<>();
         startCommand.add(getJavaExecutable().getPath());
         startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
@@ -630,34 +614,29 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Gets the Java options with 'nuxeo.*' properties substituted.
-     *
-     * It enables usage of property like ${nuxeo.log.dir} inside JAVA_OPTS.
+     * Gets the Java options with 'nuxeo.*' properties substituted. It enables usage of property like ${nuxeo.log.dir}
+     * inside JAVA_OPTS.
      *
      * @return the java options string.
      */
     protected String getJavaOptsProperty() {
         String ret = System.getProperty(JAVA_OPTS_PROPERTY, JAVA_OPTS_DEFAULT);
-        ret = StrSubstitutor.replace(ret,
-                configurationGenerator.getUserConfig());
+        ret = StrSubstitutor.replace(ret, configurationGenerator.getUserConfig());
         return ret;
     }
 
     /**
-     * Check if some server is already running (from another thread) and throw a
-     * Runtime exception if it finds one. That method will work where
-     * {@link #isRunning()} won't.
+     * Check if some server is already running (from another thread) and throw a Runtime exception if it finds one. That
+     * method will work where {@link #isRunning()} won't.
      *
-     * @throws IllegalThreadStateException Thrown if a server is already
-     *             running.
+     * @throws IllegalThreadStateException Thrown if a server is already running.
      */
     public void checkNoRunningServer() throws IllegalStateException {
         try {
             String existingPid = getPid();
             if (existingPid != null) {
                 errorValue = EXIT_CODE_OK;
-                throw new IllegalStateException(
-                        "A server is running with process ID " + existingPid);
+                throw new IllegalStateException("A server is running with process ID " + existingPid);
             }
         } catch (IOException e) {
             log.warn("Could not check existing process: " + e.getMessage());
@@ -667,20 +646,15 @@ public abstract class NuxeoLauncher {
     /**
      * @return (since 5.5) Array list with created stream gobbler threads.
      */
-    public ArrayList<ThreadedStreamGobbler> logProcessStreams(Process process,
-            boolean logProcessOutput) {
+    public ArrayList<ThreadedStreamGobbler> logProcessStreams(Process process, boolean logProcessOutput) {
         ArrayList<ThreadedStreamGobbler> sgArray = new ArrayList<>();
         ThreadedStreamGobbler inputSG, errorSG;
         if (logProcessOutput) {
-            inputSG = new ThreadedStreamGobbler(process.getInputStream(),
-                    System.out);
-            errorSG = new ThreadedStreamGobbler(process.getErrorStream(),
-                    System.err);
+            inputSG = new ThreadedStreamGobbler(process.getInputStream(), System.out);
+            errorSG = new ThreadedStreamGobbler(process.getErrorStream(), System.err);
         } else {
-            inputSG = new ThreadedStreamGobbler(process.getInputStream(),
-                    SimpleLog.LOG_LEVEL_OFF);
-            errorSG = new ThreadedStreamGobbler(process.getErrorStream(),
-                    SimpleLog.LOG_LEVEL_OFF);
+            inputSG = new ThreadedStreamGobbler(process.getInputStream(), SimpleLog.LOG_LEVEL_OFF);
+            errorSG = new ThreadedStreamGobbler(process.getErrorStream(), SimpleLog.LOG_LEVEL_OFF);
         }
         inputSG.start();
         errorSG.start();
@@ -740,8 +714,7 @@ public abstract class NuxeoLauncher {
     protected abstract void setServerStartCommand(List<String> command);
 
     private File getJavaExecutable() {
-        File javaExec = new File(System.getProperty("java.home"), "bin"
-                + File.separator + "java");
+        File javaExec = new File(System.getProperty("java.home"), "bin" + File.separator + "java");
         return javaExec;
     }
 
@@ -756,8 +729,7 @@ public abstract class NuxeoLauncher {
         ArrayList<String> nuxeoProperties = new ArrayList<>();
         nuxeoProperties.add(String.format("-D%s=%s", Environment.NUXEO_HOME,
                 configurationGenerator.getNuxeoHome().getPath()));
-        nuxeoProperties.add(String.format("-D%s=%s",
-                ConfigurationGenerator.NUXEO_CONF,
+        nuxeoProperties.add(String.format("-D%s=%s", ConfigurationGenerator.NUXEO_CONF,
                 configurationGenerator.getNuxeoConf().getPath()));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_LOG_DIR));
         nuxeoProperties.add(getNuxeoProperty(Environment.NUXEO_DATA_DIR));
@@ -768,26 +740,22 @@ public abstract class NuxeoLauncher {
         }
         if (overrideJavaTmpDir) {
             nuxeoProperties.add("-Djava.io.tmpdir="
-                    + configurationGenerator.getUserConfig().getProperty(
-                            Environment.NUXEO_TMP_DIR));
+                    + configurationGenerator.getUserConfig().getProperty(Environment.NUXEO_TMP_DIR));
         }
         return nuxeoProperties;
     }
 
     private String getNuxeoProperty(String property) {
-        return "-D" + property + "="
-                + configurationGenerator.getUserConfig().getProperty(property);
+        return "-D" + property + "=" + configurationGenerator.getUserConfig().getProperty(property);
     }
 
     protected String addToClassPath(String cp, String filename) {
-        File classPathEntry = new File(configurationGenerator.getNuxeoHome(),
-                filename);
+        File classPathEntry = new File(configurationGenerator.getNuxeoHome(), filename);
         if (!classPathEntry.exists()) {
             classPathEntry = new File(filename);
         }
         if (!classPathEntry.exists()) {
-            throw new RuntimeException(
-                    "Tried to add inexistent classpath entry: " + filename);
+            throw new RuntimeException("Tried to add inexistent classpath entry: " + filename);
         }
         cp += System.getProperty("path.separator") + classPathEntry.getPath();
         return cp;
@@ -874,16 +842,14 @@ public abstract class NuxeoLauncher {
     /**
      * @since 5.6
      */
-    protected static CommandLine parseOptions(String[] args)
-            throws ParseException {
+    protected static CommandLine parseOptions(String[] args) throws ParseException {
         initParserOptions();
         CommandLineParser parser = new PosixParser();
         CommandLine cmdLine = null;
         Boolean stopAfterParsing = true;
         try {
             cmdLine = parser.parse(launcherOptions, args);
-            if (cmdLine.hasOption(OPTION_HELP)
-                    || cmdLine.getArgList().contains(OPTION_HELP)) {
+            if (cmdLine.hasOption(OPTION_HELP) || cmdLine.getArgList().contains(OPTION_HELP)) {
                 printLongHelp();
             } else if (cmdLine.getArgList().isEmpty()) {
                 printShortHelp();
@@ -934,8 +900,7 @@ public abstract class NuxeoLauncher {
      * @throws PackageException
      * @throws IOException
      */
-    public static void launch(final NuxeoLauncher launcher) throws IOException,
-            PackageException {
+    public static void launch(final NuxeoLauncher launcher) throws IOException, PackageException {
         int exitStatus = EXIT_CODE_OK;
         boolean commandSucceeded = true;
         if (launcher.command == null) {
@@ -975,9 +940,7 @@ public abstract class NuxeoLauncher {
                             log.info("Go to " + launcher.getURL());
                         }
                     } catch (PackageException e) {
-                        log.error(
-                                "Could not initialize the packaging subsystem",
-                                e);
+                        log.error("Could not initialize the packaging subsystem", e);
                         launcher.removeShutdownHook();
                         System.exit(EXIT_CODE_ERROR);
                     }
@@ -1020,29 +983,25 @@ public abstract class NuxeoLauncher {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgAdd(params);
             } else {
-                commandSucceeded = launcher.pkgRequest(Arrays.asList(params),
-                        null, null, null);
+                commandSucceeded = launcher.pkgRequest(Arrays.asList(params), null, null, null);
             }
         } else if ("mp-install".equalsIgnoreCase(launcher.command)) {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgInstall(params);
             } else {
-                commandSucceeded = launcher.pkgRequest(null,
-                        Arrays.asList(params), null, null);
+                commandSucceeded = launcher.pkgRequest(null, Arrays.asList(params), null, null);
             }
         } else if ("mp-uninstall".equalsIgnoreCase(launcher.command)) {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgUninstall(params);
             } else {
-                commandSucceeded = launcher.pkgRequest(null, null,
-                        Arrays.asList(params), null);
+                commandSucceeded = launcher.pkgRequest(null, null, Arrays.asList(params), null);
             }
         } else if ("mp-remove".equalsIgnoreCase(launcher.command)) {
             if (launcher.hasOption(OPTION_NODEPS)) {
                 commandSucceeded = launcher.pkgRemove(params);
             } else {
-                commandSucceeded = launcher.pkgRequest(null, null, null,
-                        Arrays.asList(params));
+                commandSucceeded = launcher.pkgRequest(null, null, null, Arrays.asList(params));
             }
         } else if ("mp-request".equalsIgnoreCase(launcher.command)) {
             if (launcher.hasOption(OPTION_NODEPS)) {
@@ -1052,8 +1011,7 @@ public abstract class NuxeoLauncher {
                 commandSucceeded = launcher.pkgCompoundRequest(Arrays.asList(params));
             }
         } else if ("mp-set".equalsIgnoreCase(launcher.command)) {
-            commandSucceeded = launcher.pkgSetRequest(Arrays.asList(params),
-                    launcher.hasOption(OPTION_NODEPS));
+            commandSucceeded = launcher.pkgSetRequest(Arrays.asList(params), launcher.hasOption(OPTION_NODEPS));
         } else if ("mp-hotfix".equalsIgnoreCase(launcher.command)) {
             commandSucceeded = launcher.pkgHotfix();
         } else if ("mp-upgrade".equalsIgnoreCase(launcher.command)) {
@@ -1099,24 +1057,16 @@ public abstract class NuxeoLauncher {
     private boolean pack() {
         try {
             checkNoRunningServer();
-            configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED,
-                    "true");
+            configurationGenerator.setProperty(PARAM_UPDATECENTER_DISABLED, "true");
             List<String> startCommand = new ArrayList<>();
             startCommand.add(getJavaExecutable().getPath());
             startCommand.addAll(Arrays.asList(getJavaOptsProperty().split(" ")));
             startCommand.add("-cp");
             String classpath = getClassPath();
-            classpath = addToClassPath(classpath, "bin" + File.separator
-                    + "nuxeo-launcher.jar");
-            classpath = getClassPath(
-                    classpath,
-                    configurationGenerator.getServerConfigurator().getServerLibDir());
-            classpath = getClassPath(
-                    classpath,
-                    configurationGenerator.getServerConfigurator().getNuxeoLibDir());
-            classpath = getClassPath(
-                    classpath,
-                    new File(configurationGenerator.getRuntimeHome(), "bundles"));
+            classpath = addToClassPath(classpath, "bin" + File.separator + "nuxeo-launcher.jar");
+            classpath = getClassPath(classpath, configurationGenerator.getServerConfigurator().getServerLibDir());
+            classpath = getClassPath(classpath, configurationGenerator.getServerConfigurator().getNuxeoLibDir());
+            classpath = getClassPath(classpath, new File(configurationGenerator.getRuntimeHome(), "bundles"));
             startCommand.add(classpath);
             startCommand.addAll(getNuxeoProperties());
             if (configurationGenerator.isTomcat) {
@@ -1133,8 +1083,7 @@ public abstract class NuxeoLauncher {
             pb.directory(configurationGenerator.getNuxeoHome());
             log.debug("Pack command: " + pb.command());
             Process process = pb.start();
-            ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
-                    process, true);
+            ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(process, true);
             Thread.sleep(100);
             process.waitFor();
             waitForProcessStreams(sgArray);
@@ -1146,9 +1095,7 @@ public abstract class NuxeoLauncher {
             log.error("Could not start process", e);
         } catch (IllegalStateException e) {
             errorValue = EXIT_CODE_ERROR;
-            log.error(
-                    "The server must not be running while running pack command",
-                    e);
+            log.error("The server must not be running while running pack command", e);
         } catch (ConfigurationException e) {
             errorValue = EXIT_CODE_ERROR;
             log.error(e);
@@ -1162,8 +1109,7 @@ public abstract class NuxeoLauncher {
             return false;
         }
         if (isRunning()) {
-            log.error("Server already running. "
-                    + "Please stop it before calling \"wizard\" command "
+            log.error("Server already running. " + "Please stop it before calling \"wizard\" command "
                     + "or use the Admin Center instead of the wizard.");
             return false;
         }
@@ -1172,8 +1118,7 @@ public abstract class NuxeoLauncher {
             configurationGenerator.init();
             reloadConfiguration = false;
         }
-        configurationGenerator.getUserConfig().setProperty(
-                ConfigurationGenerator.PARAM_WIZARD_DONE, "false");
+        configurationGenerator.getUserConfig().setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "false");
         return doStart();
     }
 
@@ -1212,23 +1157,19 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Whereas {@link #doStart()} considers the server as started when the
-     * process is running, {@link #doStartAndWait()} waits for effective start
-     * by watching the logs
+     * Whereas {@link #doStart()} considers the server as started when the process is running, {@link #doStartAndWait()}
+     * waits for effective start by watching the logs
      *
      * @param logProcessOutput Must process output stream must be logged or not.
-     *
      * @return true if the server started successfully
      * @throws PackageException
      */
-    public boolean doStartAndWait(boolean logProcessOutput)
-            throws PackageException {
+    public boolean doStartAndWait(boolean logProcessOutput) throws PackageException {
         boolean commandSucceeded = false;
         if (doStart(logProcessOutput)) {
             addShutdownHook();
             try {
-                if (configurationGenerator.isWizardRequired()
-                        || waitForEffectiveStart()) {
+                if (configurationGenerator.isWizardRequired() || waitForEffectiveStart()) {
                     commandSucceeded = true;
                 }
                 removeShutdownHook();
@@ -1254,10 +1195,9 @@ public abstract class NuxeoLauncher {
      */
     protected boolean waitForEffectiveStart() throws InterruptedException {
         long startTime = new Date().getTime();
-        int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                START_MAX_WAIT_PARAM, getDefaultMaxWait()));
-        log.debug("Will wait for effective start during " + startMaxWait
-                + " seconds.");
+        int startMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(START_MAX_WAIT_PARAM,
+                getDefaultMaxWait()));
+        log.debug("Will wait for effective start during " + startMaxWait + " seconds.");
         final StringBuilder startSummary = new StringBuilder();
         final String newLine = System.getProperty("line.separator");
         boolean isReady = false;
@@ -1289,8 +1229,7 @@ public abstract class NuxeoLauncher {
             startSummary.append(newLine + getStartupSummary());
             long duration = (new Date().getTime() - startTime) / 1000;
             startSummary.append("Started in "
-                    + String.format("%dmin%02ds", new Long(duration / 60),
-                            new Long(duration % 60)));
+                    + String.format("%dmin%02ds", new Long(duration / 60), new Long(duration % 60)));
             if (wasStartupFine()) {
                 if (!quiet) {
                     System.out.println(startSummary);
@@ -1344,8 +1283,7 @@ public abstract class NuxeoLauncher {
         boolean serverStarted = false;
         try {
             if (reloadConfiguration) {
-                configurationGenerator = new ConfigurationGenerator(quiet,
-                        debug);
+                configurationGenerator = new ConfigurationGenerator(quiet, debug);
                 configurationGenerator.init();
             } else {
                 // Ensure reload on next start
@@ -1356,11 +1294,9 @@ public abstract class NuxeoLauncher {
 
             if (configurationGenerator.isWizardRequired()) {
                 if (!configurationGenerator.isForceGeneration()) {
-                    log.error("Cannot start setup wizard with "
-                            + ConfigurationGenerator.PARAM_FORCE_GENERATION
+                    log.error("Cannot start setup wizard with " + ConfigurationGenerator.PARAM_FORCE_GENERATION
                             + "=false. Either set it to true or once, either set "
-                            + ConfigurationGenerator.PARAM_WIZARD_DONE
-                            + "=true to skip the wizard.");
+                            + ConfigurationGenerator.PARAM_WIZARD_DONE + "=true to skip the wizard.");
                     errorValue = EXIT_CODE_NOT_CONFIGURED;
                     return false;
                 }
@@ -1368,9 +1304,7 @@ public abstract class NuxeoLauncher {
                 for (String param : params) {
                     paramsStr += " " + param;
                 }
-                System.setProperty(
-                        ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS,
-                        paramsStr);
+                System.setProperty(ConfigurationGenerator.PARAM_WIZARD_RESTART_PARAMS, paramsStr);
                 configurationGenerator.prepareWizardStart();
             } else {
                 configurationGenerator.cleanupPostWizard();
@@ -1378,13 +1312,11 @@ public abstract class NuxeoLauncher {
 
             log.debug("Check if install in progress...");
             if (configurationGenerator.isInstallInProgress()) {
-                getConnectBroker().executePending(
-                        configurationGenerator.getInstallFile(), true, true);
+                getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true);
                 // configuration will be reloaded, keep wizard value
                 System.setProperty(
                         ConfigurationGenerator.PARAM_WIZARD_DONE,
-                        configurationGenerator.getUserConfig().getProperty(
-                                ConfigurationGenerator.PARAM_WIZARD_DONE,
+                        configurationGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE,
                                 "true"));
                 return doStart(logProcessOutput);
             }
@@ -1392,8 +1324,7 @@ public abstract class NuxeoLauncher {
             start(logProcessOutput);
             serverStarted = isRunning();
             if (pid != null) {
-                File pidFile = new File(configurationGenerator.getPidDir(),
-                        "nuxeo.pid");
+                File pidFile = new File(configurationGenerator.getPidDir(), "nuxeo.pid");
                 FileWriter writer = new FileWriter(pidFile);
                 writer.write(pid);
                 writer.close();
@@ -1426,9 +1357,8 @@ public abstract class NuxeoLauncher {
      */
     protected void printXMLOutput() {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(
-                    CommandSetInfo.class, CommandInfo.class, PackageInfo.class,
-                    MessageInfo.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(CommandSetInfo.class, CommandInfo.class,
+                    PackageInfo.class, MessageInfo.class);
             printXMLOutput(jaxbContext, cset);
         } catch (JAXBException e) {
             log.error("Output serialization failed: " + e.getMessage(), e);
@@ -1452,12 +1382,10 @@ public abstract class NuxeoLauncher {
                 System.out.println(xml.toString());
             } else {
                 try {
-                    System.out.println(XML.toJSONObject(xml.toString()).toString(
-                            2));
+                    System.out.println(XML.toJSONObject(xml.toString()).toString(2));
                 } catch (JSONException e) {
-                    log.error(String.format(
-                            "XML to JSON conversion failed: %s\nOutput was:\n%s",
-                            e.getMessage(), xml.toString()));
+                    log.error(String.format("XML to JSON conversion failed: %s\nOutput was:\n%s", e.getMessage(),
+                            xml.toString()));
                 }
             }
         } catch (JAXBException e) {
@@ -1470,7 +1398,6 @@ public abstract class NuxeoLauncher {
      * Stop stream gobblers contained in the given ArrayList
      *
      * @throws InterruptedException
-     *
      * @since 5.5
      * @see #logProcessStreams(Process, boolean)
      */
@@ -1491,8 +1418,7 @@ public abstract class NuxeoLauncher {
      * @return classpath with all jar files in baseDir
      * @throws IOException
      */
-    protected String getClassPath(String classpath, File baseDir)
-            throws IOException {
+    protected String getClassPath(String classpath, File baseDir) throws IOException {
         File[] files = getFilename(baseDir, ".*");
         for (File file : files) {
             classpath += System.getProperty("path.separator") + file.getPath();
@@ -1542,11 +1468,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Stops the server.
-     *
-     * Will try to call specific class for a clean stop, retry
-     * {@link #STOP_NB_TRY}, waiting {@link #STOP_SECONDS_BEFORE_NEXT_TRY}
-     * between each try, then kill the process if still running.
+     * Stops the server. Will try to call specific class for a clean stop, retry {@link #STOP_NB_TRY}, waiting
+     * {@link #STOP_SECONDS_BEFORE_NEXT_TRY} between each try, then kill the process if still running.
      */
     public void stop(boolean logProcessOutput) {
         long startTime = new Date().getTime();
@@ -1561,8 +1484,8 @@ public abstract class NuxeoLauncher {
             }
             int nbTry = 0;
             boolean retry = false;
-            int stopMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(
-                    STOP_MAX_WAIT_PARAM, STOP_MAX_WAIT_DEFAULT));
+            int stopMaxWait = Integer.parseInt(configurationGenerator.getUserConfig().getProperty(STOP_MAX_WAIT_PARAM,
+                    STOP_MAX_WAIT_DEFAULT));
             do {
                 List<String> stopCommand = new ArrayList<>();
                 stopCommand.add(getJavaExecutable().getPath());
@@ -1574,15 +1497,13 @@ public abstract class NuxeoLauncher {
                 for (String param : params) {
                     stopCommand.add(param);
                 }
-                ProcessBuilder pb = new ProcessBuilder(
-                        getOSCommand(stopCommand));
+                ProcessBuilder pb = new ProcessBuilder(getOSCommand(stopCommand));
                 pb.directory(configurationGenerator.getNuxeoHome());
                 // pb = pb.redirectErrorStream(true);
                 log.debug("Server command: " + pb.command());
                 try {
                     Process stopProcess = pb.start();
-                    ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(
-                            stopProcess, logProcessOutput);
+                    ArrayList<ThreadedStreamGobbler> sgArray = logProcessStreams(stopProcess, logProcessOutput);
                     stopProcess.waitFor();
                     waitForProcessStreams(sgArray);
                     boolean wait = true;
@@ -1622,8 +1543,7 @@ public abstract class NuxeoLauncher {
                         }
                         Thread.sleep(1000);
                         deltaTime = (new Date().getTime() - startTime) / 1000;
-                    } while (!retry && getPid() != null
-                            && deltaTime < stopMaxWait);
+                    } while (!retry && getPid() != null && deltaTime < stopMaxWait);
                 } catch (InterruptedException e) {
                     log.error(e);
                 }
@@ -1631,8 +1551,7 @@ public abstract class NuxeoLauncher {
             if (getPid() == null) {
                 log.warn("Server stopped.");
             } else {
-                log.info("No answer from server, try to kill process " + pid
-                        + "...");
+                log.info("No answer from server, try to kill process " + pid + "...");
                 processManager.kill(nuxeoProcess, pid);
                 if (getPid() == null) {
                     log.warn("Server forcibly stopped.");
@@ -1654,8 +1573,7 @@ public abstract class NuxeoLauncher {
     /**
      * Configure the server after checking installation
      *
-     * @throws ConfigurationException If an installation error is detected or if
-     *             configuration fails
+     * @throws ConfigurationException If an installation error is detected or if configuration fails
      */
     public void configure() throws ConfigurationException {
         checkNoRunningServer();
@@ -1666,17 +1584,15 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @return Default max wait depending on server (ie JBoss takes much more
-     *         time than Tomcat)
+     * @return Default max wait depending on server (ie JBoss takes much more time than Tomcat)
      */
     private String getDefaultMaxWait() {
         return START_MAX_WAIT_DEFAULT;
     }
 
     /**
-     * Return process status (running or not) as String, depending on OS
-     * capability to manage processes. Set status value following
-     * "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
+     * Return process status (running or not) as String, depending on OS capability to manage processes. Set status
+     * value following "http://refspecs.freestandards.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html"
      *
      * @see #status
      */
@@ -1707,8 +1623,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Last error value set by any method. Exit code values are following the
-     * Linux Standard Base Core Specification 4.1.
+     * Last error value set by any method. Exit code values are following the Linux Standard Base Core Specification
+     * 4.1.
      */
     public int getErrorValue() {
         return errorValue;
@@ -1716,23 +1632,18 @@ public abstract class NuxeoLauncher {
 
     /**
      * @throws ParseException
-     * @return a NuxeoLauncher instance specific to current server (
-     *         Tomcat or Jetty).
+     * @return a NuxeoLauncher instance specific to current server ( Tomcat or Jetty).
      * @throws ConfigurationException If server cannot be identified
      * @since 5.5
      */
-    public static NuxeoLauncher createLauncher(String[] args)
-            throws ConfigurationException, ParseException {
+    public static NuxeoLauncher createLauncher(String[] args) throws ConfigurationException, ParseException {
         CommandLine cmdLine = parseOptions(args);
         // Common options to the Launcher and the ConfigurationGenerator
-        if (cmdLine.hasOption(OPTION_QUIET) || cmdLine.hasOption(OPTION_XML)
-                || cmdLine.hasOption(OPTION_JSON)) {
+        if (cmdLine.hasOption(OPTION_QUIET) || cmdLine.hasOption(OPTION_XML) || cmdLine.hasOption(OPTION_JSON)) {
             setQuiet();
         }
-        if (cmdLine.hasOption(OPTION_DEBUG)
-                || cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
-            setDebug(cmdLine.getOptionValue(OPTION_DEBUG_CATEGORY,
-                    "org.nuxeo.launcher"));
+        if (cmdLine.hasOption(OPTION_DEBUG) || cmdLine.hasOption(OPTION_DEBUG_CATEGORY)) {
+            setDebug(cmdLine.getOptionValue(OPTION_DEBUG_CATEGORY, "org.nuxeo.launcher"));
         }
         if (cmdLine.hasOption(OPTION_FORCE)) {
             setForce(true);
@@ -1754,11 +1665,9 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Sets from program arguments the launcher command and additional
-     * parameters.
+     * Sets from program arguments the launcher command and additional parameters.
      *
-     * @param cmdLine Program arguments; may be used by launcher implementation.
-     *            Must not be null or empty.
+     * @param cmdLine Program arguments; may be used by launcher implementation. Must not be null or empty.
      * @throws ConfigurationException
      */
     private void setArgs(CommandLine cmdLine) throws ConfigurationException {
@@ -1767,8 +1676,7 @@ public abstract class NuxeoLauncher {
         // Use GUI?
         if (cmdLine.hasOption(OPTION_GUI)) {
             useGui = Boolean.valueOf(ConnectBroker.parseAnswer(cmdLine.getOptionValue(OPTION_GUI)));
-            log.debug("GUI: " + cmdLine.getOptionValue(OPTION_GUI) + " -> "
-                    + new Boolean(useGui).toString());
+            log.debug("GUI: " + cmdLine.getOptionValue(OPTION_GUI) + " -> " + new Boolean(useGui).toString());
         } else if (OPTION_GUI.equalsIgnoreCase(command)) {
             useGui = true;
             // Shift params and extract command if there is one
@@ -1806,8 +1714,7 @@ public abstract class NuxeoLauncher {
             if (args.length > 1) {
                 params = Arrays.copyOfRange(args, 1, args.length);
                 if (log.isDebugEnabled()) {
-                    log.debug("Command parameters: "
-                            + ArrayUtils.toString(params));
+                    log.debug("Command parameters: " + ArrayUtils.toString(params));
                 }
             } else {
                 params = new String[0];
@@ -1841,8 +1748,8 @@ public abstract class NuxeoLauncher {
      */
     protected static void setDebug(String categories, boolean activateDebug) {
         debug = activateDebug;
-        Log4JHelper.setDebug(categories, activateDebug, true, new String[] {
-                Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
+        Log4JHelper.setDebug(categories, activateDebug, true,
+                new String[] { Log4JHelper.CONSOLE_APPENDER_NAME, "FILE" });
     }
 
     /**
@@ -1873,28 +1780,19 @@ public abstract class NuxeoLauncher {
     public static void printShortHelp() {
         HelpFormatter help = new HelpFormatter();
         help.setSyntaxPrefix("Usage: ");
-        help.printHelp("nuxeoctl [options] <command> [command parameters]",
-                launcherOptions);
+        help.printHelp("nuxeoctl [options] <command> [command parameters]", launcherOptions);
     }
 
     public static void printLongHelp() {
         printShortHelp();
-        log.error("\n\nJava usage:\n\tjava [-D"
-                + JAVA_OPTS_PROPERTY
-                + "=\"JVM options\"] [-D"
-                + Environment.NUXEO_HOME
-                + "=\"/path/to/nuxeo\"] [-D"
-                + ConfigurationGenerator.NUXEO_CONF
+        log.error("\n\nJava usage:\n\tjava [-D" + JAVA_OPTS_PROPERTY + "=\"JVM options\"] [-D" + Environment.NUXEO_HOME
+                + "=\"/path/to/nuxeo\"] [-D" + ConfigurationGenerator.NUXEO_CONF
                 + "=\"/path/to/nuxeo.conf\"] [-Djvmcheck=nofail] -jar \"path/to/nuxeo-launcher.jar\""
                 + " \\ \n\t\t[options] <command> [command parameters]");
-        log.error("\n\t" + JAVA_OPTS_PROPERTY
-                + "\tParameters for the server JVM (default are "
-                + JAVA_OPTS_DEFAULT + ").");
-        log.error("\t"
-                + Environment.NUXEO_HOME
-                + "\t\tNuxeo server root path (default is parent of called script).");
-        log.error("\t"
-                + ConfigurationGenerator.NUXEO_CONF
+        log.error("\n\t" + JAVA_OPTS_PROPERTY + "\tParameters for the server JVM (default are " + JAVA_OPTS_DEFAULT
+                + ").");
+        log.error("\t" + Environment.NUXEO_HOME + "\t\tNuxeo server root path (default is parent of called script).");
+        log.error("\t" + ConfigurationGenerator.NUXEO_CONF
                 + "\t\tPath to nuxeo.conf file (default is $NUXEO_HOME/bin/nuxeo.conf).");
         log.error("\tjvmcheck\t\tIf set to \"nofail\", ignore JVM version validation errors.");
         log.error("\n\nCommands list:");
@@ -1935,9 +1833,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * Work best with current nuxeoProcess. If nuxeoProcess is null or has
-     * exited, then will try to get process ID (so, result in that case depends
-     * on OS capabilities).
+     * Work best with current nuxeoProcess. If nuxeoProcess is null or has exited, then will try to get process ID (so,
+     * result in that case depends on OS capabilities).
      *
      * @return true if current process is running or if a running PID is found
      */
@@ -1988,12 +1885,10 @@ public abstract class NuxeoLauncher {
      * @return Server URL
      */
     public String getURL() {
-        return configurationGenerator.getUserConfig().getProperty(
-                ConfigurationGenerator.PARAM_NUXEO_URL);
+        return configurationGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_NUXEO_URL);
     }
 
-    protected ConnectBroker getConnectBroker() throws IOException,
-            PackageException {
+    protected ConnectBroker getConnectBroker() throws IOException, PackageException {
         if (connectBroker == null) {
             connectBroker = new ConnectBroker(configurationGenerator.getEnv());
             if (hasOption(OPTION_ACCEPT)) {
@@ -2040,35 +1935,28 @@ public abstract class NuxeoLauncher {
         getConnectBroker().pkgListAll();
     }
 
-    protected boolean pkgAdd(String[] pkgNames) throws IOException,
-            PackageException {
-        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames),
-                hasOption(OPTION_IGNORE_MISSING));
+    protected boolean pkgAdd(String[] pkgNames) throws IOException, PackageException {
+        boolean cmdOK = getConnectBroker().pkgAdd(Arrays.asList(pkgNames), hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
         return cmdOK;
     }
 
-    protected boolean pkgInstall(String[] pkgIDs) throws IOException,
-            PackageException {
+    protected boolean pkgInstall(String[] pkgIDs) throws IOException, PackageException {
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
-            cmdOK = getConnectBroker().executePending(
-                    configurationGenerator.getInstallFile(), true,
+            cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true,
                     !hasOption(OPTION_NODEPS));
         }
-        cmdOK = cmdOK
-                && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs),
-                        hasOption(OPTION_IGNORE_MISSING));
+        cmdOK = cmdOK && getConnectBroker().pkgInstall(Arrays.asList(pkgIDs), hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
         }
         return cmdOK;
     }
 
-    protected boolean pkgUninstall(String[] pkgIDs) throws IOException,
-            PackageException {
+    protected boolean pkgUninstall(String[] pkgIDs) throws IOException, PackageException {
         boolean cmdOK = getConnectBroker().pkgUninstall(Arrays.asList(pkgIDs));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
@@ -2076,8 +1964,7 @@ public abstract class NuxeoLauncher {
         return cmdOK;
     }
 
-    protected boolean pkgRemove(String[] pkgIDs) throws IOException,
-            PackageException {
+    protected boolean pkgRemove(String[] pkgIDs) throws IOException, PackageException {
         boolean cmdOK = getConnectBroker().pkgRemove(Arrays.asList(pkgIDs));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
@@ -2098,10 +1985,8 @@ public abstract class NuxeoLauncher {
      */
     protected void printInstanceXMLOutput(InstanceInfo instance) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(
-                    InstanceInfo.class, DistributionInfo.class,
-                    PackageInfo.class, ConfigurationInfo.class,
-                    KeyValueInfo.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(InstanceInfo.class, DistributionInfo.class,
+                    PackageInfo.class, ConfigurationInfo.class, KeyValueInfo.class);
             printXMLOutput(jaxbContext, instance);
         } catch (JAXBException e) {
             log.error("Output serialization failed: " + e.getMessage());
@@ -2149,17 +2034,15 @@ public abstract class NuxeoLauncher {
         List<String> pkgTemplates = new ArrayList<>();
         for (LocalPackage pkg : pkgs) {
             nxInstance.packages.add(new PackageInfo(pkg));
-            log.info(String.format("- %s (version: %s - id: %s - state: %s)",
-                    pkg.getName(), pkg.getVersion(), pkg.getId(),
-                    pkg.getPackageState().getLabel()));
+            log.info(String.format("- %s (version: %s - id: %s - state: %s)", pkg.getName(), pkg.getVersion(),
+                    pkg.getId(), pkg.getPackageState().getLabel()));
             // store template(s) added by this package
             try {
                 File installFile = pkg.getInstallFile();
                 DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
                 DocumentBuilder db = dbf.newDocumentBuilder();
                 Document dom = db.parse(installFile);
-                NodeList nodes = dom.getDocumentElement().getElementsByTagName(
-                        "config");
+                NodeList nodes = dom.getDocumentElement().getElementsByTagName("config");
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Element node = (Element) nodes.item(i);
                     if (node.hasAttribute("addtemplate")) {
@@ -2186,9 +2069,8 @@ public abstract class NuxeoLauncher {
                 nxConfig.pkgtemplates.add(template);
                 log.info("Package template: " + template);
             } else {
-                File testBase = new File(configurationGenerator.getNuxeoHome(),
-                        ConfigurationGenerator.TEMPLATES + File.separator
-                                + template);
+                File testBase = new File(configurationGenerator.getNuxeoHome(), ConfigurationGenerator.TEMPLATES
+                        + File.separator + template);
                 if (testBase.exists()) {
                     nxConfig.basetemplates.add(template);
                     log.info("Base template: " + template);
@@ -2210,8 +2092,7 @@ public abstract class NuxeoLauncher {
             }
             KeyValueInfo kv = new KeyValueInfo(key, value);
             nxConfig.keyvals.add(kv);
-            if (!key.contains("password")
-                    && !key.equals(ConfigurationGenerator.PARAM_STATUS_KEY)) {
+            if (!key.contains("password") && !key.equals(ConfigurationGenerator.PARAM_STATUS_KEY)) {
                 log.info(key + "=" + value);
             } else {
                 log.info(key + "=********");
@@ -2227,12 +2108,10 @@ public abstract class NuxeoLauncher {
      * @since 5.9.1
      */
     protected DistributionInfo getDistributionInfo() {
-        File distFile = new File(configurationGenerator.getConfigDir(),
-                "distribution.properties");
+        File distFile = new File(configurationGenerator.getConfigDir(), "distribution.properties");
         if (!distFile.exists()) {
             // fallback in the file in templates
-            distFile = new File(configurationGenerator.getNuxeoHome(),
-                    "templates");
+            distFile = new File(configurationGenerator.getNuxeoHome(), "templates");
             distFile = new File(distFile, "common");
             distFile = new File(distFile, "config");
             distFile = new File(distFile, "distribution.properties");
@@ -2256,17 +2135,14 @@ public abstract class NuxeoLauncher {
      * @throws IOException
      * @throws PackageException
      */
-    protected boolean pkgRequest(List<String> pkgsToAdd,
-            List<String> pkgsToInstall, List<String> pkgsToUninstall,
+    protected boolean pkgRequest(List<String> pkgsToAdd, List<String> pkgsToInstall, List<String> pkgsToUninstall,
             List<String> pkgsToRemove) throws IOException, PackageException {
         boolean cmdOK = true;
         if (configurationGenerator.isInstallInProgress()) {
-            cmdOK = getConnectBroker().executePending(
-                    configurationGenerator.getInstallFile(), true, true);
+            cmdOK = getConnectBroker().executePending(configurationGenerator.getInstallFile(), true, true);
         }
         cmdOK = cmdOK
-                && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall,
-                        pkgsToUninstall, pkgsToRemove, true,
+                && getConnectBroker().pkgRequest(pkgsToAdd, pkgsToInstall, pkgsToUninstall, pkgsToRemove, true,
                         hasOption(OPTION_IGNORE_MISSING));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
@@ -2293,7 +2169,6 @@ public abstract class NuxeoLauncher {
      * @throws PackageException
      * @throws IOException
      * @since 5.6
-     *
      */
     protected boolean pkgInit() throws IOException, PackageException {
         return getConnectBroker().addDistributionPackages();
@@ -2303,11 +2178,9 @@ public abstract class NuxeoLauncher {
      * Uninstall and remove all packages from the local cache
      *
      * @return
-     *
      * @throws PackageException
      * @throws IOException
      * @since 5.6
-     *
      */
     protected boolean pkgPurge() throws PackageException, IOException {
         return getConnectBroker().pkgPurge();
@@ -2317,7 +2190,6 @@ public abstract class NuxeoLauncher {
      * Install the hotfixes available for the instance
      *
      * @return
-     *
      * @throws PackageException
      * @throws IOException
      * @since 5.6
@@ -2330,7 +2202,6 @@ public abstract class NuxeoLauncher {
      * Upgrade the marketplace packages (addons) available for the instance
      *
      * @return
-     *
      * @throws PackageException
      * @throws IOException
      * @since 5.6
@@ -2342,14 +2213,12 @@ public abstract class NuxeoLauncher {
     /**
      * Combined install/uninstall request
      *
-     * @param request Space separated list of package names or IDs prefixed with
-     *            + (install) or - (uninstall)
+     * @param request Space separated list of package names or IDs prefixed with + (install) or - (uninstall)
      * @throws IOException
      * @throws PackageException
      * @since 5.6
      */
-    protected boolean pkgCompoundRequest(List<String> request)
-            throws IOException, PackageException {
+    protected boolean pkgCompoundRequest(List<String> request) throws IOException, PackageException {
         List<String> add = new ArrayList<>();
         List<String> install = new ArrayList<>();
         List<String> uninstall = new ArrayList<>();
@@ -2367,15 +2236,12 @@ public abstract class NuxeoLauncher {
         return pkgRequest(add, install, uninstall, null);
     }
 
-    protected boolean pkgSetRequest(List<String> request, boolean nodeps)
-            throws IOException, PackageException {
+    protected boolean pkgSetRequest(List<String> request, boolean nodeps) throws IOException, PackageException {
         boolean cmdOK;
         if (nodeps) {
-            cmdOK = getConnectBroker().pkgSet(request,
-                    hasOption(OPTION_IGNORE_MISSING));
+            cmdOK = getConnectBroker().pkgSet(request, hasOption(OPTION_IGNORE_MISSING));
         } else {
-            cmdOK = getConnectBroker().pkgRequest(null, request, null, null,
-                    false, hasOption(OPTION_IGNORE_MISSING));
+            cmdOK = getConnectBroker().pkgRequest(null, request, null, null, false, hasOption(OPTION_IGNORE_MISSING));
         }
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;
@@ -2384,19 +2250,15 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * dpkg-like command which returns package location, version, dependencies,
-     * conflicts, ...
+     * dpkg-like command which returns package location, version, dependencies, conflicts, ...
      *
-     * @param packages List of packages identified by their ID, name or local
-     *            filename.
-     *
+     * @param packages List of packages identified by their ID, name or local filename.
      * @return false if unable to show package information.
      * @throws PackageException
      * @throws IOException
      * @since 5.7
      */
-    protected boolean pkgShow(String[] packages) throws IOException,
-            PackageException {
+    protected boolean pkgShow(String[] packages) throws IOException, PackageException {
         boolean cmdOK = getConnectBroker().pkgShow(Arrays.asList(packages));
         if (!cmdOK) {
             errorValue = EXIT_CODE_ERROR;

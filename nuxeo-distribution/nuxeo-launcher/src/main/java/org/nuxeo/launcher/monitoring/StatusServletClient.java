@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -103,8 +103,7 @@ public class StatusServletClient {
      * @return
      * @throws SocketTimeoutException
      */
-    private boolean post(String postParam, String postParamStarted)
-            throws SocketTimeoutException {
+    private boolean post(String postParam, String postParamStarted) throws SocketTimeoutException {
         return post(postParam, postParamStarted, null);
     }
 
@@ -148,8 +147,7 @@ public class StatusServletClient {
         server.setDoInput(true);
         server.setDoOutput(true);
         server.setRequestMethod(method);
-        server.setRequestProperty("Content-type",
-                "application/x-www-form-urlencoded");
+        server.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
         server.connect();
     }
 
@@ -164,14 +162,12 @@ public class StatusServletClient {
         return sb.toString();
     }
 
-    protected boolean post(String param, String value, StringBuilder response)
-            throws SocketTimeoutException {
+    protected boolean post(String param, String value, StringBuilder response) throws SocketTimeoutException {
         String post = param + "=" + value;
         post += "&key=" + key;
         try {
             connect("POST");
-            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                    server.getOutputStream()));
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
             bw.write(post, 0, post.length());
             bw.close();
             return getResponse(response);
@@ -189,8 +185,7 @@ public class StatusServletClient {
         boolean answer;
         BufferedReader s = null;
         try {
-            s = new BufferedReader(new InputStreamReader(
-                    server.getInputStream()));
+            s = new BufferedReader(new InputStreamReader(server.getInputStream()));
             // First line is a status (true or false)
             answer = Boolean.parseBoolean(s.readLine());
             // Next (if exists) is a response body
@@ -208,11 +203,9 @@ public class StatusServletClient {
     }
 
     /**
-     * Return detected status of Nuxeo server by last call to
-     * {@link #getStartupSummary()}
+     * Return detected status of Nuxeo server by last call to {@link #getStartupSummary()}
      *
-     * @return true if everything is fine; false is there was any error or
-     *         status is unknown
+     * @return true if everything is fine; false is there was any error or status is unknown
      */
     public boolean isStartupFine() {
         return startupFine;

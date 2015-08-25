@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -12,12 +13,6 @@
   <version>6.0-HF24-SNAPSHOT</version>
   <name>Nuxeo Common</name>
   <description>Nuxeo Common: utilities.</description>
-
-  <scm>
-    <connection>scm:git:git://github.com/nuxeo/nuxeo-common.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:nuxeo/nuxeo-common.git</developerConnection>
-    <url>https://github.com/nuxeo/nuxeo-common</url>
-  </scm>
 
   <repositories>
     <repository>

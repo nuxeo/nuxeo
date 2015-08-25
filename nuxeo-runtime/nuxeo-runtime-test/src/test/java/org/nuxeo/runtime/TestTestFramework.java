@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  * Contributors:
  *     Nuxeo - initial API and implementation
  *
- * $Id$
  */
 
 package org.nuxeo.runtime;
@@ -31,7 +30,6 @@ import java.net.URL;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
-
 
 public class TestTestFramework extends NXRuntimeTestCase {
 
@@ -56,13 +54,10 @@ public class TestTestFramework extends NXRuntimeTestCase {
     @Test
     public void testLookupBundleUrl() throws Exception {
 
-        urls = new URL[] {
-                new URL("file:/repo/org/nuxeo/nuxeo-runtime-1.4-SNAPSHOT.jar"),
-                new URL("file:/projects/nuxeo-core-test/bin/test"),
-                new URL("file:/projects/nuxeo-core-test/bin/main"),
+        urls = new URL[] { new URL("file:/repo/org/nuxeo/nuxeo-runtime-1.4-SNAPSHOT.jar"),
+                new URL("file:/projects/nuxeo-core-test/bin/test"), new URL("file:/projects/nuxeo-core-test/bin/main"),
                 new URL("file:/projects/nuxeo-common/target/test-classes"),
-                new URL("file:/projects/nuxeo-common/target/classes"),
-        };
+                new URL("file:/projects/nuxeo-common/target/classes"), };
         assertEquals(urls[0], lookupBundleUrl("nuxeo-runtime"));
         assertEquals(urls[2], lookupBundleUrl("nuxeo-core-test"));
         assertEquals(urls[4], lookupBundleUrl("nuxeo-common"));

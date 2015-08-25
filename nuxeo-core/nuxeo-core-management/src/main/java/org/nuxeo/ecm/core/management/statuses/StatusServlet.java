@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -58,8 +58,7 @@ public class StatusServlet extends HttpServlet {
     private OSGiRuntimeService runtimeService;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String param = req.getParameter(PARAM);
         if (param != null) {
             doPost(req, resp);
@@ -69,16 +68,14 @@ public class StatusServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         StringBuilder response = new StringBuilder();
         String requestedInfo = req.getParameter(PARAM);
         if (requestedInfo.equals(PARAM_STARTED)) {
             getStartedInfo(response);
         } else if (requestedInfo.equals(PARAM_SUMMARY)) {
             String givenKey = req.getParameter(PARAM_SUMMARY_KEY);
-            if (getRuntimeService().getProperty(PARAM_STATUS_KEY).equals(
-                    givenKey)) {
+            if (getRuntimeService().getProperty(PARAM_STATUS_KEY).equals(givenKey)) {
                 getSummaryInfo(response);
             } else {
                 resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -93,8 +90,7 @@ public class StatusServlet extends HttpServlet {
         sendResponse(resp, response.toString());
     }
 
-    protected void sendResponse(HttpServletResponse resp, String response)
-            throws IOException {
+    protected void sendResponse(HttpServletResponse resp, String response) throws IOException {
         resp.setContentType("text/plain");
         resp.setContentLength(response.getBytes().length);
         OutputStream out = resp.getOutputStream();
