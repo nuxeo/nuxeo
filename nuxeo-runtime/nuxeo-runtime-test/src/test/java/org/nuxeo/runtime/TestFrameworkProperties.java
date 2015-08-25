@@ -16,27 +16,50 @@
  */
 package org.nuxeo.runtime;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 /**
  * @since 5.7
  */
-public class TestFrameworkProperties extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features({ RuntimeFeature.class })
+public class TestFrameworkProperties {
+
+    protected RuntimeService runtime = Framework.getRuntime();
+
+    final String aValue = "myValue";
+
+    final String aDefaultValue = "myDefaultValue";
+
+    final String aParam = "myParam";
+
+    final String aStrangeValue = "${\\my.strange/value}";
+
+    final String aParamWithDot = "my.param.with.dot";
+
+    final String aSystemValue = "mySystemValue";
 
     @Test
     public void testExpandVars() {
-        // do not define prop
-        assertEquals("<myProp>myValue</myProp>", runtime.expandVars("<myProp>myValue</myProp>"));
-        assertEquals("<myProp>${myParam}</myProp>", runtime.expandVars("<myProp>${myParam}</myProp>"));
-        assertEquals("<myProp>myDefaultValue</myProp>",
-                runtime.expandVars("<myProp>${myParam:=myDefaultValue}</myProp>"));
+        List<String> testExpressions = new ArrayList<>();
+        testExpressions.add("<myProp>" + aValue + "</myProp>");
+        testExpressions.add("<myProp>${" + aParam + "}</myProp>");
+        testExpressions.add("<myProp>${" + aParam + ":=" + aDefaultValue + "}</myProp>");
 
         // define system prop
         System.setProperty("myParam", "mySystemValue");
@@ -45,29 +68,30 @@ public class TestFrameworkProperties extends NXRuntimeTestCase {
         assertEquals("<myProp>mySystemValue</myProp>",
                 runtime.expandVars("<myProp>${myParam:=myDefaultValue}</myProp>"));
 
-        // define prop
-        runtime.getProperties().setProperty("myParam", "myValue");
-        assertEquals("<myProp>myValue</myProp>", runtime.expandVars("<myProp>myValue</myProp>"));
-        assertEquals("<myProp>myValue</myProp>", runtime.expandVars("<myProp>${myParam}</myProp>"));
-        assertEquals("<myProp>myValue</myProp>", runtime.expandVars("<myProp>${myParam:=myDefaultValue}</myProp>"));
+        // system property
+        System.setProperty(aParam, aSystemValue);
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
+        assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
+        assertEquals("<myProp>" + aSystemValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
+
+        // runtime property
+        runtime.setProperty(aParam, aValue);
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
+        assertEquals("<myProp>" + aValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
     }
 
     @Test
     public void testExpandVarsWithSpecialChars() {
-        // do not define prop
-        assertEquals("<myProp>${\\my.strange/value}</myProp>",
-                runtime.expandVars("<myProp>${\\my.strange/value}</myProp>"));
-        assertEquals("<myProp>${my.param}</myProp>", runtime.expandVars("<myProp>${my.param}</myProp>"));
-        assertEquals("<myProp>myDefaultValue</myProp>",
-                runtime.expandVars("<myProp>${my.param:=myDefaultValue}</myProp>"));
+        List<String> testExpressions = new ArrayList<>();
+        testExpressions.add("<myProp>" + aStrangeValue + "</myProp>");
+        testExpressions.add("<myProp>${" + aParamWithDot + "}</myProp>");
+        testExpressions.add("<myProp>${" + aParamWithDot + ":=" + aDefaultValue + "}</myProp>");
 
-        // define system prop
-        System.setProperty("my.param", "mySystemValue");
-        assertEquals("<myProp>${\\my.strange/value}</myProp>",
-                runtime.expandVars("<myProp>${\\my.strange/value}</myProp>"));
-        assertEquals("<myProp>mySystemValue</myProp>", runtime.expandVars("<myProp>${my.param}</myProp>"));
-        assertEquals("<myProp>mySystemValue</myProp>",
-                runtime.expandVars("<myProp>${my.param:=myDefaultValue}</myProp>"));
+        // property undefined
+        assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
+        assertEquals("<myProp>${" + aParamWithDot + "}</myProp>", runtime.expandVars(testExpressions.get(1)));
+        assertEquals("<myProp>" + aDefaultValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
 
         // define prop
         runtime.getProperties().setProperty("my.param", "${\\my.strange/value}");
@@ -77,30 +101,37 @@ public class TestFrameworkProperties extends NXRuntimeTestCase {
         assertEquals("<myProp>${\\my.strange/value}</myProp>",
                 runtime.expandVars("<myProp>${my.param:=myDefaultValue}</myProp>"));
 
+        // runtime property
+        runtime.setProperty(aParamWithDot, aStrangeValue);
+        assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(0)));
+        assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(1)));
+        assertEquals("<myProp>" + aStrangeValue + "</myProp>", runtime.expandVars(testExpressions.get(2)));
     }
 
     @Test
     public void testIsBooleanPropertyTrueFalse() throws Exception {
-        assertNull(runtime.getProperties().getProperty("foo-true"));
-        assertNull(runtime.getProperties().getProperty("foo-false"));
-        assertNull(System.getProperty("foo-true"));
-        assertNull(System.getProperty("foo-false"));
-        assertFalse(Framework.isBooleanPropertyTrue("foo-true"));
-        assertFalse(Framework.isBooleanPropertyTrue("foo-false"));
-        assertFalse(Framework.isBooleanPropertyFalse("foo-false"));
-        assertFalse(Framework.isBooleanPropertyFalse("foo-true"));
-        setRuntimeProp("foo-true", "true");
-        setRuntimeProp("foo-false", "false");
-        assertTrue(Framework.isBooleanPropertyTrue("foo-true"));
-        assertFalse(Framework.isBooleanPropertyTrue("foo-false"));
-        assertFalse(Framework.isBooleanPropertyFalse("foo-true"));
-        assertTrue(Framework.isBooleanPropertyFalse("foo-false"));
-        setRuntimeProp("foo-true", "false");
-        setRuntimeProp("foo-false", "true");
-        assertFalse(Framework.isBooleanPropertyTrue("foo-true"));
-        assertTrue(Framework.isBooleanPropertyTrue("foo-false"));
-        assertTrue(Framework.isBooleanPropertyFalse("foo-true"));
-        assertFalse(Framework.isBooleanPropertyFalse("foo-false"));
+        String booleanVar1 = "booleanVar1";
+        String booleanVar2 = "booleanVar2";
+        assertNull(runtime.getProperty(booleanVar1));
+        assertNull(runtime.getProperty(booleanVar2));
+        assertNull(System.getProperty(booleanVar1));
+        assertNull(System.getProperty(booleanVar2));
+        assertFalse(Framework.isBooleanPropertyTrue(booleanVar1));
+        assertFalse(Framework.isBooleanPropertyTrue(booleanVar2));
+        assertFalse(Framework.isBooleanPropertyFalse(booleanVar2));
+        assertFalse(Framework.isBooleanPropertyFalse(booleanVar1));
+        runtime.setProperty(booleanVar1, "true");
+        runtime.setProperty(booleanVar2, "false");
+        assertTrue(Framework.isBooleanPropertyTrue(booleanVar1));
+        assertFalse(Framework.isBooleanPropertyTrue(booleanVar2));
+        assertFalse(Framework.isBooleanPropertyFalse(booleanVar1));
+        assertTrue(Framework.isBooleanPropertyFalse(booleanVar2));
+        runtime.setProperty(booleanVar1, "false");
+        runtime.setProperty(booleanVar2, "true");
+        assertFalse(Framework.isBooleanPropertyTrue(booleanVar1));
+        assertTrue(Framework.isBooleanPropertyTrue(booleanVar2));
+        assertTrue(Framework.isBooleanPropertyFalse(booleanVar1));
+        assertFalse(Framework.isBooleanPropertyFalse(booleanVar2));
     }
 
     @Test
@@ -109,17 +140,19 @@ public class TestFrameworkProperties extends NXRuntimeTestCase {
         // check compat
         assertEquals("org.nuxeo.dev", Framework.NUXEO_DEV_SYSTEM_PROP);
         // make sure runtime prop is not set
-        assertNull(runtime.getProperties().getProperty(Framework.NUXEO_DEV_SYSTEM_PROP));
-        setRuntimeProp(Framework.NUXEO_DEV_SYSTEM_PROP, "true");
+        assertNull(runtime.getProperty(Framework.NUXEO_DEV_SYSTEM_PROP));
+        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, "true");
         assertTrue(Framework.isDevModeSet());
-        setRuntimeProp(Framework.NUXEO_DEV_SYSTEM_PROP, "");
+        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, "");
         assertFalse(Framework.isDevModeSet());
-        setRuntimeProp(Framework.NUXEO_DEV_SYSTEM_PROP, "false");
+        runtime.setProperty(Framework.NUXEO_DEV_SYSTEM_PROP, "false");
         assertFalse(Framework.isDevModeSet());
     }
 
-    protected void setRuntimeProp(String name, String value) {
-        runtime.getProperties().setProperty(name, value);
+    @After
+    public void tearDown() {
+        System.clearProperty(aParam);
+        System.clearProperty(aParamWithDot);
     }
 
 }

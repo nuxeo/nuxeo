@@ -231,4 +231,9 @@ public interface RuntimeService {
      */
     boolean getStatusMessage(StringBuilder msg);
 
+    /**
+     * @since 7.4
+     */
+    void setProperty(String name, Object value);
+
 }

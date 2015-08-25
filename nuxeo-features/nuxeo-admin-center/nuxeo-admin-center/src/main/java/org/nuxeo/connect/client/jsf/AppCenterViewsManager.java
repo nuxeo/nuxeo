@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.TimeZone;
 
 import javax.faces.context.FacesContext;
@@ -560,8 +559,7 @@ public class AppCenterViewsManager implements Serializable {
         params.put(Framework.NUXEO_DEV_SYSTEM_PROP, Boolean.toString(value));
         try {
             conf.saveFilteredConfiguration(params);
-            Properties props = conf.getUserConfig();
-            conf.getServerConfigurator().dumpProperties(props);
+            conf.getServerConfigurator().dumpProperties(conf.getUserConfig());
             // force reload of framework properties to ensure it's immediately
             // taken into account by all code checking for
             // Framework#isDevModeSet

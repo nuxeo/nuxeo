@@ -29,6 +29,8 @@ import java.net.URL;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
 public class TestTestFramework extends NXRuntimeTestCase {
@@ -49,11 +51,11 @@ public class TestTestFramework extends NXRuntimeTestCase {
     public void testSetProperty() {
         runtime.getProperties().put("toto", "titi");
         assertEquals("titi", runtime.getProperty("toto"));
+        assertEquals("titi", Framework.getProperty("toto"));
     }
 
     @Test
     public void testLookupBundleUrl() throws Exception {
-
         urls = new URL[] { new URL("file:/repo/org/nuxeo/nuxeo-runtime-1.4-SNAPSHOT.jar"),
                 new URL("file:/projects/nuxeo-core-test/bin/test"), new URL("file:/projects/nuxeo-core-test/bin/main"),
                 new URL("file:/projects/nuxeo-common/target/test-classes"),

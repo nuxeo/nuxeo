@@ -28,6 +28,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.common.Environment;
 import org.nuxeo.runtime.RuntimeService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.osgi.OSGiRuntimeService;
@@ -51,9 +53,7 @@ public class StatusServlet extends HttpServlet {
 
     public static final String PARAM_RELOAD = "reload";
 
-    // duplicated from org.nuxeo.launcher.config.ConfigurationGenerator to avoid
-    // dependencies on nuxeo-launcher-commons
-    public static final String PARAM_STATUS_KEY = "server.status.key";
+    public static final String PARAM_STATUS_KEY = Environment.SERVER_STATUS_KEY;
 
     private OSGiRuntimeService runtimeService;
 

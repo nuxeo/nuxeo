@@ -42,7 +42,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.xml.DOMConfigurator;
-import org.nuxeo.launcher.commons.text.TextTemplate;
+
+import org.nuxeo.common.codec.CryptoProperties;
+import org.nuxeo.common.utils.TextTemplate;
 
 import freemarker.template.TemplateException;
 
@@ -121,6 +123,7 @@ public abstract class ServerConfigurator {
             }
         };
         final TextTemplate templateParser = new TextTemplate(config);
+        templateParser.setKeepEncryptedAsVar(true);
         templateParser.setTrim(true);
         templateParser.setTextParsingExtensions(config.getProperty(
                 ConfigurationGenerator.PARAM_TEMPLATES_PARSING_EXTENSIONS, "xml,properties,nx"));
@@ -523,7 +526,7 @@ public abstract class ServerConfigurator {
      * @param userConfig Properties to dump into config directory
      * @since 5.4.2
      */
-    public void dumpProperties(Properties userConfig) {
+    public void dumpProperties(CryptoProperties userConfig) {
         Properties dumpedProperties = filterSystemProperties(userConfig);
         File dumpedFile = generator.getDumpedConfig();
         OutputStream os = null;
@@ -546,17 +549,14 @@ public abstract class ServerConfigurator {
      * @return copy of given properties filtered out of System properties
      * @since 5.4.2
      */
-    public Properties filterSystemProperties(Properties properties) {
+    public Properties filterSystemProperties(CryptoProperties properties) {
         Properties dumpedProperties = new Properties();
-        for (Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
+        for (@SuppressWarnings("unchecked")
+        Enumeration<String> propertyNames = (Enumeration<String>) properties.propertyNames(); propertyNames.hasMoreElements();) {
             String key = propertyNames.nextElement();
-            dumpedProperties.setProperty(key, properties.getProperty(key));
-        }
-        // Remove System properties except Nuxeo's System properties
-        for (Enumeration<String> propertyNames = (Enumeration<String>) System.getProperties().propertyNames(); propertyNames.hasMoreElements();) {
-            String key = propertyNames.nextElement();
-            if (!NUXEO_SYSTEM_PROPERTIES.contains(key)) {
-                dumpedProperties.remove(key);
+            // Exclude System properties except Nuxeo's System properties
+            if (!System.getProperties().containsKey(key) || NUXEO_SYSTEM_PROPERTIES.contains(key)) {
+                dumpedProperties.setProperty(key, properties.getRawProperty(key));
             }
         }
         return dumpedProperties;

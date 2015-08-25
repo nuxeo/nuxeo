@@ -19,6 +19,7 @@
 package org.nuxeo.launcher.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -27,9 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.launcher.commons.text.TextTemplate;
 
 public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     /**
@@ -79,29 +80,128 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
 
     @Test
     public void testSetProperty() throws ConfigurationException {
+        final String testProperty = "test.prop.key";
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        String oldValue = configGenerator.setProperty("test.prop.key", "test.prop.value");
+        String oldValue = configGenerator.setProperty(testProperty, "test.prop.value");
         assertEquals("Wrong old value", null, oldValue);
-        assertEquals("Property not set", "test.prop.value",
-                configGenerator.getUserConfig().getProperty("test.prop.key"));
-        oldValue = configGenerator.setProperty("test.prop.key", null);
+        assertEquals("Property not set", "test.prop.value", configGenerator.getUserConfig().getProperty(testProperty));
+        oldValue = configGenerator.setProperty(testProperty, null);
         assertEquals("Wrong old value", "test.prop.value", oldValue);
-        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
-        oldValue = configGenerator.setProperty("test.prop.key", "");
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty(testProperty));
+        oldValue = configGenerator.setProperty(testProperty, "");
         assertEquals("Wrong old value", null, oldValue);
-        assertEquals("Property must not be set", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
-        configGenerator.setProperty("test.prop.key", "test.prop.value");
-        oldValue = configGenerator.setProperty("test.prop.key", "");
+        assertEquals("Property must not be set", null, configGenerator.getUserConfig().getProperty(testProperty));
+        configGenerator.setProperty(testProperty, "test.prop.value");
+        oldValue = configGenerator.setProperty(testProperty, "");
         assertEquals("Wrong old value", "test.prop.value", oldValue);
-        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty("test.prop.key"));
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty(testProperty));
     }
 
+    /**
+     * According to {@link ConfigurationGenerator#saveConfiguration(Map, boolean, boolean)}:<br>
+     * <q>
+     * {@link ConfigurationGenerator#PARAM_WIZARD_DONE}, {@link ConfigurationGenerator#PARAM_TEMPLATES_NAME} and
+     * {@link ConfigurationGenerator#PARAM_FORCE_GENERATION} cannot be unset</q>
+     *
+     * <pre>
+     * nuxeo.templates=default,common,testinclude
+     * nuxeo.wizard.done=false
+     * nuxeo.force.generation=true
+     * </pre>
+     *
+     * @throws ConfigurationException
+     */
     @Test
-    public void testEscapeVariable() throws ConfigurationException {
-        TextTemplate templates = new TextTemplate();
-        templates.setVariable("pfouh", "bar");
-        assertEquals("bar${pfouh}", templates.processText("${pfouh}$${pfouh}"));
+    public void testSetSpecialProperties() throws ConfigurationException {
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        String oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, null);
+        assertEquals("Wrong old value", "default,common,testinclude", oldValue);
+        assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        configGenerator.changeTemplates(oldValue);
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, "");
+        assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be reset", "default",
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME, oldValue);
+        assertEquals(ConfigurationGenerator.PARAM_TEMPLATES_NAME + " should be modifiable", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_TEMPLATES_NAME));
+
+        oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, null);
+        assertEquals("Wrong old value", "true", oldValue);
+        assertEquals("Property should not be unset", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, "");
+        assertEquals("Property should not be unset", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION, "false");
+        assertEquals(ConfigurationGenerator.PARAM_FORCE_GENERATION + " should not be modifiable like this", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_FORCE_GENERATION));
+
+        oldValue = configGenerator.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, null);
+        assertEquals("Property should not be unset", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "" + !Boolean.parseBoolean(oldValue));
+        assertNotEquals(ConfigurationGenerator.PARAM_WIZARD_DONE + " should be modifiable", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
+        configGenerator.setProperty(ConfigurationGenerator.PARAM_WIZARD_DONE, "" + oldValue);
+        assertEquals(ConfigurationGenerator.PARAM_WIZARD_DONE + " should be modifiable", oldValue,
+                configGenerator.getUserConfig().getProperty(ConfigurationGenerator.PARAM_WIZARD_DONE));
+    }
+
+    /**
+     * Test on property "sampled" in nuxeo.conf: already present and commented
+     *
+     * <pre>
+     * #test.sampled.prop=someValue
+     * </pre>
+     */
+    @Test
+    public void testSetSampledCommentedProperty() throws ConfigurationException {
+        final String testProperty = "test.sampled.prop";
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        String oldValue = configGenerator.setProperty(testProperty, "anotherValue");
+        assertEquals("Wrong old value", null, oldValue);
+        assertEquals("Property not set", "anotherValue", configGenerator.getUserConfig().getProperty(testProperty));
+        oldValue = configGenerator.setProperty(testProperty, null);
+        assertEquals("Wrong old value", "anotherValue", oldValue);
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty(testProperty));
+        oldValue = configGenerator.setProperty(testProperty, "");
+        assertEquals("Wrong old value", null, oldValue);
+        assertEquals("Property must not be set", null, configGenerator.getUserConfig().getProperty(testProperty));
+        configGenerator.setProperty(testProperty, "someValue");
+        oldValue = configGenerator.setProperty(testProperty, "");
+        assertEquals("Wrong old value", "someValue", oldValue);
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty(testProperty));
+    }
+
+    /**
+     * Test on property "sampled" in nuxeo.conf: already present and not commented
+     *
+     * <pre>
+     * test.sampled.prop2 = someValue
+     * </pre>
+     */
+    @Test
+    public void testSetSampledActiveProperty() throws ConfigurationException {
+        final String testProperty = "test.sampled.prop2";
+        configGenerator = new ConfigurationGenerator();
+        assertTrue(configGenerator.init());
+        String oldValue = configGenerator.setProperty(testProperty, "anotherValue");
+        assertEquals("Wrong old value", "someValue", oldValue);
+        assertEquals("Property not set", "anotherValue", configGenerator.getUserConfig().getProperty(testProperty));
+        oldValue = configGenerator.setProperty(testProperty, null);
+        assertEquals("Wrong old value", "anotherValue", oldValue);
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty(testProperty));
+        oldValue = configGenerator.setProperty(testProperty, "");
+        assertEquals("Wrong old value", null, oldValue);
+        assertEquals("Property must not be set", null, configGenerator.getUserConfig().getProperty(testProperty));
+        configGenerator.setProperty(testProperty, "someValue");
+        oldValue = configGenerator.setProperty(testProperty, "");
+        assertEquals("Wrong old value", "someValue", oldValue);
+        assertEquals("Property not unset", null, configGenerator.getUserConfig().getProperty(testProperty));
     }
 
     @Test
@@ -128,7 +228,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
     public void testSetWizardDone() throws ConfigurationException {
         configGenerator = new ConfigurationGenerator();
         assertTrue(configGenerator.init());
-        Map<String, String> changedParameters = new HashMap<String, String>();
+        Map<String, String> changedParameters = new HashMap<>();
         changedParameters.put(ConfigurationGenerator.PARAM_WIZARD_DONE, "true");
         configGenerator.saveFilteredConfiguration(changedParameters);
         configGenerator = new ConfigurationGenerator();
@@ -174,7 +274,7 @@ public class ConfigurationGeneratorTest extends AbstractConfigurationTest {
         configGenerator.changeDBTemplate("postgresql");
         assertEquals("Failed to change database default to postgresql", originalTemplates + ",postgresql",
                 configGenerator.getUserTemplates());
-        Map<String, String> customParameters = new HashMap<String, String>();
+        Map<String, String> customParameters = new HashMap<>();
         customParameters.put(ConfigurationGenerator.PARAM_TEMPLATE_DBNAME, "postgresql");
         configGenerator.saveFilteredConfiguration(customParameters);
         // Check stored value

@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     mguillaume
+ *     mguillaume, jcarsique
  */
 
 package org.nuxeo.launcher.info;
@@ -25,12 +25,17 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "commands")
 /**
  * @since 5.6
  */
 public class CommandSetInfo {
+
+    static final Log log = LogFactory.getLog(CommandSetInfo.class);
 
     public CommandSetInfo() {
     }
@@ -63,6 +68,14 @@ public class CommandSetInfo {
      * @since 5.7
      */
     public void log(boolean debug) {
+        if (commands.isEmpty()) {
+            return;
+        }
+        if (debug) {
+            log.debug("\nCommands debug dump:");
+        } else {
+            log.error("\nFailed commands:");
+        }
         for (CommandInfo commandInfo : commands) {
             commandInfo.log(debug);
         }

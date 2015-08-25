@@ -188,6 +188,8 @@ public class Environment {
     // Handy parameter to distinguish from (Server)home
     private File runtimeHome;
 
+    public static final String SERVER_STATUS_KEY = "server.status.key";
+
     public static final String DISTRIBUTION_NAME = "org.nuxeo.distribution.name";
 
     public static final String DISTRIBUTION_VERSION = "org.nuxeo.distribution.version";
@@ -212,6 +214,41 @@ public class Environment {
      * @since 6.0
      */
     public static final String NUXEO_HTTP_PROXY_PASSWORD = "nuxeo.http.proxy.password";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CRYPT_ALGO = "server.crypt.algorithm";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CRYPT_KEY = "server.crypt.secretkey";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CRYPT_KEYALIAS = "server.crypt.keyalias";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CRYPT_KEYSTORE_PATH = "server.crypt.keystore.path";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CRYPT_KEYSTORE_PASS = "server.crypt.keystore.pass";
+
+    /**
+     * @since 7.4
+     */
+    public static final String JAVA_DEFAULT_KEYSTORE = "javax.net.ssl.keyStore";
+
+    /**
+     * @since 7.4
+     */
+    public static final String JAVA_DEFAULT_KEYSTORE_PASS = "javax.net.ssl.keyStorePassword";
 
     public Environment(File home) {
         this(home, null);
@@ -473,7 +510,7 @@ public class Environment {
     }
 
     public Iterable<URL> getConfigurationProvider() {
-        return this.configProvider;
+        return configProvider;
     }
 
     @Override

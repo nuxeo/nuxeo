@@ -139,9 +139,9 @@ public class TestSetupWizardActionBean {
             if (newStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN)) {
                 // BOUNDARY is generated, we can't test an exact match
                 assertTrue(expStr.startsWith(ConfigurationGenerator.BOUNDARY_BEGIN));
-            } else if (newStr.startsWith(ConfigurationGenerator.PARAM_STATUS_KEY)) {
+            } else if (newStr.startsWith(Environment.SERVER_STATUS_KEY)) {
                 // server.status.key is generated, we can't test an exact match
-                assertTrue(expStr.startsWith(ConfigurationGenerator.PARAM_STATUS_KEY));
+                assertTrue(expStr.startsWith(Environment.SERVER_STATUS_KEY));
             } else {
                 assertEquals(expStr, newStr);
             }

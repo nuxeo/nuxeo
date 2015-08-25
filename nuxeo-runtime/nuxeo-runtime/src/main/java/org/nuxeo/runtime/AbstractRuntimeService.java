@@ -21,12 +21,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.nuxeo.common.codec.CryptoProperties;
 import org.nuxeo.common.logging.JavaUtilLoggingHelper;
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.runtime.api.Framework;
@@ -36,6 +37,7 @@ import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.model.impl.ComponentManagerImpl;
 import org.nuxeo.runtime.model.impl.DefaultRuntimeContext;
+
 import org.osgi.framework.Bundle;
 
 /**
@@ -63,7 +65,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     protected File workingDir;
 
-    protected Properties properties = new Properties();
+    protected CryptoProperties properties = new CryptoProperties(System.getProperties());
 
     protected ComponentManager manager;
 
@@ -179,7 +181,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
     }
 
     @Override
-    public Properties getProperties() {
+    public CryptoProperties getProperties() {
         // do not unreference properties: some methods rely on this to set
         // variables here...
         return properties;
@@ -192,18 +194,17 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String getProperty(String name, String defValue) {
-        Properties props = new Properties(System.getProperties());
-        props.putAll(properties);
-        String value = props.getProperty(name, defValue);
-        if (value != null && value.startsWith("$") && value.equals("${" + name + "}")) {
+        String value = properties.getProperty(name, defValue);
+        if (value == null || ("${" + name + "}").equals(value)) {
             // avoid loop, don't expand
             return value;
         }
         return expandVars(value);
     }
 
+    @Override
     public void setProperty(String name, Object value) {
-        properties.put(name, value.toString());
+        properties.setProperty(name, value.toString());
     }
 
     @Override
@@ -271,9 +272,7 @@ public abstract class AbstractRuntimeService implements RuntimeService {
 
     @Override
     public String expandVars(String expression) {
-        Properties props = new Properties(System.getProperties());
-        props.putAll(properties);
-        return new TextTemplate(props).process(expression);
+        return new TextTemplate(properties).processText(expression);
     }
 
     @Override
