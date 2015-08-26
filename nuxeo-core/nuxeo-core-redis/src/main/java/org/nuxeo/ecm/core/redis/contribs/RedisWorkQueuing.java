@@ -46,6 +46,7 @@ import org.nuxeo.ecm.core.work.api.Work.State;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Protocol;
 import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.ScanResult;
@@ -507,9 +508,11 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Void call(Jedis jedis) {
-                jedis.hset(dataKey(), workIdBytes, workBytes);
-                jedis.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
-                jedis.lpush(scheduledKey(queueId), workIdBytes);
+                Pipeline pipe = jedis.pipelined();
+                pipe.hset(dataKey(), workIdBytes, workBytes);
+                pipe.hset(stateKey(), workIdBytes, STATE_SCHEDULED);
+                pipe.lpush(scheduledKey(queueId), workIdBytes);
+                pipe.sync();
                 return null;
             }
 
@@ -632,8 +635,10 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Void call(Jedis jedis) throws IOException {
-                jedis.sadd(runningKey(queueId), workIdBytes);
-                jedis.hset(stateKey(), workIdBytes, STATE_RUNNING);
+                Pipeline pipe = jedis.pipelined();
+                pipe.sadd(runningKey(queueId), workIdBytes);
+                pipe.hset(stateKey(), workIdBytes, STATE_RUNNING);
+                pipe.sync();
                 return null;
             }
         });
@@ -653,15 +658,17 @@ public class RedisWorkQueuing implements WorkQueuing {
 
             @Override
             public Void call(Jedis jedis) throws IOException {
-                // store (updated) content in hash
-                jedis.hset(dataKey(), workIdBytes, workBytes);
-                // remove key from running set
-                jedis.srem(runningKey(queueId), workIdBytes);
-                // put key in completed set
-                jedis.sadd(completedKey(queueId), workIdBytes);
-                // set state to completed
                 byte[] completedBytes = bytes(((char) STATE_COMPLETED_B) + String.valueOf(work.getCompletionTime()));
-                jedis.hset(stateKey(), workIdBytes, completedBytes);
+                Pipeline pipe = jedis.pipelined();
+                // store (updated) content in hash
+                pipe.hset(dataKey(), workIdBytes, workBytes);
+                // remove key from running set
+                pipe.srem(runningKey(queueId), workIdBytes);
+                // put key in completed set
+                pipe.sadd(completedKey(queueId), workIdBytes);
+                // set state to completed
+                pipe.hset(stateKey(), workIdBytes, completedBytes);
+                pipe.sync();
                 return null;
             }
         });
