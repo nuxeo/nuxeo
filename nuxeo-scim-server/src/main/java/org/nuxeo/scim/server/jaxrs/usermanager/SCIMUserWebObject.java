@@ -70,7 +70,7 @@ public class SCIMUserWebObject extends BaseUMObject {
         try {
             DocumentModel userModel = um.getUserModel(uid);
             if (userModel != null) {
-                return mapper.getUserResourcefromUserModel(userModel);
+                return mapper.getUserResourceFromNuxeoUser(userModel);
             }
         } catch (Exception e) {
             log.error("Error while resolving User", e);
@@ -144,7 +144,7 @@ public class SCIMUserWebObject extends BaseUMObject {
 
             List<UserResource> userResources = new ArrayList<>();
             for (DocumentModel userModel : userModels) {
-                userResources.add(mapper.getUserResourcefromUserModel(userModel));
+                userResources.add(mapper.getUserResourceFromNuxeoUser(userModel));
             }
             return new Resources<>(userResources, userResources.size(), startIndex);
         } catch (Exception e) {
@@ -200,8 +200,8 @@ public class SCIMUserWebObject extends BaseUMObject {
     protected UserResource doCreateUser(UserResource user) {
 
         try {
-            DocumentModel newUser = mapper.createUserModelFromUserResource(user);
-            UserResource resource =  mapper.getUserResourcefromUserModel(newUser);
+            DocumentModel newUser = mapper.createNuxeoUserFromUserResource(user);
+            UserResource resource =  mapper.getUserResourceFromNuxeoUser(newUser);
             return resource;
         } catch (Exception e) {
             log.error("Unable to create User", e);
@@ -226,9 +226,9 @@ public class SCIMUserWebObject extends BaseUMObject {
     protected Response doUpdateUser(String uid, UserResource user, MediaType mt) {
 
         try {
-            DocumentModel userModel = mapper.updateUserModelFromUserResource(uid, user);
+            DocumentModel userModel = mapper.updateNuxeoUserFromUserResource(uid, user);
             if (userModel!=null) {
-                UserResource userResource =  mapper.getUserResourcefromUserModel(userModel);
+                UserResource userResource =  mapper.getUserResourceFromNuxeoUser(userModel);
                 return UserResponse.updated(userResource, mt);
             }
         } catch (Exception e) {

@@ -26,14 +26,12 @@ import org.nuxeo.usermapper.extension.AbstractUserMapper;
 import org.nuxeo.usermapper.extension.UserMapper;
 
 /**
- *
  * @author tiry
- *
  */
 public class DummyUserMapper extends AbstractUserMapper implements UserMapper {
 
     @Override
-    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal) {
+    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object userObject, Map<String, Serializable> params) {
         return null;
     }
 
@@ -46,16 +44,15 @@ public class DummyUserMapper extends AbstractUserMapper implements UserMapper {
     }
 
     @Override
-    protected void resolveAttributes(Object userObject,
-            Map<String, Serializable> searchAttributes,
+    protected void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes) {
         if (userObject instanceof DummyUser) {
-            DummyUser du = (DummyUser)userObject;
+            DummyUser du = (DummyUser) userObject;
             searchAttributes.put(userManager.getUserIdField(), du.login);
-            if (du.getName().getFirstName()!=null) {
+            if (du.getName().getFirstName() != null) {
                 userAttributes.put("firstName", du.getName().getFirstName());
             }
-            if (du.getName().getLastName()!=null) {
+            if (du.getName().getLastName() != null) {
                 userAttributes.put("lastName", du.getName().getLastName());
             }
         }

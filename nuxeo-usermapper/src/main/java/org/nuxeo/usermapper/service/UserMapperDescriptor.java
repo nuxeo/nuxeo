@@ -56,8 +56,11 @@ public class UserMapperDescriptor implements Serializable {
     @XNodeMap(value = "parameters/parameter", key = "@name", type = HashMap.class, componentType = String.class)
     protected Map<String, String> params;
 
-    @XNode("script")
-    protected String sourceScript;
+    @XNode("mapperScript")
+    protected String mapperScript;
+
+    @XNode("wrapperScript")
+    protected String wrapperScript;
 
     public UserMapper getInstance() throws Exception {
         UserMapper mapper = null;
@@ -73,10 +76,10 @@ public class UserMapperDescriptor implements Serializable {
             mapper = mapperClass.newInstance();
         }
         else if (getType().equals(Type.groovy)) {
-            mapper = new GroovyUserMapper(sourceScript);
+            mapper = new GroovyUserMapper(mapperScript, wrapperScript);
         }
         else if (getType().equals(Type.javascript)) {
-            mapper = new NashornUserMapper(sourceScript);
+            mapper = new NashornUserMapper(mapperScript, wrapperScript);
         }
 
         // run init

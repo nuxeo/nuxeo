@@ -65,7 +65,7 @@ public class TestUserMapperService {
         // test create
         DummyUser dm = new DummyUser("jchan", "Jacky", "Chan");
         UserMapperService ums = Framework.getLocalService(UserMapperService.class);
-        NuxeoPrincipal principal = ums.getCreateOrUpdateNuxeoPrincipal("javaDummy", dm);
+        NuxeoPrincipal principal = ums.getOrCreateAndUpdateNuxeoPrincipal("javaDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("jchan", principal.getName());
         Assert.assertEquals("Jacky", principal.getFirstName());
@@ -73,7 +73,7 @@ public class TestUserMapperService {
 
         // test update
         dm = new DummyUser("jchan", null, "Chan2");
-        principal = ums.getCreateOrUpdateNuxeoPrincipal("javaDummy", dm);
+        principal = ums.getOrCreateAndUpdateNuxeoPrincipal("javaDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("jchan", principal.getName());
         Assert.assertEquals("Jacky", principal.getFirstName());
@@ -87,14 +87,14 @@ public class TestUserMapperService {
         // test create
         DummyUser dm = new DummyUser("bharper", "Ben", "Harper");
         UserMapperService ums = Framework.getLocalService(UserMapperService.class);
-        NuxeoPrincipal principal = ums.getCreateOrUpdateNuxeoPrincipal("groovyDummy", dm);
+        NuxeoPrincipal principal = ums.getOrCreateAndUpdateNuxeoPrincipal("groovyDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("bharper", principal.getName());
         Assert.assertEquals("Ben", principal.getFirstName());
         Assert.assertEquals("Harper", principal.getLastName());
 
         dm = new DummyUser("bharper", "Bill", "Harper");
-        principal = ums.getCreateOrUpdateNuxeoPrincipal("groovyDummy", dm);
+        principal = ums.getOrCreateAndUpdateNuxeoPrincipal("groovyDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("bharper", principal.getName());
         Assert.assertEquals("Bill", principal.getFirstName());
@@ -112,14 +112,14 @@ public class TestUserMapperService {
         // test create
         DummyUser dm = new DummyUser("bharper", "Ben", "Harper");
         UserMapperService ums = Framework.getLocalService(UserMapperService.class);
-        NuxeoPrincipal principal = ums.getCreateOrUpdateNuxeoPrincipal("jsDummy", dm);
+        NuxeoPrincipal principal = ums.getOrCreateAndUpdateNuxeoPrincipal("jsDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("bharper", principal.getName());
         Assert.assertEquals("Ben", principal.getFirstName());
         Assert.assertEquals("Harper", principal.getLastName());
 
         dm = new DummyUser("bharper", "Bill", "Harper");
-        principal = ums.getCreateOrUpdateNuxeoPrincipal("jsDummy", dm);
+        principal = ums.getOrCreateAndUpdateNuxeoPrincipal("jsDummy", dm);
         Assert.assertNotNull(principal);
         Assert.assertEquals("bharper", principal.getName());
         Assert.assertEquals("Bill", principal.getFirstName());

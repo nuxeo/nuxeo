@@ -71,7 +71,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
         try {
             DocumentModel groupModel = um.getGroupModel(uid);
             if (groupModel != null) {
-                return mapper.getGroupResourceFromGroupModel(groupModel);
+                return mapper.getGroupResourceFromNuxeoGroup(groupModel);
             }
         } catch (Exception e) {
             log.error("Error while resolving User", e);
@@ -145,7 +145,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
 
             List<GroupResource> groupResources = new ArrayList<>();
             for (DocumentModel groupModel : groupModels) {
-                groupResources.add(mapper.getGroupResourceFromGroupModel(groupModel));
+                groupResources.add(mapper.getGroupResourceFromNuxeoGroup(groupModel));
             }
             return new Resources<>(groupResources, groupResources.size(),
                     startIndex);
@@ -219,7 +219,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
             DocumentModel groupModel = mapper.updateGroupModelFromGroupResource(
                     uid, group);
             if (groupModel != null) {
-                GroupResource groupResource = mapper.getGroupResourceFromGroupModel(groupModel);
+                GroupResource groupResource = mapper.getGroupResourceFromNuxeoGroup(groupModel);
                 return GroupResponse.updated(groupResource, mt);
             }
         } catch (Exception e) {
@@ -232,7 +232,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
 
         try {
             DocumentModel newGroup = mapper.createGroupModelFromGroupResource(group);
-            GroupResource groupResource = mapper.getGroupResourceFromGroupModel(newGroup);
+            GroupResource groupResource = mapper.getGroupResourceFromNuxeoGroup(newGroup);
             return GroupResponse.created(groupResource, mt);
         } catch (Exception e) {
             log.error("Unable to create Group", e);

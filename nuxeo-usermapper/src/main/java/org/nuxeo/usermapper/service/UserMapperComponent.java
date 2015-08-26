@@ -18,6 +18,7 @@
 
 package org.nuxeo.usermapper.service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +38,8 @@ import org.nuxeo.usermapper.extension.UserMapper;
  * Component to manage extension point and expose the {@link UserMapperService} interface.
  *
  * @author tiry
- *
  */
-public class UserMapperComponent extends DefaultComponent implements
-        UserMapperService {
+public class UserMapperComponent extends DefaultComponent implements UserMapperService {
 
     protected static final Log log = LogFactory.getLog(UserMapperComponent.class);
 
@@ -51,8 +50,7 @@ public class UserMapperComponent extends DefaultComponent implements
     public static final String MAPPER_EP = "mapper";
 
     @Override
-    public void registerContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor) {
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             UserMapperDescriptor desc = (UserMapperDescriptor) contribution;
             descriptors.add(desc);
@@ -71,9 +69,7 @@ public class UserMapperComponent extends DefaultComponent implements
     }
 
     @Override
-    public void unregisterContribution(Object contribution,
-            String extensionPoint, ComponentInstance contributor)
-            {
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (MAPPER_EP.equalsIgnoreCase(extensionPoint)) {
             UserMapperDescriptor desc = (UserMapperDescriptor) contribution;
             UserMapper um = mappers.get(desc.name);
@@ -101,16 +97,20 @@ public class UserMapperComponent extends DefaultComponent implements
     }
 
     @Override
-    public NuxeoPrincipal getCreateOrUpdateNuxeoPrincipal(String mappingName,
-            Object userObject) throws NuxeoException {
-        return getMapper(mappingName).getCreateOrUpdateNuxeoPrincipal(
-                userObject);
+    public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject)
+            throws NuxeoException {
+        return getOrCreateAndUpdateNuxeoPrincipal(mappingName, userObject, true, true, null);
     }
 
     @Override
-    public Object wrapNuxeoPrincipal(String mappingName,
-            NuxeoPrincipal principal) throws NuxeoException {
-        return getMapper(mappingName).wrapNuxeoPrincipal(principal);
+    public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject,
+            boolean createIfNeeded, boolean update, Map<String, Serializable> params) throws NuxeoException {
+        return getMapper(mappingName).getOrCreateAndUpdateNuxeoPrincipal(userObject, createIfNeeded, update, params);
+    }
+
+    @Override
+    public Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params) throws NuxeoException {
+        return getMapper(mappingName).wrapNuxeoPrincipal(principal, nativePrincipal, params);
     }
 
     @Override

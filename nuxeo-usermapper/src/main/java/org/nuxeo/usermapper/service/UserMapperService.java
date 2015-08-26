@@ -18,6 +18,8 @@
 
 package org.nuxeo.usermapper.service;
 
+import java.io.Serializable;
+import java.util.Map;
 import java.util.Set;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -31,16 +33,33 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public interface UserMapperService {
 
+
+
     /**
      * Should retrieve (create if needed) and update the NuxeoPrincipal
      * according to the given userObject
      *
      * @param mappingName the name of the contributed mapping to use
      * @param userObject the native userObject
+     *
      * @return the matching {@link NuxeoPrincipal}
      * @throws NuxeoException
      */
-    NuxeoPrincipal getCreateOrUpdateNuxeoPrincipal(String mappingName, Object userObject) throws NuxeoException;
+    NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject) throws NuxeoException;
+
+    /**
+     * Should retrieve (create if needed) and update the NuxeoPrincipal
+     * according to the given userObject
+     *
+     * @param mappingName the name of the contributed mapping to use
+     * @param userObject the native userObject
+     * @param createIfNeeded flag to allow creation (default is true)
+     * @param update flag to run update (default is true)
+     *
+     * @return the matching {@link NuxeoPrincipal}
+     * @throws NuxeoException
+     */
+    NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject, boolean createIfNeeded, boolean update, Map<String, Serializable> params) throws NuxeoException;
 
     /**
      * Wrap the {@link NuxeoPrincipal} as the userObject used in the external
@@ -48,10 +67,11 @@ public interface UserMapperService {
      *      *
      * @param mappingName the name of the contributed mapping to use
      * @param principal the {@link NuxeoPrincipal} to wrap
+     * @param nativePrincipal the principal Object in the target system (can be null)
      * @return
      * @throws NuxeoException
      */
-    Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal) throws NuxeoException;
+    Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params) throws NuxeoException;
 
     /**
      * Gives access to the contributed Mapping names

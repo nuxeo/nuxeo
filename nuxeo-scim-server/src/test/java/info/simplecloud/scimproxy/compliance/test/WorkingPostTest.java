@@ -1,21 +1,18 @@
 package info.simplecloud.scimproxy.compliance.test;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import info.simplecloud.core.Group;
+import info.simplecloud.core.Resource;
 import info.simplecloud.core.User;
 import info.simplecloud.scimproxy.compliance.CSP;
-import info.simplecloud.scimproxy.compliance.ComplienceUtils;
 import info.simplecloud.scimproxy.compliance.enteties.TestResult;
 
 /**
  * Overriding the default test just to solve resource resolution issue !
- * 
+ *
  * @author tiry
  *
  */
@@ -31,13 +28,14 @@ public class WorkingPostTest extends PostTest {
             InputStream in = this.getClass().getResourceAsStream("/user_full.json");
             String fullUser = org.nuxeo.common.utils.FileUtils.read(in);
             //String fullUser = FileUtils.readFileToString(new File("src/main/resources/user_full.json"));
-            return new User(fullUser, User.ENCODING_JSON);
+            return new User(fullUser, Resource.ENCODING_JSON);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
+    @Override
     public List<TestResult> run() {
         List<TestResult> results = new ArrayList<TestResult>();
 
@@ -62,7 +60,7 @@ public class WorkingPostTest extends PostTest {
         results.add(create("json", scimGroup, false));
 
         // run same tests but now with XML
-        if (this.csp.getSpc().hasXmlDataFormat()) {
+        if (csp.getSpc().hasXmlDataFormat()) {
             // user
             scimUser.setUserName("X" + nanoTime);
             results.add(create("xml", scimUser, false));

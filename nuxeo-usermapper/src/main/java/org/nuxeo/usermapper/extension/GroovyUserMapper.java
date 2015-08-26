@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.groovy.runtime.InvokerHelper;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 
@@ -38,21 +39,29 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  */
 public class GroovyUserMapper extends AbstractUserMapper {
 
-    protected final String scriptSource;
+    protected final String mapperSource;
+
+    protected final String wrapperSource;
 
     protected GroovyClassLoader loader;
 
-    protected Class<?> groovyClass;
+    protected Class<?> mapperClass;
 
-    public GroovyUserMapper(String script) {
+    protected Class<?> wrapperClass;
+
+    public GroovyUserMapper(String mapperScript, String wrapperScript) {
         super();
-        scriptSource = script;
+        mapperSource = mapperScript;
+        wrapperSource = wrapperScript;
     }
 
     @Override
     public void init(Map<String, String> params) {
         loader = new GroovyClassLoader(this.getClass().getClassLoader());
-        groovyClass = loader.parseClass(scriptSource);
+        mapperClass = loader.parseClass(mapperSource);
+        if (!StringUtils.isEmpty(wrapperSource)) {
+            wrapperClass = loader.parseClass(wrapperSource);
+        }
     }
 
     @Override
@@ -66,14 +75,21 @@ public class GroovyUserMapper extends AbstractUserMapper {
         context.put("userAttributes", userAttributes);
         context.put("userObject", userObject);
         Binding binding = new Binding(context);
-        Script script = InvokerHelper.createScript(groovyClass, binding);
+        Script script = InvokerHelper.createScript(mapperClass, binding);
         script.run();
     }
 
     @Override
-    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal) {
-        throw new UnsupportedOperationException(
-                "The Groovy mapper does not support wrapping");
+    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object userObject, Map<String, Serializable> params) {
+
+        Map<String, Object> context = new HashMap<String, Object>();
+        context.put("nuxeoPrincipal", principal);
+        context.put("userObject", userObject);
+        context.put("params", params);
+        Binding binding = new Binding(context);
+        Script script = InvokerHelper.createScript(wrapperClass, binding);
+        script.run();
+        return context.get("userObject");
     }
 
     @Override

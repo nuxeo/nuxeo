@@ -31,11 +31,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.exceptions.WebResourceNotFoundException;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-
 import com.unboundid.scim.data.AuthenticationScheme;
 import com.unboundid.scim.data.BulkConfig;
 import com.unboundid.scim.data.ChangePasswordConfig;
@@ -48,7 +48,7 @@ import com.unboundid.scim.schema.CoreSchema;
 
 /**
  * The root entry for the WebEngine module.
- * 
+ *
  * @since 5.7.2
  */
 @Path("/scim/v1")
@@ -70,7 +70,7 @@ public class SCIMRoot extends ModuleRoot {
     public Object doGetUsersXmlResource() {
         return newObject("users", MediaType.APPLICATION_XML_TYPE);
     }
-    
+
     @Path("/Groups")
     public Object doGetGroups() {
         return newObject("groups");
@@ -95,9 +95,10 @@ public class SCIMRoot extends ModuleRoot {
         }
         else if (schemaName.equalsIgnoreCase("groups")) {
             viewName = "group-schema";
-        }        
+        }
 
-        return getView(viewName + "." + format);
+        Template tmpl = getView(viewName + "." + format);
+        return tmpl;
     }
 
     @GET
@@ -107,9 +108,9 @@ public class SCIMRoot extends ModuleRoot {
     public Object getSchema(@PathParam("schemaName")
     String schemaName, @Context
     HttpHeaders headers) {
-        
+
         List<String> accepted = headers.getRequestHeader("Accept");
-        
+
         if (accepted.contains(MediaType.APPLICATION_JSON)) {
             return getSchema(schemaName, "json");
         }
@@ -123,10 +124,10 @@ public class SCIMRoot extends ModuleRoot {
     String schemaName) {
         return getSchema(schemaName, "json");
     }
-    
+
     @GET
     @Path("/Schemas/{schemaName}.xml")
-    @Produces({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_XML })
     public Object getSchemaAsXml(@PathParam("schemaName")
     String schemaName) {
         return getSchema(schemaName, "xml");

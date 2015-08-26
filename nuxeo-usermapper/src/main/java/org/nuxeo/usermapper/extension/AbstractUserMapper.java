@@ -25,7 +25,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -53,13 +52,22 @@ public abstract class AbstractUserMapper implements UserMapper {
     }
 
     @Override
-    public NuxeoPrincipal getCreateOrUpdateNuxeoPrincipal(Object userObject) {
+    public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject) {
+        return getOrCreateAndUpdateNuxeoPrincipal(userObject, true, true, null);
+    }
+
+    @Override
+    public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update, Map<String, Serializable> params) {
 
         DocumentModel userModel = null;
 
         Map<String, Serializable> searchAttributes = new HashMap<String, Serializable>();
         Map<String, Serializable> userAttributes = new HashMap<String, Serializable>();
         final Map<String, Serializable> profileAttributes = new HashMap<String, Serializable>();
+
+        if (params!=null) {
+            searchAttributes.putAll(params);
+        }
 
         resolveAttributes(userObject, searchAttributes, userAttributes, profileAttributes);
 
@@ -80,9 +88,14 @@ public abstract class AbstractUserMapper implements UserMapper {
             }
         }
         if (userModel != null) {
-            updatePrincipal(userAttributes, userModel);
+            if (update) {
+                updatePrincipal(userAttributes, userModel);
+            }
         } else {
-            for (String k : searchAttributes.keySet() ) {
+            if (!createIfNeeded) {
+                return null;
+            }
+            for (String k : searchAttributes.keySet()) {
                 if (!userAttributes.containsKey(k)) {
                     userAttributes.put(k, searchAttributes.get(k));
                 }
@@ -90,7 +103,7 @@ public abstract class AbstractUserMapper implements UserMapper {
             userModel = createPrincipal(userAttributes);
         }
 
-        if (userModel != null && profileAttributes.size() > 0) {
+        if (userModel != null && profileAttributes.size() > 0 && update) {
             UserProfileService UPS = Framework.getService(UserProfileService.class);
             if (UPS != null) {
 
@@ -99,7 +112,7 @@ public abstract class AbstractUserMapper implements UserMapper {
                 String repoName = Framework.getService(RepositoryManager.class).getDefaultRepositoryName();
                 new UnrestrictedSessionRunner(repoName) {
                     @Override
-                    public void run() throws ClientException {
+                    public void run() {
                         DocumentModel profile = UPS.getUserProfileDocument(login, session);
                         updateProfile(session, profileAttributes, profile);
                     }

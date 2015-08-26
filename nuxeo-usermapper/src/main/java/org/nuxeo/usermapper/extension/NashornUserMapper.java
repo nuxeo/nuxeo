@@ -8,6 +8,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.automation.scripting.internals.ScriptingCache;
@@ -19,16 +20,31 @@ public class NashornUserMapper extends AbstractUserMapper {
 
     protected ScriptEngine engine;
 
-    protected final String scriptSource;
+    protected final String mapperSource;
 
-    public NashornUserMapper(String script) {
+    protected final String wrapperSource;
+
+    public NashornUserMapper(String mapperScript, String wrapperScript) {
         super();
-        scriptSource = script;
+        mapperSource = mapperScript;
+        wrapperSource = wrapperScript;
     }
 
     @Override
-    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal) {
-        throw new UnsupportedOperationException("The JavaScript mapper does not support wrapping");
+    public Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object userObject, Map<String, Serializable> params) {
+        if (StringUtils.isEmpty(wrapperSource)) {
+            return null;
+        }
+        Bindings bindings = new SimpleBindings();
+        bindings.put("nuxeoPrincipal", principal);
+        bindings.put("userObject", userObject);
+        bindings.put("params", params);
+        try {
+            engine.eval(wrapperSource, bindings);
+        } catch (ScriptException e) {
+            log.error("Error while executing JavaScript mapper", e);
+        }
+        return bindings.get("userObject");
     }
 
     @Override
@@ -52,7 +68,7 @@ public class NashornUserMapper extends AbstractUserMapper {
         bindings.put("userObject", userObject);
 
         try {
-            engine.eval(scriptSource, bindings);
+            engine.eval(mapperSource, bindings);
         } catch (ScriptException e) {
             log.error("Error while executing JavaScript mapper", e);
         }

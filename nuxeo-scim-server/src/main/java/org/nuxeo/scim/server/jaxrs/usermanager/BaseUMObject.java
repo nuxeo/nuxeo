@@ -12,12 +12,14 @@ import org.nuxeo.ecm.webengine.WebEngine;
 import org.nuxeo.ecm.webengine.model.exceptions.WebSecurityException;
 import org.nuxeo.ecm.webengine.model.impl.DefaultObject;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.scim.server.mapper.AbstractMapper;
+import org.nuxeo.scim.server.mapper.UserMapperFactory;
 
 public abstract class BaseUMObject extends DefaultObject {
 
     protected static Log log = LogFactory.getLog(SCIMUserWebObject.class);
     protected UserManager um;
-    protected UserMapper mapper;
+    protected AbstractMapper mapper;
     protected String baseUrl;
 
     // default to JSON
@@ -43,7 +45,7 @@ public abstract class BaseUMObject extends DefaultObject {
         if (idx >0) {
             baseUrl = baseUrl.substring(0, idx + getPrefix().length());
         }
-        mapper = new UserMapper(baseUrl);
+        mapper = UserMapperFactory.getMapper(baseUrl);
 
         if (args!=null && args.length>0) {
             fixeMediaType = (MediaType) args[0];

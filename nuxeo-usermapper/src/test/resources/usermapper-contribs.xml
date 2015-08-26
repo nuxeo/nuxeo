@@ -8,22 +8,22 @@
     </mapper>
 
     <mapper name="groovyDummy" type="groovy">
-      <script>
+      <mapperScript>
           searchAttributes.put("username", userObject.login);
           userAttributes.put("firstName", userObject.name.firstName);
           userAttributes.put("lastName", userObject.name.lastName);          
           profileAttributes.put("userprofile:phonenumber", "555.666.7777");
-      </script>
+      </mapperScript>
     </mapper>
 
 
     <mapper name="jsDummy" type="js">
-      <script>
+      <mapperScript>
           searchAttributes.put("username", userObject.login);
           userAttributes.put("firstName", userObject.name.firstName);
           userAttributes.put("lastName", userObject.name.lastName);
           profileAttributes.put("userprofile:phonenumber", "555.666.7777");
-      </script>
+      </mapperScript>
     </mapper>
 
   </extension>
