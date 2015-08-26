@@ -101,6 +101,9 @@
       <id>monitor</id>
     </profile>
     <profile>
+      <id>mongodb</id>
+    </profile>
+    <profile>
       <id>bench</id>
       <build>
         <plugins>
