@@ -22,4 +22,18 @@
       </parameters>
     </authenticationPlugin>
   </extension>
+  
+  
+  <extension target="org.nuxeo.usermapper.service.UserMapperComponent"
+    point="mapper">
+
+    <documentation>
+      Contribute the default usermapper for keycloak.
+    </documentation>
+    
+    <mapper name="keycloak" class="org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakUserMapper">
+    </mapper>
+  
+  </extension>
+  
 </component>

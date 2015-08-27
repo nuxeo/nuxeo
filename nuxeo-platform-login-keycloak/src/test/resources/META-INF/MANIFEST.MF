@@ -3,4 +3,4 @@ Bundle-ManifestVersion: 1
 Bundle-Name: Nuxeo Keycloak Login Module extension
 Bundle-SymbolicName: org.nuxeo.ecm.platform.login.keycloak.test;singleton:=true
 Bundle-Version: ${eclipseVersion}-r${buildNumber}
-Require-Bundle: org.nuxeo.ecm.platform.login
+

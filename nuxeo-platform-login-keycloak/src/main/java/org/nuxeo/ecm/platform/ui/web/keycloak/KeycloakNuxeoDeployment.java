@@ -1,10 +1,21 @@
-package org.nuxeo.ecm.platform.ui.web.keycloak;
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     François Maturel
+ */
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.keycloak.adapters.KeycloakDeployment;
-import org.keycloak.adapters.KeycloakDeploymentBuilder;
-import org.keycloak.representations.adapters.config.AdapterConfig;
-import org.keycloak.util.SystemPropertiesJsonParserFactory;
+package org.nuxeo.ecm.platform.ui.web.keycloak;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,12 +23,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.keycloak.adapters.KeycloakDeployment;
+import org.keycloak.adapters.KeycloakDeploymentBuilder;
+import org.keycloak.representations.adapters.config.AdapterConfig;
+import org.keycloak.util.SystemPropertiesJsonParserFactory;
+
 /**
  * This class is developed to overcome a Jackson version problem between Nuxeo and Keycloak.<br>
  * Nuxeo uses Jackson version 1.8.x where Keycloak uses 1.9.x<br>
  * Sadly the {@link ObjectMapper#setSerializationInclusion} method is not in 1.8.x<br>
- * Then {@link KeycloakNuxeoDeployment} is the same class as {@link KeycloakDeploymentBuilder},
- * rewriting static method {@link KeycloakDeploymentBuilder#loadAdapterConfig} to avoid the use of {@link ObjectMapper#setSerializationInclusion}
+ * Then {@link KeycloakNuxeoDeployment} is the same class as {@link KeycloakDeploymentBuilder}, rewriting static method
+ * {@link KeycloakDeploymentBuilder#loadAdapterConfig} to avoid the use of
+ * {@link ObjectMapper#setSerializationInclusion}
+ *
+ * @since 7.4
  */
 public class KeycloakNuxeoDeployment {
 

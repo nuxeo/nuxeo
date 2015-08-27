@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2007 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,14 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *
- * $Id: JOOoConvertPluginImpl.java 18651 2007-05-13 20:28:53Z sfermigier $
+ *     François Maturel
  */
-
 package org.nuxeo.ecm.platform.ui.web.keycloak;
 
-import org.apache.commons.lang3.StringUtils;
 import org.keycloak.adapters.AdapterDeploymentContext;
 import org.keycloak.adapters.AuthOutcome;
 import org.keycloak.adapters.KeycloakDeployment;
@@ -28,11 +24,13 @@ import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.usermapper.service.UserMapperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,24 +39,41 @@ import java.util.*;
 
 import static org.nuxeo.ecm.platform.ui.web.keycloak.KeycloakUserInfo.KeycloakUserInfoBuilder.aKeycloakUserInfo;
 
-public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin, NuxeoAuthenticationPluginLogoutExtension {
+/**
+ * Authentication plugin for handling auth flow with Keyloack
+ *
+ * @since 7.4
+ */
+
+public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin,
+        NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeycloakAuthenticationPlugin.class);
 
     private static final String PROTOCOL_CLASSPATH = "classpath:";
 
     public static final String KEYCLOAK_CONFIG_FILE_KEY = "keycloakConfigFilename";
-    private String keycloakConfigFile = PROTOCOL_CLASSPATH + "keycloak.json";
 
-    private NuxeoUserService nuxeoUserService = NuxeoUserService.getInstance();
+    public static final String KEYCLOAK_MAPPING_NAME_KEY = "mappingName";
+
+    public static final String DEFAULT_MAPPING_NAME = "keycloak";
+
+    private String keycloakConfigFile = PROTOCOL_CLASSPATH + "keycloak.json";
 
     private KeycloakAuthenticatorProvider keycloakAuthenticatorProvider;
 
+    protected String mappingName = DEFAULT_MAPPING_NAME;
+
+    @Override
     public void initPlugin(Map<String, String> parameters) {
         LOGGER.info("INITIALIZE KEYCLOAK");
 
         if (parameters.containsKey(KEYCLOAK_CONFIG_FILE_KEY)) {
             keycloakConfigFile = PROTOCOL_CLASSPATH + parameters.get(KEYCLOAK_CONFIG_FILE_KEY);
+        }
+
+        if (parameters.containsKey(KEYCLOAK_MAPPING_NAME_KEY)) {
+            mappingName = parameters.get(KEYCLOAK_MAPPING_NAME_KEY);
         }
 
         InputStream is = loadKeycloakConfigFile();
@@ -67,21 +82,26 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin, 
         LOGGER.info("Keycloak is using a per-deployment configuration loaded from: " + keycloakConfigFile);
     }
 
+    @Override
     public Boolean needLoginPrompt(HttpServletRequest httpRequest) {
         return Boolean.TRUE;
     }
 
+    @Override
     public Boolean handleLoginPrompt(HttpServletRequest httpRequest, HttpServletResponse httpResponse, String baseURL) {
         return Boolean.TRUE;
     }
 
+    @Override
     public List<String> getUnAuthenticatedURLPrefix() {
         // There are no unauthenticated URLs associated to login prompt.
         // If user is not authenticated, this plugin will have to redirect user to the keycloak sso login prompt
         return null;
     }
 
-    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+    @Override
+    public UserIdentificationInfo handleRetrieveIdentity(HttpServletRequest httpRequest,
+            HttpServletResponse httpResponse) {
         LOGGER.debug("KEYCLOAK will handle identification");
 
         KeycloakRequestAuthenticator authenticator = keycloakAuthenticatorProvider.provide(httpRequest, httpResponse);
@@ -95,7 +115,12 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin, 
 
             KeycloakUserInfo keycloakUserInfo = getKeycloakUserInfo(token);
 
-            nuxeoUserService.findOrCreateUser(keycloakUserInfo, getRoles(token, keycloakNuxeoApp));
+            UserMapperService ums = Framework.getService(UserMapperService.class);
+
+            keycloakUserInfo.setRoles(getRoles(token, keycloakNuxeoApp));
+
+            ums.getOrCreateAndUpdateNuxeoPrincipal(mappingName, keycloakUserInfo);
+
             return keycloakUserInfo;
         }
         return null;
@@ -124,16 +149,13 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin, 
      */
     private KeycloakUserInfo getKeycloakUserInfo(AccessToken token) {
         return aKeycloakUserInfo()
-                // Required
-                .withUserName(token.getEmail())
-                        // Optional
-                .withFirstName(token.getGivenName())
-                .withLastName(token.getFamilyName())
-                .withCompany(token.getPreferredUsername())
-                .withAuthPluginName("KEYCLOAK_AUTH")
-                        // The password is randomly generated has we won't use it
-                .withPassword(UUID.randomUUID().toString())
-                .build();
+        // Required
+        .withUserName(token.getEmail())
+        // Optional
+        .withFirstName(token.getGivenName()).withLastName(token.getFamilyName()).withCompany(
+                token.getPreferredUsername()).withAuthPluginName("KEYCLOAK_AUTH")
+        // The password is randomly generated has we won't use it
+        .withPassword(UUID.randomUUID().toString()).build();
     }
 
     /**
@@ -190,10 +212,6 @@ public class KeycloakAuthenticationPlugin implements NuxeoAuthenticationPlugin, 
                 throw new RuntimeException(message, fnfe);
             }
         }
-    }
-
-    public void setNuxeoUserService(NuxeoUserService nuxeoUserService) {
-        this.nuxeoUserService = nuxeoUserService;
     }
 
     public void setKeycloakAuthenticatorProvider(KeycloakAuthenticatorProvider keycloakAuthenticatorProvider) {

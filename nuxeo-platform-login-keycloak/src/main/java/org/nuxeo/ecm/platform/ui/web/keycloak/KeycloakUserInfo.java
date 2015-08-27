@@ -1,8 +1,30 @@
+/*
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     François Maturel
+ */
+
 package org.nuxeo.ecm.platform.ui.web.keycloak;
+
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.platform.api.login.UserIdentificationInfo;
 
+/**
+ * @since 7.4
+ */
 public class KeycloakUserInfo extends UserIdentificationInfo {
 
     private static final long serialVersionUID = 6894397878763275157L;
@@ -12,6 +34,8 @@ public class KeycloakUserInfo extends UserIdentificationInfo {
     protected String lastName;
 
     protected String company;
+
+    protected Set<String> roles;
 
     private KeycloakUserInfo(String emailAsUserName, String password) {
         super(emailAsUserName, password);
@@ -41,13 +65,27 @@ public class KeycloakUserInfo extends UserIdentificationInfo {
         return company;
     }
 
+    public Set<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles;
+    }
+
     public static class KeycloakUserInfoBuilder {
         protected String token;
+
         protected String userName;
+
         protected String password;
+
         protected String authPluginName;
+
         protected String company;
+
         protected String lastName;
+
         protected String firstName;
 
         private KeycloakUserInfoBuilder() {
