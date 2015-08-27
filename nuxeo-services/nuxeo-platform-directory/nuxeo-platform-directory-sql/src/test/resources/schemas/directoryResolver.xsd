@@ -25,4 +25,11 @@
     </xs:simpleType>
   </xs:element>
 
+  <xs:element name="hierarchicalDirectoryRef">
+    <xs:simpleType>
+      <xs:restriction base="xs:string" ref:resolver="directoryResolver" ref:directory="hierarchicalDirectory"
+                      ref:parentField="parent" ref:separator="/" />
+    </xs:simpleType>
+  </xs:element>
+
 </xs:schema>

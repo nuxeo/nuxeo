@@ -75,6 +75,10 @@ public class DirectoryEntryResolver implements ObjectResolver {
 
     public static final String PARAM_DIRECTORY = "directory";
 
+    public static final String PARAM_PARENT_FIELD = "parentField";
+
+    public static final String PARAM_SEPARATOR = "separator";
+
     private String idField;
 
     private String schema;
@@ -140,8 +144,8 @@ public class DirectoryEntryResolver implements ObjectResolver {
             parentField = "parent";
             separator = "/";
         }
-        String parentFieldParam = StringUtils.trim(parameters.get("parentField"));
-        String separatorParam = StringUtils.trim(parameters.get("separator"));
+        String parentFieldParam = StringUtils.trim(parameters.get(PARAM_PARENT_FIELD));
+        String separatorParam = StringUtils.trim(parameters.get(PARAM_SEPARATOR));
         if (!StringUtils.isBlank(parentFieldParam) && !StringUtils.isBlank(separatorParam)) {
             hierarchical = true;
             parentField = parentFieldParam;
@@ -225,15 +229,14 @@ public class DirectoryEntryResolver implements ObjectResolver {
                 String result = (String) entry.getProperty(schema, idField);
                 if (hierarchical) {
                     String parent = (String) entry.getProperty(schema, parentField);
-                    DocumentModel parentModel;
                     try (Session session = directory.getSession()) {
                         while (parent != null) {
-                            parentModel = session.getEntry(parent);
-                            if (parentModel != null) {
-                                parent = (String) entry.getProperty(schema, idField);
-                                result = parent + separator + result;
-                                parent = (String) entry.getProperty(schema, parentField);
+                            entry = session.getEntry(parent);
+                            if (entry == null) {
+                                break;
                             }
+                            result = parent + separator + result;
+                            parent = (String) entry.getProperty(schema, parentField);
                         }
                     }
                 }

@@ -24,6 +24,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.nuxeo.ecm.directory.DirectoryEntryResolver.NAME;
 import static org.nuxeo.ecm.directory.DirectoryEntryResolver.PARAM_DIRECTORY;
+import static org.nuxeo.ecm.directory.DirectoryEntryResolver.PARAM_PARENT_FIELD;
+import static org.nuxeo.ecm.directory.DirectoryEntryResolver.PARAM_SEPARATOR;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -61,9 +63,13 @@ public class TestDirectoryEntryResolver {
 
     private static final String REFERENCED_DIRECTORY1 = "referencedDirectory1";
 
+    private static final String HIERARCHICAL_DIRECTORY = "hierarchicalDirectory";
+
     private static final String REF1_XPATH = "dr:directory1Ref";
 
     private static final String REF2_XPATH = "dr:directory2Ref";
+
+    private static final String HIERARCHICAL_REF_XPATH = "dr:hierarchicalDirectoryRef";
 
     private static final String ENTRY_ID = "123";
 
@@ -252,6 +258,26 @@ public class TestDirectoryEntryResolver {
     }
 
     @Test
+    public void testGetHierarchicalReference() {
+        DirectoryEntryResolver derr = new DirectoryEntryResolver();
+        Map<String, String> parameters = new HashMap<>();
+        parameters.put(PARAM_DIRECTORY, HIERARCHICAL_DIRECTORY);
+        parameters.put(PARAM_PARENT_FIELD, "parent");
+        parameters.put(PARAM_SEPARATOR, "/");
+        derr.configure(parameters);
+
+        try (Session session = directoryService.open(HIERARCHICAL_DIRECTORY)) {
+            // root reference returns its id
+            DocumentModel root = session.getEntry("level0");
+            assertEquals("level0", derr.getReference(root));
+
+            // leaf reference returns complete id chain
+            DocumentModel leaf = session.getEntry("level2");
+            assertEquals("level0/level1/level2", derr.getReference(leaf));
+        }
+    }
+
+    @Test
     public void testConfigurationIsLoaded() {
         DirectoryEntryResolver idResolver = (DirectoryEntryResolver) ((SimpleType) doc.getProperty(REF1_XPATH)
                                                                                       .getType()).getObjectResolver();
@@ -303,6 +329,21 @@ public class TestDirectoryEntryResolver {
         document = doc.getObjectResolver(REF1_XPATH).fetch(DocumentModel.class);
         assertNotNull(document);
         assertEquals(ENTRY_LABEL, document.getPropertyValue("drs:label"));
+    }
+
+    @Test
+    public void testDocumentHierarchicalRef() {
+        // test the resolving
+        doc.setPropertyValue(HIERARCHICAL_REF_XPATH, "level0/level1/level2");
+        DirectoryEntry level2Entry = (DirectoryEntry) doc.getProperty(HIERARCHICAL_REF_XPATH).getObjectResolver().fetch();
+        DocumentModel document = level2Entry.getDocumentModel();
+        assertNotNull(document);
+        assertEquals("level2", document.getPropertyValue("hd:id"));
+
+        // test the edit
+        DocumentModel newDoc = coreSession.createDocumentModel("/", "doc2", "DirectoryReferencer");
+        newDoc.getProperty(HIERARCHICAL_REF_XPATH).getObjectResolver().setObject(level2Entry);
+        assertEquals("level0/level1/level2", newDoc.getPropertyValue(HIERARCHICAL_REF_XPATH));
     }
 
     @Test

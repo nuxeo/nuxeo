@@ -3,6 +3,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="directoryResolverSchema" src="sqldirectoryschema/directoryResolverSchema.xsd" prefix="drs" />
+    <schema name="hierarchicalDirectorySchema" src="sqldirectoryschema/hierarchicalDirectorySchema.xsd" prefix="hd" />
   </extension>
 
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory" point="directories">
@@ -29,6 +30,19 @@
       <idField>id</idField>
       <createTablePolicy>always</createTablePolicy>
       <dataFile>test-directory-resolver.csv</dataFile>
+    </directory>
+
+    <directory name="hierarchicalDirectory">
+      <schema>hierarchicalDirectorySchema</schema>
+      <parentDirectory>hierarchicalDirectory</parentDirectory>
+      <dbDriver>${nuxeo.test.vcs.driver}</dbDriver>
+      <dbUrl>${nuxeo.test.vcs.url}</dbUrl>
+      <dbUser>${nuxeo.test.vcs.user}</dbUser>
+      <dbPassword>${nuxeo.test.vcs.password}</dbPassword>
+      <table>hierarchicalDirectory</table>
+      <idField>id</idField>
+      <createTablePolicy>always</createTablePolicy>
+      <dataFile>test-hierarchical-directory.csv</dataFile>
     </directory>
 
   </extension>
