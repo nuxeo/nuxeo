@@ -42,9 +42,9 @@ public abstract class UserResolver {
         return provider;
     }
 
-    public abstract String findNuxeoUser(OpenIDUserInfo userInfo);
+    protected abstract String findNuxeoUser(OpenIDUserInfo userInfo);
 
-    public DocumentModel createNuxeoUser(String nuxeoLogin) {
+    protected  DocumentModel createNuxeoUser(String nuxeoLogin) {
         DocumentModel userDoc;
 
         try {
@@ -63,7 +63,7 @@ public abstract class UserResolver {
         return userDoc;
     }
 
-    public abstract DocumentModel updateUserInfo(DocumentModel user, OpenIDUserInfo userInfo);
+    protected abstract DocumentModel updateUserInfo(DocumentModel user, OpenIDUserInfo userInfo);
 
     public String findOrCreateNuxeoUser(OpenIDUserInfo userInfo) {
         String user = findNuxeoUser(userInfo);

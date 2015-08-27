@@ -29,8 +29,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.EmailBasedUserResolver;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDConnectAuthenticator;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.OpenIDUserInfo;
+import org.nuxeo.ecm.platform.oauth2.openid.auth.UserMapperResolver;
 import org.nuxeo.ecm.platform.oauth2.openid.auth.UserResolver;
 import org.nuxeo.ecm.platform.oauth2.providers.NuxeoOAuth2ServiceProvider;
 import org.nuxeo.ecm.platform.oauth2.providers.OAuth2ServiceProvider;
@@ -78,13 +80,15 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
 
     protected UserResolver userResolver;
 
+    protected String userMapper;
+
     private String accessTokenKey;
 
     private Class<? extends OpenIDUserInfo> openIdUserInfoClass;
 
     public OpenIDConnectProvider(OAuth2ServiceProvider oauth2Provider, String accessTokenKey, String userInfoURL,
             Class<? extends OpenIDUserInfo> openIdUserInfoClass, String icon, boolean enabled,
-            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass) {
+            RedirectUriResolver redirectUriResolver, Class<? extends UserResolver> userResolverClass, String userMapper) {
         this.oauth2Provider = oauth2Provider;
         this.userInfoURL = userInfoURL;
         this.openIdUserInfoClass = openIdUserInfoClass;
@@ -94,12 +98,19 @@ public class OpenIDConnectProvider implements LoginProviderLinkComputer {
         this.redirectUriResolver = redirectUriResolver;
 
         try {
-            Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[] { OpenIDConnectProvider.class });
-            userResolver = c.newInstance(new Object[] { this });
+            if (userResolverClass == null) {
+                if (userMapper != null) {
+                    userResolver = new UserMapperResolver(this, userMapper);
+                } else {
+                    userResolver = new EmailBasedUserResolver(this);
+                }
+            } else {
+                Constructor<? extends UserResolver> c = userResolverClass.getConstructor(new Class[] { OpenIDConnectProvider.class });
+                userResolver = c.newInstance(new Object[] { this });
+            }
         } catch (ReflectiveOperationException e) {
             log.error("Failed to instantiate UserResolver", e);
         }
-
     }
 
     public String getRedirectUri(HttpServletRequest req) {

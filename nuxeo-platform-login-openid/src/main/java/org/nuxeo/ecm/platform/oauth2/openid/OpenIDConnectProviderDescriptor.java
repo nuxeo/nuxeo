@@ -77,7 +77,10 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     protected String description;
 
     @XNode("userResolverClass")
-    protected Class<? extends UserResolver> userResolverClass = DEFAULT_USER_RESOLVER_CLASS;
+    protected Class<? extends UserResolver> userResolverClass;
+
+    @XNode("userMapperName")
+    protected String userMapper;
 
     @XNode("redirectUriResolver")
     protected Class<? extends RedirectUriResolver> redirectUriResolver = DEFAULT_REDIRECT_URI_RESOLVER_CLASS;
@@ -141,7 +144,14 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
         return description;
     }
 
+    public String getUserMapper() {
+        return userMapper;
+    }
+
     public Class<? extends UserResolver> getUserResolverClass() {
+        if (userResolverClass==null && userMapper==null) {
+            return DEFAULT_USER_RESOLVER_CLASS;
+        }
         return userResolverClass;
     }
 
@@ -152,5 +162,6 @@ public class OpenIDConnectProviderDescriptor implements Serializable {
     public Class<? extends OpenIDUserInfo> getUserInfoClass() {
         return userInfoClass;
     }
+
 
 }
