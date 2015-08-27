@@ -242,6 +242,11 @@ public class QuotaAwareDocument implements QuotaAware {
         doc.setPropertyValue(DOCUMENTS_SIZE_MAX_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_TRASH_SIZE_PROPERTY, 0L);
         doc.setPropertyValue(DOCUMENTS_SIZE_VERSIONS_SIZE_PROPERTY, 0L);
+        try {
+            invalidateTotalSizeCache();
+        } catch (IOException e) {
+            log.warn("Unable to invalidate cache");
+        }
         if (save) {
             save(true);
         }
@@ -249,47 +254,71 @@ public class QuotaAwareDocument implements QuotaAware {
 
     @Override
     public void invalidateTotalSizeCache() throws IOException {
+        invalidateCache(QUOTA_TOTALSIZE_CACHE_NAME);
+    }
+
+    protected Cache getCache(String cacheName) {
         CacheService cs = Framework.getService(CacheService.class);
-        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
+        Cache cache = cs.getCache(cacheName);
         if (cache != null) {
-            log.trace("Using cache " + QUOTA_TOTALSIZE_CACHE_NAME);
-            cache.invalidate(getCacheEntry(doc.getId()));
+            log.trace("Using cache " + cacheName);
+            return cache;
+        } else {
+            throw new RuntimeException("Unable to retrieve cache " + cacheName);
         }
+    }
+
+    protected void invalidateCache(String cacheName) throws IOException {
+        try {
+            Cache cache = getCache(cacheName);
+            cache.invalidate(getCacheEntry(doc.getId()));
+        } catch (RuntimeException e) {
+            log.warn(e.getMessage());
+        }
+
     }
 
     @Override
     public Long getTotalSizeCache() throws IOException {
-        CacheService cs = Framework.getService(CacheService.class);
-        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
-        if (cache != null) {
-            log.trace("Using cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+        return getSizeInCache(QUOTA_TOTALSIZE_CACHE_NAME);
+    }
+
+    protected Long getSizeInCache(String cacheName) throws IOException {
+        try {
+            Cache cache = getCache(cacheName);
             return (Long) cache.get(getCacheEntry(doc.getId()));
-        } else {
-            log.warn("Unable to retrieve cache " + QUOTA_TOTALSIZE_CACHE_NAME);
-            return null;
+        } catch (RuntimeException e) {
+            log.warn(e.getMessage());
         }
+        return null;
     }
 
     @Override
     public void putTotalSizeCache(long size) throws IOException {
-        CacheService cs = Framework.getService(CacheService.class);
-        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
-        if (cache != null) {
-            log.trace("Using cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+        putSizeInCache(QUOTA_TOTALSIZE_CACHE_NAME, size);
+    }
+
+    protected void putSizeInCache(String cacheName, long size) throws IOException {
+        try {
+            Cache cache = getCache(cacheName);
             cache.put(getCacheEntry(doc.getId()), size);
-        } else {
-            log.warn("Unable to retrieve cache " + QUOTA_TOTALSIZE_CACHE_NAME);
+        } catch (RuntimeException e) {
+            log.warn(e.getMessage());
         }
     }
 
     @Override
     public boolean totalSizeCacheExists() {
-        CacheService cs = Framework.getService(CacheService.class);
-        Cache cache = cs.getCache(QUOTA_TOTALSIZE_CACHE_NAME);
-        return (cache != null);
+        try {
+            return (getCache(QUOTA_TOTALSIZE_CACHE_NAME) != null);
+        } catch (RuntimeException e) {
+            return false;
+        }
+
     }
-    
+
     protected String getCacheEntry(String... params) {
         return StringUtils.join(params, '-');
     }
+
 }
