@@ -1,0 +1,58 @@
+<project name="integration-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <property name="out.dir" value="${maven.project.build.directory}" />
+  <unzip dest="${out.dir}/" overwrite="false">
+    <artifact:resolveFile key="org.nuxeo:nuxeo-ftest::zip" />
+  </unzip>
+  <import file="${out.dir}/nuxeo-ftest.xml" />
+
+  <if>
+    <os family="windows"/>
+    <then>
+      <nx:exit message="Sorry your OS is not yet supported" />
+    </then>
+  </if>
+
+  <property name="wizard.preset" value="none" />
+  <property name="nuxeo.wizard.done" value="true" />
+  <property name="mail.transport.port" value="2525" />
+  <property name="mail.transport.host" value="127.0.0.1" />
+
+  <property name="inject.file" value="${out.dir}/data-test-les-arbres-1.1.csv" />
+  <property name="inject.script" value="inject-arbres.py" />
+  <property name="inject.artifact" value="org.nuxeo.tools.testing:data-test-les-arbres:1.1:zip" />
+
+  <target name="redis-clean">
+    <echo level="info">Flush Redis DB</echo>
+    <exec executable="sh" failonerror="true" resultProperty="exitCode">
+      <arg value="-c" />
+      <arg value="echo flushdb | redis-cli" />
+    </exec>
+  </target>
+  
+  <target name="redis-inject">
+    <echo level="info">Inject data into Redis</echo>
+    <echo level="info">cat ${inject.file} | python ./scripts/inject-arbres.py | redis-cli --pipe</echo>
+    <exec executable="sh" failonerror="true" resultProperty="exitCode">
+      <arg value="-c" />
+      <arg value="cat ${inject.file} | python ./scripts/${inject.script} | redis-cli --pipe" />
+    </exec>
+  </target>
+ 
+  <target name="prepare-environment"
+          depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"
+          description="prepare all ressources for test">
+    <unzip dest="${out.dir}" overwrite="false">
+      <artifact:resolveFile key="${inject.artifact}" />
+    </unzip>
+    <antcall target="redis-clean" />
+    <antcall target="redis-inject" />
+  </target>
+
+</project>
