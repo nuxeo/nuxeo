@@ -125,7 +125,10 @@ public class QuotaAwareDocument implements QuotaAware {
     protected Number addDelta(String property, long delta) {
         Number oldValue = (Number) doc.getPropertyValue(property);
         Number newValue = DeltaLong.deltaOrLong(oldValue, delta);
-        doc.setPropertyValue(property, newValue);
+        if (newValue.longValue() < 0L) {
+            newValue = 0L;
+        }
+        doc.setPropertyValue(property, newValue.longValue());
         return newValue;
     }
 
