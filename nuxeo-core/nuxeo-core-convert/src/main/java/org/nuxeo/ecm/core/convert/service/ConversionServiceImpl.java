@@ -203,9 +203,11 @@ public class ConversionServiceImpl extends DefaultComponent implements Conversio
 
     protected void updateResultBlobMimeType(BlobHolder resultBh, ConverterDescriptor desc) {
         Blob mainBlob = resultBh.getBlob();
-        String mimeType = mainBlob.getMimeType();
-        if (StringUtils.isBlank(mimeType) || mimeType.equals("application/octet-stream")) {
-            mainBlob.setMimeType(desc.getDestinationMimeType());
+        if (mainBlob != null) {
+            String mimeType = mainBlob.getMimeType();
+            if (StringUtils.isBlank(mimeType) || mimeType.equals("application/octet-stream")) {
+                mainBlob.setMimeType(desc.getDestinationMimeType());
+            }
         }
     }
 
