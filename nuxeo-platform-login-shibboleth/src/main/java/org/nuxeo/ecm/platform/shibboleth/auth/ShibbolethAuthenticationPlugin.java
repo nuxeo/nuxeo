@@ -17,12 +17,14 @@
 package org.nuxeo.ecm.platform.shibboleth.auth;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -35,11 +37,19 @@ import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPlugin;
 import org.nuxeo.ecm.platform.ui.web.auth.interfaces.NuxeoAuthenticationPluginLogoutExtension;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.usermapper.extension.UserMapper;
+import org.nuxeo.usermapper.service.UserMapperService;
 
 public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin,
         NuxeoAuthenticationPluginLogoutExtension {
 
     private static final Log log = LogFactory.getLog(ShibbolethAuthenticationPlugin.class);
+
+    public static final String EXTERNAL_MAPPER_PARAM = "mapper";
+
+    public static final String DEFAULT_EXTERNAL_MAPPER = "shibboleth";
+
+    protected UserMapper externalMapper = null;
 
     protected ShibbolethAuthenticationService getService() {
         return Framework.getService(ShibbolethAuthenticationService.class);
@@ -100,17 +110,25 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
             return null;
         }
         UserManager userManager = Framework.getService(UserManager.class);
-        try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())){
-            Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
-            DocumentModel entry = userDir.getEntry(userId);
-            if (entry == null) {
-                userDir.createEntry(fieldMap);
-            } else {
-                entry.getDataModel(userManager.getUserSchemaName()).setMap(fieldMap);
-                userDir.updateEntry(entry);
+        Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
+
+        if (externalMapper!=null) {
+            Map<String, Object> nativeObject = new HashMap<String, Object>();
+            nativeObject.putAll(fieldMap);
+            nativeObject.put("userId", userId);
+            externalMapper.getOrCreateAndUpdateNuxeoPrincipal(nativeObject);
+        } else {
+            try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())){
+                DocumentModel entry = userDir.getEntry(userId);
+                if (entry == null) {
+                    userDir.createEntry(fieldMap);
+                } else {
+                    entry.getDataModel(userManager.getUserSchemaName()).setMap(fieldMap);
+                    userDir.updateEntry(entry);
+                }
+            } catch (DirectoryException e) {
+                log.error("Failed to get or create user entry", e);
             }
-        } catch (DirectoryException e) {
-            log.error("Failed to get or create user entry", e);
         }
 
         return new UserIdentificationInfo(userId, userId);
@@ -118,6 +136,20 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
 
     @Override
     public void initPlugin(Map<String, String> parameters) {
+
+        String mapperName = DEFAULT_EXTERNAL_MAPPER;
+        if (parameters.containsKey(EXTERNAL_MAPPER_PARAM)) {
+            mapperName = parameters.get(EXTERNAL_MAPPER_PARAM);
+        }
+
+        if (!StringUtils.isEmpty(mapperName)) {
+            UserMapperService ums = Framework.getService(UserMapperService.class);
+            if (ums!=null) {
+                if (ums.getAvailableMappings().contains(mapperName)) {
+                    externalMapper = ums.getMapper(mapperName);
+                }
+            }
+        }
     }
 
     @Override

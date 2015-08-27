@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.usermapper.extension.UserMapper;
 
 /**
  * This service allows to map Nuxeo Users with users coming from external system like SSO or IDM.
@@ -79,4 +80,11 @@ public interface UserMapperService {
      * @return
      */
     Set<String> getAvailableMappings();
+
+    /**
+     * returns the named mapper is any
+     * @param mappingName
+     * @return
+     */
+    UserMapper getMapper(String mappingName) throws NuxeoException;
 }

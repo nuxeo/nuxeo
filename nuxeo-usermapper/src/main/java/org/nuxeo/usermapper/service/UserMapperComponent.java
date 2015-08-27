@@ -88,6 +88,7 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
         super.deactivate(context);
     }
 
+    @Override
     public UserMapper getMapper(String mappingName) throws NuxeoException {
         UserMapper um = mappers.get(mappingName);
         if (um == null) {
@@ -117,5 +118,6 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
     public Set<String> getAvailableMappings() {
         return mappers.keySet();
     }
+
 
 }
