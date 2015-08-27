@@ -21,4 +21,15 @@
 
   </extension>
 
+  <extension target="org.nuxeo.ecm.platform.video.service.VideoService"
+    point="configuration">
+
+    <configuration>
+      <previewScreenshotInDurationPercent>10.0</previewScreenshotInDurationPercent>
+      <storyboardMinDuration>10</storyboardMinDuration>
+      <storyboardThumbnailCount>9</storyboardThumbnailCount>
+    </configuration>
+
+  </extension>
+
 </component>

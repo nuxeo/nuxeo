@@ -24,6 +24,8 @@ import static org.nuxeo.ecm.platform.video.convert.Constants.POSITION_PARAMETER;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +69,6 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
 
     public static final String THUMBNAIL_NUMBER_PARAM = "thumbnail_number";
 
-    protected int numberOfThumbnails = 9;
-
     protected Map<String, String> commonParams = new HashMap<String, String>();
 
     @Override
@@ -79,12 +79,6 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
         }
         if (!commonParams.containsKey(HEIGHT_PARAM)) {
             commonParams.put(HEIGHT_PARAM, "62");
-        }
-        if (commonParams.containsKey(THUMBNAIL_NUMBER_PARAM)) {
-            numberOfThumbnails = Integer.parseInt(commonParams.get(THUMBNAIL_NUMBER_PARAM));
-        }
-        if (numberOfThumbnails < 1) {
-            numberOfThumbnails = 1;
         }
     }
 
@@ -112,14 +106,14 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                         blob.getFilename()));
                 return bh;
             }
-            if (duration < 10.0) {
-                // do not extract a storyboard for so short videos
-                return bh;
-            }
+
             // add the command line parameters for the storyboard extraction and
             // run it
+            int numberOfThumbnails = getNumberOfThumbnails(parameters);
             for (int i = 0; i < numberOfThumbnails; i++) {
-                long timecode = Double.valueOf(Math.floor(i * duration / numberOfThumbnails)).longValue();
+                double timecode = BigDecimal.valueOf(i * duration / numberOfThumbnails)
+                                            .setScale(2, RoundingMode.HALF_UP)
+                                            .doubleValue();
                 Blob thumbBlob = Blobs.createBlobWithExtension(".jpeg");
                 params.addNamedParameter(OUTPUT_FILE_PATH_PARAMETER, thumbBlob.getFile().getAbsolutePath());
                 params.addNamedParameter(POSITION_PARAMETER, String.valueOf(timecode));
@@ -131,9 +125,9 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
                     throw result.getError();
                 }
                 thumbBlob.setMimeType("image/jpeg");
-                thumbBlob.setFilename(String.format("%05d.000-seconds.jpeg", timecode));
+                thumbBlob.setFilename(String.format("%.2f-seconds.jpeg", timecode));
                 blobs.add(thumbBlob);
-                timecodes.add(Double.valueOf(timecode));
+                timecodes.add(timecode);
                 comments.add(String.format("%s %d", blob.getFilename(), i));
             }
             return bh;
@@ -146,5 +140,20 @@ public class StoryboardConverter extends BaseVideoConverter implements Converter
             }
             throw new ConversionException(msg, e);
         }
+    }
+
+    protected int getNumberOfThumbnails(Map<String, Serializable> parameters) {
+        int numberOfThumbnails = 9;
+        if (parameters.containsKey(THUMBNAIL_NUMBER_PARAM)) {
+            numberOfThumbnails = (int) parameters.get(THUMBNAIL_NUMBER_PARAM);
+        }
+        // param from converter descriptor still overrides the video service configuration to keep compat
+        if (commonParams.containsKey(THUMBNAIL_NUMBER_PARAM)) {
+            numberOfThumbnails = Integer.parseInt(commonParams.get(THUMBNAIL_NUMBER_PARAM));
+        }
+        if (numberOfThumbnails < 1) {
+            numberOfThumbnails = 1;
+        }
+        return numberOfThumbnails;
     }
 }

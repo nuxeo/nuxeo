@@ -23,7 +23,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 
 /**
- * Small DTO to precompute the thumbnail URLs for JSF and convert the timcode to millisencodes
+ * Small DTO to precompute the thumbnail URLs for JSF
  */
 public class StoryboardItem {
 
@@ -48,7 +48,7 @@ public class StoryboardItem {
         try {
             Double tc = (Double) doc.getPropertyValue(propertyPath + "/timecode");
             if (tc != null) {
-                timecode = String.format("%f", Math.floor(tc));
+                timecode = String.format("%.2f", tc);
             }
             // TODO: read filename from blob too
         } catch (PropertyException e) {

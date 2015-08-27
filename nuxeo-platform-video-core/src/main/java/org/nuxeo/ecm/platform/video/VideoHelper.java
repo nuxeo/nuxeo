@@ -46,6 +46,9 @@ import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
 import org.nuxeo.ecm.platform.picture.api.adapters.AbstractPictureAdapter;
 import org.nuxeo.ecm.platform.picture.api.adapters.PictureResourceAdapter;
 import org.nuxeo.ecm.platform.video.convert.Constants;
+import org.nuxeo.ecm.platform.video.convert.StoryboardConverter;
+import org.nuxeo.ecm.platform.video.service.Configuration;
+import org.nuxeo.ecm.platform.video.service.VideoService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -63,6 +66,16 @@ public class VideoHelper {
     public static final String MISSING_PREVIEW_PICTURE = "preview/missing-video-preview.jpeg";
 
     public static final String FFMPEG_INFO_COMMAND_LINE = "ffmpeg-info";
+
+    /**
+     * @since 7.4
+     */
+    public static final int DEFAULT_MIN_DURATION_FOR_STORYBOARD = 10;
+
+    /**
+     * @since 7.4
+     */
+    public static final int DEFAULT_NUMBER_OF_THUMBNAILS = 9;
 
     // TODO: make this configurable somehow though an extension point. The
     // imaging package need a similar refactoring, try to make both consistent
@@ -94,34 +107,53 @@ public class VideoHelper {
             return;
         }
 
-        BlobHolder result;
-        try {
+        VideoService videoService = Framework.getService(VideoService.class);
+        Configuration configuration = videoService.getConfiguration();
 
-            VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
-            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-            parameters.put("duration", videoDocument.getVideo().getDuration());
-            result = Framework.getService(ConversionService.class).convert(Constants.STORYBOARD_CONVERTER,
-                    new SimpleBlobHolder(video), parameters);
-        } catch (ConversionException e) {
-            // this can happen when if the codec is not supported or not
-            // readable by ffmpeg and is recoverable by using a dummy preview
-            log.warn(String.format("could not extract story board for document '%s' with video file '%s': %s",
-                    docModel.getTitle(), video.getFilename(), e.getMessage()));
-            log.debug(e, e);
-            return;
+        VideoDocument videoDocument = docModel.getAdapter(VideoDocument.class);
+        double duration = videoDocument.getVideo().getDuration();
+        double storyboardMinDuration = DEFAULT_MIN_DURATION_FOR_STORYBOARD;
+        if (configuration != null) {
+            storyboardMinDuration = configuration.getStoryboardMinDuration();
         }
-        List<Blob> blobs = result.getBlobs();
-        List<String> comments = (List<String>) result.getProperty("comments");
-        List<Double> timecodes = (List<Double>) result.getProperty("timecodes");
-        List<Map<String, Serializable>> storyboard = new ArrayList<Map<String, Serializable>>();
-        for (int i = 0; i < blobs.size(); i++) {
-            Map<String, Serializable> item = new HashMap<String, Serializable>();
-            item.put("comment", comments.get(i));
-            item.put("timecode", timecodes.get(i));
-            item.put("content", (Serializable) blobs.get(i));
-            storyboard.add(item);
+
+        BlobHolder result = null;
+        if (storyboardMinDuration >= 0 && duration >= storyboardMinDuration) {
+            try {
+                Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+                parameters.put("duration", duration);
+                int numberOfThumbnails = DEFAULT_NUMBER_OF_THUMBNAILS;
+                if (configuration != null) {
+                    numberOfThumbnails = configuration.getStoryboardThumbnailCount();
+                }
+                parameters.put(StoryboardConverter.THUMBNAIL_NUMBER_PARAM, numberOfThumbnails);
+
+                result = Framework.getService(ConversionService.class).convert(Constants.STORYBOARD_CONVERTER,
+                        new SimpleBlobHolder(video), parameters);
+            } catch (ConversionException e) {
+                // this can happen when if the codec is not supported or not
+                // readable by ffmpeg and is recoverable by using a dummy preview
+                log.warn(String.format("could not extract story board for document '%s' with video file '%s': %s",
+                        docModel.getTitle(), video.getFilename(), e.getMessage()));
+                log.debug(e, e);
+                return;
+            }
         }
-        docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, (Serializable) storyboard);
+
+        if (result != null) {
+            List<Blob> blobs = result.getBlobs();
+            List<String> comments = (List<String>) result.getProperty("comments");
+            List<Double> timecodes = (List<Double>) result.getProperty("timecodes");
+            List<Map<String, Serializable>> storyboard = new ArrayList<Map<String, Serializable>>();
+            for (int i = 0; i < blobs.size(); i++) {
+                Map<String, Serializable> item = new HashMap<String, Serializable>();
+                item.put("comment", comments.get(i));
+                item.put("timecode", timecodes.get(i));
+                item.put("content", (Serializable) blobs.get(i));
+                storyboard.add(item);
+            }
+            docModel.setPropertyValue(VideoConstants.STORYBOARD_PROPERTY, (Serializable) storyboard);
+        }
     }
 
     /**
@@ -175,15 +207,19 @@ public class VideoHelper {
     }
 
     /**
-     * Update the JPEG previews of a Video document from the video blob content by taking a screen-shot of the movie at
-     * 10% of the duration to avoid black screen fade in video.
+     * Update the JPEG previews of a Video document from the video blob content by taking a screen-shot of the movie.
      */
     public static void updatePreviews(DocumentModel docModel, Blob video) throws IOException {
-
         Double duration = (Double) docModel.getPropertyValue(VideoConstants.DURATION_PROPERTY);
         Double position = 0.0;
         if (duration != null) {
-            position = duration * 0.1;
+            VideoService videoService = Framework.getService(VideoService.class);
+            Configuration configuration = videoService.getConfiguration();
+            if (configuration != null) {
+                position = duration * configuration.getPreviewScreenshotInDurationPercent() / 100;
+            } else {
+                position = duration * 0.1;
+            }
         }
         updatePreviews(docModel, video, position, THUMBNAILS_VIEWS);
     }

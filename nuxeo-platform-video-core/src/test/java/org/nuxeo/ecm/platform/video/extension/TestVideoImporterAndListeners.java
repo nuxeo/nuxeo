@@ -62,6 +62,7 @@ import org.nuxeo.ecm.platform.video.VideoDocument;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
@@ -90,6 +91,9 @@ public class TestVideoImporterAndListeners {
     protected static final String VIDEO_TYPE = "Video";
 
     public static final Log log = LogFactory.getLog(TestVideoImporterAndListeners.class);
+
+    @Inject
+    protected RuntimeHarness runtimeHarness;
 
     @Inject
     protected RepositorySettings repositorySettings;
@@ -244,12 +248,12 @@ public class TestVideoImporterAndListeners {
         assertEquals(0.0, storyboard.get(0).get("timecode"));
         assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 0", storyboard.get(0).get("comment"));
         Blob thumb0 = (Blob) storyboard.get(0).get("content");
-        assertEquals("00000.000-seconds.jpeg", thumb0.getFilename());
+        assertEquals("0.00-seconds.jpeg", thumb0.getFilename());
 
-        assertEquals(72.0, storyboard.get(1).get("timecode"));
+        assertEquals(72.65, storyboard.get(1).get("timecode"));
         assertEquals("elephantsdream-160-mpeg4-su-ac3.avi 1", storyboard.get(1).get("comment"));
         Blob thumb1 = (Blob) storyboard.get(1).get("content");
-        assertEquals("00072.000-seconds.jpeg", thumb1.getFilename());
+        assertEquals("72.65-seconds.jpeg", thumb1.getFilename());
 
         // check that the thumbnails where extracted
         assertEquals("Small", docModel.getPropertyValue("picture:views/0/title"));
@@ -332,6 +336,33 @@ public class TestVideoImporterAndListeners {
         assertTrue(streamInfo.contains("Video: mpeg1video"));
         assertTrue(streamInfo.contains("320x200"));
         assertTrue(streamInfo.contains("23.98 fps"));
+    }
+
+    @Test
+    public void testConfiguration() throws Exception {
+        CommandAvailability ca = cles.getCommandAvailability("ffmpeg-screenshot");
+        if (!ca.isAvailable()) {
+            log.warn("ffmpeg-screenshot is not avalaible, skipping the end of the test");
+            throw new AssumptionViolatedException("ffmpeg-screenshot is not avalaible");
+        }
+
+        runtimeHarness.deployContrib("org.nuxeo.ecm.platform.video.core", "video-configuration-override.xml");
+
+        DocumentModel docModel = session.createDocumentModel("/", "doc", VIDEO_TYPE);
+        assertNotNull(docModel);
+        docModel.setPropertyValue("file:content", (Serializable) getBlobFromPath("test-data/sample.mpg").getBlob());
+        docModel = session.createDocument(docModel);
+        session.save();
+
+        waitForAsyncCompletion();
+
+        docModel = session.getDocument(docModel.getRef());
+
+        List<Map<String, Serializable>> storyboard = docModel.getProperty("vid:storyboard").getValue(List.class);
+        assertNotNull(storyboard);
+        assertEquals(2, storyboard.size());
+
+        runtimeHarness.undeployContrib("org.nuxeo.ecm.platform.video.core", "video-configuration-override.xml");
     }
 
 }

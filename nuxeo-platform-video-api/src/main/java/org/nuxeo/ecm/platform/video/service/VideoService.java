@@ -101,4 +101,9 @@ public interface VideoService {
      */
     VideoConversion getVideoConversion(String conversionName);
 
+    /**
+     * @since 7.4
+     */
+    Configuration getConfiguration();
+
 }

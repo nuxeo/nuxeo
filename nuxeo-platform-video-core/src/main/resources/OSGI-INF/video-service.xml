@@ -40,4 +40,20 @@
       class="org.nuxeo.ecm.platform.video.service.AutomaticVideoConversion" />
   </extension-point>
 
+  <extension-point name="configuration">
+    <documentation>
+      <p>Since 7.4.</p>
+      <p>
+      Extension point to configure the VideoService, such as:
+        <ul>
+          <li>When to take the preview screenshot (percentage of the video duration)</li>
+          <li>Storyboard thumbnails count</li>
+          <li>Minimum duration of the video to generate storyboard (0 means always, &lt; 0 means never)</li>
+        </ul>
+      </p>
+    </documentation>
+    <object
+      class="org.nuxeo.ecm.platform.video.service.Configuration" />
+  </extension-point>
+
 </component>

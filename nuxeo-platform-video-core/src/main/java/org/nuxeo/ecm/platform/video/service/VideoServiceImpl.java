@@ -48,6 +48,8 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
+import static org.nuxeo.ecm.platform.video.service.Configuration.DEFAULT_CONFIGURATION;
+
 /**
  * Default implementation of {@link VideoService}.
  *
@@ -61,9 +63,19 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     public static final String DEFAULT_VIDEO_CONVERSIONS_EP = "automaticVideoConversions";
 
+    /**
+     * @since 7.4
+     */
+    public static final String CONFIGURATION_EP = "configuration";
+
     protected VideoConversionContributionHandler videoConversions;
 
     protected AutomaticVideoConversionContributionHandler automaticVideoConversions;
+
+    /**
+     * @since 7.4
+     */
+    protected Configuration configuration = DEFAULT_CONFIGURATION;
 
     @Override
     public void activate(ComponentContext context) {
@@ -91,19 +103,31 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
 
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
-            videoConversions.addContribution((VideoConversion) contribution);
-        } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
-            automaticVideoConversions.addContribution((AutomaticVideoConversion) contribution);
+        switch (extensionPoint) {
+            case VIDEO_CONVERSIONS_EP:
+                videoConversions.addContribution((VideoConversion) contribution);
+                break;
+            case DEFAULT_VIDEO_CONVERSIONS_EP:
+                automaticVideoConversions.addContribution((AutomaticVideoConversion) contribution);
+                break;
+            case CONFIGURATION_EP:
+                configuration = (Configuration) contribution;
+                break;
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
-        if (VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
-            videoConversions.removeContribution((VideoConversion) contribution);
-        } else if (DEFAULT_VIDEO_CONVERSIONS_EP.equals(extensionPoint)) {
-            automaticVideoConversions.removeContribution((AutomaticVideoConversion) contribution);
+        switch (extensionPoint) {
+            case VIDEO_CONVERSIONS_EP:
+                videoConversions.removeContribution((VideoConversion) contribution);
+                break;
+            case DEFAULT_VIDEO_CONVERSIONS_EP:
+                automaticVideoConversions.removeContribution((AutomaticVideoConversion) contribution);
+                break;
+            case CONFIGURATION_EP:
+                configuration = DEFAULT_CONFIGURATION;
+                break;
         }
     }
 
@@ -179,5 +203,10 @@ public class VideoServiceImpl extends DefaultComponent implements VideoService {
     @Override
     public VideoConversion getVideoConversion(String conversionName) {
         return videoConversions.registry.get(conversionName);
+    }
+
+    @Override
+    public Configuration getConfiguration() {
+        return configuration;
     }
 }
