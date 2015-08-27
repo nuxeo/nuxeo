@@ -5,10 +5,10 @@
     point="mapper">
 
     <mapper name="saml" type="js">
-      <script>
+      <mapperScript>
           searchAttributes.put("username", userObject.getNameID().getValue());
           userAttributes.put("email", userObject.getNameID().getValue());
-      </script>
+      </mapperScript>
     </mapper>
 
   </extension>

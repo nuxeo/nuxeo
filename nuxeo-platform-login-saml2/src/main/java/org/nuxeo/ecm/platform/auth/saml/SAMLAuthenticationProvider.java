@@ -177,10 +177,10 @@ public class SAMLAuthenticationProvider implements NuxeoAuthenticationPlugin, Lo
         }
         try {
             userResolver = userResolverClass.newInstance();
+            userResolver.init(parameters);
         } catch (InstantiationException | IllegalAccessException e) {
             log.error("Failed to initialize user resolver " + userResolverClassname);
         }
-
 
         // Initialize the OpenSAML library
         try {

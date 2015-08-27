@@ -24,7 +24,7 @@ public class UserMapperBasedResolver implements UserResolver {
 
     @Override
     public String findOrCreateNuxeoUser(SAMLCredential userInfo) {
-        NuxeoPrincipal principal = Framework.getService(UserMapperService.class).getCreateOrUpdateNuxeoPrincipal(
+        NuxeoPrincipal principal = Framework.getService(UserMapperService.class).getOrCreateAndUpdateNuxeoPrincipal(
                 mapperName, userInfo);
 
         if (principal != null) {
