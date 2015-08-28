@@ -19,7 +19,10 @@
 package org.nuxeo.ecm.platform.scanimporter.processor;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -87,7 +90,13 @@ public class ScannedFileImporter {
                 if (outDir == null) {
                     file.delete();
                 } else {
-                    file.renameTo(new File(outDir, file.getName()));
+                    Path source = file.toPath();
+                    Path target = outDir.toPath().resolve(file.getName());
+                    try {
+                        Files.move(source, target);
+                    } catch (IOException e) {
+                        log.error("An exception occured while moving " + source.getFileName(), e);
+                    }
                 }
             }
         }
