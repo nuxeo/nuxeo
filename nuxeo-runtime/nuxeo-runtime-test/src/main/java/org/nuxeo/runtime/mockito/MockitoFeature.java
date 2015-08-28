@@ -53,7 +53,8 @@ public class MockitoFeature extends SimpleFeature {
 
     protected void cleanupThread() throws NoSuchFieldException, SecurityException, IllegalArgumentException,
             IllegalAccessException {
-        Field f = GlobalConfiguration.class.getDeclaredField("globalConfiguration");
+
+        Field f = GlobalConfiguration.class.getDeclaredField("GLOBAL_CONFIGURATION");
         f.setAccessible(true);
         ThreadLocal<IMockitoConfiguration> holder = (ThreadLocal<IMockitoConfiguration>) f.get(null);
         holder.remove();
