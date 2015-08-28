@@ -250,4 +250,9 @@ public interface DocumentRoutingConstants {
      * @since 7.2
      */
     public static final String GLOBAL_VAR_SCHEMA_PREFIX = "var_global_";
+
+    /**
+     * @since 7.4
+     */
+    public static final String CAN_DATA_VISU = "DataVisualization";
 }
