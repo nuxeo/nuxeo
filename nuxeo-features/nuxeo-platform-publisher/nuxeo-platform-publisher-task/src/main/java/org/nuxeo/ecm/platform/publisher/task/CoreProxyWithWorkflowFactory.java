@@ -78,8 +78,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     protected LookupState lookupState = new LookupStateByACL();
 
     @Override
-    public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters)
-            {
+    public void init(CoreSession coreSession, ValidatorsRule validatorsRule, Map<String, String> parameters) {
         super.init(coreSession, validatorsRule, parameters);
         // setup lookup state strategy if requested
         String lookupState = parameters.get(LOOKUP_STATE_PARAM_KEY);
@@ -101,8 +100,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     @Override
-    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode, Map<String, String> params)
-            {
+    public PublishedDocument publishDocument(DocumentModel doc, PublicationNode targetNode,
+            Map<String, String> params) {
         DocumentModel targetDocModel;
         if (targetNode instanceof CoreFolderPublicationNode) {
             CoreFolderPublicationNode coreNode = (CoreFolderPublicationNode) targetNode;
@@ -117,8 +116,7 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         return runner.getPublishedDocument();
     }
 
-    protected boolean isPublishedDocWaitingForPublication(DocumentModel doc, CoreSession session)
-            {
+    protected boolean isPublishedDocWaitingForPublication(DocumentModel doc, CoreSession session) {
         return !lookupState.isPublished(doc, session);
     }
 
@@ -160,21 +158,26 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
     }
 
     protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) {
-        DocumentModel sourceVersion = coreSession.getSourceDocument(newProxy.getRef());
-        DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
-        DocumentModelList brothers = coreSession.getProxies(dm.getRef(), newProxy.getParentRef());
-        if (brothers != null && brothers.size() > 1) {
-            // we remove the brothers of the published document if any
-            // the use case is:
-            // v1 is published, v2 is waiting for publication and was just
-            // validated
-            // v1 is removed and v2 is now being published
-            for (DocumentModel doc : brothers) {
-                if (!doc.getId().equals(newProxy.getId())) {
-                    coreSession.removeDocument(doc.getRef());
+        new UnrestrictedSessionRunner(coreSession) {
+            @Override
+            public void run() {
+                DocumentModel sourceVersion = session.getSourceDocument(newProxy.getRef());
+                DocumentModel dm = session.getSourceDocument(sourceVersion.getRef());
+                DocumentModelList brothers = session.getProxies(dm.getRef(), newProxy.getParentRef());
+                if (brothers != null && brothers.size() > 1) {
+                    // we remove the brothers of the published document if any
+                    // the use case is:
+                    // v1 is published, v2 is waiting for publication and was just
+                    // validated
+                    // v1 is removed and v2 is now being published
+                    for (DocumentModel doc : brothers) {
+                        if (!doc.getId().equals(newProxy.getId())) {
+                            session.removeDocument(doc.getRef());
+                        }
+                    }
                 }
             }
-        }
+        }.runUnrestricted();
     }
 
     @Override
@@ -241,7 +244,8 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
 
     @Override
     public PublishedDocument wrapDocumentModel(DocumentModel doc) {
-        final SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.wrapDocumentModel(doc);
+        final SimpleCorePublishedDocument publishedDocument = (SimpleCorePublishedDocument) super.wrapDocumentModel(
+                doc);
 
         new UnrestrictedSessionRunner(coreSession) {
             @Override

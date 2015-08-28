@@ -134,7 +134,6 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         ACL existingACL = acp.getOrCreateACL();
         existingACL.clear();
         existingACL.add(new ACE("myuser1", SecurityConstants.READ, true));
-        existingACL.add(new ACE("myuser2", SecurityConstants.READ, true));
         existingACL.add(new ACE("myuser3", SecurityConstants.READ, true));
         existingACL.add(new ACE("myuser4", SecurityConstants.READ, true));
         acp.addACL(existingACL);
@@ -156,7 +155,6 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         existingACL = acp.getOrCreateACL();
         existingACL.clear();
         existingACL.add(new ACE("myuser1", SecurityConstants.READ_WRITE, true));
-        existingACL.add(new ACE("myuser2", SecurityConstants.EVERYTHING, true));
         acp.addACL(existingACL);
         session.setACP(ws1.getRef(), acp, true);
 
@@ -228,13 +226,14 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
-        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
         assertEquals(1, publishedDocuments.size());
 
         publishedDocument = publishedDocuments.get(0);
         assertTrue(publishedDocument.isPending());
 
+        // myuser2 must be able to validate without having Read permission on the live document 'doc2publish'
         treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
         assertFalse(publishedDocument.isPending());
 
@@ -271,8 +270,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         // myuser2 can see it, it's the validator
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
-        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
         assertEquals(1, publishedDocuments.size());
 
         publishedDocument = publishedDocuments.get(0);
@@ -388,8 +387,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         // my user 2 publish the document
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
-        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
         assertEquals(1, publishedDocuments.size());
 
         publishedDocument = publishedDocuments.get(0);
@@ -456,8 +455,8 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         // my user 2 publish the document
         changeUser("myuser2");
         PublicationTree treeUser2 = publisherService.getPublicationTree(defaultTreeName, session, factoryParams);
-        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(new DocumentLocationImpl(
-                doc2Publish));
+        List<PublishedDocument> publishedDocuments = treeUser2.getExistingPublishedDocument(
+                new DocumentLocationImpl(doc2Publish));
         assertEquals(1, publishedDocuments.size());
 
         publishedDocument = publishedDocuments.get(0);
