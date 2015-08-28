@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -429,7 +430,7 @@ public class MultiDirectorySession extends BaseSession {
                     log.error("Cannot get readonly value from directory "
                             + dirInfo.dirName, ce);
                 }
-                if (entry != null && entry.getId() == null) {
+                if (entry != null && StringUtils.isNotBlank(entry.getId())) {
                     entryId = entry.getId();
                 }
                 for (Entry<String, String> e : dirInfo.toSource.entrySet()) {
