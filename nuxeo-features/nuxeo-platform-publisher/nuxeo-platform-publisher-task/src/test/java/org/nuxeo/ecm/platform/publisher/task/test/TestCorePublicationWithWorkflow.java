@@ -135,7 +135,6 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         ACL existingACL = acp.getOrCreateACL();
         existingACL.clear();
         existingACL.add(new ACE("myuser1", SecurityConstants.READ, true));
-        existingACL.add(new ACE("myuser2", SecurityConstants.READ, true));
         existingACL.add(new ACE("myuser3", SecurityConstants.READ, true));
         existingACL.add(new ACE("myuser4", SecurityConstants.READ, true));
         acp.addACL(existingACL);
@@ -157,7 +156,6 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         existingACL = acp.getOrCreateACL();
         existingACL.clear();
         existingACL.add(new ACE("myuser1", SecurityConstants.READ_WRITE, true));
-        existingACL.add(new ACE("myuser2", SecurityConstants.EVERYTHING, true));
         acp.addACL(existingACL);
         session.setACP(ws1.getRef(), acp, true);
 
@@ -236,6 +234,7 @@ public abstract class TestCorePublicationWithWorkflow extends SQLRepositoryTestC
         publishedDocument = publishedDocuments.get(0);
         assertTrue(publishedDocument.isPending());
 
+        // myuser2 must be able to validate without having Read permission on the live document 'doc2publish'
         treeUser2.validatorPublishDocument(publishedDocument, "Approved!");
         assertFalse(publishedDocument.isPending());
 

@@ -176,27 +176,27 @@ public class CoreProxyWithWorkflowFactory extends CoreProxyFactory implements Pu
         return Framework.getLocalService(TaskService.class);
     }
 
-    protected void removeExistingProxiesOnPreviousVersions(DocumentModel newProxy) throws PublishingException {
-        try {
-
-            DocumentModel sourceVersion = coreSession.getSourceDocument(newProxy.getRef());
-            DocumentModel dm = coreSession.getSourceDocument(sourceVersion.getRef());
-            DocumentModelList brothers = coreSession.getProxies(dm.getRef(), newProxy.getParentRef());
-            if (brothers != null && brothers.size() > 1) {
-                // we remove the brothers of the published document if any
-                // the use case is:
-                // v1 is published, v2 is waiting for publication and was just
-                // validated
-                // v1 is removed and v2 is now being published
-                for (DocumentModel doc : brothers) {
-                    if (!doc.getId().equals(newProxy.getId())) {
-                        coreSession.removeDocument(doc.getRef());
+    protected void removeExistingProxiesOnPreviousVersions(final DocumentModel newProxy) throws PublishingException {
+        new UnrestrictedSessionRunner(coreSession) {
+            @Override
+            public void run() {
+                DocumentModel sourceVersion = session.getSourceDocument(newProxy.getRef());
+                DocumentModel dm = session.getSourceDocument(sourceVersion.getRef());
+                DocumentModelList brothers = session.getProxies(dm.getRef(), newProxy.getParentRef());
+                if (brothers != null && brothers.size() > 1) {
+                    // we remove the brothers of the published document if any
+                    // the use case is:
+                    // v1 is published, v2 is waiting for publication and was just
+                    // validated
+                    // v1 is removed and v2 is now being published
+                    for (DocumentModel doc : brothers) {
+                        if (!doc.getId().equals(newProxy.getId())) {
+                            session.removeDocument(doc.getRef());
+                        }
                     }
                 }
             }
-        } catch (ClientException e1) {
-            throw new PublishingException(e1.getMessage(), e1);
-        }
+        }.runUnrestricted();
     }
 
     @Override
