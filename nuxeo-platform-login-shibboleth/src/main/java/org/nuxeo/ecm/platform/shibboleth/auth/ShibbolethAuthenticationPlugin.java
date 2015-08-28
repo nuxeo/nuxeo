@@ -112,13 +112,13 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
         UserManager userManager = Framework.getService(UserManager.class);
         Map<String, Object> fieldMap = getService().getUserMetadata(userManager.getUserIdField(), httpRequest);
 
-        if (externalMapper!=null) {
+        if (externalMapper != null) {
             Map<String, Object> nativeObject = new HashMap<String, Object>();
             nativeObject.putAll(fieldMap);
             nativeObject.put("userId", userId);
             externalMapper.getOrCreateAndUpdateNuxeoPrincipal(nativeObject);
         } else {
-            try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())){
+            try (Session userDir = Framework.getService(DirectoryService.class).open(userManager.getUserDirectoryName())) {
                 DocumentModel entry = userDir.getEntry(userId);
                 if (entry == null) {
                     userDir.createEntry(fieldMap);
@@ -144,7 +144,7 @@ public class ShibbolethAuthenticationPlugin implements NuxeoAuthenticationPlugin
 
         if (!StringUtils.isEmpty(mapperName)) {
             UserMapperService ums = Framework.getService(UserMapperService.class);
-            if (ums!=null) {
+            if (ums != null) {
                 if (ums.getAvailableMappings().contains(mapperName)) {
                     externalMapper = ums.getMapper(mapperName);
                 }
