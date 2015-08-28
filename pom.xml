@@ -76,7 +76,6 @@
     <module>nuxeo-business-days-management</module>
     <module>nuxeo-core-binarymanager-sql</module>
     <module>nuxeo-http-client</module>
-    <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-document-routing</module>
     <module>nuxeo-platform-error-web</module>
     <module>nuxeo-platform-forms-layout-demo</module>
@@ -87,6 +86,7 @@
     <module>nuxeo-shell</module>
     <module>nuxeo-filesystem-connectors</module>
     <module>nuxeo-user-center</module>
+    <module>nuxeo-platform-login</module>
     <module>nuxeo-platform-shibboleth-groups-web</module>
     <module>nuxeo-apidoc-server</module>
     <module>nuxeo-birt</module>
