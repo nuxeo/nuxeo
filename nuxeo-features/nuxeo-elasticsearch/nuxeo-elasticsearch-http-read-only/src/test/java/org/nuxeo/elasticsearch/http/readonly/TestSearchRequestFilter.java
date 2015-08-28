@@ -5,9 +5,20 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.local.LocalSession;
+import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
+import org.nuxeo.elasticsearch.test.RepositoryElasticSearchFeature;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+@RunWith(FeaturesRunner.class)
+@Features({ RepositoryElasticSearchFeature.class })
+@LocalDeploy("org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml")
 public class TestSearchRequestFilter {
 
     private static final String INDICES = "nxutest";
@@ -17,7 +28,8 @@ public class TestSearchRequestFilter {
     @Test
     public void testMatchAll() throws Exception {
         String payload = "{\"query\": {\"match_all\": {}}}";
-        SearchRequestFilter filter = new SearchRequestFilter(getNonAdminPrincipal(), INDICES, TYPES, "pretty", payload);
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        filter.init(getNonAdminCoreSession(), INDICES, TYPES, "pretty", payload);
         Assert.assertEquals("/nxutest/doc/_search?pretty", filter.getUrl());
         Assert.assertEquals(
                 "{\"query\":{\"filtered\":{\"filter\":{\"terms\":{\"ecm:acl\":[\"group1\",\"group2\",\"members\",\"jdoe\",\"Everyone\"]}},\"query\":{\"match_all\":{}}}}}",
@@ -27,14 +39,16 @@ public class TestSearchRequestFilter {
     @Test
     public void testMatchAllAsAdmin() throws Exception {
         String payload = "{\"query\": {\"match_all\": {}}}";
-        SearchRequestFilter filter = new SearchRequestFilter(getAdminPrincipal(), INDICES, TYPES, "pretty", payload);
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        filter.init(getAdminCoreSession(), INDICES, TYPES, "pretty", payload);
         Assert.assertEquals("/nxutest/doc/_search?pretty", filter.getUrl());
         Assert.assertEquals(payload, filter.getPayload());
     }
 
     @Test
     public void testUriSearch() throws Exception {
-        SearchRequestFilter filter = new SearchRequestFilter(getNonAdminPrincipal(), INDICES, TYPES,
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        filter.init(getNonAdminCoreSession(), INDICES, TYPES,
                 "size=2&q=dc%5C%3Atitle:Workspaces", null);
         Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?size=2");
         Assert.assertEquals(
@@ -44,7 +58,8 @@ public class TestSearchRequestFilter {
 
     @Test
     public void testUriSearchWithDefaultFieldAndOperator() throws Exception {
-        SearchRequestFilter filter = new SearchRequestFilter(getNonAdminPrincipal(), INDICES, TYPES,
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        filter.init(getNonAdminCoreSession(), INDICES, TYPES,
                 "q=dc\\:title:Workspaces&pretty&df=dc:title&default_operator=AND", null);
         Assert.assertEquals(filter.getUrl(), "/nxutest/doc/_search?pretty");
         Assert.assertEquals(
@@ -54,13 +69,38 @@ public class TestSearchRequestFilter {
 
     @Test
     public void testUriSearchAsAdmin() throws Exception {
-        SearchRequestFilter filter = new SearchRequestFilter(getAdminPrincipal(), INDICES, TYPES,
+        DefaultSearchRequestFilter filter = new DefaultSearchRequestFilter();
+        filter.init(getAdminCoreSession(), INDICES, TYPES,
                 "size=2&q=dc\\:title:Workspaces", null);
         Assert.assertEquals("/nxutest/doc/_search?size=2&q=dc\\:title:Workspaces", filter.getUrl());
         Assert.assertEquals(null, filter.getPayload());
     }
 
-    private NuxeoPrincipal getAdminPrincipal() {
+    /**
+     * @since 7.4
+     */
+    public static CoreSession getAdminCoreSession() {
+        return new LocalSession() {
+            @Override
+            public NuxeoPrincipal getPrincipal() {
+                return getAdminPrincipal();
+            }
+        };
+    }
+
+    /**
+     * @since 7.4
+     */
+    public static CoreSession getNonAdminCoreSession() {
+        return new LocalSession() {
+            @Override
+            public NuxeoPrincipal getPrincipal() {
+                return getNonAdminPrincipal();
+            }
+        };
+    }
+
+    public static NuxeoPrincipal getAdminPrincipal() {
         return new NuxeoPrincipal() {
             @Override
             public String getFirstName() {
@@ -204,7 +244,7 @@ public class TestSearchRequestFilter {
         };
     }
 
-    static NuxeoPrincipal getNonAdminPrincipal() {
+    public static NuxeoPrincipal getNonAdminPrincipal() {
         return new NuxeoPrincipal() {
             @Override
             public String getFirstName() {

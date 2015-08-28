@@ -1,4 +1,4 @@
-package org.nuxeo.elasticsearch.http.readonly;/*
+package org.nuxeo.elasticsearch.http.readonly.filter;/*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials

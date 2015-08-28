@@ -38,7 +38,10 @@ import org.json.JSONException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.elasticsearch.audit.ESAuditBackend;
+import org.nuxeo.elasticsearch.http.readonly.filter.RequestValidator;
+import org.nuxeo.elasticsearch.http.readonly.filter.SearchRequestFilter;
+import org.nuxeo.elasticsearch.http.readonly.service.RequestFilterService;
+import org.nuxeo.elasticsearch.http.readonly.filter.DefaultSearchRequestFilter;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -53,13 +56,11 @@ public class Main extends ModuleRoot {
     private static final String DEFAULT_ES_BASE_URL = "http://localhost:9200/";
     private static final java.lang.String ES_BASE_URL_PROPERTY = "elasticsearch.httpReadOnly.baseUrl";
     private String esBaseUrl;
-    private final RequestValidator validator;
 
     public Main() {
         super();
         if (getContext() == null) {
         }
-        validator = new RequestValidator();
         if (log.isDebugEnabled()) {
             log.debug("New instance of ES module");
         }
@@ -81,45 +82,6 @@ public class Main extends ModuleRoot {
     @Produces(MediaType.APPLICATION_JSON)
     public String searchWithPost(@Context UriInfo uriInf, String payload) throws IOException, JSONException {
         return doSearchWithPayload("_all", "_all", uriInf.getRequestUri().getRawQuery(), payload);
-    }
-
-
-    /**
-     * @since 7.4
-     */
-    @GET
-    @Path(ESAuditBackend.IDX_NAME + "/_search")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String searchAuditWithPayload(@Context UriInfo uriInf, MultivaluedMap<String, String> formParams)
-            throws IOException, JSONException {
-        if (!getPrincipal().isAdministrator()) {
-            throw new IllegalArgumentException("Invalid index submitted: " + ESAuditBackend.IDX_NAME);
-        }
-        NuxeoPrincipal principal = getPrincipal();
-        SearchRequestFilter req = new SearchRequestFilter(principal, ESAuditBackend.IDX_NAME, ESAuditBackend.IDX_TYPE,
-                uriInf.getRequestUri().getRawQuery(), formParams.keySet().iterator().next());
-        log.warn(req);
-        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
-    }
-
-    /**
-     * @since 7.4
-     */
-    @POST
-    @Path(ESAuditBackend.IDX_NAME + "/_search")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public String searchAuditWithPost(@Context UriInfo uriInf, String payload)
-            throws IOException, JSONException {
-        if (!getPrincipal().isAdministrator()) {
-            throw new IllegalArgumentException("Invalid index submitted: " + ESAuditBackend.IDX_NAME);
-        }
-        NuxeoPrincipal principal = getPrincipal();
-        SearchRequestFilter req = new SearchRequestFilter(principal, ESAuditBackend.IDX_NAME, ESAuditBackend.IDX_TYPE,
-                uriInf.getRequestUri().getRawQuery(), payload);
-        log.warn(req);
-        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
     }
 
     @GET
@@ -162,12 +124,19 @@ public class Main extends ModuleRoot {
 
     protected String doSearchWithPayload(String indices, String types, String rawQuery, String payload)
             throws IOException, JSONException {
-        NuxeoPrincipal principal = getPrincipal();
-        indices = validator.getIndices(indices);
-        types = validator.getTypes(indices, types);
-        SearchRequestFilter req = new SearchRequestFilter(principal, indices, types, rawQuery, payload);
-        log.warn(req);
-        return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
+        RequestFilterService requestFilterService = Framework.getService(RequestFilterService.class);
+        try {
+            SearchRequestFilter req = requestFilterService.getRequestFilters(indices);
+            if (req == null) {
+                req = new DefaultSearchRequestFilter();
+            }
+            req.init(getContext().getCoreSession(), indices, types, rawQuery, payload);
+            log.warn(req);
+            return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
+        } catch (InstantiationException | IllegalAccessException e) {
+            log.error("Error when trying to get Search Request Filter for indice " + indices, e);
+            return null;
+        }
     }
 
     @GET
@@ -175,10 +144,8 @@ public class Main extends ModuleRoot {
     @Produces(MediaType.APPLICATION_JSON)
     public String searchWithUri(@PathParam("indices") String indices, @PathParam("types") String types, @Context UriInfo uriInf)
             throws IOException, JSONException {
-        NuxeoPrincipal principal = getPrincipal();
-        indices = validator.getIndices(indices);
-        types = validator.getTypes(indices, types);
-        SearchRequestFilter req = new SearchRequestFilter(principal, indices, types,
+        DefaultSearchRequestFilter req = new DefaultSearchRequestFilter();
+        req.init(getContext().getCoreSession(), indices, types,
                 uriInf.getRequestUri().getRawQuery(), null);
         log.warn(req);
         return HttpClient.get(getElasticsearchBaseUrl() + req.getUrl(), req.getPayload());
@@ -190,6 +157,7 @@ public class Main extends ModuleRoot {
     public String getDocument(@PathParam("indices") String indices, @PathParam("types") String types,
             @PathParam("documentId") String documentId, @Context UriInfo uriInf) throws IOException, JSONException {
         NuxeoPrincipal principal = getPrincipal();
+        RequestValidator validator = new RequestValidator();
         indices = validator.getIndices(indices);
         types = validator.getTypes(indices, types);
         validator.checkValidDocumentId(documentId);

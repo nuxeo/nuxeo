@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.elasticsearch.http.readonly.RequestFilterService" version="1.0.0">
+   <documentation>
+    Service to declare and apply request filter on es request.
+  </documentation>
+
+  <implementation class="org.nuxeo.elasticsearch.http.readonly.service.RequestFilterService"/>
+
+  <service>
+    <provide interface="org.nuxeo.elasticsearch.http.readonly.service.RequestFilterService"/>
+  </service>
+
+  <extension-point name="filters">
+    <documentation>
+      This extension can be used to register new filters
+    </documentation>
+    <object class="org.nuxeo.elasticsearch.http.readonly.service.RequestFilterDescriptor"/>
+  </extension-point>
+
+</component>
