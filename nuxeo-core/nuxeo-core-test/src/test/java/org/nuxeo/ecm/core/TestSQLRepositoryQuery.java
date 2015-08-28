@@ -1465,8 +1465,13 @@ public class TestSQLRepositoryQuery {
         Date now = new Date();
         Calendar begin = new GregorianCalendar();
         begin.setTimeInMillis(now.toInstant().minus(5, ChronoUnit.DAYS).toEpochMilli());
+        // avoid DB rounding for timestamp on seconds / milliseconds
+        begin.set(Calendar.SECOND, 0);
+        begin.set(Calendar.MILLISECOND, 0);
         Calendar end = new GregorianCalendar();
         end.setTimeInMillis(now.toInstant().plus(5, ChronoUnit.DAYS).toEpochMilli());
+        end.set(Calendar.SECOND, 0);
+        end.set(Calendar.MILLISECOND, 0);
         acl.add(ACE.builder("leela", "Write").creator("Administrator").begin(begin).end(end).build());
         acl.add(ACE.BLOCK);
         acp.addACL(acl);
