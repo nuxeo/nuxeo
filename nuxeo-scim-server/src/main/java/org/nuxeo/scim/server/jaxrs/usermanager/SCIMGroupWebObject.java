@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * http://www.gnu.org/licenses/lgpl.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     dmetzler
+ *     Nuxeo - initial API and implementation
+ *
  */
+
 package org.nuxeo.scim.server.jaxrs.usermanager;
 
 import java.io.Serializable;
@@ -34,8 +36,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,8 +57,9 @@ import com.unboundid.scim.sdk.Resources;
  * Simple Resource class used to expose the SCIM API on Users endpoint
  *
  * @author tiry
- *
+ * @since 7.4
  */
+
 @WebObject(type = "groups")
 @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 public class SCIMGroupWebObject extends BaseUMObject {
@@ -80,10 +83,8 @@ public class SCIMGroupWebObject extends BaseUMObject {
     }
 
     @GET
-    @Produces({ MediaType.APPLICATION_JSON,
-            MediaType.APPLICATION_XML + "; qs=0.9" })
-    public Resources<GroupResource> getGroups(@Context
-    UriInfo uriInfo) {
+    @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML + "; qs=0.9" })
+    public Resources<GroupResource> getGroups(@Context UriInfo uriInfo) {
 
         Map<String, List<String>> params = uriInfo.getQueryParameters();
 
@@ -137,8 +138,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
             DocumentModelList groupModels = null;
             try {
                 dSession = ds.open(directoryName);
-                groupModels = dSession.query(filter, null, orderBy, true,
-                        count, startIndex - 1);
+                groupModels = dSession.query(filter, null, orderBy, true, count, startIndex - 1);
             } finally {
                 dSession.close();
             }
@@ -147,8 +147,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
             for (DocumentModel groupModel : groupModels) {
                 groupResources.add(mapper.getGroupResourceFromNuxeoGroup(groupModel));
             }
-            return new Resources<>(groupResources, groupResources.size(),
-                    startIndex);
+            return new Resources<>(groupResources, groupResources.size(), startIndex);
         } catch (Exception e) {
             log.error("Error while getting Groups", e);
         }
@@ -158,9 +157,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
     @Path("{uid}")
     @GET
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public GroupResource getGroupResource(@Context
-    UriInfo uriInfo, @PathParam("uid")
-    String uid) {
+    public GroupResource getGroupResource(@Context UriInfo uriInfo, @PathParam("uid") String uid) {
         return resolveGroupRessource(uid);
 
     }
@@ -168,27 +165,22 @@ public class SCIMGroupWebObject extends BaseUMObject {
     @Path("{uid}.xml")
     @GET
     @Produces(MediaType.APPLICATION_XML)
-    public GroupResource getGroupResourceAsXml(@Context
-    UriInfo uriInfo, @PathParam("uid")
-    String uid) {
+    public GroupResource getGroupResourceAsXml(@Context UriInfo uriInfo, @PathParam("uid") String uid) {
         return getGroupResource(uriInfo, uid);
     }
 
     @Path("{uid}.json")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public GroupResource getUserResourceAsJSON(@Context
-    UriInfo uriInfo, @PathParam("uid")
-    String uid) {
+    public GroupResource getUserResourceAsJSON(@Context UriInfo uriInfo, @PathParam("uid") String uid) {
         return getGroupResource(uriInfo, uid);
     }
 
     @POST
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public Response createGroup(@Context
-    UriInfo uriInfo, GroupResource group, @Context
-    final HttpServletResponse response) {
+    public Response createGroup(@Context UriInfo uriInfo, GroupResource group,
+            @Context final HttpServletResponse response) {
         try {
             checkUpdateGuardPreconditions();
             return doCreateGroup(group, fixeMediaType);
@@ -201,9 +193,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
     @Path("{uid}")
     @Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-    public Response updateGroup(@Context
-    UriInfo uriInfo, @PathParam("uid")
-    String uid, GroupResource user) {
+    public Response updateGroup(@Context UriInfo uriInfo, @PathParam("uid") String uid, GroupResource user) {
         try {
             checkUpdateGuardPreconditions();
             return doUpdateGroup(uid, user, fixeMediaType);
@@ -212,12 +202,10 @@ public class SCIMGroupWebObject extends BaseUMObject {
         }
     }
 
-    protected Response doUpdateGroup(String uid, GroupResource group,
-            MediaType mt) {
+    protected Response doUpdateGroup(String uid, GroupResource group, MediaType mt) {
 
         try {
-            DocumentModel groupModel = mapper.updateGroupModelFromGroupResource(
-                    uid, group);
+            DocumentModel groupModel = mapper.updateGroupModelFromGroupResource(uid, group);
             if (groupModel != null) {
                 GroupResource groupResource = mapper.getGroupResourceFromNuxeoGroup(groupModel);
                 return GroupResponse.updated(groupResource, mt);
@@ -242,9 +230,7 @@ public class SCIMGroupWebObject extends BaseUMObject {
 
     @Path("{uid}")
     @DELETE
-    public Response deleteGroupResource(@Context
-    UriInfo uriInfo, @PathParam("uid")
-    String uid) {
+    public Response deleteGroupResource(@Context UriInfo uriInfo, @PathParam("uid") String uid) {
         try {
             um.deleteGroup(uid);
             return Response.ok().build();

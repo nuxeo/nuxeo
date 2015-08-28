@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
+
 package org.nuxeo.scim.server.mapper;
 
 import java.io.Serializable;
@@ -15,6 +33,12 @@ import com.unboundid.scim.data.Meta;
 import com.unboundid.scim.data.UserResource;
 import com.unboundid.scim.schema.CoreSchema;
 
+/**
+ * Mapper implementation that uses the {@link UserMapperService}
+ *
+ * @author tiry
+ * @since 7.4
+ */
 public class ConfigurableUserMapper extends AbstractMapper {
 
     protected UserMapperService mapperService;
@@ -48,9 +72,10 @@ public class ConfigurableUserMapper extends AbstractMapper {
     @Override
     public DocumentModel createNuxeoUserFromUserResource(UserResource user) throws NuxeoException {
 
-        NuxeoPrincipal principal = mapperService.getOrCreateAndUpdateNuxeoPrincipal(MAPPING_NAME, user, true, true, null);
+        NuxeoPrincipal principal = mapperService.getOrCreateAndUpdateNuxeoPrincipal(MAPPING_NAME, user, true, true,
+                null);
 
-        if (principal!=null) {
+        if (principal != null) {
             return um.getUserModel(principal.getName());
         }
         return null;
@@ -60,9 +85,10 @@ public class ConfigurableUserMapper extends AbstractMapper {
     public DocumentModel updateNuxeoUserFromUserResource(String uid, UserResource user) throws NuxeoException {
 
         Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put("uid",uid);
-        NuxeoPrincipal principal = mapperService.getOrCreateAndUpdateNuxeoPrincipal(MAPPING_NAME, user, false, true, params);
-        if (principal!=null) {
+        params.put("uid", uid);
+        NuxeoPrincipal principal = mapperService.getOrCreateAndUpdateNuxeoPrincipal(MAPPING_NAME, user, false, true,
+                params);
+        if (principal != null) {
             return um.getUserModel(principal.getName());
         }
         return null;

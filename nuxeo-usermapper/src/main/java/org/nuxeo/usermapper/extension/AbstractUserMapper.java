@@ -40,6 +40,7 @@ import org.nuxeo.runtime.api.Framework;
  * Provide default implementation for interaction with the {@link UserManager}.
  *
  * @author tiry
+ * @since 7.4
  */
 public abstract class AbstractUserMapper implements UserMapper {
 
@@ -57,7 +58,8 @@ public abstract class AbstractUserMapper implements UserMapper {
     }
 
     @Override
-    public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update, Map<String, Serializable> params) {
+    public NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
+            Map<String, Serializable> params) {
 
         DocumentModel userModel = null;
 
@@ -65,7 +67,7 @@ public abstract class AbstractUserMapper implements UserMapper {
         Map<String, Serializable> userAttributes = new HashMap<String, Serializable>();
         final Map<String, Serializable> profileAttributes = new HashMap<String, Serializable>();
 
-        if (params!=null) {
+        if (params != null) {
             searchAttributes.putAll(params);
         }
 

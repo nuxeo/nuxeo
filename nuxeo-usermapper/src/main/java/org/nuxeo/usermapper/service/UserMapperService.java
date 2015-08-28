@@ -30,49 +30,44 @@ import org.nuxeo.usermapper.extension.UserMapper;
  * This service allows to map Nuxeo Users with users coming from external system like SSO or IDM.
  *
  * @author tiry
- *
+ * @since 7.4
  */
 public interface UserMapperService {
 
-
-
     /**
-     * Should retrieve (create if needed) and update the NuxeoPrincipal
-     * according to the given userObject
+     * Should retrieve (create if needed) and update the NuxeoPrincipal according to the given userObject
      *
      * @param mappingName the name of the contributed mapping to use
      * @param userObject the native userObject
-     *
      * @return the matching {@link NuxeoPrincipal}
      * @throws NuxeoException
      */
     NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject) throws NuxeoException;
 
     /**
-     * Should retrieve (create if needed) and update the NuxeoPrincipal
-     * according to the given userObject
+     * Should retrieve (create if needed) and update the NuxeoPrincipal according to the given userObject
      *
      * @param mappingName the name of the contributed mapping to use
      * @param userObject the native userObject
      * @param createIfNeeded flag to allow creation (default is true)
      * @param update flag to run update (default is true)
-     *
      * @return the matching {@link NuxeoPrincipal}
      * @throws NuxeoException
      */
-    NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject, boolean createIfNeeded, boolean update, Map<String, Serializable> params) throws NuxeoException;
+    NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(String mappingName, Object userObject, boolean createIfNeeded,
+            boolean update, Map<String, Serializable> params) throws NuxeoException;
 
     /**
-     * Wrap the {@link NuxeoPrincipal} as the userObject used in the external
-     * authentication system
-     *      *
+     * Wrap the {@link NuxeoPrincipal} as the userObject used in the external authentication system *
+     *
      * @param mappingName the name of the contributed mapping to use
      * @param principal the {@link NuxeoPrincipal} to wrap
      * @param nativePrincipal the principal Object in the target system (can be null)
      * @return
      * @throws NuxeoException
      */
-    Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params) throws NuxeoException;
+    Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal,
+            Map<String, Serializable> params) throws NuxeoException;
 
     /**
      * Gives access to the contributed Mapping names
@@ -83,6 +78,7 @@ public interface UserMapperService {
 
     /**
      * returns the named mapper is any
+     *
      * @param mappingName
      * @return
      */

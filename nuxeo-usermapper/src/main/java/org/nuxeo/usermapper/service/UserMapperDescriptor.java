@@ -34,6 +34,7 @@ import org.nuxeo.usermapper.extension.UserMapper;
  * XMap descriptor for contributing {@link UserMapper} plugins
  *
  * @author tiry
+ * @since 7.4
  */
 @XObject("mapper")
 public class UserMapperDescriptor implements Serializable {

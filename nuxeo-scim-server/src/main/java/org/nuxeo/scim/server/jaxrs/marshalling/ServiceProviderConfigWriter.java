@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
+
 package org.nuxeo.scim.server.jaxrs.marshalling;
 
 import java.io.IOException;
@@ -18,41 +36,44 @@ import com.unboundid.scim.marshal.json.JsonMarshaller;
 import com.unboundid.scim.marshal.xml.XmlMarshaller;
 import com.unboundid.scim.sdk.SCIMException;
 
+/**
+ * Handles marshaling for SCIM {@link ServiceProviderConfig}
+ *
+ * @author tiry
+ * @since 7.4
+ */
 @Provider
 @Produces({ "application/xml", "application/json" })
 public class ServiceProviderConfigWriter implements MessageBodyWriter<ServiceProviderConfig> {
 
     @Override
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
+    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return ServiceProviderConfig.class.isAssignableFrom(type);
     }
 
     @Override
-    public long getSize(ServiceProviderConfig t, Class<?> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType) {
+    public long getSize(ServiceProviderConfig t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType) {
         return -1;
     }
 
     @Override
-    public void writeTo(ServiceProviderConfig t, Class<?> type,
-            Type genericType, Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
+    public void writeTo(ServiceProviderConfig t, Class<?> type, Type genericType, Annotation[] annotations,
+            MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
+            throws IOException, WebApplicationException {
 
         try {
             Marshaller marshaller = null;
             if (mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE)) {
-                marshaller = new XmlMarshaller();                                
+                marshaller = new XmlMarshaller();
             } else {
                 marshaller = new JsonMarshaller();
             }
-            marshaller.marshal(t, entityStream);            
+            marshaller.marshal(t, entityStream);
         } catch (SCIMException e) {
-            throw new WebApplicationException(e);        
+            throw new WebApplicationException(e);
         }
-        
+
     }
 
 }

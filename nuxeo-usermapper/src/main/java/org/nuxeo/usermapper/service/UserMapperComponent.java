@@ -38,6 +38,7 @@ import org.nuxeo.usermapper.extension.UserMapper;
  * Component to manage extension point and expose the {@link UserMapperService} interface.
  *
  * @author tiry
+ * @since 7.4
  */
 public class UserMapperComponent extends DefaultComponent implements UserMapperService {
 
@@ -110,7 +111,8 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
     }
 
     @Override
-    public Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params) throws NuxeoException {
+    public Object wrapNuxeoPrincipal(String mappingName, NuxeoPrincipal principal, Object nativePrincipal,
+            Map<String, Serializable> params) throws NuxeoException {
         return getMapper(mappingName).wrapNuxeoPrincipal(principal, nativePrincipal, params);
     }
 
@@ -118,6 +120,5 @@ public class UserMapperComponent extends DefaultComponent implements UserMapperS
     public Set<String> getAvailableMappings() {
         return mappers.keySet();
     }
-
 
 }

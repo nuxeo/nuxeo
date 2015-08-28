@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl-2.1.html
+ * http://www.gnu.org/licenses/lgpl.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,8 +12,10 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     tdelprat
+ *     Nuxeo - initial API and implementation
+ *
  */
+
 package org.nuxeo.scim.server.tests;
 
 import java.util.Arrays;
@@ -30,9 +32,7 @@ import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * 
  * @author tiry
- *
  */
 public class ScimServerInit implements RepositoryInit {
 
@@ -41,18 +41,15 @@ public class ScimServerInit implements RepositoryInit {
      */
     private static final String POWER_USER_LOGIN = "user0";
 
-    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges",
-            "Bill" };
+    public static final String[] FIRSTNAMES = { "Steve", "John", "Georges", "Bill" };
 
-    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson",
-            "Gates" };
+    public static final String[] LASTNAMES = { "Jobs", "Lennon", "Harrisson", "Gates" };
 
-    public static final String[] GROUPNAMES = { "Stark", "Lannister",
-            "Targaryen", "Greyjoy" };
+    public static final String[] GROUPNAMES = { "Stark", "Lannister", "Targaryen", "Greyjoy" };
 
     @Override
     public void populate(CoreSession session) throws ClientException {
-   
+
         UserManager um = Framework.getLocalService(UserManager.class);
         // Create some users
         if (um != null) {
@@ -61,8 +58,8 @@ public class ScimServerInit implements RepositoryInit {
 
     }
 
-    private void createUsersAndGroups(UserManager um) throws ClientException,
-            UserAlreadyExistsException, GroupAlreadyExistsException {
+    private void createUsersAndGroups(UserManager um) throws ClientException, UserAlreadyExistsException,
+            GroupAlreadyExistsException {
         for (int idx = 0; idx < 4; idx++) {
             String userId = "user" + idx;
 
@@ -99,8 +96,8 @@ public class ScimServerInit implements RepositoryInit {
         um.updateUser(principal.getModel());
     }
 
-    private void createGroup(UserManager um, String groupId, String groupLabel)
-            throws ClientException, GroupAlreadyExistsException {
+    private void createGroup(UserManager um, String groupId, String groupLabel) throws ClientException,
+            GroupAlreadyExistsException {
         NuxeoGroup group = um.getGroup(groupId);
         if (group != null) {
             um.deleteGroup(groupId);

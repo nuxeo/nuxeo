@@ -18,6 +18,12 @@ import com.unboundid.scim.marshal.xml.XmlUnmarshaller;
 import com.unboundid.scim.schema.CoreSchema;
 import com.unboundid.scim.sdk.InvalidResourceException;
 
+/**
+ * Handles marshaling for SCIM {@link UserResource}
+ *
+ * @author tiry
+ * @since 7.4
+ */
 @Provider
 @Consumes({ "application/xml", "application/json" })
 public class UserResourceReader implements MessageBodyReader<UserResource> {
@@ -36,8 +42,8 @@ public class UserResourceReader implements MessageBodyReader<UserResource> {
 
         Unmarshaller unmarshaller = null;
         if (mediaType.isCompatible(MediaType.APPLICATION_XML_TYPE)) {
-            unmarshaller = new XmlUnmarshaller();                               
-        } else {            
+            unmarshaller = new XmlUnmarshaller();
+        } else {
             unmarshaller = new NXJsonUnmarshaller();
         }
          try {
@@ -45,7 +51,7 @@ public class UserResourceReader implements MessageBodyReader<UserResource> {
         } catch (InvalidResourceException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        }        
+        }
         return null;
     }
 

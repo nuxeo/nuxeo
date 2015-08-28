@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the GNU Lesser General Public License
+ * (LGPL) version 2.1 which accompanies this distribution, and is available at
+ * http://www.gnu.org/licenses/lgpl.html
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * Contributors:
+ *     Nuxeo - initial API and implementation
+ *
+ */
+
 package org.nuxeo.scim.server.tests;
 
 import java.net.URI;
@@ -46,7 +64,6 @@ import com.unboundid.scim.sdk.SCIMService;
 @Ignore("Unable to make it run reliability because of internal parser issues ...")
 public class ScimServerTest {
 
-
     @Inject
     CoreSession session;
 
@@ -55,8 +72,7 @@ public class ScimServerTest {
 
         final URI uri = URI.create("http://localhost:18090/scim/v1/");
 
-        final ClientConfig clientConfig =
-            createHttpBasicClientConfig("user0", "user0");
+        final ClientConfig clientConfig = createHttpBasicClientConfig("user0", "user0");
         final SCIMService scimService = new SCIMService(uri, clientConfig);
         scimService.setAcceptType(MediaType.APPLICATION_JSON_TYPE);
 
@@ -89,39 +105,31 @@ public class ScimServerTest {
 
     }
 
-    protected static ClientConfig createHttpBasicClientConfig(
-        final String userName, final String password) {
+    protected static ClientConfig createHttpBasicClientConfig(final String userName, final String password) {
 
-      final HttpParams params = new BasicHttpParams();
-      DefaultHttpClient.setDefaultHttpParams(params);
-      params.setBooleanParameter(CoreConnectionPNames.SO_REUSEADDR, true);
-      params.setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
-      params.setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK,
-                                 true);
+        final HttpParams params = new BasicHttpParams();
+        DefaultHttpClient.setDefaultHttpParams(params);
+        params.setBooleanParameter(CoreConnectionPNames.SO_REUSEADDR, true);
+        params.setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, true);
+        params.setBooleanParameter(CoreConnectionPNames.STALE_CONNECTION_CHECK, true);
 
-      final SchemeRegistry schemeRegistry = new SchemeRegistry();
-      schemeRegistry.register(new Scheme(
-              "http", 80, PlainSocketFactory.getSocketFactory()));
+        final SchemeRegistry schemeRegistry = new SchemeRegistry();
+        schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 
-      final PoolingClientConnectionManager mgr =
-              new PoolingClientConnectionManager(schemeRegistry);
-      mgr.setMaxTotal(200);
-      mgr.setDefaultMaxPerRoute(20);
+        final PoolingClientConnectionManager mgr = new PoolingClientConnectionManager(schemeRegistry);
+        mgr.setMaxTotal(200);
+        mgr.setDefaultMaxPerRoute(20);
 
-      final DefaultHttpClient httpClient = new DefaultHttpClient(mgr, params);
+        final DefaultHttpClient httpClient = new DefaultHttpClient(mgr, params);
 
-      final Credentials credentials =
-              new UsernamePasswordCredentials(userName, password);
-      httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY,
-                                                         credentials);
-      httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
+        final Credentials credentials = new UsernamePasswordCredentials(userName, password);
+        httpClient.getCredentialsProvider().setCredentials(AuthScope.ANY, credentials);
+        httpClient.addRequestInterceptor(new PreemptiveAuthInterceptor(), 0);
 
-      ClientConfig clientConfig = new ApacheHttpClientConfig(httpClient);
-      clientConfig.setBypassHostnameVerification(true);
+        ClientConfig clientConfig = new ApacheHttpClientConfig(httpClient);
+        clientConfig.setBypassHostnameVerification(true);
 
-      return clientConfig;
+        return clientConfig;
     }
-
-
 
 }

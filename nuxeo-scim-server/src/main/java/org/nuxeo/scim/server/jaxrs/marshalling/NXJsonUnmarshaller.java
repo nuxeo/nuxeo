@@ -21,15 +21,17 @@ import com.unboundid.scim.sdk.InvalidResourceException;
 
 /**
  * Copy of the original scimsdk class just to change some org.json constructors
- * 
+ *
  * scimsdk uses a custom version of org.json with a different artifactId and
  * some code differences but with the same namespace
- * 
+ *
  * @author tiry
- * 
+ * @since 7.4
+ *
  */
 public class NXJsonUnmarshaller extends JsonUnmarshaller {
 
+    @Override
     public <R extends BaseResource> R unmarshal(final InputStream inputStream,
             final ResourceDescriptor resourceDescriptor,
             final ResourceFactory<R> resourceFactory)

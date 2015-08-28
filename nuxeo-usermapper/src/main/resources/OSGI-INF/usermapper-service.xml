@@ -1,72 +1,198 @@
 <?xml version="1.0"?>
 
-<component name="org.nuxeo.usermapper.service.UserMapperComponent" version="1.0">
+<component name="org.nuxeo.usermapper.service.UserMapperComponent"
+	version="1.0">
 
-  <implementation class="org.nuxeo.usermapper.service.UserMapperComponent" />
+	<implementation class="org.nuxeo.usermapper.service.UserMapperComponent" />
 
-  <service>
-      <provide interface="org.nuxeo.usermapper.service.UserMapperService" />
-  </service>
+	<service>
+		<provide interface="org.nuxeo.usermapper.service.UserMapperService" />
+	</service>
 
-  <documentation>
-    This component expose a service to help mapping NuxeoPrincipal to userObject provided by an external system.
-    
-    The mapping itself is configurable using an extension point.
-    
-    Typical use cases include :
-    
-    <ul>
-      <li> SSO plugin that are able to do Just In Time provisionning </li>
-         <ul>
-            <li> SAML </li>
-            <li> Shibboleth </li>
-         </ul>
-      <li> User provisioning API (such as SCIM) </li>
-    </ul>  
-  </documentation>
+	<documentation>
+		This component expose a service to help mapping NuxeoPrincipal to
+		userObject provided by an external system.
+
+		The mapping itself is configurable using an extension point.
+
+		Typical use cases include :
+
+		<ul>
+			<li> SSO plugin that are able to do Just In Time provisionning </li>
+			<ul>
+				<li> SAML </li>
+				<li> Shibboleth </li>
+				<li> OpenId </li>
+				<li> Keyloack </li>
+			</ul>
+			<li> User provisioning API (such as SCIM) </li>
+		</ul>
+	</documentation>
 
 
-  <extension-point name="mapper">
-    <documentation>
-      Allow to contribute mapper classes that will be responsible for handling the mapping between the NuxeoPrincipal and the userObject as seen in the external system.
-      
-      Here is an example to contribute a custom class : 
-      <code>
-      
-          <mapper name="javaDummy" 
-                  class="org.nuxeo.usermapper.test.dummy.DummyUserMapper">
-             <parameters>
-                <param name="param1">value1</param>
-             </parameters>
-          </mapper>
-      
-      </code>
-      
-      The contributed class has to implement the UserMapper interface.
-      
-      You can also contribute the implementation via a groovy script, in this case, simply omit the class attribute and add a script tag:
-       
-      <code>
-      
-		    <mapper name="groovyDummy">
-		      <script>
-		          attributes.put("username", userObject.login);
-		          attributes.put("firstName", userObject.name.firstName);
-		          attributes.put("lastName", userObject.name.lastName);
-		      </script>
-		    </mapper>
-      
-      </code>
+	<extension-point name="mapper">
+		<documentation>
+			Allow to contribute mapper classes that will be responsible for
+			handling the mapping in 2 directions :
 
-      In the script : 
-      <ul>
-        <li> userObject : represent the object passed to the  <pre>getCreateOrUpdateNuxeoPrincipal</pre> method </li>
-        <li> attributes : is the Map&lt;String,String&gt; that will be used to search and create/update the NuxeoPrincipal</li>
-      </ul>      
-    </documentation>
-    
-    <object
-      class="org.nuxeo.usermapper.service.UserMapperDescriptor" />
-  </extension-point>
+			<ul>
+				<li> find and update NuxeoPrincipal given a userObject coming from
+					the external system</li>
+				<li> create an external userObject from a NuxeoPrincipal</li>
+			</ul>
+
+			Here is an example to contribute a custom class :
+			<code>
+
+				<mapper name="javaDummy"
+					class="org.nuxeo.usermapper.test.dummy.DummyUserMapper">
+					<parameters>
+						<param name="param1">value1</param>
+					</parameters>
+				</mapper>
+
+			</code>
+
+			The contributed class has to implement the UserMapper interface.
+
+			You can also contribute the implementation via a Groovy or JavaScript.
+
+			In this case, simply omit the class attribute and add a script tag:
+
+			<code>
+
+				<mapper name="scim" type="groovy">
+					<mapperScript>
+		          <![CDATA[
+				  import org.nuxeo.ecm.platform.usermanager.UserManager;
+				  import org.nuxeo.runtime.api.Framework;		
+				
+		          UserManager um = Framework.getLocalService(UserManager.class);
+		          
+		          String userId = userObject.getId();
+		          if (userId == null || userId.isEmpty()) {
+		            userId = userObject.getUserName();
+		          }
+		          
+		          searchAttributes.put(um.getUserIdField(), userId);
+		          
+		          if (searchAttributes.containsKey("uid")) {
+		             userAttributes.put(um.getUserIdField(), searchAttributes.get("uid"));
+		          }          
+		          
+		          if (userObject.getEmails() != null && userObject.getEmails().size() > 0) {
+		            userAttributes.put("email",userObject.getEmails().iterator().next().getValue());
+		          }
+		          String displayName = userObject.getDisplayName();
+		          if (displayName!=null && !displayName.isEmpty()) {
+		            int idx = displayName.indexOf(" ");
+		            if (idx>0) {
+		                userAttributes.put("firstName", displayName.substring(0, idx).trim());
+		                userAttributes.put("lastName", displayName.substring(idx+1).trim());
+		            } else {
+		                userAttributes.put("firstName", displayName);
+		                userAttributes.put("lastName", "");
+		            }
+		        }
+		        ]]>
+	            </mapperScript>
+
+				<wrapperScript>
+			        <![CDATA[   
+					import org.nuxeo.ecm.core.api.DocumentModel;
+					import org.nuxeo.ecm.core.api.NuxeoException;
+					import org.nuxeo.ecm.platform.usermanager.UserManager;
+					import org.nuxeo.runtime.api.Framework;
+					
+					import com.unboundid.scim.data.Entry;
+					import com.unboundid.scim.data.GroupResource;
+					import com.unboundid.scim.data.Meta;
+					import com.unboundid.scim.data.Name;
+					import com.unboundid.scim.data.UserResource;
+					import com.unboundid.scim.schema.CoreSchema;
+					import com.unboundid.scim.sdk.SCIMConstants;
+			            
+			        UserManager um = Framework.getLocalService(UserManager.class);
+			        DocumentModel userModel = nuxeoPrincipal.getModel();
+			        String userId = (String) userModel.getProperty(um.getUserSchemaName(),
+			                um.getUserIdField());
+			                          
+			        String fname = (String) userModel.getProperty(um.getUserSchemaName(),
+			                "firstName");
+			        String lname = (String) userModel.getProperty(um.getUserSchemaName(),
+			                "lastName");
+			        String email = (String) userModel.getProperty(um.getUserSchemaName(),
+			                "email");
+			        String company = (String) userModel.getProperty(um.getUserSchemaName(),
+			                "company");
+			
+			        String displayName = fname + " " + lname;
+			        displayName = displayName.trim();
+			        userObject.setDisplayName(displayName);
+			        Collection<Entry<String>> emails = new ArrayList<>();
+			        if (email!=null) {
+			            emails.add(new Entry<String>(email, "string"));
+			            userObject.setEmails(emails);
+			        }
+			
+			        Name fullName = new Name(displayName, lname, "", fname, "", "");
+			        userObject.setSingularAttributeValue(SCIMConstants.SCHEMA_URI_CORE,
+			                "name", Name.NAME_RESOLVER, fullName);
+			       
+			        // manage groups
+			        List<String> groupIds = um.getPrincipal(userId).getAllGroups();
+			        Collection<Entry<String>> groups = new ArrayList<>();
+			        for (String groupId : groupIds) {
+			            groups.add(new Entry<String>(groupId, "string"));
+			        }
+			        userObject.setGroups(groups);
+			
+			        userObject.setActive(true);
+			     	]]>
+				</wrapperScript>
+		</mapper>
+
+
+		 <mapper name="jsDummy" type="js">
+		      <mapperScript>
+		          searchAttributes.put("username", userObject.login);
+		          userAttributes.put("firstName", userObject.name.firstName);
+		          userAttributes.put("lastName", userObject.name.lastName);
+		          profileAttributes.put("userprofile:phonenumber", "555.666.7777");
+		      </mapperScript>
+	     </mapper>
+
+	  </code>
+
+			In the script context for mapping userObject to NuxeoPrincipal :
+			<ul>
+				<li>
+					userObject : represent the object passed to the
+					<pre>getCreateOrUpdateNuxeoPrincipal</pre>
+					method
+				</li>
+				<li> searchAttributes : is the Map&lt;String,String&gt; that will be used
+					to search the NuxeoPrincipal</li>
+				<li> userAttributes : is the Map&lt;String,String&gt; that will be used
+					to create/updaate the NuxeoPrincipal</li>
+				<li> profileAttribute : is the Map&lt;String,String&gt; that will be used
+					to update the user's profile</li>
+
+			</ul>
+
+
+			In the script context for wrapping a NuxeoPrincipal into a userObject :
+			<ul>
+				<li>
+					userObject : represent the userObject as initialized by the caller code 
+				</li>
+				<li> nuxeoPrincipal : is the principal to wrap</li>
+				<li> params : is the Map&lt;String,Serializable&gt; passed by the caller</li>
+			</ul>
+
+		</documentation>
+
+		<object class="org.nuxeo.usermapper.service.UserMapperDescriptor" />
+	</extension-point>
 
 </component>

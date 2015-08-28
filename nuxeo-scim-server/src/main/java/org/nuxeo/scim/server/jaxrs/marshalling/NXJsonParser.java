@@ -10,6 +10,12 @@ import com.unboundid.scim.marshal.json.JsonParser;
 import com.unboundid.scim.schema.ResourceDescriptor;
 import com.unboundid.scim.sdk.InvalidResourceException;
 
+/**
+ * Hack to make a method public !
+ *
+ * @author tiry
+ * @since 7.4
+ */
 public class NXJsonParser extends JsonParser {
 
     public <R extends BaseResource> R doUnmarshal(
@@ -17,7 +23,7 @@ public class NXJsonParser extends JsonParser {
             final ResourceDescriptor resourceDescriptor,
             final ResourceFactory<R> resourceFactory,
             final JSONArray defaultSchemas)
-            throws JSONException, InvalidResourceException {        
+            throws JSONException, InvalidResourceException {
         return super.unmarshal(jsonObject, resourceDescriptor, resourceFactory, defaultSchemas);
     }
 

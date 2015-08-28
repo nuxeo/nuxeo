@@ -35,7 +35,7 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
  * Implement the {@link UserMapper} using Groovy Scripting for the mapping part
  *
  * @author tiry
- *
+ * @since 7.4
  */
 public class GroovyUserMapper extends AbstractUserMapper {
 
@@ -65,8 +65,7 @@ public class GroovyUserMapper extends AbstractUserMapper {
     }
 
     @Override
-    protected void resolveAttributes(Object userObject,
-            Map<String, Serializable> searchAttributes,
+    protected void resolveAttributes(Object userObject, Map<String, Serializable> searchAttributes,
             Map<String, Serializable> userAttributes, Map<String, Serializable> profileAttributes) {
 
         Map<String, Object> context = new HashMap<String, Object>();

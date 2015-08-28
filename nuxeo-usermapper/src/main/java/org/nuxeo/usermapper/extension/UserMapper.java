@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -25,18 +25,15 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.usermapper.service.UserMapperService;
 
 /**
- * Interface for class providing a named implementation for the
- * {@link UserMapperService}
+ * Interface for class providing a named implementation for the {@link UserMapperService}
  *
  * @author tiry
- *
+ * @since 7.4
  */
 public interface UserMapper {
 
-
     /**
-     * Should retrieve (create if needed) and update the NuxeoPrincipal
-     * according to the given userObject
+     * Should retrieve (create if needed) and update the NuxeoPrincipal according to the given userObject
      *
      * @param userObject the object representing the user in the external system
      * @return
@@ -44,26 +41,22 @@ public interface UserMapper {
     NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject);
 
     /**
-     * Should retrieve (create if needed) and update the NuxeoPrincipal
-     * according to the given userObject
+     * Should retrieve (create if needed) and update the NuxeoPrincipal according to the given userObject
      *
      * @param userObject the object representing the user in the external system
      * @param createIfNeeded flag to allow creation (default is true)
      * @param update flag to run update (default is true)
-     *
      * @return
      */
 
-    NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update, Map<String, Serializable> params);
-
+    NuxeoPrincipal getOrCreateAndUpdateNuxeoPrincipal(Object userObject, boolean createIfNeeded, boolean update,
+            Map<String, Serializable> params);
 
     /**
-     * Wrap the {@link NuxeoPrincipal} as the userObject used in the external
-     * authentication system
+     * Wrap the {@link NuxeoPrincipal} as the userObject used in the external authentication system
      *
      * @param principal the NuxeoPrincipal
      * @param nativePrincipal the native object to represent the principal in the target system
-     *
      * @return
      */
     Object wrapNuxeoPrincipal(NuxeoPrincipal principal, Object nativePrincipal, Map<String, Serializable> params);
@@ -78,7 +71,6 @@ public interface UserMapper {
 
     /**
      * Release callback : called when the plugin is about to be unloaded
-     *
      */
     void release();
 }
