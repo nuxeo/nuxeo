@@ -79,7 +79,7 @@ public class SubWidgetTagHandler extends TagHandler {
         // resolve subwidgets from widget in context
         Widget widget = null;
         String widgetVariableName = RenderVariables.widgetVariables.widget.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute widgetAttribute = helper.createAttribute(widgetVariableName, "#{" + widgetVariableName + "}");
         if (widgetAttribute != null) {
             widget = (Widget) widgetAttribute.getObject(ctx, Widget.class);
@@ -104,7 +104,7 @@ public class SubWidgetTagHandler extends TagHandler {
             // set unique id on widget before exposing it to the context, but assumes iteration could be done several
             // times => do not generate id again if already set, unless specified by attribute "recomputeIds"
             if (subWidget != null && (subWidget.getId() == null || recomputeIdsBool)) {
-                WidgetTagHandler.generateWidgetId(helper, subWidget, false);
+                WidgetTagHandler.generateWidgetId(ctx, helper, subWidget, false);
             }
 
             // expose widget variables
@@ -144,7 +144,7 @@ public class SubWidgetTagHandler extends TagHandler {
             blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
-            FaceletHandler handlerWithVars = helper.getAliasTagHandler(tagConfigId, variables, blockedPatterns,
+            FaceletHandler handlerWithVars = helper.getAliasFaceletHandler(tagConfigId, variables, blockedPatterns,
                     nextHandler);
 
             // apply

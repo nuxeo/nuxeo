@@ -59,7 +59,7 @@ public class LayoutDevTagHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
         Layout layoutInstance = (Layout) layout.getObject(ctx, Layout.class);
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute templateAttr = helper.createAttribute("template", layoutInstance.getDevTemplate());
         TagAttributes attributes = FaceletHandlerHelper.getTagAttributes(templateAttr);
         String widgetTagConfigId = layoutInstance.getTagConfigId();

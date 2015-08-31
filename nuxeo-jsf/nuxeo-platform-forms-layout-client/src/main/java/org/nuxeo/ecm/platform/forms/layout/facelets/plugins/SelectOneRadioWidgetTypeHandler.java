@@ -16,9 +16,11 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlSelectOneRadio;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -33,12 +35,13 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
  */
 public class SelectOneRadioWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public SelectOneRadioWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectOneRadio.COMPONENT_TYPE);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        apply(ctx, parent, widget, HtmlSelectOneRadio.COMPONENT_TYPE);
     }
 
 }

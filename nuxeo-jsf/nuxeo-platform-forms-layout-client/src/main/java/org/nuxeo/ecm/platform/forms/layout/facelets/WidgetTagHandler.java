@@ -21,6 +21,7 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ValueExpressionLiteral;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 import org.nuxeo.runtime.api.Framework;
 
@@ -60,7 +63,6 @@ import com.sun.faces.facelets.el.VariableMapperWrapper;
  */
 public class WidgetTagHandler extends MetaTagHandler {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(WidgetTagHandler.class);
 
     protected final TagConfig config;
@@ -203,8 +205,8 @@ public class WidgetTagHandler extends MetaTagHandler {
             if (widgetInstanceBuilt) {
                 // expose widget variable to the context as layout row has not done it already, and set unique id on
                 // widget before exposing it to the context
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-                WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+                WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
 
                 VariableMapper vm = new VariableMapperWrapper(orig);
                 ctx.setVariableMapper(vm);
@@ -237,23 +239,24 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
     }
 
-    public static void generateWidgetIdsRecursive(FaceletHandlerHelper helper, Widget widget) {
-        generateWidgetId(helper, widget, true);
+    public static void generateWidgetIdsRecursive(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget) {
+        generateWidgetId(ctx, helper, widget, true);
     }
 
     /**
      * @since 7.2
      */
-    public static void generateWidgetId(FaceletHandlerHelper helper, Widget widget, boolean recursive) {
+    public static void generateWidgetId(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
+            boolean recursive) {
         if (widget == null) {
             return;
         }
-        widget.setId(helper.generateWidgetId(widget.getName()));
+        widget.setId(FaceletHandlerHelper.generateWidgetId(ctx, widget.getName()));
         if (recursive) {
             Widget[] subWidgets = widget.getSubWidgets();
             if (subWidgets != null) {
                 for (Widget subWidget : subWidgets) {
-                    generateWidgetIdsRecursive(helper, subWidget);
+                    generateWidgetIdsRecursive(ctx, helper, subWidget);
                 }
             }
         }
@@ -264,13 +267,44 @@ public class WidgetTagHandler extends MetaTagHandler {
         if (widget == null) {
             return;
         }
-        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-        FaceletHandler handler = layoutService.getFaceletHandler(ctx, config, widget, nextHandler);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+
+        TagConfig wtConfig = TagConfigFactory.createTagConfig(config, widget.getTagConfigId(), null, nextHandler);
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
+        WidgetTypeHandler handler = layoutService.getWidgetTypeHandler(wtConfig, widget);
+
         if (handler == null) {
+            String widgetTypeName = widget.getType();
+            String widgetTypeCategory = widget.getTypeCategory();
+            String message = String.format("No widget handler found for type '%s' in category '%s'", widgetTypeName,
+                    widgetTypeCategory);
+            log.error(message);
+            FaceletHandler h = helper.getErrorComponentHandler(null, message);
+            h.apply(ctx, parent);
             return;
         }
+
+        FaceletHandler fh = handler;
+        if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
+            // decorate handler with dev handler
+            FaceletHandler devHandler = handler.getDevFaceletHandler(config, widget);
+            if (devHandler != null) {
+                // expose the widget variable to sub dev handler
+                String widgetTagConfigId = widget.getTagConfigId();
+                Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
+                variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
+                List<String> blockedPatterns = new ArrayList<String>();
+                blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
+                FaceletHandler devAliasHandler = helper.getAliasFaceletHandler(widgetTagConfigId, variables,
+                        blockedPatterns, devHandler);
+                String refId = widget.getName();
+                fh = new DevTagHandler(config, refId, handler, devAliasHandler);
+            }
+        }
+
         if (fillVariables) {
             // expose widget variables
             Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
@@ -285,14 +319,13 @@ public class WidgetTagHandler extends MetaTagHandler {
             variables.put(RenderVariables.globalVariables.value.name(), valueExpr);
             variables.put(RenderVariables.globalVariables.value.name() + "_" + widget.getLevel(), valueExpr);
 
-            FaceletHandler handlerWithVars = helper.getAliasTagHandler(widget.getTagConfigId(), variables, null,
-                    handler);
+            FaceletHandler handlerWithVars = helper.getAliasFaceletHandler(widget.getTagConfigId(), variables, null, fh);
             // apply
             handlerWithVars.apply(ctx, parent);
 
         } else {
             // just apply
-            handler.apply(ctx, parent);
+            fh.apply(ctx, parent);
         }
     }
 

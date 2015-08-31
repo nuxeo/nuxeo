@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
@@ -46,12 +49,13 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1495841177711755669L;
+    public FileWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
@@ -74,24 +78,26 @@ public class FileWidgetTypeHandler extends AbstractWidgetTypeHandler {
         // file components do not support client behaviors => do not add input
         // slot
         boolean isEdit = BuiltinWidgetModes.EDIT.equals(mode);
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false, isEdit);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper, false, isEdit);
         if (isEdit) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     UIInputFile.COMPONENT_TYPE, null);
-            String msgId = helper.generateMessageId(widgetName);
+            String msgId = FaceletHandlerHelper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         } else {
             // TODO: handle PLAIN and PDF mode better?
             ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     UIOutputFile.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
-                        output, UIHtmlText.class.getName(), null);
+                FaceletHandler h = helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(
+                        new TagAttribute[0]), output, UIHtmlText.class.getName(), null);
+                h.apply(ctx, parent);
             } else {
-                return output;
+                output.apply(ctx, parent);
             }
         }
     }

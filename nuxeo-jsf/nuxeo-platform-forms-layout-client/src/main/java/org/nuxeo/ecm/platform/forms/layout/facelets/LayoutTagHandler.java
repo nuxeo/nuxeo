@@ -174,7 +174,7 @@ public class LayoutTagHandler extends TagHandler {
         VariableMapper vm = new VariableMapperWrapper(orig);
         ctx.setVariableMapper(vm);
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         try {
             Layout layoutInstance = null;
 
@@ -310,7 +310,7 @@ public class LayoutTagHandler extends TagHandler {
 
         // set unique id on layout, unless layout is only resolved
         if (!resolveOnly) {
-            layoutInstance.setId(helper.generateLayoutId(layoutInstance.getName()));
+            layoutInstance.setId(FaceletHandlerHelper.generateLayoutId(ctx, layoutInstance.getName()));
         }
 
         // add additional properties put on tag
@@ -346,7 +346,7 @@ public class LayoutTagHandler extends TagHandler {
                 if (widgetMap != null) {
                     for (Widget widget : widgetMap.values()) {
                         if (widget != null && (widget.getId() == null)) {
-                            WidgetTagHandler.generateWidgetId(helper, widget, false);
+                            WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
                         }
                     }
                 }
@@ -369,7 +369,8 @@ public class LayoutTagHandler extends TagHandler {
         final String layoutTagConfigId = layoutInstance.getTagConfigId();
 
         if (resolveOnly) {
-            FaceletHandler handler = helper.getAliasTagHandler(layoutTagConfigId, vars, blockedPatterns, nextHandler);
+            FaceletHandler handler = helper.getAliasFaceletHandler(layoutTagConfigId, vars, blockedPatterns,
+                    nextHandler);
             // apply
             handler.apply(ctx, parent);
         } else {
@@ -388,9 +389,9 @@ public class LayoutTagHandler extends TagHandler {
                     } else {
                         nextHandler = new DevTagHandler(config, layoutInstance.getName(), includeHandler, devHandler);
                     }
-                    handler = helper.getAliasTagHandler(layoutTagConfigId, vars, blockedPatterns, nextHandler);
+                    handler = helper.getAliasFaceletHandler(layoutTagConfigId, vars, blockedPatterns, nextHandler);
                 } else {
-                    handler = helper.getAliasTagHandler(layoutTagConfigId, vars, blockedPatterns, includeHandler);
+                    handler = helper.getAliasFaceletHandler(layoutTagConfigId, vars, blockedPatterns, includeHandler);
                 }
                 // apply
                 handler.apply(ctx, parent);

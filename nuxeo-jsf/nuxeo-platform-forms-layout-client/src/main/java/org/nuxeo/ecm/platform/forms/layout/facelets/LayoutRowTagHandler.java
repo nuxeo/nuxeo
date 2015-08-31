@@ -74,7 +74,7 @@ public class LayoutRowTagHandler extends TagHandler {
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName, "#{" + layoutVariableName + "}");
         if (layoutAttribute != null) {
             layout = (Layout) layoutAttribute.getObject(ctx, Layout.class);
@@ -107,7 +107,7 @@ public class LayoutRowTagHandler extends TagHandler {
             blockedPatterns.add(RenderVariables.columnVariables.layoutColumn.name());
             blockedPatterns.add(RenderVariables.columnVariables.layoutColumnIndex.name());
 
-            FaceletHandler handler = helper.getAliasTagHandler(row.getTagConfigId(), variables, blockedPatterns,
+            FaceletHandler handler = helper.getAliasFaceletHandler(row.getTagConfigId(), variables, blockedPatterns,
                     nextHandler);
             handler.apply(ctx, parent);
             rowCounter++;

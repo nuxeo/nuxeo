@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -50,20 +49,23 @@ public interface WebLayoutManager extends LayoutManager {
     public static final String JSF_CATEGORY = "jsf";
 
     /**
-     * Returns the widget type handler for the registered widget type with this type name.
-     * <p>
-     * If the no widget type is found with this name, return null.
-     */
-    WidgetTypeHandler getWidgetTypeHandler(String typeName) throws WidgetException;
-
-    /**
      * Returns the widget type handler for the registered widget type with this type name and type category.
      * <p>
-     * If the no widget type is found with this name, return null.
+     * If no widget type is found with this name, returns null.
      *
-     * @since 5.7.3
+     * @since 8.1
      */
-    WidgetTypeHandler getWidgetTypeHandler(String typeCategory, String typeName) throws WidgetException;
+    WidgetTypeHandler getWidgetTypeHandler(TagConfig config, String typeCategory, String typeName)
+            throws WidgetException;
+
+    /**
+     * Returns the widget type handler for the registered widget.
+     * <p>
+     * If widget is null or its widget type is unknown, returns null.
+     *
+     * @since 8.1
+     */
+    WidgetTypeHandler getWidgetTypeHandler(TagConfig config, Widget widget) throws WidgetException;
 
     /**
      * Returns the computed layout for this name and mode in given context, or null if no layout with this name is
@@ -180,30 +182,6 @@ public interface WebLayoutManager extends LayoutManager {
      */
     Widget getWidget(FaceletContext ctx, LayoutConversionContext lctx, String conversionCat,
             WidgetDefinition widgetDef, String layoutMode, String valueName, String layoutName);
-
-    /**
-     * Returns the facelet handler for given widget.
-     *
-     * @param ctx the facelet context.
-     * @param config the tag config, used to hook the handler in the jsf tree.
-     * @param widget the computed widget.
-     * @return a facelet handler.
-     * @deprecated since 5.6: use {@link #getFaceletHandler(FaceletContext, TagConfig, Widget, FaceletHandler)} instead
-     */
-    @Deprecated
-    FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget);
-
-    /**
-     * Returns the facelet handler for given widget.
-     *
-     * @param ctx the facelet context.
-     * @param config the tag config, used to hook the handler in the jsf tree.
-     * @param widget the computed widget.
-     * @param nextHandler the next handler in the execution chain
-     * @return a facelet handler.
-     * @since 5.6
-     */
-    FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget, FaceletHandler nextHandler);
 
     /**
      * Returns a widget computed from given information.

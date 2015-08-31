@@ -19,11 +19,13 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlColumn;
 import javax.faces.component.html.HtmlDataTable;
 import javax.faces.component.html.HtmlOutputText;
@@ -55,22 +57,24 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelectWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public DirectorySelectManyWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     protected String getEditComponentType() {
         return HtmlSelectManyListbox.COMPONENT_TYPE;
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
         String mode = widget.getMode();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
+            super.apply(ctx, parent, widget, getEditComponentType());
+            return;
         }
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper);
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
 
@@ -89,7 +93,7 @@ public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelec
         }
         if (valueAttr == null) {
             // don't bother
-            return leaf;
+            return;
         }
 
         // build directory item attributes, using widget properties
@@ -133,25 +137,25 @@ public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelec
                     helper.createAttribute("model", "model"));
             ComponentHandler itHandler = helper.getHtmlComponentHandler(widgetTagConfigId, itAttributes, childHandler,
                     UIEditableList.COMPONENT_TYPE, null);
-
-            return itHandler;
+            itHandler.apply(ctx, parent);
         } else {
             // build a standard table
             ComponentHandler columnEntry = helper.getHtmlComponentHandler(widgetTagConfigId,
                     FaceletHandlerHelper.getTagAttributes(), dirEntry, HtmlColumn.COMPONENT_TYPE, null);
 
             TagAttributes iterationAttributes = FaceletHandlerHelper.getTagAttributes(
-                    helper.createIdAttribute(widgetName), valueAttr, helper.createAttribute("var", "item"));
+                    helper.createIdAttribute(ctx, widgetName), valueAttr, helper.createAttribute("var", "item"));
 
             ComponentHandler table = helper.getHtmlComponentHandler(widgetTagConfigId, iterationAttributes,
                     columnEntry, HtmlDataTable.COMPONENT_TYPE, null);
 
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
-                        table, UIHtmlText.class.getName(), null);
+                FaceletHandler h = helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(
+                        new TagAttribute[0]), table, UIHtmlText.class.getName(), null);
+                h.apply(ctx, parent);
             } else {
-                return table;
+                table.apply(ctx, parent);
             }
         }
     }

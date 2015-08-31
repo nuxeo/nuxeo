@@ -83,7 +83,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
         // resolve widgets from row in context
         LayoutRow row = null;
         String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute rowAttribute = helper.createAttribute(rowVariableName, "#{" + rowVariableName + "}");
         if (rowAttribute != null) {
             row = (LayoutRow) rowAttribute.getObject(ctx, LayoutRow.class);
@@ -108,7 +108,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             // set unique id on widget before exposing it to the context, but assumes iteration could be done several
             // times => do not generate id again if already set, unless specified by attribute "recomputeIds"
             if (widget != null && (widget.getId() == null || recomputeIdsBool)) {
-                WidgetTagHandler.generateWidgetId(helper, widget, false);
+                WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
             }
 
             // expose widget variables
@@ -145,7 +145,7 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
             blockedPatterns.add(RenderVariables.widgetVariables.widgetIndex.name() + "*");
             blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
-            FaceletHandler handler = helper.getAliasTagHandler(tagConfigId, variables, blockedPatterns, nextHandler);
+            FaceletHandler handler = helper.getAliasFaceletHandler(tagConfigId, variables, blockedPatterns, nextHandler);
 
             // apply
             handler.apply(ctx, parent);

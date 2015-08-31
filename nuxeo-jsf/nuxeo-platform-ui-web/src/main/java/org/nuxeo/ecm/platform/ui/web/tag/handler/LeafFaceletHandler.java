@@ -33,6 +33,9 @@ import javax.faces.view.facelets.FaceletHandler;
  */
 public class LeafFaceletHandler implements FaceletHandler {
 
+    public LeafFaceletHandler() {
+    }
+
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
     }
 
@@ -40,4 +43,5 @@ public class LeafFaceletHandler implements FaceletHandler {
     public String toString() {
         return "FaceletHandler Tail";
     }
+
 }

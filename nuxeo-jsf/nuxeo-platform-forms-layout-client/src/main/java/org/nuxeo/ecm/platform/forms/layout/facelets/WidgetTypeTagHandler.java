@@ -259,8 +259,8 @@ public class WidgetTypeTagHandler extends TagHandler {
         // retrieved from tag attributes
         try {
             // set unique id on widget before exposing it to the context
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            WidgetTagHandler.generateWidgetId(helper, widget, false);
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+            WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
 
             boolean resolveOnlyBool = false;
             if (resolveOnly != null) {

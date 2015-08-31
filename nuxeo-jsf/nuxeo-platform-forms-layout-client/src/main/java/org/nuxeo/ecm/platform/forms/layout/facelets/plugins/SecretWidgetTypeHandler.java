@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlInputSecret;
 import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.CompositeFaceletHandler;
@@ -39,27 +42,28 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
  */
 public class SecretWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1495841177711755669L;
+    public SecretWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputSecret.COMPONENT_TYPE, null);
-            String msgId = helper.generateMessageId(widgetName);
+            String msgId = FaceletHandlerHelper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         }
-        // do not render anything for other modes
-        return leaf;
+        // do not do anything for other modes
     }
 }

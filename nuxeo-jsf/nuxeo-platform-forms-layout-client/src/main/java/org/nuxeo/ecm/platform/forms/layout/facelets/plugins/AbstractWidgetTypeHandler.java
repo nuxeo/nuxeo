@@ -19,10 +19,12 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
@@ -50,9 +52,7 @@ import com.sun.faces.facelets.tag.ui.InsertHandler;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
-
-    private static final long serialVersionUID = -2933485416045771633L;
+public abstract class AbstractWidgetTypeHandler extends WidgetTypeHandler {
 
     /**
      * @since 6.0
@@ -64,13 +64,37 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      */
     public static final String DISABLE_DEV_PROPERTY_NAME = "disable_dev";
 
+    protected final TagConfig tagConfig;
+
     protected Map<String, String> properties;
 
-    public abstract FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException;
+    protected Widget widget;
 
-    public FaceletHandler getDevFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget)
-            throws WidgetException {
+    protected final TagAttribute widgetAttr;
+
+    public AbstractWidgetTypeHandler(TagConfig config) {
+        super(config);
+        tagConfig = config;
+        widgetAttr = getAttribute("widget");
+    }
+
+    @Override
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
+        if (widget == null) {
+            // resolve widget attribute instead, useful for the runtime tag library
+            Widget wi = (Widget) widgetAttr.getObject(ctx, Widget.class);
+            if (wi != null) {
+                apply(ctx, parent, wi);
+            }
+        } else {
+            apply(ctx, parent, widget);
+        }
+    }
+
+    public abstract void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException,
+            IOException;
+
+    public FaceletHandler getDevFaceletHandler(TagConfig tagConfig, Widget widget) throws WidgetException {
         if (Boolean.parseBoolean(getProperty(DISABLE_DEV_PROPERTY_NAME))
                 || Boolean.parseBoolean((String) widget.getProperty(DISABLE_DEV_PROPERTY_NAME))) {
             return null;
@@ -80,7 +104,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
         if (StringUtils.isBlank(template)) {
             template = getProperty(DEV_TEMPLATE_PROPERTY_NAME);
         }
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         TagAttribute widgetAttr = helper.createAttribute("widget",
                 "#{" + RenderVariables.widgetVariables.widget.name() + "}");
         TagAttributes devWidgetAttributes;
@@ -117,6 +141,10 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
         this.properties = properties;
     }
 
+    public void setWidget(Widget widget) {
+        this.widget = widget;
+    }
+
     /**
      * Returns sub handlers as computed from tag information.
      * <p>
@@ -139,21 +167,6 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      * Returns sub handlers as computed from tag information.
      * <p>
      * Adds an input slot if corresponding boolean parameter is true.
-     *
-     * @since 6.0
-     * @deprecated since 7.2, use
-     *             {@link #getNextHandler(FaceletContext, TagConfig, Widget, FaceletHandler[], FaceletHandlerHelper, boolean, boolean)}
-     *             instead
-     */
-    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers, FaceletHandlerHelper helper, boolean addInputSlot) {
-        return getNextHandler(ctx, tagConfig, widget, subHandlers, helper, addInputSlot, false);
-    }
-
-    /**
-     * Returns sub handlers as computed from tag information.
-     * <p>
-     * Adds an input slot if corresponding boolean parameter is true.
      * <p>
      * Adds an document constraint validator if corresponding boolean parameter is true.
      *
@@ -164,6 +177,9 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
             boolean addDocumentConstraintValidator) {
         FaceletHandler leaf;
         List<FaceletHandler> handlers = new ArrayList<>();
+        if (nextHandler != null && !(nextHandler instanceof LeafFaceletHandler)) {
+            handlers.add(nextHandler);
+        }
         if (subHandlers != null && subHandlers.length > 0) {
             for (FaceletHandler fh : subHandlers) {
                 if (fh != null && !(fh instanceof LeafFaceletHandler)) {

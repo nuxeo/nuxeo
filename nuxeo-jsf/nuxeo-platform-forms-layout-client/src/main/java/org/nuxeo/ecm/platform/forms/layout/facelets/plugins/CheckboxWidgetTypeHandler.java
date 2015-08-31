@@ -20,9 +20,11 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 import javax.faces.view.facelets.ComponentHandler;
@@ -53,25 +55,27 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public CheckboxWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlSelectBooleanCheckbox.COMPONENT_TYPE, NXCheckboxRenderer.RENDERER_TYPE);
-            String msgId = helper.generateMessageId(widgetName);
+            String msgId = FaceletHandlerHelper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         } else {
             TagAttributes attributes = getViewTagAttributes(ctx, helper, widgetId, widget,
                     !BuiltinWidgetModes.isLikePlainMode(mode));
@@ -80,10 +84,11 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
-                        output, UIHtmlText.class.getName(), null);
+                FaceletHandler h = helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(
+                        new TagAttribute[0]), output, UIHtmlText.class.getName(), null);
+                h.apply(ctx, parent);
             } else {
-                return output;
+                output.apply(ctx, parent);
             }
         }
     }

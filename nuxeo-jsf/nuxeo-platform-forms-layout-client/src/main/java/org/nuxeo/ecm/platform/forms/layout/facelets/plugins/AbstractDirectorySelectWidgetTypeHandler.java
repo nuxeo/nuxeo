@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -35,10 +36,12 @@ import org.nuxeo.ecm.platform.ui.web.directory.UIDirectorySelectItems;
  */
 public abstract class AbstractDirectorySelectWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
-
     protected enum DirectoryPropertyMappings {
         directoryName, displayAll, displayObsoleteEntries, filter, localize, dbl10n;
+    }
+
+    public AbstractDirectorySelectWidgetTypeHandler(TagConfig config) {
+        super(config);
     }
 
     @Override

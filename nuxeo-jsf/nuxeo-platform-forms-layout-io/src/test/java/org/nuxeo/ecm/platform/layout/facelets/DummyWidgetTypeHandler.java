@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.platform.layout.facelets;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.view.facelets.ComponentHandler;
@@ -42,34 +45,33 @@ import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
  */
 public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1495841177711755669L;
+    public DummyWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         FaceletHandler[] handlers = null;
-        String originalId = helper.generateUniqueId();
+        String originalId = helper.generateUniqueId(ctx);
         TagAttributes attributes = helper.getTagAttributes(originalId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         String widgetTagConfigId = widget.getTagConfigId();
         if (BuiltinWidgetModes.VIEW.equals(mode)) {
             ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
-            handlers = new FaceletHandler[] { output };
+            output.apply(ctx, parent);
         } else if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputText.COMPONENT_TYPE, null);
-            String msgId = helper.generateUniqueId(originalId);
+            String msgId = FaceletHandlerHelper.generateUniqueId(ctx, originalId);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, originalId,
                     "errorMessage");
             handlers = new FaceletHandler[] { input, message };
-        }
-        if (handlers == null) {
-            return new LeafFaceletHandler();
-        } else {
-            return new CompositeFaceletHandler(handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         }
     }
+
 }

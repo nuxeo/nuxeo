@@ -16,9 +16,11 @@
  */
 package org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -30,13 +32,13 @@ import org.nuxeo.ecm.platform.ui.web.renderer.NxListboxRenderer;
  */
 public class SelectManyListboxDirectoryAggregateWidgetTypeHandler extends SelectDirectoryAggregateWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public SelectManyListboxDirectoryAggregateWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectManyListbox.COMPONENT_TYPE,
-                NxListboxRenderer.RENDERER_TYPE);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        apply(ctx, parent, widget, HtmlSelectManyListbox.COMPONENT_TYPE, NxListboxRenderer.RENDERER_TYPE);
     }
 
 }

@@ -19,8 +19,18 @@
 
 package org.nuxeo.ecm.platform.layout.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.Map;
+
+import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.Tag;
+import javax.faces.view.facelets.TagAttribute;
+import javax.faces.view.facelets.TagConfig;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +45,12 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.layout.facelets.DummyWidgetTypeHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.sun.faces.facelets.tag.TagAttributesImpl;
 
 /**
  * Test layout component extension points.
@@ -208,7 +217,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
         WidgetType type = service.getWidgetType("test");
         assertNotNull(type);
         assertEquals("test", type.getName());
-        WidgetTypeHandler handler = service.getWidgetTypeHandler("test");
+        WidgetTypeHandler handler = service.getWidgetTypeHandler(getTestTagConfig(), null, "test");
         assertNotNull(handler);
         assertEquals(DummyWidgetTypeHandler.class.getName(), handler.getClass().getName());
         assertEquals("bar1", handler.getProperty("foo1"));
@@ -218,7 +227,7 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetTypeNullHandlerRegistration() {
-        WidgetTypeHandler handler = service.getWidgetTypeHandler("complex");
+        WidgetTypeHandler handler = service.getWidgetTypeHandler(getTestTagConfig(), null, "complex");
         assertNotNull(handler);
         assertEquals(TemplateWidgetTypeHandler.class.getName(), handler.getClass().getName());
         assertEquals("/widgets/complex_widget_template.xhtml", handler.getProperty("template"));
@@ -226,10 +235,31 @@ public class TestLayoutComponent extends NXRuntimeTestCase {
 
     @Test
     public void testWidgetTypeNullHandlerRegistrationFromStore() {
-        WidgetTypeHandler handler = service.getWidgetTypeHandler("testCategory", "complexFromStore");
+        WidgetTypeHandler handler = service.getWidgetTypeHandler(getTestTagConfig(), "testCategory",
+                "complexFromStore");
         assertNotNull(handler);
         assertEquals(TemplateWidgetTypeHandler.class.getName(), handler.getClass().getName());
         assertEquals("/widgets/complex_widget_template.xhtml", handler.getProperty("template"));
+    }
+
+    protected TagConfig getTestTagConfig() {
+        TagConfig parent = new TagConfig() {
+            @Override
+            public String getTagId() {
+                return "tagId";
+            }
+
+            @Override
+            public Tag getTag() {
+                return new Tag(null, "ns", "localName", "qName", new TagAttributesImpl(new TagAttribute[0]));
+            }
+
+            @Override
+            public FaceletHandler getNextHandler() {
+                return new LeafFaceletHandler();
+            }
+        };
+        return TagConfigFactory.createTagConfig(parent, "id", null, new LeafFaceletHandler());
     }
 
     @Test

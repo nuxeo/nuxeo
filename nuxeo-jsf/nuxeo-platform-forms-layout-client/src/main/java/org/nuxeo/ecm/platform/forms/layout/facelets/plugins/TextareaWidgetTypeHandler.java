@@ -20,6 +20,9 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlInputTextarea;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.view.facelets.ComponentHandler;
@@ -46,7 +49,9 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
-    private static final long serialVersionUID = -771626672018944435L;
+    public TextareaWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     // .wrapword{
     // white-space: -moz-pre-wrap !important; /* Mozilla, since 1999 */
@@ -58,9 +63,8 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
     public static String WRAP_WORD_STYLE = "white-space: -moz-pre-wrap !important; white-space: -pre-wrap; white-space: -o-pre-wrap; white-space: pre-wrap; word-wrap: break-word;";
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
@@ -79,14 +83,15 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
                 attributes = FaceletHandlerHelper.addTagAttribute(attributes, dir);
             }
         }
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputTextarea.COMPONENT_TYPE, null);
-            String msgId = helper.generateMessageId(widgetName);
+            String msgId = FaceletHandlerHelper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         } else {
             // add styling for end of line characters to be displayed
             if (!BuiltinWidgetModes.EDIT.equals(mode) && !BuiltinWidgetModes.isLikePlainMode(mode)
@@ -98,10 +103,11 @@ public class TextareaWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
-                        output, UIHtmlText.class.getName(), null);
+                FaceletHandler h = helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(
+                        new TagAttribute[0]), output, UIHtmlText.class.getName(), null);
+                h.apply(ctx, parent);
             } else {
-                return output;
+                output.apply(ctx, parent);
             }
         }
     }

@@ -61,9 +61,9 @@ public class DevTagHandler extends TagHandler {
     @Override
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttributes devAttrs = FaceletHandlerHelper.getTagAttributes(
-                helper.createAttribute("id", helper.generateDevContainerId(refId)),
+                helper.createAttribute("id", FaceletHandlerHelper.generateDevContainerId(ctx, refId)),
                 helper.createAttribute("styleClass", "displayN nxlDevContainer"),
                 helper.createAttribute("layout", "block"));
         ComponentHandler dComp = helper.getHtmlComponentHandler(config.getTagId(), devAttrs, devHandler,
@@ -71,7 +71,7 @@ public class DevTagHandler extends TagHandler {
         FaceletHandler nextHandler = new CompositeFaceletHandler(new FaceletHandler[] {
                 helper.getDisableDevModeTagHandler(config.getTagId(), dComp), originalHandler });
         TagAttributes cAttrs = FaceletHandlerHelper.getTagAttributes(
-                helper.createAttribute("id", helper.generateDevRegionId(refId)),
+                helper.createAttribute("id", FaceletHandlerHelper.generateDevRegionId(ctx, refId)),
                 helper.createAttribute("styleClass", "nxlDevRegion"), helper.createAttribute("layout", "block"));
         ComponentHandler cComp = helper.getHtmlComponentHandler(config.getTagId(), cAttrs, nextHandler,
                 PANEL_COMPONENT_TYPE, null);

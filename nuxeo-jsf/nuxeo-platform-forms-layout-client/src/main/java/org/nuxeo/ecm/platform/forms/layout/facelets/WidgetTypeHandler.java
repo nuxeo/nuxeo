@@ -19,12 +19,14 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets;
 
-import java.io.Serializable;
+import java.io.IOException;
 import java.util.Map;
 
+import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -34,38 +36,43 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public interface WidgetTypeHandler extends Serializable {
+public abstract class WidgetTypeHandler extends TagHandler {
+
+    public WidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     /**
      * Returns the facelet handler that will be applied for given widget and template in this context.
      *
      * @param ctx the facelet context in which this handler will be applied.
-     * @param tagConfig the tag configuration this facelet will be applied for.
+     * @param parent parent component in the JSF tree
      * @param widget the widget giving properties the handler will take into account.
-     * @param subHandlers facelet handlers for sub widgets.
-     * @return a facelet handler.
      * @throws WidgetException
+     * @throws IOException
      */
-    FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException;
+    public abstract void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException,
+            IOException;
 
     /**
      * Returns the facelet handler used for dev mode.
      *
      * @since 6.0
      */
-    FaceletHandler getDevFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget) throws WidgetException;
+    public abstract FaceletHandler getDevFaceletHandler(TagConfig tagConfig, Widget widget) throws WidgetException;
 
     /**
      * Returns a property value given its name.
      *
      * @return property with this name.
      */
-    String getProperty(String name);
+    public abstract String getProperty(String name);
 
     /**
      * Set properties
      */
-    void setProperties(Map<String, String> properties);
+    public abstract void setProperties(Map<String, String> properties);
+
+    public abstract void setWidget(Widget widget);
 
 }

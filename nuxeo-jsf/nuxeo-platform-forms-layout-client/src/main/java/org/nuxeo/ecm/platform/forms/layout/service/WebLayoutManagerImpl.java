@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.service;
 
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,9 +33,7 @@ import java.util.Set;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
-import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,10 +71,8 @@ import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.LayoutTypeDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetDescriptor;
 import org.nuxeo.ecm.platform.forms.layout.descriptors.WidgetTypeDescriptor;
-import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
-import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.functions.LayoutFunctions;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -162,12 +159,8 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
     }
 
     @Override
-    public WidgetTypeHandler getWidgetTypeHandler(String typeName) throws WidgetException {
-        return getWidgetTypeHandler(getDefaultStoreCategory(), typeName);
-    }
-
-    @Override
-    public WidgetTypeHandler getWidgetTypeHandler(String typeCategory, String typeName) throws WidgetException {
+    public WidgetTypeHandler getWidgetTypeHandler(TagConfig config, String typeCategory, String typeName)
+            throws WidgetException {
         if (StringUtils.isBlank(typeCategory)) {
             typeCategory = getDefaultStoreCategory();
         }
@@ -179,18 +172,30 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
         Class<?> klass = type.getWidgetTypeClass();
         if (klass == null) {
             // implicit handler is the "template" one
-            handler = new TemplateWidgetTypeHandler();
+            handler = new TemplateWidgetTypeHandler(config);
         } else {
             try {
-                // Thread context loader is not working in isolated EARs
-                handler = (WidgetTypeHandler) klass.newInstance();
+                Constructor<?> ctor = klass.getDeclaredConstructor(TagConfig.class);
+                ctor.setAccessible(true);
+                handler = (WidgetTypeHandler) ctor.newInstance(config);
             } catch (ReflectiveOperationException e) {
                 log.error("Caught error when instanciating widget type handler", e);
                 return null;
             }
         }
-        // set properties
         handler.setProperties(type.getProperties());
+        return handler;
+    }
+
+    @Override
+    public WidgetTypeHandler getWidgetTypeHandler(TagConfig config, Widget widget) throws WidgetException {
+        if (widget == null) {
+            return null;
+        }
+        WidgetTypeHandler handler = getWidgetTypeHandler(config, widget.getTypeCategory(), widget.getType());
+        if (handler != null) {
+            handler.setWidget(widget);
+        }
         return handler;
     }
 
@@ -590,60 +595,6 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             layout.setDevTemplate(devTemplate);
         }
         return layout;
-    }
-
-    @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget) {
-        return getFaceletHandler(ctx, config, widget, null);
-    }
-
-    @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget,
-            FaceletHandler nextHandler) {
-        String widgetTypeName = widget.getType();
-        String widgetTypeCategory = widget.getTypeCategory();
-        WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeCategory, widgetTypeName);
-        if (handler == null) {
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-            String message = "No widget handler found for type '" + widgetTypeName + "' in category '"
-                    + widgetTypeCategory + "'";
-            log.error(message);
-            ComponentHandler output = helper.getErrorComponentHandler(null, message);
-            return output;
-        } else {
-            FaceletHandler[] subHandlers = null;
-            List<FaceletHandler> subHandlersList = new ArrayList<FaceletHandler>();
-            if (nextHandler != null) {
-                subHandlersList.add(nextHandler);
-            }
-            if (!subHandlersList.isEmpty()) {
-                subHandlers = subHandlersList.toArray(new FaceletHandler[0]);
-            }
-            FaceletHandler widgetHandler = handler.getFaceletHandler(ctx, config, widget, subHandlers);
-
-            if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
-                // decorate handler with dev handler
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-                FaceletHandler devHandler = handler.getDevFaceletHandler(ctx, config, widget);
-                if (devHandler == null) {
-                    return widgetHandler;
-                }
-                // expose the widget variable to sub dev handler
-                String widgetTagConfigId = widget.getTagConfigId();
-                Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
-                ExpressionFactory eFactory = ctx.getExpressionFactory();
-                ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
-                variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
-                List<String> blockedPatterns = new ArrayList<String>();
-                blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
-                FaceletHandler devAliasHandler = helper.getAliasTagHandler(widgetTagConfigId, variables,
-                        blockedPatterns, devHandler);
-                String refId = widget.getName();
-                FaceletHandler widgetDevHandler = new DevTagHandler(config, refId, widgetHandler, devAliasHandler);
-                return widgetDevHandler;
-            }
-            return widgetHandler;
-        }
     }
 
     @Override
