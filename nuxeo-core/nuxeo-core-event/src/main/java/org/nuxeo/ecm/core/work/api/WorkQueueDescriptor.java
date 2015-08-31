@@ -34,33 +34,51 @@ public class WorkQueueDescriptor {
 
     public static final String ALL_QUEUES = "*";
 
+    public static final int DEFAULT_MAX_THREADS = 4;
+
+    public static final int DEFAULT_CLEAR_COMPLETED_AFTER_SECONDS = 3600;
+
+    public static final int DEFAULT_CAPACITY = -1;
+
     @XNode("@id")
     public String id;
 
     @XNode("@queueing")
-    public Boolean queuing = Boolean.TRUE;
+    public Boolean queuing;
+
+    /**
+     * Whether queuing of work instances to this queue is enabled for this Nuxeo instance.
+     */
+    public boolean isQueuingEnabled() {
+        return !Boolean.FALSE.equals(queuing);
+    }
 
     @XNode("@processing")
-    public Boolean processing = Boolean.TRUE;
+    public Boolean processing;
+
+    /**
+     * Whether processing of work instances from this queue is enabled for this Nuxeo instance.
+     */
+    public boolean isProcessingEnabled() {
+        return !Boolean.FALSE.equals(processing);
+    }
 
     @XNode("name")
     public String name;
 
     @XNode("maxThreads")
-    public int maxThreads = 4;
+    public Integer maxThreads;
 
-    /**
-     * If this is {@code true}, then a priority queue is used instead of a regular queue. In this case, the {@link Work}
-     * instances in the queue must implement {@link Comparable} and are prioritized according to their
-     * {@code compareTo()} method.
-     *
-     * @since 5.7
-     */
-    @XNode("usePriority")
-    public boolean usePriority = false;
+    public int getMaxThreads() {
+        return maxThreads == null ? DEFAULT_MAX_THREADS : maxThreads.intValue();
+    }
 
     @XNode("clearCompletedAfterSeconds")
-    public int clearCompletedAfterSeconds = 3600;
+    public Integer clearCompletedAfterSeconds;
+
+    public int getClearCompletedAfterSeconds() {
+        return clearCompletedAfterSeconds == null ? DEFAULT_CLEAR_COMPLETED_AFTER_SECONDS : clearCompletedAfterSeconds.intValue();
+    }
 
     @XNodeList(value = "category", type = HashSet.class, componentType = String.class)
     public Set<String> categories = Collections.emptySet();
@@ -72,20 +90,10 @@ public class WorkQueueDescriptor {
      * @since 5.7
      */
     @XNode("capacity")
-    public int capacity = -1;
+    public Integer capacity;
 
-    /**
-     * Whether queuing of work instances to this queue is enabled for this Nuxeo instance.
-     */
-    public boolean isQueuingEnabled() {
-        return !Boolean.FALSE.equals(queuing);
-    }
-
-    /**
-     * Whether processing of work instances from this queue is enabled for this Nuxeo instance.
-     */
-    public boolean isProcessingEnabled() {
-        return !Boolean.FALSE.equals(processing);
+    public int getCapacity() {
+        return capacity == null ? DEFAULT_CAPACITY : capacity.intValue();
     }
 
     @Override
@@ -96,7 +104,6 @@ public class WorkQueueDescriptor {
         o.processing = processing;
         o.name = name;
         o.maxThreads = maxThreads;
-        o.usePriority = usePriority;
         o.clearCompletedAfterSeconds = clearCompletedAfterSeconds;
         o.capacity = capacity;
         o.categories = new HashSet<String>(categories);
@@ -110,12 +117,70 @@ public class WorkQueueDescriptor {
         if (other.processing != null) {
             processing = other.processing;
         }
-        name = other.name;
-        maxThreads = other.maxThreads;
-        usePriority = other.usePriority;
-        clearCompletedAfterSeconds = other.clearCompletedAfterSeconds;
-        capacity = other.capacity;
+        if (other.name != null) {
+            name = other.name;
+        }
+        if (other.maxThreads != null) {
+            maxThreads = other.maxThreads;
+        }
+        if (other.clearCompletedAfterSeconds != null) {
+            clearCompletedAfterSeconds = other.clearCompletedAfterSeconds;
+        }
+        if (other.capacity != null) {
+            capacity = other.capacity;
+        }
         categories.addAll(other.categories);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buf = new StringBuilder(getClass().getSimpleName());
+        buf.append("[id=");
+        buf.append(id);
+        buf.append(" categories=");
+        buf.append(categories);
+        if (queuing != null) {
+            buf.append(" queuing=");
+            buf.append(queuing);
+        }
+        if (processing != null) {
+            buf.append(" processing=");
+            buf.append(processing);
+        }
+        if (maxThreads != null) {
+            buf.append(" maxThreads=");
+            buf.append(maxThreads);
+        }
+        if (capacity != null) {
+            buf.append(" capacity=");
+            buf.append(capacity);
+        }
+        if (clearCompletedAfterSeconds != null) {
+            buf.append(" clearCompletedAfterSeconds=");
+            buf.append(clearCompletedAfterSeconds);
+        }
+        buf.append("]");
+        return buf.toString();
+    }
+
+    public String toEffectiveString() {
+        StringBuilder buf = new StringBuilder(getClass().getSimpleName());
+        buf.append("(id=");
+        buf.append(id);
+        buf.append(" categories=");
+        buf.append(categories);
+        buf.append(" queuing=");
+        buf.append(isQueuingEnabled());
+        buf.append(" processing=");
+        buf.append(isProcessingEnabled());
+        buf.append(" maxThreads=");
+        buf.append(getMaxThreads());
+        buf.append(" capacity=");
+        buf.append(getCapacity());
+        buf.append(" clearCompletedAfterSeconds=");
+        buf.append(getClearCompletedAfterSeconds());
+        buf.append(")");
+        return buf.toString();
     }
 
 }

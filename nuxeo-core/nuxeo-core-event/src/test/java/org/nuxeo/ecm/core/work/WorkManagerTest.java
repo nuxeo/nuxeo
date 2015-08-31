@@ -77,7 +77,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     protected static final String QUEUE = "SleepWork";
 
-    protected WorkManager service;
+    protected WorkManagerImpl service;
 
     protected boolean dontClearCompletedWork;
 
@@ -89,14 +89,17 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        doDeploy();
-        fireFrameworkStarted();
-        service = Framework.getLocalService(WorkManager.class);
+        deployBundle("org.nuxeo.ecm.core.event");
+        service = (WorkManagerImpl) Framework.getLocalService(WorkManager.class);
     }
 
     protected void doDeploy() throws Exception {
-        deployBundle("org.nuxeo.ecm.core.event");
         deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-config.xml");
+    }
+
+    protected void deployAndStart() throws Exception {
+        doDeploy();
+        fireFrameworkStarted();
     }
 
     @Override
@@ -114,7 +117,9 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     }
 
     @Test
-    public void testBasics() {
+    public void testBasics() throws Exception {
+        deployAndStart();
+
         assertNotNull(service);
         service.clearCompletedWork(0);
         assertEquals(0, service.getQueueSize(QUEUE, COMPLETED));
@@ -124,20 +129,23 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testWorkManagerConfig() throws Exception {
+        deployAndStart();
+
         SleepWork work = new SleepWork(1);
         assertEquals(CATEGORY, work.getCategory());
         assertEquals(QUEUE, service.getCategoryQueueId(CATEGORY));
         WorkQueueDescriptor qd = service.getWorkQueueDescriptor(QUEUE);
         assertEquals("SleepWork", qd.id);
         assertEquals("Sleep Work Queue", qd.name);
-        assertEquals(2, qd.maxThreads);
-        assertFalse(qd.usePriority);
-        assertEquals(1234, qd.clearCompletedAfterSeconds);
+        assertEquals(2, qd.getMaxThreads());
+        assertEquals(1234, qd.getClearCompletedAfterSeconds());
         assertEquals(Collections.singleton("SleepWork"), qd.categories);
     }
 
     @Test
     public void testWorkManagerWork() throws Exception {
+        deployAndStart();
+
         int duration = 3000; // ms
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work);
@@ -162,6 +170,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testWorkManagerScheduling() throws Exception {
+        deployAndStart();
+
         assertEquals(Collections.emptyList(), service.listWorkIds(QUEUE, COMPLETED));
         int duration = 5000; // 2s
         SleepWork work1 = new SleepWork(duration, false, "1");
@@ -214,6 +224,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     @Test
     @Ignore
     public void testWorkManagerShutdown() throws Exception {
+        deployAndStart();
+
         int duration = 2000; // 2s
         SleepWork work1 = new SleepWork(duration, false, "1");
         SleepWork work2 = new SleepWork(duration, false, "2");
@@ -249,9 +261,58 @@ public class WorkManagerTest extends NXRuntimeTestCase {
         assertEquals(duration, remaining3);
     }
 
+    @Test
+    public void testWorkManagerConfigDisableOneBeforeStart() throws Exception {
+        doDeploy();
+        // before first applicationStarted:
+        // disable SleepWork queue
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-disablequeue.xml");
+        fireFrameworkStarted();
+
+        assertTrue(service.isProcessingEnabled("default"));
+        assertFalse(service.isProcessingEnabled("SleepWork"));
+    }
+
+    @Test
+    public void testWorkManagerConfigDisableOneAfterStart() throws Exception {
+        doDeploy();
+        fireFrameworkStarted();
+        // after first applicationStarted:
+        // disable SleepWork queue
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-disablequeue.xml");
+
+        assertTrue(service.isProcessingEnabled("default"));
+        assertFalse(service.isProcessingEnabled("SleepWork"));
+    }
+
+    @Test
+    public void testWorkManagerConfigDisableAllBeforeStart() throws Exception {
+        doDeploy();
+        // before first applicationStarted:
+        // disable * then enable SleepWork queue
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-disablequeue1.xml");
+        fireFrameworkStarted();
+
+        assertFalse(service.isProcessingEnabled("default"));
+        assertTrue(service.isProcessingEnabled("SleepWork"));
+    }
+
+    @Test
+    public void testWorkManagerConfigDisableAllAfterStart() throws Exception {
+        doDeploy();
+        fireFrameworkStarted();
+        // after first applicationStarted:
+        // disable * then enable SleepWork queue
+        deployContrib("org.nuxeo.ecm.core.event.test", "test-workmanager-disablequeue1.xml");
+
+        assertFalse(service.isProcessingEnabled("default"));
+        assertTrue(service.isProcessingEnabled("SleepWork"));
+    }
+
     @Ignore("NXP-15680")
     @Test
     public void testWorkManagerDisableProcessing() throws Exception {
+        deployAndStart();
         assumeTrue(persistent());
 
         // disable SleepWork queue
@@ -293,6 +354,7 @@ public class WorkManagerTest extends NXRuntimeTestCase {
     @Ignore("NXP-15680")
     @Test
     public void testWorkManagerDisableProcessing2() throws Exception {
+        deployAndStart();
         assumeTrue(persistent());
 
         // disable all queues
@@ -343,6 +405,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void transientFilesWorkAreCleaned() throws Exception {
+        deployAndStart();
+
         final File file = feature.resolveAndCreate(new File("pfouh"));
         service.schedule(new CreateFile(file));
         service.awaitCompletion(5, TimeUnit.SECONDS);
@@ -350,6 +414,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testClearCompleted() throws Exception {
+        deployAndStart();
+
         int N = 20;
         int duration = 100; // ms
         for (int i = 0; i < N; i++) {
@@ -365,6 +431,8 @@ public class WorkManagerTest extends NXRuntimeTestCase {
 
     @Test
     public void testClearCompletedBefore() throws Exception {
+        deployAndStart();
+
         int duration = 1000; // ms
         SleepWork work = new SleepWork(duration, false);
         service.schedule(work);
