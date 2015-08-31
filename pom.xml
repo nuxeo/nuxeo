@@ -5046,7 +5046,7 @@
                 <onlyWhenRelease>true</onlyWhenRelease>
                 <excludes>
                   <!-- <exclude>org.nuxeo.build:nuxeo-distribution-tools</exclude> -->
-                  <!-- <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude> -->
+                  <exclude>org.nuxeo:nuxeo-ftest:*:zip</exclude>
                   <!-- <exclude>org.nuxeo.connect:nuxeo-connect-client</exclude> -->
                   <!-- <exclude>org.jboss.seam:*</exclude> -->
                 </excludes>
@@ -5421,13 +5421,7 @@
             <artifactId>maven-enforcer-plugin</artifactId>
             <executions>
               <execution>
-                <id>enforce-plugin-versions</id>
-                <goals>
-                  <goal>enforce</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>enforce-banned-dependencies</id>
+                <id>release-checks</id>
                 <goals>
                   <goal>enforce</goal>
                 </goals>
