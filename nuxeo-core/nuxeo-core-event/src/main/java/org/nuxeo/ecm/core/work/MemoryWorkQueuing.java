@@ -115,10 +115,7 @@ public class MemoryWorkQueuing implements WorkQueuing {
     }
 
     protected BlockingQueue<Runnable> newBlockingQueue(WorkQueueDescriptor workQueueDescriptor) {
-        if (workQueueDescriptor.usePriority) {
-            log.warn("Priority queues are now deprecated and function as regular queues");
-        }
-        int capacity = workQueueDescriptor.capacity;
+        int capacity = workQueueDescriptor.getCapacity();
         if (capacity <= 0) {
             capacity = -1; // unbounded
         }
