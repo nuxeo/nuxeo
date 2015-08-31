@@ -1445,19 +1445,22 @@ public abstract class AbstractSession implements CoreSession, Serializable {
     public boolean canRemoveDocument(DocumentRef docRef) throws ClientException {
         try {
             Document doc = resolveReference(docRef);
-            return canRemoveDocument(doc);
+            return canRemoveDocument(doc) == null;
         } catch (DocumentException e) {
             throw new ClientException(e);
         }
     }
 
-    protected boolean canRemoveDocument(Document doc) throws ClientException,
-            DocumentException {
+    /**
+     * Checks if a document can be removed, and returns a failure reason if not.
+     */
+    protected String canRemoveDocument(Document doc) throws ClientException, DocumentException {
+        // TODO must also check for proxies on live docs
         if (doc.isVersion()) {
             // TODO a hasProxies method would be more efficient
             Collection<Document> proxies = getSession().getProxies(doc, null);
             if (!proxies.isEmpty()) {
-                return false;
+                return "Proxy " + proxies.iterator().next().getUUID() + " targets version " + doc.getUUID();
             }
             // find a working document to check security
             Document working;
@@ -1467,20 +1470,29 @@ public abstract class AbstractSession implements CoreSession, Serializable {
                 working = null;
             }
             if (working != null) {
-                return hasPermission(working, WRITE_VERSION);
+                Document baseVersion = working.getBaseVersion();
+                if (baseVersion != null && !baseVersion.isCheckedOut() && baseVersion.getUUID().equals(doc.getUUID())) {
+                    return "Working copy " + working.getUUID() + " is checked in with base version " + doc.getUUID();
+                }
+                return hasPermission(working, WRITE_VERSION) ? null
+                        : "Missing permission '" + WRITE_VERSION + "' on working copy " + working.getUUID();
             } else {
                 // no working document, only admins can remove
-                return isAdministrator();
+                return isAdministrator() ? null : "No working copy and not an Administrator";
             }
         } else {
             if (isAdministrator()) {
-                return true;
+                return null; // ok
             }
             if (!hasPermission(doc, REMOVE)) {
-                return false;
+                return "Missing permission '" + REMOVE + "' on document " + doc.getUUID();
             }
             Document parent = doc.getParent();
-            return parent == null || hasPermission(parent, REMOVE_CHILDREN);
+            if (parent == null) {
+                return null; // ok
+            }
+            return hasPermission(parent, REMOVE_CHILDREN) ? null
+                    : "Missing permission '" + REMOVE_CHILDREN + "' on parent document " + parent.getUUID();
         }
     }
 
@@ -1497,10 +1509,10 @@ public abstract class AbstractSession implements CoreSession, Serializable {
 
     protected void removeDocument(Document doc) throws ClientException {
         try {
-            if (!canRemoveDocument(doc)) {
+            String reason = canRemoveDocument(doc);
+            if (reason != null) {
                 throw new DocumentSecurityException(
-                        "Permission denied: cannot remove document "
-                                + doc.getUUID());
+                        "Permission denied: cannot remove document " + doc.getUUID() + ", " + reason);
             }
             removeNotifyOneDoc(doc);
 
