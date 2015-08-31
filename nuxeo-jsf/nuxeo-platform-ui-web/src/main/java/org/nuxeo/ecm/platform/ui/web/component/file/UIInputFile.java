@@ -141,10 +141,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
     public InputFileInfo getFileInfoValue() {
         InputFileInfo res = getFileInfoSubmittedValue();
         if (res == null) {
-            res = getFileInfoLocalValue();
-        }
-        if (res == null) {
-            res = (InputFileInfo) getValue();
+            res = getPreviousFileInfoValue();
         }
         return res;
     }
@@ -155,6 +152,17 @@ public class UIInputFile extends UIInput implements NamingContainer {
 
     public InputFileInfo getFileInfoSubmittedValue() {
         return (InputFileInfo) getSubmittedValue();
+    }
+
+    /**
+     * @since 7.4
+     */
+    public InputFileInfo getPreviousFileInfoValue() {
+        InputFileInfo res = getFileInfoLocalValue();
+        if (res == null) {
+            res = (InputFileInfo) getValue();
+        }
+        return res;
     }
 
     public String getOnchange() {
@@ -200,7 +208,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         InputFileInfo submitted = new InputFileInfo(choice, null, null, null);
         if (InputFileChoice.tempKeep.name().equals(choice) || InputFileChoice.keep.name().equals(choice)) {
             // re-submit already stored values
-            InputFileInfo previous = getFileInfoValue();
+            InputFileInfo previous = getPreviousFileInfoValue();
             if (previous != null) {
                 submitted.setBlob(previous.getConvertedBlob());
                 submitted.setFilename(previous.getConvertedFilename());
@@ -253,7 +261,7 @@ public class UIInputFile extends UIInput implements NamingContainer {
         }
         toValidate.setChoice(choice);
 
-        InputFileInfo previous = getFileInfoValue();
+        InputFileInfo previous = getPreviousFileInfoValue();
         InputFileChoice previousChoice = previous.getConvertedChoice();
         boolean temp = InputFileChoice.tempKeep == previousChoice || InputFileChoice.upload == previousChoice;
         List<InputFileChoice> choices = getAvailableChoices(previous.getBlob(), temp);
