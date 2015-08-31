@@ -21,7 +21,7 @@
 # usage: "gitf [git instructions]"
 gitf() {
   for dir in . *; do
-    if [ -a "$dir"/.git ]; then
+    if [ -e "$dir"/.git ]; then
       echo "[$dir]"
       (cd "$dir" ; git "$@")
       echo
