@@ -26,6 +26,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -50,14 +51,14 @@ public class DirectorySelectOneWidgetTypeHandler extends AbstractDirectorySelect
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers) throws WidgetException {
         String mode = widget.getMode();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
+            return super.getTagHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
         }
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         String widgetId = widget.getId();
         String widgetTagConfigId = widget.getTagConfigId();

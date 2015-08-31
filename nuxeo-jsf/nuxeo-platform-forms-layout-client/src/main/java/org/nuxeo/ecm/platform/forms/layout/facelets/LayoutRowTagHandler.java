@@ -72,7 +72,7 @@ public class LayoutRowTagHandler extends TagHandler {
         // resolve rows from layout in context
         Layout layout = null;
         String layoutVariableName = RenderVariables.layoutVariables.layout.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute layoutAttribute = helper.createAttribute(layoutVariableName,
                 String.format("#{%s}", layoutVariableName));
         if (layoutAttribute != null) {

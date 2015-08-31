@@ -26,12 +26,12 @@ import java.util.List;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.component.html.HtmlSelectBooleanCheckbox;
 import javax.faces.view.facelets.ComponentHandler;
-import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -41,6 +41,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
 import org.nuxeo.ecm.platform.ui.web.renderer.NXCheckboxRenderer;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.CompositeTagHandler;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 
@@ -56,9 +57,9 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
@@ -68,10 +69,10 @@ public class CheckboxWidgetTypeHandler extends AbstractWidgetTypeHandler {
             TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlSelectBooleanCheckbox.COMPONENT_TYPE, NXCheckboxRenderer.RENDERER_TYPE);
-            String msgId = helper.generateMessageId(widgetName);
+            String msgId = helper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+            return new CompositeTagHandler(tagConfig, handlers);
         } else {
             TagAttributes attributes = getViewTagAttributes(ctx, helper, widgetId, widget,
                     !BuiltinWidgetModes.isLikePlainMode(mode));

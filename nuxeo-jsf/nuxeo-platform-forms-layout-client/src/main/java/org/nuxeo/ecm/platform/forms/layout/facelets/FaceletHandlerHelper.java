@@ -45,6 +45,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 import javax.faces.view.facelets.ValidatorConfig;
 import javax.faces.view.facelets.ValidatorHandler;
 
@@ -111,19 +112,16 @@ public final class FaceletHandlerHelper {
      */
     public static final String DIR_AUTO = "auto";
 
-    final FaceletContext context;
-
     final TagConfig tagConfig;
 
-    public FaceletHandlerHelper(FaceletContext context, TagConfig tagConfig) {
-        this.context = context;
+    public FaceletHandlerHelper(TagConfig tagConfig) {
         this.tagConfig = tagConfig;
     }
 
     /**
      * Returns a id unique within the facelet context.
      */
-    public String generateUniqueId() {
+    public String generateUniqueId(FaceletContext context) {
         String id;
         TagAttribute idAttr = tagConfig.getTag().getAttributes().get("id");
         if (idAttr != null) {
@@ -131,13 +129,13 @@ public final class FaceletHandlerHelper {
         } else {
             id = context.getFacesContext().getViewRoot().createUniqueId();
         }
-        return generateUniqueId(id);
+        return generateUniqueId(context, id);
     }
 
     /**
      * Returns a id unique within the facelet context using given id as base.
      */
-    public String generateUniqueId(String base) {
+    public static String generateUniqueId(FaceletContext context, String base) {
         FacesContext faces = context.getFacesContext();
         NuxeoLayoutIdManagerBean bean = lookupIdBean(faces);
         return bean.generateUniqueId(base);
@@ -205,37 +203,37 @@ public final class FaceletHandlerHelper {
         return Functions.jsfTagIdEscape(base);
     }
 
-    public String generateWidgetId(String widgetName) {
-        return generateUniqueId(WIDGET_ID_PREFIX + widgetName);
+    public static String generateWidgetId(FaceletContext context, String widgetName) {
+        return generateUniqueId(context, WIDGET_ID_PREFIX + widgetName);
     }
 
-    public String generateLayoutId(String layoutName) {
-        return generateUniqueId(LAYOUT_ID_PREFIX + layoutName);
+    public static String generateLayoutId(FaceletContext context, String layoutName) {
+        return generateUniqueId(context, LAYOUT_ID_PREFIX + layoutName);
     }
 
-    public String generateMessageId(String widgetName) {
-        return generateUniqueId(WIDGET_ID_PREFIX + widgetName + MESSAGE_ID_SUFFIX);
-    }
-
-    /**
-     * @since 6.0
-     */
-    public String generateDevRegionId(String widgetName) {
-        return generateUniqueId(WIDGET_ID_PREFIX + widgetName + DEV_REGION_ID_SUFFIX);
+    public static String generateMessageId(FaceletContext context, String widgetName) {
+        return generateUniqueId(context, WIDGET_ID_PREFIX + widgetName + MESSAGE_ID_SUFFIX);
     }
 
     /**
      * @since 6.0
      */
-    public String generateDevContainerId(String widgetName) {
-        return generateUniqueId(WIDGET_ID_PREFIX + widgetName + DEV_CONTAINER_ID_SUFFIX);
+    public static String generateDevRegionId(FaceletContext context, String widgetName) {
+        return generateUniqueId(context, WIDGET_ID_PREFIX + widgetName + DEV_REGION_ID_SUFFIX);
+    }
+
+    /**
+     * @since 6.0
+     */
+    public static String generateDevContainerId(FaceletContext context, String widgetName) {
+        return generateUniqueId(context, WIDGET_ID_PREFIX + widgetName + DEV_CONTAINER_ID_SUFFIX);
     }
 
     /**
      * Creates a unique id and returns corresponding attribute, using given string id as base.
      */
-    public TagAttribute createIdAttribute(String base) {
-        String value = generateUniqueId(base);
+    public TagAttribute createIdAttribute(FaceletContext context, String base) {
+        String value = generateUniqueId(context, base);
         return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", "id", "id", value);
     }
 
@@ -303,9 +301,9 @@ public final class FaceletHandlerHelper {
     /**
      * Copies tag attributes with given names from the tag config, using given id as base for the id attribute.
      */
-    public TagAttributes copyTagAttributes(String id, String... names) {
+    public TagAttributes copyTagAttributes(FaceletContext context, String id, String... names) {
         List<TagAttribute> list = new ArrayList<TagAttribute>();
-        list.add(createIdAttribute(id));
+        list.add(createIdAttribute(context, id));
         for (String name : names) {
             if ("id".equals(name)) {
                 // ignore
@@ -601,9 +599,24 @@ public final class FaceletHandlerHelper {
     /**
      * @since 5.6
      */
-    public FaceletHandler getAliasTagHandler(String tagConfigId, Map<String, ValueExpression> variables,
+    public FaceletHandler getAliasFaceletHandler(String tagConfigId, Map<String, ValueExpression> variables,
             List<String> blockedPatterns, FaceletHandler nextHandler) {
         FaceletHandler currentHandler = nextHandler;
+        if (variables != null) {
+            // XXX also set id? cache? anchor?
+            ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId, getTagAttributes(),
+                    nextHandler);
+            currentHandler = new AliasTagHandler(config, variables, blockedPatterns);
+        }
+        return currentHandler;
+    }
+
+    /**
+     * @since 7.4
+     */
+    public TagHandler getAliasTagHandler(String tagConfigId, Map<String, ValueExpression> variables,
+            List<String> blockedPatterns, TagHandler nextHandler) {
+        TagHandler currentHandler = nextHandler;
         if (variables != null) {
             // XXX also set id? cache? anchor?
             ComponentConfig config = TagConfigFactory.createAliasTagConfig(tagConfig, tagConfigId, getTagAttributes(),

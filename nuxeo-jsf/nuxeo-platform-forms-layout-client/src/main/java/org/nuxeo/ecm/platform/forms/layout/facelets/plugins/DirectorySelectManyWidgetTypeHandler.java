@@ -35,6 +35,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
@@ -62,15 +63,15 @@ public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelec
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
+            throws WidgetException {
         String mode = widget.getMode();
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
-            return super.getFaceletHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
+            return super.getTagHandler(ctx, tagConfig, widget, subHandlers, getEditComponentType());
         }
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
+        TagHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
         String widgetName = widget.getName();
         String widgetTagConfigId = widget.getTagConfigId();
 
@@ -141,7 +142,7 @@ public class DirectorySelectManyWidgetTypeHandler extends AbstractDirectorySelec
                     FaceletHandlerHelper.getTagAttributes(), dirEntry, HtmlColumn.COMPONENT_TYPE, null);
 
             TagAttributes iterationAttributes = FaceletHandlerHelper.getTagAttributes(
-                    helper.createIdAttribute(widgetName), valueAttr, helper.createAttribute("var", "item"));
+                    helper.createIdAttribute(ctx, widgetName), valueAttr, helper.createAttribute("var", "item"));
 
             ComponentHandler table = helper.getHtmlComponentHandler(widgetTagConfigId, iterationAttributes,
                     columnEntry, HtmlDataTable.COMPONENT_TYPE, null);

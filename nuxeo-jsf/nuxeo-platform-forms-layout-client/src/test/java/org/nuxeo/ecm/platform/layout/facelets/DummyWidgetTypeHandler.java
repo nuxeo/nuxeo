@@ -22,18 +22,20 @@ package org.nuxeo.ecm.platform.layout.facelets;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.view.facelets.ComponentHandler;
-import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.AbstractWidgetTypeHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.CompositeTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafTagHandler;
 
 /**
  * Test widget that shows possibilities on how to write a widget tag handler.
@@ -45,13 +47,13 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1495841177711755669L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
+            throws WidgetException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetTagConfigId = widget.getTagConfigId();
         FaceletHandler[] handlers = null;
-        String originalId = helper.generateUniqueId();
+        String originalId = helper.generateUniqueId(ctx);
         TagAttributes attributes = helper.getTagAttributes(originalId, widget);
         FaceletHandler leaf = new LeafFaceletHandler();
         if (BuiltinWidgetModes.VIEW.equals(mode)) {
@@ -61,15 +63,15 @@ public class DummyWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputText.COMPONENT_TYPE, null);
-            String msgId = helper.generateUniqueId(originalId);
+            String msgId = FaceletHandlerHelper.generateUniqueId(ctx, originalId);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, originalId,
                     "errorMessage");
             handlers = new FaceletHandler[] { input, message };
         }
         if (handlers == null) {
-            return new LeafFaceletHandler();
+            return new LeafTagHandler(tagConfig);
         } else {
-            return new CompositeFaceletHandler(handlers);
+            return new CompositeTagHandler(tagConfig, handlers);
         }
     }
 }

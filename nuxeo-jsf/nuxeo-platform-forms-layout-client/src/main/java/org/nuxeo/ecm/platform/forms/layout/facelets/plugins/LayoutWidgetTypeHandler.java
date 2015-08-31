@@ -24,6 +24,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
@@ -47,9 +48,9 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
+            throws WidgetException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String widgetId = widget.getId();
         String widgetMode = widget.getMode();
 
@@ -69,7 +70,7 @@ public class LayoutWidgetTypeHandler extends AbstractWidgetTypeHandler {
         FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper, false, false);
         String widgetTagConfigId = widget.getTagConfigId();
         TagConfig layoutTagConfig = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, leaf);
-        FaceletHandler res = new LayoutTagHandler(layoutTagConfig);
+        TagHandler res = new LayoutTagHandler(layoutTagConfig);
         if (BuiltinWidgetModes.PDF.equals(widgetMode)) {
             // add a surrounding p:html tag handler
             return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]), res,

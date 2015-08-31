@@ -67,7 +67,7 @@ public class WidgetTypeDevTagHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
             ELException {
         Widget widgetInstance = (Widget) widget.getObject(ctx, Widget.class);
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         String templateValue = template != null ? template.getValue(ctx) : null;
         if (StringUtils.isBlank(templateValue)) {
             templateValue = DEFAULT_TEMPLATE;

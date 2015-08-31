@@ -18,30 +18,37 @@ package org.nuxeo.ecm.platform.ui.web.tag.handler;
 
 import java.io.IOException;
 
-import javax.el.ELException;
-import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 /**
- * Leaf Facelet Handler (facelet handler that does nothing).
- * <p>
- * Used when there is no next handler to apply, as next handler can never be null.
+ * Composite facelet handler which is also a tag handler.
  *
  * @since 7.4
  */
-public class LeafFaceletHandler implements FaceletHandler {
+public final class CompositeTagHandler extends TagHandler {
 
-    public LeafFaceletHandler() {
+    private final FaceletHandler[] children;
+
+    private final int len;
+
+    public CompositeTagHandler(TagConfig config, FaceletHandler[] children) {
+        super(config);
+        this.children = children;
+        this.len = children.length;
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
+    public void apply(FaceletContext ctx, UIComponent parent) throws IOException {
+        for (int i = 0; i < len; i++) {
+            this.children[i].apply(ctx, parent);
+        }
     }
 
-    @Override
-    public String toString() {
-        return "FaceletHandler Tail";
+    public FaceletHandler[] getHandlers() {
+        return this.children;
     }
 
 }

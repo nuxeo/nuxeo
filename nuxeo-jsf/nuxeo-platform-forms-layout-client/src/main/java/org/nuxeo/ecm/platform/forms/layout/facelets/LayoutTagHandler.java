@@ -47,6 +47,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.platform.forms.layout.api.Layout;
 import org.nuxeo.ecm.platform.forms.layout.api.LayoutDefinition;
+import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.LayoutDevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
@@ -175,7 +176,7 @@ public class LayoutTagHandler extends TagHandler {
             BlockingVariableMapper vm = new BlockingVariableMapper(orig);
             ctx.setVariableMapper(vm);
 
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
             ExpressionFactory eFactory = ctx.getExpressionFactory();
             Layout layoutInstance = null;
 
@@ -305,7 +306,7 @@ public class LayoutTagHandler extends TagHandler {
 
         // set unique id on layout, unless layout is only resolved
         if (!resolveOnly) {
-            layoutInstance.setId(helper.generateLayoutId(layoutInstance.getName()));
+            layoutInstance.setId(FaceletHandlerHelper.generateLayoutId(ctx, layoutInstance.getName()));
         }
 
         // add additional properties put on tag
@@ -333,6 +334,21 @@ public class LayoutTagHandler extends TagHandler {
             templateValue = layoutInstance.getTemplate();
         }
 
+        if (!resolveOnly) {
+            boolean scaffold = Boolean.parseBoolean(String.valueOf(layoutInstance.getProperty("scaffold")));
+            if (scaffold) {
+                // generate ids on widgets
+                Map<String, Widget> widgetMap = layoutInstance.getWidgetMap();
+                if (widgetMap != null) {
+                    for (Widget widget : widgetMap.values()) {
+                        if (widget != null && (widget.getId() == null)) {
+                            WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
+                        }
+                    }
+                }
+            }
+        }
+
         // expose layout instance to variable mapper to ensure good
         // resolution of properties
         ExpressionFactory eFactory = ctx.getExpressionFactory();
@@ -345,6 +361,7 @@ public class LayoutTagHandler extends TagHandler {
         final String layoutTagConfigId = layoutInstance.getTagConfigId();
 
         if (resolveOnly) {
+            // apply
             nextHandler.apply(ctx, parent);
         } else {
             if (!StringUtils.isBlank(templateValue)) {

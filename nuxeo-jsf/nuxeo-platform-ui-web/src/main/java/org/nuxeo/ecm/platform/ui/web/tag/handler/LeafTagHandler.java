@@ -22,18 +22,16 @@ import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 /**
- * Leaf Facelet Handler (facelet handler that does nothing).
- * <p>
- * Used when there is no next handler to apply, as next handler can never be null.
- *
  * @since 7.4
  */
-public class LeafFaceletHandler implements FaceletHandler {
+public class LeafTagHandler extends TagHandler {
 
-    public LeafFaceletHandler() {
+    public LeafTagHandler(TagConfig config) {
+        super(config);
     }
 
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, ELException {
@@ -41,7 +39,7 @@ public class LeafFaceletHandler implements FaceletHandler {
 
     @Override
     public String toString() {
-        return "FaceletHandler Tail";
+        return "TagHandler Tail";
     }
 
 }

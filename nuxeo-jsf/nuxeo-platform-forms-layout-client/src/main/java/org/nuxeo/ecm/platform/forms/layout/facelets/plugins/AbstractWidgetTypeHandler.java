@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 import javax.faces.view.facelets.ValidatorHandler;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +39,9 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.WidgetTypeHandler;
 import org.nuxeo.ecm.platform.forms.layout.facelets.dev.WidgetTypeDevTagHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.CompositeTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.ecm.platform.ui.web.validator.DocumentConstraintValidator;
 
@@ -66,7 +68,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
 
     protected Map<String, String> properties;
 
-    public abstract FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    public abstract TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers) throws WidgetException;
 
     public FaceletHandler getDevFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget)
@@ -80,7 +82,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
         if (StringUtils.isBlank(template)) {
             template = getProperty(DEV_TEMPLATE_PROPERTY_NAME);
         }
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         TagAttribute widgetAttr = helper.createAttribute("widget",
                 String.format("#{%s}", RenderVariables.widgetVariables.widget.name()));
         TagAttributes devWidgetAttributes;
@@ -130,7 +132,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      *
      * @since 6.0
      */
-    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    protected TagHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers, FaceletHandlerHelper helper) {
         boolean isEdit = BuiltinWidgetModes.EDIT.equals(widget.getMode());
         return getNextHandler(ctx, tagConfig, widget, subHandlers, helper, isEdit, isEdit);
@@ -146,7 +148,7 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      *             {@link #getNextHandler(FaceletContext, TagConfig, Widget, FaceletHandler[], FaceletHandlerHelper, boolean, boolean)}
      *             instead
      */
-    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    protected TagHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers, FaceletHandlerHelper helper, boolean addInputSlot) {
         return getNextHandler(ctx, tagConfig, widget, subHandlers, helper, addInputSlot, false);
     }
@@ -160,10 +162,10 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
      *
      * @since 7.2
      */
-    protected FaceletHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    protected TagHandler getNextHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers, FaceletHandlerHelper helper, boolean addInputSlot,
             boolean addDocumentConstraintValidator) {
-        FaceletHandler leaf;
+        TagHandler leaf;
         List<FaceletHandler> handlers = new ArrayList<>();
         if (subHandlers != null && subHandlers.length > 0) {
             for (FaceletHandler fh : subHandlers) {
@@ -185,9 +187,9 @@ public abstract class AbstractWidgetTypeHandler implements WidgetTypeHandler {
             }
         }
         if (handlers.size() == 0) {
-            leaf = new LeafFaceletHandler();
+            leaf = new LeafTagHandler(tagConfig);
         } else {
-            leaf = new CompositeFaceletHandler(handlers.toArray(new FaceletHandler[] {}));
+            leaf = new CompositeTagHandler(tagConfig, handlers.toArray(new FaceletHandler[] {}));
         }
         return leaf;
     }

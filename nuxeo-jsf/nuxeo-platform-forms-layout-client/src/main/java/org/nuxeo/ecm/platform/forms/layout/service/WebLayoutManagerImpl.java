@@ -35,6 +35,7 @@ import javax.faces.view.facelets.ComponentHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -553,18 +554,12 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
     }
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget) {
-        return getFaceletHandler(ctx, config, widget, null);
-    }
-
-    @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig config, Widget widget,
-            FaceletHandler nextHandler) {
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig config, Widget widget, FaceletHandler nextHandler) {
         String widgetTypeName = widget.getType();
         String widgetTypeCategory = widget.getTypeCategory();
         WidgetTypeHandler handler = getWidgetTypeHandler(widgetTypeCategory, widgetTypeName);
         if (handler == null) {
-            FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+            FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
             String message = String.format("No widget handler found for type '%s' in category '%s'", widgetTypeName,
                     widgetTypeCategory);
             log.error(message);
@@ -579,11 +574,11 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
             if (!subHandlersList.isEmpty()) {
                 subHandlers = subHandlersList.toArray(new FaceletHandler[0]);
             }
-            FaceletHandler widgetHandler = handler.getFaceletHandler(ctx, config, widget, subHandlers);
+            TagHandler widgetHandler = handler.getTagHandler(ctx, config, widget, subHandlers);
 
             if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
                 // decorate handler with dev handler
-                FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
                 FaceletHandler devHandler = handler.getDevFaceletHandler(ctx, config, widget);
                 if (devHandler == null) {
                     return widgetHandler;
@@ -596,10 +591,10 @@ public class WebLayoutManagerImpl extends AbstractLayoutManager implements WebLa
                 variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
                 List<String> blockedPatterns = new ArrayList<String>();
                 blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
-                FaceletHandler devAliasHandler = helper.getAliasTagHandler(widgetTagConfigId, variables,
+                FaceletHandler devAliasHandler = helper.getAliasFaceletHandler(widgetTagConfigId, variables,
                         blockedPatterns, devHandler);
                 String refId = widget.getName();
-                FaceletHandler widgetDevHandler = new DevTagHandler(config, refId, widgetHandler, devAliasHandler);
+                TagHandler widgetDevHandler = new DevTagHandler(config, refId, widgetHandler, devAliasHandler);
                 return widgetDevHandler;
             }
             return widgetHandler;

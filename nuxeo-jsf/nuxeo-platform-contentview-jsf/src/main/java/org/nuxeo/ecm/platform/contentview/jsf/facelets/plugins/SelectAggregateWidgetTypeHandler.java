@@ -27,6 +27,7 @@ import javax.el.ValueExpression;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetSelectOption;
@@ -110,8 +111,8 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
     }
 
     @Override
-    protected FaceletHandler getComponentFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
-            FaceletHandler componentHandler) {
+    protected TagHandler getComponentFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
+            TagHandler componentHandler) {
         WidgetSelectOption[] selectOptions = widget.getSelectOptions();
         if (selectOptions != null && selectOptions.length != 0) {
             List<String> blockedPatterns = new ArrayList<String>(1);

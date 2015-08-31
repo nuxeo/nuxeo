@@ -20,6 +20,7 @@ import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -33,9 +34,9 @@ public class SelectManyCheckboxDirectoryAggregateWidgetTypeHandler extends Selec
     private static final long serialVersionUID = 1L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
             FaceletHandler[] subHandlers) throws WidgetException {
-        return getFaceletHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectManyCheckbox.COMPONENT_TYPE,
+        return getTagHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectManyCheckbox.COMPONENT_TYPE,
                 NxSelectManyCheckboxListRenderer.RENDERER_TYPE);
     }
 

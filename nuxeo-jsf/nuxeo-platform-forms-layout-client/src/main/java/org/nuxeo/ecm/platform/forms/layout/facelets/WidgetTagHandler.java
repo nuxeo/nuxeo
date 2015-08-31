@@ -38,6 +38,7 @@ import javax.faces.view.facelets.MetaTagHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagException;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -119,8 +120,8 @@ public class WidgetTagHandler extends MetaTagHandler {
 
         // additional checks
         if (name == null && widget == null && definition == null) {
-            throw new TagException(this.tag, "At least one of attributes 'name', 'widget' "
-                    + "or 'definition' is required");
+            throw new TagException(this.tag,
+                    "At least one of attributes 'name', 'widget' " + "or 'definition' is required");
         }
         if (widget == null && (name != null || definition != null)) {
             if (mode == null) {
@@ -198,18 +199,17 @@ public class WidgetTagHandler extends MetaTagHandler {
                 }
             }
 
+            if (widgetInstanceBuilt) {
+                // expose widget variable to the context as layout row has not done it already, and set unique id on
+                // widget before exposing it to the context
+                FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+                WidgetTagHandler.generateWidgetId(ctx, helper, widgetInstance, false);
+            }
+
             VariableMapper orig = ctx.getVariableMapper();
             try {
                 BlockingVariableMapper vm = new BlockingVariableMapper(orig);
                 ctx.setVariableMapper(vm);
-
-                if (widgetInstanceBuilt) {
-                    // expose widget variable to the context as layout row has not done it already, and set unique id on
-                    // widget before exposing it to the context
-                    FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
-                    WidgetTagHandler.generateWidgetId(helper, widgetInstance, false);
-                    exposeWidgetVariables(ctx, vm, widgetInstance, null, false);
-                }
 
                 boolean resolveOnlyBool = false;
                 if (resolveOnly != null) {
@@ -227,23 +227,24 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
     }
 
-    public static void generateWidgetIdsRecursive(FaceletHandlerHelper helper, Widget widget) {
-        generateWidgetId(helper, widget, true);
+    public static void generateWidgetIdsRecursive(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget) {
+        generateWidgetId(ctx, helper, widget, true);
     }
 
     /**
      * @since 7.2
      */
-    public static void generateWidgetId(FaceletHandlerHelper helper, Widget widget, boolean recursive) {
+    public static void generateWidgetId(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
+            boolean recursive) {
         if (widget == null) {
             return;
         }
-        widget.setId(helper.generateWidgetId(widget.getName()));
+        widget.setId(FaceletHandlerHelper.generateWidgetId(ctx, widget.getName()));
         if (recursive) {
             Widget[] subWidgets = widget.getSubWidgets();
             if (subWidgets != null) {
                 for (Widget subWidget : subWidgets) {
-                    generateWidgetIdsRecursive(helper, subWidget);
+                    generateWidgetIdsRecursive(ctx, helper, subWidget);
                 }
             }
         }
@@ -256,7 +257,7 @@ public class WidgetTagHandler extends MetaTagHandler {
         }
         WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-        FaceletHandler handler = layoutService.getFaceletHandler(ctx, config, widget, nextHandler);
+        TagHandler handler = layoutService.getTagHandler(ctx, config, widget, nextHandler);
         if (handler == null) {
             return;
         }

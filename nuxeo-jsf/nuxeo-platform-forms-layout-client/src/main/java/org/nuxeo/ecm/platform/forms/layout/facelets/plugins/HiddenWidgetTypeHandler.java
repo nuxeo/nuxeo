@@ -21,18 +21,19 @@ package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlInputHidden;
 import javax.faces.view.facelets.ComponentHandler;
-import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.CompositeTagHandler;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
 
@@ -46,9 +47,9 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
     private static final long serialVersionUID = 2202878489813240926L;
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
+            throws WidgetException {
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
         String widgetName = widget.getName();
@@ -64,10 +65,10 @@ public class HiddenWidgetTypeHandler extends AbstractWidgetTypeHandler {
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlInputHidden.COMPONENT_TYPE, null);
-            String msgId = helper.generateMessageId(widgetName);
+            String msgId = helper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeFaceletHandler(handlers);
+            return new CompositeTagHandler(tagConfig, handlers);
         } else {
             // default on text for other modes
             ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,

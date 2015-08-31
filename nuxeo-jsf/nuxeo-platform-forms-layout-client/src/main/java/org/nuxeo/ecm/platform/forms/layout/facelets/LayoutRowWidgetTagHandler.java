@@ -71,13 +71,13 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
      * Widget variables exposed: {@link RenderVariables.widgetVariables#widget} , same variable suffixed with "_n" where
      * n is the widget level, and {@link RenderVariables.widgetVariables#widgetIndex}.
      */
-    public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException,
-            ELException {
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
 
         // resolve widgets from row in context
         LayoutRow row = null;
         String rowVariableName = RenderVariables.rowVariables.layoutRow.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute rowAttribute = helper.createAttribute(rowVariableName, String.format("#{%s}", rowVariableName));
         if (rowAttribute != null) {
             row = (LayoutRow) rowAttribute.getObject(ctx, LayoutRow.class);
@@ -108,13 +108,19 @@ public class LayoutRowWidgetTagHandler extends TagHandler {
                 // several times => do not generate id again if already set, unless specified by attribute
                 // "recomputeIds"
                 if (widget != null && (widget.getId() == null || recomputeIdsBool)) {
-                    WidgetTagHandler.generateWidgetId(helper, widget, false);
+                    WidgetTagHandler.generateWidgetId(ctx, helper, widget, false);
                 }
 
-                WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, widgetCounter, true);
+                // XXX: expose widget controls too, need to figure out
+                // why controls cannot be references to widget.controls like
+                // properties are in TemplateWidgetTypeHandler
+                if (widget != null) {
 
-                nextHandler.apply(ctx, parent);
-                widgetCounter++;
+                    WidgetTagHandler.exposeWidgetVariables(ctx, vm, widget, widgetCounter, true);
+
+                    nextHandler.apply(ctx, parent);
+                    widgetCounter++;
+                }
             }
         } finally {
             ctx.setVariableMapper(orig);

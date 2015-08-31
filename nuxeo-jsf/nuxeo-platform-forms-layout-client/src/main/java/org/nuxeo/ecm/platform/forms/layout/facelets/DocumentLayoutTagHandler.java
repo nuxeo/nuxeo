@@ -139,7 +139,7 @@ public class DocumentLayoutTagHandler extends TagHandler {
             }
         }
 
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute modeAttr = helper.createAttribute("mode", modeValue);
         List<FaceletHandler> handlers = new ArrayList<FaceletHandler>();
         FaceletHandler leaf = nextHandler;

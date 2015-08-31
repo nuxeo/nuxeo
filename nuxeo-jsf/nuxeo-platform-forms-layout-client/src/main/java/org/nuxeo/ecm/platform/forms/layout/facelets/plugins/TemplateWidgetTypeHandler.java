@@ -33,6 +33,7 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
+import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,7 +45,7 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
+import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -72,16 +73,16 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
     public static final String BIND_VALUE_IF_NO_FIELD_PROPERTY_NAME = "bindValueIfNoField";
 
     @Override
-    public FaceletHandler getFaceletHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
+    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
+            throws WidgetException {
         String template = getTemplateValue(widget);
-        FaceletHandler leaf = new LeafFaceletHandler();
+        TagHandler leaf = new LeafTagHandler(tagConfig);
         if (template == null) {
             log.error("Missing template property for widget " + widget.getName() + " in layout "
                     + widget.getLayoutName());
             return leaf;
         }
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, tagConfig);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String widgetId = widget.getId();
         TagAttributes attributes = helper.getTagAttributes(widgetId, widget);
         TagAttribute templateAttr = getTemplateAttribute(helper);
@@ -108,8 +109,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         blockedPatterns.add(RenderVariables.widgetVariables.widgetControl.name() + "_*");
 
         DecorateHandler includeHandler = new DecorateHandler(config);
-        FaceletHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns,
-                includeHandler);
+        TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns, includeHandler);
         return handler;
     }
 

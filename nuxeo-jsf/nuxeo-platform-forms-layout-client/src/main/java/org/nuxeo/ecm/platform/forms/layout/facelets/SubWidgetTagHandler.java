@@ -73,7 +73,7 @@ public class SubWidgetTagHandler extends TagHandler {
         // resolve subwidgets from widget in context
         Widget widget = null;
         String widgetVariableName = RenderVariables.widgetVariables.widget.name();
-        FaceletHandlerHelper helper = new FaceletHandlerHelper(ctx, config);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
         TagAttribute widgetAttribute = helper.createAttribute(widgetVariableName,
                 String.format("#{%s}", widgetVariableName));
         if (widgetAttribute != null) {
@@ -105,7 +105,7 @@ public class SubWidgetTagHandler extends TagHandler {
                 // several times => do not generate id again if already set, unless specified by attribute
                 // "recomputeIds"
                 if (subWidget != null && (subWidget.getId() == null || recomputeIdsBool)) {
-                    WidgetTagHandler.generateWidgetId(helper, subWidget, false);
+                    WidgetTagHandler.generateWidgetId(ctx, helper, subWidget, false);
                 }
 
                 WidgetTagHandler.exposeWidgetVariables(ctx, vm, subWidget, subWidgetCounter, true);
