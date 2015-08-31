@@ -19,16 +19,21 @@
 package org.nuxeo.ftest.cap;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Date;
 
 import org.junit.Test;
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.FileDocumentBasePage;
 import org.nuxeo.functionaltests.pages.forms.FileCreationFormPage;
+import org.nuxeo.functionaltests.pages.tabs.EditTabSubPage;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 
 /**
  * Test file upload in Nuxeo DM.
@@ -54,6 +59,25 @@ public class ITFileUploadTest extends AbstractTest {
         String uploadedFileName = fileDocumentBasePage.getFileSummaryTab().getMainContentFileText();
         assertTrue("Wrong uploaded file name '" + uploadedFileName + "', expected it to contain '" + filePrefix + "'",
                 uploadedFileName.contains(filePrefix));
+
+        // Check removal of file
+        WebElement sumContent = Locator.findElementWithTimeout(By.xpath("//div[@class=\"content_block\"]"));
+        assertNotNull(sumContent);
+        String sumContentText = sumContent.getText();
+        assertNotNull(sumContentText);
+        assertFalse(sumContentText.contains("Drop here"));
+        assertTrue(sumContentText.contains(uploadedFileName));
+        EditTabSubPage editPage = fileDocumentBasePage.getEditTab();
+        WebElement deleteChoice = Locator.findElementWithTimeout(By.id("document_edit:nxl_file:nxw_file:nxw_file_file:choicedelete"));
+        assertNotNull(deleteChoice);
+        deleteChoice.click();
+        fileDocumentBasePage = editPage.save().asPage(FileDocumentBasePage.class);
+        sumContent = Locator.findElementWithTimeout(By.xpath("//div[@class=\"content_block\"]"));
+        assertNotNull(sumContent);
+        sumContentText = sumContent.getText();
+        assertNotNull(sumContentText);
+        assertTrue(sumContentText.contains("Drop here"));
+        assertFalse(sumContentText.contains(uploadedFileName));
 
         // Clean up repository
         deleteWorkspace(fileDocumentBasePage, wsTitle);
