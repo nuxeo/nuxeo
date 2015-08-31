@@ -55,6 +55,7 @@ import org.nuxeo.ecm.core.api.DocumentModelIterator;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -1170,6 +1171,45 @@ public class TestMongoDBRepository extends MongoDBRepositoryTestCase {
         session.removeDocument(returnedChildDocs.get(0).getRef());
 
         assertFalse(session.exists(returnedChildDocs.get(0).getRef()));
+    }
+
+    @Test
+    public void testRemoveVersion() {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        // create version
+        DocumentRef version = doc.checkIn(VersioningOption.MAJOR, null);
+        // create proxy
+        DocumentModel proxy = session.createProxy(version, new PathRef("/"));
+
+        // cannot remove version due to existing proxy
+        try {
+            session.removeDocument(version);
+            fail();
+        } catch (DocumentSecurityException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("targets version"));
+        }
+
+        // remove proxy
+        session.removeDocument(proxy.getRef());
+        // create version 2
+        doc.checkOut();
+        doc.checkIn(VersioningOption.MAJOR, null);
+        // restore doc to version 1
+        session.restoreToVersion(doc.getRef(), version);
+
+        // cannot remove version due to live doc having it as base version
+        try {
+            session.removeDocument(version);
+            fail();
+        } catch (DocumentSecurityException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("is checked in with base version"));
+        }
+
+        // checkout live doc
+        doc.checkOut();
+        // now we can remove the version
+        session.removeDocument(version);
     }
 
     public void TODOtestQuery() {

@@ -19,6 +19,7 @@ package org.nuxeo.ftest.cap;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -151,21 +152,24 @@ public class ITArchivedVersionsTest extends AbstractTest {
         // Select version 1.0
         archivedVersionsPage = archivedVersionsPage.selectVersion("1.0");
 
-        // Check can delete versions since one is selected
-        archivedVersionsPage.checkCanRemoveSelectedVersions(true);
+        // Check cannot delete version 1.0 since it's the base version for the restored document
+        archivedVersionsPage.checkCanRemoveSelectedVersions(false);
+
+        // Deselect version 1.0
+        archivedVersionsPage = archivedVersionsPage.selectVersion("1.0");
 
         // Select version 2.0
         archivedVersionsPage = archivedVersionsPage.selectVersion("2.0");
 
-        // Check can delete versions since two are selected
+        // Check can delete version 2.0
         archivedVersionsPage.checkCanRemoveSelectedVersions(true);
 
-        // Delete selected versions
+        // Delete selected version
         archivedVersionsPage = archivedVersionsPage.removeSelectedVersions();
 
-        // Check version labels, there should be none
+        // Check version labels, there should be one left
         List<String> versionLabels = archivedVersionsPage.getVersionLabels();
-        assertEquals(0, versionLabels.size());
+        assertEquals(Arrays.asList("1.0"), versionLabels);
 
         // Go back to doc and return it
         return archivedVersionsPage.goToDocumentByBreadcrumb("Test file: modif 1");

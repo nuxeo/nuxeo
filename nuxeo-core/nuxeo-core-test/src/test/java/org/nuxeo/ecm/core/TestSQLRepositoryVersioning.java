@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
-import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -121,8 +120,9 @@ public class TestSQLRepositoryVersioning {
         checkVersions(file);
 
         file.setPropertyValue("file:filename", "A");
-        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         file = session.saveDocument(file);
+        file.checkIn(VersioningOption.MINOR, null);
+        file.checkOut(); // to allow deleting last version
 
         checkVersions(file, "0.1");
 
@@ -201,25 +201,26 @@ public class TestSQLRepositoryVersioning {
     private void createTrioVersions(DocumentModel file) throws Exception {
         // create a first version
         file.setProperty("file", "filename", "A");
-        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         file = session.saveDocument(file);
+        file.checkIn(VersioningOption.MINOR, null);
 
         checkVersions(file, "0.1");
 
         // create a second version
         // make it dirty so it will be saved
         file.setProperty("file", "filename", "B");
-        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
+        file.checkIn(VersioningOption.MINOR, null);
 
         checkVersions(file, "0.1", "0.2");
 
         // create a third version
         file.setProperty("file", "filename", "C");
-        file.putContextData(ScopeType.REQUEST, VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, Boolean.TRUE);
         maybeSleepToNextSecond();
         file = session.saveDocument(file);
+        file.checkIn(VersioningOption.MINOR, null);
+        file.checkOut();  // to allow deleting last version
 
         checkVersions(file, "0.1", "0.2", "0.3");
     }
@@ -545,6 +546,8 @@ public class TestSQLRepositoryVersioning {
         // remove the proxy first
         session.removeDocument(proxy.getRef());
         session.save();
+        // check out the working copy
+        file.checkOut();
         // we can now remove the version
         session.removeDocument(version.getRef());
         session.save();
@@ -700,6 +703,8 @@ public class TestSQLRepositoryVersioning {
         List<VersionModel> versions = session.getVersionsForDocument(doc.getRef());
         assertEquals(1, versions.size());
         DocumentModel docVersion = session.getDocumentWithVersion(doc.getRef(), versions.get(0));
+        // check out the working copy to remove the base version
+        doc.checkOut();
         session.removeDocument(docVersion.getRef());
 
         checkVersions(doc);
@@ -991,6 +996,7 @@ public class TestSQLRepositoryVersioning {
         session.save();
         DocumentRef v1ref = session.checkIn(doc.getRef(), VersioningOption.MAJOR, null);
         session.checkOut(doc.getRef());
+        maybeSleepToNextSecond();
         DocumentRef v2ref = session.checkIn(doc.getRef(), VersioningOption.MINOR, null);
 
         // last version on the doc
