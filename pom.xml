@@ -175,7 +175,7 @@
     <dropbox.api.version>1.7.7</dropbox.api.version>
     <selenium.version>2.39.0</selenium.version>
     <cxf.version>2.6.8</cxf.version>
-    <pdfbox.version>1.8.6</pdfbox.version>
+    <pdfbox.version>1.8.9</pdfbox.version>
     <aws.version>1.9.14</aws.version>
 
     <!-- JBoss properties -->
