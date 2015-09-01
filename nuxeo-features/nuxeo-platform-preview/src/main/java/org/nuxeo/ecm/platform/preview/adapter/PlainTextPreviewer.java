@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2009 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SAS (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -28,18 +28,19 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService;
 import org.nuxeo.ecm.platform.preview.api.PreviewException;
-import org.nuxeo.runtime.api.Framework;
 
 import com.ibm.icu.text.CharsetDetector;
 
 public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePreviewer {
 
-    protected String htmlContent(String content) {
-        return "<pre>"
-                + content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\'", "&apos;").replace(
-                        "\"", "&quot;").replace("\n", "<br/>") + "</pre>";
+    public String htmlContent(String content) {
+        // & and < are the only two that we really need to escape
+        // then we also make newlines visible
+        String escaped = StringUtils.replaceEach(content, //
+                new String[] { "&", "<", "\n" }, //
+                new String[] { "&amp;", "&lt;", "<br/>" });
+        return "<pre>" + escaped + "</pre>";
     }
 
     @Override
@@ -68,18 +69,11 @@ public class PlainTextPreviewer extends AbstractPreviewer implements MimeTypePre
             throw new PreviewException("Cannot encode blob content to string", e);
         }
 
-        HtmlSanitizerService sanitizer = Framework.getService(HtmlSanitizerService.class);
-        if (sanitizer == null && !Framework.isTestModeSet()) {
-            throw new RuntimeException("Cannot find HtmlSanitizerService");
-        }
-
         htmlPage.append("<?xml version=\"1.0\" encoding=\"UTF-8\"/>");
         htmlPage.append("<html>");
         htmlPage.append("<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/></head>");
         htmlPage.append("<body>");
-        if (sanitizer != null) {
-            htmlPage.append(htmlContent(sanitizer.sanitizeString(content, null)));
-        }
+        htmlPage.append(htmlContent(content));
         htmlPage.append("</body></html>");
 
         Blob mainBlob = Blobs.createBlob(htmlPage.toString(), "text/html", "UTF-8", "index.html");
