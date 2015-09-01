@@ -13,10 +13,9 @@ import org.nuxeo.runtime.api.Framework;
 class LookupStateByTask implements LookupState {
 
     @Override
-    public boolean isPublished(DocumentModel doc, CoreSession session)
-            throws ClientException {
-        List<Task> tasks = Framework.getLocalService(TaskService.class).getTaskInstances(
-                doc, (NuxeoPrincipal) null, session);
+    public boolean isPublished(DocumentModel doc, CoreSession session) throws ClientException {
+        List<Task> tasks = Framework.getLocalService(TaskService.class).getTaskInstances(doc, (NuxeoPrincipal) null,
+                session);
         for (Task task : tasks) {
             if (task.getName().equals(CoreProxyWithWorkflowFactory.TASK_NAME)) {
                 // if there is a task on this doc, then it is not yet

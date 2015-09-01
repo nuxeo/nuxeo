@@ -6,7 +6,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface LookupState {
 
-    boolean isPublished(DocumentModel doc, CoreSession session)
-            throws ClientException;
+    boolean isPublished(DocumentModel doc, CoreSession session) throws ClientException;
 
 }

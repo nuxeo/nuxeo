@@ -44,8 +44,7 @@ public class ChangePermissionUnrestricted extends UnrestrictedSessionRunner {
     private final String[] validators;
 
     // acl unused
-    public ChangePermissionUnrestricted(CoreSession session,
-            DocumentModel document, String[] validators,
+    public ChangePermissionUnrestricted(CoreSession session, DocumentModel document, String[] validators,
             NuxeoPrincipal principal, String aclName, ACL acl) {
         super(session);
         this.ref = document.getRef();
