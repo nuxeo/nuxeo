@@ -78,18 +78,16 @@ public class RelationCreationBean {
             msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.type", null, locale);
             message = new FacesMessage(msg);
         } else if (objectType.equals("literal")) {
-            objectValue = ((String) objectLiteralValueInput.getLocalValue()).trim();
+            objectValue = StringUtils.trim((String) objectLiteralValueInput.getLocalValue());
             msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.text", null, locale);
             message = new FacesMessage(msg);
         } else if (objectType.equals("uri")) {
             // XXX maybe perform better validation on uri
-            objectValue = ((String) objectUriInput.getLocalValue()).trim();
+            objectValue = StringUtils.trim((String) objectUriInput.getLocalValue());
             msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.uri", null, locale);
             message = new FacesMessage(msg);
         } else if (objectType.equals("document")) {
-            if (null != objectDocumentUidInput) {
-                objectValue = ((String) objectDocumentUidInput.getLocalValue()).trim();
-            }
+            objectValue = StringUtils.trim((String) objectDocumentUidInput.getLocalValue());
             msg = I18NUtils.getMessageString(bundleName, "error.relation.required.object.document", null, locale);
             message = new FacesMessage(msg);
         } else {
