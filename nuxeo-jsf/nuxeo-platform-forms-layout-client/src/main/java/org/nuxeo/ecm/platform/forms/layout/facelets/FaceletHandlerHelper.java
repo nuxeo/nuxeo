@@ -168,28 +168,6 @@ public final class FaceletHandlerHelper {
     }
 
     /**
-     * Generates a unique id from counters persisted in given map
-     *
-     * @since 5.7
-     * @deprecated since 7.2, see {@link NuxeoLayoutIdManagerBean}
-     */
-    @Deprecated
-    public static String generateUniqueId(String base, Map<String, Integer> counters) {
-        // strip base of any remnant counter name
-        base = stripUniqueIdBase(base);
-        // increment in map
-        Integer cnt = counters.get(base);
-        if (cnt == null) {
-            counters.put(base, new Integer(0));
-            return base;
-        } else {
-            int i = cnt.intValue() + 1;
-            counters.put(base, new Integer(i));
-            return base + "_" + i;
-        }
-    }
-
-    /**
      * @throws IllegalArgumentException if the given string is null or empty.
      */
     protected static String generateValidIdString(String base) {

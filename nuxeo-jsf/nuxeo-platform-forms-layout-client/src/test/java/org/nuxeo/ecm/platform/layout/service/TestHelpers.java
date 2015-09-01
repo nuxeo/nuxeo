@@ -26,10 +26,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
@@ -39,7 +40,6 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.forms.layout.api.FieldDefinition;
 import org.nuxeo.ecm.platform.forms.layout.api.impl.FieldDefinitionImpl;
-import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.NXRuntimeTestCase;
@@ -112,6 +112,7 @@ public class TestHelpers extends NXRuntimeTestCase {
         File file = File.createTempFile("test", ".xml");
         FileOutputStream fileOut = new FileOutputStream(file);
         fileOut.write(res);
+        fileOut.close();
 
         return res;
     }
@@ -127,8 +128,7 @@ public class TestHelpers extends NXRuntimeTestCase {
 
         InputStream generatedStream = new ByteArrayInputStream(generated);
 
-        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""),
-                FileUtils.read(generatedStream).replaceAll("\r?\n", ""));
+        assertEquals(read(expected).replaceAll("\r?\n", ""), read(generatedStream).replaceAll("\r?\n", ""));
     }
 
     @Test
@@ -142,23 +142,11 @@ public class TestHelpers extends NXRuntimeTestCase {
 
         InputStream generatedStream = new ByteArrayInputStream(generated);
 
-        assertEquals(FileUtils.read(expected).replaceAll("\r?\n", ""),
-                FileUtils.read(generatedStream).replaceAll("\r?\n", ""));
+        assertEquals(read(expected).replaceAll("\r?\n", ""), read(generatedStream).replaceAll("\r?\n", ""));
     }
 
-    @Test
-    public void testGenerateUniqueId() throws Exception {
-        Map<String, Integer> counters = new HashMap<String, Integer>();
-        String unique_1 = FaceletHandlerHelper.generateUniqueId("foo", counters);
-        assertEquals("foo", unique_1);
-        String unique_2 = FaceletHandlerHelper.generateUniqueId("foo", counters);
-        assertEquals("foo_1", unique_2);
-        // ask for a name already incremented
-        String unique_3 = FaceletHandlerHelper.generateUniqueId("foo_1", counters);
-        assertEquals("foo_2", unique_3);
-        // again with several levels
-        String unique_4 = FaceletHandlerHelper.generateUniqueId("foo_1_1", counters);
-        assertEquals("foo_3", unique_4);
+    protected String read(InputStream in) throws IOException {
+        return IOUtils.toString(in, Charsets.UTF_8);
     }
 
 }

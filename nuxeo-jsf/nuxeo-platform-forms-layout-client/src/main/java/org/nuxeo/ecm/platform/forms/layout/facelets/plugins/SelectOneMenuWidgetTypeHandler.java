@@ -16,11 +16,12 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlSelectOneMenu;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagConfig;
-import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
@@ -34,12 +35,13 @@ import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
  */
 public class SelectOneMenuWidgetTypeHandler extends AbstractSelectWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public SelectOneMenuWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers) throws WidgetException {
-        return getTagHandler(ctx, tagConfig, widget, subHandlers, HtmlSelectOneMenu.COMPONENT_TYPE);
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
+        apply(ctx, parent, widget, HtmlSelectOneMenu.COMPONENT_TYPE);
     }
 
 }

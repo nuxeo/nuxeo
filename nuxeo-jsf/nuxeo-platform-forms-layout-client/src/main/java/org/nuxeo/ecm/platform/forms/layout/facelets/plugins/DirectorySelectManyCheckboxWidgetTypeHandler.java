@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlSelectManyCheckbox;
+import javax.faces.view.facelets.TagConfig;
 
 /**
  * Select many directory widget
@@ -28,7 +29,9 @@ import javax.faces.component.html.HtmlSelectManyCheckbox;
  */
 public class DirectorySelectManyCheckboxWidgetTypeHandler extends DirectorySelectManyWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public DirectorySelectManyCheckboxWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
     protected String getEditComponentType() {

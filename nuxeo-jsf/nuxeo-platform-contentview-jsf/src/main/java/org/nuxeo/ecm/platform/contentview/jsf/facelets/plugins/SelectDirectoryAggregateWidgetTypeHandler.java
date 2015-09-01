@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.view.facelets.FaceletContext;
+import javax.faces.view.facelets.TagConfig;
 
 import org.nuxeo.ecm.platform.contentview.jsf.facelets.plugins.SelectAggregateWidgetTypeHandler.AggregatePropertyMappings;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -32,7 +33,9 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.plugins.AbstractDirectorySel
  */
 public abstract class SelectDirectoryAggregateWidgetTypeHandler extends AbstractDirectorySelectWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public SelectDirectoryAggregateWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
     protected List<String> getExcludedProperties() {

@@ -21,7 +21,9 @@ package org.nuxeo.ecm.platform.forms.layout.facelets;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,13 +40,13 @@ import javax.faces.view.facelets.MetaTagHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagException;
-import javax.faces.view.facelets.TagHandler;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.el.ValueExpressionLiteral;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.WidgetDefinition;
+import org.nuxeo.ecm.platform.forms.layout.facelets.dev.DevTagHandler;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.BlockingVariableMapper;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
@@ -59,7 +61,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WidgetTagHandler extends MetaTagHandler {
 
-    @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(WidgetTagHandler.class);
 
     protected final TagConfig config;
@@ -255,12 +256,42 @@ public class WidgetTagHandler extends MetaTagHandler {
         if (widget == null) {
             return;
         }
-        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
 
-        TagHandler handler = layoutService.getTagHandler(ctx, config, widget, nextHandler);
+        FaceletHandlerHelper helper = new FaceletHandlerHelper(config);
+        WebLayoutManager layoutService = Framework.getService(WebLayoutManager.class);
+        WidgetTypeHandler handler = layoutService.getWidgetTypeHandler(config, widget);
+
         if (handler == null) {
+            String widgetTypeName = widget.getType();
+            String widgetTypeCategory = widget.getTypeCategory();
+            String message = String.format("No widget handler found for type '%s' in category '%s'", widgetTypeName,
+                    widgetTypeCategory);
+            log.error(message);
+            FaceletHandler h = helper.getErrorComponentHandler(null, message);
+            h.apply(ctx, parent);
             return;
         }
+
+        FaceletHandler fh = handler;
+        if (FaceletHandlerHelper.isDevModeEnabled(ctx)) {
+            // decorate handler with dev handler
+            FaceletHandler devHandler = handler.getDevFaceletHandler(config, widget);
+            if (devHandler != null) {
+                // expose the widget variable to sub dev handler
+                String widgetTagConfigId = widget.getTagConfigId();
+                Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
+                ExpressionFactory eFactory = ctx.getExpressionFactory();
+                ValueExpression widgetVe = eFactory.createValueExpression(widget, Widget.class);
+                variables.put(RenderVariables.widgetVariables.widget.name(), widgetVe);
+                List<String> blockedPatterns = new ArrayList<String>();
+                blockedPatterns.add(RenderVariables.widgetVariables.widget.name() + "*");
+                FaceletHandler devAliasHandler = helper.getAliasFaceletHandler(widgetTagConfigId, variables,
+                        blockedPatterns, devHandler);
+                String refId = widget.getName();
+                fh = new DevTagHandler(config, refId, handler, devAliasHandler);
+            }
+        }
+
         if (fillVariables) {
             // expose widget variables
             VariableMapper cvm = ctx.getVariableMapper();

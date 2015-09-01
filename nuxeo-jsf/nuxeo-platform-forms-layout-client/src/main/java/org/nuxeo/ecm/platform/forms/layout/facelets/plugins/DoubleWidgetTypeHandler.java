@@ -16,10 +16,14 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
+
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlInputText;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.convert.DoubleConverter;
 import javax.faces.view.facelets.ComponentHandler;
+import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.ConverterConfig;
 import javax.faces.view.facelets.ConverterHandler;
 import javax.faces.view.facelets.FaceletContext;
@@ -27,14 +31,12 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
-import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.BuiltinWidgetModes;
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
 import org.nuxeo.ecm.platform.forms.layout.api.exceptions.WidgetException;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.ui.web.component.seam.UIHtmlText;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.CompositeTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 
 import com.sun.faces.facelets.tag.TagAttributesImpl;
@@ -47,11 +49,12 @@ import com.sun.faces.facelets.tag.TagAttributesImpl;
  */
 public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public DoubleWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     @Override
-    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -64,23 +67,24 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
         } else {
             attributes = helper.getTagAttributes(widgetId, widget);
         }
-        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, subHandlers, helper);
+        FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, null, helper);
         if (BuiltinWidgetModes.EDIT.equals(mode)) {
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
                     new TagAttributesImpl(new TagAttribute[0]), leaf, DoubleConverter.CONVERTER_ID);
             ConverterHandler convert = new ConverterHandler(convertConfig);
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, convert,
                     HtmlInputText.COMPONENT_TYPE, null);
-            String msgId = helper.generateMessageId(ctx, widgetName);
+            String msgId = FaceletHandlerHelper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { input, message };
-            return new CompositeTagHandler(tagConfig, handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         } else if (BuiltinWidgetModes.CSV.equals(mode)) {
             // default on text without any converter to ease format
             // configuration
             ComponentHandler output = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf,
                     HtmlOutputText.COMPONENT_TYPE, null);
-            return output;
+            output.apply(ctx, parent);
         } else {
             // default on text with int converter for other modes
             ConverterConfig convertConfig = TagConfigFactory.createConverterConfig(tagConfig, widget.getTagConfigId(),
@@ -90,10 +94,11 @@ public class DoubleWidgetTypeHandler extends AbstractWidgetTypeHandler {
                     HtmlOutputText.COMPONENT_TYPE, null);
             if (BuiltinWidgetModes.PDF.equals(mode)) {
                 // add a surrounding p:html tag handler
-                return helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(new TagAttribute[0]),
-                        output, UIHtmlText.class.getName(), null);
+                FaceletHandler h = helper.getHtmlComponentHandler(widgetTagConfigId, new TagAttributesImpl(
+                        new TagAttribute[0]), output, UIHtmlText.class.getName(), null);
+                h.apply(ctx, parent);
             } else {
-                return output;
+                output.apply(ctx, parent);
             }
         }
     }

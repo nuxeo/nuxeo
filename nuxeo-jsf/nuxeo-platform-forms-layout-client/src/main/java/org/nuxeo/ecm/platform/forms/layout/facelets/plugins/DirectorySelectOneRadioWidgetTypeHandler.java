@@ -20,6 +20,7 @@
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
 import javax.faces.component.html.HtmlSelectOneRadio;
+import javax.faces.view.facelets.TagConfig;
 
 /**
  * Select one directory widget
@@ -28,7 +29,9 @@ import javax.faces.component.html.HtmlSelectOneRadio;
  */
 public class DirectorySelectOneRadioWidgetTypeHandler extends DirectorySelectOneWidgetTypeHandler {
 
-    private static final long serialVersionUID = 1L;
+    public DirectorySelectOneRadioWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
 
     protected String getEditComponentType() {
         return HtmlSelectOneRadio.COMPONENT_TYPE;

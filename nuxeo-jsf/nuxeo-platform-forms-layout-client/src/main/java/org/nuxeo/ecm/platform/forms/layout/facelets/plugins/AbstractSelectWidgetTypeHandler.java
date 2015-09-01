@@ -16,12 +16,14 @@
  */
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.component.UIComponent;
 import javax.faces.component.html.HtmlSelectManyCheckbox;
 import javax.faces.component.html.HtmlSelectManyListbox;
 import javax.faces.component.html.HtmlSelectManyMenu;
@@ -44,7 +46,6 @@ import org.nuxeo.ecm.platform.forms.layout.api.impl.WidgetSelectOptionsImpl;
 import org.nuxeo.ecm.platform.forms.layout.facelets.FaceletHandlerHelper;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItem;
 import org.nuxeo.ecm.platform.ui.web.component.UISelectItems;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.CompositeTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafFaceletHandler;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
 
@@ -54,8 +55,6 @@ import org.nuxeo.ecm.platform.ui.web.util.ComponentTagUtils;
  * @since 5.4.2
  */
 public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetTypeHandler {
-
-    private static final long serialVersionUID = 1L;
 
     protected enum SelectPropertyMappings {
         selectOptions, var, itemLabel, resolveItemLabelTwice, itemLabelPrefix, itemLabelPrefixSeparator,
@@ -67,6 +66,10 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
         displayIdAndLabel, displayIdAndLabelSeparator, notDisplayDefaultOption,
         //
         localize, dbl10n;
+    }
+
+    public AbstractSelectWidgetTypeHandler(TagConfig config) {
+        super(config);
     }
 
     // ease up override of behavior without impacting default options
@@ -210,9 +213,9 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
         return excludedProps;
     }
 
-    protected TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers, String componentType) throws WidgetException {
-        return getTagHandler(ctx, tagConfig, widget, subHandlers, componentType, null);
+    protected void apply(FaceletContext ctx, UIComponent parent, Widget widget, String componentType)
+            throws WidgetException, IOException {
+        apply(ctx, parent, widget, componentType, null);
     }
 
     protected TagHandler getComponentFaceletHandler(FaceletContext ctx, FaceletHandlerHelper helper, Widget widget,
@@ -220,8 +223,8 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
         return componentHandler;
     }
 
-    protected TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget,
-            FaceletHandler[] subHandlers, String componentType, String rendererType) throws WidgetException {
+    protected void apply(FaceletContext ctx, UIComponent parent, Widget widget, String componentType,
+            String rendererType) throws WidgetException, IOException {
         FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String mode = widget.getMode();
         String widgetId = widget.getId();
@@ -245,9 +248,6 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
             FaceletHandler optionsHandler = getOptionsFaceletHandler(ctx, helper, widget);
             FaceletHandler[] nextHandlers = new FaceletHandler[] {};
             nextHandlers = (FaceletHandler[]) ArrayUtils.add(nextHandlers, optionsHandler);
-            if (subHandlers != null) {
-                nextHandlers = (FaceletHandler[]) ArrayUtils.addAll(nextHandlers, subHandlers);
-            }
             FaceletHandler leaf = getNextHandler(ctx, tagConfig, widget, nextHandlers, helper, true, true);
             // maybe add convert handler for easier integration of select2
             // widgets handling multiple values
@@ -261,13 +261,14 @@ public abstract class AbstractSelectWidgetTypeHandler extends AbstractWidgetType
 
             ComponentHandler input = helper.getHtmlComponentHandler(widgetTagConfigId, attributes, leaf, componentType,
                     rendererType);
-            String msgId = helper.generateMessageId(ctx, widgetName);
+            String msgId = FaceletHandlerHelper.generateMessageId(ctx, widgetName);
             ComponentHandler message = helper.getMessageComponentHandler(widgetTagConfigId, msgId, widgetId, null);
             FaceletHandler[] handlers = { getComponentFaceletHandler(ctx, helper, widget, input), message };
-            return new CompositeTagHandler(tagConfig, handlers);
+            FaceletHandler h = new CompositeFaceletHandler(handlers);
+            h.apply(ctx, parent);
         } else {
             // TODO
-            return null;
+            return;
         }
     }
 }

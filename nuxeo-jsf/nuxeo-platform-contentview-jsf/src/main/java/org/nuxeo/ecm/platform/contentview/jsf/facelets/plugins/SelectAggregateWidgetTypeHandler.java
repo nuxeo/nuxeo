@@ -27,6 +27,7 @@ import javax.el.ValueExpression;
 import javax.faces.view.facelets.CompositeFaceletHandler;
 import javax.faces.view.facelets.FaceletContext;
 import javax.faces.view.facelets.FaceletHandler;
+import javax.faces.view.facelets.TagConfig;
 import javax.faces.view.facelets.TagHandler;
 
 import org.nuxeo.ecm.platform.forms.layout.api.Widget;
@@ -44,10 +45,12 @@ public abstract class SelectAggregateWidgetTypeHandler extends AbstractSelectWid
 
     private static final String LABELS = "optionLabels";
 
-    private static final long serialVersionUID = 1L;
-
     protected enum AggregatePropertyMappings {
         itemCount;
+    }
+
+    public SelectAggregateWidgetTypeHandler(TagConfig config) {
+        super(config);
     }
 
     @Override

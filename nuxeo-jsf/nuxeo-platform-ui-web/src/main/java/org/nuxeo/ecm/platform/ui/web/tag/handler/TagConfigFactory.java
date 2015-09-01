@@ -52,7 +52,7 @@ public final class TagConfigFactory {
         protected final FaceletHandler nextHandler;
 
         TagConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes, FaceletHandler nextHandler) {
-            tag = new Tag(tagConfig.getTag(), attributes);
+            tag = new Tag(tagConfig.getTag(), getOrCreateTagAttributes(attributes));
             if (tagConfigId == null) {
                 tagId = tagConfig.getTagId();
             } else {
@@ -85,7 +85,7 @@ public final class TagConfigFactory {
 
         ComponentConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
                 FaceletHandler nextHandler, String componentType, String rendererType) {
-            super(tagConfig, tagConfigId, attributes, nextHandler);
+            super(tagConfig, tagConfigId, getOrCreateTagAttributes(attributes), nextHandler);
             this.componentType = componentType;
             this.rendererType = rendererType;
         }
@@ -107,7 +107,7 @@ public final class TagConfigFactory {
 
         ConverterConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
                 FaceletHandler nextHandler, String converterId) {
-            super(tagConfig, tagConfigId, attributes, nextHandler);
+            super(tagConfig, tagConfigId, getOrCreateTagAttributes(attributes), nextHandler);
             this.converterId = converterId;
         }
 
@@ -123,7 +123,7 @@ public final class TagConfigFactory {
 
         ValidatorConfigWrapper(TagConfig tagConfig, String tagConfigId, TagAttributes attributes,
                 FaceletHandler nextHandler, String validatorId) {
-            super(tagConfig, tagConfigId, attributes, nextHandler);
+            super(tagConfig, tagConfigId, getOrCreateTagAttributes(attributes), nextHandler);
             this.validatorId = validatorId;
         }
 
@@ -179,6 +179,13 @@ public final class TagConfigFactory {
 
     protected static TagAttribute createAttribute(TagConfig tagConfig, String name, String value) {
         return new TagAttributeImpl(tagConfig.getTag().getLocation(), "", name, name, value);
+    }
+
+    protected static TagAttributes getOrCreateTagAttributes(TagAttributes attributes) {
+        if (attributes == null) {
+            return new TagAttributesImpl(new TagAttribute[0]);
+        }
+        return attributes;
     }
 
 }

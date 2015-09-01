@@ -19,6 +19,7 @@
 
 package org.nuxeo.ecm.platform.forms.layout.facelets.plugins;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +28,8 @@ import java.util.Map;
 
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
-import javax.faces.view.facelets.CompositeFaceletHandler;
+import javax.faces.component.UIComponent;
 import javax.faces.view.facelets.FaceletContext;
-import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagAttributes;
 import javax.faces.view.facelets.TagConfig;
@@ -45,7 +45,6 @@ import org.nuxeo.ecm.platform.forms.layout.facelets.RenderVariables;
 import org.nuxeo.ecm.platform.forms.layout.facelets.ValueExpressionHelper;
 import org.nuxeo.ecm.platform.forms.layout.service.WebLayoutManager;
 import org.nuxeo.ecm.platform.ui.web.binding.MapValueExpression;
-import org.nuxeo.ecm.platform.ui.web.tag.handler.LeafTagHandler;
 import org.nuxeo.ecm.platform.ui.web.tag.handler.TagConfigFactory;
 import org.nuxeo.runtime.api.Framework;
 
@@ -60,8 +59,6 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
     private static final Log log = LogFactory.getLog(TemplateWidgetTypeHandler.class);
 
-    private static final long serialVersionUID = 6886289896957398368L;
-
     public static final String TEMPLATE_PROPERTY_NAME = "template";
 
     /**
@@ -72,15 +69,17 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      */
     public static final String BIND_VALUE_IF_NO_FIELD_PROPERTY_NAME = "bindValueIfNoField";
 
+    public TemplateWidgetTypeHandler(TagConfig config) {
+        super(config);
+    }
+
     @Override
-    public TagHandler getTagHandler(FaceletContext ctx, TagConfig tagConfig, Widget widget, FaceletHandler[] subHandlers)
-            throws WidgetException {
+    public void apply(FaceletContext ctx, UIComponent parent, Widget widget) throws WidgetException, IOException {
         String template = getTemplateValue(widget);
-        TagHandler leaf = new LeafTagHandler(tagConfig);
         if (template == null) {
             log.error("Missing template property for widget " + widget.getName() + " in layout "
                     + widget.getLayoutName());
-            return leaf;
+            return;
         }
         FaceletHandlerHelper helper = new FaceletHandlerHelper(tagConfig);
         String widgetId = widget.getId();
@@ -91,15 +90,10 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
         }
         attributes = FaceletHandlerHelper.addTagAttribute(attributes, templateAttr);
         String widgetTagConfigId = widget.getTagConfigId();
-        FaceletHandler nextHandler = leaf;
-        if (subHandlers != null) {
-            nextHandler = new CompositeFaceletHandler(subHandlers);
-        }
-
         TagConfig config = TagConfigFactory.createTagConfig(tagConfig, widgetTagConfigId, attributes, nextHandler);
 
-        Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, subHandlers,
-                widgetTagConfigId, template);
+        Map<String, ValueExpression> variables = getVariablesForRendering(ctx, helper, widget, widgetTagConfigId,
+                template);
 
         List<String> blockedPatterns = new ArrayList<String>();
         blockedPatterns.add(RenderVariables.widgetVariables.field.name() + "*");
@@ -110,7 +104,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
 
         DecorateHandler includeHandler = new DecorateHandler(config);
         TagHandler handler = helper.getAliasTagHandler(widgetTagConfigId, variables, blockedPatterns, includeHandler);
-        return handler;
+        handler.apply(ctx, parent);
     }
 
     /**
@@ -118,7 +112,7 @@ public class TemplateWidgetTypeHandler extends AbstractWidgetTypeHandler {
      * "field_1", etc. and also the widget properties using the format "widgetProperty_thePropertyName".
      */
     protected Map<String, ValueExpression> getVariablesForRendering(FaceletContext ctx, FaceletHandlerHelper helper,
-            Widget widget, FaceletHandler[] subHandlers, String widgetTagConfigId, String template) {
+            Widget widget, String widgetTagConfigId, String template) {
         Map<String, ValueExpression> variables = new HashMap<String, ValueExpression>();
         ExpressionFactory eFactory = ctx.getExpressionFactory();
 
