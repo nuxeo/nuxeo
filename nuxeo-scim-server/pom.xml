@@ -98,6 +98,11 @@
           <groupId>org.slf4j</groupId>
           <artifactId>jcl-over-slf4j</artifactId>
         </exclusion>
+        <!-- use com.sun.jersey:jersey-core instead -->
+        <exclusion>
+          <groupId>javax.ws.rs</groupId>
+          <artifactId>jsr311-api</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
