@@ -18,9 +18,16 @@
 
 package org.nuxeo.functionaltests.formsLayoutDemo.page;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.nuxeo.functionaltests.AbstractTest;
+import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets.ListStandardWidgetPage;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -28,6 +35,11 @@ import org.openqa.selenium.support.FindBy;
  * @since 7.1
  */
 public class HomePage {
+
+    /**
+     * @since 7.4
+     */
+    public static final String URL = AbstractTest.NUXEO_URL + "/layoutDemo/";
 
     @Required
     @FindBy(linkText = "Standard Widgets")
@@ -53,4 +65,17 @@ public class HomePage {
         return AbstractTest.asPage(ListStandardWidgetPage.class);
     }
 
+    public Map<String, List<String>> getMenuItems() {
+        Map<String, List<String>> items = new LinkedHashMap<String, List<String>>();
+        List<WebElement> boxes = Locator.findElementsWithTimeout(By.xpath("//div[@class='layoutDemoLeftMenu']/div"));
+        for (WebElement box : boxes) {
+            WebElement boxHead = box.findElement(By.xpath(".//h3"));
+            List<String> titles = new ArrayList<String>();
+            for (WebElement item : box.findElements(By.xpath(".//li"))) {
+                titles.add(item.getText());
+            }
+            items.put(boxHead.getText(), titles);
+        }
+        return items;
+    }
 }

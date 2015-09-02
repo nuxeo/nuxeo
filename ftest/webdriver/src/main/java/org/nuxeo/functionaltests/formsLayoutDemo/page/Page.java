@@ -27,7 +27,7 @@ import org.openqa.selenium.support.FindBy;
 /**
  * @since 7.1
  */
-public abstract class Page {
+public class Page {
 
     protected final static String SELECTED_TAB_CSS_CLASS = "selected";
 
@@ -39,7 +39,6 @@ public abstract class Page {
     @FindBy(linkText = "Reference")
     protected WebElement referenceTabLink;
 
-    @Required
     @FindBy(linkText = "Preview")
     protected WebElement previewTabLink;
 
@@ -50,7 +49,17 @@ public abstract class Page {
         return AbstractTest.asPage(OverviewTab.class);
     }
 
+    /**
+     * @since 7.4
+     */
+    public boolean hasPreviewTab() {
+        return previewTabLink != null;
+    }
+
     public PreviewTab goToPreviewTab() {
+        if (!hasPreviewTab()) {
+            throw new AssertionError("No preview tab");
+        }
         if (!previewTabLink.findElement(By.xpath("ancestor::li")).getAttribute("class").equals(SELECTED_TAB_CSS_CLASS)) {
             previewTabLink.click();
         }

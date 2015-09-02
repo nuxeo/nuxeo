@@ -18,7 +18,6 @@ package org.nuxeo.functionaltests.formsLayoutDemo.page;
 
 import static org.junit.Assert.assertEquals;
 
-import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Required;
 import org.nuxeo.functionaltests.forms.JSListWidgetElement;
@@ -35,7 +34,7 @@ import org.openqa.selenium.support.FindBy;
  */
 public class ValidationPage {
 
-    public static String PAGE_PATH = AbstractTest.NUXEO_URL + "/layoutDemo/testDocumentValidation";
+    public static String PAGE_PATH = HomePage.URL + "testDocumentValidation";
 
     protected WebDriver driver;
 
