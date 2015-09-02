@@ -36,7 +36,6 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
@@ -48,7 +47,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestPermissionFilter {
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     CoreSession session;
@@ -67,7 +66,7 @@ public class TestPermissionFilter {
 
     @Test
     public void testIncludedPermissions() {
-        try (CoreSession newSession = openSessionAs("foo")) {
+        try (CoreSession newSession = coreFeature.openCoreSession("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
             assertNotNull(doc);
@@ -88,7 +87,7 @@ public class TestPermissionFilter {
 
     @Test
     public void testExcludedPermissions() {
-        try (CoreSession newSession = openSessionAs("foo")) {
+        try (CoreSession newSession = coreFeature.openCoreSession("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
             assertNotNull(doc);
@@ -109,7 +108,7 @@ public class TestPermissionFilter {
 
     @Test
     public void testIncludedAndExcludedPermissions() {
-        try (CoreSession newSession = openSessionAs("foo")) {
+        try (CoreSession newSession = coreFeature.openCoreSession("foo")) {
             DocumentModel doc = newSession.createDocumentModel("/", "file", "File");
             doc = newSession.createDocument(doc);
             assertNotNull(doc);
@@ -129,10 +128,6 @@ public class TestPermissionFilter {
             filter = new PermissionFilter(Arrays.asList(WRITE), Arrays.asList("Bar"));
             assertFalse(filter.accept(doc));
         }
-    }
-
-    protected CoreSession openSessionAs(String username) {
-        return settings.openSessionAs(username);
     }
 
 }

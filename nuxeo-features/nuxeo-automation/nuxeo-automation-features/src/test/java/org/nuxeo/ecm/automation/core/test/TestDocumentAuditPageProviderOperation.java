@@ -26,7 +26,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
@@ -44,7 +43,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ AuditFeature.class })
 @Deploy({ "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.automation.features" })
-@RepositoryConfig(cleanup = Granularity.METHOD, init = TestDocumentAuditPageProviderOperation.Populate.class, repositoryFactoryClass = PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = TestDocumentAuditPageProviderOperation.Populate.class)
 public class TestDocumentAuditPageProviderOperation {
 
     private static final int MAX_ENTRIES = 500;

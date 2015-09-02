@@ -18,7 +18,6 @@
 package org.nuxeo.elasticsearch.test;
 
 import org.junit.runners.model.FrameworkMethod;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -34,7 +33,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy({ "org.nuxeo.runtime.jtajca", "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.webengine.core",
         "org.nuxeo.ecm.platform.web.common", "org.nuxeo.elasticsearch.core", "org.nuxeo.ecm.platform.query.api" })
 @Features(CoreFeature.class)
-@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class RepositoryElasticSearchFeature extends SimpleFeature {
     @Override
     public void afterMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {

@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -46,9 +45,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("org.nuxeo.runtime.reload")
 public class TestSQLRepositoryFulltextConfig {
-
-    @Inject
-    protected RepositorySettings repositorySettings;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -71,10 +67,10 @@ public class TestSQLRepositoryFulltextConfig {
 
     protected void newRepository() {
         waitForAsyncCompletion();
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
         // reload repo with new config
         reloadService.reloadRepository();
-        session = repositorySettings.createSession();
+        session = coreFeature.createCoreSession();
     }
 
     protected void waitForAsyncCompletion() {

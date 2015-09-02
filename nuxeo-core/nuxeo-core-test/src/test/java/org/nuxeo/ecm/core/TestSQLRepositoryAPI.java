@@ -102,7 +102,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyBeforeModificationListener;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyTestListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -122,9 +121,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 })
 @LocalDeploy("org.nuxeo.ecm.core.test.tests:OSGI-INF/test-repo-core-types-contrib.xml")
 public class TestSQLRepositoryAPI {
-
-    @Inject
-    protected RepositorySettings repositorySettings;
 
     @Inject
     protected CoreFeature coreFeature;
@@ -158,7 +154,7 @@ public class TestSQLRepositoryAPI {
     }
 
     protected void reopenSession() {
-        session = repositorySettings.reopenSession();
+        session = coreFeature.reopenCoreSession();
     }
 
     protected void waitForAsyncCompletion() {

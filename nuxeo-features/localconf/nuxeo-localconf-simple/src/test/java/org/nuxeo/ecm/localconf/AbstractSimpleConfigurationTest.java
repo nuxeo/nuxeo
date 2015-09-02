@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.localconf.SimpleConfiguration;
 
 /**
@@ -43,7 +43,7 @@ import org.nuxeo.ecm.localconf.SimpleConfiguration;
 public abstract class AbstractSimpleConfigurationTest {
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -87,7 +87,7 @@ public abstract class AbstractSimpleConfigurationTest {
     }
 
     protected CoreSession openSessionAs(String username) {
-        return settings.openSessionAs(username);
+        return coreFeature.openCoreSession(username);
     }
 
 }

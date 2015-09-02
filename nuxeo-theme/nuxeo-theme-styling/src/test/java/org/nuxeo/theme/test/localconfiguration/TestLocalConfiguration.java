@@ -43,7 +43,7 @@ import org.nuxeo.theme.localconfiguration.LocalThemeConfigConstants;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(init = LocalConfigurationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = LocalConfigurationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.theme.styling", "org.nuxeo.theme.styling.tests:local-configuration-config.xml" })
 public class TestLocalConfiguration {
 

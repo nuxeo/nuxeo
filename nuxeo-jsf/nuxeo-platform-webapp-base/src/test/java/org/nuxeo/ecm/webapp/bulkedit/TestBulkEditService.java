@@ -48,7 +48,7 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.platform.types.api", "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.webapp.base" })
 public class TestBulkEditService {
 

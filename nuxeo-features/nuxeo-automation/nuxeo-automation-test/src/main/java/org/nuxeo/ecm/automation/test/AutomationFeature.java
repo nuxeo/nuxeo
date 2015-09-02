@@ -23,7 +23,6 @@ import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.trace.TracerFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -56,7 +55,7 @@ public class AutomationFeature extends SimpleFeature {
 
     protected OperationCallback tracer;
 
-    protected RepositorySettings repository;
+    protected CoreFeature coreFeature;
 
     public class OperationContextProvider implements Provider<OperationContext> {
 
@@ -78,7 +77,7 @@ public class AutomationFeature extends SimpleFeature {
 
     protected OperationContext getContext() {
         if (context == null) {
-            CoreSession session = repository.getSession();
+            CoreSession session = coreFeature.getCoreSession();
             context = new OperationContext(session);
             if (tracer != null) {
                 context.addChainCallback(tracer);
@@ -101,7 +100,7 @@ public class AutomationFeature extends SimpleFeature {
     public void configure(FeaturesRunner runner, Binder binder) {
         binder.bind(OperationContext.class).toProvider(contextProvider).in(AutomationScope.INSTANCE);
         binder.bind(OperationCallback.class).toProvider(tracerProvider).in(AutomationScope.INSTANCE);
-        repository = runner.getFeature(CoreFeature.class).getRepository();
+        coreFeature = runner.getFeature(CoreFeature.class);
         tracerFactory = Framework.getLocalService(TracerFactory.class);
     }
 

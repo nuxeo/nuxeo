@@ -23,7 +23,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.test.virusscan.service.DummyVirusScanner;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -43,9 +42,6 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
         "org.nuxeo.ecm.core.test:vscan/virusscan-service-contrib.xml",
         "org.nuxeo.ecm.core.test:vscan/listeners-contrib.xml" })
 public class TestDummyVirusScanner {
-
-    @Inject
-    protected RepositorySettings settings;
 
     @Inject
     protected CoreSession session;

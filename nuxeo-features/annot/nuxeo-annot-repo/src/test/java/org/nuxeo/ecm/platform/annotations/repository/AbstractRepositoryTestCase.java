@@ -38,16 +38,13 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.event.impl.EventServiceImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.annotations.repository.service.AnnotationFeature;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
-import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
@@ -75,9 +72,6 @@ public abstract class AbstractRepositoryTestCase {
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    RepositorySettings repo;
 
     @Inject
     protected EventService eventService;
@@ -154,12 +148,4 @@ public abstract class AbstractRepositoryTestCase {
         TransactionHelper.startTransaction();
     }
 
-    protected void openSession() {
-        session = repo.createSession();
-    }
-
-    protected void closeSession() {
-        repo.releaseSession();
-        session = null;
-    }
 }

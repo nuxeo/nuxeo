@@ -46,8 +46,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -68,7 +66,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(type = BackendType.H2, init = RenditionPublicationRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = RenditionPublicationRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core.convert.api", "org.nuxeo.ecm.core.convert", "org.nuxeo.ecm.core.convert.plugins",
         "org.nuxeo.ecm.platform.convert", "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.rendition.api",
         "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.directory",
@@ -99,7 +97,7 @@ public class TestRenditionPublicationWFReject {
     protected DocumentModel doc2Publish = null;
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Before
     public void initPublishTestCase() throws Exception {
@@ -175,7 +173,7 @@ public class TestRenditionPublicationWFReject {
     protected final Set<CoreSession> others = new HashSet<CoreSession>();
 
     private void changeUser(String userName) throws Exception {
-        session = settings.openSessionAs(userName, false, false);
+        session = coreFeature.openCoreSession(userName);
         session.save(); // synch with previous
         others.add(session);
     }

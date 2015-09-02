@@ -30,7 +30,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -52,9 +51,6 @@ public class TestSQLBinariesIndexingOverride {
 
     @Inject
     protected RuntimeHarness runtimeHarness;
-
-    @Inject
-    protected RepositorySettings repositorySettings;
 
     @Inject
     protected EventService eventService;
@@ -93,10 +89,10 @@ public class TestSQLBinariesIndexingOverride {
 
     protected void newRepository() {
         waitForAsyncCompletion();
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
         // reload repo with new config
         reloadService.reloadRepository();
-        session = repositorySettings.createSession();
+        session = coreFeature.createCoreSession();
     }
 
     protected void waitForAsyncCompletion() {

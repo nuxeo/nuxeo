@@ -29,67 +29,139 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class StorageConfiguration {
 
-    private DatabaseHelper databaseHelper = DatabaseHelper.DATABASE;
+    public static final String CORE_PROPERTY = "nuxeo.test.core";
 
-    public String getRepositoryName() {
-        return databaseHelper.repositoryName;
+    public static final String CORE_VCS = "vcs";
+
+    public static final String CORE_DBS_MEM = "mem";
+
+    public static final String CORE_DBS_MONGODB = "mongodb";
+
+    public static final String CORE_DEFAULT = CORE_VCS;
+
+    private DatabaseHelper vcsDatabaseHelper;
+
+    private String dbsBackend;
+
+    public StorageConfiguration() {
+        String core = defaultSystemProperty(CORE_PROPERTY, CORE_DEFAULT);
+        switch (core) {
+        case CORE_VCS:
+            initVCS();
+            break;
+        case CORE_DBS_MEM:
+        case CORE_DBS_MONGODB:
+            dbsBackend = core;
+            break;
+        default:
+            throw new ExceptionInInitializerError("Unknown test core mode: " + core);
+        }
     }
 
+    protected static String defaultSystemProperty(String name, String def) {
+        String value = System.getProperty(name);
+        if (value == null || value.equals("") || value.equals("${" + name + "}")) {
+            System.setProperty(name, value = def);
+        }
+        return value;
+    }
+
+    protected void initVCS() {
+        vcsDatabaseHelper = DatabaseHelper.DATABASE;
+    }
+
+    // used only for datasource contrib in TestSQLBinaryManager
     public String getVCSName() {
-        String db = databaseHelper.getClass().getSimpleName();
+        String db = vcsDatabaseHelper.getClass().getSimpleName();
         if (db.startsWith("Database")) {
             db = db.substring("Database".length());
         }
         return db;
     }
 
+    public boolean isVCS() {
+        return vcsDatabaseHelper != null;
+    }
+
     public boolean isVCSH2() {
-        return databaseHelper instanceof DatabaseH2;
+        return vcsDatabaseHelper instanceof DatabaseH2;
     }
 
     public boolean isVCSDerby() {
-        return databaseHelper instanceof DatabaseDerby;
+        return vcsDatabaseHelper instanceof DatabaseDerby;
     }
 
     public boolean isVCSPostgreSQL() {
-        return databaseHelper instanceof DatabasePostgreSQL;
+        return vcsDatabaseHelper instanceof DatabasePostgreSQL;
     }
 
     public boolean isVCSMySQL() {
-        return databaseHelper instanceof DatabaseMySQL;
+        return vcsDatabaseHelper instanceof DatabaseMySQL;
     }
 
     public boolean isVCSOracle() {
-        return databaseHelper instanceof DatabaseOracle;
+        return vcsDatabaseHelper instanceof DatabaseOracle;
     }
 
     public boolean isVCSSQLServer() {
-        return databaseHelper instanceof DatabaseSQLServer;
+        return vcsDatabaseHelper instanceof DatabaseSQLServer;
     }
 
     public boolean isVCSDB2() {
-        return databaseHelper instanceof DatabaseDB2;
+        return vcsDatabaseHelper instanceof DatabaseDB2;
+    }
+
+    public boolean isDBS() {
+        return dbsBackend != null;
+    }
+
+    public boolean isDBSMem() {
+        return CORE_DBS_MEM.equals(dbsBackend);
+    }
+
+    public boolean isDBSMongoDB() {
+        return CORE_DBS_MONGODB.equals(dbsBackend);
+    }
+
+    public String getRepositoryName() {
+        if (isVCS()) {
+            return vcsDatabaseHelper.repositoryName;
+        } else {
+            return "test"; // DBS
+        }
     }
 
     /**
      * For databases that do asynchronous fulltext indexing, sleep a bit.
      */
     public void sleepForFulltext() {
-        databaseHelper.sleepForFulltext();
+        if (isVCS()) {
+            vcsDatabaseHelper.sleepForFulltext();
+        } else {
+            // DBS
+        }
     }
 
     /**
      * For databases that don't have sub-second resolution, sleep a bit to get to the next second.
      */
     public void maybeSleepToNextSecond() {
-        databaseHelper.maybeSleepToNextSecond();
+        if (isVCS()) {
+            vcsDatabaseHelper.maybeSleepToNextSecond();
+        } else {
+            // DBS
+        }
     }
 
     /**
      * Checks if the database has sub-second resolution.
      */
     public boolean hasSubSecondResolution() {
-        return databaseHelper.hasSubSecondResolution();
+        if (isVCS()) {
+            return vcsDatabaseHelper.hasSubSecondResolution();
+        } else {
+            return true; // DBS
+        }
     }
 
     public void waitForAsyncCompletion() {
@@ -105,7 +177,11 @@ public class StorageConfiguration {
      * Checks if the database supports multiple fulltext indexes.
      */
     public boolean supportsMultipleFulltextIndexes() {
-        return databaseHelper.supportsMultipleFulltextIndexes();
+        if (isVCS()) {
+            return vcsDatabaseHelper.supportsMultipleFulltextIndexes();
+        } else {
+            return false; // DBS
+        }
     }
 
 }

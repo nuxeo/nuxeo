@@ -40,7 +40,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     }
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected LogCaptureFeature.Result logCaptureResults;
@@ -49,7 +49,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     public void testWithoutTransaction() throws Exception {
         TransactionHelper.commitOrRollbackTransaction();
         IterableQueryResult results;
-        try (CoreSession session = settings.openSessionAsSystemUser()) {
+        try (CoreSession session = coreFeature.openCoreSessionSystem()) {
             results = session.queryAndFetch("SELECT * from Document", "NXQL");
         }
         TransactionHelper.startTransaction();
@@ -60,7 +60,7 @@ public class QueryResultsAreAutomaticallyClosedTest {
     // needs a JCA connection for this to work
     @Test
     public void testTransactional() throws Exception {
-        try (CoreSession session = settings.openSessionAsSystemUser()) {
+        try (CoreSession session = coreFeature.openCoreSessionSystem()) {
             IterableQueryResult results = session.queryAndFetch("SELECT * from Document", "NXQL");
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
@@ -87,8 +87,8 @@ public class QueryResultsAreAutomaticallyClosedTest {
     @Test
     public void testNested() throws Exception {
         IterableQueryResult mainResults;
-        try (CoreSession main = settings.openSessionAsSystemUser()) {
-            NestedQueryRunner runner = new NestedQueryRunner(settings.repositoryName);
+        try (CoreSession main = coreFeature.openCoreSessionSystem()) {
+            NestedQueryRunner runner = new NestedQueryRunner(main.getRepositoryName());
             mainResults = main.queryAndFetch("SELECT * from Document", "NXQL");
             runner.runUnrestricted();
             Assert.assertFalse(runner.result.isLife());

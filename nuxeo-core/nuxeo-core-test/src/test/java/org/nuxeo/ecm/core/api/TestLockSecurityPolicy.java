@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -51,13 +50,13 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestLockSecurityPolicy {
 
     @Inject
-    protected RepositorySettings repo;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CoreSession session = repo.openSessionAs(SecurityConstants.SYSTEM_USERNAME)) {
+        try (CoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
             if (acp == null) {
@@ -87,7 +86,7 @@ public class TestLockSecurityPolicy {
     public void testLockSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
-        try (CoreSession session = repo.openSessionAs(ADMINISTRATOR)) {
+        try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             DocumentModel root = session.getRootDocument();
             DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
             folder = session.createDocument(folder);
@@ -102,7 +101,7 @@ public class TestLockSecurityPolicy {
             session.save();
         }
 
-        try (CoreSession session = repo.openSessionAs(ANONYMOUS)) {
+        try (CoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
             // write granted to anonymous
             checkLockPermissions(session, folderRef, true);
 
@@ -118,7 +117,7 @@ public class TestLockSecurityPolicy {
         }
 
         // write denied to admin
-        try (CoreSession session = repo.openSessionAs(ADMINISTRATOR)) {
+        try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             checkLockPermissions(session, folderRef, false);
             session.save();
         }

@@ -63,7 +63,6 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -93,7 +92,7 @@ public class TestSQLRepositoryProperties {
     protected RuntimeHarness runtimeHarness;
 
     @Inject
-    protected RepositorySettings repositorySettings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected EventService eventService;
@@ -133,7 +132,7 @@ public class TestSQLRepositoryProperties {
     }
 
     protected void reopenSession() {
-        session = repositorySettings.reopenSession();
+        session = coreFeature.reopenCoreSession();
     }
 
     protected void waitForAsyncCompletion() {
@@ -546,14 +545,14 @@ public class TestSQLRepositoryProperties {
         session.save();
 
         waitForAsyncCompletion();
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
 
         // add complexschema to TestDocument
         runtimeHarness.deployContrib("org.nuxeo.ecm.core.test.tests", "OSGI-INF/test-schema-update.xml");
         try {
             reloadService.reloadRepository();
             // reload repo with new doctype
-            session = repositorySettings.createSession();
+            session = coreFeature.createCoreSession();
 
             doc = session.getDocument(new IdRef(doc.getId()));
 

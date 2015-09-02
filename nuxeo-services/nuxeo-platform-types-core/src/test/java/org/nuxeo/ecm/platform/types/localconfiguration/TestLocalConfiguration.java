@@ -46,7 +46,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.types.Type;
@@ -86,7 +85,7 @@ public class TestLocalConfiguration {
     public static final String COLLABORATIVE_CATEGORY = "Collaborative";
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -319,7 +318,7 @@ public class TestLocalConfiguration {
 
         addReadForEveryone(CHILD_WORKSPACE_REF);
 
-        try (CoreSession newSession = openSessionAs("user1")) {
+        try (CoreSession newSession = coreFeature.openCoreSession("user1")) {
             DocumentModel childWorkspace = newSession.getDocument(CHILD_WORKSPACE_REF);
             assertTrue(typeManager.isAllowedSubType(FOLDER_TYPE, childWorkspace.getType(), childWorkspace));
             assertTrue(typeManager.isAllowedSubType(WORKSPACE_TYPE, childWorkspace.getType(), childWorkspace));
@@ -337,10 +336,6 @@ public class TestLocalConfiguration {
         childWorkspace.setACP(acp, true);
         session.saveDocument(childWorkspace);
         session.save();
-    }
-
-    protected CoreSession openSessionAs(String username) {
-        return settings.openSessionAs(username);
     }
 
 }

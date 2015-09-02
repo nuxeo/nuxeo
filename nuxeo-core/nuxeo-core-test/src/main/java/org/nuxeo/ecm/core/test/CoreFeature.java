@@ -11,7 +11,11 @@
  */
 package org.nuxeo.ecm.core.test;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.io.Serializable;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -22,22 +26,31 @@ import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.repository.RepositoryService;
-import org.nuxeo.ecm.core.test.annotations.BackendType;
+import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
+import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.jtajca.NuxeoContainer;
+import org.nuxeo.runtime.model.persistence.Contribution;
+import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
+import org.nuxeo.runtime.test.runner.ServiceProvider;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.osgi.framework.Bundle;
 
-import com.google.inject.Binder;
+import com.google.inject.Scope;
 
 /**
  * The core feature provides deployments needed to have a nuxeo core running. Several annotations can be used:
@@ -68,38 +81,61 @@ public class CoreFeature extends SimpleFeature {
 
     protected int initialOpenSessions;
 
-    protected RepositorySettings repository;
+    protected RepositorySettings repositorySettings;
 
     protected boolean cleaned;
 
     protected StorageConfiguration storageConfiguration = new StorageConfiguration();
 
+    // this value gets injected
+    protected CoreSession session;
+
+    protected class CoreSessionServiceProvider extends ServiceProvider<CoreSession> {
+        public CoreSessionServiceProvider() {
+            super(CoreSession.class);
+        }
+
+        @Override
+        public Scope getScope() {
+            return CoreScope.INSTANCE;
+        }
+
+        @Override
+        public CoreSession get() {
+            return session;
+        }
+    }
+
     public StorageConfiguration getStorageConfiguration() {
         return storageConfiguration;
     }
 
-    public RepositorySettings getRepository() {
-        return repository;
-    }
-
-    public BackendType getBackendType() {
-        return repository.getBackendType();
-    }
-
     @Override
     public void initialize(FeaturesRunner runner) throws Exception {
-        repository = new RepositorySettings(runner);
-        runner.getFeature(RuntimeFeature.class).addServiceProvider(repository);
+        repositorySettings = new RepositorySettings(runner);
+        runner.getFeature(RuntimeFeature.class).addServiceProvider(new CoreSessionServiceProvider());
     }
+
+    protected String repositoryName = "test";
 
     @Override
     public void start(FeaturesRunner runner) throws Exception {
-        repository.initialize();
-    }
-
-    @Override
-    public void configure(FeaturesRunner runner, Binder binder) {
-        binder.bind(RepositorySettings.class).toInstance(repository);
+        DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
+        try {
+            RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
+            log.info("Deploying a VCS repo implementation");
+            dbHelper.setRepositoryName(repositoryName);
+            dbHelper.setUp(repositorySettings.getRepositoryFactoryClass());
+            OSGiAdapter osgi = harness.getOSGiAdapter();
+            Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
+            String contribPath = dbHelper.getDeploymentContrib();
+            URL contribURL = bundle.getEntry(contribPath);
+            assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
+            Contribution contrib = new ContributionLocation(repositoryName, contribURL);
+            harness.getContext().deploy(contrib);
+        } catch (Exception e) {
+            log.error(e.toString(), e);
+        }
     }
 
     @Override
@@ -116,7 +152,7 @@ public class CoreFeature extends SimpleFeature {
                 log.warn("Leaking session", info);
             }
         }
-        if (repository.getGranularity() != Granularity.METHOD) {
+        if (repositorySettings.getGranularity() != Granularity.METHOD) {
             initializeSession(runner);
         }
     }
@@ -124,10 +160,12 @@ public class CoreFeature extends SimpleFeature {
     @Override
     public void afterRun(FeaturesRunner runner) throws Exception {
         waitForAsyncCompletion(); // fulltext and various workers
-        if (repository.getGranularity() != Granularity.METHOD) {
+        if (repositorySettings.getGranularity() != Granularity.METHOD) {
             cleanupSession(runner);
         }
-        repository.shutdown();
+        if (session != null) {
+            releaseCoreSession();
+        }
 
         final CoreInstance core = CoreInstance.getInstance();
         int finalOpenSessions = core.getNumberOfSessions();
@@ -141,14 +179,14 @@ public class CoreFeature extends SimpleFeature {
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        if (repository.getGranularity() == Granularity.METHOD) {
+        if (repositorySettings.getGranularity() == Granularity.METHOD) {
             initializeSession(runner);
         }
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
-        if (repository.getGranularity() == Granularity.METHOD) {
+        if (repositorySettings.getGranularity() == Granularity.METHOD) {
             cleanupSession(runner);
         }
     }
@@ -178,9 +216,8 @@ public class CoreFeature extends SimpleFeature {
             TransactionHelper.commitOrRollbackTransaction();
             TransactionHelper.startTransaction();
         }
-        CoreSession session = repository.getSession();
         if (session == null) {
-            session = repository.createSession();
+            createCoreSession();
         }
         try {
             log.trace("remove everything except root");
@@ -209,7 +246,7 @@ public class CoreFeature extends SimpleFeature {
         } finally {
             CoreScope.INSTANCE.exit();
         }
-        repository.releaseSession();
+        releaseCoreSession();
         cleaned = true;
         CoreInstance.getInstance().cleanupThisThread();
     }
@@ -222,11 +259,11 @@ public class CoreFeature extends SimpleFeature {
             cleaned = false;
         }
         CoreScope.INSTANCE.enter();
-        CoreSession session = repository.createSession();
+        createCoreSession();
         if (session == null) {
             throw new AssertionError("Cannot open session");
         }
-        RepositoryInit factory = repository.getInitializer();
+        RepositoryInit factory = repositorySettings.getRepositoryInit();
         if (factory != null) {
             factory.populate(session);
             session.save();
@@ -234,8 +271,48 @@ public class CoreFeature extends SimpleFeature {
         }
     }
 
-    public void setRepositorySettings(RepositorySettings settings) {
-        repository.importSettings(settings);
+    public String getRepositoryName() {
+        return storageConfiguration.getRepositoryName();
+    }
+
+    public CoreSession openCoreSession(String username) {
+        return CoreInstance.openCoreSession(getRepositoryName(), username);
+    }
+
+    public CoreSession openCoreSession(NuxeoPrincipal principal) {
+        return CoreInstance.openCoreSession(getRepositoryName(), principal);
+    }
+
+    public CoreSession openCoreSession() {
+        return CoreInstance.openCoreSession(getRepositoryName());
+    }
+
+    public CoreSession openCoreSessionSystem() {
+        return CoreInstance.openCoreSessionSystem(getRepositoryName());
+    }
+
+    public CoreSession createCoreSession() {
+        UserPrincipal principal = new UserPrincipal("Administrator", new ArrayList<String>(), false, true);
+        session = CoreInstance.openCoreSession(getRepositoryName(), principal);
+        return session;
+    }
+
+    public CoreSession getCoreSession() {
+        return session;
+    }
+
+    public void releaseCoreSession() {
+        session.close();
+        session = null;
+    }
+
+    public CoreSession reopenCoreSession() {
+        releaseCoreSession();
+        waitForAsyncCompletion();
+        // flush JCA cache to acquire a new low-level session
+        NuxeoContainer.resetConnectionManager();
+        createCoreSession();
+        return session;
     }
 
 }

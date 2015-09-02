@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -48,11 +47,11 @@ public class TestUnrestrictedSessionRunner {
     public static final String NEW_TITLE = "new title";
 
     @Inject
-    protected RepositorySettings repo;
+    protected CoreFeature coreFeature;
 
     @Test
     public void testUnrestrictedPropertySetter() throws Exception {
-        try (CoreSession session = repo.openSessionAs("bob")) {
+        try (CoreSession session = coreFeature.openCoreSession("bob")) {
             seeDocCreatedByUnrestricted(session);
         }
     }
@@ -60,7 +59,7 @@ public class TestUnrestrictedSessionRunner {
     @SuppressWarnings("deprecation")
     @Test
     public void testUnrestrictedSessionSeesDocCreatedBefore() throws Exception {
-        try (CoreSession session = repo.openSessionAs(SecurityConstants.ADMINISTRATOR)) {
+        try (CoreSession session = coreFeature.openCoreSession(SecurityConstants.ADMINISTRATOR)) {
             unrestrictedSeesDocCreatedBefore(session);
         }
     }

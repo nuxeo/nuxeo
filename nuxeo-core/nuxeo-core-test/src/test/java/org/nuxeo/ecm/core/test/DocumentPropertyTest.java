@@ -29,7 +29,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class)
+@RepositoryConfig(init = DefaultRepositoryInit.class)
 public class DocumentPropertyTest {
 
     @Inject

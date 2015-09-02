@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.api.security.UserEntry;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -58,13 +57,13 @@ import org.nuxeo.runtime.test.runner.RuntimeHarness;
 public class TestSecurityPolicyService {
 
     @Inject
-    protected RepositorySettings repo;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected RuntimeHarness harness;
 
     private void setTestPermissions(String user, String... perms) {
-        try (CoreSession session = repo.openSessionAs(SecurityConstants.SYSTEM_USERNAME)) {
+        try (CoreSession session = coreFeature.openCoreSession(SecurityConstants.SYSTEM_USERNAME)) {
             DocumentModel doc = session.getRootDocument();
             ACP acp = doc.getACP();
             if (acp == null) {
@@ -85,7 +84,7 @@ public class TestSecurityPolicyService {
     public void testNewSecurityPolicy() throws Exception {
         // create document
         DocumentRef folderRef;
-        try (CoreSession session = repo.openSessionAs(ADMINISTRATOR)) {
+        try (CoreSession session = coreFeature.openCoreSession(ADMINISTRATOR)) {
             setTestPermissions(ANONYMOUS, READ);
             DocumentModel root = session.getRootDocument();
             DocumentModel folder = new DocumentModelImpl(root.getPathAsString(), "folder#1", "Folder");
@@ -101,7 +100,7 @@ public class TestSecurityPolicyService {
         }
 
         // open session as anonymous and set access on user info
-        try (CoreSession session = repo.openSessionAs(ANONYMOUS)) {
+        try (CoreSession session = coreFeature.openCoreSession(ANONYMOUS)) {
             DocumentModelImpl documentModelImpl = new DocumentModelImpl("User");
             Map<String, Object> data = new HashMap<String, Object>();
             data.put("accessLevel", Long.valueOf(3));

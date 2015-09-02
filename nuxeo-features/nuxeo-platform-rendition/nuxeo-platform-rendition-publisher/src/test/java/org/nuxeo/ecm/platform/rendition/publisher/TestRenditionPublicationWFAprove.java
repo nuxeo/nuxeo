@@ -47,7 +47,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -91,7 +90,7 @@ public class TestRenditionPublicationWFAprove {
     protected DirectoryService directoryService;
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected EventService eventService;
@@ -186,7 +185,7 @@ public class TestRenditionPublicationWFAprove {
     protected final Set<CoreSession> others = new HashSet<CoreSession>();
 
     private void changeUser(String userName) throws Exception {
-        session = settings.openSessionAs(userName, false, false);
+        session = coreFeature.openCoreSession(userName);
         session.save(); // synch with previous
         others.add(session);
     }

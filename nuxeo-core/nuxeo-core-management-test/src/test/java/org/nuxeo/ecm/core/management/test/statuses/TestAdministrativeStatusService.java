@@ -38,7 +38,6 @@ import org.nuxeo.ecm.core.management.api.ProbeManager;
 import org.nuxeo.ecm.core.management.statuses.AdministrableServiceDescriptor;
 import org.nuxeo.ecm.core.management.storage.DocumentStoreSessionRunner;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.api.Framework;
@@ -55,11 +54,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestAdministrativeStatusService {
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Before
     public void setUp() throws Exception {
-        DocumentStoreSessionRunner.setRepositoryName(settings.getName());
+        DocumentStoreSessionRunner.setRepositoryName(coreFeature.getRepositoryName());
     }
 
     @After

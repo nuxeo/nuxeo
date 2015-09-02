@@ -38,7 +38,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @Deploy("org.nuxeo.ecm.platform.publisher.web")
 @LocalDeploy("org.nuxeo.ecm.platform.publisher.web:OSGI-INF/core-types-contrib.xml")
-@RepositoryConfig(init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public class TestPublishActions {
 
     @Inject

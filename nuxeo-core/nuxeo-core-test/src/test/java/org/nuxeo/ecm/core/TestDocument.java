@@ -53,7 +53,6 @@ import org.nuxeo.ecm.core.model.Document.WriteContext;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -75,7 +74,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestDocument {
 
     @Inject
-    protected RepositorySettings repositorySettings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession coreSession;
@@ -88,7 +87,7 @@ public class TestDocument {
     }
 
     protected void reopenSession() {
-        repositorySettings.reopenSession();
+        coreSession = coreFeature.reopenCoreSession();
         setUp();
     }
 

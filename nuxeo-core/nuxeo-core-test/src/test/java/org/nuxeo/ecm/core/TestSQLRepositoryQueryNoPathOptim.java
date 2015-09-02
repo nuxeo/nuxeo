@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.storage.sql.RepositoryDescriptor;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -57,7 +56,7 @@ public class TestSQLRepositoryQueryNoPathOptim {
     protected RuntimeHarness runtimeHarness;
 
     @Inject
-    protected RepositorySettings repositorySettings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected EventService eventService;
@@ -90,10 +89,10 @@ public class TestSQLRepositoryQueryNoPathOptim {
 
     protected void newRepository() {
         waitForAsyncCompletion();
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
         // reload repo with new config
         reloadService.reloadRepository();
-        session = repositorySettings.createSession();
+        session = coreFeature.createCoreSession();
     }
 
     protected void waitForAsyncCompletion() {

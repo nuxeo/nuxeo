@@ -42,7 +42,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
 @Deploy({ "org.nuxeo.ecm.user.invite" })
-@RepositoryConfig(init = DefaultRepositoryInit.class, user = "Administrator", cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @LocalDeploy({ "org.nuxeo.ecm.user.invite:test-types-contrib.xml" })
 public abstract class AbstractUserRegistration {
 

@@ -29,23 +29,10 @@ import org.nuxeo.ecm.core.test.NoopRepositoryInit;
 @Target({ ElementType.TYPE })
 public @interface RepositoryConfig {
 
-    String singleDatasource() default "";
-
     Class<? extends RepositoryFactory> repositoryFactoryClass() default SQLRepositoryFactory.class;
-
-    /**
-     * @deprecated since 5.6 replaced by system properties, see {@link DatabaseHelper}
-     */
-    @Deprecated
-    BackendType type() default BackendType.H2;
-
-    String repositoryName() default "test";
-
-    String databaseName() default "nuxeojunittests";
 
     Class<? extends RepositoryInit> init() default NoopRepositoryInit.class;
 
     Granularity cleanup() default Granularity.UNDEFINED;
 
-    String user() default "Administrator";
 }

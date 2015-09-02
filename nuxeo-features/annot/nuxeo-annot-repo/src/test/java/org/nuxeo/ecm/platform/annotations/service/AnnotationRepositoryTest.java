@@ -74,10 +74,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         assertNotNull(myfile);
 
         session.save();
-        closeSession();
-        nextTransaction();
+        session = coreFeature.reopenCoreSession();
         sleepForFulltext();
-        openSession();
 
         // the text 'zombie' is not found in the document
         DocumentModelList results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
@@ -93,10 +91,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         sameDocumentFrom2Servers(uriMyfileServer1, uriMyFileserver2);
 
         session.save();
-        closeSession();
-        nextTransaction();
+        session = coreFeature.reopenCoreSession();
         sleepForFulltext();
-        openSession();
 
         // the body of the text is annotated on the document
         results = session.query("SELECT * FROM Document WHERE ecm:fulltext = 'zombie'", 10);
@@ -112,10 +108,8 @@ public class AnnotationRepositoryTest extends AbstractRepositoryTestCase {
         myfile = session.saveDocument(myfile);
 
         session.save();
-        closeSession();
-        nextTransaction();
+        session = coreFeature.reopenCoreSession();
         sleepForFulltext();
-        openSession();
 
         // we find no documents: this is
         // intentional: even if the annotation have been copied to the archived

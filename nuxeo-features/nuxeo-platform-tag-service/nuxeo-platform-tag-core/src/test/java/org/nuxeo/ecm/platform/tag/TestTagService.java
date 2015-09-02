@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -59,7 +58,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(repositoryFactoryClass = PoolingRepositoryFactory.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.datasource", "org.nuxeo.ecm.platform.tag", "org.nuxeo.ecm.platform.query.api",
         "org.nuxeo.ecm.platform.ws" })
 @LocalDeploy("org.nuxeo.ecm.platform.tag:login-config.xml")

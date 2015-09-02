@@ -42,7 +42,6 @@ import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.listeners.DummyAsyncRetryListener;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,7 +59,7 @@ public class TestSQLRepositoryJTAJCA {
     private static final String ADMINISTRATOR = SecurityConstants.ADMINISTRATOR;
 
     @Inject
-    protected RepositorySettings repositorySettings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected RepositoryService repositoryService;
@@ -201,7 +200,7 @@ public class TestSQLRepositoryJTAJCA {
         // let commit do an implicit save
         nextTransaction();
         // release cx
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
 
         final DocumentRef ref = new PathRef("/doc");
         TransactionHelper.startTransaction();
@@ -271,13 +270,13 @@ public class TestSQLRepositoryJTAJCA {
         CoreSession closedSession = session;
 
         waitForAsyncCompletion();
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
 
         // use a closed session. because of tx, we can reconnect it
         assertNotNull(closedSession.getRootDocument());
 
         // reopen session for rest of the code
-        session = repositorySettings.createSession();
+        session = coreFeature.createCoreSession();
     }
 
     @Test
@@ -302,7 +301,7 @@ public class TestSQLRepositoryJTAJCA {
         CoreSession closedSession = session;
 
         waitForAsyncCompletion();
-        repositorySettings.releaseSession();
+        coreFeature.releaseCoreSession();
         TransactionHelper.commitOrRollbackTransaction();
 
         // no startTransaction
@@ -325,9 +324,7 @@ public class TestSQLRepositoryJTAJCA {
         file = session.createDocument(file);
         session.save();
 
-        waitForAsyncCompletion();
-        repositorySettings.releaseSession();
-        session = repositorySettings.createSession();
+        session = coreFeature.reopenCoreSession();
 
         assertNull(file.getCoreSession());
     }
@@ -390,7 +387,7 @@ public class TestSQLRepositoryJTAJCA {
             @Override
             public void run() {
                 try {
-                    repositorySettings.releaseSession();
+                    coreFeature.releaseCoreSession();
                 } catch (Exception e) {
                     fail(e.toString());
                 }
@@ -398,7 +395,7 @@ public class TestSQLRepositoryJTAJCA {
         };
         t.start();
         t.join();
-        session = repositorySettings.createSession();
+        session = coreFeature.createCoreSession();
     }
 
 }
