@@ -18,7 +18,6 @@
 
 package org.nuxeo.functionaltests.formsLayoutDemo.page;
 
-import org.nuxeo.functionaltests.Required;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
@@ -27,7 +26,6 @@ import org.openqa.selenium.support.FindBy;
  */
 public class OverviewTab extends Tab {
 
-    @Required
     @FindBy(xpath = "//div[@class='tabsContent']/div[@class='foldableBox']")
     protected WebElement descriptionFoldableBox;
 
