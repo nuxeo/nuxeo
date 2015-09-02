@@ -25,6 +25,16 @@ public interface XMLImporterService {
     public List<DocumentModel> importDocuments(DocumentModel root, File source) throws IOException;
 
     /**
+     * Imports {@link DocumentModel} in Nuxeo from an XML or a Zip archive.
+     *
+     * @param root target container {@link DocumentModel}
+     * @param source source file, can be XML or Zip with XML index
+     * @param deferSave if true, do not save docs in docsStack during processing, save them after full parse of xml doc
+     * @return
+     */
+    public List<DocumentModel> importDocuments(DocumentModel root, File source, boolean deferSave) throws IOException;
+
+    /**
      * Imports {@link DocumentModel} in Nuxeo from an XML Stream.
      *
      * @param root target container {@link DocumentModel}
@@ -39,9 +49,10 @@ public interface XMLImporterService {
      * @param root target container {@link DocumentModel}
      * @param source source file, can be XML or Zip with XML index
      * @param mvelContext Context added each time a mvel expression is resolved
+     * @param deferSave if true, do not save docs in docsStack during processing, save them after full parse of xml doc
      * @return
      */
-    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
+    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext, boolean deferSave)
             throws IOException;
 
     /**

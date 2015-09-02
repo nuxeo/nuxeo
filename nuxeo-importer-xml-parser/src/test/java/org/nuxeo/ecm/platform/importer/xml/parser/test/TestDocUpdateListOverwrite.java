@@ -55,7 +55,7 @@ public class TestDocUpdateListOverwrite {
               
         xml = FileUtils.getResourceFileFromContext("docupdate.xml");
         Assert.assertNotNull(xml);
-        importer.importDocuments(root, xml);
+        importer.importDocuments(root, xml,true);
         session.save();
         
         // UPDATE DOCUMENT, OVERWRITE LIST

@@ -87,24 +87,30 @@ public class XMLImporterServiceImpl {
     protected DocumentModel rootDoc;
 
     protected Stack<DocumentModel> docsStack;
+    
+    protected Map<String, List<String>> deletedAttributes = new HashMap<>();
 
     protected Map<String, Object> mvelCtx = new HashMap<>();
 
     protected Map<Element, DocumentModel> elToDoc = new HashMap<>();
 
     protected ParserConfigRegistry registry;
+    
+    protected Boolean deferSave = false;
 
     public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry) {
-        this(rootDoc, registry, null);
+        this(rootDoc, registry, null, false);
     }
 
-    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry, Map<String, Object> mvelContext) {
+    public XMLImporterServiceImpl(DocumentModel rootDoc, ParserConfigRegistry registry, Map<String, Object> mvelContext, boolean deferSave) {
         if (mvelContext != null) {
             mvelCtx.putAll(mvelContext);
         }
 
         session = rootDoc.getCoreSession();
         this.rootDoc = rootDoc;
+        this.deferSave = deferSave;
+        
         docsStack = new Stack<>();
         pushInStack(rootDoc);
         mvelCtx.put("root", rootDoc);
@@ -203,16 +209,21 @@ public class XMLImporterServiceImpl {
         mvelCtx.put("xml", doc);
         mvelCtx.put("map", elToDoc);
         process(root);
-        return new ArrayList<>(docsStack);
-//        ArrayList<DocumentModel> a = new ArrayList();
-//        DocumentModel d = null;
-//        while(docsStack.size()>0){
-//        	d = popStack();
-//        	d.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
-//        	d = session.saveDocument(d);
-//        	a.add(d);
-//        }        
-//        return a;
+        
+        // defer saveDocument to end of operation
+        if (deferSave) {
+        	ArrayList<DocumentModel> a = new ArrayList<DocumentModel>();
+        	DocumentModel d = null;
+        	while(docsStack.size()>0){
+        		d = popStack();
+        		d.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
+        		d = session.saveDocument(d);
+        		a.add(d);
+        	}        
+        	return a;
+        } else {
+        	return new ArrayList<>(docsStack);
+        }
     }
 
     protected Object resolveComplex(Element el, AttributeConfigDescriptor conf) {
@@ -477,14 +488,21 @@ public class XMLImporterServiceImpl {
     			
     			DocumentModel existingDoc = session.getDocument(doc.getRef());
     			
-    			// get attributes, if attribute needs to be overwritten, clear it from the doc
+    			// get attributes, if attribute needs to be overwritten, empty in the document
     			for (Object e : el.elements()) {
     				List<AttributeConfigDescriptor> configs = getAttributConfigs((Element) e);
     				if (configs != null) {
+						if (!deletedAttributes.containsKey(existingDoc.getId())){
+							deletedAttributes.put(existingDoc.getId(), new ArrayList<String>());
+						}
     					for (AttributeConfigDescriptor config : configs) {
-    						if (config.overwrite){
-    							String targetDocProperty = config.getTargetDocProperty();
-    							existingDoc.setPropertyValue(targetDocProperty,null);
+							String targetDocProperty = config.getTargetDocProperty();
+							
+    						// check deletedAttributes for attribute which should be overwritten
+							// if it is there, don't empty it a second time
+							if (config.overwrite && !deletedAttributes.get(existingDoc.getId()).contains(targetDocProperty)){
+    							deletedAttributes.get(existingDoc.getId()).add(targetDocProperty); 
+    							existingDoc.setPropertyValue(targetDocProperty,new ArrayList<>());
     						}
     					}
     				} 
@@ -514,7 +532,9 @@ public class XMLImporterServiceImpl {
 
             DocumentModel doc = popStack();
             doc.putContextData(XML_IMPORTER_INITIALIZATION, Boolean.TRUE);
-            doc = session.saveDocument(doc);
+            if (!deferSave) {
+            	doc = session.saveDocument(doc);
+            }
             pushInStack(doc);
 
             if (createConf != null) {
@@ -553,4 +573,5 @@ public class XMLImporterServiceImpl {
         mvelCtx.put("changeableDocument", doc);
         return doc;
     }
+    
 }

@@ -66,7 +66,12 @@ public class XMLImporterComponent extends DefaultComponent implements XMLImporte
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile) throws IOException {
-        return importDocuments(root, xmlFile, null);
+        return importDocuments(root, xmlFile, null, false);
+    }
+
+    @Override
+    public List<DocumentModel> importDocuments(DocumentModel root, File xmlFile, boolean deferSave) throws IOException {
+        return importDocuments(root, xmlFile, null, deferSave);
     }
 
     @Override
@@ -75,16 +80,16 @@ public class XMLImporterComponent extends DefaultComponent implements XMLImporte
     }
 
     @Override
-    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext)
+    public List<DocumentModel> importDocuments(DocumentModel root, File source, Map<String, Object> mvelContext, boolean deferSave)
             throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext);
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext, deferSave);
         return importer.parse(source);
     }
 
     @Override
     public List<DocumentModel> importDocuments(DocumentModel root, InputStream xmlStream,
             Map<String, Object> mvelContext) throws IOException {
-        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext);
+        XMLImporterServiceImpl importer = new XMLImporterServiceImpl(root, getRegistry(), mvelContext, false);
         return importer.parse(xmlStream);
     }
 
