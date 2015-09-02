@@ -18,6 +18,7 @@
 package org.nuxeo.ftest.formsLayoutDemo;
 
 import static org.hamcrest.text.IsEmptyString.isEmptyString;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,6 +31,7 @@ import org.nuxeo.functionaltests.forms.ListWidgetElement;
 import org.nuxeo.functionaltests.forms.RichEditorElement;
 import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.forms.WidgetElement;
+import org.nuxeo.functionaltests.formsLayoutDemo.page.HomePage;
 import org.nuxeo.functionaltests.formsLayoutDemo.page.standardWidgets.ListStandardWidgetPage;
 import org.openqa.selenium.support.ui.Select;
 
@@ -56,8 +58,8 @@ public class ITJSListWidgetTest extends AbstractTest {
 
     @Before
     public void setUp() {
-        driver.get(NUXEO_URL + "/layoutDemo");
-        page = get(NUXEO_URL + "/layoutDemo/listWidget", ListStandardWidgetPage.class);
+        driver.get(HomePage.URL);
+        page = get(HomePage.URL + "listWidget", ListStandardWidgetPage.class);
         page.goToOverviewTab();
     }
 
