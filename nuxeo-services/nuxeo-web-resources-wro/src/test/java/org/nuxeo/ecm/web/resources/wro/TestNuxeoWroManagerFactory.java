@@ -16,6 +16,13 @@
  */
 package org.nuxeo.ecm.web.resources.wro;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import static org.mockito.MockitoAnnotations.initMocks;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,15 +60,8 @@ import ro.isdc.wro.model.group.processor.InjectorBuilder;
 import ro.isdc.wro.model.resource.locator.factory.UriLocatorFactory;
 import ro.isdc.wro.model.resource.processor.ResourcePostProcessor;
 import ro.isdc.wro.model.resource.processor.ResourcePreProcessor;
-import ro.isdc.wro.model.resource.processor.impl.css.CssMinProcessor;
+import ro.isdc.wro.model.resource.processor.impl.css.JawrCssMinifierProcessor;
 import ro.isdc.wro.model.resource.processor.impl.js.JSMinProcessor;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * @since 7.3
@@ -126,7 +126,7 @@ public class TestNuxeoWroManagerFactory {
 
         // check that default processors and locators are setup
         Collection<ResourcePreProcessor> pre = new ArrayList<>(victim.getProcessorsFactory().getPreProcessors());
-        assertTrue(checkProcessor(CssMinProcessor.class, pre));
+        assertTrue(checkProcessor(JawrCssMinifierProcessor.class, pre));
         assertTrue(checkProcessor(CssUrlRewritingProcessor.class, pre));
         List<ResourcePostProcessor> post = new ArrayList<>(victim.getProcessorsFactory().getPostProcessors());
         assertTrue(checkProcessor(JSMinProcessor.class, post));
