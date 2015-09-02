@@ -36,6 +36,7 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.jboss.seam.annotations.remoting.WebRemote;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.web.ServletContexts;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -50,6 +51,7 @@ import org.nuxeo.ecm.platform.actions.ActionContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.webapp.edit.lock.LockActions;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 
 @Name("popupHelper")
 @Scope(CONVERSATION)
@@ -260,6 +262,7 @@ public class PopupHelper implements Serializable {
         doc.setProperty("dublincore", "title", newTitle);
         documentManager.saveDocument(doc);
         documentManager.save();
+        Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED);
         return "OK";
     }
 
