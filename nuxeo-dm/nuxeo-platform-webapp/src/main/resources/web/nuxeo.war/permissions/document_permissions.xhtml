@@ -1,9 +1,14 @@
 <div xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:ui="http://java.sun.com/jsf/facelets"
-  class="nx-elements">
+    class="nx-elements">
 
   <script type="text/javascript"
-    src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+      src="#{baseURL}bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+
+  <script src="#{baseURL}bower_components/moment/min/moment-with-locales.min.js"></script>
+  <script>
+    var lang = navigator.language || navigator.browserLanguage;
+    moment.locale(lang);
+  </script>
 
   <link rel="import" href="#{baseURL}bower_components/polymer/polymer.html"></link>
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>

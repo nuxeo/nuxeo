@@ -140,11 +140,11 @@
 
         doSend: function() {
             if(this.params.begin) {
-                this.params.begin = new Date(this.params.begin).toISOString();
+                this.params.begin = moment(this.params.begin).format();
             }
 
             if(this.params.end) {
-                this.params.end = new Date(this.params.end).toISOString();
+                this.params.end = moment(this.params.end).format();
             }
             this.params.permission = this.$.allowedRights.value;
             if (this.updatingACE) {
