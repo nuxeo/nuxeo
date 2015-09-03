@@ -19,31 +19,32 @@ package org.nuxeo.ftest.formsLayoutDemo;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.nuxeo.functionaltests.forms.CheckboxWidgetElement;
 
 /**
  * @since 7.4
  */
-public class ITTextareaWidgetTest extends AbstractWidgetPageTest {
+public class ITCheckboxWidgetTest extends AbstractWidgetPageTest {
 
-    public ITTextareaWidgetTest() {
-        super("textareaWidget");
+    public ITCheckboxWidgetTest() {
+        super("checkboxWidget");
     }
 
     @Test
     public void testWidget() {
         navigateTo(pageId);
         checkNoError();
-        assertEquals("", getViewWidget().getValue(false));
-        checkValueRequired(false);
+        assertEquals("No", getViewWidget(CheckboxWidgetElement.class).getValue(false));
         submitDemo();
-        checkValueRequired(true);
-        getEditWidget().setInputValue("la lala\na la ligne");
+        getEditWidget(CheckboxWidgetElement.class).setInputValue("true");
         submitDemo();
-        checkValueRequired(false);
-        assertEquals("la lala\na la ligne", getViewWidget().getValue(false));
+        assertEquals("Yes", getViewWidget(CheckboxWidgetElement.class).getValue(false));
+        getEditWidget(CheckboxWidgetElement.class).setInputValue("false");
+        submitDemo();
+        assertEquals("No", getViewWidget(CheckboxWidgetElement.class).getValue(false));
         navigateTo(pageId);
-        assertEquals("", getViewWidget().getValue(false));
-        assertEquals("", getEditWidget().getValue(true));
+        assertEquals("No", getViewWidget(CheckboxWidgetElement.class).getValue(false));
+        assertEquals("false", getEditWidget(CheckboxWidgetElement.class).getValue(true));
     }
 
 }

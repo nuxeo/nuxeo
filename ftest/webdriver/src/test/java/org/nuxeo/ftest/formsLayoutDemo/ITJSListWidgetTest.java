@@ -206,7 +206,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         select2WidgetElement.selectValue(S2_SELECTION_1, true);
         RichEditorElement richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 0, RichEditorElement.class,
                 true);
-        richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_1);
+        richEditorElement.setInputValue(DUMMY_HTML_TEXT_CONTENT_1);
 
         listWidget.addNewElement();
         assertEquals(2, listWidget.getRows().size());
@@ -216,7 +216,7 @@ public class ITJSListWidgetTest extends AbstractTest {
         select2WidgetElement.selectValue(S2_SELECTION_2, true);
 
         richEditorElement = listWidget.getSubWidget("nxw_htmlTextItem", 1, RichEditorElement.class, true);
-        richEditorElement.insertContent(DUMMY_HTML_TEXT_CONTENT_2);
+        richEditorElement.setInputValue(DUMMY_HTML_TEXT_CONTENT_2);
 
         page.submitS2HtmlTextComplexListWidget();
 

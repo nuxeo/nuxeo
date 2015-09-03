@@ -91,8 +91,12 @@ public abstract class AbstractWidgetPageTest extends AbstractTest {
     protected void submitDemo() {
         AjaxRequestManager arm = new AjaxRequestManager(driver);
         arm.watchAjaxRequests();
-        driver.findElement(By.xpath("//input[@value='Submit']")).click();
+        doSubmitDemo();
         arm.waitForAjaxRequests();
+    }
+
+    protected void doSubmitDemo() {
+        driver.findElement(By.xpath("//input[@value='Submit']")).click();
     }
 
 }

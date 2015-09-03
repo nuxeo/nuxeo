@@ -37,7 +37,7 @@ import org.openqa.selenium.By;
 /**
  * Tests every menu item.
  *
- * @since 7.2
+ * @since 7.4
  */
 public class ITMenuTest extends AbstractTest {
 

@@ -19,31 +19,32 @@ package org.nuxeo.ftest.formsLayoutDemo;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.nuxeo.functionaltests.forms.RichEditorElement;
 
 /**
  * @since 7.4
  */
-public class ITTextareaWidgetTest extends AbstractWidgetPageTest {
+public class ITHTMLTextWidgetTest extends AbstractWidgetPageTest {
 
-    public ITTextareaWidgetTest() {
-        super("textareaWidget");
+    public ITHTMLTextWidgetTest() {
+        super("htmltextWidget");
     }
 
     @Test
     public void testWidget() {
         navigateTo(pageId);
         checkNoError();
-        assertEquals("", getViewWidget().getValue(false));
+        assertEquals("", getViewWidget(RichEditorElement.class).getValue(false));
         checkValueRequired(false);
         submitDemo();
         checkValueRequired(true);
-        getEditWidget().setInputValue("la lala\na la ligne");
+        getEditWidget(RichEditorElement.class).setInputValue("<b>Bold</b> content");
         submitDemo();
         checkValueRequired(false);
-        assertEquals("la lala\na la ligne", getViewWidget().getValue(false));
+        assertEquals("Bold content", getViewWidget(RichEditorElement.class).getValue(false));
         navigateTo(pageId);
-        assertEquals("", getViewWidget().getValue(false));
-        assertEquals("", getEditWidget().getValue(true));
+        assertEquals("", getViewWidget(RichEditorElement.class).getValue(false));
+        assertEquals("", getEditWidget(RichEditorElement.class).getValue(true));
     }
 
 }
