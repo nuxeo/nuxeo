@@ -51,7 +51,7 @@ public class ITContainerWidgetTest extends AbstractWidgetPageTest {
 
         submitDemo();
         Locator.waitForTextPresent(driver.findElement(By.xpath("//html")), "Value is required");
-        assertEquals("Value is required", driver.findElement(By.id(editIdPrefix + "nxw_textWidget_message")).getText());
+        assertEquals("Value is required", driver.findElement(By.id(editIdPrefix + "nxw_textWidget_message_1")).getText());
 
         LayoutElement edit = new LayoutElement(driver, editIdPrefix);
         edit.getWidget("nxw_textWidget").setInputValue("test");
