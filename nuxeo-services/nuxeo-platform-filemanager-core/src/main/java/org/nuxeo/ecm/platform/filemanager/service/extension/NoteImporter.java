@@ -34,6 +34,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
+
 /**
  * Imports the string content of a blob as text for the content of the "note" field of a new Note document.
  * <p>
@@ -110,12 +113,12 @@ public class NoteImporter extends AbstractFileImporter {
 
         byte[] bytes = blob.getByteArray();
 
-        List<String> charsets = Arrays.asList("utf-8", "iso-8859-1");
+        List<String> charsets = new ArrayList<>(Arrays.asList("utf-8", "iso-8859-1"));
 
-        // charset specified in MIME type?
         String CSEQ = "charset=";
         int i = mimeType.indexOf(CSEQ);
         if (i > 0) {
+            // charset specified in MIME type
             String onlyMimeType = mimeType.substring(0, i).replace(";", "").trim();
             blob.setMimeType(onlyMimeType);
             String charset = mimeType.substring(i + CSEQ.length());
@@ -124,17 +127,27 @@ public class NoteImporter extends AbstractFileImporter {
                 charset = charset.substring(0, i);
             }
             charset = charset.trim().replace("\"", "");
-            charsets = new ArrayList<String>(charsets);
             charsets.add(0, charset);
+        } else {
+            // charset detected from the actual bytes
+            CharsetMatch charsetMatch = new CharsetDetector().setText(bytes).detect();
+            if (charsetMatch != null) {
+                String charset = charsetMatch.getName();
+                charsets.add(0, charset);
+            }
         }
 
-        // resort to auto-detection
+        // now convert the string according to the charset, and fallback on others if not possible
         for (String charset : charsets) {
             try {
                 Charset cs = Charset.forName(charset);
                 CharsetDecoder d = cs.newDecoder().onMalformedInput(CodingErrorAction.REPORT).onUnmappableCharacter(
                         CodingErrorAction.REPORT);
                 CharBuffer cb = d.decode(ByteBuffer.wrap(bytes));
+                if (cb.length() != 0 && cb.charAt(0) == '\ufeff') {
+                    // remove BOM
+                    cb = cb.subSequence(1, cb.length());
+                }
                 return cb.toString();
             } catch (IllegalArgumentException e) {
                 // illegal charset
