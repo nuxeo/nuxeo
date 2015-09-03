@@ -14,14 +14,14 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.functionaltests.forms;
+package org.nuxeo.functionaltests.fragment;
 
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.AbstractTest;
 import org.nuxeo.functionaltests.Locator;
-import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
+import org.nuxeo.functionaltests.forms.Select2WidgetElement;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;

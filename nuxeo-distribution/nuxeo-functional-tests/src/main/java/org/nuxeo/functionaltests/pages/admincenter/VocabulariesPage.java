@@ -23,7 +23,7 @@ import java.util.List;
 import org.nuxeo.functionaltests.AjaxRequestManager;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.forms.NewVocabularyEntryForm;
+import org.nuxeo.functionaltests.fragment.NewVocabularyEntryForm;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;

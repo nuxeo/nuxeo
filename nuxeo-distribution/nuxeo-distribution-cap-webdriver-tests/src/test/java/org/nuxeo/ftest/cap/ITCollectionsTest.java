@@ -26,9 +26,8 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
-
 import org.nuxeo.functionaltests.AbstractTest;
-import org.nuxeo.functionaltests.forms.AddToCollectionForm;
+import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.CollectionsPage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage;
 import org.nuxeo.functionaltests.pages.DocumentBasePage.UserNotConnectedException;
@@ -40,7 +39,6 @@ import org.nuxeo.functionaltests.pages.tabs.CollectionContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ContentTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.ManageTabSubPage;
 import org.nuxeo.functionaltests.pages.tabs.SummaryTabSubPage;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
