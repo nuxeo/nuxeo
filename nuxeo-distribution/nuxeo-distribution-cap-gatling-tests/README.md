@@ -1,48 +1,46 @@
 # Nuxeo Gatling bench
 
-# Requirement
-
-- A running Nuxeo server instance
-- A Redis server (>= 2.4.14 for the `--pipe` support) by default expect to run on `localhost:6379`
-- Setup an existing administrator account in the file: `src/test/resources/data/admins.csv`
-- Setup a list of users that will be created as members and used in the bench: `src/test/resources/data/users.csv`
-  default file contains 500 users.
-- Increase vcs and db pool size accordingly to the concurrent requests expected (in `nuxeo.conf`: `nuxeo.*
-.max-pool-size`)
-
 
 # Overview
 
-Gatling is used to execute simulations (aka scenario).
+This module provides [Gatling](http://gatling.io/) bench scripts and make it easy to create new one.
 
-The Setup simulation creates a bench workspace and users taken from a CSV file.
+The documents are feeded from Redis (see section below), bench users from a CSV file.
 
-Then there are simulations to create documents using the Nuxeo Rest API. Documents are served by a Redis server. The
-folder layout is created first then the leaf documents.
+The Nuxeo instance is first setup using a simulation (aka scenario) that creates a sandbox workspace
+and users.
 
-It is easy to inject documents into Redis using provided script and open data or by creating custom script.
+The next step is to create documents using the Nuxeo Rest API. The folder layout is created first then the leaf
+documents.
 
-Once documents are loaded, simulation of UI (JSF) navigation can be run, it is possible to mix navigation
-with document update.
+Once documents are loaded, simulation that update documents or navigate using the JSF UI can be
+run.
 
+
+# Requirement
+
+- A Redis server (>= 2.4.14 for the `--pipe` support) by default expect to run on `localhost:6379`
+- The data injection must be done on unix
 
 # Injecting documents into Redis
 
-## From open data
+The goal is to do the document pre processing using custom script, so Gatling has ready to use data serverd
+quickly by Redis, it also enable to use multiple Gatling instance.
 
-There a few sample provided
 
-### Tree dataset
+## Data injectors
 
-The dataset is taken from the "Mairie de Paris" and contains the [list of tree in the Paris area](http://opendata.paris.fr/explore/dataset/les-arbres/?tab=metas)
+### Default "Trees" dataset
 
-To download the file (12MB, 90k docs) and inject the content into redis:
+The dataset is taken from the "Mairie de Paris" and contains the [list of trees in the Paris area](http://opendata.paris.fr/explore/dataset/les-arbres/?tab=metas)
 
-    python inject-arbre.py | redis-cli --pipe
+This data will be download and injected automatically when using the default maven integration-test phase.
 
-See `python inject-arbre.py --help` for more information, note that the file can be processed much faster using GNU parallel:
+You can also run the script by hand, this will download the file (12MB, 90k docs) and inject the content into redis:
 
-    cat ~/data/les-arbres.csv | parallel --pipe --block 2M python ./inject-arbres.py | redis-cli --pipe
+    python ./scripts/inject-arbre.py | redis-cli --pipe
+
+See `python inject-arbre.py --help` for more information.
 
 
 ### library dataset
@@ -51,12 +49,16 @@ The dataset is taken from the "Mairie de Paris" and contains the [list of books 
 
 To download the file (276MB, 746k docs) and inject the content into redis:
 
-    python inject-biblio.py | redis-cli --pipe
+    python scripts/inject-biblio.py | redis-cli --pipe
 
+Note that the file can be processed much faster using GNU parallel:
 
-## From a custom python script
+    cat ~/data/biblio.csv | parallel --pipe --block 40M python .scripts/inject-biblio.py | redis-cli --pipe
 
-Create document using the `NuxeoWriter.addDocument` API, the folders layout will be build automatically:
+### Custom dataset
+
+Create a python script and use the `NuxeoWriter.addDocument` method, the writer will take care of creating parent
+folders if they don't already exists:
 
       from nuxeo import NuxeoWriter
 
@@ -71,14 +73,14 @@ this:
       python  my-script.py | redis-cli --pipe
 
 
-See the previous `inject-*.py` file for example.
+Create your injector by looking at provided one.
 
 ## Redis document store
 
 The documents information are stored in a Redis database with the following layout:
 
-- `imp:folder` a ZSET of folders path and level
-- `imp:doc` a SET of documents path
+- `imp:folder` a ZSET to list folder with their depth level
+- `imp:doc` a SET to list the documents path
 - `imp:data:$docPath` a HASH describing a document (or a folder) including the payload that will be used to create
 the Nuxeo document
 
@@ -90,14 +92,14 @@ When running the gatling tests it will also produces:
 
 Some useful `redit-cli` commands:
 
-    # Number of document to create
+    # Number of document in the data set
     SCARD imp:doc
-    # Number of document to create
-    ZCARD imp:temp:folder:toCreate
+    # Number of document pending in creation
+    ZCARD imp:temp:doc:toCreate
     # Number of document in creation or failed after import
-    SCARD imp:temp:folder:creating
+    SCARD imp:temp:doc:creating
     # Number of document created
-    SCARD imp:temp:folder:created
+    SCARD imp:temp:doc:created
     # View a doc
     HGETALL imp:data:<docPath>
 
@@ -154,10 +156,10 @@ Options:
     # user thinktime in second between update
     -DthinkTime=0
 
-## BenchSimulation (mixing simulations)
+## Bench (mixing Navigation and Update)
 
-x% UpdateDocument
-y% Navigation
+10% UpdateDocument
+90% Navigation
 
 ## Cleanup simulation
 
@@ -165,16 +167,9 @@ This simulation remove all documents, users and group from the Nuxeo instance, a
 
 # Launching
 
-## Setup a Nuxeo instance and run all simulations
+## All in one
 
-This will import a default data set, start a server and run the following simulations:
-- Setup
-- CreateFolders 
-- CreateDocuments
-- UpdateDocuments
-- Navigation
-- Cleanup
-
+Setup a Nuxeo instance, get data, inject data into Redis, run all the simulations.
 
     mvn -nsu integration-test -Pbench
 
@@ -193,7 +188,6 @@ Default options: see below
      [4] org.nuxeo.cap.bench.Sim30UpdateDocuments
      [5] org.nuxeo.cap.bench.Sim50Bench
      [6] org.nuxeo.cap.bench.Sim90Cleanup
-     
 
 
 Common options with default values:
@@ -205,6 +199,9 @@ Common options with default values:
     # Redis key prefix (or namespace)
     -DredisNamespace=imp
 
+Note that you may need to edit the administrator account if it is not the default one:
+
+    src/test/resources/data/admins.csv
 
 You can also bypass the interactive mode and execute a simulation
 
