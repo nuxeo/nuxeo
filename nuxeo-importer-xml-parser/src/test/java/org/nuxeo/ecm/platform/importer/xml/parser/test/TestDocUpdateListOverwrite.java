@@ -55,7 +55,7 @@ public class TestDocUpdateListOverwrite {
               
         xml = FileUtils.getResourceFileFromContext("docupdate.xml");
         Assert.assertNotNull(xml);
-        importer.importDocuments(root, xml,true);
+        importer.importDocuments(root, xml, true);
         session.save();
         
         // UPDATE DOCUMENT, OVERWRITE LIST
@@ -65,7 +65,6 @@ public class TestDocUpdateListOverwrite {
         property = fileDoc.getProperty("dc:subjects");
         subjects = (Object[]) property.getValue();
         Assert.assertEquals("The property dc:subjects should contain 4 values", 4, subjects.length);
-
         
 	}
 

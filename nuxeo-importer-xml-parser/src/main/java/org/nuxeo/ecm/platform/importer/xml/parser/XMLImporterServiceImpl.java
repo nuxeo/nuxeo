@@ -72,6 +72,9 @@ public class XMLImporterServiceImpl {
     private static final String MSG_CREATION = "**CREATION**\n"
             + "Try to create document in %s with name %s based on \"%s\" fragment " + "with the following conf: %s\n";
 
+    private static final String MSG_UPDATE = "**DOCUMENT UPDATE**\n"
+            + "Try to update document in %s with name %s based on \"%s\" fragment " + "with the following conf: %s\n";
+    
     private static final String MSG_UPDATE_PROPERTY_TRACE = "**PROPERTY UPDATE**\n"
             + "Value found for %s in %s is \"%s\". With the following conf: %s";
 
@@ -231,6 +234,7 @@ public class XMLImporterServiceImpl {
         for (String name : conf.getMapping().keySet()) {
             propValue.put(name, resolveAndEvaluateXmlNode(el, conf.getMapping().get(name)));
         }
+
         return propValue;
     }
 
@@ -325,7 +329,7 @@ public class XMLImporterServiceImpl {
                 }
             } else {
                 value = (Serializable) resolveComplex(el, conf);
-                if (value != null) {
+                if (value != null && !conf.getMapping().isEmpty()) {
                     property.addValue(value);
                 }
             }
@@ -480,12 +484,15 @@ public class XMLImporterServiceImpl {
     	doc.setPathInfo(path, name);
 
     	if (log.isDebugEnabled()) {
-    		log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+    		if (conf.getUpdate()){
+    			log.debug(String.format(MSG_UPDATE, path, name, el.getUniquePath(), conf.toString()));
+    		} else {
+    			log.debug(String.format(MSG_CREATION, path, name, el.getUniquePath(), conf.toString()));
+    		}
     	}
 
     	try {
     		if (conf.getUpdate() && session.exists(doc.getRef())){
-    			
     			DocumentModel existingDoc = session.getDocument(doc.getRef());
     			
     			// get attributes, if attribute needs to be overwritten, empty in the document
@@ -497,7 +504,6 @@ public class XMLImporterServiceImpl {
 						}
     					for (AttributeConfigDescriptor config : configs) {
 							String targetDocProperty = config.getTargetDocProperty();
-							
     						// check deletedAttributes for attribute which should be overwritten
 							// if it is there, don't empty it a second time
 							if (config.overwrite && !deletedAttributes.get(existingDoc.getId()).contains(targetDocProperty)){
