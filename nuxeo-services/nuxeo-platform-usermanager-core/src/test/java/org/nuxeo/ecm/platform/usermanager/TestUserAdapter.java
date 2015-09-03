@@ -22,36 +22,18 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.commons.lang.StringUtils;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Thierry Martins
  */
+@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserAdapter extends UserManagerTestCase {
-
-    protected UserManager userManager;
-
-    protected UserService userService;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
-
-        userManager = userService.getUserManager();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     @Test
     public void testAdministratorModel() throws Exception {

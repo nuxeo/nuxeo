@@ -17,43 +17,44 @@
 
 package org.nuxeo.ecm.platform.computedgroups.test;
 
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestLabelledComputedGroupService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class) // to init properties for SQL datasources
+@Deploy({ "org.nuxeo.ecm.core.schema", //
+        "org.nuxeo.ecm.core.api", //
+        "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.event", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.sql", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:labelled-computedgroups-framework.xml", //
+        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
+})
+public class TestLabelledComputedGroupService {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        DatabaseHelper.DATABASE.setUp();
-    }
+    @Inject
+    protected ComputedGroupsService cgs;
 
     @Test
     public void testContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "labelled-computedgroups-framework.xml");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
-        assertNotNull(cgs);
 
         NuxeoGroup group = cgs.getComputedGroup("Grp1");
         assertNotNull(group);

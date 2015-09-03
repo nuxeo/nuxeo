@@ -28,56 +28,81 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.jmock.Expectations;
+import org.jmock.Mockery;
+import org.jmock.integration.junit4.JUnit4Mockery;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagementMock;
+import org.nuxeo.ecm.directory.localconfiguration.DirectoryConfiguration;
+import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagement;
+import org.nuxeo.ecm.platform.usermanager.MultiTenantUserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
+import org.nuxeo.ecm.platform.usermanager.UserManagerTestCase;
 import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
-import org.nuxeo.ecm.platform.usermanager.UserService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * These Test Cases test the usermanager when a Directory Local Configuration is set.
  *
  * @author Benjamin JALON
  */
-public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
+@Deploy("org.nuxeo.ecm.directory.multi")
+@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl-multitenant/directory-for-context-config.xml")
+public class TestUserManagerWithContext extends UserManagerTestCase {
 
-    protected UserManagerImpl userManager;
+    protected Mockery mockery = new JUnit4Mockery();
 
-    protected UserService userService;
+    MultiTenantUserManager mtum;
 
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl-multitenant/DirectoryServiceMock.xml");
-
-        deployBundle("org.nuxeo.ecm.directory.multi");
-
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
-
-        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
-
-        userManager = (UserManagerImpl) userService.getUserManager();
+    public void setUp()  {
         UserMultiTenantManagement umtm = new DefaultUserMultiTenantManagementMock();
         // to simulate the directory local configuration
-        userManager.multiTenantManagement = umtm;
+        ((UserManagerImpl) userManager).multiTenantManagement = umtm;
+        mtum = (MultiTenantUserManager) userManager;
     }
 
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
+    /**
+     * Context doc with a local conf using "tenanta".
+     */
+    protected DocumentModel getContextDoc() {
+        DirectoryConfiguration directoryConfiguration = mockery.mock(DirectoryConfiguration.class);
+        mockery.checking(new Expectations() {
+            {
+                allowing(directoryConfiguration).canMerge();
+                will(returnValue(Boolean.FALSE));
+                allowing(directoryConfiguration).getDirectorySuffix();
+                will(returnValue("tenanta"));
+            }
+        });
+
+        CoreSession session = mockery.mock(CoreSession.class);
+        mockery.checking(new Expectations() {
+            {
+                allowing(session).adaptFirstMatchingDocumentWithFacet(with(any(DocumentRef.class)),
+                        with(any(String.class)), with(any(Class.class)));
+                will(returnValue(directoryConfiguration));
+            }
+        });
+
+        DocumentModel doc = mockery.mock(DocumentModel.class);
+        mockery.checking(new Expectations() {
+            {
+                allowing(doc).getCoreSession();
+                will(returnValue(session));
+                allowing(doc).getRef();
+                will(returnValue(new IdRef("123")));
+            }
+        });
+        return doc;
     }
 
     @Test
@@ -91,12 +116,12 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
     @Test
     public void testShouldReturnOnlyUserFromTenantA() throws Exception {
 
-        DocumentModelList users = userManager.searchUsers("%%", null);
+        DocumentModelList users = mtum.searchUsers("%%", null);
 
         assertEquals(2, users.size());
 
-        DocumentModel fakeDoc = new SimpleDocumentModel();
-        users = userManager.searchUsers("Administrator", fakeDoc);
+        DocumentModel fakeDoc = getContextDoc();
+        users = mtum.searchUsers("Administrator", fakeDoc);
 
         assertEquals(1, users.size());
         assertEquals("Administrator@tenanta", users.get(0).getPropertyValue("username"));
@@ -107,17 +132,17 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();
-        DocumentModel fakeDoc = new SimpleDocumentModel();
+        DocumentModel fakeDoc = getContextDoc();
 
-        DocumentModelList groups = userManager.searchGroups(filter, fulltext, null);
+        DocumentModelList groups = mtum.searchGroups(filter, fulltext, null);
         assertEquals(4, groups.size());
 
-        groups = userManager.searchGroups(filter, fulltext, fakeDoc);
+        groups = mtum.searchGroups(filter, fulltext, fakeDoc);
         assertEquals(2, groups.size());
 
         filter.put("groupname", "administrators%");
         fulltext.add("groupname");
-        groups = userManager.searchGroups(filter, fulltext, fakeDoc);
+        groups = mtum.searchGroups(filter, fulltext, fakeDoc);
         assertEquals(1, groups.size());
         assertEquals("administrators-tenanta", groups.get(0).getPropertyValue("groupname"));
     }
@@ -125,13 +150,13 @@ public class TestUserManagerWithContext extends UserManagerMultiTenantTestCase {
     @Test
     public void testShouldAddPrefixToIdWhenGroupCreated() throws Exception {
 
-        DocumentModel fakeDoc = new SimpleDocumentModel();
+        DocumentModel fakeDoc = getContextDoc();
 
         DocumentModel newGroup = userManager.getBareGroupModel();
         newGroup.setPropertyValue("groupname", "test");
-        userManager.createGroup(newGroup, fakeDoc);
+        mtum.createGroup(newGroup, fakeDoc);
 
-        DocumentModel group = userManager.getGroupModel("test", fakeDoc);
+        DocumentModel group = mtum.getGroupModel("test", fakeDoc);
         String groupIdValue = (String) group.getPropertyValue("groupname");
         assertTrue(groupIdValue.endsWith("-tenanta"));
 

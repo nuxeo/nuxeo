@@ -30,12 +30,11 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
-import org.nuxeo.ecm.platform.usermanager.DefaultUserMultiTenantManagementMock;
 import org.nuxeo.ecm.platform.usermanager.UserManagerImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManagerTestCase;
 import org.nuxeo.ecm.platform.usermanager.UserMultiTenantManagement;
-import org.nuxeo.ecm.platform.usermanager.UserService;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * This will test the filter on groups transformation to manage the Directory Local Configuration. Directory Local
@@ -45,29 +44,17 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author bjalon
  */
+@Deploy("org.nuxeo.ecm.directory.multi")
+@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl-multitenant/directory-for-context-config.xml")
 public class TestUserManagerImplFilterTranformerForDirectoryLocalConfigManagement extends UserManagerTestCase {
-
-    protected UserManagerImpl userManager;
-
-    protected UserService userService;
 
     protected UserMultiTenantManagement umtm;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.directory.multi");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
-                "test-usermanagerimpl-multitenant/directory-for-context-config.xml");
-
-        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
-
-        userManager = (UserManagerImpl) userService.getUserManager();
         umtm = new DefaultUserMultiTenantManagementMock();
         // needed to simulate the directory local configuration
-        userManager.multiTenantManagement = umtm;
+        ((UserManagerImpl) userManager).multiTenantManagement = umtm;
     }
 
     @Test

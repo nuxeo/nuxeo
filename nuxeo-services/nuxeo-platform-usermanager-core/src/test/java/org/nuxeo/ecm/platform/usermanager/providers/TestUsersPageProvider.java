@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,44 +36,30 @@ import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.UserManagerTestCase;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUsersPageProvider extends UserManagerTestCase {
 
     protected static final String PROVIDER_NAME = "users_listing";
 
+    @Inject
     protected PageProviderService ppService;
 
-    protected UserManager userManager;
-
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        ppService = Framework.getService(PageProviderService.class);
-        assertNotNull(ppService);
-
-        userManager = Framework.getService(UserManager.class);
-        assertNotNull(userManager);
-
-        initUsers();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    protected void initUsers() {
+    public void initUsers() {
         userManager.createUser(createUser("jdoe"));
         userManager.createUser(createUser("jsmith"));
         userManager.createUser(createUser("bree"));
         userManager.createUser(createUser("lbramard"));
+    }
+
+    @After
+    public void cleanUsers() {
+        userManager.deleteUser("jdoe");
+        userManager.deleteUser("jsmith");
+        userManager.deleteUser("bree");
+        userManager.deleteUser("lbramard");
     }
 
     protected DocumentModel createUser(String userName) {

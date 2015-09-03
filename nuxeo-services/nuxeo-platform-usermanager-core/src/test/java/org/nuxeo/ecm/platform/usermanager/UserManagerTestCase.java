@@ -17,20 +17,73 @@
  */
 package org.nuxeo.ecm.platform.usermanager;
 
-import org.nuxeo.ecm.platform.usermanager.local.configuration.UserManagerMultiTenantTestCase;
+import java.util.Arrays;
 
-public abstract class UserManagerTestCase extends UserManagerMultiTenantTestCase {
+import javax.inject.Inject;
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
+import org.junit.After;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class) // to init properties for SQL datasources
+@Deploy({ "org.nuxeo.ecm.core.schema", //
+        "org.nuxeo.ecm.core.api", //
+        "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.event", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.platform.query.api", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/usermanager-inmemory-cache-config.xml", //
+        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/userservice-config.xml", //
+})
+public abstract class UserManagerTestCase {
+
+    @Inject
+    protected UserManager userManager;
+
+    public void TODO() {
+//        if (!RedisFeature.setup(this)) {
+//            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+//                    "test-usermanagerimpl/usermanager-redis-cache-config.xml");
+//        } else {
+//            deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+//                    "test-usermanagerimpl/usermanager-inmemory-cache-config.xml");
+//        }
+//        fireFrameworkStarted();
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void cleanup() {
+        DocumentModelList users = userManager.searchUsers(null);
+        for (DocumentModel user : users) {
+            String userId = user.getId();
+            if (userId.equals(userManager.getAnonymousUserId())) {
+                continue;
+            }
+            if (userId.startsWith("Administrator")) {
+                // comes from a CSV
+                continue;
+            }
+            userManager.getPrincipal(userId); // init relation tables needed on delete
+            userManager.deleteUser(userId);
+        }
+        for (String groupId : Arrays.asList("group1", "group2", "group3")) {
+            if (userManager.getGroup(groupId) != null) {
+                userManager.deleteGroup(groupId);
+            }
+        }
     }
+
 }

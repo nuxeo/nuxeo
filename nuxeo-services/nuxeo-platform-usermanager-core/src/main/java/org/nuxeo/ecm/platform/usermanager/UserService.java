@@ -136,7 +136,7 @@ public class UserService extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         descriptors.remove(contribution);
-        // recomputeUserManager(true);
+        recomputeUserManager(true);
     }
 
 }

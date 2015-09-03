@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -51,40 +53,19 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.GroupAlreadyExistsException;
 import org.nuxeo.ecm.platform.usermanager.exceptions.UserAlreadyExistsException;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
 /**
  * @author George Lefter
  * @author Florent Guillaume
  * @author Anahide Tchertchian
  */
+@LocalDeploy("org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml")
 public class TestUserManager extends UserManagerTestCase {
 
-    protected UserManager userManager;
-
-    protected UserService userService;
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        userService = (UserService) Framework.getRuntime().getComponent(UserService.NAME);
-
-        userManager = userService.getUserManager();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    @Test
-    public void testConnect() {
-        assertNotNull(userManager);
-    }
+    @Inject
+    protected RuntimeHarness harness;
 
     @Test
     public void testExistingSetup() throws Exception {
@@ -131,11 +112,21 @@ public class TestUserManager extends UserManagerTestCase {
 
     @Test
     public void testGetAdministratorOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-override-config.xml");
         // user manager is recomputed after deployment => refetch it
-        userManager = userService.getUserManager();
+        userManager = Framework.getService(UserManager.class);
+        try {
+            doTestGetAdministratorOverride();
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/userservice-override-config.xml");
+            // user manager is recomputed after undeployment => refetch it
+            userManager = Framework.getService(UserManager.class);
+        }
+    }
 
+    public void doTestGetAdministratorOverride() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("tehroot");
         assertNotNull(principal);
         assertTrue(principal.isAdministrator());
@@ -193,11 +184,21 @@ public class TestUserManager extends UserManagerTestCase {
 
     @Test
     public void testGetVirtualUsersOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-override-config.xml");
         // user manager is recomputed after deployment => refetch it
-        userManager = userService.getUserManager();
+        userManager = Framework.getService(UserManager.class);
+        try {
+            doTestGetVirtualUsersOverride();
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/userservice-override-config.xml");
+            // user manager is recomputed after undeployment => refetch it
+            userManager = Framework.getService(UserManager.class);
+        }
+    }
 
+    public void doTestGetVirtualUsersOverride() throws Exception {
         NuxeoPrincipal principal = userManager.getPrincipal("ClassicAdministrator");
         assertNotNull(principal);
         assertEquals("ClassicAdministrator", principal.getName());
@@ -243,11 +244,21 @@ public class TestUserManager extends UserManagerTestCase {
 
     @Test
     public void testGetAdministratorGroupsOverride() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests",
                 "test-usermanagerimpl/userservice-override-config.xml");
         // user manager is recomputed after deployment => refetch it
-        userManager = userService.getUserManager();
+        userManager = Framework.getService(UserManager.class);
+        try {
+            doTestGetAdministratorGroupsOverride();
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests",
+                    "test-usermanagerimpl/userservice-override-config.xml");
+            // user manager is recomputed after undeployment => refetch it
+            userManager = Framework.getService(UserManager.class);
+        }
+    }
 
+    public void doTestGetAdministratorGroupsOverride() throws Exception {
         List<String> adminGroups = userManager.getAdministratorsGroups();
         assertEquals(Arrays.asList("myAdministrators"), adminGroups);
     }
@@ -807,7 +818,6 @@ public class TestUserManager extends UserManagerTestCase {
     private void initTestGetUsernamesForPermission() throws Exception {
         userManager.getPrincipal("Administrator"); // creates tables
         deleteTestObjects();
-        userManager.deleteUser("Administrator");
         userManager.createUser(getUser("alex"));
         userManager.createUser(getUser("bree"));
         userManager.createUser(getUser("jdoe"));
@@ -848,7 +858,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
 
-        List<String> expectedUsers = Arrays.asList("alex", "jdoe", "bree");
+        List<String> expectedUsers = Arrays.asList("Administrator", "alex", "jdoe", "bree");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
@@ -920,7 +930,7 @@ public class TestUserManager extends UserManagerTestCase {
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
 
-        List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
+        List<String> expectedUsers = Arrays.asList("Administrator", "alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
@@ -944,7 +954,7 @@ public class TestUserManager extends UserManagerTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
+        List<String> expectedUsers = Arrays.asList("Administrator", "alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
 
@@ -971,7 +981,7 @@ public class TestUserManager extends UserManagerTestCase {
         List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
         // Should contain alex and stef (in group1) and jdoe (in none of these
         // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList("alex", "stef", "jdoe");
+        List<String> expectedUsers = Arrays.asList("Administrator", "alex", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers, users);

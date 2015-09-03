@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -40,8 +42,10 @@ import org.nuxeo.ecm.core.api.impl.NuxeoGroupImpl;
 import org.nuxeo.ecm.core.api.validation.DocumentValidationService;
 import org.nuxeo.ecm.core.schema.types.SimpleType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml",
+        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanager-resolver.xml" })
 public class TestUserManagerResolver extends UserManagerTestCase {
 
     private static final String USER_XPATH = "umr:user";
@@ -50,23 +54,16 @@ public class TestUserManagerResolver extends UserManagerTestCase {
 
     private static final String USER_GROUP_XPATH = "umr:userOrGroup";
 
+    @Inject
     protected CoreSession session;
 
+    @Inject
     protected DocumentValidationService validator;
-
-    protected UserManager userManager;
 
     protected DocumentModel doc;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanager-resolver.xml");
-        session = Framework.getService(CoreSession.class);
-        validator = Framework.getService(DocumentValidationService.class);
-        userManager = Framework.getService(UserManager.class);
         doc = session.createDocumentModel("/", "doc1", "TestResolver");
     }
 

@@ -222,7 +222,7 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
         userConfig.schemaName = userSchemaName;
         userConfig.nameKey = userIdField;
 
-        if (descriptor.userCacheName != null) {
+        if (cacheService != null && descriptor.userCacheName != null) {
             principalCache = cacheService.getCache(descriptor.userCacheName);
         }
 

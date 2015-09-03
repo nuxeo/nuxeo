@@ -17,6 +17,12 @@
 
 package org.nuxeo.ecm.platform.computedgroups.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,14 +30,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsService;
 import org.nuxeo.ecm.platform.computedgroups.ComputedGroupsServiceImpl;
 import org.nuxeo.ecm.platform.computedgroups.GroupComputer;
@@ -39,44 +45,41 @@ import org.nuxeo.ecm.platform.computedgroups.GroupComputerDescriptor;
 import org.nuxeo.ecm.platform.computedgroups.UserManagerWithComputedGroups;
 import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-public class TestComputedGroupService extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class) // to init properties for SQL datasources
+@Deploy({ "org.nuxeo.ecm.core.schema", //
+        "org.nuxeo.ecm.core.api", //
+        "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.event", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.sql", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml", //
+        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
+        })
+public class TestComputedGroupService {
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        DatabaseHelper.DATABASE.setUp();
-    }
+    @Inject
+    protected RuntimeHarness harness;
 
-    @Test
-    public void testLookup() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager", "OSGI-INF/computedgroups-framework.xml");
-        ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
-        assertNotNull(cgs);
-    }
+    @Inject
+    protected ComputedGroupsService cgs;
+
+    @Inject
+    protected UserManager um;
 
     @Test
     public void testContrib() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        ComputedGroupsService cgs = Framework.getLocalService(ComputedGroupsService.class);
-        assertNotNull(cgs);
-
         ComputedGroupsServiceImpl component = (ComputedGroupsServiceImpl) cgs;
 
         GroupComputerDescriptor desc = component.getComputerDescriptors().get(0);
@@ -109,23 +112,6 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
 
     @Test
     public void testUserManagerIntegration() throws Exception {
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        UserManager um = Framework.getLocalService(UserManager.class);
-        assertNotNull(um);
 
         boolean isUserManagerWithComputedGroups = false;
         if (um instanceof UserManagerWithComputedGroups) {
@@ -180,22 +166,15 @@ public class TestComputedGroupService extends NXRuntimeTestCase {
 
     @Test
     public void testCompanyComputer() throws Exception {
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "companycomputedgroups-contrib.xml");
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
+        harness.deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "companycomputedgroups-contrib.xml");
+        try {
+            dotTestCompanyComputer();
+        } finally {
+            harness.undeployContrib("org.nuxeo.ecm.platform.usermanager.tests", "companycomputedgroups-contrib.xml");
+        }
+    }
 
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-
-        UserManager um = Framework.getLocalService(UserManager.class);
-        assertNotNull(um);
+    public void dotTestCompanyComputer() throws Exception {
 
         Map<String, Serializable> filter = new HashMap<String, Serializable>();
         HashSet<String> fulltext = new HashSet<String>();

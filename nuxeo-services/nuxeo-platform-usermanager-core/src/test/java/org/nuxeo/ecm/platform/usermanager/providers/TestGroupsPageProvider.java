@@ -8,60 +8,62 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author <a href="mailto:troger@nuxeo.com">Thomas Roger</a>
  */
-public class TestGroupsPageProvider extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class) // to init properties for SQL datasources
+@Deploy({ "org.nuxeo.ecm.core.schema", //
+        "org.nuxeo.ecm.core.api", //
+        "org.nuxeo.ecm.core", //
+        "org.nuxeo.ecm.core.event", //
+        "org.nuxeo.ecm.platform.usermanager.api", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.platform.query.api", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.usermanager.tests:computedgroups-contrib.xml", //
+        "org.nuxeo.ecm.platform.usermanager.tests:test-usermanagerimpl/directory-config.xml", //
+})
+public class TestGroupsPageProvider {
 
     protected static final String PROVIDER_NAME = "groups_listing";
 
+    @Inject
     protected PageProviderService ppService;
 
+    @Inject
     protected UserManager userManager;
 
-    @Override
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        DatabaseHelper.DATABASE.setUp();
-
-        deployBundle("org.nuxeo.ecm.core.schema");
-        deployBundle("org.nuxeo.ecm.core");
-        deployBundle("org.nuxeo.ecm.core.event");
-        deployBundle("org.nuxeo.ecm.core.api");
-        deployBundle("org.nuxeo.ecm.directory.api");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployContrib("org.nuxeo.ecm.platform.query.api", "OSGI-INF/pageprovider-framework.xml");
-        deployBundle("org.nuxeo.ecm.platform.usermanager.api");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "test-usermanagerimpl/directory-config.xml");
-        deployContrib("org.nuxeo.ecm.platform.usermanager.tests", "computedgroups-contrib.xml");
-
-        ppService = Framework.getService(PageProviderService.class);
-        assertNotNull(ppService);
-
-        userManager = Framework.getService(UserManager.class);
-        assertNotNull(userManager);
-
-        initGroups();
-    }
-
-    protected void initGroups() {
+    public void initGroups() {
         userManager.createGroup(createGroup("group1"));
         userManager.createGroup(createGroup("group2"));
+    }
+
+    @After
+    public void cleanGroups() {
+        userManager.deleteGroup("group1");
+        userManager.deleteGroup("group2");
     }
 
     protected DocumentModel createGroup(String groupName) {
