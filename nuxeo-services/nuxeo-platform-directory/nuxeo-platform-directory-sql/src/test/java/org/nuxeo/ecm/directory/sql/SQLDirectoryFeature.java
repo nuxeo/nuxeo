@@ -24,9 +24,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.runners.model.FrameworkMethod;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.api.DataModel;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -35,6 +36,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
@@ -47,11 +49,13 @@ import com.google.inject.name.Names;
  *
  * @since 6.0
  */
-@Features({ ClientLoginFeature.class })
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", "org.nuxeo.ecm.directory",
-        "org.nuxeo.ecm.core.schema", "org.nuxeo.ecm.directory.types.contrib",
+@Features({ CoreFeature.class, ClientLoginFeature.class })
+@Deploy({"org.nuxeo.ecm.directory.api", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.core.schema", //
+        "org.nuxeo.ecm.directory.types.contrib", //
         "org.nuxeo.ecm.directory.sql" })
+@LocalDeploy("org.nuxeo.ecm.directory.sql:nxdirectory-ds.xml")
 public class SQLDirectoryFeature extends SimpleFeature {
     public static final String USER_DIRECTORY_NAME = "userDirectory";
 
@@ -79,39 +83,67 @@ public class SQLDirectoryFeature extends SimpleFeature {
             });
     }
 
-    protected final Map<Directory, Set<String>> savedContext = new HashMap<>();
+    Granularity granularity;
+
+    protected final Map<String, Map<String, Map<String, Object>>> allDirectoryData = new HashMap<>();
 
     @Override
-    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method,
-            Object test) throws Exception {
-        for (Directory dir : Framework.getService(DirectoryService.class)
-            .getDirectories()) {
-            Session session = dir.getSession();
-            try {
-                String field = session.getIdField();
-                Map<String, Serializable> filter = Collections.emptyMap();
-                savedContext.put(
-                        dir,
-                        new HashSet<String>(session
-                            .getProjection(filter, field)));
-            } finally {
-                session.close();
+    public void beforeRun(FeaturesRunner runner) throws Exception {
+        granularity = runner.getFeature(CoreFeature.class).getRepository().getGranularity();
+    }
+
+    @Override
+    public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        if (granularity != Granularity.METHOD) {
+            return;
+        }
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        // record all directories in their entirety
+        allDirectoryData.clear();
+        for (Directory dir : directoryService.getDirectories()) {
+            Map<String, Map<String, Object>> data = new HashMap<>();
+            try (Session session = dir.getSession()) {
+                List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
+                        Collections.emptyMap(), true); // fetch references
+                for (DocumentModel entry : entries) {
+                    DataModel dm = entry.getDataModel(dir.getSchema());
+                    data.put(entry.getId(), dm.getMap());
+                }
+                allDirectoryData.put(dir.getName(), data);
             }
         }
     }
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
-        for (Map.Entry<Directory, Set<String>> each : savedContext.entrySet()) {
-            Directory directory = each.getKey();
-            Session session = directory.getSession();
-            final Set<String> projection = each.getValue();
-            try {
-                String field = session.getIdField();
-                Map<String, Serializable> filter = Collections.emptyMap();
-                for (String id : session.getProjection(filter, field)) {
-                    if (!projection.contains(id)) {
-                        session.deleteEntry(id);
+        if (granularity != Granularity.METHOD) {
+            return;
+        }
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        // clear all directories
+        for (Directory dir : directoryService.getDirectories()) {
+            try (Session session = dir.getSession()) {
+                List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
+                for (String id : ids) {
+                    session.deleteEntry(id);
+                }
+            }
+        }
+        // re-create all directory entries
+        for (Entry<String, Map<String, Map<String, Object>>> each : allDirectoryData.entrySet()) {
+            String directoryName = each.getKey();
+            Directory directory = directoryService.getDirectory(directoryName);
+            Collection<Map<String, Object>> data = each.getValue().values();
+            try (Session session = directory.getSession()) {
+                for (Map<String, Object> map : data) {
+                    try {
+                        session.createEntry(map);
+                    } catch (DirectoryException e) {
+                        // happens for filter directories
+                        // or when testing config changes
+                        if (!e.getMessage().contains("already exists") && !e.getMessage().contains("Missing id")) {
+                            throw e;
+                        }
                     }
                 }
             } finally {

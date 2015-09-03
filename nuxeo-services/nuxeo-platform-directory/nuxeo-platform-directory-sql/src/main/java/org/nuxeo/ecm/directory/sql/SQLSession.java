@@ -65,9 +65,7 @@ import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.EntrySource;
 import org.nuxeo.ecm.directory.OperationNotAllowedException;
 import org.nuxeo.ecm.directory.PasswordHelper;
-import org.nuxeo.ecm.directory.PermissionDescriptor;
 import org.nuxeo.ecm.directory.Reference;
-import org.nuxeo.ecm.directory.SizeLimitExceededException;
 import org.nuxeo.ecm.directory.sql.filter.SQLComplexFilter;
 
 /**
@@ -111,14 +109,12 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     Connection sqlConnection;
 
-    private final boolean managedSQLSession;
-
     private final Dialect dialect;
 
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
-    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config,
-            boolean managedSQLSession) throws DirectoryException {
+    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config)
+            throws DirectoryException {
         this.directory = directory;
         schemaName = config.getSchemaName();
         table = directory.getTable();
@@ -129,7 +125,6 @@ public class SQLSession extends BaseSession implements EntrySource {
         storedFieldNames = directory.getStoredFieldNames();
         dialect = directory.getDialect();
         sid = String.valueOf(SIDGenerator.next());
-        this.managedSQLSession = managedSQLSession;
         substringMatchType = config.getSubstringMatchType();
         autoincrementIdField = config.isAutoincrementIdField();
         staticFilters = config.getStaticFilters();
@@ -165,9 +160,6 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             if (sqlConnection == null || sqlConnection.isClosed()) {
                 sqlConnection = directory.getConnection();
-                if (!managedSQLSession) {
-                    sqlConnection.setAutoCommit(true);
-                }
             }
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '"
