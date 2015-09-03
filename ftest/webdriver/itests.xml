@@ -1,4 +1,5 @@
-<project name="nuxeo-layoutDemo-webdriver-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-layoutDemo-webdriver-tests" xmlns:nx="urn:nuxeo-build"
+  xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
   <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
@@ -37,7 +38,7 @@
       <cutdirsmapper dirs="1" />
     </unzip>
     <copy todir="${nuxeo.nxserver}/bundles/">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-forms-layout-demo:${maven.project.version}:jar" />
     </copy>
   </target>
 
