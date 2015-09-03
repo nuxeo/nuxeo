@@ -101,7 +101,7 @@
     </copy>
 
     <copy todir="${tomcat}/client">
-      <artifact:resolveFile key="org.nuxeo.shell:nuxeo-shell" />
+      <artifact:file key="org.nuxeo.shell:nuxeo-shell" />
     </copy>
   </target>
 
@@ -116,12 +116,12 @@
 
     <!-- Nuxeo core server -->
     <unzip dest="${distribution.dir}/nxserver">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver::zip" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver::zip" />
     </unzip>
 
     <!-- Complementary templates for CoreServer -->
     <unzip dest="${distribution.dir}/templates" overwrite="true">
-      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:templates-tomcat-coreserver" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:templates-tomcat-coreserver" />
     </unzip>
 
     <delete failonerror="false">
@@ -293,11 +293,11 @@ org.nuxeo.distribution.package=zip</echo>
     </copy>
 
     <unzip dest="${distribution.dir}/sdk/tools">
-      <artifact:resolveFile key="org.nuxeo:nuxeo-ecm::zip:tools" />
+      <artifact:file key="org.nuxeo:nuxeo-ecm::zip:tools" />
     </unzip>
 
     <copy todir="${distribution.dir}/nxserver/bundles">
-      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-seam-debug" />
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}-${classifier}-sdk.zip"

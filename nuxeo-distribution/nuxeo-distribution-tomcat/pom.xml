@@ -94,14 +94,44 @@
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>templates-tomcat-coreserver</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-startup-wizard</artifactId>
       <type>war</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-coreserver</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-cap</artifactId>
       <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.shell</groupId>
+      <artifactId>nuxeo-shell</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo</groupId>
+      <artifactId>nuxeo-ecm</artifactId>
+      <type>zip</type>
+      <classifier>tools</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-seam-debug</artifactId>
       <scope>provided</scope>
     </dependency>
     <!-- Marketplace packages embedded in Tomcat distribution -->
