@@ -573,6 +573,11 @@
         <artifactId>nuxeo-quota-web</artifactId>
         <version>${nuxeo.quota.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-quota-automation</artifactId>
+        <version>${nuxeo.quota.version}</version>
+      </dependency>
 
       <!-- Binary Metadata -->
       <dependency>
@@ -984,6 +989,16 @@
         <artifactId>nuxeo-liveconnect-core</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-google-drive</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.liveconnect</groupId>
+        <artifactId>nuxeo-liveconnect-dropbox</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
 
       <!-- Media Publishing -->
       <dependency>
@@ -1024,6 +1039,16 @@
         <version>${nuxeo.features.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-error-web</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-forms-layout-demo</artifactId>
+        <version>${nuxeo.addons.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
