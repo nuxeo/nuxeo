@@ -23,15 +23,14 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-error-web</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <type>zip</type>
       <classifier>nuxeo-cap</classifier>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

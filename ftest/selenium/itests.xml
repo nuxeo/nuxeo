@@ -10,15 +10,9 @@
   </unzip>
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
-  <target name="download" unless="no.download">
-    <echo level="info" message="Downloading for tests ${groupId}:${artifactId}:${nuxeo.distribution.version}:zip:${classifier}" />
-    <delete failonerror="false" dir="${nuxeo.home}" />
-    <unzip dest="${nuxeo.home}/">
-      <artifact:file key="${groupId}:${artifactId}:${nuxeo.distribution.version}:zip:${classifier}" />
-      <cutdirsmapper dirs="1" />
-    </unzip>
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss">
     <copy todir="${nuxeo.nxserver}/bundles/">
-      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-error-web:${maven.project.version}:jar" />
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-error-web" />
     </copy>
   </target>
 
