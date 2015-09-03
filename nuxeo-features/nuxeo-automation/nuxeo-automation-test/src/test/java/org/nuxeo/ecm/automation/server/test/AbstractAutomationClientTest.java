@@ -27,12 +27,10 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,16 +58,18 @@ import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlob;
 import org.nuxeo.ecm.automation.core.operations.blob.GetDocumentBlobs;
 import org.nuxeo.ecm.automation.core.operations.document.CreateDocument;
 import org.nuxeo.ecm.automation.core.operations.document.DeleteDocument;
-import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.core.operations.document.FetchDocument;
 import org.nuxeo.ecm.automation.core.operations.document.GetDocumentChildren;
 import org.nuxeo.ecm.automation.core.operations.document.LockDocument;
 import org.nuxeo.ecm.automation.core.operations.document.UpdateDocument;
 import org.nuxeo.ecm.automation.core.operations.services.DocumentPageProviderOperation;
 import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOperation;
+import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
+
 import com.google.inject.Inject;
+
 
 public abstract class AbstractAutomationClientTest {
 
@@ -126,14 +126,13 @@ public abstract class AbstractAutomationClientTest {
             assertThat(remoteCause, is(notNullValue()));
             final StackTraceElement[] remoteStack = remoteCause.getStackTrace();
             assertThat(remoteStack, is(notNullValue()));
+            Boolean rollback = ((RemoteThrowable) remoteCause).getOtherNodes().get("rollback").getBooleanValue();
+            assertThat(rollback, is(Boolean.TRUE));
             while (remoteCause.getCause() != remoteCause && remoteCause.getCause() != null) {
                 remoteCause = remoteCause.getCause();
             }
-            Map<String, JsonNode> otherNodes = ((RemoteThrowable) remoteCause).getOtherNodes();
-            String className = otherNodes.get("className").getTextValue();
-            assertThat(className, is("org.nuxeo.ecm.core.model.NoSuchDocumentException"));
-            Boolean rollback = otherNodes.get("rollback").getBooleanValue();
-            assertThat(rollback, is(Boolean.TRUE));
+            String className = ((RemoteThrowable) remoteCause).getOtherNodes().get("className").getTextValue();
+            assertThat(className, is(NoSuchDocumentException.class.getName()));
         }
     }
 
