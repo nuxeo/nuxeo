@@ -26,7 +26,7 @@ import org.openqa.selenium.WebElement;
  *
  * @since 5.9.4
  */
-public class RichEditorElement extends AbstractWidgetElement {
+public class RichEditorElement extends WidgetElement {
 
 
     /**
@@ -42,7 +42,8 @@ public class RichEditorElement extends AbstractWidgetElement {
      *
      * @param content The content to define in the document.
      */
-    public void insertContent(String content) {
+    @Override
+    public void setInputValue(String content) {
         // Define the script which sets the content of the editor
         String scriptToExecute = String.format("tinyMCE.activeEditor.insertContent('%s')", content);
         // Set the content of the editor
@@ -85,6 +86,11 @@ public class RichEditorElement extends AbstractWidgetElement {
                 id);
         String result = (String) ((JavascriptExecutor) driver).executeScript(scriptToExecute);
         return result;
+    }
+
+    @Override
+    public String getInputValue() {
+        return getHtmlContent();
     }
 
 }
