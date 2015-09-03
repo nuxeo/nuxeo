@@ -14,13 +14,12 @@
  * Contributors:
  *     <a href="mailto:grenard@nuxeo.com">Guillaume</a>
  */
-package org.nuxeo.functionaltests.forms;
+package org.nuxeo.functionaltests.fragment;
 
 import java.util.Arrays;
 
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.fragment.WebFragmentImpl;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

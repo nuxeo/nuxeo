@@ -23,7 +23,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.nuxeo.functionaltests.Locator;
 import org.nuxeo.functionaltests.Required;
-import org.nuxeo.functionaltests.forms.AddToCollectionForm;
+import org.nuxeo.functionaltests.fragment.AddToCollectionForm;
 import org.nuxeo.functionaltests.pages.actions.ContextualActions;
 import org.nuxeo.functionaltests.pages.admincenter.AdminCenterBasePage;
 import org.nuxeo.functionaltests.pages.search.SearchPage;
