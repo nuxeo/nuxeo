@@ -63,7 +63,11 @@ public class LayoutElement implements LayoutFragment {
     public String getSubElementId(String id) {
         String finalId = id;
         if (this.id != null) {
-            finalId = this.id + ":" + id;
+            if (this.id.endsWith(":")) {
+                finalId = this.id + id;
+            } else {
+                finalId = this.id + ":" + id;
+            }
         }
         return finalId;
     }
