@@ -25,8 +25,7 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-forms-layout-demo</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
@@ -37,7 +36,7 @@
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <classifier>nuxeo-cap</classifier>
       <type>zip</type>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
