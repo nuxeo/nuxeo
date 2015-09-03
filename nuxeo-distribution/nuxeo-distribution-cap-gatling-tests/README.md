@@ -170,6 +170,7 @@ This simulation remove all documents, users and group from the Nuxeo instance, a
 ## All in one
 
 Setup a Nuxeo instance, get data, inject data into Redis, run all the simulations.
+Warning this will flush (ERASE) the Redis db0.
 
     mvn -nsu integration-test -Pbench
 

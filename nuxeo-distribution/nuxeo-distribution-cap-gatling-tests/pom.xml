@@ -97,7 +97,6 @@
                 <jvmArg>-Xms1g</jvmArg>
                 <jvmArg>-Xmx2g</jvmArg>
               </jvmArgs>
-              <disableCompiler>true</disableCompiler>
             </configuration>
 
             <executions>
