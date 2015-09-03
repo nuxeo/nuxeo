@@ -132,6 +132,7 @@ public class DocumentTreeNodeImpl implements DocumentTreeNode {
                 String nodePath = getPath();
                 if (currentPath != null && nodePath != null && currentPath.startsWith(nodePath)
                         && currentPath.length() > nodePath.length()
+                        && currentPath.substring(nodePath.length()).startsWith("/") // make sure nodePath is the parent of currentPath
                         && !currentPath.substring(nodePath.length() + 1).contains("/")) {
                     // direct parent
                     return true;
