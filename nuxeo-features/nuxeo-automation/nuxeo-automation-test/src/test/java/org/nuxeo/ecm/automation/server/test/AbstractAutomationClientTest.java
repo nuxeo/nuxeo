@@ -27,14 +27,12 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.inject.Inject;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.JsonNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +69,6 @@ import org.nuxeo.ecm.automation.core.operations.services.ResultSetPageProviderOp
 import org.nuxeo.ecm.automation.core.operations.services.query.DocumentPaginatedQuery;
 import org.nuxeo.ecm.automation.server.test.UploadFileSupport.DigestMockInputStream;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.runtime.api.Framework;
 
 
 public abstract class AbstractAutomationClientTest {
@@ -129,14 +126,13 @@ public abstract class AbstractAutomationClientTest {
             assertThat(remoteCause, is(notNullValue()));
             final StackTraceElement[] remoteStack = remoteCause.getStackTrace();
             assertThat(remoteStack, is(notNullValue()));
+            Boolean rollback = ((RemoteThrowable) remoteCause).getOtherNodes().get("rollback").getBooleanValue();
+            assertThat(rollback, is(Boolean.TRUE));
             while (remoteCause.getCause() != remoteCause && remoteCause.getCause() != null) {
                 remoteCause = remoteCause.getCause();
             }
-            Map<String, JsonNode> otherNodes = ((RemoteThrowable) remoteCause).getOtherNodes();
-            String className = otherNodes.get("className").getTextValue();
+            String className = ((RemoteThrowable) remoteCause).getOtherNodes().get("className").getTextValue();
             assertThat(className, is(DocumentNotFoundException.class.getName()));
-            Boolean rollback = otherNodes.get("rollback").getBooleanValue();
-            assertThat(rollback, is(Boolean.TRUE));
         }
     }
 

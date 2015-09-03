@@ -16,6 +16,7 @@ import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
@@ -85,19 +86,23 @@ public class JsonMarshalling {
     @JsonCachable(false)
     public static class ThrowableDeserializer extends org.codehaus.jackson.map.deser.ThrowableDeserializer {
 
-        protected HashMap<String, JsonNode> otherNodes = new HashMap<String, JsonNode>();
+        protected Stack<Map<String, JsonNode>> unknownStack = new Stack<>();
 
         public ThrowableDeserializer(BeanDeserializer src) {
             super(src);
         }
 
         @Override
-        public Object deserializeFromObject(JsonParser jp, DeserializationContext ctxt) throws IOException,
-                JsonProcessingException {
-
+        public Object deserializeFromObject(JsonParser jp, DeserializationContext ctxt)
+                throws IOException, JsonProcessingException {
+            unknownStack.push(new HashMap<String, JsonNode>());
+            try {
             RemoteThrowable t = (RemoteThrowable) super.deserializeFromObject(jp, ctxt);
-            t.getOtherNodes().putAll(otherNodes);
-            return t;
+            t.getOtherNodes().putAll(unknownStack.peek());
+                return t;
+            } finally {
+                unknownStack.pop();
+            }
         }
     }
 
@@ -126,7 +131,7 @@ public class JsonMarshalling {
                 if (deserializer instanceof ThrowableDeserializer) {
                     JsonParser jp = ctxt.getParser();
                     JsonNode propertyNode = jp.readValueAsTree();
-                    ((ThrowableDeserializer) deserializer).otherNodes.put(propertyName, propertyNode);
+                    ((ThrowableDeserializer) deserializer).unknownStack.peek().put(propertyName, propertyNode);
                     return true;
                 }
                 return false;
@@ -214,7 +219,7 @@ public class JsonMarshalling {
         while (tok != null && tok != JsonToken.END_ARRAY) {
             OperationDocumentation op = JsonOperationMarshaller.read(jp);
             ops.put(op.id, op);
-            if(op.aliases!=null) {
+            if (op.aliases != null) {
                 for (String alias : op.aliases) {
                     ops.put(alias, op);
                 }
@@ -326,7 +331,7 @@ public class JsonMarshalling {
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             Object param = entry.getValue();
             jg.writeFieldName(entry.getKey());
-            write(jg,param);
+            write(jg, param);
         }
     }
 

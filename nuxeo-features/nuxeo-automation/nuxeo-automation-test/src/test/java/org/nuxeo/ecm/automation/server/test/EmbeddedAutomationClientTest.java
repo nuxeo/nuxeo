@@ -894,8 +894,12 @@ public class EmbeddedAutomationClientTest extends AbstractAutomationClientTest {
         } catch (RemoteException e) {
             assertNotNull(e);
             assertEquals("Exception Message", e.getRemoteCause().getCause().getMessage());
+            RemoteThrowable cause = (RemoteThrowable)e.getRemoteCause();
+            while (cause.getCause() != null && cause.getCause() != cause) {
+                cause = (RemoteThrowable)cause.getCause();
+            }
             assertEquals(ExceptionTest.class.getCanonicalName(),
-                    ((RemoteThrowable) e.getRemoteCause()).getOtherNodes().get("className").getTextValue());
+                    cause.getOtherNodes().get("className").getTextValue());
             assertEquals(HttpServletResponse.SC_METHOD_NOT_ALLOWED, e.getStatus());
         } catch (Exception e) {
             fail();
