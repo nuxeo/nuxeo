@@ -110,8 +110,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     private final boolean nativeCase;
 
-    private boolean managedSQLSession;
-
     private DataSource dataSource;
 
     private Table table;
@@ -205,13 +203,6 @@ public class SQLDirectory extends AbstractDirectory {
                     config.getDataFileCharacterSeparator(), config.createTablePolicy);
             helper.setupTable();
 
-            try {
-                if (!managedSQLSession) {
-                    sqlConnection.commit();
-                }
-            } catch (SQLException e) {
-                throw new DirectoryException(e);
-            }
         } finally {
             try {
                 sqlConnection.close();
@@ -233,13 +224,11 @@ public class SQLDirectory extends AbstractDirectory {
         }
         try {
             if (!StringUtils.isEmpty(config.dataSourceName)) {
-                managedSQLSession = true;
                 dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
                 // InitialContext context = new InitialContext();
                 // dataSource = (DataSource)
                 // context.lookup(config.dataSourceName);
             } else {
-                managedSQLSession = false;
                 dataSource = new SimpleDataSource(config.dbUrl, config.dbDriver, config.dbUser, config.dbPassword);
             }
             log.trace("found datasource: " + dataSource);
@@ -256,7 +245,9 @@ public class SQLDirectory extends AbstractDirectory {
                 // try single-datasource non-XA mode
                 Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
                 if (connection != null) {
-                    managedSQLSession = true;
+                    if (ConnectionHelper.useSingleConnection(config.dataSourceName)) {
+                        connection.setAutoCommit(TransactionHelper.isNoTransaction());
+                    }
                     return connection;
                 }
             }
@@ -308,7 +299,7 @@ public class SQLDirectory extends AbstractDirectory {
         if (dialect == null) {
             initConnection();
         }
-        SQLSession session = new SQLSession(this, config, managedSQLSession);
+        SQLSession session = new SQLSession(this, config);
         addSession(session);
         return session;
     }

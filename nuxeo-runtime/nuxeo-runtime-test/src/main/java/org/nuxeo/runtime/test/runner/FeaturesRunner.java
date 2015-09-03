@@ -110,16 +110,12 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         loader.apply(Direction.BACKWARD, new Callable() {
             @Override
             public void call(Holder holder) throws Exception {
-                // TODO Auto-generated method stub
-
+                T annotation = scanner.getAnnotation(holder.type, type);
+                if (annotation != null) {
+                    configs.add(annotation);
+                }
             }
         });
-        for (FeaturesLoader.Holder each : Lists.reverse(loader.holders)) {
-            annotation = scanner.getAnnotation(each.type, type);
-            if (annotation != null) {
-                configs.add(annotation);
-            }
-        }
         return Defaults.of(type, configs);
     }
 

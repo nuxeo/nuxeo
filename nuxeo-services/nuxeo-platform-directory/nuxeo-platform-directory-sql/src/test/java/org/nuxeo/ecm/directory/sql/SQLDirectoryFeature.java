@@ -26,9 +26,8 @@ import java.util.Map.Entry;
 import org.junit.runners.model.FrameworkMethod;
 import org.nuxeo.ecm.core.api.DataModel;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Directory;
 import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
@@ -38,6 +37,7 @@ import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 import com.google.inject.Binder;
@@ -47,13 +47,13 @@ import com.google.inject.name.Names;
 /**
  * @since 6.0
  */
-@Features({ ClientLoginFeature.class })
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-@Deploy({ "org.nuxeo.ecm.directory.api", //
+@Features({ CoreFeature.class, ClientLoginFeature.class })
+@Deploy({"org.nuxeo.ecm.directory.api", //
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.directory.types.contrib", //
         "org.nuxeo.ecm.directory.sql" })
+@LocalDeploy("org.nuxeo.ecm.directory.sql:nxdirectory-ds.xml")
 public class SQLDirectoryFeature extends SimpleFeature {
     public static final String USER_DIRECTORY_NAME = "userDirectory";
 
@@ -76,10 +76,20 @@ public class SQLDirectoryFeature extends SimpleFeature {
         });
     }
 
+    Granularity granularity;
+
     protected final Map<String, Map<String, Map<String, Object>>> allDirectoryData = new HashMap<>();
 
     @Override
+    public void beforeRun(FeaturesRunner runner) throws Exception {
+        granularity = runner.getFeature(CoreFeature.class).getRepository().getGranularity();
+    }
+
+    @Override
     public void beforeMethodRun(FeaturesRunner runner, FrameworkMethod method, Object test) throws Exception {
+        if (granularity != Granularity.METHOD) {
+            return;
+        }
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         // record all directories in their entirety
         allDirectoryData.clear();
@@ -99,6 +109,9 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
     @Override
     public void afterTeardown(FeaturesRunner runner) throws Exception {
+        if (granularity != Granularity.METHOD) {
+            return;
+        }
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         // clear all directories
         for (Directory dir : directoryService.getDirectories()) {

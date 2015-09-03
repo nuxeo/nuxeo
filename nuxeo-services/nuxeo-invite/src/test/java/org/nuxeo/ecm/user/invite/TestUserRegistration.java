@@ -107,8 +107,11 @@ public class TestUserRegistration extends AbstractUserRegistration {
         userInfo.setPropertyValue("userinfo:lastName", "Olivier");
         userInfo.setPropertyValue("userinfo:email", templogin + "@dummy.com");
 
-        userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
                 UserInvitationService.ValidationMethod.NONE, true);
+        Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
+        additionnalInfos.put("userinfo:login", newUser);
+        userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
         userInfo.setPropertyValue("userinfo:login", templogin + '1');
         // Must throw a UserAlreadyExistsException

@@ -58,7 +58,7 @@ public class SimpleDataSource implements DataSource {
     @Override
     public Connection getConnection() throws SQLException {
         Connection con = JDBCUtils.getConnection(url, user, password);
-        con.setAutoCommit(false);
+        con.setAutoCommit(true);
         return con;
     }
 
@@ -88,6 +88,7 @@ public class SimpleDataSource implements DataSource {
     }
 
     // @Override in CommonDataSource for Java SE 7 / JDBC 4.1
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
         throw new SQLFeatureNotSupportedException();
     }
