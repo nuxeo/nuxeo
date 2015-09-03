@@ -95,7 +95,7 @@ public class SimpleDataSource implements DataSource {
                 }
             }
         }
-        con.setAutoCommit(false);
+        con.setAutoCommit(true);
         return con;
     }
 

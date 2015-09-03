@@ -114,8 +114,6 @@ public class SQLDirectory extends AbstractDirectory {
 
     private final boolean nativeCase;
 
-    private boolean managedSQLSession;
-
     private DataSource dataSource;
 
     private final Table table;
@@ -205,15 +203,8 @@ public class SQLDirectory extends AbstractDirectory {
                     config.getDataFileCharacterSeparator(), config.createTablePolicy);
             helper.setupTable();
 
-            try {
-                if (!managedSQLSession) {
-                    sqlConnection.commit();
-                }
-            } catch (SQLException e) {
-                throw new DirectoryException(e);
-            }
         } catch (StorageException e) {
-            throw new DirectoryException(e);
+        	throw new DirectoryException(e);
         } finally {
             try {
                 sqlConnection.close();
@@ -235,13 +226,11 @@ public class SQLDirectory extends AbstractDirectory {
         }
         try {
             if (config.dataSourceName != null) {
-                managedSQLSession = true;
                 dataSource = DataSourceHelper.getDataSource(config.dataSourceName);
                 // InitialContext context = new InitialContext();
                 // dataSource = (DataSource)
                 // context.lookup(config.dataSourceName);
             } else {
-                managedSQLSession = false;
                 dataSource = new SimpleDataSource(config.dbUrl, config.dbDriver, config.dbUser, config.dbPassword);
             }
             log.trace("found datasource: " + dataSource);
@@ -254,15 +243,17 @@ public class SQLDirectory extends AbstractDirectory {
 
     public Connection getConnection() throws DirectoryException {
         try {
-            // try single-datasource non-XA mode
-            Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
-            if (connection == null) {
-                // standard datasource usage
-                connection = getConnection(getDataSource());
-            } else {
-                managedSQLSession = true;
+            if (config.dataSourceName != null) {
+                // try single-datasource non-XA mode
+                Connection connection = ConnectionHelper.getConnection(config.dataSourceName);
+                if (connection != null) {
+                    if (ConnectionHelper.useSingleConnection(config.dataSourceName)) {
+                        connection.setAutoCommit(!TransactionHelper.isTransactionActiveOrMarkedRollback());
+                    }
+                    return connection;
+                }
             }
-            return connection;
+            return getConnection(getDataSource());
         } catch (SQLException e) {
             throw new DirectoryException("Cannot connect to SQL directory '" + getName() + "': " + e.getMessage(), e);
         }
@@ -334,7 +325,7 @@ public class SQLDirectory extends AbstractDirectory {
 
     @Override
     public synchronized Session getSession() throws DirectoryException {
-        SQLSession session = new SQLSession(this, config, managedSQLSession);
+        SQLSession session = new SQLSession(this, config);
         addSession(session);
         return session;
     }
