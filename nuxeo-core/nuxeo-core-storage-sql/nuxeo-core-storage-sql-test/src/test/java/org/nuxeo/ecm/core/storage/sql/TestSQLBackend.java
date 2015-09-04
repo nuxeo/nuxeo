@@ -516,7 +516,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         }
         session.save();
 
-        BinaryManagerStatus status = runBinariesGC(0, null, true);
+        BinaryManagerStatus status = runBinariesGC(0, session, true);
         assertEquals(4, status.numBinaries); // ABC, DEF, GHI, JKL
         assertEquals(4 * 3, status.sizeBinaries);
         assertEquals(0, status.numBinariesGC);
@@ -533,7 +533,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         // run GC in non-delete mode
         Thread.sleep(3 * 1000); // sleep before GC to pass its time threshold
-        status = runBinariesGC(0, null, false);
+        status = runBinariesGC(0, session, false);
         if (isSoftDeleteEnabled()) {
             // with soft delete nothing is actually deleted yet
             assertEquals(4, status.numBinaries);
@@ -545,7 +545,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
             repoMgmt.cleanupDeletedDocuments(0, null);
             // rerun GC in non-delete mode
             Thread.sleep(3 * 1000);
-            status = runBinariesGC(0, null, false);
+            status = runBinariesGC(0, session, false);
         }
         assertEquals(2, status.numBinaries); // GHI, JKL
         assertEquals(2 * 3, status.sizeBinaries);
@@ -560,7 +560,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
         assertEquals(1 * 3, status.sizeBinariesGC);
 
         Thread.sleep(3 * 1000);
-        status = runBinariesGC(0, null, true);
+        status = runBinariesGC(0, session, true);
         assertEquals(4, status.numBinaries); // DEF3, GHI2, JKL, MNO
         assertEquals(4 * 3, status.sizeBinaries);
         assertEquals(0, status.numBinariesGC);
@@ -584,7 +584,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
     protected BinaryManagerStatus runBinariesGC(int moreWork, Session session, boolean delete) throws Exception {
         BlobManager blobManager = Framework.getService(BlobManager.class);
-        BlobProvider blobProvider = blobManager.getBlobProvider(DatabaseHelper.DATABASE.repositoryName);
+        BlobProvider blobProvider = blobManager.getBlobProvider(session.getRepositoryName());
         BinaryManager binaryManager = ((BinaryBlobProvider) blobProvider).getBinaryManager();
         BinaryGarbageCollector gc = binaryManager.getGarbageCollector();
         assertFalse(gc.isInProgress());

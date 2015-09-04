@@ -82,7 +82,7 @@ public class SQLDirectoryFeature extends SimpleFeature {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        granularity = runner.getFeature(CoreFeature.class).getRepository().getGranularity();
+        granularity = runner.getFeature(CoreFeature.class).getGranularity();
     }
 
     @Override

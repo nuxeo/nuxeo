@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006-2011 Nuxeo SA (http://nuxeo.com/) and others.
+ * Copyright (c) 2006-2015 Nuxeo SA (http://nuxeo.com/) and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,8 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     bstefanescu
+ *     Bogdan Stefanescu
+ *     Florent Guillaume
  */
 package org.nuxeo.ecm.core.test;
 
@@ -31,15 +32,18 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.repository.RepositoryFactory;
 import org.nuxeo.ecm.core.repository.RepositoryService;
 import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.test.annotations.RepositoryInit;
 import org.nuxeo.osgi.OSGiAdapter;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.jtajca.NuxeoContainer;
 import org.nuxeo.runtime.model.persistence.Contribution;
 import org.nuxeo.runtime.model.persistence.fs.ContributionLocation;
+import org.nuxeo.runtime.test.runner.Defaults;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,13 +57,9 @@ import org.osgi.framework.Bundle;
 import com.google.inject.Scope;
 
 /**
- * The core feature provides deployments needed to have a nuxeo core running. Several annotations can be used:
- * <ul>
- * <li>FIXME
- * <li>FIXME
- * </ul>
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
+ * The core feature provides a default {@link CoreSession} that can be injected.
+ * <p>
+ * In addition, by injecting the feature itself, some helper methods are available to open new sessions.
  */
 @Deploy({ "org.nuxeo.runtime.management", //
         "org.nuxeo.ecm.core.schema", //
@@ -79,16 +79,20 @@ public class CoreFeature extends SimpleFeature {
 
     private static final Log log = LogFactory.getLog(CoreFeature.class);
 
-    protected int initialOpenSessions;
-
-    protected RepositorySettings repositorySettings;
-
-    protected boolean cleaned;
-
     protected StorageConfiguration storageConfiguration = new StorageConfiguration();
+
+    protected RepositoryInit repositoryInit;
+
+    protected Granularity granularity;
+
+    protected Class<? extends RepositoryFactory> repositoryFactoryClass;
+
+    protected int initialOpenSessions;
 
     // this value gets injected
     protected CoreSession session;
+
+    protected boolean cleaned;
 
     protected class CoreSessionServiceProvider extends ServiceProvider<CoreSession> {
         public CoreSessionServiceProvider() {
@@ -111,35 +115,49 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void initialize(FeaturesRunner runner) throws Exception {
-        repositorySettings = new RepositorySettings(runner);
+    public void initialize(FeaturesRunner runner) {
         runner.getFeature(RuntimeFeature.class).addServiceProvider(new CoreSessionServiceProvider());
+        // init from RepositoryConfig annotations
+        RepositoryConfig repositoryConfig = runner.getConfig(RepositoryConfig.class);
+        if (repositoryConfig == null) {
+            repositoryConfig = Defaults.of(RepositoryConfig.class);
+        }
+        try {
+            repositoryInit = repositoryConfig.init().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NuxeoException(e);
+        }
+        Granularity cleanup = repositoryConfig.cleanup();
+        granularity = cleanup == Granularity.UNDEFINED ? Granularity.CLASS : cleanup;
+        repositoryFactoryClass = repositoryConfig.repositoryFactoryClass();
     }
 
-    protected String repositoryName = "test";
+    public Granularity getGranularity() {
+        return granularity;
+    }
 
     @Override
-    public void start(FeaturesRunner runner) throws Exception {
-        DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
+    public void start(FeaturesRunner runner) {
         try {
-            RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             log.info("Deploying a VCS repo implementation");
-            dbHelper.setRepositoryName(repositoryName);
-            dbHelper.setUp(repositorySettings.getRepositoryFactoryClass());
+            // setup system properties for generic XML extension points
+            DatabaseHelper dbHelper = DatabaseHelper.DATABASE;
+            dbHelper.setUp(repositoryFactoryClass);
+            String contribPath = dbHelper.getDeploymentContrib();
+            RuntimeHarness harness = runner.getFeature(RuntimeFeature.class).getHarness();
             OSGiAdapter osgi = harness.getOSGiAdapter();
             Bundle bundle = osgi.getRegistry().getBundle("org.nuxeo.ecm.core.storage.sql.test");
-            String contribPath = dbHelper.getDeploymentContrib();
             URL contribURL = bundle.getEntry(contribPath);
             assertNotNull("deployment contrib " + contribPath + " not found", contribURL);
-            Contribution contrib = new ContributionLocation(repositoryName, contribURL);
+            Contribution contrib = new ContributionLocation(getRepositoryName(), contribURL);
             harness.getContext().deploy(contrib);
         } catch (Exception e) {
-            log.error(e.toString(), e);
+            throw new NuxeoException(e);
         }
     }
 
     @Override
-    public void beforeRun(FeaturesRunner runner) throws Exception {
+    public void beforeRun(FeaturesRunner runner) {
         // wait for async tasks that may have been triggered by
         // RuntimeFeature (typically repo initialization)
         Framework.getLocalService(EventService.class).waitForAsyncCompletion();
@@ -152,15 +170,15 @@ public class CoreFeature extends SimpleFeature {
                 log.warn("Leaking session", info);
             }
         }
-        if (repositorySettings.getGranularity() != Granularity.METHOD) {
+        if (granularity != Granularity.METHOD) {
             initializeSession(runner);
         }
     }
 
     @Override
-    public void afterRun(FeaturesRunner runner) throws Exception {
+    public void afterRun(FeaturesRunner runner) {
         waitForAsyncCompletion(); // fulltext and various workers
-        if (repositorySettings.getGranularity() != Granularity.METHOD) {
+        if (granularity != Granularity.METHOD) {
             cleanupSession(runner);
         }
         if (session != null) {
@@ -178,15 +196,15 @@ public class CoreFeature extends SimpleFeature {
     }
 
     @Override
-    public void beforeSetup(FeaturesRunner runner) throws Exception {
-        if (repositorySettings.getGranularity() == Granularity.METHOD) {
+    public void beforeSetup(FeaturesRunner runner) {
+        if (granularity == Granularity.METHOD) {
             initializeSession(runner);
         }
     }
 
     @Override
-    public void afterTeardown(FeaturesRunner runner) throws Exception {
-        if (repositorySettings.getGranularity() == Granularity.METHOD) {
+    public void afterTeardown(FeaturesRunner runner) {
+        if (granularity == Granularity.METHOD) {
             cleanupSession(runner);
         }
     }
@@ -251,7 +269,7 @@ public class CoreFeature extends SimpleFeature {
         CoreInstance.getInstance().cleanupThisThread();
     }
 
-    protected void initializeSession(FeaturesRunner runner) throws Exception {
+    protected void initializeSession(FeaturesRunner runner) {
         if (cleaned) {
             // re-trigger application started
             RepositoryService repositoryService = Framework.getLocalService(RepositoryService.class);
@@ -260,12 +278,8 @@ public class CoreFeature extends SimpleFeature {
         }
         CoreScope.INSTANCE.enter();
         createCoreSession();
-        if (session == null) {
-            throw new AssertionError("Cannot open session");
-        }
-        RepositoryInit factory = repositorySettings.getRepositoryInit();
-        if (factory != null) {
-            factory.populate(session);
+        if (repositoryInit != null) {
+            repositoryInit.populate(session);
             session.save();
             waitForAsyncCompletion();
         }

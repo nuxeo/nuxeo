@@ -121,10 +121,6 @@ public abstract class DatabaseHelper {
 
     public String repositoryName = DEFAULT_REPOSITORY_NAME;
 
-    public void setRepositoryName(String name) {
-        repositoryName = name;
-    }
-
     /**
      * Sets the database backend used for VCS unit tests.
      */
@@ -223,7 +219,6 @@ public abstract class DatabaseHelper {
     public void setUp() throws Exception {
         setOwner();
         setDatabaseName(DEFAULT_DATABASE_NAME);
-        setRepositoryName(DEFAULT_REPOSITORY_NAME);
         setRepositoryFactory(defaultRepositoryFactory);
         setBinaryManager(defaultBinaryManager, "");
         setSingleDataSourceMode();
