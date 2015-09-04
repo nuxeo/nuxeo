@@ -95,7 +95,7 @@ public class AttributeConfigDescriptor {
         if (xmlPath != null) {
             return xmlPath;
         }
-        if (mapping != null) {
+        if (mapping != null && !mapping.keySet().isEmpty()) {
             return mapping.values().iterator().next();
         }
         return null;

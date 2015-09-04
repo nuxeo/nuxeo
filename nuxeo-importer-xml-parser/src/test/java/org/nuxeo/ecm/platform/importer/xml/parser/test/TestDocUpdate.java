@@ -30,7 +30,8 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("nuxeo-importer-xml-parser")
-@LocalDeploy("nuxeo-importer-xml-parser:test-ImporterMapping-MultiValue-contrib.xml")
+@LocalDeploy({"nuxeo-importer-xml-parser:test-ImporterMapping-MultiValue-contrib.xml"})
+
 public class TestDocUpdate {
 
     @Inject
@@ -66,7 +67,6 @@ public class TestDocUpdate {
         property = fileDoc.getProperty("dc:subjects");
         subjects = (Object[]) property.getValue();
         Assert.assertEquals("The property dc:subjects should contain 6 values", 6, subjects.length);
-        
-	}
+    }
 
 }
