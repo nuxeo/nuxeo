@@ -58,6 +58,8 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
 import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -80,6 +82,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 @RunWith(FeaturesRunner.class)
 @Features(AuditFeature.class)
+@RepositoryConfig(cleanup=Granularity.CLASS)
 // We handle transaction start and commit manually to make it possible to have
 // several consecutive transactions in a test method
 @Deploy({ "org.nuxeo.ecm.platform.userworkspace.types", "org.nuxeo.ecm.platform.userworkspace.api",
@@ -253,7 +256,7 @@ public class TestPermissionHierarchyFileSystemChanges {
      * <pre>
      * Server side hierarchy for the test
      * ==================================
-     * 
+     *
      * /user1 (user workspace)
      *   |-- user1Folder1       (registered as a synchronization root with Everything permission for user2)
      *   |-- user1Folder2       (registered as a synchronization root with ReadWrite permission only for user2)

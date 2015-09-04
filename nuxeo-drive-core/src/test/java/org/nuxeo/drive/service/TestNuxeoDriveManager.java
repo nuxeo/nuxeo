@@ -127,10 +127,16 @@ public class TestNuxeoDriveManager {
     @Before
     public void createUserSessionsAndFolders() throws Exception {
         try (Session userDir = directoryService.open("userDirectory")) {
+            if (userDir.getEntry("user1") != null) {
+                userDir.deleteEntry("user1");
+            }
             Map<String, Object> user1 = new HashMap<String, Object>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user1);
+            if (userDir.getEntry("user2") != null) {
+                userDir.deleteEntry("user2");
+            }
             Map<String, Object> user2 = new HashMap<String, Object>();
             user2.put("username", "user2");
             user2.put("groups", Arrays.asList(new String[] { "members" }));

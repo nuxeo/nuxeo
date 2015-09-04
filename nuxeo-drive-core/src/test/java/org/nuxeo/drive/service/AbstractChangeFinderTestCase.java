@@ -128,6 +128,9 @@ public abstract class AbstractChangeFinderTestCase {
 
         // Create test users
         try (Session userDir = directoryService.open("userDirectory")) {
+            if (userDir.getEntry("user1") != null) {
+                userDir.deleteEntry("user1");
+            }
             Map<String, Object> user1 = new HashMap<String, Object>();
             user1.put("username", "user1");
             user1.put("groups", Arrays.asList(new String[] { "members" }));
