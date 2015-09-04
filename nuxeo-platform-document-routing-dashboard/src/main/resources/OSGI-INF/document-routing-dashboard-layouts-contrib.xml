@@ -101,9 +101,6 @@
       <fields>
         <field>data.nt.name</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="localize">true</property>
       </properties>
@@ -117,9 +114,6 @@
       <fields>
         <field>data.nt.targetDocumentId</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
     </widget>
 
     <widget name="routing_task_duedate" type="datetime">
@@ -130,9 +124,6 @@
       <fields>
         <field>data.nt.dueDate</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="format">#{nxu:dateAndTimeFormater('medium')}
         </property>
@@ -148,9 +139,6 @@
       <fields>
         <field>data.nt.directive</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="localize">true</property>
       </properties>
@@ -165,9 +153,6 @@
       <fields>
         <field>data.nt.actors</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="localize">true</property>
       </properties>
@@ -180,9 +165,6 @@
       <fields>
         <field>data.nt.taskComments</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="localize">true</property>
         <property name="hideSubLabels">true</property>
@@ -204,9 +186,6 @@
       <fields>
         <field>data.nt.processId</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="localize">true</property>
       </properties>
@@ -221,9 +200,6 @@
         <field>data</field>
         <field>data.nt.targetDocumentId</field>
       </fields>
-      <widgetModes>
-        <mode value="any">view</mode>
-      </widgetModes>
       <properties mode="any">
         <property name="tab">TAB_ROUTE_WORKFLOW</property>
       </properties>
