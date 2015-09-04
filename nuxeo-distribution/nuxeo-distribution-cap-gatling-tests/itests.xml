@@ -45,6 +45,18 @@
     </exec>
   </target>
 
+  <target name="add-bench-template" if="osfamily-unix">
+    <echo level="info">Add bench template to nuxeo.conf</echo>
+    <copy todir="${nuxeo.home}/templates">
+       <fileset dir="src/test/resources/templates" />
+    </copy>
+    <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
+    <exec executable="sh" failonerror="true">
+      <arg value="-c" />
+      <arg value="${nuxeo.home}/bin/nuxeoctl config --set nuxeo.templates  &quot;$(${nuxeo.home}/bin/nuxeoctl config --get nuxeo.templates -q),${bench.template}&quot;" />
+    </exec>
+  </target>
+
   <target name="tune-nuxeo">
     <antcall target="set-conf">
       <param name="name" value="JAVA_OPTS" />
@@ -65,6 +77,7 @@
     <unzip dest="${out.dir}" overwrite="false">
       <artifact:resolveFile key="${inject.artifact}" />
     </unzip>
+    <antcall target="add-bench-template" />
     <antcall target="tune-nuxeo" />
     <antcall target="redis-clean" />
     <antcall target="redis-inject" />

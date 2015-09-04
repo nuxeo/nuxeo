@@ -166,14 +166,20 @@ Options:
 
 This simulation remove all documents, users and group from the Nuxeo instance, also delete the data in redis.
 
-# Launching
+# Executing bench
+
+To run a gatling test you need to use explicitely the `bench` maven profile.
+There is also a `perf` profile that can be added to start with a tuned the Nuxeo instance.
+
 
 ## All in one
 
-Setup a Nuxeo instance, get data, inject data into Redis, run all the simulations.
+Setup a Nuxeo instance, get data, inject data into Redis, run all the simulations and stop Nuxeo.
 WARNING this will flush (ERASE) the Redis database 7.
 
-    mvn -nsu integration-test -Pbench
+    mvn -nsu verify -Pbench
+
+You can use `integration-test` instead of verify to keep the Nuxeo instance running.
 
 
 Default options: see below
@@ -197,11 +203,7 @@ Common options with default values:
     # Nuxeo target URL
     -Durl=http://localhost:8080/nuxeo
     # Redis access
-    -DredisHost=localhost -DredisPort=6379
-    # Redis database num
-    -DredisDb=7
-    # Redis key prefix (or namespace)
-    -DredisNamespace=imp
+    -DredisHost=localhost -DredisPort=6379 -DredisDb=7 -DredisNamespace=imp
 
 Note that you may need to edit the administrator account if it is not the default one:
 

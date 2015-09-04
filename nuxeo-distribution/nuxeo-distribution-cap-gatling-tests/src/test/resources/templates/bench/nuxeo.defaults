@@ -1,0 +1,6 @@
+bench.target=.
+
+org.nuxeo.ecm.instance.description=Nuxeo Gatling bench
+nuxeo.vcs.idtype=sequence
+
+

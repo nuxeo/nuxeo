@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<component name="bench-audit-config">
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+    <extension target="org.nuxeo.ecm.platform.audit.service.NXAuditEventsService" point="event">
+      <event enabled="false" name="loginSuccess" />
+      <event enabled="false" name="loginFailed" />
+      <event enabled="false" name="logout"/>
+   </extension>
+</component>

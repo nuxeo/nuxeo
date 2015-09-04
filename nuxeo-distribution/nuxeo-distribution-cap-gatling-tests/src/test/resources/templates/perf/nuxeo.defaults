@@ -1,0 +1,6 @@
+nuxeo.template.includes=bench
+perf.target=.
+
+nuxeo.vcs.idtype=sequence
+nuxeo.vcs.fulltext.search.disabled=true
+
