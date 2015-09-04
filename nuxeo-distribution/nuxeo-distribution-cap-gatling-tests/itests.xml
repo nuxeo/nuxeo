@@ -1,9 +1,6 @@
-<project name="gatling-tests"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="gatling-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <property name="out.dir" value="${maven.project.build.directory}" />
@@ -13,7 +10,7 @@
   <import file="${out.dir}/nuxeo-ftest.xml" />
 
   <if>
-    <os family="windows"/>
+    <os family="windows" />
     <then>
       <nx:exit message="Sorry your OS is not yet supported" />
     </then>
@@ -28,20 +25,23 @@
   <property name="inject.script" value="inject-arbres.py" />
   <property name="inject.artifact" value="org.nuxeo.tools.testing:data-test-les-arbres:1.1:zip" />
 
+  <property name="redis.db" value="7" />
+
+
   <target name="redis-clean" if="osfamily-unix">
-    <echo level="info">Flushing Redis db0</echo>
+    <echo level="info">Flushing Redis db ${redis.db}</echo>
     <exec executable="sh" failonerror="true" resultProperty="exitCode">
       <arg value="-c" />
-      <arg value="echo flushdb | redis-cli" />
+      <arg value="echo flushdb | redis-cli -n ${redis.db}" />
     </exec>
   </target>
-  
+
   <target name="redis-inject" if="osfamily-unix">
     <echo level="info">Injecting data into Redis</echo>
-    <echo level="info">cat ${inject.file} | python ./scripts/inject-arbres.py | redis-cli --pipe</echo>
+    <echo level="info">cat ${inject.file} | python ./scripts/${inject.script} | redis-cli -n ${redis.db} --pipe</echo>
     <exec executable="sh" failonerror="true" resultProperty="exitCode">
       <arg value="-c" />
-      <arg value="cat ${inject.file} | python ./scripts/${inject.script} | redis-cli --pipe" />
+      <arg value="cat ${inject.file} | python ./scripts/${inject.script} | redis-cli -n ${redis.db} --pipe" />
     </exec>
   </target>
 
@@ -59,10 +59,9 @@
       <param name="value" value="50" />
     </antcall>
   </target>
- 
-  <target name="prepare-environment"
-          depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"
-          description="prepare all ressources for test">
+
+  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"
+    description="prepare all ressources for test">
     <unzip dest="${out.dir}" overwrite="false">
       <artifact:resolveFile key="${inject.artifact}" />
     </unzip>

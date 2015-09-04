@@ -15,9 +15,9 @@ setup:
 	$(info ### Setup Nuxeo users...)
 	mvn -f ../pom.xml -nsu gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup
 
-inject: 
+inject:
 	$(info ### Injecting all data into Redis...)
-	python ./inject-arbre.py | redis-cli --pipe	
+	python ./inject-arbre.py | redis-cli -n 7 --pipe
 
 clean:
 	find . "(" -name "*~" -or  -name ".#*" -or  -name "#*#" -or -name "*.pyc" ")" -print0 | xargs -0 rm -f

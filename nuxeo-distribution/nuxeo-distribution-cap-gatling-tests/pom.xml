@@ -68,7 +68,7 @@
   <build>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
     <plugins>
-     <plugin>
+      <plugin>
         <groupId>net.alchim31.maven</groupId>
         <artifactId>scala-maven-plugin</artifactId>
         <executions>
@@ -208,7 +208,6 @@
                 <configuration>
                   <targets>
                     <target>stop</target>
-                    <target>cleanup-environment</target>
                   </targets>
                 </configuration>
               </execution>
@@ -216,6 +215,12 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>perf</id>
+    </profile>
+    <profile>
+      <id>monitor</id>
     </profile>
     <profile>
       <id>tomcat</id>
@@ -240,6 +245,9 @@
     </profile>
     <profile>
       <id>mysql</id>
+    </profile>
+    <profile>
+      <id>mongodb</id>
     </profile>
   </profiles>
 </project>

@@ -27,7 +27,8 @@ object Redis {
   lazy val pool = {
     val host = System.getProperty("redisHost", "localhost")
     val port = Integer.getInteger("redisPort", 6379)
-    val ret = new RedisClientPool(host, port)
+    val db = Integer.getInteger("redisDb", 7)
+    val ret = new RedisClientPool(host, port, database = db)
     ret.withClient(
       client => {
         // clean temp

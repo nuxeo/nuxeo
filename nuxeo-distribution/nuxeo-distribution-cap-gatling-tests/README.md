@@ -38,8 +38,9 @@ This data will be download and injected automatically when using the default mav
 
 You can also run the script by hand, this will download the file (12MB, 90k docs) and inject the content into redis:
 
-    python ./scripts/inject-arbre.py | redis-cli --pipe
+    python ./scripts/inject-arbre.py | redis-cli -n 7 --pipe
 
+By default we use the redis database 7.
 See `python inject-arbre.py --help` for more information.
 
 
@@ -49,11 +50,11 @@ The dataset is taken from the "Mairie de Paris" and contains the [list of books 
 
 To download the file (276MB, 746k docs) and inject the content into redis:
 
-    python scripts/inject-biblio.py | redis-cli --pipe
+    python scripts/inject-biblio.py | redis-cli -n 7 --pipe
 
 Note that the file can be processed much faster using GNU parallel:
 
-    cat ~/data/biblio.csv | parallel --pipe --block 40M python .scripts/inject-biblio.py | redis-cli --pipe
+    cat ~/data/biblio.csv | parallel --pipe --block 40M python .scripts/inject-biblio.py | redis-cli -n 7 --pipe
 
 ### Custom dataset
 
@@ -70,7 +71,7 @@ folders if they don't already exists:
 This will output [Redis pipe protocol](http://redis.io/topics/mass-insert) that can be read by the `redis-cli` like
 this:
 
-      python  my-script.py | redis-cli --pipe
+      python  my-script.py | redis-cli -n 7 --pipe
 
 
 Create your injector by looking at provided one.
@@ -170,7 +171,7 @@ This simulation remove all documents, users and group from the Nuxeo instance, a
 ## All in one
 
 Setup a Nuxeo instance, get data, inject data into Redis, run all the simulations.
-WARNING this will flush (ERASE) the Redis db0.
+WARNING this will flush (ERASE) the Redis database 7.
 
     mvn -nsu integration-test -Pbench
 
@@ -197,6 +198,8 @@ Common options with default values:
     -Durl=http://localhost:8080/nuxeo
     # Redis access
     -DredisHost=localhost -DredisPort=6379
+    # Redis database num
+    -DredisDb=7
     # Redis key prefix (or namespace)
     -DredisNamespace=imp
 
