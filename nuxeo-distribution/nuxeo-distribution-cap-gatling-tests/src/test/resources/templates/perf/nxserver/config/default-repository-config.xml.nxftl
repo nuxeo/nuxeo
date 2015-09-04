@@ -20,7 +20,7 @@
       <noDDL>${nuxeo.vcs.noddl}</noDDL>
       <aclOptimizations enabled="false"/>
       <pathOptimizations enabled="false"/>
-      <idType>${nuxeo.vcs.idtype}</idType>
+      <idType>sequence</idType>
       <indexing>
 <#if "${nuxeo.db.type}" == "postgresql">
         <fulltext disabled="${nuxeo.vcs.fulltext.disabled}" searchDisabled="${nuxeo.vcs.fulltext.search.disabled}"
