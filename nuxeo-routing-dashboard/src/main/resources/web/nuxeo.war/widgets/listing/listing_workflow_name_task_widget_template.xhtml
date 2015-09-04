@@ -7,12 +7,26 @@
   xmlns:h="http://java.sun.com/jsf/html"
   xmlns:nxp="http://nuxeo.org/nxweb/pdf">
   <c:if test="#{nxl:isLikePlainMode(widget.mode)}">
-    <c:if test="#{widgetProperty_localize}">
-      <h:outputText value="#{messages[nxd:titleOrId(field_0)]}" />
-    </c:if>
-    <c:if test="#{!widgetProperty_localize}">
-      <h:outputText value="#{nxd:titleOrId(field_0)}" />
-    </c:if>
+    <nxu:set var="doc"
+      value="#{docSuggestionActions.getDocumentWithId(field_0)}">
+      <c:if test="#{widgetProperty_localize}">
+        <h:outputText value="#{messages[nxd:titleOrId(doc)]}" />
+      </c:if>
+      <c:if test="#{!widgetProperty_localize}">
+        <h:outputText value="#{nxd:titleOrId(doc)}" />
+      </c:if>
+    </nxu:set>
+  </c:if>
+  <c:if test="#{widget.mode == 'pdf'}">
+    <nxu:set var="doc"
+      value="#{docSuggestionActions.getDocumentWithId(field_0)}">
+      <c:if test="#{widgetProperty_localize}">
+        <nxp:html>#{messages[nxd:titleOrId(doc)]}</nxp:html>
+      </c:if>
+      <c:if test="#{!widgetProperty_localize}">
+        <nxp:html>#{nxd:titleOrId(doc)}</nxp:html>
+      </c:if>
+    </nxu:set>
   </c:if>
   <c:if test="#{nxl:isLikeViewMode(widget.mode)}">
     <div>
