@@ -52,7 +52,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
-@Deploy("org.nuxeo.ecm.platform.query.api")
+@Deploy({"org.nuxeo.ecm.platform.query.api"})
 @LocalDeploy("org.nuxeo.ecm.platform.query.api:test-pageprovider-namedparams-contrib.xml")
 public class TestPageProviderNamedParameters {
 

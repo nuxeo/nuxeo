@@ -16,7 +16,9 @@
  */
 package org.nuxeo.ecm.platform.query.api;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,6 +33,11 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.SortInfo;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventService;
+import org.nuxeo.ecm.core.event.impl.UnboundEventContext;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.core.io.registry.context.RenderingContext;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
@@ -926,4 +933,101 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return false;
     }
 
+    /**
+     * Send a search event so that PageProvider calls can be tracked by Audit or other statistic gathering process
+     *
+     * @param principal
+     * @param query
+     * @param entries
+     * @since 7.4
+     */
+    protected void fireSearchEvent(Principal principal, String query, List<T> entries) {
+
+        if (!getDefinition().isUsageTrackingEnabled()) {
+            return;
+        }
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+
+        props.put("pageProviderName", getDefinition().getName());
+
+        props.put("effectiveQuery", query);
+        props.put("searchPattern", getDefinition().getPattern());
+        props.put("queryParams", getDefinition().getQueryParameters());
+        WhereClauseDefinition wc = getDefinition().getWhereClause();
+        if (wc != null) {
+            props.put("whereClause_fixedPart", wc.getFixedPart());
+            props.put("whereClause_select", wc.getSelectStatement());
+        }
+
+        DocumentModel searchDocumentModel = getSearchDocumentModel();
+        if (searchDocumentModel != null) {
+            RenderingContext rCtx = RenderingContext.CtxBuilder.properties("*").get();
+            try {
+                // the SearchDocumentModel is not a Document bound to the repository
+                // - it may not survive the Event Stacking (ShallowDocumentModel)
+                // - it may take too much space in memory
+                // => let's use JSON
+                String searchDocumentModelAsJson = MarshallerHelper.objectToJson(DocumentModel.class,
+                        searchDocumentModel, rCtx);
+                props.put("searchDocumentModelAsJson", searchDocumentModelAsJson);
+            } catch (IOException e) {
+                log.error("Unable to Marshall SearchDocumentModel as JSON", e);
+            }
+        }
+
+        if (entries != null) {
+            props.put("resultsCountInPage", entries.size());
+        }
+        props.put("resultsCount", getResultsCount());
+        props.put("pageSize", getPageSize());
+        props.put("pageIndex", getCurrentPageIndex());
+        props.put("principal", principal.getName());
+
+        incorporateAggregates(props);
+
+        EventService es = Framework.getService(EventService.class);
+        EventContext ctx = new UnboundEventContext(principal, props);
+        es.fireEvent(ctx.newEvent("search"));
+    }
+
+    /**
+     * Default (dummy) implementation that should be overriden by PageProvider actually dealing with Aggregates
+     *
+     * @param eventProps
+     * @since 7.4
+     */
+    protected void incorporateAggregates(Map<String, Serializable> eventProps) {
+
+        List<AggregateDefinition> ags = getDefinition().getAggregates();
+        if (ags != null) {
+            ArrayList<HashMap<String, Serializable>> aggregates = new ArrayList<HashMap<String, Serializable>>();
+            for (AggregateDefinition ag : ags) {
+                HashMap<String, Serializable> agData = new HashMap<String, Serializable>();
+                agData.put("type", ag.getType());
+                agData.put("id", ag.getId());
+                agData.put("field", ag.getDocumentField());
+                agData.putAll(ag.getProperties());
+                ArrayList<HashMap<String, Serializable>> rangesData = new ArrayList<HashMap<String, Serializable>>();
+                if (ag.getDateRanges() != null) {
+                    for (AggregateRangeDateDefinition range : ag.getDateRanges()) {
+                        HashMap<String, Serializable> rangeData = new HashMap<String, Serializable>();
+                        rangeData.put("from", range.getFromAsString());
+                        rangeData.put("to", range.getToAsString());
+                        rangesData.add(rangeData);
+                    }
+                    for (AggregateRangeDefinition range : ag.getRanges()) {
+                        HashMap<String, Serializable> rangeData = new HashMap<String, Serializable>();
+                        rangeData.put("from", range.getFrom());
+                        rangeData.put("to", range.getTo());
+                        rangesData.add(rangeData);
+                    }
+                }
+                agData.put("ranges", rangesData);
+                aggregates.add(agData);
+            }
+            eventProps.put("aggregates", aggregates);
+        }
+
+    }
 }

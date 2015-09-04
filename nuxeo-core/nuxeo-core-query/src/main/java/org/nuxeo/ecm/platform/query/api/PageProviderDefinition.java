@@ -96,4 +96,10 @@ public interface PageProviderDefinition extends Serializable {
      * @since 6.0
      */
     List<AggregateDefinition> getAggregates();
+
+    /**
+     * @since 7.4
+     */
+    public boolean isUsageTrackingEnabled();
+
 }

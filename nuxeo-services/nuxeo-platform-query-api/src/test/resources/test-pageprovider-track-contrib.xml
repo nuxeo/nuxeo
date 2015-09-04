@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.query.api.PageProviderservice.testContrib">
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="advanced_search" src="schemas/test_advanced_search.xsd"
+      prefix="search" />
+  </extension>
+
+  <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
+    <doctype name="AdvancedSearch" extends="Document">
+      <schema name="advanced_search" />
+    </doctype>
+  </extension>
+
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+    point="providers">
+
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+      <pageSizeOptions>
+        <option>10</option>
+        <option>15</option>
+        <option>20</option>
+      </pageSizeOptions>
+    </coreQueryPageProvider>
+
+    <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN_TRACK">
+      <trackUsage>true</trackUsage>       
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+      <pageSizeOptions>
+        <option>10</option>
+        <option>15</option>
+        <option>20</option>
+      </pageSizeOptions>
+    </coreQueryPageProvider>
+    
+    <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH"
+      class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
+      <trackUsage>true</trackUsage>
+      <pattern>
+        SELECT dc:title FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+    </genericPageProvider>
+
+    <coreQueryPageProvider name="ADVANCED_SEARCH">
+      <trackUsage>true</trackUsage>
+      <property name="coreSession">#{documentManager}</property>
+      <searchDocumentType>AdvancedSearch</searchDocumentType>
+      <whereClause>
+        <predicate parameter="ecm:fulltext" operator="FULLTEXT">
+          <field schema="advanced_search" name="fulltext_all" />
+        </predicate>
+        <predicate parameter="dc:title" operator="LIKE">
+          <field schema="advanced_search" name="title" />
+        </predicate>
+        <predicate parameter="dc:modified" operator="IS NULL">
+          <field schema="advanced_search" name="isPresent" />
+        </predicate>
+        <fixedPart>
+          ecm:parentId = ?
+        </fixedPart>
+      </whereClause>
+      <parameter>#{currentDocument.id}</parameter>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>20</pageSize>
+    </coreQueryPageProvider>
+
+  </extension>
+
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+    
+    <listener name="SearchLogger" async="false"
+      postCommit="false" priority="1000"
+      class="org.nuxeo.ecm.platform.query.core.SearchEventsAccumulator">
+    </listener>
+  </extension>
+  
+</component>

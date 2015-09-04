@@ -211,6 +211,10 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
                 log.warn(e.getMessage(), e);
             }
         }
+
+        // send event for statistics !
+        fireSearchEvent(getCoreSession().getPrincipal(), query, currentPageDocuments);
+
         return currentPageDocuments;
     }
 

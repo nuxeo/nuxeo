@@ -105,6 +105,19 @@ public abstract class BasePageProviderDescriptor {
     @XNodeList(value = "aggregates/aggregate", type = ArrayList.class, componentType = AggregateDescriptor.class)
     protected List<AggregateDescriptor> aggregates;
 
+    /**
+     * @since 7.4
+     */
+    @XNode("trackUsage")
+    protected boolean trackUsage = false;
+
+    /**
+     * @since 7.4
+     */
+    public boolean isUsageTrackingEnabled() {
+        return trackUsage;
+    }
+
     public boolean getQuotePatternParameters() {
         return quotePatternParameters;
     }
@@ -252,9 +265,11 @@ public abstract class BasePageProviderDescriptor {
             }
         }
         clone.searchDocumentType = searchDocumentType;
+        clone.trackUsage=trackUsage;
         return clone;
     }
 
     protected abstract BasePageProviderDescriptor newInstance();
+
 
 }

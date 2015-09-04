@@ -103,6 +103,10 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
             errorMessage = e.getMessage();
             log.warn(e.getMessage(), e);
         }
+
+        // send event for statistics !
+        fireSearchEvent(getCoreSession().getPrincipal(), query, currentPageDocuments);
+
         return currentPageDocuments;
     }
 
@@ -133,6 +137,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         super.refresh();
     }
 
+    @Override
     protected CoreSession getCoreSession() {
         Map<String, Serializable> props = getProperties();
         CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
