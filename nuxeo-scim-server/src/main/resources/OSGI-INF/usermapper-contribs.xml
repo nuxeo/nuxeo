@@ -21,6 +21,7 @@
           
           if (searchAttributes.containsKey("uid")) {
              userAttributes.put(um.getUserIdField(), searchAttributes.get("uid"));
+             searchAttributes.remove("uid");
           }          
           
           if (userObject.getEmails() != null && userObject.getEmails().size() > 0) {
