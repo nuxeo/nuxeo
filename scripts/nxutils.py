@@ -29,8 +29,10 @@ import sys
 import time
 import urllib2
 from zipfile import ZIP_DEFLATED, ZipFile
+from distutils.version import LooseVersion
 
 
+REQUIRED_GIT_VERSION = "1.8.4"
 SUPPORTED_GIT_ONLINE_URLS = "http://", "https://", "git://", "git@"
 DEFAULT_MP_CONF_URL = ("https://raw.github.com/nuxeo/"
                        "integration-scripts/master/marketplace.ini")
@@ -236,27 +238,22 @@ class Repository(object):
         'version': the version to checkout.
         'fallback_branch': the branch to fallback on when 'version' is not
         found locally or remotely."""
-        if version in check_output("git tag").split():
+        if version in check_output("git tag --list %s" % version).split():
             # the version is a tag name
             system("git checkout %s -q" % version)
-        elif version not in check_output("git branch").split():
+        elif version not in check_output("git branch --list %s" % version).split():
             # create the local branch if missing
-            retcode = system("git checkout --track -b %s %s/%s -q" % (version,
-                             self.alias, version),
+            retcode = system("git checkout --track -b %s %s/%s -q" % (version, self.alias, version),
                              fallback_branch is None)
             if retcode != 0 and fallback_branch is not None:
-                log("Branch %s not found, fallback on %s" % (version,
-                                                             fallback_branch))
+                log("Branch %s not found, fallback on %s" % (version, fallback_branch))
                 self.git_update(fallback_branch)
         else:
             # reuse local branch
             system("git checkout %s -q" % version)
-            retcode = system("git rebase -q %s/%s" % (self.alias, version),
-                             False)
-            if retcode != 0:
-                system("git stash -q")
-                system("git rebase -q %s/%s" % (self.alias, version))
-                system("git stash pop -q")
+            if "%s/%s" % (self.alias, version) in check_output("git branch -r --list %s/%s" % (self.alias,
+                                                                                               version)).split():
+                system("git rebase -q --autostash %s/%s" % (self.alias, version))
         log("")
 
     def get_mp_config(self, marketplace_conf):
@@ -520,7 +517,9 @@ def long_path_workaround_cleanup(driveletter, basedir):
 
 def assert_git_config():
     """Check Git configuration."""
-    t = ""
+    t = check_output("git --version").split()[-1]
+    if LooseVersion(t) < LooseVersion(REQUIRED_GIT_VERSION):
+        raise ExitException(1, "Requires Git version %s+ (detected %s)" % (REQUIRED_GIT_VERSION, t))
     try:
         t = check_output("git config --get-all color.branch")
     except ExitException, e:
