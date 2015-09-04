@@ -252,6 +252,7 @@ public class CoreGraph implements Graph {
             for (Statement statement : statements) {
                 add(statement);
             }
+            session.save();
         }
 
         protected void add(Statement statement) {

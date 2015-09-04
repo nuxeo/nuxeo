@@ -20,6 +20,10 @@
 
 package org.nuxeo.ecm.platform.userworkspace.core.service;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -41,7 +45,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
     private static final Log log = LogFactory.getLog(UserWorkspaceService.class);
 
-    protected UserWorkspaceDescriptor descriptor;
+    protected Deque<UserWorkspaceDescriptor> descriptors = new LinkedList<>();
 
     protected UserWorkspaceService userWorkspaceService;
 
@@ -65,7 +69,7 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
 
     private UserWorkspaceService getUserWorkspaceService() {
         if (userWorkspaceService == null) {
-            Class<?> klass = descriptor.getUserWorkspaceClass();
+            Class<?> klass = getConfiguration().getUserWorkspaceClass();
             if (klass == null) {
                 throw new NuxeoException("No class specified for the userWorkspace");
             }
@@ -79,23 +83,25 @@ public class UserWorkspaceServiceImplComponent extends DefaultComponent {
     }
 
     @Override
-    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            {
-        descriptor = (UserWorkspaceDescriptor) contribution;
+    public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        descriptors.add((UserWorkspaceDescriptor) contribution);
     }
 
     @Override
-    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor)
-            {
-        descriptor = null;
+    public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
+        descriptors.remove(contribution);
+    }
+
+    protected void recompute() {
+        userWorkspaceService = null;
     }
 
     public String getTargetDomainName() {
-        return descriptor.getTargetDomainName();
+        return getConfiguration().getTargetDomainName();
     }
 
     public UserWorkspaceDescriptor getConfiguration() {
-        return descriptor;
+        return descriptors.getLast();
     }
 
     // for tests only

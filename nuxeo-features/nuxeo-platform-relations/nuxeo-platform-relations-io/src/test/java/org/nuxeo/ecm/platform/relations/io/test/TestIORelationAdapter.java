@@ -32,10 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.Path;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -43,7 +47,9 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.io.DocumentTranslationMap;
 import org.nuxeo.ecm.core.io.impl.DocumentTranslationMapImpl;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.io.api.IOManager;
 import org.nuxeo.ecm.platform.io.api.IOResourceAdapter;
 import org.nuxeo.ecm.platform.io.api.IOResources;
@@ -58,14 +64,23 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.io.IORelationResources;
 import org.nuxeo.ecm.platform.relations.jena.JenaGraph;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * Test layout component extension points.
  *
  * @author <a href="mailto:at@nuxeo.com">Anahide Tchertchian</a>
  */
-public class TestIORelationAdapter extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@LocalDeploy({ "org.nuxeo.ecm.relations.io.tests:io-test-framework.xml", //
+        "org.nuxeo.ecm.relations.io.tests:io-relations-test-contrib.xml", //
+        "org.nuxeo.ecm.relations.io.tests:jena-test-bundle.xml", //
+})
+public class TestIORelationAdapter {
 
     private static final String graphName = "myrelations";
 
@@ -93,35 +108,28 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
     private static final Resource simpleResource = new ResourceImpl(
             "http://www.wikipedia.com/Enterprise_Content_Management");
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     private IOManager ioService;
 
+    @Inject
     private RelationManager rService;
 
     private JenaGraph graph;
 
     private String repoName;
 
-    @Override
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        openSession();
-
-        // specific files
-        deployContrib("org.nuxeo.ecm.relations.io.tests", "io-test-framework.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests", "io-relations-test-contrib.xml");
-        deployContrib("org.nuxeo.ecm.relations.io.tests", "jena-test-bundle.xml");
-        ioService = Framework.getService(IOManager.class);
-        assertNotNull(ioService);
-        assertNotNull(ioService);
-        rService = Framework.getService(RelationManager.class);
         Graph graph = rService.getGraphByName(graphName);
         assertNotNull(graph);
         assertEquals(JenaGraph.class, graph.getClass());
         this.graph = (JenaGraph) graph;
 
         createDocuments();
-        repoName = database.getRepositoryName();
+        repoName = session.getRepositoryName();
     }
 
     private void createDocuments() {
@@ -138,15 +146,11 @@ public class TestIORelationAdapter extends SQLRepositoryTestCase {
         session.save();
     }
 
-    @Override
     @After
     public void tearDown() throws Exception {
         if (graph != null) {
             graph.clear();
         }
-        graph = null;
-        closeSession();
-        super.tearDown();
     }
 
     private static InputStream getTestFile(String filePath) {

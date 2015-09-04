@@ -58,7 +58,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
- * @author Anahide Tchertchian "org.nuxeo.ecm.platform.task.testing" })
+ * @author Anahide Tchertchian
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

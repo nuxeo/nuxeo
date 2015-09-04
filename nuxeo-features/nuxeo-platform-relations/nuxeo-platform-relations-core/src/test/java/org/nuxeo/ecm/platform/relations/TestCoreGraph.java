@@ -17,6 +17,11 @@
  */
 package org.nuxeo.ecm.platform.relations;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -35,13 +40,16 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.relations.api.Literal;
 import org.nuxeo.ecm.platform.relations.api.Node;
 import org.nuxeo.ecm.platform.relations.api.QNameResource;
@@ -57,14 +65,26 @@ import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
 import org.nuxeo.ecm.platform.relations.descriptors.GraphDescriptor;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestCoreGraph extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy("org.nuxeo.ecm.relations")
+@LocalDeploy("org.nuxeo.ecm.relations.tests:relation-core-test-contrib.xml")
+public class TestCoreGraph {
 
     public static final String DC_TERMS_NS = "http://purl.org/dc/terms/";
 
     private static final String GRAPH_NAME = "myrelations";
 
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     private RelationManager service;
 
     private CoreGraph graph;
@@ -81,37 +101,24 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.relations");
-        deployContrib("org.nuxeo.ecm.relations.tests", "relation-core-test-contrib.xml");
-        openSession();
-        service = Framework.getService(RelationManager.class);
-
         statements = new ArrayList<Statement>();
-        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.getRepositoryName()
-                + "/00010000-2c86-46fa-909e-02494bcb0001");
-        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE, database.getRepositoryName()
-                + "/00020000-2c86-46fa-909e-02494bcb0002");
+        doc1 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
+                session.getRepositoryName() + "/00010000-2c86-46fa-909e-02494bcb0001");
+        doc2 = new QNameResourceImpl(RelationConstants.DOCUMENT_NAMESPACE,
+                session.getRepositoryName() + "/00020000-2c86-46fa-909e-02494bcb0002");
         isBasedOn = new QNameResourceImpl(DC_TERMS_NS, "IsBasedOn");
         references = new QNameResourceImpl(DC_TERMS_NS, "References");
         statements.add(new StatementImpl(doc2, isBasedOn, doc1));
-        statements.add(new StatementImpl(doc1, references, new ResourceImpl(
-                "http://www.wikipedia.com/Enterprise_Content_Management")));
+        statements.add(new StatementImpl(doc1, references,
+                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         statements.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         Collections.sort(statements);
 
         graph = (CoreGraph) service.getGraphByName(GRAPH_NAME);
-        assertNotNull(graph);
     }
 
     public void useGraphWithSession() throws Exception {
         graph = (CoreGraph) service.getGraph(GRAPH_NAME, session);
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     private static String getTestFile() {
@@ -139,9 +146,9 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     @Test
     public void testAdd() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         graph.add(statements);
-        assertEquals(3, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(3), graph.size());
     }
 
     @Test
@@ -152,7 +159,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     @Test
     public void testSubjectResource() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         Resource src = new ResourceImpl("urn:foo:1234");
         Statement st = new StatementImpl(src, isBasedOn, doc1);
         graph.add(st);
@@ -160,12 +167,12 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(1, stmts.size());
         assertEquals(st, stmts.get(0));
         graph.remove(Collections.singletonList(st));
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
     }
 
     @Test
     public void testBlank() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         Node src = new BlankImpl();
         Node dst = new BlankImpl("123");
         Statement st = new StatementImpl(src, isBasedOn, dst);
@@ -174,7 +181,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         assertEquals(1, stmts.size());
         assertEquals(st, stmts.get(0));
         graph.remove(Collections.singletonList(st));
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
     }
 
     @Test
@@ -202,13 +209,13 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     @Test
     public void testRemove() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         graph.add(statements);
-        assertEquals(3, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(3), graph.size());
         List<Statement> stmts = new ArrayList<Statement>();
         stmts.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         graph.remove(stmts);
-        assertEquals(2, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(2), graph.size());
     }
 
     @Test
@@ -269,15 +276,15 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
         stmts = graph.getStatements(new StatementImpl(doc1, null, null));
         Collections.sort(stmts);
         expected = new ArrayList<Statement>();
-        expected.add(new StatementImpl(doc1, references, new ResourceImpl(
-                "http://www.wikipedia.com/Enterprise_Content_Management")));
+        expected.add(new StatementImpl(doc1, references,
+                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         assertEquals(expected, stmts);
 
         stmts = graph.getStatements(new StatementImpl(null, references, null));
         Collections.sort(stmts);
         expected = new ArrayList<Statement>();
-        expected.add(new StatementImpl(doc1, references, new ResourceImpl(
-                "http://www.wikipedia.com/Enterprise_Content_Management")));
+        expected.add(new StatementImpl(doc1, references,
+                new ResourceImpl("http://www.wikipedia.com/Enterprise_Content_Management")));
         expected.add(new StatementImpl(doc2, references, new LiteralImpl("NXRuntime")));
         assertEquals(expected, stmts);
 
@@ -289,15 +296,16 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
         // test with unknown nodes
         expected = new ArrayList<Statement>();
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), new ResourceImpl(
-                "http://propertty"), new ResourceImpl("http://object")));
+        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"),
+                new ResourceImpl("http://propertty"), new ResourceImpl("http://object")));
         assertEquals(expected, stmts);
 
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), null, new LiteralImpl(
-                "literal")));
+        stmts = graph.getStatements(
+                new StatementImpl(new ResourceImpl("http://subject"), null, new LiteralImpl("literal")));
         assertEquals(expected, stmts);
 
-        stmts = graph.getStatements(new StatementImpl(new ResourceImpl("http://subject"), null, new BlankImpl("blank")));
+        stmts = graph.getStatements(
+                new StatementImpl(new ResourceImpl("http://subject"), null, new BlankImpl("blank")));
         assertEquals(expected, stmts);
     }
 
@@ -388,22 +396,22 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     @Test
     public void testSize() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         List<Statement> stmts = new ArrayList<Statement>();
         stmts.add(new StatementImpl(doc1, isBasedOn, new LiteralImpl("foo")));
         graph.add(stmts);
-        assertEquals(1, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(1), graph.size());
         graph.add(statements);
-        assertEquals(4, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(4), graph.size());
     }
 
     @Test
     public void testClear() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         graph.add(statements);
-        assertEquals(3, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(3), graph.size());
         graph.clear();
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
     }
 
     public void TODOtestQuery() {
@@ -483,9 +491,9 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
 
     public void TODOtestRead() throws Exception {
         InputStream in = new FileInputStream(getTestFile());
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         graph.read(in, null, null);
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         List<Statement> statements = graph.getStatements();
         Collections.sort(statements);
         // assertSame(statements.size(), this.statements.size());
@@ -496,7 +504,7 @@ public class TestCoreGraph extends SQLRepositoryTestCase {
     }
 
     public void TODOtestReadPath() {
-        assertEquals(0, (double) graph.size(), 1e-8);
+        assertEquals(Long.valueOf(0), graph.size());
         graph.read(getTestFile(), null, null);
         assertFalse(graph.size().intValue() == 0);
         List<Statement> statements = graph.getStatements();

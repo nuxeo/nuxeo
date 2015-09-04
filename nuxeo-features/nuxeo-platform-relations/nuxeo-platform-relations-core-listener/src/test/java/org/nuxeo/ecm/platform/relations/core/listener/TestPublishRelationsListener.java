@@ -17,16 +17,22 @@
 
 package org.nuxeo.ecm.platform.relations.core.listener;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.After;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import javax.inject.Inject;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.comment.api.CommentableDocument;
 import org.nuxeo.ecm.platform.relations.api.Graph;
 import org.nuxeo.ecm.platform.relations.api.RelationManager;
@@ -36,9 +42,22 @@ import org.nuxeo.ecm.platform.relations.api.impl.LiteralImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
 import org.nuxeo.ecm.platform.relations.api.impl.StatementImpl;
 import org.nuxeo.ecm.platform.relations.api.util.RelationConstants;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
-public class TestPublishRelationsListener extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
+@Deploy({ "org.nuxeo.ecm.relations.api", //
+        "org.nuxeo.ecm.relations", //
+        "org.nuxeo.ecm.relations.jena", //
+        "org.nuxeo.ecm.relations.core.listener", //
+        "org.nuxeo.ecm.platform.comment.api", //
+        "org.nuxeo.ecm.platform.comment", //
+        "org.nuxeo.ecm.platform.relations.core.listener.tests", //
+})
+public class TestPublishRelationsListener {
 
     protected static final Resource conformsTo = new ResourceImpl("http://purl.org/dc/terms/ConformsTo");
 
@@ -54,21 +73,14 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
 
     protected DocumentModel section;
 
+    @Inject
     protected RelationManager relationManager;
+
+    @Inject
+    protected CoreSession session;
 
     @Before
     public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.relations.api");
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-        deployBundle("org.nuxeo.ecm.relations.core.listener");
-        deployBundle("org.nuxeo.ecm.platform.comment.api");
-        deployBundle("org.nuxeo.ecm.platform.comment");
-        deployBundle("org.nuxeo.ecm.platform.relations.core.listener.tests");
-        openSession();
-
-        relationManager = Framework.getService(RelationManager.class);
 
         workspace = session.createDocumentModel("Folder");
         workspace.setProperty("dublincore", "title", "Workspace");
@@ -91,12 +103,6 @@ public class TestPublishRelationsListener extends SQLRepositoryTestCase {
         doc2 = session.createDocument(doc2);
 
         session.save();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     protected void addSomeComments(DocumentModel docToComment) throws Exception {

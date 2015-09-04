@@ -28,9 +28,11 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.After;
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -38,22 +40,44 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.task.Task;
 import org.nuxeo.ecm.platform.task.TaskComment;
 import org.nuxeo.ecm.platform.task.TaskService;
-import org.nuxeo.ecm.platform.task.test.TaskUTConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Anahide Tchertchian
  * @author Antoine Taillefer
  */
-public class TaskServiceTest extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.ecm.platform.content.template", //
+        "org.nuxeo.ecm.directory", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.directory.types.contrib", //
+        "org.nuxeo.ecm.directory.sql", //
+        "org.nuxeo.ecm.platform.query.api", //
+        "org.nuxeo.ecm.platform.task.core", //
+})
+@LocalDeploy({ "org.nuxeo.ecm.platform.task.testing:OSGI-INF/test-sql-directories-contrib.xml", //
+        "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml" })
+public class TaskServiceTest {
 
+    @Inject
+    protected CoreFeature coreFeature;
+
+    @Inject
+    protected CoreSession session;
+
+    @Inject
     protected TaskService taskService;
 
+    @Inject
     protected UserManager userManager;
 
     protected NuxeoPrincipal administrator;
@@ -66,27 +90,8 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
     protected NuxeoPrincipal user4;
 
-    @Override
     @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        deployBundle("org.nuxeo.ecm.platform.content.template");
-        deployBundle("org.nuxeo.ecm.directory");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.directory.types.contrib");
-        deployBundle("org.nuxeo.ecm.directory.sql");
-        deployBundle("org.nuxeo.ecm.platform.query.api");
-        deployContrib("org.nuxeo.ecm.platform.test", "test-usermanagerimpl/directory-config.xml");
-
-        deployBundle(TaskUTConstants.CORE_BUNDLE_NAME);
-        deployBundle(TaskUTConstants.TESTING_BUNDLE_NAME);
-
-        taskService = Framework.getService(TaskService.class);
-
-        userManager = Framework.getService(UserManager.class);
-        assertNotNull(userManager);
-
+    public void setUp() {
         administrator = userManager.getPrincipal(SecurityConstants.ADMINISTRATOR);
         assertNotNull(administrator);
 
@@ -101,15 +106,6 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
 
         user4 = userManager.getPrincipal("myuser4");
         assertNotNull(user4);
-
-        openSession();
-    }
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        closeSession();
-        super.tearDown();
     }
 
     @Test
@@ -624,8 +620,7 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
         assertEquals(1, tasks.size());
 
         // check as user1
-        CoreSession session1 = openSessionAs(user1.getName());
-        try {
+        try (CoreSession session1 = coreFeature.openCoreSession(user1.getName())) {
             tasks = taskService.getTaskInstances(document, user1, session1);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
@@ -638,13 +633,10 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session1);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
-        } finally {
-            closeSession(session1);
         }
 
         // check that user2 sees them if requesting the given user / all
-        CoreSession session2 = openSessionAs(user2.getName());
-        try {
+        try (CoreSession session2 = coreFeature.openCoreSession(user2.getName())) {
             tasks = taskService.getTaskInstances(document, user1, session2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
@@ -657,8 +649,6 @@ public class TaskServiceTest extends SQLRepositoryTestCase {
             tasks = taskService.getTaskInstances(document, (NuxeoPrincipal) null, session2);
             assertNotNull(tasks);
             assertEquals(1, tasks.size());
-        } finally {
-            closeSession(session2);
         }
     }
 

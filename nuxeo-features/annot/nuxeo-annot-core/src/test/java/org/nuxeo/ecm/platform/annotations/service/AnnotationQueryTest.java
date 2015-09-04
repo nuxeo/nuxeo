@@ -19,48 +19,45 @@
 
 package org.nuxeo.ecm.platform.annotations.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
+import javax.inject.Inject;
+
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationImpl;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationManager;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.relations.api.impl.ResourceImpl;
-import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 /**
  * @author Alexandre Russel
  */
-public class AnnotationQueryTest extends SQLRepositoryTestCase {
-
-    private AnnotationsService service;
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+@Deploy({ "org.nuxeo.ecm.relations", //
+        "org.nuxeo.ecm.annotations", //
+        "org.nuxeo.ecm.relations.jena", //
+        "org.nuxeo.ecm.platform.usermanager", //
+        "org.nuxeo.ecm.platform.types.core", //
+        "org.nuxeo.ecm.platform.types.api", //
+})
+@LocalDeploy("org.nuxeo.ecm.annotations:test-ann-contrib.xml")
+public class AnnotationQueryTest {
 
     private final AnnotationQuery query = new AnnotationQuery();
 
     private final AnnotationManager manager = new AnnotationManager();
-
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        deployBundle("org.nuxeo.ecm.relations");
-        deployBundle("org.nuxeo.ecm.annotations");
-        deployTestContrib("org.nuxeo.ecm.annotations", "test-ann-contrib.xml");
-        deployBundle("org.nuxeo.ecm.relations.jena");
-        deployBundle("org.nuxeo.ecm.platform.usermanager");
-        deployBundle("org.nuxeo.ecm.platform.types.core");
-        deployBundle("org.nuxeo.ecm.platform.types.api");
-        service = Framework.getService(AnnotationsService.class);
-        assertNotNull(service);
-    }
 
     @Test
     public void testgetAnnotationsForURIs() throws Exception {

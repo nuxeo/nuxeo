@@ -22,71 +22,44 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.inject.Inject;
 import javax.transaction.Transaction;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.sql.SQLRepositoryTestCase;
+import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCConnection;
 import org.nuxeo.ecm.core.storage.sql.jdbc.XAResourceConnectionAdapter;
 import org.nuxeo.ecm.core.storage.sql.jdbc.dialect.Dialect;
+import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.osgi.OSGiRuntimeService;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * Test that transaction management does the right thing with single-datasource mode.
  */
-public class TestSingleDataSource extends SQLRepositoryTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class)
+public class TestSingleDataSource {
 
-    @Override
-    protected OSGiRuntimeService handleNewRuntime(OSGiRuntimeService runtime) {
-        runtime = super.handleNewRuntime(runtime);
-        Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
-        return runtime;
-    }
-
-    @Override
-    protected void deployRepositoryContrib() throws Exception {
-        super.deployRepositoryContrib();
-        deployBundle("org.nuxeo.runtime.jtajca");
-    }
+    @Inject
+    protected CoreFeature coreFeature;
 
     @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp(); // database setUp deletes all tables
-        fireFrameworkStarted();
-        TransactionHelper.startTransaction();
-
-        // no openSession() done here
-    }
-
-    @After
-    @Override
-    public void tearDown() throws Exception {
-        try {
-            if (session != null) {
-                session.cancel();
-                closeSession();
-            }
-            if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-                TransactionHelper.setTransactionRollbackOnly();
-                TransactionHelper.commitOrRollbackTransaction();
-            }
-        } finally {
-            Framework.getProperties().remove(ConnectionHelper.SINGLE_DS);
-            super.tearDown();
-        }
+    public void setSingleDataSourceMode() {
+        Framework.getProperties().setProperty(ConnectionHelper.SINGLE_DS, "jdbc/NuxeoTestDS");
     }
 
     /**
      * H2 cannot have one connection doing an insert in a tx and another using the same table, as it waits for a lock.
      */
     protected boolean canUseTwoConnections() {
+        StorageConfiguration database = coreFeature.getStorageConfiguration();
         return !(database.isVCSH2() || database.isVCSDerby());
     }
 

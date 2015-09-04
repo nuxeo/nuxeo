@@ -11,20 +11,29 @@
  */
 package org.nuxeo.ecm.core.persistence;
 
+import java.util.List;
 import java.util.Properties;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.storage.sql.DatabaseHelper;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.datasource.ConnectionHelper;
-import org.nuxeo.runtime.test.NXRuntimeTestCase;
-import org.nuxeo.runtime.transaction.TransactionHelper;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 
-public class TestPersistenceProvider extends NXRuntimeTestCase {
+@RunWith(FeaturesRunner.class)
+@Features(CoreFeature.class) // to init properties for SQL datasources
+@Deploy("org.nuxeo.ecm.core.persistence")
+@LocalDeploy("org.nuxeo.ecm.core.persistence.test:OSGI-INF/test-persistence-config.xml")
+public class TestPersistenceProvider {
 
     protected PersistenceProvider persistenceProvider;
 
@@ -34,11 +43,8 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
     }
 
     @Before
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    public void setUp() {
         final Properties properties = Framework.getProperties();
-        DatabaseHelper.DATABASE.setUp();
         if (useSingleDataSource()) {
             // the name doesn't actually matter, as code in
             // ConnectionHelper.getDataSource ignores it and uses
@@ -48,24 +54,25 @@ public class TestPersistenceProvider extends NXRuntimeTestCase {
             properties.remove(ConnectionHelper.SINGLE_DS);
         }
 
-        deployBundle("org.nuxeo.runtime.jtajca");
-        deployBundle("org.nuxeo.runtime.datasource");
-        deployBundle("org.nuxeo.ecm.core.persistence");
-        deployContrib("org.nuxeo.ecm.core.persistence.test", "OSGI-INF/test-persistence-config.xml");
-        fireFrameworkStarted();
-        TransactionHelper.startTransaction();
         activatePersistenceProvider();
     }
 
     @After
-    @Override
-    public void tearDown() throws Exception {
-        deactivatePersistenceProvider();
-        if (TransactionHelper.isTransactionActiveOrMarkedRollback()) {
-            TransactionHelper.setTransactionRollbackOnly();
-            TransactionHelper.commitOrRollbackTransaction();
+    public void tearDown() {
+        EntityManager em = persistenceProvider.acquireEntityManager();
+
+        // clean all entities
+        Query q = em.createQuery("select id from DummyEntity");
+        @SuppressWarnings("unchecked")
+        List<String> list = (List<String>) q.getResultList();
+        for (String id : list) {
+            DummyEntity entity = em.find(DummyEntity.class, id);
+            em.remove(entity);
         }
-        super.tearDown();
+        em.flush();
+        em.clear();
+
+        deactivatePersistenceProvider();
     }
 
     protected void activatePersistenceProvider() {
