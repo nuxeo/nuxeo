@@ -30,16 +30,6 @@
     <module>nuxeo-scim-server</module>
   </modules>
 
- <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-usermapper</artifactId>
-        <version>7.4-SNAPSHOT</version>
-      </dependency>
-    </dependencies>
- </dependencyManagement>
-
   <repositories>
     <repository>
       <id>public</id>
