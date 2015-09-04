@@ -238,22 +238,23 @@ class Repository(object):
         'version': the version to checkout.
         'fallback_branch': the branch to fallback on when 'version' is not
         found locally or remotely."""
-        if version in check_output("git tag --list %s" % version).split():
-            # the version is a tag name
+        is_tag = version in check_output("git tag --list %s" % version).split()
+        is_local_branch = version in check_output("git branch --list %s" % version).split()
+        is_remote_branch = "%s/%s" % (self.alias, version) in check_output(
+                           "git branch -r --list %s/%s" % (self.alias, version)).split()
+        if is_tag:
             system("git checkout %s -q" % version)
-        elif version not in check_output("git branch --list %s" % version).split():
-            # create the local branch if missing
-            retcode = system("git checkout --track -b %s %s/%s -q" % (version, self.alias, version),
-                             fallback_branch is None)
-            if retcode != 0 and fallback_branch is not None:
-                log("Branch %s not found, fallback on %s" % (version, fallback_branch))
-                self.git_update(fallback_branch)
-        else:
-            # reuse local branch
+        elif is_local_branch:
             system("git checkout %s -q" % version)
-            if "%s/%s" % (self.alias, version) in check_output("git branch -r --list %s/%s" % (self.alias,
-                                                                                               version)).split():
+            if is_remote_branch:
                 system("git rebase -q --autostash %s/%s" % (self.alias, version))
+        elif is_remote_branch:
+            system("git checkout --track -b %s %s/%s -q" % (version, self.alias, version), fallback_branch is None)
+        elif fallback_branch:
+            log("Branch %s not found, fallback on %s" % (version, fallback_branch))
+            self.git_update(fallback_branch)
+        else:
+            log("Branch %s not found" % version)
         log("")
 
     def get_mp_config(self, marketplace_conf):
