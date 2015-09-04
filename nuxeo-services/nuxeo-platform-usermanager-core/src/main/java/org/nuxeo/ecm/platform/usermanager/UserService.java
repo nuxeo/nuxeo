@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.platform.usermanager.UserManager.MatchType;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.api.login.Authenticator;
@@ -136,7 +137,11 @@ public class UserService extends DefaultComponent {
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         descriptors.remove(contribution);
-        recomputeUserManager(true);
+        try {
+            recomputeUserManager(true);
+        } catch (DirectoryException e) {
+            log.debug(e); // at shutdown we don't have a userDirectory anymore
+        }
     }
 
 }
