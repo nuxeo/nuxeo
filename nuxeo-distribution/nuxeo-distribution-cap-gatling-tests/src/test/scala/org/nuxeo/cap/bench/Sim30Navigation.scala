@@ -45,8 +45,8 @@ class Sim30Navigation extends Simulation {
   }
 
   val url = System.getProperty("url", "http://localhost:8080/nuxeo")
-  val nbUsers = Integer.getInteger("users", 1)
-  val duration = Integer.getInteger("duration", 30)
+  val nbUsers = Integer.getInteger("users", 8)
+  val duration = Integer.getInteger("duration", 60)
   val httpProtocol = http
     .baseURL(url)
     .disableWarmUp

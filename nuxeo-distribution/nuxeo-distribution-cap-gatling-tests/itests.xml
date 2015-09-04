@@ -60,7 +60,7 @@
   <target name="tune-nuxeo">
     <antcall target="set-conf">
       <param name="name" value="JAVA_OPTS" />
-      <param name="value" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:MaxPermSize=512m" />
+      <param name="value" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:MaxPermSize=512m -XX:SoftRefLRUPolicyMSPerMB=5" />
     </antcall>
     <antcall target="set-conf">
       <param name="name" value="nuxeo.db.max-pool-size" />
