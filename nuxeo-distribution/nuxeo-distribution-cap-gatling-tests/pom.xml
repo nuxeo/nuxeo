@@ -56,14 +56,14 @@
       <version>1.1</version>
       <scope>test</scope>
     </dependency>
-    <!--dependency>
+    <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <classifier>nuxeo-cap</classifier>
       <version>${version}</version>
       <type>zip</type>
       <scope>provided</scope>
-    </dependency-->
+    </dependency>
   </dependencies>
   <build>
     <testSourceDirectory>src/test/scala</testSourceDirectory>
@@ -147,7 +147,7 @@
                   <simulationClass>org.nuxeo.cap.bench.Sim30Navigation</simulationClass>
                 </configuration>
               </execution>
-              <execution>
+              <!--execution>
                 <id>cleanup</id>
                 <phase>integration-test</phase>
                 <goals>
@@ -156,7 +156,7 @@
                 <configuration>
                   <simulationClass>org.nuxeo.cap.bench.Sim90Cleanup</simulationClass>
                 </configuration>
-              </execution>
+              </execution-->
             </executions>
 
           </plugin>

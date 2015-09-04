@@ -35,7 +35,7 @@ class InjectorArbre(Injector):
                 lat, lon = row[0].split(", ")
                 name = geohash.encode((float(lon), float(lat)))
             except ValueError:
-                self.log.error("Skipping line with invalid geohash: " + row[0])
+                self.log.warn("Skipping line with invalid geohash: " + row[0])
                 continue
             props = {}
             parentPath = self.createPathFromGeoHash(name)

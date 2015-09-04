@@ -1,4 +1,4 @@
-<project name="integration-tests"
+<project name="gatling-tests"
          xmlns:nx="urn:nuxeo-build"
          xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
@@ -28,21 +28,36 @@
   <property name="inject.script" value="inject-arbres.py" />
   <property name="inject.artifact" value="org.nuxeo.tools.testing:data-test-les-arbres:1.1:zip" />
 
-  <target name="redis-clean">
-    <echo level="info">Flush Redis DB</echo>
+  <target name="redis-clean" if="osfamily-unix">
+    <echo level="info">Flushing Redis db0</echo>
     <exec executable="sh" failonerror="true" resultProperty="exitCode">
       <arg value="-c" />
       <arg value="echo flushdb | redis-cli" />
     </exec>
   </target>
   
-  <target name="redis-inject">
-    <echo level="info">Inject data into Redis</echo>
+  <target name="redis-inject" if="osfamily-unix">
+    <echo level="info">Injecting data into Redis</echo>
     <echo level="info">cat ${inject.file} | python ./scripts/inject-arbres.py | redis-cli --pipe</echo>
     <exec executable="sh" failonerror="true" resultProperty="exitCode">
       <arg value="-c" />
       <arg value="cat ${inject.file} | python ./scripts/${inject.script} | redis-cli --pipe" />
     </exec>
+  </target>
+
+  <target name="tune-nuxeo">
+    <antcall target="set-conf">
+      <param name="name" value="JAVA_OPTS" />
+      <param name="value" value="$JAVA_OPTS -Xms3g -Xmx3g -XX:MaxPermSize=512m" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.db.max-pool-size" />
+      <param name="value" value="52" />
+    </antcall>
+    <antcall target="set-conf">
+      <param name="name" value="nuxeo.vcs.max-pool-size" />
+      <param name="value" value="50" />
+    </antcall>
   </target>
  
   <target name="prepare-environment"
@@ -51,6 +66,7 @@
     <unzip dest="${out.dir}" overwrite="false">
       <artifact:resolveFile key="${inject.artifact}" />
     </unzip>
+    <antcall target="tune-nuxeo" />
     <antcall target="redis-clean" />
     <antcall target="redis-inject" />
   </target>
