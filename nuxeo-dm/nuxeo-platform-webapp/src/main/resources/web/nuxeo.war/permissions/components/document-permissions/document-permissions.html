@@ -12,14 +12,14 @@
 <dom-module id="document-permissions">
     <template>
         <nx-doc-resource id="doc" auto="true" doc-id="{{docId}}" doc-path="{{docPath}}" response="{{doc}}"
-                enrichers="extendedAcls, permissions, userVisiblePermissions"></nx-doc-resource>
+            enrichers="extendedAcls, permissions, userVisiblePermissions"></nx-doc-resource>
 
         <div class="bubbleBox">
             <div class="bubbleHeader">
                 <h3>Access rights defined explicitely on this folder</h3>
                 <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
-                            on-acecreated="refresh"></popup-permission>
+                        on-acecreated="refresh"></popup-permission>
                 </template>
             </div>
             <template is="dom-if" if="{{hasLocalAcls}}">
@@ -35,20 +35,22 @@
                         </tr>
                         <template is="dom-repeat" items="{{localAcls}}" as="acl">
                             <template is="dom-repeat" items="{{acl.ace}}" as="ace">
-                                <tr>
-                                    <td><span>{{ace.username}}</span></td>
-                                    <td><span>{{ace.creator}}</span></td>
-                                    <td><span>{{ace.permission}}</span></td>
-                                    <td><span>{{formatDuration(ace)}}</span></td>
-                                    <td><span>{{acl.name}}</span></td>
-                                    <td>
-                                        <template is="dom-if" if="{{hasEverythingRight}}">
-                                            <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
+                                <template is="dom-if" if="{{ace.granted}}">
+                                    <tr>
+                                        <td><span>{{ace.username}}</span></td>
+                                        <td><span>{{ace.creator}}</span></td>
+                                        <td><span>{{ace.permission}}</span></td>
+                                        <td><span>{{formatDuration(ace)}}</span></td>
+                                        <td><span>{{acl.name}}</span></td>
+                                        <td>
+                                            <template is="dom-if" if="{{hasEverythingRight}}">
+                                                <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                                                     on-aceupdated="refresh"></popup-permission>
-                                            <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
-                                        </template>
-                                    </td>
-                                </tr>
+                                                <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
+                                            </template>
+                                        </td>
+                                    </tr>
+                                </template>
                             </template>
                         </template>
                     </table>
@@ -63,6 +65,7 @@
             <div class="bubbleBox">
                 <div class="bubbleHeader">
                     <h3>Access rights coming from upper folders in the hierarchy</h3>
+                    <paper-button raised="true" on-click="blockInheritance">Block inheritance</paper-button>
                 </div>
                 <div>
                     <table class="dataTable tmp-tab">
@@ -87,11 +90,27 @@
             </div>
         </template>
 
+        <template is="dom-if" if="{{!hasInheritedAcls}}">
+            <div class="bubbleBox">
+                <div class="bubbleHeader">
+                    <h3>Access rights coming from upper folders in the hierarchy</h3>
+                    <paper-button raised="true" on-click="unblockInheritance">Unblock inheritance</paper-button>
+                </div>
+                <div>
+                    <p class="emptyResult">No rights are inherited from parent documents.</p>
+                </div>
+            </div>
+        </template>
+
         <popup-confirm id="confirmation">
             <h2>Confirm ACE deletion?</h2>
         </popup-confirm>
 
         <nx-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}" on-response="refresh"></nx-operation>
+        <nx-operation id="blockOp" op="Document.BlockPermissionInheritance" input={{docId}}
+            on-response="refresh"></nx-operation>
+        <nx-operation id="unblockOp" op="Document.UnblockPermissionInheritance" input={{docId}}
+            on-response="refresh"></nx-operation>
     </template>
 </dom-module>
 
@@ -226,6 +245,14 @@
                 }
             }
             return [];
+        },
+
+        blockInheritance: function() {
+            this.$.blockOp.execute();
+        },
+
+        unblockInheritance: function() {
+            this.$.unblockOp.execute();
         }
     });
 </script>
