@@ -216,6 +216,8 @@ public class SQLDirectory extends AbstractDirectory {
                     config.createTablePolicy);
             helper.setupTable();
 
+        } catch (StorageException e) {
+            throw new DirectoryException(e);
         } finally {
             try {
                 sqlConnection.close();

@@ -17,10 +17,12 @@
 package org.nuxeo.ecm.directory.sql;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.junit.runners.model.FrameworkMethod;
@@ -29,6 +31,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.directory.Directory;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.login.test.ClientLoginFeature;
@@ -102,16 +105,23 @@ public class SQLDirectoryFeature extends SimpleFeature {
         allDirectoryData.clear();
         for (Directory dir : directoryService.getDirectories()) {
             Map<String, Map<String, Object>> data = new HashMap<>();
-            try (Session session = dir.getSession()) {
-                List<DocumentModel> entries = session.query(Collections.emptyMap(), Collections.emptySet(),
-                        Collections.emptyMap(), true); // fetch references
-                for (DocumentModel entry : entries) {
-                    DataModel dm = entry.getDataModel(dir.getSchema());
-                    data.put(entry.getId(), dm.getMap());
-                }
-                allDirectoryData.put(dir.getName(), data);
-            }
-        }
+            Session session = dir.getSession();
+			try {
+				Map<String,Serializable> filter = Collections.emptyMap();
+				Set<String> orderBy = Collections.emptySet();
+				Map<String,String> params = Collections.emptyMap();
+				List<DocumentModel> entries = session.query(filter, orderBy,
+						params, true); // fetch references
+				for (DocumentModel entry : entries) {
+					DataModel dm = entry.getDataModel(dir.getSchema());
+					data.put(entry.getId(), dm.getMap());
+				}
+				allDirectoryData.put(dir.getName(), data);
+			} finally {
+				session.close();
+			}
+
+		}
     }
 
     @Override
@@ -122,11 +132,15 @@ public class SQLDirectoryFeature extends SimpleFeature {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         // clear all directories
         for (Directory dir : directoryService.getDirectories()) {
-            try (Session session = dir.getSession()) {
-                List<String> ids = session.getProjection(Collections.emptyMap(), dir.getIdField());
+            Session session = dir.getSession();
+            try {
+            	Map<String,Serializable> filter = Collections.emptyMap();
+                List<String> ids = session.getProjection(filter, dir.getIdField());
                 for (String id : ids) {
                     session.deleteEntry(id);
                 }
+            } finally {
+            	session.close();
             }
         }
         // re-create all directory entries
@@ -134,7 +148,8 @@ public class SQLDirectoryFeature extends SimpleFeature {
             String directoryName = each.getKey();
             Directory directory = directoryService.getDirectory(directoryName);
             Collection<Map<String, Object>> data = each.getValue().values();
-            try (Session session = directory.getSession()) {
+            Session session = directory.getSession();
+            try {
                 for (Map<String, Object> map : data) {
                     try {
                         session.createEntry(map);
