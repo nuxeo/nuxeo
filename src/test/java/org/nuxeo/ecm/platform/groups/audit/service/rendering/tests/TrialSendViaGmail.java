@@ -13,7 +13,6 @@ import org.nuxeo.ecm.automation.core.operations.notification.SendMail;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.IResultPublisher;
 import org.nuxeo.ecm.platform.groups.audit.service.acl.job.publish.PublishByMail;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -35,7 +34,7 @@ public class TrialSendViaGmail {
 
     @Test
     public void test() throws Exception {
-        String repository = this.getClass().getAnnotation(RepositoryConfig.class).repositoryName();
+        String repository = "test"; // XXX
 
         // sender account
         final String defaultFrom = "nuxeomailtester@gmail.com"; //
