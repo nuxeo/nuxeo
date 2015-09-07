@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
@@ -308,6 +309,8 @@ public class RestHelper implements Serializable {
         return localeSelector.getLocaleString();
     }
 
+    public static final Pattern VALID_LOCALE = Pattern.compile("[A-Za-z0-9-_]*");
+
     /**
      * Sets the locale string if given string is not null and not empty, as well as on faces context view root in case
      * it was already created so that it holds the new locale for future lookups by JSF components.
@@ -315,7 +318,8 @@ public class RestHelper implements Serializable {
      * Useful for url pattern bindings.
      */
     public void setLocaleString(String localeString) {
-        if (!StringUtils.isBlank(localeString)) {
+        // injected directly in JavaScript in a number of places, so should be sanitized
+        if (!StringUtils.isBlank(localeString) && VALID_LOCALE.matcher(localeString).matches()) {
             localeSelector.setLocaleString(localeString.trim());
             FacesContext ctx = FacesContext.getCurrentInstance();
             if (ctx != null) {
