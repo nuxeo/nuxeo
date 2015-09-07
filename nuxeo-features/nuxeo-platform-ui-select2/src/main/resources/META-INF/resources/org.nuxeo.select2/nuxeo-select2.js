@@ -1,5 +1,10 @@
 (function() {
 
+  function escapeHTML(string) {
+    // prototype.js allows us to use escapeHTML on strings
+    return string.escapeHTML();
+  }
+
   function warnMessage(entry) {
     var markup = "";
     if (entry.warn_message) {
@@ -18,7 +23,7 @@
         markup += "<img src='" + window.nxContextPath + "/icons/group.png' class='smallIcon' />";
       }
     }
-    markup += entry.displayLabel;
+    markup += escapeHTML(entry.displayLabel);
     markup += "&nbsp;<span class='detail'>" + entry.id + "</span>";
     markup += warnMessage(entry);
     return markup;
@@ -32,17 +37,17 @@
           + doc.properties['common:icon'] + "' class='smallIcon' />"
     }
     markup += "</td><td>";
-    markup += doc.title;
+    markup += escapeHTML(doc.title);
     markup += warnMessage(doc);
     if (doc.path) {
-      markup += "<span class='displayB detail' style='word-break:break-all;'>" + doc.path + "</span>";
+      markup += "<span class='displayB detail' style='word-break:break-all;'>" + escapeHTML(doc.path) + "</span>";
     }
     markup += "</td></tr></tbody></table>"
     return markup;
   }
 
   function dirEntryDefaultFormatter(entry) {
-    var markup = entry.displayLabel;
+    var markup = escapeHTML(entry.displayLabel);
     markup += warnMessage(entry);
     return markup;
   }
@@ -61,7 +66,7 @@
   }
 
   function dirSelectionDefaultFormatter(entry) {
-    var markup = entry.absoluteLabel;
+    var markup = escapeHTML(entry.absoluteLabel);
     markup += warnMessage(entry);
     return markup;
   }
@@ -84,10 +89,10 @@
       var markup = "<a href="
           + url
           + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
-          + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
+          + getUrlWithConversationId(url) + "'}'>" + escapeHTML(doc.title) + "</a>"
       return markup;
     } else {
-      return doc.title;
+      return escapeHTML(doc.title);
     }
   }
 
@@ -152,9 +157,9 @@
 
   function getDefaultLabel(item) {
     if (item.displayLabel) {
-      return item.displayLabel;
+      return escapeHTML(item.displayLabel);
     } else {
-      return item.title;
+      return escapeHTML(item.title);
     }
   }
 
@@ -285,7 +290,7 @@
     } else {
       select2_params.formatSelection = function(doc) {
         if (select2_params.labelFieldName != null) {
-          return doc.properties[select2_params.labelFieldName];
+          return escapeHTML(doc.properties[select2_params.labelFieldName]);
         } else {
           return getDefaultLabel(doc)
         }
