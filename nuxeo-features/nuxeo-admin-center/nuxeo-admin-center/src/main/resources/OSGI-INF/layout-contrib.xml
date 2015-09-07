@@ -1652,9 +1652,6 @@
         <fields>
           <field>rs:ace_username</field>
         </fields>
-        <properties mode="any">
-          <property name="userSuggestionSearchType">USER_TYPE</property>
-        </properties>
       </widget>
       <widget name="creator" type="multipleUsersSuggestion">
         <labels>
@@ -1740,9 +1737,6 @@
         <fields>
           <field>rs:ace_username</field>
         </fields>
-        <properties mode="any">
-          <property name="userSuggestionSearchType">USER_TYPE</property>
-        </properties>
       </widget>
       <widget name="path" type="select_path_tree">
         <labels>
