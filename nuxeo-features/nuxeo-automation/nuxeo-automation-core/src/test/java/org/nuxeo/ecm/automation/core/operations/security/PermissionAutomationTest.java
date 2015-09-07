@@ -18,8 +18,11 @@
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
+import static org.nuxeo.ecm.core.api.security.SecurityConstants.READ;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +30,23 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.operations.document.AddPermission;
+import org.nuxeo.ecm.automation.core.operations.document.BlockPermissionInheritance;
+import org.nuxeo.ecm.automation.core.operations.document.UnblockPermissionInheritance;
 import org.nuxeo.ecm.automation.core.operations.document.UpdatePermission;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.security.ACL;
+import org.nuxeo.ecm.core.api.security.ACP;
+import org.nuxeo.ecm.core.api.security.Access;
+import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.runtime.mockito.MockitoFeature;
+import org.nuxeo.runtime.mockito.RuntimeService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -47,10 +58,14 @@ import com.google.inject.Inject;
  * @since 7.4
  */
 @RunWith(FeaturesRunner.class)
-@Features(CoreFeature.class)
+@Features({ CoreFeature.class, MockitoFeature.class })
 @Deploy("org.nuxeo.ecm.automation.core")
 @LocalDeploy("org.nuxeo.ecm.automation.core:test-operations.xml")
 public class PermissionAutomationTest {
+
+    @Mock
+    @RuntimeService
+    protected AdministratorGroupsProvider administratorGroupsProvider;
 
     protected DocumentModel src;
 
@@ -67,6 +82,9 @@ public class PermissionAutomationTest {
         src = session.createDocument(src);
         session.save();
         src = session.getDocument(src.getRef());
+
+        when(administratorGroupsProvider.getAdministratorsGroups()).thenReturn(
+                Collections.singletonList("administrators"));
     }
 
     @Test
@@ -115,5 +133,32 @@ public class PermissionAutomationTest {
 
         // Tear down
         src.getACP().removeACEsByUsername(ACL.LOCAL_ACL, "members");
+    }
+
+    @Test
+    public void canBlockPermissionInheritance() throws OperationException {
+        ACP acp = src.getACP();
+        assertEquals(Access.GRANT, acp.getAccess("members", READ));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        automationService.run(ctx, BlockPermissionInheritance.ID, null);
+        src.refresh();
+        acp = src.getACP();
+        assertEquals(Access.DENY, acp.getAccess("members", READ));
+    }
+
+    @Test
+    public void canUnblockPermissionInheritance() throws OperationException {
+        ACP acp = src.getACP();
+        acp.blockInheritance(ACL.LOCAL_ACL, session.getPrincipal().getName());
+        assertEquals(Access.DENY, acp.getAccess("members", READ));
+
+        OperationContext ctx = new OperationContext(session);
+        ctx.setInput(src);
+        automationService.run(ctx, UnblockPermissionInheritance.ID, null);
+        src.refresh();
+        acp = src.getACP();
+        assertEquals(Access.GRANT, acp.getAccess("members", READ));
     }
 }

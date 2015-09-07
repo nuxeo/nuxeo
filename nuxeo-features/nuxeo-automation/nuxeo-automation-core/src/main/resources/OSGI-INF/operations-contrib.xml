@@ -93,6 +93,8 @@
     <operation class="org.nuxeo.ecm.automation.core.operations.document.UpdatePermission" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.RemovePermission" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.BlockPermissionInheritance" />
+    <operation class="org.nuxeo.ecm.automation.core.operations.document.UnblockPermissionInheritance" />
     <operation
       class="org.nuxeo.ecm.automation.core.operations.document.RemoveDocumentACL" />
     <operation
