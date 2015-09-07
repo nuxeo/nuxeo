@@ -15,6 +15,7 @@
 included in the default full build). Thus they are not deprecated.</description>
 
   <modules>
+    <module>nuxeo-api-playground</module>
     <module>nuxeo-platform-jbpm</module>
     <module>nuxeo-web-embedded</module>
     <module>nuxeo-platform-intuition</module>
