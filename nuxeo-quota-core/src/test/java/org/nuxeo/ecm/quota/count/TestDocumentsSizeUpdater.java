@@ -46,7 +46,7 @@ import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.TransactionalConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
 import org.nuxeo.ecm.core.versioning.VersioningService;
@@ -82,7 +82,7 @@ public class TestDocumentsSizeUpdater {
     protected CoreSession session;
 
     @Inject
-    RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected EventService eventService;
@@ -1476,11 +1476,11 @@ public class TestDocumentsSizeUpdater {
 
             @Override
             public void run() throws Exception {
-                try (CoreSession userSession = settings.openSessionAs("toto")) {
+                try (CoreSession userSession = coreFeature.openCoreSession("toto")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
                     assertNotNull(uw);
                 }
-                try (CoreSession userSession = settings.openSessionAs("titi")) {
+                try (CoreSession userSession = coreFeature.openCoreSession("titi")) {
                     DocumentModel uw = uwm.getCurrentUserPersonalWorkspace(userSession, null);
                     assertNotNull(uw);
                 }
