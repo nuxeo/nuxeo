@@ -277,7 +277,8 @@ public class NuxeoLauncherGUI {
                     launcher.doStartAndWait();
                 } catch (PackageException e) {
                     log.error("Could not initialize the packaging subsystem", e);
-                    System.exit(1);
+                    System.exit(launcher == null || launcher.getErrorValue() == NuxeoLauncher.EXIT_CODE_OK ? NuxeoLauncher.EXIT_CODE_INVALID
+                            : launcher.getErrorValue());
                 }
                 updateServerStatus();
             }
