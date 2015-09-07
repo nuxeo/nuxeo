@@ -1114,6 +1114,7 @@ public abstract class NuxeoLauncher {
             printLongHelp();
         } else if (launcher.commandIs("status")) {
             String statusMsg = launcher.status();
+            launcher.errorValue = launcher.getStatus();
             if (!quiet) {
                 log.warn(statusMsg);
                 if (launcher.isStarted()) {
@@ -1961,8 +1962,6 @@ public abstract class NuxeoLauncher {
         } catch (IOException e) {
             status = STATUS_CODE_UNKNOWN;
             return "Could not check existing process (" + e.getMessage() + ").";
-        } finally {
-            errorValue = status;
         }
     }
 
