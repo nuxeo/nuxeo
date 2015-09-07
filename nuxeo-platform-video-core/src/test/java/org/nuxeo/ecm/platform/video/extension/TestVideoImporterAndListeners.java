@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
@@ -96,7 +95,7 @@ public class TestVideoImporterAndListeners {
     protected RuntimeHarness runtimeHarness;
 
     @Inject
-    protected RepositorySettings repositorySettings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -190,9 +189,7 @@ public class TestVideoImporterAndListeners {
         session.save();
 
         // reopen session
-        repositorySettings.releaseSession();
-        waitForAsyncCompletion();
-        session = repositorySettings.createSession();
+        session = coreFeature.reopenCoreSession();
 
         docModel = session.getDocument(ref);
         assertEquals("Video", docModel.getType());
@@ -307,9 +304,7 @@ public class TestVideoImporterAndListeners {
         session.save();
 
         // reopen session
-        repositorySettings.releaseSession();
-        waitForAsyncCompletion();
-        session = repositorySettings.createSession();
+        session = coreFeature.reopenCoreSession();
 
         docModel = session.getDocument(docModel.getRef());
         assertEquals("Video", docModel.getType());
