@@ -60,6 +60,7 @@
     <nuxeo.logs.viewer.version>7.4-SNAPSHOT</nuxeo.logs.viewer.version>
     <nuxeo.spreadsheet.version>7.4-SNAPSHOT</nuxeo.spreadsheet.version>
     <nuxeo.theme.compat.version>7.4-SNAPSHOT</nuxeo.theme.compat.version>
+    <nuxeo.datadog.reporter.version>7.4-SNAPSHOT</nuxeo.datadog.reporter.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>7.4-SNAPSHOT</nuxeo.jbpm.version>
@@ -128,6 +129,7 @@
     <module>nuxeo-liveconnect</module>
     <module>nuxeo-media-publishing</module>
     <module>nuxeo-theme-compat</module>
+    <module>nuxeo-datadog-reporter</module>
   </modules>
 
   <dependencyManagement>
@@ -1069,6 +1071,14 @@
         <artifactId>nuxeo-platform-forms-layout-demo</artifactId>
         <version>${nuxeo.addons.version}</version>
       </dependency>
+
+      <!-- Datadog reporter -->
+      <dependency>
+        <groupId>org.nuxeo.datadog</groupId>
+        <artifactId>nuxeo-datadog-reporter</artifactId>
+        <version>${nuxeo.datadog.reporter.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
