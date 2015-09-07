@@ -1,5 +1,10 @@
 (function() {
 
+  function escapeHTML(string) {
+    // prototype.js allows us to use escapeHTML on strings
+    return string.escapeHTML();
+  }
+
   function userEntryDefaultFormatter(entry) {
     var markup = "";
     if (entry.displayIcon && entry.type) {
@@ -9,7 +14,7 @@
         markup += "<img src='" + window.nxContextPath + "/icons/group.png'/>";
       }
     }
-    markup += entry.displayLabel;
+    markup += escapeHTML(entry.displayLabel);
     markup += "&nbsp;<span class='detail'>" + entry.id + "</span>";
     if (entry.warn_message) {
       markup += "<img src='" + window.nxContextPath
@@ -24,7 +29,7 @@
       markup += "<img src='" + window.nxContextPath
           + doc.properties['common:icon'] + "'/>"
     }
-    markup += doc.title;
+    markup += escapeHTML(doc.title);
     if (doc.warn_message) {
       markup += "<img src='" + window.nxContextPath
           + "/icons/warning.gif' title='" + doc.warn_message + "'/>"
@@ -33,7 +38,7 @@
   }
 
   function dirEntryDefaultFormatter(entry) {
-    var markup = entry.displayLabel;
+    var markup = escapeHTML(entry.displayLabel);
     if (entry.warn_message) {
       markup += "<img src='" + window.nxContextPath
           + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
@@ -58,7 +63,7 @@
   }
 
   function dirSelectionDefaultFormatter(entry) {
-    var markup = entry.absoluteLabel;
+    var markup = escapeHTML(entry.absoluteLabel);
     if (entry.warn_message) {
       markup += "<img src='" + window.nxContextPath
           + "/icons/warning.gif' title='" + entry.warn_message + "'/>"
@@ -84,10 +89,10 @@
       var markup = "<a href="
           + url
           + " onclick='if(!(event.ctrlKey||event.metaKey||event.button==1)){this.href='"
-          + getUrlWithConversationId(url) + "'}'>" + doc.title + "</a>"
+          + getUrlWithConversationId(url) + "'}'>" + escapeHTML(doc.title) + "</a>"
       return markup;
     } else {
-      return doc.title;
+      return escapeHTML(doc.title);
     }
   }
 
@@ -146,9 +151,9 @@
 
   function getDefaultLabel(item) {
     if (item.displayLabel) {
-      return item.displayLabel;
+      return escapeHTML(item.displayLabel);
     } else {
-      return item.title;
+      return escapeHTML(item.title);
     }
   }
 
@@ -264,7 +269,7 @@
     } else {
       select2_params.formatSelection = function(doc) {
         if (select2_params.labelFieldName != null) {
-          return doc.properties[select2_params.labelFieldName];
+          return escapeHTML(doc.properties[select2_params.labelFieldName]);
         } else {
           return getDefaultLabel(doc)
         }
