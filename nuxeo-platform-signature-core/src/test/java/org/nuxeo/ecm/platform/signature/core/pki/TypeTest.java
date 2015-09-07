@@ -57,7 +57,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.ecm.core", "org.nuxeo.ecm.core.api", "org.nuxeo.runtime.management", "org.nuxeo.ecm.directory",
         "org.nuxeo.common", "org.nuxeo.ecm.directory.sql", "org.nuxeo.ecm.platform.signature.core",
         "org.nuxeo.ecm.platform.signature.core.test" })

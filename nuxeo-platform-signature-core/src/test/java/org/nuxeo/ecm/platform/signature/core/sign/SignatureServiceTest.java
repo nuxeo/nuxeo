@@ -68,7 +68,7 @@ import com.lowagie.text.pdf.PdfReader;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@RepositoryConfig(user = "Administrator", init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy({ "org.nuxeo.runtime.management", //
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.directory.sql", //
