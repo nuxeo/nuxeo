@@ -68,7 +68,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -114,9 +113,6 @@ public class TestPermissionHierarchy {
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    protected RepositorySettings repository;
 
     @Inject
     protected DirectoryService directoryService;
@@ -189,8 +185,8 @@ public class TestPermissionHierarchy {
         createUser("user2", "user2");
 
         // Open a core session for each user
-        session1 = repository.openSessionAs("user1");
-        session2 = repository.openSessionAs("user2");
+        session1 = coreFeature.openCoreSession("user1");
+        session2 = coreFeature.openCoreSession("user2");
 
         // Create user workspace for each user
         userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);

@@ -58,7 +58,7 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
-import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.ecm.directory.Session;
@@ -88,7 +88,7 @@ public abstract class AbstractChangeFinderTestCase {
     protected CoreSession session;
 
     @Inject
-    protected RepositorySettings repository;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected DirectoryService directoryService;
@@ -136,7 +136,7 @@ public abstract class AbstractChangeFinderTestCase {
             user1.put("groups", Arrays.asList(new String[] { "members" }));
             userDir.createEntry(user1);
         }
-        user1Session = repository.openSessionAs("user1");
+        user1Session = coreFeature.openCoreSession("user1");
 
         commitAndWaitForAsyncCompletion();
 

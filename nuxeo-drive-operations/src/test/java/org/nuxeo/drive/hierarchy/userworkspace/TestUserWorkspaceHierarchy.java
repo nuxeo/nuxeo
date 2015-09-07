@@ -64,7 +64,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -108,9 +107,6 @@ public class TestUserWorkspaceHierarchy {
     protected CoreSession session;
 
     @Inject
-    protected RepositorySettings repository;
-
-    @Inject
     protected DirectoryService directoryService;
 
     @Inject
@@ -150,7 +146,7 @@ public class TestUserWorkspaceHierarchy {
      * <pre>
      * Server side for user1
      * ==============================
-     * 
+     *
      * /user1 (user workspace)
      *   |-- user1Folder1
      *   |     |-- user1File1
@@ -177,7 +173,7 @@ public class TestUserWorkspaceHierarchy {
         setPermission(session.getRootDocument(), "user1", SecurityConstants.READ_WRITE, true);
 
         // Open a core session for test user
-        session1 = repository.openSessionAs("user1");
+        session1 = coreFeature.openCoreSession("user1");
 
         // Create user workspace for test user
         userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);
@@ -229,7 +225,7 @@ public class TestUserWorkspaceHierarchy {
      * <pre>
      * Expected client side for user1
      * ==============================
-     * 
+     *
      * Nuxeo Drive
      *   |-- My synchronized folders
      *   |     |-- user1Folder3

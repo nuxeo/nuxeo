@@ -60,7 +60,6 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.versioning.VersioningService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.reload.ReloadService;
@@ -102,9 +101,6 @@ public class TestDefaultFileSystemItemFactory {
 
     @Inject
     protected CoreSession session;
-
-    @Inject
-    protected RepositorySettings repository;
 
     @Inject
     protected FileSystemItemAdapterService fileSystemItemAdapterService;
@@ -346,7 +342,7 @@ public class TestDefaultFileSystemItemFactory {
         // As a user with READ permission
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
-        try (CoreSession joeSession = repository.openSessionAs("joe")) {
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
 
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
 
@@ -357,7 +353,7 @@ public class TestDefaultFileSystemItemFactory {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = repository.openSessionAs("joe")) {
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
 
             note = joeSession.getDocument(note.getRef());
             fsItem = defaultFileSystemItemFactory.getFileSystemItem(note);
@@ -488,7 +484,7 @@ public class TestDefaultFileSystemItemFactory {
         DocumentModel rootDoc = session.getRootDocument();
         setPermission(rootDoc, "joe", SecurityConstants.READ, true);
 
-        try (CoreSession joeSession = repository.openSessionAs("joe")) {
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
             nuxeoDriveManager.registerSynchronizationRoot(joeSession.getPrincipal(), syncRootFolder, session);
             // Under Oracle, the READ ACL optims are not visible from the
             // joe session while the transaction has not been committed.
@@ -497,7 +493,7 @@ public class TestDefaultFileSystemItemFactory {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = repository.openSessionAs("joe")) {
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
             file = joeSession.getDocument(file.getRef());
             fileItem = (FileItem) defaultFileSystemItemFactory.getFileSystemItem(file);
             assertFalse(fileItem.getCanUpdate());
@@ -645,7 +641,7 @@ public class TestDefaultFileSystemItemFactory {
         TransactionHelper.commitOrRollbackTransaction();
         TransactionHelper.startTransaction();
 
-        try (CoreSession joeSession = repository.openSessionAs("joe")) {
+        try (CoreSession joeSession = coreFeature.openCoreSession("joe")) {
             folder = joeSession.getDocument(folder.getRef());
 
             // By default folder is not under any sync root for Joe, hence

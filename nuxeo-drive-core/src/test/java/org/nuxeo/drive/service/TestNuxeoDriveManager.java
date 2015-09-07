@@ -47,14 +47,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
-import org.nuxeo.ecm.core.api.impl.UserPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -88,7 +87,7 @@ public class TestNuxeoDriveManager {
     CoreSession session;
 
     @Inject
-    RepositorySettings repository;
+    CoreFeature coreFeature;
 
     @Inject
     NuxeoDriveManager nuxeoDriveManager;
@@ -153,15 +152,8 @@ public class TestNuxeoDriveManager {
         setPermissions(workspace_1, new ACE("members", SecurityConstants.READ));
         setPermissions(workspace_2, new ACE("members", SecurityConstants.READ_WRITE));
 
-        user1Session = repository.openSessionAs("user1");
-        user2Session = repository.openSessionAs("user2");
-        // Work around the RepositorySettings API that does not allow to open
-        // sessions with real principal objects from the user manager and their
-        // groups.
-        UserPrincipal user1 = (UserPrincipal) user1Session.getPrincipal();
-        user1.setGroups(userManager.getPrincipal("user1").getGroups());
-        UserPrincipal user2 = (UserPrincipal) user2Session.getPrincipal();
-        user2.setGroups(userManager.getPrincipal("user2").getGroups());
+        user1Session = coreFeature.openCoreSession(userManager.getPrincipal("user1"));
+        user2Session = coreFeature.openCoreSession(userManager.getPrincipal("user2"));
 
         user1Workspace = userWorkspaceService.getCurrentUserPersonalWorkspace(user1Session,
                 user1Session.getDocument(new PathRef("/default-domain"))).getRef();
@@ -218,7 +210,7 @@ public class TestNuxeoDriveManager {
 
         // Check synchronization root paths
         Map<String, SynchronizationRoots> synRootMap = nuxeoDriveManager.getSynchronizationRoots(user1Session.getPrincipal());
-        Set<String> rootPaths = synRootMap.get(repository.getName()).paths;
+        Set<String> rootPaths = synRootMap.get(session.getRepositoryName()).paths;
         assertEquals(2, rootPaths.size());
         assertTrue(rootPaths.contains("/default-domain/UserWorkspaces/user1"));
         assertTrue(rootPaths.contains("/default-domain/workspaces/workspace-2"));
@@ -582,12 +574,12 @@ public class TestNuxeoDriveManager {
 
     protected void checkRootsCount(Principal principal, int expectedCount) {
         assertEquals(expectedCount,
-                nuxeoDriveManager.getSynchronizationRoots(principal).get(repository.getName()).refs.size());
+                nuxeoDriveManager.getSynchronizationRoots(principal).get(session.getRepositoryName()).refs.size());
     }
 
     protected void checkRoots(Principal principal, int expectedCount, Set<String> expectedRootPaths) {
         Map<String, SynchronizationRoots> syncRoots = nuxeoDriveManager.getSynchronizationRoots(principal);
-        Set<String> syncRootPaths = syncRoots.get(repository.getName()).paths;
+        Set<String> syncRootPaths = syncRoots.get(session.getRepositoryName()).paths;
         assertEquals(expectedCount, syncRootPaths.size());
         for (String syncRootPath : expectedRootPaths) {
             assertTrue(syncRootPaths.contains(syncRootPath));

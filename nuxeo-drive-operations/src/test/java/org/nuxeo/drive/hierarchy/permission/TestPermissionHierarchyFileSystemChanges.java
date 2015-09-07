@@ -57,9 +57,9 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.EventServiceAdmin;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunVoid;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -104,7 +104,7 @@ public class TestPermissionHierarchyFileSystemChanges {
     protected EventServiceAdmin eventServiceAdmin;
 
     @Inject
-    protected RepositorySettings repository;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected DirectoryService directoryService;
@@ -142,8 +142,8 @@ public class TestPermissionHierarchyFileSystemChanges {
         createUser("user2", "user2");
 
         // Open a core session for each user
-        session1 = repository.openSessionAs("user1");
-        session2 = repository.openSessionAs("user2");
+        session1 = coreFeature.openCoreSession("user1");
+        session2 = coreFeature.openCoreSession("user2");
         principal1 = session1.getPrincipal();
         principal2 = session2.getPrincipal();
 
