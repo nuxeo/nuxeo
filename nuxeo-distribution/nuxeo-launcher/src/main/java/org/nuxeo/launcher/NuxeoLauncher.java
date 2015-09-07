@@ -2066,7 +2066,8 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param beQuiet if true, launcher will be in quiet mode
+     * Set launcher in quiet mode
+     *
      * @since 5.5
      */
     protected static void setQuiet() {
@@ -2114,11 +2115,12 @@ public abstract class NuxeoLauncher {
     }
 
     /**
-     * @param set a launcher strict option
+     * @param isStrict if {@code true}, set the launcher strict option
      * @since 7.4
+     * @see #OPTION_STRICT_DESC
      */
-    protected static void setStrict(boolean value) {
-        strict = value;
+    protected static void setStrict(boolean isStrict) {
+        strict = isStrict;
     }
 
     protected void setXMLOutput() {
@@ -2497,7 +2499,7 @@ public abstract class NuxeoLauncher {
     /**
      * Uninstall and remove all packages from the local cache
      *
-     * @return
+     * @return {@code true} if command succeed
      * @throws PackageException
      * @throws IOException
      * @since 5.6
@@ -2509,7 +2511,7 @@ public abstract class NuxeoLauncher {
     /**
      * Install the hotfixes available for the instance
      *
-     * @return
+     * @return {@code true} if command succeed
      * @throws PackageException
      * @throws IOException
      * @since 5.6
@@ -2521,7 +2523,7 @@ public abstract class NuxeoLauncher {
     /**
      * Upgrade the marketplace packages (addons) available for the instance
      *
-     * @return
+     * @return {@code true} if command succeed
      * @throws PackageException
      * @throws IOException
      * @since 5.6

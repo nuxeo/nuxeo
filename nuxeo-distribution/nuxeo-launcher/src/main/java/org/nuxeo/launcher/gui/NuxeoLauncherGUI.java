@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -190,7 +190,6 @@ public class NuxeoLauncherGUI {
      * Instantiate a new {@link NuxeoFrame}. Can be overridden if needed.
      *
      * @param controller
-     * @return
      */
     protected NuxeoFrame createNuxeoFrame(NuxeoLauncherGUI controller) {
         return new NuxeoFrame(controller);
@@ -230,7 +229,8 @@ public class NuxeoLauncherGUI {
     /**
      * Update interface information with current server status.
      *
-     * @see {@link NuxeoFrame#updateMainButton()} {@link NuxeoFrame#updateSummary()}
+     * @see NuxeoFrame#updateMainButton()
+     * @see NuxeoFrame#updateSummary()
      */
     public void updateServerStatus() {
         waitForFrameLoaded();
