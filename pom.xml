@@ -64,6 +64,7 @@
     <nuxeo.easyshare.version>6.0-HF22-SNAPSHOT</nuxeo.easyshare.version>
     <nuxeo.logs.viewer.version>6.0-HF22-SNAPSHOT</nuxeo.logs.viewer.version>
     <nuxeo.spreadsheet.version>6.0-HF22-SNAPSHOT</nuxeo.spreadsheet.version>
+    <nuxeo.datadog.reporter.version>6.0-HF22-SNAPSHOT</nuxeo.datadog.reporter.version>
 
     <!-- optional addons -->
     <nuxeo.jbpm.version>6.0-HF22-SNAPSHOT</nuxeo.jbpm.version>
@@ -131,6 +132,7 @@
     <module>nuxeo-logs-viewer</module>
     <module>nuxeo-platform-spreadsheet</module>
     <module>nuxeo-segment.io-connector</module>
+    <module>nuxeo-datadog-reporter</module>
   </modules>
 
   <dependencyManagement>
@@ -1189,6 +1191,12 @@
         <version>${nuxeo.addons.version}</version>
       </dependency>
 
+      <!-- Datadog reporter -->
+      <dependency>
+        <groupId>org.nuxeo.datadog</groupId>
+        <artifactId>nuxeo-datadog-reporter</artifactId>
+        <version>${nuxeo.datadog.reporter.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
