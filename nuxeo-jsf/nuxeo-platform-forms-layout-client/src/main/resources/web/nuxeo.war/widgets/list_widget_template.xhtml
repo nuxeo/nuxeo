@@ -59,7 +59,7 @@
         <c:when test="#{widgetProperty_display == 'table'}">
           <table class="dataTable widgetTable listWidgetTable #{widgetProperty_styleClass}">
             <thead>
-              <c:if test="#{displaySubLabels and (isEditMode or not empty fieldOrValue)}">
+              <ui:fragment rendered="#{displaySubLabels and (isEditMode or not empty fieldOrValue)}">
                 <tr>
                   <c:if test="#{showActions}">
                     <th class="boldColumn"></th>
@@ -73,7 +73,7 @@
                     </th>
                   </nxl:subWidget>
                 </tr>
-              </c:if>
+              </ui:fragment>
             </thead>
             <tbody>
               <nxu:inputList value="#{fieldOrValue}"
