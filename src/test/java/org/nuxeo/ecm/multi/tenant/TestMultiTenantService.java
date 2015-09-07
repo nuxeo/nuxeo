@@ -55,7 +55,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
-import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.core.trash.TrashService;
@@ -84,7 +84,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 public class TestMultiTenantService {
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected CoreSession session;
@@ -457,7 +457,7 @@ public class TestMultiTenantService {
     }
 
     protected CoreSession openSession() {
-        return settings.openSession();
+        return coreFeature.openCoreSession();
     }
 
     protected String getPowerUsersGroup() throws LoginException {
