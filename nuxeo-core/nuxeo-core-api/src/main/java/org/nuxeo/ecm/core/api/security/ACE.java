@@ -287,8 +287,9 @@ public final class ACE implements Serializable, Cloneable {
             boolean endEqual = ace.end == null && end == null
                     || !(ace.end == null || end == null) && ace.end.getTimeInMillis() == end.getTimeInMillis();
             boolean creatorEqual = ace.creator != null ? ace.creator.equals(creator) : creator == null;
-            return ace.isGranted == isGranted && ace.username.equals(username) && ace.permission.equals(permission)
-                    && creatorEqual && beginEqual && endEqual;
+            boolean usernameEqual = ace.username != null ? ace.username.equals(username) : username == null;
+            return ace.isGranted == isGranted && usernameEqual && ace.permission.equals(permission) && creatorEqual
+                    && beginEqual && endEqual;
         }
         return super.equals(obj);
     }

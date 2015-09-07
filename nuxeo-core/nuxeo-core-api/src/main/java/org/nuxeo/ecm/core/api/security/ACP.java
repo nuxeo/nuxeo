@@ -109,10 +109,19 @@ public interface ACP extends Serializable, Cloneable {
      */
     void setRules(String aclName, UserEntry[] userEntries, boolean overwrite);
 
+    /**
+     *
+     * @param acl
+     */
     void addACL(ACL acl);
 
     void addACL(int pos, ACL acl);
 
+    /**
+     * @deprecated since 7.4. Always use {@link #addACL(ACL)} to have correctly ordered acls. To force by-passing the
+     *             order, use {@link #addACL(int, ACL)}.
+     */
+    @Deprecated
     void addACL(String afterMe, ACL acl);
 
     ACL removeACL(String name);
@@ -145,12 +154,29 @@ public interface ACP extends Serializable, Cloneable {
     ACP clone();
 
     /**
-     * Add an ACE to the given {@code aclName}.
+     * Block the inheritance on the given {@code aclName}.
      *
-     * @return true if the {@code acp} was changed.
+     * @param username the user blocking the inheritance
+     * @return true if the ACP was changed.
      * @since 7.4
      */
-    boolean addACE(String aclName, ACE ace, boolean blockInheritance);
+    boolean blockInheritance(String aclName, String username);
+
+    /**
+     * Unblock the inheritance on the given {@code aclName}.
+     *
+     * @return true if the ACP was changed.
+     * @since 7.4
+     */
+    boolean unblockInheritance(String aclName);
+
+    /**
+     * Add an ACE to the given {@code aclName}.
+     *
+     * @return true if the ACP was changed.
+     * @since 7.4
+     */
+    boolean addACE(String aclName, ACE ace);
 
     /**
      * Replace the {@code oldACE} with {@code newACE} on the given {@code aclName}, only if the {@code oldACE} exists.

@@ -17,6 +17,8 @@
 
 package org.nuxeo.ecm.core.io.marshallers.json.document;
 
+import javax.inject.Inject;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,8 +29,6 @@ import org.nuxeo.ecm.core.api.security.impl.UserEntryImpl;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriterTest;
 import org.nuxeo.ecm.core.io.marshallers.json.JsonAssert;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-
-import javax.inject.Inject;
 
 @LocalDeploy("org.nuxeo.ecm.core.io:OSGI-INF/doc-type-contrib.xml")
 public class ACPJsonWriterTest extends AbstractJsonWriterTest.Local<ACPJsonWriter, ACP> {
@@ -59,8 +59,8 @@ public class ACPJsonWriterTest extends AbstractJsonWriterTest.Local<ACPJsonWrite
         json.has("entity-type").isEquals("acls");
         json = json.has("acl").isArray();
         json.length(2);
-        json.has(0).has("name").isEquals("inherited");
-        json = json.has(1);
+        json.has(1).has("name").isEquals("inherited");
+        json = json.has(0);
         json.has("name").isEquals("SpongeBobRules");
         json = json.has("ace").length(1);
         json = json.has(0).isObject();

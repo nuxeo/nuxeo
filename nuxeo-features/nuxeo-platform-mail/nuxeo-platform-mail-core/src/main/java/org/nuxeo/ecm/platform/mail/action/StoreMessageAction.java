@@ -72,7 +72,7 @@ public class StoreMessageAction implements MessageAction {
             ACL acl = (ACL) context.get("acl");
             if (acl != null) {
                 ACP acp = doc.getACP();
-                acp.addACL(0, acl);
+                acp.addACL(acl);
                 doc.setACP(acp, true);
             }
             session.save();

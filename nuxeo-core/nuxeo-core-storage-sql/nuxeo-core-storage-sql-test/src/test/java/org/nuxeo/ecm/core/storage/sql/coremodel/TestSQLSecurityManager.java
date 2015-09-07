@@ -12,15 +12,18 @@
 
 package org.nuxeo.ecm.core.storage.sql.coremodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.storage.sql.ACLRow;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  * @author Florent Guillaume
@@ -37,7 +40,7 @@ public class TestSQLSecurityManager {
         ACL[] acls = acp.getACLs();
         assertEquals(2, acls.length);
 
-        ACL acl = acls[0];
+        ACL acl = acls[1];
         assertEquals("local", acl.getName());
 
         ACE[] aces = acl.getACEs();
@@ -48,7 +51,7 @@ public class TestSQLSecurityManager {
         assertEquals("Read", ace.getPermission());
         assertEquals("bob", ace.getUsername());
 
-        acl = acls[1];
+        acl = acls[0];
         assertEquals("wf", acl.getName());
 
         aces = acl.getACEs();
@@ -87,18 +90,18 @@ public class TestSQLSecurityManager {
         ACLRow[] aclrows = SQLSession.acpToAclRows(acp);
         assertEquals(3, aclrows.length);
 
-        ACLRow aclrow = aclrows[0];
-        assertEquals(0, aclrow.pos);
+        ACLRow aclrow = aclrows[2];
+        assertEquals(2, aclrow.pos);
         assertEquals("local", aclrow.name);
         assertTrue(aclrow.grant);
         assertEquals("Read", aclrow.permission);
         assertEquals("bob", aclrow.user);
         assertNull(aclrow.group);
 
-        aclrow = aclrows[1];
+        aclrow = aclrows[0];
         assertEquals("steve", aclrow.user);
 
-        aclrow = aclrows[2];
+        aclrow = aclrows[1];
         assertEquals("pete", aclrow.user);
     }
 

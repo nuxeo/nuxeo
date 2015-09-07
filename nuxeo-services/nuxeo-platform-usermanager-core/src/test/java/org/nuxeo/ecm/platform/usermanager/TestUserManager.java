@@ -666,8 +666,8 @@ public class TestUserManager extends UserManagerTestCase {
         assertEquals(2, principals.size());
         String name1 = principals.get(0).getName();
         String name2 = principals.get(1).getName();
-        assertTrue("test_u1".equals(name1) && "test_u2".equals(name2) || "test_u1".equals(name2)
-                && "test_u2".equals(name1));
+        assertTrue("test_u1".equals(name1) && "test_u2".equals(name2)
+                || "test_u1".equals(name2) && "test_u2".equals(name1));
     }
 
     @Test
@@ -874,7 +874,7 @@ public class TestUserManager extends UserManagerTestCase {
 
         ACPImpl acp = new ACPImpl();
         ACLImpl acl = new ACLImpl();
-        acl.add(new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING, false));
+        acl.add(ACE.BLOCK);
         acl.add(new ACE("group1", SecurityConstants.READ, false));
         acl.add(new ACE("alex", SecurityConstants.READ, true));
         acp.addACL(acl);
@@ -979,9 +979,9 @@ public class TestUserManager extends UserManagerTestCase {
         acp.addACL(acl2);
 
         List<String> users = Arrays.asList(userManager.getUsersForPermission(SecurityConstants.READ, acp));
-        // Should contain alex and stef (in group1) and jdoe (in none of these
-        // groups) but not bree (in group2)
-        List<String> expectedUsers = Arrays.asList("Administrator", "alex", "stef", "jdoe");
+        // Should contain stef (in group1) and jdoe (in none of these
+        // groups) but not bree (in group2) neither alex (in group1 and group2)
+        List<String> expectedUsers = Arrays.asList("Administrator", "stef", "jdoe");
         Collections.sort(users);
         Collections.sort(expectedUsers);
         assertEquals("Expected users having read access are ", expectedUsers, users);

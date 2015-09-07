@@ -67,14 +67,18 @@ public final class DocumentPermissionHelper {
     public static boolean addPermission(ACP acp, String aclName, String userName, String permission,
             boolean blockInheritance, String currentPrincipalName, Calendar begin, Calendar end,
             Map<String, Serializable> contextData) {
-        return acp.addACE(aclName,
+        boolean acpChanged = false;
+        if (blockInheritance) {
+            acpChanged = acp.blockInheritance(aclName, currentPrincipalName);
+        }
+        acpChanged = acpChanged || acp.addACE(aclName,
                 ACE.builder(userName, permission)
                    .creator(currentPrincipalName)
                    .begin(begin)
                    .end(end)
                    .contextData(contextData)
-                   .build(),
-                blockInheritance);
+                   .build());
+        return acpChanged;
     }
 
     /**

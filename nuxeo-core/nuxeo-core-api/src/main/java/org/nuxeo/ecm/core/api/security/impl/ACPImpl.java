@@ -59,7 +59,37 @@ public class ACPImpl implements ACP {
                 oldACL.clear();
                 oldACL.addAll(acl);
             } else {
-                acls.add(acl);
+                String name = acl.getName();
+                switch (name) {
+                case ACL.INHERITED_ACL:
+                    // add the inherited ACL always at the end
+                    acls.add(acl);
+                    break;
+                case ACL.LOCAL_ACL:
+                    // add the local ACL before the inherited if any
+                    ACL inherited = getACL(ACL.INHERITED_ACL);
+                    if (inherited != null) {
+                        int i = acls.indexOf(inherited);
+                        acls.add(i, acl);
+                    } else {
+                        acls.add(acl);
+                    }
+                    break;
+                default:
+                    ACL local = getACL(ACL.LOCAL_ACL);
+                    if (local != null) {
+                        int i = acls.indexOf(local);
+                        acls.add(i, acl);
+                    } else {
+                        inherited = getACL(ACL.INHERITED_ACL);
+                        if (inherited != null) {
+                            int i = acls.indexOf(inherited);
+                            acls.add(i, acl);
+                        } else {
+                            acls.add(acl);
+                        }
+                    }
+                }
             }
         }
         // if oldACL and ACL are the same instance, we just need to clear
@@ -69,6 +99,10 @@ public class ACPImpl implements ACP {
 
     @Override
     public void addACL(int pos, ACL acl) {
+        ACL oldACL = getACL(acl.getName());
+        if (oldACL != null) {
+            acls.remove(oldACL);
+        }
         acls.add(pos, acl);
         cache.clear();
     }
@@ -328,13 +362,44 @@ public class ACPImpl implements ACP {
     }
 
     @Override
-    public boolean addACE(String aclName, ACE ace, boolean blockInheritance) {
+    public boolean blockInheritance(String aclName, String username) {
+        if (aclName == null) {
+            throw new NullPointerException("'aclName' cannot be null");
+        }
+        if (username == null) {
+            throw new NullPointerException("'username' cannot be null");
+        }
+
+        ACL acl = getOrCreateACL(aclName);
+        boolean aclChanged = acl.blockInheritance(username);
+        if (aclChanged) {
+            addACL(acl);
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean unblockInheritance(String aclName) {
         if (aclName == null) {
             throw new NullPointerException("'aclName' cannot be null");
         }
 
         ACL acl = getOrCreateACL(aclName);
-        boolean aclChanged = acl.add(ace, blockInheritance);
+        boolean aclChanged = acl.unblockInheritance();
+        if (aclChanged) {
+            addACL(acl);
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean addACE(String aclName, ACE ace) {
+        if (aclName == null) {
+            throw new NullPointerException("'aclName' cannot be null");
+        }
+
+        ACL acl = getOrCreateACL(aclName);
+        boolean aclChanged = acl.add(ace);
         if (aclChanged) {
             addACL(acl);
         }

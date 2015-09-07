@@ -73,8 +73,8 @@ public class TestPermissionListener {
         ACE fryACE = new ACE("fry", WRITE, true);
         ACE leelaACE = new ACE("leela", READ, true);
         ACP acp = doc.getACP();
-        acp.addACE(ACL.LOCAL_ACL, fryACE, false);
-        acp.addACE(ACL.LOCAL_ACL, leelaACE, false);
+        acp.addACE(ACL.LOCAL_ACL, fryACE);
+        acp.addACE(ACL.LOCAL_ACL, leelaACE);
         doc.setACP(acp, true);
 
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {
@@ -109,15 +109,15 @@ public class TestPermissionListener {
         ACE fryACE = new ACE("fry", WRITE, true);
         ACE leelaACE = new ACE("leela", READ, true);
         ACP acp = doc.getACP();
-        acp.addACE(ACL.LOCAL_ACL, fryACE, false);
-        acp.addACE(ACL.LOCAL_ACL, leelaACE, false);
+        acp.addACE(ACL.LOCAL_ACL, fryACE);
+        acp.addACE(ACL.LOCAL_ACL, leelaACE);
         doc.setACP(acp, true);
 
         acp = doc.getACP();
         acp.removeACE(ACL.LOCAL_ACL, leelaACE);
         acp.removeACE(ACL.LOCAL_ACL, fryACE);
         fryACE = new ACE("fry", READ, true);
-        acp.addACE(ACL.LOCAL_ACL, fryACE, false);
+        acp.addACE(ACL.LOCAL_ACL, fryACE);
         doc.setACP(acp, true);
 
         try (Session session = directoryService.open(ACE_INFO_DIRECTORY)) {

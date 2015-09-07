@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.AdministratorGroupsProvider;
@@ -36,9 +35,6 @@ import com.google.common.collect.Lists;
 public class ACLImpl extends ArrayList<ACE>implements ACL {
 
     private static final long serialVersionUID = 5332101749929771434L;
-
-    public static final ACE BLOCK_INHERITANCE_ACE = new ACE(SecurityConstants.EVERYONE, SecurityConstants.EVERYTHING,
-            false);
 
     private final String name;
 
@@ -78,40 +74,45 @@ public class ACLImpl extends ArrayList<ACE>implements ACL {
     }
 
     @Override
-    public boolean add(ACE ace, boolean blockInheritance) {
+    public boolean blockInheritance(String username) {
         boolean aclChanged = false;
-
         List<ACE> aces = Lists.newArrayList(getACEs());
-        String username = ace.getUsername();
-        String creator = ace.getCreator();
-        if (blockInheritance) {
-            if (StringUtils.isEmpty(ace.getCreator())) {
-                throw new IllegalArgumentException("Can't block inheritance without a creator");
-            }
-
-            aces.clear();
-            aces.add(ace);
-
-            if (!username.equals(creator)) {
-                aces.add(ACE.builder(creator, SecurityConstants.EVERYTHING).creator(creator).build());
-            }
-
+        if (!aces.contains(ACE.BLOCK)) {
+            aces.add(ACE.builder(username, SecurityConstants.EVERYTHING).creator(username).build());
             aces.addAll(getAdminEverythingACES());
-            aces.add(BLOCK_INHERITANCE_ACE);
+            aces.add(ACE.BLOCK);
             aclChanged = true;
-        } else {
-            if (!aces.contains(ace)) {
-                int pos = aces.indexOf(BLOCK_INHERITANCE_ACE);
-                if (pos >= 0) {
-                    aces.add(pos, ace);
-                } else {
-                    aces.add(ace);
-                }
-                aclChanged = true;
-            }
+            setACEs(aces.toArray(new ACE[aces.size()]));
         }
+        return aclChanged;
+    }
 
-        setACEs(aces.toArray(new ACE[aces.size()]));
+    @Override
+    public boolean unblockInheritance() {
+        boolean aclChanged = false;
+        List<ACE> aces = Lists.newArrayList(getACEs());
+        if (aces.contains(ACE.BLOCK)) {
+            aces.remove(ACE.BLOCK);
+            aclChanged = true;
+            setACEs(aces.toArray(new ACE[aces.size()]));
+        }
+        return aclChanged;
+    }
+
+    @Override
+    public boolean add(ACE ace) {
+        boolean aclChanged = false;
+        List<ACE> aces = Lists.newArrayList(getACEs());
+        if (!aces.contains(ace)) {
+            int pos = aces.indexOf(ACE.BLOCK);
+            if (pos >= 0) {
+                aces.add(pos, ace);
+            } else {
+                aces.add(ace);
+            }
+            aclChanged = true;
+            setACEs(aces.toArray(new ACE[aces.size()]));
+        }
 
         return aclChanged;
     }

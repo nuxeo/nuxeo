@@ -60,12 +60,29 @@ public interface ACL extends List<ACE>, Serializable, Cloneable {
     void setACEs(ACE[] aces);
 
     /**
+     * Block the inheritance.
+     *
+     * @param username the user blocking the inheritance
+     * @return true if the ACL was changed.
+     * @since 7.4
+     */
+    boolean blockInheritance(String username);
+
+    /**
+     * Unblock the inheritance.
+     *
+     * @return true if the ACL was changed.
+     * @since 7.4
+     */
+    boolean unblockInheritance();
+
+    /**
      * Add an ACE.
      *
      * @return true if the ACL was changed.
      * @since 7.4
      */
-    boolean add(ACE ace, boolean blockInheritance);
+    boolean add(ACE ace);
 
     /**
      * Replace the {@code oldACE} with {@code newACE}, only if the {@code oldACE} exists.

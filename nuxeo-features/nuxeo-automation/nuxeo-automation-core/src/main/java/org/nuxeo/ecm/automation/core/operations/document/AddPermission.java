@@ -101,11 +101,14 @@ public class AddPermission {
 
         String creator = session.getPrincipal().getName();
         ACE ace = ACE.builder(user, permission).creator(creator).begin(begin).end(end).contextData(contextData).build();
-        boolean permissionChanged = acp.addACE(aclName, ace, blockInheritance);
+        boolean permissionChanged = false;
+        if (blockInheritance) {
+            permissionChanged = acp.blockInheritance(aclName, creator);
+        }
+        permissionChanged = acp.addACE(aclName, ace) || permissionChanged;
         if (permissionChanged) {
             doc.setACP(acp, true);
         }
-
     }
 
 }

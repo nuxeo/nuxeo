@@ -1377,9 +1377,8 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
             // Checking if the permission contains the permission we want to
             // check (we use the security service method for coumpound
             // permissions)
-            List<String> acePermissions;
+            List<String> acePermissions = getLeafPermissions(ace.getPermission());
 
-            acePermissions = getLeafPermissions(ace.getPermission());
             // Everything is a special permission (not compound)
             if (SecurityConstants.EVERYTHING.equals(ace.getPermission())) {
                 acePermissions = Arrays.asList(permissionProvider.getPermissions());
@@ -1389,10 +1388,9 @@ public class UserManagerImpl implements UserManager, MultiTenantUserManager, Adm
                 // special case: everybody perm grant false, don't take in
                 // account the previous ace
                 if (SecurityConstants.EVERYONE.equals(ace.getUsername()) && !ace.isGranted()) {
-                    filteredACEbyPerm.clear();
-                } else {
-                    filteredACEbyPerm.add(ace);
+                    break;
                 }
+                filteredACEbyPerm.add(ace);
             }
         }
 
