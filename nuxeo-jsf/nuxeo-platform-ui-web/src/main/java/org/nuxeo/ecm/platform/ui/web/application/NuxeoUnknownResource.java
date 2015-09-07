@@ -26,6 +26,7 @@ import java.net.URLStreamHandler;
 
 import javax.faces.application.ViewResource;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -91,8 +92,8 @@ public class NuxeoUnknownResource extends ViewResource {
 
             @Override
             public InputStream getInputStream() throws IOException {
-                String msg = String.format("<span><span style=\"color:red;font-weight:bold;\">%s"
-                        + "</span><br /></span>", errorMessage);
+                String msg = String.format("<span><span style=\"color:red;font-weight:bold;\">%s</span><br/></span>",
+                        StringEscapeUtils.escapeHtml(errorMessage));
                 return new ByteArrayInputStream(msg.getBytes());
             }
         }
