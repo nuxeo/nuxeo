@@ -40,7 +40,6 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.utils.DateParser;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.audit.AuditFeature;
@@ -63,7 +62,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 @RunWith(FeaturesRunner.class)
 @Features({ EmbeddedAutomationServerFeature.class, WorkflowFeature.class, AuditFeature.class })
-@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class, init = RestServerInit.class)
+@RepositoryConfig(cleanup = Granularity.METHOD, init = RestServerInit.class)
 @Jetty(port = 18090)
 @Deploy({ "org.nuxeo.ecm.platform.restapi.server.routing", "org.nuxeo.ecm.automation.test",
         "org.nuxeo.ecm.automation.io", "org.nuxeo.ecm.platform.restapi.io", "org.nuxeo.ecm.platform.restapi.test",

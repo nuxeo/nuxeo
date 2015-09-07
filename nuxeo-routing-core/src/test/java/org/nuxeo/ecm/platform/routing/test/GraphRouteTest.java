@@ -49,7 +49,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.impl.UserPrincipal;
-import org.nuxeo.ecm.core.test.RepositorySettings;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.api.exception.DocumentRouteException;
@@ -69,7 +69,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     protected static final String TYPE_ROUTE_NODE = "RouteNode";
 
     @Inject
-    protected RepositorySettings settings;
+    protected CoreFeature coreFeature;
 
     @Inject
     protected RuntimeHarness harness;
@@ -107,7 +107,7 @@ public class GraphRouteTest extends AbstractGraphRouteTest {
     }
 
     protected CoreSession openSession(NuxeoPrincipal principal) {
-        return settings.openSessionAs(principal);
+        return coreFeature.openCoreSession(principal);
     }
 
     protected Map<String, Serializable> keyvalue(String key, String value) {

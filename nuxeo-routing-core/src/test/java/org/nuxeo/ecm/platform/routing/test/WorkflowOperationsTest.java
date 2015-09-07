@@ -37,7 +37,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoute;
 import org.nuxeo.ecm.platform.routing.api.DocumentRoutingService;
 import org.nuxeo.ecm.platform.routing.core.api.operation.CompleteTaskOperation;
@@ -56,9 +55,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 @RunWith(FeaturesRunner.class)
 @Features({ WorkflowFeature.class, WebEngineFeatureCore.class })
 public class WorkflowOperationsTest extends AbstractGraphRouteTest {
-
-    @Inject
-    protected RepositorySettings repo;
 
     @Inject
     protected CoreSession session;
