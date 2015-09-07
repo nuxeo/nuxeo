@@ -62,7 +62,7 @@ public class CmisFeatureSessionLocal extends CmisFeatureSession {
 
     @Override
     public void beforeSetup(FeaturesRunner runner) throws Exception {
-        String repositoryName = runner.getFeature(CoreFeature.class).getRepository().getName();
+        String repositoryName = runner.getFeature(CoreFeature.class).getRepositoryName();
         setUpCmisSession(repositoryName);
     }
 

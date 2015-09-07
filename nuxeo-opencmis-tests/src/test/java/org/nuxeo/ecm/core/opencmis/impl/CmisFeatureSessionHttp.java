@@ -94,7 +94,7 @@ public abstract class CmisFeatureSessionHttp extends CmisFeatureSession {
 
     @Override
     public void beforeRun(FeaturesRunner runner) throws Exception {
-        String repositoryName = runner.getFeature(CoreFeature.class).getRepository().getName();
+        String repositoryName = runner.getFeature(CoreFeature.class).getRepositoryName();
         setUpServer();
         setUpCmisSession(repositoryName);
     }

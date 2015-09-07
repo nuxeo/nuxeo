@@ -105,7 +105,6 @@ import org.nuxeo.ecm.core.opencmis.impl.client.NuxeoSession;
 import org.nuxeo.ecm.core.opencmis.impl.server.NuxeoContentStream;
 import org.nuxeo.ecm.core.opencmis.tests.Helper;
 import org.nuxeo.ecm.core.opencmis.tests.StatusLoggingDefaultHttpInvoker;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.StorageConfiguration;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -127,7 +126,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Features(CmisFeature.class)
 @Deploy({ "org.nuxeo.ecm.webengine.core" })
 @LocalDeploy({ "org.nuxeo.ecm.core.opencmis.tests.tests:OSGI-INF/types-contrib.xml" })
-@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class CmisSuiteSession {
 
     private static final Log log = LogFactory.getLog(CmisSuiteSession.class);
