@@ -31,7 +31,6 @@ import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.EventService;
-import org.nuxeo.ecm.core.storage.sql.ra.PoolingRepositoryFactory;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -46,7 +45,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(BinaryMetadataFeature.class)
 @LocalDeploy({ "org.nuxeo.binary.metadata:binary-metadata-contrib-async-test.xml",
         "org.nuxeo.binary.metadata:binary-metadata-contrib-pdf-test.xml" })
-@RepositoryConfig(cleanup = Granularity.METHOD, repositoryFactoryClass = PoolingRepositoryFactory.class)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public class TestBinaryMetadataAsyncListener {
 
     @Inject
