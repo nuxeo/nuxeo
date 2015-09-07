@@ -11,10 +11,11 @@
 </div>
 <table class="dataTableNoBorder smallTable">
 <#list Context['tasksInfo'] as taskInfo>
+<#assign actor = Fn.getPrincipal(taskInfo.actor) />
   <tr>
     <td class="fortyPercent">
-      <span class="user">${Fn.getPrincipal(taskInfo.actor).firstName} ${Fn.getPrincipal(taskInfo.actor).lastName} 
-        <#if (Fn.getPrincipal(taskInfo.actor).firstName?? &&Fn.getPrincipal(taskInfo.actor).lastName??)>${taskInfo.actor}</#if>
+      <span class="user">${Fn.htmlEscape(actor.firstName)} ${Fn.htmlEscape(actor.lastName)}
+        <#if (actor.firstName?? && actor.lastName??)>${Fn.htmlEscape(taskInfo.actor)}</#if>
       </span>
     </td>
     <td class="tenPercent">
@@ -25,7 +26,7 @@
       <#else><span class="label label-info">N/A</span></#if>
     </td>
     <td class="fiftyPercent">
-      <span class="detail">${taskInfo.comment}</span>
+      <span class="detail">${Fn.htmlEscape(taskInfo.comment)}</span>
     </td>
   </tr>
 </#list>
