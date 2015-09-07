@@ -13,15 +13,20 @@ package org.nuxeo.ecm.core.storage.mongodb;
 
 import static java.lang.Boolean.TRUE;
 import static org.nuxeo.ecm.core.storage.State.NOP;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ANCESTOR_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_BINARY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_VERSION_SERIES_ID;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_VERSION_SERIES_ID;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -402,6 +407,15 @@ public class MongoDBRepository extends DBSRepositoryBase {
 
     protected void initRepository() {
         // create required indexes
+        // code does explicit queries on those
+        coll.createIndex(new BasicDBObject(KEY_PARENT_ID, ONE));
+        coll.createIndex(new BasicDBObject(KEY_ANCESTOR_IDS, ONE));
+        coll.createIndex(new BasicDBObject(KEY_VERSION_SERIES_ID, ONE));
+        coll.createIndex(new BasicDBObject(KEY_PROXY_TARGET_ID, ONE));
+        coll.createIndex(new BasicDBObject(KEY_PROXY_VERSION_SERIES_ID, ONE));
+        // often used in user-generated queries
+        coll.createIndex(new BasicDBObject(KEY_PRIMARY_TYPE, ONE));
+        coll.createIndex(new BasicDBObject(KEY_LIFECYCLE_STATE, ONE));
         if (!fulltextDisabled) {
             DBObject indexKeys = new BasicDBObject();
             indexKeys.put(KEY_FULLTEXT_SIMPLE, MONGODB_INDEX_TEXT);
