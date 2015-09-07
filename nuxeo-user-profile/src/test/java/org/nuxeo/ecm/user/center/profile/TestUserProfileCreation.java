@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
-import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -30,7 +30,7 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 public class TestUserProfileCreation {
 
     @Inject
-    RepositorySettings repositorySettings;
+    CoreFeature coreFeature;
 
     @Inject
     UserWorkspaceService userWorkspaceService;
@@ -52,7 +52,7 @@ public class TestUserProfileCreation {
             user = userDir.createEntry(user1);
         }
 
-        try (CoreSession session = repositorySettings.openSessionAs(user.getId())) {
+        try (CoreSession session = coreFeature.openCoreSession(user.getId())) {
             DocumentModel userWorkspace = userWorkspaceService.getCurrentUserPersonalWorkspace(session, null);
             Assert.assertEquals(user.getId(), userWorkspace.getName());
 
