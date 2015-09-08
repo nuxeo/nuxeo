@@ -468,7 +468,11 @@ final public class NxqlQueryConverter {
             // match all document with a path
             filter = FilterBuilders.existsFilter(name + ".children");
         } else {
-            filter = FilterBuilders.termFilter(name + ".children", value);
+            String v = String.valueOf(value);
+            if (v.endsWith("/")) {
+                v = v.replaceAll("/$", "");
+            }
+            filter = FilterBuilders.termFilter(name + ".children", v);
         }
         return filter;
     }

@@ -293,6 +293,15 @@ public class TestNxqlConversion {
                 "    }\n" + //
                 "  }\n" + //
                 "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("select * from Document where ecm:path STARTSWITH '/the/path/'").toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"constant_score\" : {\n" //
+                + "    \"filter\" : {\n" //
+                + "      \"term\" : {\n" //
+                + "        \"ecm:path.children\" : \"/the/path\"\n" //
+                + "      }\n" + "    }\n" //
+                + "  }\n" //
+                + "}", es);
     }
 
     @Test
