@@ -1802,12 +1802,14 @@
           <widget>ace_end</widget>
         </column>
       </columns>
-      <widget name="document_title" type="text">
+      <widget name="document_title" type="listing_id_title_link">
         <labels>
           <label mode="any">label.dublincore.title</label>
         </labels>
         <translated>true</translated>
         <fields>
+          <field>data["ecm:uuid"]</field>
+          <field>#{navigationContext.currentServerLocation.name}</field>
           <field>data["dc:title"]</field>
         </fields>
       </widget>
