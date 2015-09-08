@@ -51,10 +51,9 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
     public JPAUIDSequencerImpl() {
     }
 
-
     @Override
     public void init() {
-        //NOP
+        // NOP
     }
 
     /**
@@ -144,7 +143,7 @@ public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
 
         try {
             future.get();
-        } catch (InterruptedException | ExecutionException e) {  // deals with interrupt below
+        } catch (InterruptedException | ExecutionException e) { // deals with interrupt below
             ExceptionUtils.checkInterrupt(e);
             throw new NuxeoException(e);
         }
