@@ -5278,7 +5278,11 @@
           <version>1.8</version>
           <extensions>true</extensions>
         </plugin>
-
+        <plugin>
+          <groupId>io.gatling</groupId>
+          <artifactId>gatling-maven-plugin</artifactId>
+          <version>${gatling.version}</version>
+        </plugin>
         <plugin>
           <groupId>net.alchim31.maven</groupId>
           <artifactId>scala-maven-plugin</artifactId>

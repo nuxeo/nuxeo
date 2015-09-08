@@ -23,7 +23,7 @@
 
   <property name="inject.file" value="${out.dir}/data-test-les-arbres-1.1.csv" />
   <property name="inject.script" value="inject-arbres.py" />
-  <property name="inject.artifact" value="org.nuxeo.tools.testing:data-test-les-arbres:1.1:zip" />
+  <property name="inject.artifact" value="org.nuxeo.tools.testing:data-test-les-arbres::zip" />
 
   <property name="redis.db" value="7" />
 
