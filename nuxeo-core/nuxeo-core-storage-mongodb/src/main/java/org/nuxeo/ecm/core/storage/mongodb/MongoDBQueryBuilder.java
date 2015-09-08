@@ -71,6 +71,7 @@ import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.primitives.BooleanType;
+import org.nuxeo.ecm.core.storage.ExpressionEvaluator;
 import org.nuxeo.ecm.core.storage.ExpressionEvaluator.PathResolver;
 import org.nuxeo.ecm.core.storage.dbs.DBSDocument;
 import org.nuxeo.ecm.core.storage.dbs.DBSSession;
@@ -669,10 +670,7 @@ public class MongoDBQueryBuilder {
         }
         // TODO check list fields
         String like = walkStringLiteral((StringLiteral) rvalue);
-        // escape with slash except alphanumeric and percent
-        String regex = like.replaceAll("([^a-zA-Z0-9%])", "\\\\$1");
-        // replace percent with regexp
-        regex = regex.replaceAll("%", ".*");
+        String regex = ExpressionEvaluator.likeToRegex(like);
 
         int flags = caseInsensitive ? Pattern.CASE_INSENSITIVE : 0;
         Pattern pattern = Pattern.compile(regex, flags);

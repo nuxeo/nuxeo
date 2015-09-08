@@ -2218,6 +2218,7 @@ public class NXQLQueryMaker implements QueryMaker {
                 whereParams.add(getSerializableLiteral((Literal) rvalue));
             } else {
                 visitSimpleExpression(column, op, rvalue, null, arrayElementIndex);
+                addLikeEscaping();
             }
         }
 
@@ -2244,6 +2245,14 @@ public class NXQLQueryMaker implements QueryMaker {
                 buf.append(" LOWER(");
                 rvalue.accept(this);
                 buf.append(")");
+                addLikeEscaping();
+            }
+        }
+
+        protected void addLikeEscaping() {
+            String escape = dialect.getLikeEscaping();
+            if (escape != null) {
+                buf.append(escape);
             }
         }
 

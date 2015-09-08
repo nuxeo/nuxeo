@@ -451,6 +451,11 @@ public class DialectSQLServer extends Dialect {
     }
 
     @Override
+    public String getLikeEscaping() {
+        return " ESCAPE '\\'";
+    }
+
+    @Override
     public boolean supportsCircularCascadeDeleteConstraints() {
         // See http://support.microsoft.com/kb/321843
         // Msg 1785 Introducing FOREIGN KEY constraint

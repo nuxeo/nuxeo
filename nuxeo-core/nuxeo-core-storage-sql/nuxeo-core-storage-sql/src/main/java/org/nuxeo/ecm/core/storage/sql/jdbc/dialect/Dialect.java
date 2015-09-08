@@ -614,6 +614,15 @@ public abstract class Dialect {
             Column mainColumn, Model model, Database database);
 
     /**
+     * Gets the SQL fragment to add after a LIKE match to specify the escaping character.
+     *
+     * @since 7.4
+     */
+    public String getLikeEscaping() {
+        return null;
+    }
+
+    /**
      * Gets the SQL fragment to match a mixin type.
      */
     public String getMatchMixinType(Column mixinsColumn, String mixin, boolean positive, String[] returnParam) {
