@@ -18,6 +18,7 @@ package org.nuxeo.elasticsearch.seqgen;
 
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
+import org.nuxeo.ecm.platform.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
 import org.nuxeo.runtime.api.Framework;
@@ -32,7 +33,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @since 7.3
  */
-public class ESUIDSequencer implements UIDSequencer {
+public class ESUIDSequencer extends AbstractUIDSequencer {
 
     public static final String IDX_NAME = "uidgen";
 

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,30 +12,29 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Thierry Delprat
- *
+ *     Antoine Taillefer <ataillefer@nuxeo.com>
  */
 package org.nuxeo.ecm.platform.uidgen;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class DummyUIDSequencerImpl extends AbstractUIDSequencer {
-
-    protected ConcurrentHashMap<String, AtomicInteger> counters = new ConcurrentHashMap<String, AtomicInteger>();
+/**
+ * @since 7.4
+ */
+public abstract class AbstractUIDSequencer implements UIDSequencer {
 
     @Override
-    public void init() {
-    }
+    public abstract void init();
 
     @Override
-    public int getNext(String key) {
-        counters.putIfAbsent(key, new AtomicInteger());
-        return counters.get(key).incrementAndGet();
-    }
+    public abstract int getNext(String key);
 
     @Override
-    public void dispose() {
+    public abstract void dispose();
+
+    @Override
+    public void initSequence(String key, int id) {
+        while ((getNext(key)) < id) {
+            continue;
+        }
     }
 
 }

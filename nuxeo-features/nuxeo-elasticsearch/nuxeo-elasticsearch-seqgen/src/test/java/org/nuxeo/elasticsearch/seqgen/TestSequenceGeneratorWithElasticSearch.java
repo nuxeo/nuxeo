@@ -16,13 +16,16 @@
  */
 package org.nuxeo.elasticsearch.seqgen;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
@@ -45,15 +48,28 @@ public class TestSequenceGeneratorWithElasticSearch {
     @Test
     public void testIncrement() throws Exception {
         UIDSequencer seq = uidGeneratorService.getSequencer();
-        Assert.assertNotNull(seq);
-        Assert.assertTrue(seq.getClass().isAssignableFrom(ESUIDSequencer.class));
+        assertNotNull(seq);
+        assertTrue(seq.getClass().isAssignableFrom(ESUIDSequencer.class));
 
-        Assert.assertEquals(1, seq.getNext("myseq"));
-        Assert.assertEquals(2, seq.getNext("myseq"));
-        Assert.assertEquals(3, seq.getNext("myseq"));
-        Assert.assertEquals(1, seq.getNext("myseq2"));
-        Assert.assertEquals(4, seq.getNext("myseq"));
-        Assert.assertEquals(2, seq.getNext("myseq2"));
+        assertEquals(1, seq.getNext("myseq"));
+        assertEquals(2, seq.getNext("myseq"));
+        assertEquals(3, seq.getNext("myseq"));
+        assertEquals(1, seq.getNext("myseq2"));
+        assertEquals(4, seq.getNext("myseq"));
+        assertEquals(2, seq.getNext("myseq2"));
+    }
+
+    @Test
+    public void testInitSequence() {
+        UIDSequencer seq = uidGeneratorService.getSequencer();
+
+        seq.getNext("mySequence");
+        seq.getNext("mySequence");
+
+        seq.initSequence("mySequence", 1);
+        assertTrue(seq.getNext("mySequence") > 1);
+        seq.initSequence("mySequence", 10);
+        assertTrue(seq.getNext("mySequence") > 10);
     }
 
     @Test
@@ -76,9 +92,9 @@ public class TestSequenceGeneratorWithElasticSearch {
 
         tpe.shutdown();
         boolean finish = tpe.awaitTermination(20, TimeUnit.SECONDS);
-        Assert.assertTrue("timeout", finish);
+        assertTrue("timeout", finish);
 
-        Assert.assertEquals(nbCalls + 1, seq.getNext(seqName));
+        assertEquals(nbCalls + 1, seq.getNext(seqName));
     }
 
 }

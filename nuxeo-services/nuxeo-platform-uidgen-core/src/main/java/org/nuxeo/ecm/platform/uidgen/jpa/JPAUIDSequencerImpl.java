@@ -30,7 +30,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider;
 import org.nuxeo.ecm.core.persistence.PersistenceProvider.RunCallback;
 import org.nuxeo.ecm.core.persistence.PersistenceProviderFactory;
-import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
+import org.nuxeo.ecm.platform.uidgen.AbstractUIDSequencer;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  */
-public class JPAUIDSequencerImpl implements UIDSequencer {
+public class JPAUIDSequencerImpl extends AbstractUIDSequencer {
 
     private static volatile PersistenceProvider persistenceProvider;
 

@@ -33,6 +33,16 @@ public interface UIDSequencer {
     void init();
 
     /**
+     * Initializes the sequencer with the given key to at least the given id.
+     * <p>
+     * A sequence can only be incremented, so if its current id is greater than the given id the sequence won't be
+     * decremented to reach the given id.
+     *
+     * @since 7.4
+     */
+    void initSequence(String key, int id);
+
+    /**
      * For the given key returns the incremented UID which is also stored in the same sequence entry. This is a
      * "one time use" function for a document.
      *
@@ -41,13 +51,11 @@ public interface UIDSequencer {
      */
     int getNext(String key);
 
-
     /**
      * Cleanup callback
      *
      * @since 7.3
      */
     void dispose();
-
 
 }
