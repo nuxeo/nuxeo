@@ -78,6 +78,7 @@ input::-moz-focus-inner {
 .nx-page input[type="submit"]:disabled:hover,
 .nx-page input[type="button"]:disabled,
 .nx-page input[type="button"]:disabled:hover {
+  cursor: not-allowed;
   display: none }
 
 .nx-page .tinyButton,

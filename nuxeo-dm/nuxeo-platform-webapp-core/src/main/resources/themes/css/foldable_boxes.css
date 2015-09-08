@@ -46,6 +46,7 @@ author: lkemen@nuxeo.com
 .foldableBox div.unfolded a.foldableHeaderLink,
 .foldableBox div.foldedDisabled a.foldableHeaderLink {
   font-size: 1.15em;
+  font-weight: bold;
   border-bottom: 1px solid transparent;
   color: "default (__FLAVOR__ color)";
   display: inline-block;
@@ -157,8 +158,8 @@ author: lkemen@nuxeo.com
 /* =Bubble boxes */
 .bubbleBox {
   background-color: #fff;
-  border-width: 1px; border-style: solid;
-  border-color: "neutral.lighter (__FLAVOR__ border)";
+  border: 1px solid #eee;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
   border-radius: 3px;
   display: block;
   margin: 0 1em 1em 0;

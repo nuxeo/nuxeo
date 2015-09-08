@@ -11,7 +11,8 @@ author: lkemen@nuxeo.com
 /* =Form tags */
 .nx-page input, .nx-page select, .nx-page textarea, .nx-page button,
 .nx-page keygen, .nx-page isindex, .nx-page legend, .nx-page a {
-  font-family: "default (__FLAVOR__ font)" }
+  font-family: "default (__FLAVOR__ font)";
+  font-size: inherit; }
 
 /* =Tree */
 .nx-page .menu {
@@ -59,7 +60,7 @@ author: lkemen@nuxeo.com
 
 .nx-page .rf-trn-ico {
   height: 12px;
-  padding-top: 0.3em;
+  margin-top: .1em;
   vertical-align: top;
   width: 12px }
 
