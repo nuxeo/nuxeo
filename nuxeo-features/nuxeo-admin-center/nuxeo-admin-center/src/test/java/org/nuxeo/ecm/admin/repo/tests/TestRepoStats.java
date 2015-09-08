@@ -33,14 +33,18 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.facet.VersioningDocument;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.google.inject.Inject;
 
 @RunWith(FeaturesRunner.class)
 @Features(PlatformFeature.class)
+@RepositoryConfig(cleanup=Granularity.METHOD)
 public class TestRepoStats {
 
     @Inject
@@ -83,7 +87,9 @@ public class TestRepoStats {
 
         blobDoc = session.createDocument(blobDoc);
         session.save();
-
+        TransactionHelper.commitOrRollbackTransaction();
+        TransactionHelper.startTransaction();
+        
         // Add a blob Holder
 
         RepoStatInfo stat2 = runRepoStatSync();
@@ -101,7 +107,8 @@ public class TestRepoStats {
                 VersioningDocument.CREATE_SNAPSHOT_ON_SAVE_KEY, true);
         blobDoc = session.saveDocument(blobDoc);
 
-        session.save();
+       	TransactionHelper.commitOrRollbackTransaction();
+       	TransactionHelper.startTransaction();
 
         // check that version has been created
         DocumentModelList docs = session.query("select * from File");
@@ -120,8 +127,10 @@ public class TestRepoStats {
         blob = new StringBlob("123456789");
         blobDoc.setPropertyValue("file:content", blob);
         blobDoc = session.saveDocument(blobDoc);
-        session.save();
 
+       	TransactionHelper.commitOrRollbackTransaction();
+       	TransactionHelper.startTransaction();
+       	
         RepoStatInfo stat4 = runRepoStatSync();
         // System.out.println(stat4.toString());
         assertEquals(1, stat4.getVersions());
