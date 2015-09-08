@@ -31,10 +31,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.CommonTermsQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.SimpleQueryStringBuilder;
 import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -215,18 +219,7 @@ final public class NxqlQueryConverter {
         } else if ("<>".equals(op) || "!=".equals(op)) {
             filter = FilterBuilders.notFilter(FilterBuilders.termFilter(name, value));
         } else if ("LIKE".equals(op) || "ILIKE".equals(op) || "NOT LIKE".equals(op) || "NOT ILIKE".equals(op)) {
-            // ILIKE will work only with a correct mapping
-            String likeValue = ((String) value).replace("%", "*");
-            String fieldName = name;
-            if (op.contains("ILIKE")) {
-                likeValue = likeValue.toLowerCase();
-                fieldName = name + ".lowercase";
-            }
-            if (StringUtils.countMatches(likeValue, "*") == 1 && likeValue.endsWith("*")) {
-                query = QueryBuilders.matchPhrasePrefixQuery(fieldName, likeValue.replace("*", ""));
-            } else {
-                query = QueryBuilders.wildcardQuery(fieldName, likeValue);
-            }
+            query = makeLikeQuery(op, name, (String) value);
             if (op.startsWith("NOT")) {
                 filter = FilterBuilders.notFilter(FilterBuilders.queryFilter(query));
                 query = null;
@@ -263,6 +256,76 @@ final public class NxqlQueryConverter {
         return new QueryAndFilter(query, filter);
     }
 
+    private static QueryBuilder makeLikeQuery(String op, String name, String value) {
+        String fieldName = name;
+        if (op.contains("ILIKE")) {
+            // ILIKE will work only with a correct mapping
+            value = value.toLowerCase();
+            fieldName = name + ".lowercase";
+        }
+        // convert the value to a wildcard query
+        String wildcard = likeToWildcard(value);
+        // use match phrase prefix when possible
+        if (StringUtils.countMatches(wildcard, "*") == 1 && wildcard.endsWith("*") && !wildcard.contains("?")
+                && !wildcard.contains("\\")) {
+            MatchQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName, wildcard.replace("*", ""));
+            return query;
+        }
+        return QueryBuilders.wildcardQuery(fieldName, wildcard);
+    }
+
+    /**
+     * Turns a NXQL LIKE pattern into a wildcard for WildcardQuery.
+     * <p>
+     * % and _ are standard wildcards, and \ escapes them.
+     *
+     * @since 7.4
+     */
+    protected static String likeToWildcard(String like) {
+        StringBuilder wildcard = new StringBuilder();
+        char[] chars = like.toCharArray();
+        boolean escape = false;
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            boolean escapeNext = false;
+            switch (c) {
+            case '?':
+                wildcard.append("\\?");
+                break;
+            case '*': // compat, * = % in NXQL (for some backends)
+            case '%':
+                if (escape) {
+                    wildcard.append(c);
+                } else {
+                    wildcard.append("*");
+                }
+                break;
+            case '_':
+                if (escape) {
+                    wildcard.append(c);
+                } else {
+                    wildcard.append("?");
+                }
+                break;
+            case '\\':
+                if (escape) {
+                    wildcard.append("\\\\");
+                } else {
+                    escapeNext = true;
+                }
+                break;
+            default:
+                wildcard.append(c);
+                break;
+            }
+            escape = escapeNext;
+        }
+        if (escape) {
+            // invalid string terminated by escape character, ignore
+        }
+        return wildcard.toString();
+    }
+
     protected static String getComplexFieldName(String name) {
         name = name.replace("/*", "");
         name = name.replace("/", ".");
@@ -282,6 +345,14 @@ final public class NxqlQueryConverter {
             }
         });
         return sortInfos;
+    }
+
+    /**
+     * Translates from Nuxeo syntax to Elasticsearch simple_query_string syntax.
+     */
+    public static String translateFulltextQuery(String query) {
+        // The AND operator does not exist in NXQL it is the default operator
+        return query.replace(" OR ", " | ").replace(" or ", " | ");
     }
 
     /**

@@ -507,6 +507,11 @@ public class DialectOracle extends Dialect {
     }
 
     @Override
+    public String getLikeEscaping() {
+        return " ESCAPE '\\'";
+    }
+
+    @Override
     public boolean supportsUpdateFrom() {
         throw new UnsupportedOperationException();
     }
