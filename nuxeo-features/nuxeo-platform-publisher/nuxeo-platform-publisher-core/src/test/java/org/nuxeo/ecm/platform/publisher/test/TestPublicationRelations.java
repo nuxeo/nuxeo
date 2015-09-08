@@ -125,6 +125,8 @@ public class TestPublicationRelations extends PublisherTestCase {
         PublishedDocument pubDoc = tree.publish(Populate.self.doc2Publish, targetNode);
         assertTrue(pubDoc instanceof SimpleCorePublishedDocument);
 
+        waitForAsyncExec();
+        
         DocumentModel proxy = ((SimpleCorePublishedDocument) pubDoc).getProxy();
         assertTrue(PublicationRelationHelper.isPublished(proxy));
 
