@@ -2281,4 +2281,43 @@ public class TestMongoDBRepositoryQuery extends MongoDBRepositoryTestCase {
         assertEquals(new HashSet<String>(Arrays.asList(expected)), set);
     }
 
+    @Test
+    public void testQueryLikeWildcard() throws Exception {
+        DocumentModelList dml;
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc.setPropertyValue("dc:title", "foo");
+        doc.setPropertyValue("dc:description", "fo%");
+        doc.setPropertyValue("dc:rights", "fo_");
+        doc.setPropertyValue("dc:source", "fo\\");
+        doc = session.createDocument(doc);
+        session.save();
+
+        // regular % wildcard
+        dml = session.query("SELECT * FROM File WHERE dc:title LIKE 'f%'");
+        assertEquals(1, dml.size());
+        // regular _ wildcard
+        dml = session.query("SELECT * FROM File WHERE dc:title LIKE 'fo_'");
+        assertEquals(1, dml.size());
+
+        // escaped % wildcard
+        dml = session.query("SELECT * FROM File WHERE dc:title LIKE 'fo\\%'");
+        assertEquals(0, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:description LIKE 'fo\\%'");
+        assertEquals(1, dml.size());
+
+        // escaped _ wildcard
+        dml = session.query("SELECT * FROM File WHERE dc:title LIKE 'fo\\_'");
+        assertEquals(0, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:rights LIKE 'fo\\_'");
+        assertEquals(1, dml.size());
+
+        // explicit \
+        // because \ is already an escape char in NXQL strings, we have to double-double it
+        // doubled for NXQL string escaping, and doubled for LIKE escaping
+        dml = session.query("SELECT * FROM File WHERE dc:title LIKE 'fo\\\\\\\\'");
+        assertEquals(0, dml.size());
+        dml = session.query("SELECT * FROM File WHERE dc:source LIKE 'fo\\\\\\\\'");
+        assertEquals(1, dml.size());
+    }
+
 }

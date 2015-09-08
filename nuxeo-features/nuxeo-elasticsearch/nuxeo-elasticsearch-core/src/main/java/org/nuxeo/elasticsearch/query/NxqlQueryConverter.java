@@ -388,25 +388,79 @@ final public class NxqlQueryConverter {
     }
 
     private static QueryBuilder makeLikeQuery(String op, String name, String value, EsHint hint) {
-        // ILIKE will work only with a correct mapping
-        String likeValue = value.replace("%", "*");
         String fieldName = name;
         if (op.contains("ILIKE")) {
-            likeValue = likeValue.toLowerCase();
+            // ILIKE will work only with a correct mapping
+            value = value.toLowerCase();
             fieldName = name + ".lowercase";
         }
         if (hint != null && hint.index != null) {
             fieldName = hint.index;
         }
+        // convert the value to a wildcard query
+        String wildcard = likeToWildcard(value);
         // use match phrase prefix when possible
-        if (StringUtils.countMatches(likeValue, "*") == 1 && likeValue.endsWith("*")) {
-            MatchQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName, likeValue.replace("*", ""));
+        if (StringUtils.countMatches(wildcard, "*") == 1 && wildcard.endsWith("*") && !wildcard.contains("?")
+                && !wildcard.contains("\\")) {
+            MatchQueryBuilder query = QueryBuilders.matchPhrasePrefixQuery(fieldName, wildcard.replace("*", ""));
             if (hint != null && hint.analyzer != null) {
                 query.analyzer(hint.analyzer);
             }
             return query;
         }
-        return QueryBuilders.wildcardQuery(fieldName, likeValue);
+        return QueryBuilders.wildcardQuery(fieldName, wildcard);
+    }
+
+    /**
+     * Turns a NXQL LIKE pattern into a wildcard for WildcardQuery.
+     * <p>
+     * % and _ are standard wildcards, and \ escapes them.
+     *
+     * @since 7.4
+     */
+    protected static String likeToWildcard(String like) {
+        StringBuilder wildcard = new StringBuilder();
+        char[] chars = like.toCharArray();
+        boolean escape = false;
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            boolean escapeNext = false;
+            switch (c) {
+            case '?':
+                wildcard.append("\\?");
+                break;
+            case '*': // compat, * = % in NXQL (for some backends)
+            case '%':
+                if (escape) {
+                    wildcard.append(c);
+                } else {
+                    wildcard.append("*");
+                }
+                break;
+            case '_':
+                if (escape) {
+                    wildcard.append(c);
+                } else {
+                    wildcard.append("?");
+                }
+                break;
+            case '\\':
+                if (escape) {
+                    wildcard.append("\\\\");
+                } else {
+                    escapeNext = true;
+                }
+                break;
+            default:
+                wildcard.append(c);
+                break;
+            }
+            escape = escapeNext;
+        }
+        if (escape) {
+            // invalid string terminated by escape character, ignore
+        }
+        return wildcard.toString();
     }
 
     private static QueryBuilder makeFulltextQuery(String nxqlName, String value, EsHint hint) {

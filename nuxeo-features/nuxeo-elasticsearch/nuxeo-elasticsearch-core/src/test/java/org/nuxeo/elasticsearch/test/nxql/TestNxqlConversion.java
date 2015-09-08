@@ -225,6 +225,53 @@ public class TestNxqlConversion {
     }
 
     @Test
+    public void testConverterLIKEWildcard() throws Exception {
+        String es;
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 LIKE '%foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"wildcard\" : {\n" //
+                + "    \"f1\" : {\n" //
+                + "      \"wildcard\" : \"*foo\"\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 LIKE '_foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"wildcard\" : {\n" //
+                + "    \"f1\" : {\n" //
+                + "      \"wildcard\" : \"?foo\"\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", es);
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 LIKE '?foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"wildcard\" : {\n" //
+                + "    \"f1\" : {\n" //
+                + "      \"wildcard\" : \"\\\\?foo\"\n" // backslash escaped for JSON
+                + "    }\n" //
+                + "  }\n" //
+                + "}", es);
+        // * is also accepted as a wildcard (compat)
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 LIKE '*foo'").toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"wildcard\" : {\n" //
+                + "    \"f1\" : {\n" //
+                + "      \"wildcard\" : \"*foo\"\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", es);
+        // NXQL escaping
+        es = NxqlQueryConverter.toESQueryBuilder("SELECT * FROM Document WHERE f1 LIKE 'foo\\_bar\\%'").toString();
+        assertEqualsEvenUnderWindows("{\n" //
+                + "  \"wildcard\" : {\n" //
+                + "    \"f1\" : {\n" //
+                + "      \"wildcard\" : \"foo_bar%\"\n" //
+                + "    }\n" //
+                + "  }\n" //
+                + "}", es);
+    }
+
+    @Test
     public void testConverterILIKE() throws Exception {
         String es = NxqlQueryConverter.toESQueryBuilder("select * from Document where f1 ILIKE 'Foo%'").toString();
         assertEqualsEvenUnderWindows("{\n" + "  \"match\" : {\n" + "    \"f1.lowercase\" : {\n"

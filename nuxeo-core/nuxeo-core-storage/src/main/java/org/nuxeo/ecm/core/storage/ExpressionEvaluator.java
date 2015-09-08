@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.CharUtils;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.query.sql.model.BooleanLiteral;
 import org.nuxeo.ecm.core.query.sql.model.DateLiteral;
@@ -519,12 +520,61 @@ public abstract class ExpressionEvaluator {
             value = value.toLowerCase();
             right = right.toLowerCase();
         }
-        // escape with slash except alphanumeric and percent
-        String regex = right.replaceAll("([^a-zA-Z0-9%])", "\\\\$1");
-        // replace percent with regexp
-        regex = regex.replaceAll("%", ".*");
-        boolean match = Pattern.compile(regex).matcher(value).matches();
+        String regex = likeToRegex(right);
+        boolean match = Pattern.matches(regex.toString(), value);
         return match;
+    }
+
+    /**
+     * Turns a NXQL LIKE pattern into a regex.
+     * <p>
+     * % and _ are standard wildcards, and \ escapes them.
+     *
+     * @since 7.4
+     */
+    public static String likeToRegex(String like) {
+        StringBuilder regex = new StringBuilder();
+        char[] chars = like.toCharArray();
+        boolean escape = false;
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            boolean escapeNext = false;
+            switch (c) {
+            case '%':
+                if (escape) {
+                    regex.append(c);
+                } else {
+                    regex.append(".*");
+                }
+                break;
+            case '_':
+                if (escape) {
+                    regex.append(c);
+                } else {
+                    regex.append(".");
+                }
+                break;
+            case '\\':
+                if (escape) {
+                    regex.append("\\\\"); // backslash escaped for regexp
+                } else {
+                    escapeNext = true;
+                }
+                break;
+            default:
+                // escape mostly everything just in case
+                if (!CharUtils.isAsciiAlphanumeric(c)) {
+                    regex.append("\\");
+                }
+                regex.append(c);
+                break;
+            }
+            escape = escapeNext;
+        }
+        if (escape) {
+            // invalid string terminated by escape character, ignore
+        }
+        return regex.toString();
     }
 
     // if list, use EXIST (SELECT 1 FROM left WHERE left.item = right)
