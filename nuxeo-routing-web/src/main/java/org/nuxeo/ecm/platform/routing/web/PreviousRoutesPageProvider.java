@@ -37,13 +37,12 @@ import org.nuxeo.ecm.platform.query.api.PredicateFieldDefinition;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * {@link PageProvider} implementation that returns {@link LogEntry} from Audit
- * Service - Used for Route History content view
+ * {@link PageProvider} implementation that returns {@link LogEntry} from Audit Service - Used for Route History content
+ * view
  *
  * @Since 5.6
  */
-public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
-        implements PageProvider<LogEntry> {
+public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry> implements PageProvider<LogEntry> {
 
     private static final long serialVersionUID = 1L;
 
@@ -57,6 +56,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
 
     public static final String DOC_ID_PROPERTY = "documentID";
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
 
@@ -76,10 +76,8 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
 
     protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
-        CoreSession session = (CoreSession) getProperties().get(
-                CORE_SESSION_PROPERTY);
-        if (session != null && preprocess != null
-                && "true".equalsIgnoreCase(preprocess.toString())) {
+        CoreSession session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
+        if (session != null && preprocess != null && "true".equalsIgnoreCase(preprocess.toString())) {
             CommentProcessorHelper cph = new CommentProcessorHelper(session);
             cph.processComments(entries);
         }
@@ -96,9 +94,8 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
         }
 
         buildAuditQuery(true);
-        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(
-                auditQuery, auditQueryParams, (int) getCurrentPageIndex() + 1,
-                (int) getMinMaxPageSize());
+        List<LogEntry> entries = (List<LogEntry>) reader.nativeQuery(auditQuery, auditQueryParams,
+                (int) getCurrentPageIndex() + 1, (int) getMinMaxPageSize());
         preprocessCommentsIfNeeded(entries);
         return entries;
     }
@@ -177,8 +174,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
             // Simple Pattern
 
             if (!allowSimplePattern()) {
-                throw new UnsupportedOperationException(
-                        "This page provider requires a explicit Where Clause");
+                throw new UnsupportedOperationException("This page provider requires a explicit Where Clause");
             }
 
             String baseQuery = def.getPattern();
@@ -209,15 +205,12 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
                 while (fixedPart.indexOf("?") > 0) {
                     // Hack for handling parameter in fixed part TODO
                     if (getProperties().get(DOC_ID_PROPERTY) != null) {
-                        fixedPart = fixedPart.replaceFirst("\\?",
-                                getProperties().get(DOC_ID_PROPERTY).toString());
+                        fixedPart = fixedPart.replaceFirst("\\?", getProperties().get(DOC_ID_PROPERTY).toString());
                         // Map properties = new HashMap<String, Serializable>();
                         // properties.put(DOC_ID_PROPERTY, "done");
                     } else {
-                        fixedPart = fixedPart.replaceFirst("\\?", ":param"
-                                + idxParam);
-                        qParams.put("param" + idxParam,
-                                convertParam(params[idxParam]));
+                        fixedPart = fixedPart.replaceFirst("\\?", ":param" + idxParam);
+                        qParams.put("param" + idxParam, convertParam(params[idxParam]));
                         idxParam++;
                     }
                 }
@@ -243,8 +236,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
                             if (fieldDef[fidx].getXpath() != null) {
                                 val[fidx] = searchDocumentModel.getPropertyValue(fieldDef[fidx].getXpath());
                             } else {
-                                val[fidx] = searchDocumentModel.getProperty(
-                                        fieldDef[fidx].getSchema(),
+                                val[fidx] = searchDocumentModel.getProperty(fieldDef[fidx].getSchema(),
                                         fieldDef[fidx].getName());
                             }
                         }
@@ -300,8 +292,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
                             }
                         }
                         baseQuery.append(" ) ");
-                    } else if (predicate.getOperator().equalsIgnoreCase(
-                            "BETWEEN")) {
+                    } else if (predicate.getOperator().equalsIgnoreCase("BETWEEN")) {
                         Object startValue = convertParam(val[0]);
                         Object endValue = null;
                         if (val.length > 1) {
@@ -343,6 +334,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
         }
     }
 
+    @Override
     public void refresh() {
         setCurrentPageOffset(0);
         super.refresh();
@@ -360,8 +352,7 @@ public class PreviousRoutesPageProvider extends AbstractPageProvider<LogEntry>
             return 0;
         }
 
-        List<Long> res = (List<Long>) reader.nativeQuery(
-                "select count(log.id) " + auditQuery, auditQueryParams, 1, 20);
+        List<Long> res = (List<Long>) reader.nativeQuery("select count(log.id) " + auditQuery, auditQueryParams, 1, 20);
         resultsCount = res.get(0).longValue();
 
         return resultsCount;
