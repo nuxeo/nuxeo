@@ -113,7 +113,7 @@
       temp.searchType = params.userSuggestionSearchType;
     } else if (params.operationId == 'Document.PageProvider') {
       // build default operation for Document
-      temp.searchTerm = query.term + "%";
+      temp.searchTerm = query.term;
       temp.query = params.query;
       temp.providerName = params.pageProviderName;
       temp.page = "0";
