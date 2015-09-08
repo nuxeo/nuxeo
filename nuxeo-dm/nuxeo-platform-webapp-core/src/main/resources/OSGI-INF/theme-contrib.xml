@@ -238,6 +238,12 @@
 
     <!-- Style resources (contain indirect references to flavor names, i.e. "__FLAVOR__") -->
     <!-- Global styles -->
+    <resource name="normalize.css">
+      <path>themes/css/normalize.css</path>
+      <processors>
+        <processor>flavor</processor>
+      </processors>
+    </resource>
     <resource name="breadcrumb.css">
       <path>themes/css/breadcrumb.css</path>
       <processors>
@@ -426,6 +432,7 @@
     <!-- styling common to all basic pages -->
     <bundle name="nuxeo_base">
       <resources>
+        <resource>normalize.css</resource>
         <resource>basics.css</resource>
         <resource>buttons_and_actions.css</resource>
         <resource>body.css</resource>
