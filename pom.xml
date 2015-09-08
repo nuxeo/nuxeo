@@ -196,7 +196,6 @@
     <org.ops4j.pax.version>4.4.0</org.ops4j.pax.version>
     <org.slf4j.version>1.7.7</org.slf4j.version>
     <ch.qos.logback.version>1.0.11</ch.qos.logback.version>
-    <!-- gatling -->
     <gatling.version>2.1.7</gatling.version>
     <scala.version>2.11.7</scala.version>
     <scala-maven-plugin.version>3.2.2</scala-maven-plugin.version>
@@ -4477,7 +4476,6 @@
         <artifactId>scala-library</artifactId>
         <version>${scala.version}</version>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 

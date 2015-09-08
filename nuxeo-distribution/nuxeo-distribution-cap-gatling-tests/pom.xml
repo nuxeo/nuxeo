@@ -60,7 +60,6 @@
       <groupId>org.nuxeo.ecm.distribution</groupId>
       <artifactId>nuxeo-distribution-tomcat</artifactId>
       <classifier>nuxeo-cap</classifier>
-      <version>${version}</version>
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
@@ -101,7 +100,6 @@
                 <jvmArg>-Xmx2g</jvmArg>
               </jvmArgs>
             </configuration>
-
             <executions>
               <execution>
                 <id>setup</id>
@@ -150,18 +148,17 @@
                   <simulationClass>org.nuxeo.cap.bench.Sim30Navigation</simulationClass>
                 </configuration>
               </execution>
-              <!--execution>
-                <id>cleanup</id>
-                <phase>integration-test</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <simulationClass>org.nuxeo.cap.bench.Sim90Cleanup</simulationClass>
-                </configuration>
-              </execution-->
+              <!-- <execution> -->
+              <!-- <id>cleanup</id> -->
+              <!-- <phase>integration-test</phase> -->
+              <!-- <goals> -->
+              <!-- <goal>execute</goal> -->
+              <!-- </goals> -->
+              <!-- <configuration> -->
+              <!-- <simulationClass>org.nuxeo.cap.bench.Sim90Cleanup</simulationClass> -->
+              <!-- </configuration> -->
+              <!-- </execution> -->
             </executions>
-
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>

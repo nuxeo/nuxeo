@@ -48,7 +48,7 @@
   <target name="add-bench-template" if="osfamily-unix">
     <echo level="info">Add bench template to nuxeo.conf</echo>
     <copy todir="${nuxeo.home}/templates">
-       <fileset dir="src/test/resources/templates" />
+      <fileset dir="src/test/resources/templates" />
     </copy>
     <chmod dir="${nuxeo.home}/bin" perm="ug+x" includes="*.sh,*ctl" />
     <exec executable="sh" failonerror="true">
@@ -72,8 +72,9 @@
     </antcall>
   </target>
 
-  <target name="prepare-environment" depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"
-    description="prepare all ressources for test">
+  <target name="prepare-environment"
+          depends="_init,prepare-db,prepare-tomcat,prepare-jboss,prepare-ear,prepare-monitor"
+          description="prepare all ressources for test">
     <unzip dest="${out.dir}" overwrite="false">
       <artifact:resolveFile key="${inject.artifact}" />
     </unzip>
