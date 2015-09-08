@@ -6,9 +6,6 @@ Specific styles for the Administrator View
 author: lkemen@nuxeo.com
 */
 
-.nxMainContainer {
-  background: none "color.major.stronger (__FLAVOR__ background)"; }
-
 /* ActionBar*/
 .actionBar {
   background-color: #efefef;

@@ -8,18 +8,17 @@ author: lkemen@nuxeo.com
 .gridBox {
   padding: .5em 1.5em 1em }
 
-.nxSearchForm {
-  font-size: .8em;
+.nxMainContainer .nxSearchForm {
   background-color: #fff;
+  font-size: .8em;
+  padding: 4.7em 1.5em 5em;
   width: 19% }
 
 .nxSearchForm .containerSubWidget {
   margin: 0 }
 
 .nxSearchResults {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
   padding: 1em 3em 3em;
-  min-height: 900px;
   width: 81% }
 
 .nxSearchResults .containerWidgetPanel {

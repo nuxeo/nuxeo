@@ -9,6 +9,7 @@ author: lkemen@nuxeo.com
 .nxFooter {
   background: none "footer (__FLAVOR__ background)";
   font-size: .8em;
+  padding: 0 0 0 19%;
   width: 100% }
 
 .footerDefaultLinks {

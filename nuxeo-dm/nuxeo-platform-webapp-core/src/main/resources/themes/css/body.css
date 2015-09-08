@@ -5,43 +5,50 @@ author: lkemen@nuxeo.com
 
 /* Container of the main part without header and footer */
 .nxMainContainer {
+  background-color: "neutral.lighter (__FLAVOR__ background)";
   font-size: .8em;
-  height: 100%;
+  min-height: 100%;
   position: relative;
-  width: 100% }
+  width: 100%; }
 
 .nxHeader + .nxMainContainer {
-  margin-top: 3.4em; }
+  margin-top: 3.7em; }
 
-.nxMainContainer .column {
+.nxMainContainer .column,
+.nxMainContainer .verticalTabsColumn,
+.nxMainContainer .nxSearchForm {
   background: none "color.major.stronger (__FLAVOR__ background)";
   bottom: 0;
   font-size: .85em;
-  width: 270px;
-  padding: 1.2em 0.75em;
-  position: absolute;
-  overflow-y: scroll;
+  width: 19%;
+  padding: 6em 1em;
+  position: fixed;
+  overflow-y: auto;
   top: 0; }
 
-.nxMainContainer .content {
-  padding: 2em 3em 3em;
-  background-color: "neutral.lighter (__FLAVOR__ background)";
-  min-height: 70em }
+.nxMainContainer .column > div:last-child,
+.nxMainContainer .nxSearchForm > div:last-child {
+  margin-bottom: 6em; }
 
-.nxMainContainer .column + .content {
-  margin-left: 270px }
+.nxMainContainer .content {
+  padding: 2em 3em 3em; }
+
+.nxMainContainer .column + .content,
+.nxMainContainer .verticalTabsContent,
+.nxMainContainer .nxSearchResults {
+  margin-left: 19%; }
 
 /* Main region */
 .mainFragment {
-  padding: .6em 0 }
+  padding: .6em 0; }
 
 /* Description of folders - to be moved to tabs_content */
 .currentDocumentDescription {
   display: block;
   font-size: .9em;
   font-weight: bold;
-  padding: 0 0 1em }
+  padding: 0 0 1em; }
 
 .currentItemDescription {
   display: block;
-  font-size: 13px }
+  font-size: 13px; }

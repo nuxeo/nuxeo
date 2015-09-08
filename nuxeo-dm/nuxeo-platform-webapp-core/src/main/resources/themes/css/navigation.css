@@ -17,7 +17,7 @@ author: lkemen@nuxeo.com
   display: inline-block;
   font-family: arial,sans-serif;
   font-size: 1em;
-  margin: 0 0 -0.5em;
+  margin: 0 0 -8px;
   width: 100% }
 
 .tabsBar ul {
@@ -119,23 +119,20 @@ author: lkemen@nuxeo.com
   text-shadow: none }
 
 /* Vertical tabs in home and admin Center */
-.verticalTabsColumn {
-  height: 100%;
-  min-height: 650px;
-  padding: 0 }
+.nxMainContainer .verticalTabsColumn {
+  padding: 6em 0 }
 
-.verticalTabsContent {
+.nxMainContainer .verticalTabsContent {
   padding: 2em;
-  min-height: 650px;
-  background-color: "neutral.lighter (__FLAVOR__ background)" }
+  width: 81%; }
 
 .tabsBar.vertical {
   background: none 0;
   border: none; }
 
 .tabsBar.vertical ul {
-  margin: 0 -1px 0 8px;
-  padding: 2em 0; }
+  margin: 0 0 0 .6rem;
+  padding: 0; }
 
 .tabsBar.vertical li {
   border: 1px solid transparent;
@@ -146,8 +143,9 @@ author: lkemen@nuxeo.com
 .tabsBar.vertical li a:visited {
   color: "link.vertical.tabs (__FLAVOR__ color)";
   display: block;
-  font-size: 1.1em;
+  font-size: 1.2em;
   border-top: none;
+  border-left: 3px solid transparent;
   padding: .7em 0 .7em .6em;
   text-decoration: none;
   transition: none }
@@ -158,16 +156,16 @@ author: lkemen@nuxeo.com
 .tabsBar.vertical li:hover,
 .tabsBar.vertical li.selected,
 .tabsBar.vertical li.selected:hover {
-  background-color: "neutral.lighter (__FLAVOR__ background)";
   margin-left: .2em;
   transition: margin 0.1s ease-in 0.1s }
 
 .tabsBar.vertical li:hover a,
 .tabsBar.vertical li.selected a {
   border-left: 3px solid;
+  background-color: rgba(0,0,0,0.5);
   border-color: "color.major.strong (__FLAVOR__ border)";
   border-top: medium none;
-  color: "black (__FLAVOR__ color)" }
+  color: #fff; }
 
 /* =Navigation controls */
 .pageNavigationControls,
