@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -164,8 +164,8 @@ public class SQLDirectory extends AbstractDirectory {
             if (schema == null) {
                 throw new DirectoryException("schema not found: " + config.schemaName);
             }
-            schemaFieldMap = new LinkedHashMap<String, Field>();
-            storedFieldNames = new LinkedList<String>();
+            schemaFieldMap = new LinkedHashMap<>();
+            storedFieldNames = new LinkedList<>();
             boolean hasPrimary = false;
             for (Field f : schema.getFields()) {
                 String fieldName = f.getName().getLocalName();
@@ -262,11 +262,11 @@ public class SQLDirectory extends AbstractDirectory {
      * <p>
      * A few retries are done to work around databases that have problems with many open/close in a row.
      *
-     * @param dataSource the datasource
+     * @param aDataSource the datasource
      * @return the connection
      */
-    protected Connection getConnection(DataSource dataSource) throws SQLException {
-        return JDBCUtils.getConnection(dataSource);
+    protected Connection getConnection(DataSource aDataSource) throws SQLException {
+        return JDBCUtils.getConnection(aDataSource);
     }
 
     @Override

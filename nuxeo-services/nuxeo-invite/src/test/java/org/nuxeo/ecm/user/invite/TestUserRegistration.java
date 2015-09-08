@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2014-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -86,7 +86,7 @@ public class TestUserRegistration extends AbstractUserRegistration {
 
         String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
                 new HashMap<String, Serializable>(), UserInvitationService.ValidationMethod.NONE, true);
-        Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
+        Map<String, Serializable> additionnalInfos = new HashMap<>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
 
@@ -107,9 +107,9 @@ public class TestUserRegistration extends AbstractUserRegistration {
         userInfo.setPropertyValue("userinfo:lastName", "Olivier");
         userInfo.setPropertyValue("userinfo:email", templogin + "@dummy.com");
 
-        String requestId = userRegistrationService.submitRegistrationRequest(userInfo, new HashMap<String, Serializable>(0),
-                UserInvitationService.ValidationMethod.NONE, true);
-        Map<String, Serializable> additionnalInfos = new HashMap<String, Serializable>();
+        String requestId = userRegistrationService.submitRegistrationRequest(userInfo,
+                new HashMap<String, Serializable>(0), UserInvitationService.ValidationMethod.NONE, true);
+        Map<String, Serializable> additionnalInfos = new HashMap<>();
         additionnalInfos.put("userinfo:login", newUser);
         userRegistrationService.validateRegistration(requestId, additionnalInfos);
 

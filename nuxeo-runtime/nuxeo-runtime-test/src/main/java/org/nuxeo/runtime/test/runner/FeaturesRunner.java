@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,6 @@ import org.nuxeo.runtime.test.runner.FeaturesLoader.Callable;
 import org.nuxeo.runtime.test.runner.FeaturesLoader.Direction;
 import org.nuxeo.runtime.test.runner.FeaturesLoader.Holder;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -110,9 +109,9 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
         loader.apply(Direction.BACKWARD, new Callable() {
             @Override
             public void call(Holder holder) throws Exception {
-                T annotation = scanner.getAnnotation(holder.type, type);
-                if (annotation != null) {
-                    configs.add(annotation);
+                T hAnnotation = scanner.getAnnotation(holder.type, type);
+                if (hAnnotation != null) {
+                    configs.add(hAnnotation);
                 }
             }
         });
@@ -139,7 +138,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
     protected List<FrameworkMethod> computeTestMethods() {
         List<FrameworkMethod> methods = super.computeTestMethods();
         // sort a copy
-        methods = new ArrayList<FrameworkMethod>(methods);
+        methods = new ArrayList<>(methods);
         MethodSorter.sortMethodsUsingSourceOrder(methods);
         return methods;
     }
@@ -429,7 +428,7 @@ public class FeaturesRunner extends BlockJUnit4ClassRunner {
 
     @Override
     protected List<TestRule> getTestRules(Object target) {
-        final RulesFactory<Rule, TestRule> factory = new RulesFactory<Rule, TestRule>(Rule.class, TestRule.class);
+        final RulesFactory<Rule, TestRule> factory = new RulesFactory<>(Rule.class, TestRule.class);
         loader.apply(Direction.FORWARD, new Callable() {
 
             @Override

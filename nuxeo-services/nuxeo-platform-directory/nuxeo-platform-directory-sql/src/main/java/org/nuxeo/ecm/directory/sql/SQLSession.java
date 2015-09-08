@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -112,8 +112,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
     protected JDBCLogger logger = new JDBCLogger("SQLDirectory");
 
-    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config)
-            throws DirectoryException {
+    public SQLSession(SQLDirectory directory, SQLDirectoryDescriptor config) throws DirectoryException {
         this.directory = directory;
         schemaName = config.getSchemaName();
         table = directory.getTable();
@@ -204,7 +203,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
         }
 
-        List<Column> columnList = new ArrayList<Column>(table.getColumns());
+        List<Column> columnList = new ArrayList<>(table.getColumns());
         for (Iterator<Column> i = columnList.iterator(); i.hasNext();) {
             Column column = i.next();
             String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
@@ -219,7 +218,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sql = insert.getStatement();
 
         if (logger.isLogEnabled()) {
-            List<Serializable> values = new ArrayList<Serializable>(columnList.size());
+            List<Serializable> values = new ArrayList<>(columnList.size());
             for (Column column : columnList) {
                 String prefixField = schemaFieldMap.get(column.getKey()).getName().getPrefixedName();
                 Object value = fieldMap.get(prefixField);
@@ -373,7 +372,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         String sql = select.getStatement();
 
         if (logger.isLogEnabled()) {
-            List<Serializable> values = new ArrayList<Serializable>();
+            List<Serializable> values = new ArrayList<>();
             values.add(id);
             addFilterValuesForLog(values);
             logger.logSQL(sql, values);
@@ -392,7 +391,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
 
             // fetch the stored fields
-            Map<String, Object> fieldMap = new HashMap<String, Object>();
+            Map<String, Object> fieldMap = new HashMap<>();
             for (String fieldName : storedFieldNames) {
                 Object value = getFieldValue(rs, fieldName);
                 fieldMap.put(fieldName, value);
@@ -417,7 +416,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
             // fetch the reference fields
             if (fetchReferences) {
-                Map<String, List<String>> targetIdsMap = new HashMap<String, List<String>>();
+                Map<String, List<String>> targetIdsMap = new HashMap<>();
                 for (Reference reference : directory.getReferences()) {
                     List<String> targetIds = reference.getTargetIdsForSource(entry.getId());
                     targetIds = new ArrayList<>(targetIds);
@@ -472,8 +471,8 @@ public class SQLSession extends BaseSession implements EntrySource {
         }
 
         acquireConnection();
-        List<Column> storedColumnList = new LinkedList<Column>();
-        List<String> referenceFieldList = new LinkedList<String>();
+        List<Column> storedColumnList = new LinkedList<>();
+        List<String> referenceFieldList = new LinkedList<>();
         DataModel dataModel = docModel.getDataModel(schemaName);
 
         if (isMultiTenant()) {
@@ -522,7 +521,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             String sql = update.getStatement();
 
             if (logger.isLogEnabled()) {
-                List<Serializable> values = new ArrayList<Serializable>(storedColumnList.size());
+                List<Serializable> values = new ArrayList<>(storedColumnList.size());
                 for (Column column : storedColumnList) {
                     Object value = dataModel.getData(column.getKey());
                     values.add((Serializable) value);
@@ -680,7 +679,7 @@ public class SQLSession extends BaseSession implements EntrySource {
         try {
             Delete delete = new Delete(table);
             StringBuilder whereClause = new StringBuilder();
-            List<Serializable> values = new ArrayList<Serializable>(1 + map.size());
+            List<Serializable> values = new ArrayList<>(1 + map.size());
 
             whereClause.append(table.getPrimaryColumn().getQuotedName());
             whereClause.append(" = ?");
@@ -732,8 +731,7 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy)
-            {
+    public DocumentModelList query(Map<String, Serializable> filter, Set<String> fulltext, Map<String, String> orderBy) {
         // XXX not fetch references by default: breaks current behavior
         return query(filter, fulltext, orderBy, false);
     }
@@ -752,7 +750,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             return new DocumentModelListImpl();
         }
         acquireConnection();
-        Map<String, Object> filterMap = new LinkedHashMap<String, Object>(filter);
+        Map<String, Object> filterMap = new LinkedHashMap<>(filter);
 
         if (isMultiTenant()) {
             // filter entries on the tenantId field also
@@ -766,7 +764,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             // build count query statement
             StringBuilder whereClause = new StringBuilder();
             String separator = "";
-            List<Column> orderedColumns = new LinkedList<Column>();
+            List<Column> orderedColumns = new LinkedList<>();
             for (String columnName : filterMap.keySet()) {
 
                 if (directory.isReference(columnName)) {
@@ -885,8 +883,11 @@ public class SQLSession extends BaseSession implements EntrySource {
             if (orderBy != null) {
                 for (Iterator<Map.Entry<String, String>> it = orderBy.entrySet().iterator(); it.hasNext();) {
                     Entry<String, String> entry = it.next();
-                    orderby.append(dialect.openQuote()).append(entry.getKey()).append(dialect.closeQuote()).append(' ').append(
-                            entry.getValue());
+                    orderby.append(dialect.openQuote())
+                           .append(entry.getKey())
+                           .append(dialect.closeQuote())
+                           .append(' ')
+                           .append(entry.getValue());
                     if (it.hasNext()) {
                         orderby.append(',');
                     }
@@ -908,7 +909,7 @@ public class SQLSession extends BaseSession implements EntrySource {
             }
 
             if (logger.isLogEnabled()) {
-                List<Serializable> values = new ArrayList<Serializable>(orderedColumns.size());
+                List<Serializable> values = new ArrayList<>(orderedColumns.size());
                 for (Column column : orderedColumns) {
                     Object value = filterMap.get(column.getKey());
                     values.add((Serializable) value);
@@ -928,7 +929,7 @@ public class SQLSession extends BaseSession implements EntrySource {
                 while (rs.next()) {
 
                     // fetch values for stored fields
-                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> map = new HashMap<>();
                     for (String fieldName : storedFieldNames) {
                         Object o = getFieldValue(rs, fieldName);
                         map.put(fieldName, o);
@@ -938,7 +939,7 @@ public class SQLSession extends BaseSession implements EntrySource {
 
                     // fetch the reference fields
                     if (fetchReferences) {
-                        Map<String, List<String>> targetIdsMap = new HashMap<String, List<String>>();
+                        Map<String, List<String>> targetIdsMap = new HashMap<>();
                         for (Reference reference : directory.getReferences()) {
                             List<String> targetIds = reference.getTargetIdsForSource(docModel.getId());
                             String fieldName = reference.getFieldName();
@@ -1075,10 +1076,9 @@ public class SQLSession extends BaseSession implements EntrySource {
     }
 
     @Override
-    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName)
-            {
+    public List<String> getProjection(Map<String, Serializable> filter, Set<String> fulltext, String columnName) {
         DocumentModelList docList = query(filter, fulltext);
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (DocumentModel docModel : docList) {
             Object obj = docModel.getProperty(schemaName, columnName);
             String propValue;

@@ -48,7 +48,7 @@ import com.google.inject.name.Names;
  * @since 6.0
  */
 @Features({ CoreFeature.class, ClientLoginFeature.class })
-@Deploy({"org.nuxeo.ecm.directory.api", //
+@Deploy({ "org.nuxeo.ecm.directory.api", //
         "org.nuxeo.ecm.directory", //
         "org.nuxeo.ecm.core.schema", //
         "org.nuxeo.ecm.directory.types.contrib", //
