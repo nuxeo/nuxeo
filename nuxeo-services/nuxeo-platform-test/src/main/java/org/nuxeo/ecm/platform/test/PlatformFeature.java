@@ -17,6 +17,7 @@
 package org.nuxeo.ecm.platform.test;
 
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.core.test.TransactionalFeature;
 import org.nuxeo.ecm.directory.sql.SQLDirectoryFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -30,7 +31,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
 @Deploy({ "org.nuxeo.ecm.platform.api", "org.nuxeo.ecm.platform.content.template", "org.nuxeo.ecm.platform.dublincore",
         "org.nuxeo.ecm.platform.usermanager.api", "org.nuxeo.ecm.platform.usermanager",
         "org.nuxeo.ecm.platform.query.api", "org.nuxeo.ecm.platform.test:test-usermanagerimpl/directory-config.xml" })
-@Features({ CoreFeature.class,SQLDirectoryFeature.class})
+@Features({ TransactionalFeature.class, CoreFeature.class,SQLDirectoryFeature.class})
 public class PlatformFeature extends SimpleFeature {
 
 }

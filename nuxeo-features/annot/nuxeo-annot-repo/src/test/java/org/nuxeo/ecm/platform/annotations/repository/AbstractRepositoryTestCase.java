@@ -50,6 +50,7 @@ import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
  * @author Alexandre Russel
@@ -148,6 +149,8 @@ public abstract class AbstractRepositoryTestCase {
     }
 
     protected void waitForAsyncExec() {
+    	TransactionHelper.commitOrRollbackTransaction();
+    	TransactionHelper.startTransaction();
         EventServiceImpl evtService = (EventServiceImpl) Framework
             .getLocalService(EventService.class);
         evtService.waitForAsyncCompletion();
