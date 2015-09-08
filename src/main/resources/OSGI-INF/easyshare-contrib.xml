@@ -45,4 +45,10 @@
 
   </extension>
 
+  <extension point="sanitizer" target="org.nuxeo.ecm.platform.htmlsanitizer.HtmlSanitizerService">
+    <sanitizer name="easyshare">
+      <field>easysharefolder:shareComment</field>
+    </sanitizer>
+  </extension>
+
 </component>
