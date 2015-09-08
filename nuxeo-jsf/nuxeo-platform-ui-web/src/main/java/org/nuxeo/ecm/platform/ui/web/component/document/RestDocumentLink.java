@@ -35,9 +35,11 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.FacesEvent;
 
 import org.apache.commons.lang.StringUtils;
+import org.nuxeo.ecm.core.api.DocumentLocation;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.component.VariableManager;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
@@ -68,6 +70,11 @@ public class RestDocumentLink extends HtmlOutputLink {
     protected String repositoryName;
 
     protected DocumentRef documentIdRef;
+
+    /**
+     * @since 7.4
+     */
+    protected DocumentRef documentPathRef;
 
     protected String view;
 
@@ -113,10 +120,11 @@ public class RestDocumentLink extends HtmlOutputLink {
      */
     @Override
     public Object getValue() {
-
         DocumentModel doc = getDocument();
+        DocumentRef documentIdRef = getDocumentIdRef();
+        DocumentRef documentPathRef = getDocumentPathRef();
         String repoName = getRepositoryName();
-        if (doc == null && repoName == null) {
+        if (doc == null && repoName == null || (documentIdRef != null || documentPathRef != null) && repoName == null) {
             return null;
         }
 
@@ -173,10 +181,16 @@ public class RestDocumentLink extends HtmlOutputLink {
 
         // new conversation variable handled by renderer
         boolean useNewConversation = true;
-        if (doc == null) {
-            return DocumentModelFunctions.repositoryUrl(pattern, repoName, viewId, params, useNewConversation, baseURL);
-        } else {
+        if (doc != null) {
             return DocumentModelFunctions.documentUrl(pattern, doc, viewId, params, useNewConversation, baseURL);
+        } else if (documentIdRef != null) {
+            DocumentLocation docLoc = new DocumentLocationImpl(repoName, documentIdRef);
+            return DocumentModelFunctions.documentUrl(pattern, docLoc, viewId, params, useNewConversation, baseURL);
+        } else if (documentPathRef != null) {
+            DocumentLocation docLoc = new DocumentLocationImpl(repoName, documentPathRef);
+            return DocumentModelFunctions.documentUrl(pattern, docLoc, viewId, params, useNewConversation, baseURL);
+        } else {
+            return DocumentModelFunctions.repositoryUrl(pattern, repoName, viewId, params, useNewConversation, baseURL);
         }
     }
 
@@ -260,12 +274,11 @@ public class RestDocumentLink extends HtmlOutputLink {
         this.repositoryName = repositoryName;
     }
 
-    // XXX AT: useless right now
     public DocumentRef getDocumentIdRef() {
         if (documentIdRef != null) {
             return documentIdRef;
         }
-        ValueExpression ve = getValueExpression("documentIdRef");
+        ValueExpression ve = getValueExpression("documentId");
         if (ve != null) {
             try {
                 String id = (String) ve.getValue(getFacesContext().getELContext());
@@ -284,6 +297,31 @@ public class RestDocumentLink extends HtmlOutputLink {
 
     public void setDocumentIdRef(DocumentRef documentIdRef) {
         this.documentIdRef = documentIdRef;
+    }
+
+    public DocumentRef getDocumentPathRef() {
+        if (documentPathRef != null) {
+            return documentPathRef;
+        }
+        ValueExpression ve = getValueExpression("documentPath");
+        if (ve != null) {
+            try {
+                String id = (String) ve.getValue(getFacesContext().getELContext());
+                if (id != null) {
+                    return new IdRef(id);
+                } else {
+                    return null;
+                }
+            } catch (ELException e) {
+                throw new FacesException(e);
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public void setDocumentPathRef(DocumentRef documentPathRef) {
+        this.documentPathRef = documentPathRef;
     }
 
     /**
