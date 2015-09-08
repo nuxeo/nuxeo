@@ -1776,9 +1776,9 @@
         <column>
           <properties mode="any">
             <property name="useFirstWidgetLabelAsColumnHeader">true</property>
-            <property name="sortPropertyName">ecm:acl/*1/creator</property>
+            <property name="sortPropertyName">ecm:acl/*1/principal</property>
           </properties>
-          <widget>ace_creator</widget>
+          <widget>ace_username</widget>
         </column>
         <column>
           <properties mode="any">
@@ -1786,6 +1786,13 @@
             <property name="sortPropertyName">ecm:acl/*1/permission</property>
           </properties>
           <widget>ace_permission</widget>
+        </column>
+        <column>
+          <properties mode="any">
+            <property name="useFirstWidgetLabelAsColumnHeader">true</property>
+            <property name="sortPropertyName">ecm:acl/*1/creator</property>
+          </properties>
+          <widget>ace_creator</widget>
         </column>
         <column>
           <properties mode="any">
@@ -1813,15 +1820,6 @@
           <field>data["dc:title"]</field>
         </fields>
       </widget>
-      <widget name="ace_creator" type="text">
-        <labels>
-          <label mode="any">label.ace.creator</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>data["ecm:acl/*1/creator"]</field>
-        </fields>
-      </widget>
       <widget name="ace_permission" type="text">
         <labels>
           <label mode="any">label.ace.permission</label>
@@ -1829,6 +1827,24 @@
         <translated>true</translated>
         <fields>
           <field>data["ecm:acl/*1/permission"]</field>
+        </fields>
+      </widget>
+      <widget name="ace_username" type="text">
+        <labels>
+          <label mode="any">label.ace.username</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/principal"]</field>
+        </fields>
+      </widget>
+      <widget name="ace_creator" type="text">
+        <labels>
+          <label mode="any">label.ace.creator</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>data["ecm:acl/*1/creator"]</field>
         </fields>
       </widget>
       <widget name="ace_begin" type="datetime">
