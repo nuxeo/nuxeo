@@ -565,6 +565,172 @@
 
     </widgetType>
 
+    <widgetType name="listing_id_title_link">
+      <configuration>
+        <sinceVersion>7.4</sinceVersion>
+        <title>Document id title with link</title>
+        <description>
+          <p>
+            This widget type displays a link to navigate to a document.
+          </p>
+          <p>
+            It requires the following fields configuration:
+            <ul>
+              <li>
+                first field maps the document id, it will be used to
+                display the document link
+              </li>
+              <li>
+                second field maps the repository name, it will be used to
+                display the document link
+              </li>
+              <li>
+                third field maps the displayed link title
+              </li>
+            </ul>
+          </p>
+        </description>
+        <demo id="listing_id_title_linkWidget" />
+        <confProperties>
+          <property name="sortPropertyName">dc:title</property>
+        </confProperties>
+        <fields>
+          <list>false</list>
+          <complex>false</complex>
+          <defaultConfiguration>
+            <field>data.id</field>
+            <field>data.repositoryName</field>
+            <field>data.dc.title</field>
+          </defaultConfiguration>
+        </fields>
+        <categories>
+          <category>listing</category>
+        </categories>
+        <properties>
+          <defaultValues mode="any">
+            <property name="hideExternalLink">true</property>
+          </defaultValues>
+          <layouts mode="any">
+            <layout name="listing_title_link_widget_type_properties_any">
+              <rows>
+                <row>
+                  <widget>tab</widget>
+                </row>
+                <row>
+                  <widget>subTab</widget>
+                </row>
+                <row>
+                  <widget>tabs</widget>
+                </row>
+                <row>
+                  <widget>target</widget>
+                </row>
+                <row>
+                  <widget category="widgetTypeConf">localize</widget>
+                </row>
+                <row>
+                  <widget>hideExternalLink</widget>
+                </row>
+              </rows>
+              <widget name="tab" type="text">
+                <labels>
+                  <label mode="any">Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The tab to select when clicking on the
+                    document link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tab</field>
+                </fields>
+              </widget>
+              <widget name="subTab" type="text">
+                <labels>
+                  <label mode="any">Sub Tab</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The sub tab to select when clicking on the
+                    document link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>subTab</field>
+                </fields>
+              </widget>
+              <widget name="tabs" type="text">
+                <labels>
+                  <label mode="any">Tabs</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Combination of tabs to select when clicking
+                    on the
+                    document link. Sample value: MAIN_TABS:document.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>tabs</field>
+                </fields>
+              </widget>
+              <widget name="target" type="text">
+                <labels>
+                  <label mode="any">Target</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    The target attribute of the link.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>target</field>
+                </fields>
+              </widget>
+              <widget name="localize" type="checkbox">
+                <categories>
+                  <category>widgetTypeConf</category>
+                </categories>
+                <labels>
+                  <label mode="any">Localize</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Flag indicating that the title is localized.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>localize</field>
+                </fields>
+              </widget>
+              <widget name="hideExternalLink" type="checkbox">
+                <labels>
+                  <label mode="any">Hide External Link</label>
+                </labels>
+                <helpLabels>
+                  <label mode="any">
+                    Flag indicating that the external link, opening the document in a new
+                    conversation, must be hidden.
+                  </label>
+                </helpLabels>
+                <fields>
+                  <field>hideExternalLink</field>
+                </fields>
+              </widget>
+            </layout>
+          </layouts>
+        </properties>
+      </configuration>
+      <handler-class>
+        org.nuxeo.ecm.platform.forms.layout.facelets.plugins.TemplateWidgetTypeHandler
+      </handler-class>
+      <property name="template">
+        /widgets/listing/listing_id_title_link_widget_template.xhtml
+      </property>
+
+    </widgetType>
+
     <widgetType name="listing_lock_icon">
       <configuration>
         <sinceVersion>5.4.0</sinceVersion>
