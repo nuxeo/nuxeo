@@ -385,7 +385,7 @@ But you can also give a zip file and the service will parse each xml document in
     importer.importDocuments(root, zipXml);
 
 
-# Updating existing documents
+### Updating existing documents
 
 The importer can update properties for documents already existing in a repository. The criterion for checking that a document exists is by PathRef - meaning that when the importer encounters a document which has the same computed path as an existing document, the importer will update the existing document with the information mapped from the source file. To enable this option add *updateExistingDocuments="true* to a docConfig definition. 
 Example:
@@ -394,14 +394,14 @@ Example:
 		<docConfig tagName="seance" updateExistingDocuments="true">
 		...
 		
-# Overwrite list attributes while updating existing documents
+### Overwrite list attributes while updating existing documents
 
 The default behavior will append any list items found while updating an existing document. To overwrite a list attribute with items from a new source file, add *overwrite="true"* to the attributeConfig definition for the list attribute. Note that it will be necessary to have a separate attributeConfig for a list member. For example: 
 
 	<attributeConfig tagName="subjects" docProperty="dc:subjects" overwrite="true" />
 	<attributeConfig tagName="subject" docProperty="dc:subjects" xmlPath="text()" />
 
-# Deferred save
+### Deferred save
 
 During an import, documents are placed on a stack and saved either when the document is created or updated successfully or at the end of the import process. The default behavior is to save when the document is created or updated. To defer saving objects to the end of an import process, the *importDocuments* method takes a third optional parameter (set to *true*):
 
