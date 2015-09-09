@@ -18,19 +18,22 @@
 package org.nuxeo.automation.scripting.internals;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.util.DataModelProperties;
 import org.nuxeo.ecm.automation.core.util.Properties;
-import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,7 +55,17 @@ public class AutomationMapper {
         AutomationService automationService = Framework.getService(AutomationService.class);
         populateContext(ctx, input);
         Map<String, Object> params = unwrapParameters(parameters);
-        return automationService.run(ctx, opId, params);
+        Object output = automationService.run(ctx, opId, params);
+        if (output instanceof DocumentModel) {
+            return new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) output);
+        } else if (output instanceof DocumentModelList) {
+            List<DocumentWrapper> docs = new ArrayList<>();
+            for (DocumentModel doc : (DocumentModelList) output) {
+                docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+            }
+            return docs;
+        }
+        return output;
     }
 
     protected Map<String, Object> unwrapParameters(ScriptObjectMirror parameters) {
@@ -76,7 +89,20 @@ public class AutomationMapper {
     protected void populateContext(OperationContext ctx, Object input) {
         if (input instanceof ScriptObjectMirror) {
             ctx.setInput(extractProperties((ScriptObjectMirror) input));
-        }else{
+        } else if (input instanceof DocumentWrapper) {
+            ctx.setInput(((DocumentWrapper) input).getDoc());
+        } else if (input instanceof List<?>) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            List<?> l = (List<?>) input;
+            for (Object item : l) {
+                if (item instanceof DocumentWrapper) {
+                    docs.add(((DocumentWrapper) item).getDoc());
+                }
+            }
+            if (docs.size() == l.size() && docs.size() > 0) {
+                ctx.setInput(docs);
+            }
+        } else {
             ctx.setInput(input);
         }
     }

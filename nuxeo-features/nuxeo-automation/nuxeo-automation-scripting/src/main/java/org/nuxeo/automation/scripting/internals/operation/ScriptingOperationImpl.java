@@ -16,6 +16,7 @@
  */
 package org.nuxeo.automation.scripting.internals.operation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.nuxeo.automation.scripting.api.AutomationScriptingService;
 import org.nuxeo.automation.scripting.internals.MarshalingHelper;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
+import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.util.BlobList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -57,6 +59,18 @@ public class ScriptingOperationImpl {
             AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
             scriptingService.setOperationContext(ctx);
             ScriptingOperationInterface itf = scriptingService.getInterface(ScriptingOperationInterface.class, source, ctx.getCoreSession());
+            // Wrapping the input
+            if (input instanceof DocumentModel) {
+                DocumentWrapper documentWrapper = new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) input);
+                return wrapResult(itf.run(documentWrapper, args));
+            }
+            if (input instanceof DocumentModelList) {
+                List<DocumentWrapper> docs = new ArrayList<>();
+                for (DocumentModel doc : (DocumentModelList) input) {
+                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                }
+                return wrapResult(itf.run(docs, args));
+            }
             return wrapResult(itf.run(input, args));
         } catch (ScriptException e) {
             throw new OperationException(e);
@@ -70,18 +84,19 @@ public class ScriptingOperationImpl {
         }
         if (res instanceof ScriptObjectMirror) {
             Object unwrapped = MarshalingHelper.unwrap((ScriptObjectMirror) res);
-
             if (unwrapped instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) unwrapped;
                 for (Object item : l) {
-                    if (item instanceof DocumentModel) {
-                        docs.add((DocumentModel) item);
+                    if (item instanceof DocumentWrapper) {
+                        docs.add(((DocumentWrapper) item).getDoc());
                     }
                 }
                 if (docs.size() == l.size() && docs.size() > 0) {
                     return docs;
                 }
+            } else if (unwrapped instanceof DocumentWrapper) {
+                return ((DocumentWrapper) unwrapped).getDoc();
             }
             return unwrapped;
         } else if (res instanceof NativeArray) {
@@ -93,31 +108,26 @@ public class ScriptingOperationImpl {
                     documentModelList.add((DocumentModel) entry);
                 } else if (entry instanceof Blob) {
                     blobList.add((Blob) entry);
+                } else if (entry instanceof DocumentWrapper) {
+                    documentModelList.add(((DocumentWrapper) entry).getDoc());
                 }
             }
             return documentModelList.isEmpty() ? blobList : documentModelList;
+        } else if (res instanceof DocumentWrapper) {
+            return ((DocumentWrapper) res).getDoc();
+        } else if (res instanceof List<?>) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            List<?> l = (List<?>) res;
+            for (Object item : l) {
+                if (item instanceof DocumentWrapper) {
+                    docs.add(((DocumentWrapper) item).getDoc());
+                }
+            }
+            if (docs.size() == l.size() && docs.size() > 0) {
+                return docs;
+            }
         }
         return res;
     }
-
-//    protected ScriptableMap wrap(OperationContext ctx) {
-//        return wrap(ctx.getVars());
-//    }
-//
-//    protected ScriptableMap wrap(Map<String, Object> vars) {
-//        return new ScriptableMap(vars);
-//    }
-//
-//    protected NativeObject wrap2(OperationContext ctx) {
-//        return wrap2(ctx.getVars());
-//    }
-//
-//    protected NativeObject wrap2(Map<String, Object> vars) {
-//        NativeObject no = new NativeObject();
-//        for (String k : vars.keySet()) {
-//            no.defineProperty(k, vars.get(k), NativeObject.READONLY);
-//        }
-//        return no;
-//    }
 
 }

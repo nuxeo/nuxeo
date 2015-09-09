@@ -38,7 +38,7 @@
          function run(input, params) {
 
             var query = "select * from " + params.type + " where ecm:path startswith '";
-            query = query + input.getPathAsString();
+            query = query + input.getPath();
             query = query + "'";
 
             //println("query = " + query);
@@ -127,6 +127,9 @@
                     "dc:subjects" : [ "from", "javascript" ]
                 }
             });
+
+            print("doc title:" + newDoc.getProperty("dc:title"));
+            print("doc title:" + newDoc["dc:title"]);
 
             var blob = Blob.AttachOnDocument(input, {
                 "document" : params.document

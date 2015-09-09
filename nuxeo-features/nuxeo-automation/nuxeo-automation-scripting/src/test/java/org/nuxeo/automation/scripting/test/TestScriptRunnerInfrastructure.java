@@ -239,7 +239,7 @@ public class TestScriptRunnerInfrastructure {
         params.put("document", "/newDoc");
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestBlob", params);
         assertEquals("creationFields.json", ((Blob) result.getPropertyValue("file:content")).getFilename());
-        assertEquals("title:creationFields.json\n", outContent.toString());
+        assertEquals("doc title:New Title\ndoc title:New Title\ntitle:creationFields.json\n", outContent.toString());
     }
 
     @Test
