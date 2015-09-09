@@ -44,6 +44,7 @@ import org.nuxeo.runtime.api.Framework;
 public class AutomationMapper {
 
     protected final CoreSession session;
+
     public OperationContext ctx;
 
     public AutomationMapper(CoreSession session, OperationContext operationContext) {
@@ -53,9 +54,73 @@ public class AutomationMapper {
 
     public Object executeOperation(String opId, Object input, ScriptObjectMirror parameters) throws Exception {
         AutomationService automationService = Framework.getService(AutomationService.class);
-        populateContext(ctx, input);
+        unwrapContext(ctx, input);
         Map<String, Object> params = unwrapParameters(parameters);
         Object output = automationService.run(ctx, opId, params);
+        return wrapContextAndOutput(output);
+    }
+
+    public void unwrapContext(OperationContext ctx, Object inputOutput) {
+        if (inputOutput instanceof ScriptObjectMirror) {
+            ctx.setInput(extractProperties((ScriptObjectMirror) inputOutput));
+        } else if (inputOutput instanceof DocumentWrapper) {
+            ctx.setInput(((DocumentWrapper) inputOutput).getDoc());
+        } else if (inputOutput instanceof List<?>) {
+            DocumentModelList docs = new DocumentModelListImpl();
+            List<?> l = (List<?>) inputOutput;
+            for (Object item : l) {
+                if (item instanceof DocumentWrapper) {
+                    docs.add(((DocumentWrapper) item).getDoc());
+                }
+            }
+            if (docs.size() == l.size() && docs.size() > 0) {
+                ctx.setInput(docs);
+            }
+        } else {
+            ctx.setInput(inputOutput);
+        }
+        for (String entryId : ctx.keySet()) {
+            Object entry = ctx.get(entryId);
+            if (entry instanceof DocumentWrapper) {
+                ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
+            } else if (ctx.get(entryId) instanceof List<?>) {
+                DocumentModelList docs = new DocumentModelListImpl();
+                List<?> l = (List<?>) entry;
+                for (Object item : l) {
+                    if (ctx.get(entryId) instanceof DocumentWrapper) {
+                        docs.add(((DocumentWrapper) item).getDoc());
+                    }
+                }
+                if (docs.size() == l.size() && docs.size() > 0) {
+                    ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
+                }
+            }
+        }
+    }
+
+    protected Properties extractProperties(ScriptObjectMirror parameters) {
+        DataModelProperties props = new DataModelProperties();
+        Map<String, Object> data = MarshalingHelper.unwrapMap(parameters);
+        for (String k : data.keySet()) {
+            props.getMap().put(k, (Serializable) data.get(k));
+        }
+        return props;
+    }
+
+    protected Object wrapContextAndOutput(Object output) {
+        for (String entryId : ctx.keySet()) {
+            Object entry = ctx.get(entryId);
+            if (entry instanceof DocumentModel) {
+                ctx.put(entryId, new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) entry));
+            }
+            if (entry instanceof DocumentModelList) {
+                List<DocumentWrapper> docs = new ArrayList<>();
+                for (DocumentModel doc : (DocumentModelList) entry) {
+                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                }
+                ctx.put(entryId, docs);
+            }
+        }
         if (output instanceof DocumentModel) {
             return new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) output);
         } else if (output instanceof DocumentModelList) {
@@ -79,42 +144,24 @@ public class AutomationMapper {
                 } else {
                     params.put(k, extractProperties(jso));
                 }
+            } else if (value instanceof DocumentWrapper) {
+                params.put(k, ((DocumentWrapper) value).getDoc());
+            } else if (value instanceof List<?>) {
+                DocumentModelList docs = new DocumentModelListImpl();
+                List<?> l = (List<?>) value;
+                for (Object item : l) {
+                    if (item instanceof DocumentWrapper) {
+                        docs.add(((DocumentWrapper) item).getDoc());
+                    }
+                }
+                if (docs.size() == l.size() && docs.size() > 0) {
+                    params.put(k, docs);
+                }
             } else {
                 params.put(k, value);
             }
         }
         return params;
     }
-
-    protected void populateContext(OperationContext ctx, Object input) {
-        if (input instanceof ScriptObjectMirror) {
-            ctx.setInput(extractProperties((ScriptObjectMirror) input));
-        } else if (input instanceof DocumentWrapper) {
-            ctx.setInput(((DocumentWrapper) input).getDoc());
-        } else if (input instanceof List<?>) {
-            DocumentModelList docs = new DocumentModelListImpl();
-            List<?> l = (List<?>) input;
-            for (Object item : l) {
-                if (item instanceof DocumentWrapper) {
-                    docs.add(((DocumentWrapper) item).getDoc());
-                }
-            }
-            if (docs.size() == l.size() && docs.size() > 0) {
-                ctx.setInput(docs);
-            }
-        } else {
-            ctx.setInput(input);
-        }
-    }
-
-    protected Properties extractProperties(ScriptObjectMirror parameters) {
-        DataModelProperties props = new DataModelProperties();
-        Map<String, Object> data = MarshalingHelper.unwrapMap(parameters);
-        for (String k : data.keySet()) {
-            props.getMap().put(k, (Serializable) data.get(k));
-        }
-        return props;
-    }
-
 
 }

@@ -58,32 +58,67 @@ public class ScriptingOperationImpl {
         try {
             AutomationScriptingService scriptingService = Framework.getService(AutomationScriptingService.class);
             scriptingService.setOperationContext(ctx);
-            ScriptingOperationInterface itf = scriptingService.getInterface(ScriptingOperationInterface.class, source, ctx.getCoreSession());
-            // Wrapping the input
-            if (input instanceof DocumentModel) {
-                DocumentWrapper documentWrapper = new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) input);
-                return wrapResult(itf.run(documentWrapper, args));
-            }
-            if (input instanceof DocumentModelList) {
-                List<DocumentWrapper> docs = new ArrayList<>();
-                for (DocumentModel doc : (DocumentModelList) input) {
-                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
-                }
-                return wrapResult(itf.run(docs, args));
-            }
-            return wrapResult(itf.run(input, args));
+            ScriptingOperationInterface itf = scriptingService.getInterface(ScriptingOperationInterface.class, source,
+                    ctx.getCoreSession());
+            input = wrapArgsAndInput(input, args);
+            return unwrapResult(itf.run(input, args));
         } catch (ScriptException e) {
             throw new OperationException(e);
         }
-
     }
 
-    protected Object wrapResult(Object res) {
+    protected Object wrapArgsAndInput(Object input, Map<String, Object> args) {
+        for (String entryId : args.keySet()) {
+            Object entry = args.get(entryId);
+            if (entry instanceof DocumentModel) {
+                args.put(entryId, new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) entry));
+            }
+            if (entry instanceof DocumentModelList) {
+                List<DocumentWrapper> docs = new ArrayList<>();
+                for (DocumentModel doc : (DocumentModelList) entry) {
+                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                }
+                args.put(entryId, docs);
+            }
+        }
+        if (input instanceof DocumentModel) {
+            return new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) input);
+        } else if (input instanceof DocumentModelList) {
+            List<DocumentWrapper> docs = new ArrayList<>();
+            for (DocumentModel doc : (DocumentModelList) input) {
+                docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+            }
+            return docs;
+        }
+        return input;
+    }
+
+    protected Object unwrapResult(Object res) {
+        // Unwrap Context
+        for (String entryId : ctx.keySet()) {
+            Object entry = ctx.get(entryId);
+            if (entry instanceof DocumentWrapper) {
+                ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
+            } else if (ctx.get(entryId) instanceof List<?>) {
+                DocumentModelList docs = new DocumentModelListImpl();
+                List<?> l = (List<?>) entry;
+                for (Object item : l) {
+                    if (ctx.get(entryId) instanceof DocumentWrapper) {
+                        docs.add(((DocumentWrapper) item).getDoc());
+                    }
+                }
+                if (docs.size() == l.size() && docs.size() > 0) {
+                    ctx.put(entryId, ((DocumentWrapper) entry).getDoc());
+                }
+            }
+        }
+        // Unwrap Result
         if (res == null) {
             return null;
         }
         if (res instanceof ScriptObjectMirror) {
-            Object unwrapped = MarshalingHelper.unwrap((ScriptObjectMirror) res);
+            Object unwrapped = MarshalingHelper.unwrap(
+                    (ScriptObjectMirror) res);
             if (unwrapped instanceof List<?>) {
                 DocumentModelList docs = new DocumentModelListImpl();
                 List<?> l = (List<?>) unwrapped;

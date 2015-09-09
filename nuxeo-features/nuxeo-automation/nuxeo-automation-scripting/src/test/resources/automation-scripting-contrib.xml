@@ -6,6 +6,7 @@
   <operation
           class="org.nuxeo.automation.scripting.test.operations.ContextModificationTest" />
     <operation class="org.nuxeo.automation.scripting.test.operations.Operation1"/>
+    <operation class="org.nuxeo.automation.scripting.test.operations.TestWrappers"/>
   </extension>
 
   <extension target="org.nuxeo.automation.scripting.internals.AutomationScriptingComponent" point="operation">
@@ -258,6 +259,41 @@
             var document = my_chain_with_dashes(input, {});
 
             return document;
+        }
+      ]]></script>
+    </scriptedOperation>
+
+    <scriptedOperation id="Scripting.TestWrappers">
+      <inputType>Document</inputType>
+      <outputType>Document</outputType>
+      <category>Scripting</category>
+      <script><![CDATA[
+        function run(input, params) {
+            // Input
+            print("Root input title:" + input.getProperty("dc:title"));
+            print("Root input title:" + input["dc:title"]);
+
+            // Context wrapper
+            print("Root ctx title:" + ctx.doc.getProperty("dc:title"));
+            print("Root ctx title:" + ctx.doc["dc:title"]);
+
+            // Parameters wrapper
+            print("Root params title:" + params.doc.getProperty("dc:title"));
+            print("Root params title:" + params.doc["dc:title"]);
+
+            var result = Test.Wrappers(input, {
+                "value" : params.doc
+            });
+
+            // Result
+            print("Root result title:" + result.getProperty("dc:title"));
+            print("Root result title:" + result["dc:title"]);
+
+            // Context wrapper
+            print("Root ctx title:" + ctx.doc.getProperty("dc:title"));
+            print("Root ctx title:" + ctx.doc["dc:title"]);
+
+            return result;
         }
       ]]></script>
     </scriptedOperation>

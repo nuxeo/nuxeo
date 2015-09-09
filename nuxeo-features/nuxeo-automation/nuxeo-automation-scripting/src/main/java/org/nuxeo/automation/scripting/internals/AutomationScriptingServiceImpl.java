@@ -42,8 +42,11 @@ import org.nuxeo.ecm.automation.context.ContextHelper;
 import org.nuxeo.ecm.automation.context.ContextService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.scripting.DateWrapper;
+import org.nuxeo.ecm.automation.core.scripting.DocumentWrapper;
 import org.nuxeo.ecm.automation.core.scripting.PrincipalWrapper;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.runtime.api.Framework;
@@ -92,7 +95,24 @@ public class AutomationScriptingServiceImpl implements AutomationScriptingServic
     @Override
     public void setOperationContext(OperationContext ctx) {
         this.operationContext = operationContexts.get();
-        this.operationContext = ctx;
+        this.operationContext = wrapContext(ctx);
+    }
+
+    protected OperationContext wrapContext(OperationContext ctx) {
+        for (String entryId : ctx.keySet()) {
+            Object entry = ctx.get(entryId);
+            if (entry instanceof DocumentModel) {
+                ctx.put(entryId, new DocumentWrapper(ctx.getCoreSession(), (DocumentModel) entry));
+            }
+            if (entry instanceof DocumentModelList) {
+                List<DocumentWrapper> docs = new ArrayList<>();
+                for (DocumentModel doc : (DocumentModelList) entry) {
+                    docs.add(new DocumentWrapper(ctx.getCoreSession(), doc));
+                }
+                ctx.put(entryId, docs);
+            }
+        }
+        return ctx;
     }
 
     @Override

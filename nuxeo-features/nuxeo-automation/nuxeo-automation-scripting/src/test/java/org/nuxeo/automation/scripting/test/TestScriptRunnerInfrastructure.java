@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -352,5 +353,33 @@ public class TestScriptRunnerInfrastructure {
         ctx.setInput(root);
         DocumentModel result = (DocumentModel) automationService.run(ctx, "Scripting.TestChainWithDashes", null);
         assertNotNull(result);
+    }
+
+    @Test
+    public void canManageDocumentModelWrappers() throws OperationException {
+        OperationContext ctx = new OperationContext(session);
+        DocumentModel root = session.getRootDocument();
+        root.setPropertyValue("dc:title", "New Title");
+        session.saveDocument(root);
+        ctx.setInput(root);
+        ctx.put("doc", root);
+        Map<String, Object> params = new HashMap<>();
+        params.put("doc", root);
+        Object result = automationService.run(ctx, "Scripting.TestWrappers", params);
+        assertEquals("Root input title:New Title\n" +
+                "Root input title:New Title\n" +
+                "Root ctx title:New Title\n" +
+                "Root ctx title:New Title\n" +
+                "Root params title:New Title\n" +
+                "Root params title:New Title\n" +
+                "Root result title:New Title\n" +
+                "Root result title:New Title\n" +
+                "Root ctx title:New Title\n" +
+                "Root ctx title:New Title\n", outContent.toString());
+        assertTrue(result instanceof DocumentModel);
+        Object doc = ctx.get("doc");
+        assertNotNull(doc);
+        assertTrue(doc instanceof DocumentModel);
+        assertTrue((Boolean) ctx.get("entry"));
     }
 }
