@@ -53,10 +53,11 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermFilterBuilder;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.metrics.max.Max;
 import org.elasticsearch.search.sort.SortOrder;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
-
 import org.nuxeo.common.utils.TextTemplate;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
@@ -119,6 +120,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             log.info("Activate Elasticsearch backend for Audit");
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esClient = esa.getClient();
+            ensureUIDSequencer();
         }
         return esClient;
     }
@@ -339,12 +341,8 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
     @Override
     public Long getEventsCount(String eventId) {
-        CountResponse res = getClient().prepareCount(IDX_NAME)
-                                       .setTypes(IDX_TYPE)
-                                       .setQuery(
-                                               QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("eventId",
-                                                       eventId)))
-                                       .get();
+        CountResponse res = getClient().prepareCount(IDX_NAME).setTypes(IDX_TYPE).setQuery(
+                QueryBuilders.constantScoreQuery(FilterBuilders.termFilter("eventId", eventId))).get();
         return res.getCount();
     }
 
@@ -597,6 +595,30 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
         }
     }
 
+    /**
+     * Ensures the audit sequence returns an UID greater or equal than the maximum log entry id.
+     */
+    protected void ensureUIDSequencer() {
+        // Get max log entry id
+        SearchRequestBuilder builder = getSearchRequestBuilder();
+        builder.setQuery(QueryBuilders.matchAllQuery()).addAggregation(AggregationBuilders.max("maxAgg").field("id"));
+        SearchResponse searchResponse = builder.execute().actionGet();
+        Max agg = searchResponse.getAggregations().get("maxAgg");
+        int maxLogEntryId = (int) agg.getValue();
+
+        // Get next sequence id
+        UIDGeneratorService uidGeneratorService = Framework.getService(UIDGeneratorService.class);
+        UIDSequencer seq = uidGeneratorService.getSequencer();
+        int nextSequenceId = seq.getNext(SEQ_NAME);
+
+        // Increment sequence to max log entry id if needed
+        if (nextSequenceId < maxLogEntryId) {
+            log.info(String.format("Next UID returned by %s sequence is %d, initializing sequence to %d", SEQ_NAME,
+                    nextSequenceId, maxLogEntryId));
+            seq.initSequence(SEQ_NAME, maxLogEntryId);
+        }
+    }
+
     @Override
     public ExtendedInfo newExtendedInfo(Serializable value) {
         return new ExtendedInfo() {
@@ -623,7 +645,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
 
             @Override
             public <T> T getValue(Class<T> clazz) {
-                return clazz.cast(this.getSerializableValue());
+                return clazz.cast(getSerializableValue());
             }
 
         };
