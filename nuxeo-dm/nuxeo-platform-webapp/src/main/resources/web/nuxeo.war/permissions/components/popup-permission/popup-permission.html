@@ -18,7 +18,7 @@
         <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
 
         <template is="dom-if" if="{{!updatingACE}}">
-            <paper-button raised="true" on-click="togglePopup">New Access Right</paper-button>
+            <paper-button raised="true" on-click="togglePopup">New Permission</paper-button>
         </template>
         <template is="dom-if" if="{{updatingACE}}">
             <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-button>
@@ -26,53 +26,53 @@
 
         <paper-dialog id="popupRight" modal>
             <template is="dom-if" if="{{!updatingACE}}">
-                <h2>Add new permission</h2>
+                <h2>Add a Permission</h2>
             </template>
             <template is="dom-if" if="{{updatingACE}}">
-                <h2>Update permission</h2>
+                <h2>Update Permission</h2>
             </template>
 
             <!-- Give acces to row -->
             <paper-dialog-scrollable>
                 <div>
-                    <div>Give access to</div>
+                    <div>User / Group</div>
                     <div>
                         <paper-input
-                                id="user"
-                                placeholder="User Name"
-                                value="{{params.username}}">
+                            id="user"
+                            placeholder="user / group"
+                            value="{{params.username}}">
                         </paper-input>
                     </div>
                 </div>
-                <div>
-                    <div>Start</div>
-                    <div>
-                        <paper-input id="begin" type="date" value="{{params.begin}}" />
-                    </div>
-                </div>
-                <div>
-                    <div>End</div>
-                    <div>
-                        <paper-input id="end" type="date" value="{{params.end}}" />
-                    </div>
-                </div>
-                <!-- Allowed rights row -->
+                <!-- Right row -->
                 <div layout horizontal>
-                    <div>Allowed rights</div>
+                    <div>Right</div>
                     <select id="allowedRights" flex two value="{{params.permission::change}}">
                         <template is="dom-repeat" items="{{userVisiblePermissions}}">
                             <option value="{{item}}">{{item}}</option>
                         </template>
                     </select>
                 </div>
+                <div>
+                    <div>From</div>
+                    <div>
+                        <paper-input id="begin" type="date" value="{{params.begin}}" />
+                    </div>
+                </div>
+                <div>
+                    <div>To</div>
+                    <div>
+                        <paper-input id="end" type="date" value="{{params.end}}" />
+                    </div>
+                </div>
 
                 <div id="notification">
                     <template is="dom-if" if="{{showNotificationFields}}">
                         <div layout horizontal>
-                            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Notify users by sending them a message </paper-checkbox>
+                            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Send an email to notify user</paper-checkbox>
                         </div>
                         <div layout horizontal>
-                            <iron-autogrow-textarea placeholder="Hi! Could you comment this document and ..." id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+                            <iron-autogrow-textarea placeholder="Hi! Could you comment this document and..." id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
                         </div>
                     </template>
                 </div>
@@ -82,7 +82,7 @@
                 <paper-button dialog-dismiss>Cancel</paper-button>
                 <template is="dom-if" if="{{!updatingACE}}">
                     <paper-button on-tap="doSend">
-                        Create and add a new one
+                        Create and add another
                     </paper-button>
                 </template>
                 <paper-button class="colorful" dialog-confirm on-tap="doSend">

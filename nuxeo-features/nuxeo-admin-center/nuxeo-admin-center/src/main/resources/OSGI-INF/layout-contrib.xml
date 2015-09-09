@@ -1632,6 +1632,9 @@
           <widget>creator</widget>
         </row>
         <row>
+          <widget>path</widget>
+        </row>
+        <row>
           <widget>permission</widget>
         </row>
         <row>
@@ -1639,9 +1642,6 @@
         </row>
         <row>
           <widget>aclName</widget>
-        </row>
-        <row>
-          <widget>path</widget>
         </row>
       </rows>
       <widget name="username" type="multipleUsersSuggestion">
@@ -1665,6 +1665,18 @@
           <property name="userSuggestionSearchType">USER_TYPE</property>
         </properties>
       </widget>
+      <widget name="path" type="select_path_tree">
+        <labels>
+          <label mode="any">label.permissions.search.path</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rs:ecm_path</field>
+        </fields>
+        <properties widgetMode="any">
+          <property name="showAllDomains">true</property>
+        </properties>
+      </widget>
       <widget name="permission" type="selectManyListbox">
         <labels>
           <label mode="any">label.ace.permission</label>
@@ -1680,7 +1692,7 @@
       </widget>
       <widget name="date_range" type="datetimeRange">
         <labels>
-          <label mode="any">label.permissions.search.date.range</label>
+          <label mode="any">label.permissions.search.time.frame</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1700,18 +1712,6 @@
         <fields>
           <field>rs:ace_acl_name</field>
         </fields>
-      </widget>
-      <widget name="path" type="select_path_tree">
-        <labels>
-          <label mode="any">label.permissions.search.path</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>rs:ecm_path</field>
-        </fields>
-        <properties widgetMode="any">
-          <property name="showAllDomains">true</property>
-        </properties>
       </widget>
     </layout>
 

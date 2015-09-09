@@ -16,94 +16,89 @@
 
         <div class="bubbleBox">
             <div class="bubbleHeader">
-                <h3>Access rights defined explicitely on this folder</h3>
+                <h3>Permissions defined locally</h3>
                 <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                         on-acecreated="refresh"></popup-permission>
                 </template>
             </div>
-            <template is="dom-if" if="{{hasLocalAcls}}">
+            <template is="dom-if" if="{{hasLocalAces}}">
                 <div>
                     <table class="dataTable tmp-tab">
                         <tr class="tmp-tab">
-                            <th class="tmp-tab">Username</th>
-                            <th class="tmp-tab">Creator</th>
-                            <th class="tmp-tab">Permission</th>
-                            <th class="tmp-tab">Duration</th>
-                            <th class="tmp-tab">Policy name</th>
+                            <th class="tmp-tab">User / Group</th>
+                            <th class="tmp-tab">Right</th>
+                            <th class="tmp-tab">Time frame</th>
+                            <th class="tmp-tab">Granted By</th>
                             <th class="tmp-tab">Actions</th>
                         </tr>
-                        <template is="dom-repeat" items="{{localAcls}}" as="acl">
-                            <template is="dom-repeat" items="{{acl.ace}}" as="ace">
-                                <template is="dom-if" if="{{ace.granted}}">
-                                    <tr>
-                                        <td><span>{{ace.username}}</span></td>
-                                        <td><span>{{ace.creator}}</span></td>
-                                        <td><span>{{ace.permission}}</span></td>
-                                        <td><span>{{formatDuration(ace)}}</span></td>
-                                        <td><span>{{acl.name}}</span></td>
-                                        <td>
-                                            <template is="dom-if" if="{{hasEverythingRight}}">
-                                                <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
-                                                    on-aceupdated="refresh"></popup-permission>
-                                                <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
-                                            </template>
-                                        </td>
-                                    </tr>
-                                </template>
-                            </template>
+                        <template is="dom-repeat" items="{{localAces}}" as="ace">
+                            <tr>
+                                <td><span>{{ace.username}}</span></td>
+                                <td><span>{{ace.permission}}</span></td>
+                                <td><span>{{formatTimeFrame(ace)}}</span></td>
+                                <td><span>{{ace.creator}}</span></td>
+                                <td>
+                                    <template is="dom-if" if="{{hasEverythingRight}}">
+                                        <popup-permission doc-id="{{doc.uid}}" ace="{{ace}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
+                                            on-aceupdated="refresh"></popup-permission>
+                                        <paper-icon-button icon="delete" on-click="localRightsDel" raised="true"></paper-icon-button>
+                                    </template>
+                                </td>
+                            </tr>
                         </template>
                     </table>
                 </div>
             </template>
-            <template is="dom-if" if="{{!hasLocalAcls}}">
-                <p class="emptyResult">There is no specific right defined here.</p>
+            <template is="dom-if" if="{{!hasLocalAces}}">
+                <p class="emptyResult">No local permission.</p>
             </template>
         </div>
 
-        <template is="dom-if" if="{{hasInheritedAcls}}">
+        <template is="dom-if" if="{{hasInheritedAces}}">
             <div class="bubbleBox">
                 <div class="bubbleHeader">
-                    <h3>Access rights coming from upper folders in the hierarchy</h3>
-                    <paper-button raised="true" on-click="blockInheritance">Block inheritance</paper-button>
+                    <h3>Permissions inherited from upper levels</h3>
+                    <paper-button id="block" raised="true" on-click="blockInheritance">Block</paper-button>
+                    <paper-tooltip for="block">Block tooltip</paper-tooltip>
                 </div>
                 <div>
                     <table class="dataTable tmp-tab">
                         <tr class="tmp-tab">
-                            <th class="tmp-tab">Username</th>
-                            <th class="tmp-tab">Creator</th>
-                            <th class="tmp-tab">Permission</th>
-                            <th class="tmp-tab">Duration</th>
+                            <th class="tmp-tab">User / Group</th>
+                            <th class="tmp-tab">Right</th>
+                            <th class="tmp-tab">Time frame</th>
+                            <th class="tmp-tab">Granted By</th>
                         </tr>
-                        <template is="dom-repeat" items="{{inheritedAcls}}" as="acl">
-                            <template is="dom-repeat" items="{{acl.ace}}" as="ace">
-                                <tr>
-                                    <td><span>{{ace.username}}</span></td>
-                                    <td><span>{{ace.creator}}</span></td>
-                                    <td><span>{{ace.permission}}</span></td>
-                                    <td><span>{{formatDuration(ace)}}</span></td>
-                                </tr>
-                            </template>
+                        <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
+                            <tr>
+                                <td><span>{{ace.username}}</span></td>
+                                <td><span>{{ace.permission}}</span></td>
+                                <td><span>{{formatTimeFrame(ace)}}</span></td>
+                                <td><span>{{ace.creator}}</span></td>
+                            </tr>
                         </template>
                     </table>
                 </div>
             </div>
         </template>
 
-        <template is="dom-if" if="{{!hasInheritedAcls}}">
+        <template is="dom-if" if="{{!hasInheritedAces}}">
             <div class="bubbleBox">
                 <div class="bubbleHeader">
-                    <h3>Access rights coming from upper folders in the hierarchy</h3>
-                    <paper-button raised="true" on-click="unblockInheritance">Unblock inheritance</paper-button>
+                    <h3>Permissions inherited from upper levels</h3>
+                    <paper-button raised="true" on-click="unblockInheritance">Unblock</paper-button>
+                    <paper-tooltip for="block">Unblock tooltip</paper-tooltip>
                 </div>
                 <div>
-                    <p class="emptyResult">No rights are inherited from parent documents.</p>
+                    <p class="emptyResult"></p>
                 </div>
             </div>
         </template>
 
         <popup-confirm id="confirmation">
-            <h2>Confirm ACE deletion?</h2>
+            <h2>The following permission will be deleted</h2>
+            <p>METTRE LA LIGNE DU TABLEAU</p>
         </popup-confirm>
 
         <nx-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}" on-response="refresh"></nx-operation>
@@ -136,25 +131,25 @@
                 value: false,
                 computed: 'computeEverythingRight(doc)'
             },
-            hasLocalAcls: {
+            hasLocalAces: {
                 type: Boolean,
                 value: false,
-                computed: 'computeHasLocalAcls(doc)'
+                computed: 'computeHasLocalAces(doc)'
             },
-            hasInheritedAcls: {
+            hasInheritedAces: {
                 type: Boolean,
                 value: false,
-                computed: 'computeHasInheritedAcls(doc)'
+                computed: 'computeHasInheritedAces(doc)'
             },
-            localAcls: {
+            localAces: {
                 type: Array,
                 value: [],
-                computed: 'computeLocalAcls(doc)'
+                computed: 'computeLocalAces(doc)'
             },
-            inheritedAcls: {
+            inheritedAces: {
                 type: Array,
                 value: [],
-                computed: 'computeInheritedAcls(doc)'
+                computed: 'computeInheritedAces(doc)'
             }
         },
 
@@ -162,7 +157,7 @@
             document.querySelector('#doc').get();
         },
 
-        formatDuration: function(ace) {
+        formatTimeFrame: function(ace) {
             var now = moment();
             var begin = ace.begin;
             var end = ace.end;
@@ -175,7 +170,7 @@
             } else if (begin !== null && end != null) {
                 return (now.isAfter(begin) ? 'Since ' : 'From ') + moment(begin).format(format) + ' until ' + moment(end).format(format);
             } else {
-                return '';
+                return 'Permanent';
             }
         },
 
@@ -183,7 +178,7 @@
             var self = this;
             this.$.confirmation.toggle(function() {
                 // Walk on data hosts in order to retrieve the 'item' property from the repeat loop item context
-                var item = e.model.dataHost.dataHost.item;
+                var item = e.model.dataHost.dataHost.ace;
                 self.$.rmPermission.params = {
                     id: item.id
                 };
@@ -198,7 +193,7 @@
             return false;
         },
 
-        computeHasLocalAcls: function(doc) {
+        computeHasLocalAces: function(doc) {
             if (doc) {
                 var acls = doc.contextParameters.acls;
                 for (var i = 0; i < acls.length; i++) {
@@ -210,7 +205,7 @@
             return false;
         },
 
-        computeHasInheritedAcls: function(doc) {
+        computeHasInheritedAces: function(doc) {
             if (doc) {
                 var acls = doc.contextParameters.acls;
                 for (var i = 0; i < acls.length; i++) {
@@ -222,29 +217,60 @@
             return false;
         },
 
-        computeLocalAcls: function(doc) {
-            var localAcls = [];
+        computeLocalAces: function(doc) {
+            var localAces = [];
             if (doc) {
                 var acls = doc.contextParameters.acls;
                 for (var i = 0; i < acls.length; i++) {
-                    if (acls[i].name !== 'inherited') {
-                        localAcls.push(acls[i]);
+                    var acl = acls[i];
+                    if (acl.name !== 'inherited') {
+                        for (var j = 0; j < acl.ace.length; j++) {
+                            var ace = acl.ace[j];
+                            if (ace.granted && (ace.status === 'pending' || ace.status === 'effective')) {
+                                ace.aclName = acl.name;
+                                localAces.push(ace);
+                            }
+                        }
                     }
                 }
             }
-            return localAcls;
+            localAces.sort(this._sortAces);
+            return localAces;
         },
 
-        computeInheritedAcls: function(doc) {
+        computeInheritedAces: function(doc) {
+            var inheritedAces = [];
             if (doc) {
                 var acls = doc.contextParameters.acls;
                 for (var i = 0; i < acls.length; i++) {
                     if (acls[i].name === 'inherited') {
-                        return [acls[i]];
+                        var acl = acls[i];
+                        for (var j = 0; j < acl.ace.length; j++) {
+                            var ace = acl.ace[j];
+                            if (ace.granted && (ace.status === 'pending' || ace.status === 'effective')) {
+                                inheritedAces.push(ace);
+                            }
+                        }
                     }
                 }
             }
-            return [];
+            inheritedAces.sort(this._sortAces);
+            return inheritedAces;
+        },
+
+        _sortAces: function(a, b) {
+            // -1 => a before b
+            // 1 -> a after b
+            if (a.begin === null) {
+                return -1;
+            } else if (b.begin === null) {
+                return 1;
+            } else {
+                // compare begin dates
+                var aBegin = moment(a.begin);
+                var bBegin = moment(b.begin);
+                return aBegin.isBefore(bBegin) ? -1 : 1;
+            }
         },
 
         blockInheritance: function() {
