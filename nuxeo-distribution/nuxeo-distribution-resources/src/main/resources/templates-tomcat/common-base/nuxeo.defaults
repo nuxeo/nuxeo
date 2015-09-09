@@ -74,3 +74,5 @@ elasticsearch.indexing.clearCompletedAfterSeconds=90
 elasticsearch.adminCenter.displayClusterInfo=false
 # Reindex the repository content on startup if the index is empty
 elastcisearch.reindex.onStartup=false
+# Use Elasticsearch as a backend for audit logs
+audit.elasticsearch.enabled=false
