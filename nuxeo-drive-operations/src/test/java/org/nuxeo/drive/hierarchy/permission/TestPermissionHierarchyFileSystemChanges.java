@@ -153,15 +153,13 @@ public class TestPermissionHierarchyFileSystemChanges {
         userWorkspace1 = userWorkspaceService.getCurrentUserPersonalWorkspace(session1, null);
         userWorkspace1ItemId = USER_SYNC_ROOT_PARENT_ID_PREFIX + userWorkspace1.getId();
         TransactionHelper.commitOrRollbackTransaction();
-        TransactionHelper.startTransaction();
         // Wait for personal workspace creation event to be logged in the audit
         eventService.waitForAsyncCompletion();
+        TransactionHelper.startTransaction();
     }
 
     @After
     public void tearDown() throws ClientException {
-        // needed for session cleanup
-        TransactionHelper.startTransaction();
 
         // Close core sessions
         session1.close();
@@ -170,6 +168,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         // Delete test users
         deleteUser("user1");
         deleteUser("user2");
+       
 
         // Disable deletion listener for the repository cleanup phase done in
         // CoreFeature#afterTeardown to avoid exception due to no active
@@ -238,8 +237,10 @@ public class TestPermissionHierarchyFileSystemChanges {
             assertEquals("My Docs", change.getFileSystemItemName());
             assertNull(change.getFileSystemItem());
         } finally {
-            TransactionHelper.commitOrRollbackTransaction();
+            commitAndWaitForAsyncCompletion();
         }
+        
+        TransactionHelper.startTransaction();
     }
 
     /**
@@ -396,6 +397,7 @@ public class TestPermissionHierarchyFileSystemChanges {
         harness.undeployContrib("org.nuxeo.drive.operations.test",
                 "OSGI-INF/test-nuxeodrive-hierarchy-permission-adapter-contrib.xml");
         Framework.getLocalService(ReloadService.class).reload();
+        TransactionHelper.startTransaction();
     }
 
     protected DocumentModel createFile(CoreSession session, String path, String name, String type, String fileName,
@@ -417,6 +419,9 @@ public class TestPermissionHierarchyFileSystemChanges {
 
     protected void createUser(String userName, String password) throws ClientException {
         Session userDir = directoryService.getDirectory("userDirectory").getSession();
+        if (userDir.getEntry(userName) != null) {
+        	userDir.deleteEntry(userName);
+        }
         try {
             Map<String, Object> user = new HashMap<String, Object>();
             user.put("username", userName);
