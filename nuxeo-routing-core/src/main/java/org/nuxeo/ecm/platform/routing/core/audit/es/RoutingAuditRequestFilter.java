@@ -34,6 +34,13 @@ import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.http.readonly.filter.AuditRequestFilter;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * Define a elasticsearch passthrough filter for audit_wf index view. Restrict to 'Routing' event category and, if the
+ * user is not an administrator, to the list of workflow model on which the user has the 'Data Visualization'
+ * permission.
+ *
+ * @since 7.4
+ */
 public class RoutingAuditRequestFilter extends AuditRequestFilter {
 
     private CoreSession session;
@@ -53,9 +60,6 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
 
     @Override
     public String getPayload() throws JSONException {
-        if (principal.isAdministrator()) {
-            return payload;
-        }
         if (filteredPayload == null) {
             if (payload.contains("\\")) {
                 // JSONObject removes backslash so we need to hide them
@@ -73,21 +77,25 @@ public class RoutingAuditRequestFilter extends AuditRequestFilter {
             JSONObject categoryFilter = new JSONObject().put("term", new JSONObject().put(
                     DocumentEventContext.CATEGORY_PROPERTY_KEY, DocumentRoutingConstants.ROUTING_CATEGORY));
 
-            DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
-            List<DocumentRoute> wfModels = documentRoutingService.getAvailableDocumentRouteModel(session);
-            List<String> modelNames = new ArrayList<String>();
-            for (DocumentRoute model : wfModels) {
-                if (session.hasPermission(model.getDocument().getRef(), DocumentRoutingConstants.CAN_DATA_VISU)) {
-                    modelNames.add(model.getModelName());
+            JSONArray fs = new JSONArray().put(categoryFilter);
+
+            if (!principal.isAdministrator()) {
+                DocumentRoutingService documentRoutingService = Framework.getService(DocumentRoutingService.class);
+                List<DocumentRoute> wfModels = documentRoutingService.getAvailableDocumentRouteModel(session);
+                List<String> modelNames = new ArrayList<String>();
+                for (DocumentRoute model : wfModels) {
+                    if (session.hasPermission(model.getDocument().getRef(), DocumentRoutingConstants.CAN_DATA_VISU)) {
+                        modelNames.add(model.getModelName());
+                    }
                 }
+
+                JSONObject wfModelFilter = new JSONObject().put("terms",
+                        new JSONObject().put("extended.modelName", modelNames.toArray(new String[modelNames.size()])));
+
+                fs.put(wfModelFilter);
             }
 
-            JSONObject wfModelFilter = new JSONObject().put("terms", new JSONObject().put(
-                    "extended.modelName", modelNames.toArray(new String[modelNames.size()])));
-
-            JSONArray fs = new JSONArray().put(categoryFilter).put(wfModelFilter);
-
-            JSONObject filter = new JSONObject().put("bool", new JSONObject().put("must",fs));
+            JSONObject filter = new JSONObject().put("bool", new JSONObject().put("must", fs));
 
             JSONObject newQuery = new JSONObject().put("filtered",
                     new JSONObject().put("query", query).put("filter", filter));
