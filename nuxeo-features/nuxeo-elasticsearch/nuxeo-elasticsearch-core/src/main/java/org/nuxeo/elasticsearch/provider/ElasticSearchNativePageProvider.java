@@ -67,6 +67,8 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
 
     @Override
     public List<DocumentModel> getCurrentPage() {
+        long t0 = System.currentTimeMillis();
+
         // use a cache
         if (currentPageDocuments != null) {
             return currentPageDocuments;
@@ -106,12 +108,16 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
             errorMessage = e.getMessage();
             log.warn(e.getMessage(), e);
         }
+
+        // send event for statistics !
+        fireSearchEvent(getCoreSession().getPrincipal(), query.toString(), currentPageDocuments,
+                System.currentTimeMillis() - t0);
+
         return currentPageDocuments;
     }
 
     private List<AggregateEsBase<? extends Bucket>> buildAggregates() {
-        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(
-                getAggregateDefinitions().size());
+        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(getAggregateDefinitions().size());
         for (AggregateDefinition def : getAggregateDefinitions()) {
             ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
         }
@@ -127,13 +133,13 @@ public class ElasticSearchNativePageProvider extends AbstractPageProvider<Docume
         QueryBuilder ret;
         PageProviderDefinition def = getDefinition();
         if (def.getWhereClause() == null) {
-            ret = PageProviderQueryBuilder.makeQuery(def.getPattern(), getParameters(), def.getQuotePatternParameters(),
-                    def.getEscapePatternParameters(), isNativeQuery());
+            ret = PageProviderQueryBuilder.makeQuery(def.getPattern(), getParameters(),
+                    def.getQuotePatternParameters(), def.getEscapePatternParameters(), isNativeQuery());
         } else {
             DocumentModel searchDocumentModel = getSearchDocumentModel();
             if (searchDocumentModel == null) {
-                throw new NuxeoException(String.format(
-                        "Cannot build query of provider '%s': " + "no search document model is set", getName()));
+                throw new NuxeoException(String.format("Cannot build query of provider '%s': "
+                        + "no search document model is set", getName()));
             }
             ret = PageProviderQueryBuilder.makeQuery(searchDocumentModel, def.getWhereClause(), getParameters(),
                     isNativeQuery());

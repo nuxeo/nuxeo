@@ -60,6 +60,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String PAGEPROVIDER_TRACK_PROPERTY_NAME = "nuxeo.pageprovider.track";
+
     protected String name;
 
     protected long offset = 0;
@@ -933,6 +935,35 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         return false;
     }
 
+    protected Boolean tracking = null;
+
+    /**
+     * @since 7.4
+     */
+    protected boolean isTrackingEnabled() {
+
+        if (tracking != null) {
+            return tracking;
+        }
+
+        if (getDefinition().isUsageTrackingEnabled()) {
+            tracking = true;
+        } else {
+            String trackedPageProviders = Framework.getProperty(PAGEPROVIDER_TRACK_PROPERTY_NAME, "");
+            if ("*".equals(trackedPageProviders)) {
+                tracking = true;
+            } else {
+                List<String> pps = Arrays.asList(trackedPageProviders.split(","));
+                if (pps.contains(getDefinition().getName())) {
+                    tracking = true;
+                } else {
+                    tracking = false;
+                }
+            }
+        }
+        return tracking;
+    }
+
     /**
      * Send a search event so that PageProvider calls can be tracked by Audit or other statistic gathering process
      *
@@ -941,9 +972,9 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
      * @param entries
      * @since 7.4
      */
-    protected void fireSearchEvent(Principal principal, String query, List<T> entries) {
+    protected void fireSearchEvent(Principal principal, String query, List<T> entries, Long executionTimeMs) {
 
-        if (!getDefinition().isUsageTrackingEnabled()) {
+        if (!isTrackingEnabled()) {
             return;
         }
 
@@ -954,6 +985,7 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         props.put("effectiveQuery", query);
         props.put("searchPattern", getDefinition().getPattern());
         props.put("queryParams", getDefinition().getQueryParameters());
+        props.put("params", getParameters());
         WhereClauseDefinition wc = getDefinition().getWhereClause();
         if (wc != null) {
             props.put("whereClause_fixedPart", wc.getFixedPart());
@@ -983,6 +1015,10 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
         props.put("pageSize", getPageSize());
         props.put("pageIndex", getCurrentPageIndex());
         props.put("principal", principal.getName());
+
+        if (executionTimeMs != null) {
+            props.put("executionTimeMs", executionTimeMs);
+        }
 
         incorporateAggregates(props);
 
@@ -1018,8 +1054,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
                     }
                     for (AggregateRangeDefinition range : ag.getRanges()) {
                         HashMap<String, Serializable> rangeData = new HashMap<String, Serializable>();
-                        rangeData.put("from", range.getFrom());
-                        rangeData.put("to", range.getTo());
+                        rangeData.put("from-dbl", range.getFrom());
+                        rangeData.put("to-dbl", range.getTo());
                         rangesData.add(rangeData);
                     }
                 }

@@ -49,6 +49,22 @@
       </pageSizeOptions>
     </coreQueryPageProvider>
     
+      <coreQueryPageProvider name="CURRENT_DOCUMENT_CHILDREN2">
+      <pattern>
+        SELECT * FROM Document WHERE ecm:parentId = ? AND
+        ecm:isCheckedInVersion
+        = 0 AND ecm:mixinType != 'HiddenInNavigation' AND
+        ecm:currentLifeCycleState != 'deleted'
+      </pattern>
+      <sort column="dc:title" ascending="true" />
+      <pageSize>2</pageSize>
+      <pageSizeOptions>
+        <option>10</option>
+        <option>15</option>
+        <option>20</option>
+      </pageSizeOptions>
+    </coreQueryPageProvider>
+    
     <genericPageProvider name="CURRENT_DOCUMENT_CHILDREN_FETCH"
       class="org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider">
       <trackUsage>true</trackUsage>

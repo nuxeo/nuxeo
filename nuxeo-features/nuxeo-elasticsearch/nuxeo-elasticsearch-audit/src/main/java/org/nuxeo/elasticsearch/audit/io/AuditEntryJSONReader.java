@@ -1,27 +1,37 @@
 package org.nuxeo.elasticsearch.audit.io;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.joda.time.format.ISODateTimeFormat;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 import org.nuxeo.ecm.platform.audit.api.ExtendedInfo;
 import org.nuxeo.ecm.platform.audit.api.LogEntry;
 import org.nuxeo.ecm.platform.audit.impl.ExtendedInfoImpl;
 import org.nuxeo.ecm.platform.audit.impl.LogEntryImpl;
+import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter.BinaryBlobEntrySerializer;
+import org.nuxeo.elasticsearch.audit.io.AuditEntryJSONWriter.MapEntrySerializer;
 
 public class AuditEntryJSONReader {
 
     public static LogEntry read(String content) throws IOException {
 
-        JsonFactory factory = new JsonFactory();
+        ObjectMapper objectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule("esAuditJson", org.codehaus.jackson.Version.unknownVersion());
+        module.addSerializer(Map.class, new MapEntrySerializer());
+        module.addSerializer(AbstractBlob.class, new BinaryBlobEntrySerializer());
+        objectMapper.registerModule(module);
 
-        factory.setCodec(new ObjectMapper());
+        JsonFactory factory = new JsonFactory();
+        factory.setCodec(objectMapper);
         JsonParser jp = factory.createJsonParser(content);
 
         JsonToken tok = jp.nextToken();
@@ -62,7 +72,7 @@ public class AuditEntryJSONReader {
                 } else if ("logDate".equals(key)) {
                     entry.setLogDate(ISODateTimeFormat.dateTime().parseDateTime(jp.getText()).toDate());
                 } else if ("extended".equals(key)) {
-                    entry.setExtendedInfos(readExtendedInfo(entry, jp));
+                    entry.setExtendedInfos(readExtendedInfo(entry, jp, objectMapper));
                 }
             }
             tok = jp.nextToken();
@@ -70,23 +80,31 @@ public class AuditEntryJSONReader {
         return entry;
     }
 
-    public static Map<String, ExtendedInfo> readExtendedInfo(LogEntryImpl entry, JsonParser jp) throws IOException {
-        JsonToken tok = jp.nextToken();
-
-        // skip {
-        if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-            tok = jp.nextToken();
-        }
+    public static Map<String, ExtendedInfo> readExtendedInfo(LogEntryImpl entry, JsonParser jp,
+            ObjectMapper objectMapper) throws IOException {
 
         Map<String, ExtendedInfo> info = new HashMap<String, ExtendedInfo>();
 
-        while (tok != null && tok != JsonToken.END_OBJECT) {
-            String key = jp.getCurrentName();
-            tok = jp.nextToken();
-            if (tok != JsonToken.VALUE_NULL) {
-                info.put(key, ExtendedInfoImpl.createExtendedInfo((Serializable) jp.getText()));
+        JsonNode node = jp.readValueAsTree();
+
+        Iterator<String> fieldsIt = node.getFieldNames();
+
+        while (fieldsIt.hasNext()) {
+            String fieldName = fieldsIt.next();
+
+            JsonNode field = node.get(fieldName);
+
+            if (field.isObject()) {
+                info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(objectMapper.writeValueAsString(field)));
+            } else if (field.isArray()) {
+                info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(objectMapper.writeValueAsString(field)));
+            } else {
+                if (field.isInt() || field.isLong()) {
+                    info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(field.getLongValue()));
+                } else {
+                    info.put(fieldName, ExtendedInfoImpl.createExtendedInfo(field.getTextValue()));
+                }
             }
-            tok = jp.nextToken();
         }
         return info;
     }

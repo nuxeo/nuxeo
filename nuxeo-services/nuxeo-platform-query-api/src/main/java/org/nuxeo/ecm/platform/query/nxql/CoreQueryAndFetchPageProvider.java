@@ -82,6 +82,8 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
     @Override
     public List<Map<String, Serializable>> getCurrentPage() {
         checkQueryCache();
+        CoreSession coreSession = null;
+        long t0 = System.currentTimeMillis();
         if (currentItems == null) {
             errorMessage = null;
             error = null;
@@ -96,7 +98,7 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
             currentItems = new ArrayList<Map<String, Serializable>>();
 
             Map<String, Serializable> props = getProperties();
-            CoreSession coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
+            coreSession = (CoreSession) props.get(CORE_SESSION_PROPERTY);
             if (coreSession == null) {
                 throw new NuxeoException("cannot find core session");
             }
@@ -179,6 +181,9 @@ public class CoreQueryAndFetchPageProvider extends AbstractPageProvider<Map<Stri
                 }
             }
         }
+
+        // send event for statistics !
+        fireSearchEvent(coreSession.getPrincipal(), query, currentItems, System.currentTimeMillis()-t0);
 
         return currentItems;
     }

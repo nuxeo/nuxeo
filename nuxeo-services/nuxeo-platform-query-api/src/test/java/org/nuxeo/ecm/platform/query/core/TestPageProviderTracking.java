@@ -36,10 +36,12 @@ import org.nuxeo.ecm.core.api.DocumentModelFactory;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -75,6 +77,27 @@ public class TestPageProviderTracking {
 
         def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN_FETCH");
         assertTrue(def.isUsageTrackingEnabled());
+    }
+
+    @Test
+    public void testTrackingProperty() throws Exception {
+
+        Framework.getProperties().put(AbstractPageProvider.PAGEPROVIDER_TRACK_PROPERTY_NAME, "CURRENT_DOCUMENT_CHILDREN2");
+
+        PageProviderDefinition def = pps.getPageProviderDefinition("CURRENT_DOCUMENT_CHILDREN2");
+        assertFalse(def.isUsageTrackingEnabled());
+
+        Map<String, Serializable> props = new HashMap<String, Serializable>();
+        props.put(CoreQueryDocumentPageProvider.CORE_SESSION_PROPERTY, (Serializable) coreSession);
+
+        PageProvider<?> pp = pps.getPageProvider("CURRENT_DOCUMENT_CHILDREN2", null, 10L, 0L, props,
+                coreSession.getRootDocument().getId());
+        assertNotNull(pp);
+
+        SearchEventsAccumulator.reset();
+        pp.getCurrentPage();
+        List<Map<String, Serializable>> events = SearchEventsAccumulator.getStackedEvents();
+        assertEquals(1, events.size());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package org.nuxeo.elasticsearch.audit.io;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -51,10 +52,24 @@ public class AuditEntryJSONWriter {
         for (String key : extended.keySet()) {
             ExtendedInfo ei = extended.get(key);
             if (ei != null && ei.getSerializableValue() != null) {
-                try {
-                    jg.writeObjectField(key, ei.getSerializableValue());
-                } catch (JsonMappingException e) {
-                    log.error("No Serializer found.", e);
+                Serializable value = ei.getSerializableValue();
+                if (value instanceof String) {
+                    String strValue = ((String) value).trim();
+                    if (strValue.startsWith("{") && strValue.endsWith("}")) {
+                        jg.writeFieldName(key);
+                        jg.writeRawValue(strValue);
+                    } else if (strValue.startsWith("[") && strValue.endsWith("]")) {
+                        jg.writeFieldName(key);
+                        jg.writeRawValue(strValue);
+                    } else {
+                        jg.writeStringField(key,strValue);
+                    }
+                } else {
+                    try {
+                        jg.writeObjectField(key, ei.getSerializableValue());
+                    } catch (JsonMappingException e) {
+                        log.error("No Serializer found.", e);
+                    }
                 }
             } else {
                 jg.writeNullField(key);

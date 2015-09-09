@@ -64,6 +64,9 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
 
     @Override
     public List<DocumentModel> getCurrentPage() {
+
+        long t0 = System.currentTimeMillis();
+
         // use a cache
         if (currentPageDocuments != null) {
             return currentPageDocuments;
@@ -105,7 +108,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         }
 
         // send event for statistics !
-        fireSearchEvent(getCoreSession().getPrincipal(), query, currentPageDocuments);
+        fireSearchEvent(getCoreSession().getPrincipal(), query, currentPageDocuments, System.currentTimeMillis() - t0);
 
         return currentPageDocuments;
     }
@@ -148,8 +151,7 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
     }
 
     private List<AggregateEsBase<? extends Bucket>> buildAggregates() {
-        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(
-                getAggregateDefinitions().size());
+        ArrayList<AggregateEsBase<? extends Bucket>> ret = new ArrayList<>(getAggregateDefinitions().size());
         for (AggregateDefinition def : getAggregateDefinitions()) {
             ret.add(AggregateFactory.create(def, getSearchDocumentModel()));
         }
@@ -175,4 +177,30 @@ public class ElasticSearchNxqlPageProvider extends CoreQueryDocumentPageProvider
         return currentAggregates;
     }
 
+    /**
+     * Extends the default implementation to add results of aggregates
+     *
+     * @param eventProps
+     * @since 7.4
+     */
+    @Override
+    protected void incorporateAggregates(Map<String, Serializable> eventProps) {
+
+        super.incorporateAggregates(eventProps);
+        if (currentAggregates != null) {
+            HashMap<String, Serializable> aggregateMatches = new HashMap<String, Serializable>();
+            for (String key : currentAggregates.keySet()) {
+                Aggregate<? extends Bucket> ag = currentAggregates.get(key);
+                ArrayList<HashMap<String, Serializable>> buckets = new ArrayList<HashMap<String, Serializable>>();
+                for (Bucket bucket : ag.getBuckets()) {
+                    HashMap<String, Serializable> b = new HashMap<String, Serializable>();
+                    b.put("key", bucket.getKey());
+                    b.put("count", bucket.getDocCount());
+                    buckets.add(b);
+                }
+                aggregateMatches.put(key, buckets);
+            }
+            eventProps.put("aggregatesMatches", aggregateMatches);
+        }
+    }
 }

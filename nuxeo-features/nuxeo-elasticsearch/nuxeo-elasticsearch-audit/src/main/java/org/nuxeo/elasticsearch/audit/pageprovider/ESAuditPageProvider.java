@@ -49,6 +49,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
 
     protected static String emptyQuery = "{ \"match_all\" : { }\n }";
 
+    @Override
     public String toString() {
         buildAuditQuery(true);
         StringBuffer sb = new StringBuffer();
@@ -56,13 +57,21 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         return sb.toString();
     }
 
+    protected CoreSession getCoreSession() {
+        Object session = getProperties().get(CORE_SESSION_PROPERTY);
+        if (session != null && CoreSession.class.isAssignableFrom(session.getClass())) {
+            return (CoreSession) session;
+        }
+        return null;
+    }
+
     protected void preprocessCommentsIfNeeded(List<LogEntry> entries) {
         Serializable preprocess = getProperties().get(UICOMMENTS_PROPERTY);
 
         if (preprocess != null && "true".equalsIgnoreCase(preprocess.toString())) {
-            Object session = (CoreSession) getProperties().get(CORE_SESSION_PROPERTY);
-            if (session != null && CoreSession.class.isAssignableFrom(session.getClass())) {
-                CommentProcessorHelper cph = new CommentProcessorHelper((CoreSession) session);
+            CoreSession session = getCoreSession();
+            if (session != null ) {
+                CommentProcessorHelper cph = new CommentProcessorHelper(session);
                 cph.processComments(entries);
             }
         }
@@ -95,6 +104,16 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
             }
         }
         preprocessCommentsIfNeeded(entries);
+
+        long t0 = System.currentTimeMillis();
+
+
+        CoreSession session = getCoreSession();
+        if (session!=null) {
+            // send event for statistics !
+            fireSearchEvent(session.getPrincipal(), searchBuilder.toString(), entries, System.currentTimeMillis() - t0);
+        }
+
         return entries;
     }
 
@@ -167,6 +186,7 @@ public class ESAuditPageProvider extends AbstractPageProvider<LogEntry> implemen
         }
     }
 
+    @Override
     public void refresh() {
         setCurrentPageOffset(0);
         super.refresh();
