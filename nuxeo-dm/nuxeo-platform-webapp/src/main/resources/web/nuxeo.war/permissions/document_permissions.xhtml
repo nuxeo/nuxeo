@@ -14,6 +14,37 @@
   <link rel="import" href="#{baseURL}bower_components/nuxeo-elements/nx-connection.html"></link>
   <link rel="import" href="#{baseURL}permissions/components/document-permissions/document-permissions.html"></link>
 
+  <script>
+    (function () {
+      Polymer.Base.i18n = function (key, defaultValue) {
+        return {
+          'label.permissions.locallyDefined': "#{messages['label.permissions.locallyDefined']}",
+          'label.permissions.userGroup': "#{messages['label.permissions.userGroup']}",
+          'label.permissions.right': "#{messages['label.permissions.right']}",
+          'label.permissions.timeFrame': "#{messages['label.permissions.timeFrame']}",
+          'label.permissions.grantedBy': "#{messages['label.permissions.grantedBy']}",
+          'label.permissions.actions': "#{messages['label.permissions.actions']}",
+          'label.permissions.noLocalPermission': "#{messages['label.permissions.noLocalPermission']}",
+          'label.permissions.inherited': "#{messages['label.permissions.inherited']}",
+          'label.permissions.block': "#{messages['label.permissions.block']}",
+          'label.permissions.unblock': "#{messages['label.permissions.unblock']}",
+          'label.permissions.deleteConfirmation': "#{messages['label.permissions.deleteConfirmation']}",
+          'label.permissions.newPermission': "#{messages['label.permissions.newPermission']}",
+          'label.permissions.addPermission': "#{messages['label.permissions.addPermission']}",
+          'label.permissions.updatePermission': "#{messages['label.permissions.updatePermission']}",
+          'label.permissions.from': "#{messages['label.permissions.from']}",
+          'label.permissions.to': "#{messages['label.permissions.to']}",
+          'label.permissions.notify': "#{messages['label.permissions.notify']}",
+          'label.permissions.notifyPlaceholder': "#{messages['label.permissions.notifyPlaceholder']}",
+          'label.permissions.cancel': "#{messages['label.permissions.cancel']}",
+          'label.permissions.createAndAdd': "#{messages['label.permissions.createAndAdd']}",
+          'label.permissions.create': "#{messages['label.permissions.create']}",
+          'label.permissions.update': "#{messages['label.permissions.update']}"
+        }[key] || defaultValue || key ;
+      };
+    })();
+  </script>
+
   <template is="dom-bind">
 
     <nx-connection id="nx_connection" url="#{baseURL}"></nx-connection>

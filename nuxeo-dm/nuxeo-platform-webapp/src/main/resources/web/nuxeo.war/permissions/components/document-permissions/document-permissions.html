@@ -16,7 +16,7 @@
 
         <div class="bubbleBox">
             <div class="bubbleHeader">
-                <h3>Permissions defined locally</h3>
+                <h3>[[i18n('label.permissions.locallyDefined', 'Permissions defined locally')]]</h3>
                 <template is="dom-if" if="{{hasEverythingRight}}">
                     <popup-permission doc-id="{{doc.uid}}" user-visible-permissions="{{doc.contextParameters.userVisiblePermissions}}"
                         on-acecreated="refresh"></popup-permission>
@@ -26,11 +26,11 @@
                 <div>
                     <table class="dataTable tmp-tab">
                         <tr class="tmp-tab">
-                            <th class="tmp-tab">User / Group</th>
-                            <th class="tmp-tab">Right</th>
-                            <th class="tmp-tab">Time frame</th>
-                            <th class="tmp-tab">Granted By</th>
-                            <th class="tmp-tab">Actions</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.actions', 'Actions')]]</th>
                         </tr>
                         <template is="dom-repeat" items="{{localAces}}" as="ace">
                             <tr>
@@ -51,24 +51,23 @@
                 </div>
             </template>
             <template is="dom-if" if="{{!hasLocalAces}}">
-                <p class="emptyResult">No local permission.</p>
+                <p class="emptyResult">[[i18n('label.permissions.noLocalPermissions', 'No local permission.')]]</p>
             </template>
         </div>
 
         <template is="dom-if" if="{{hasInheritedAces}}">
             <div class="bubbleBox">
                 <div class="bubbleHeader">
-                    <h3>Permissions inherited from upper levels</h3>
-                    <paper-button id="block" raised="true" on-click="blockInheritance">Block</paper-button>
-                    <paper-tooltip for="block">Block tooltip</paper-tooltip>
+                    <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
+                    <paper-button id="block" raised="true" on-click="blockInheritance">[[i18n('label.permissions.block', 'Block')]]</paper-button>
                 </div>
                 <div>
                     <table class="dataTable tmp-tab">
                         <tr class="tmp-tab">
-                            <th class="tmp-tab">User / Group</th>
-                            <th class="tmp-tab">Right</th>
-                            <th class="tmp-tab">Time frame</th>
-                            <th class="tmp-tab">Granted By</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.userGroup', 'User / Group')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.right', 'Right')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.timeFrame', 'Time Frame')]]</th>
+                            <th class="tmp-tab">[[i18n('label.permissions.grantedBy', 'Granted by')]]</th>
                         </tr>
                         <template is="dom-repeat" items="{{inheritedAces}}" as="ace">
                             <tr>
@@ -86,9 +85,8 @@
         <template is="dom-if" if="{{!hasInheritedAces}}">
             <div class="bubbleBox">
                 <div class="bubbleHeader">
-                    <h3>Permissions inherited from upper levels</h3>
-                    <paper-button raised="true" on-click="unblockInheritance">Unblock</paper-button>
-                    <paper-tooltip for="block">Unblock tooltip</paper-tooltip>
+                    <h3>[[i18n('label.permissions.inherited', 'Permissions inherited from upper levels')]]</h3>
+                    <paper-button raised="true" on-click="unblockInheritance">[[i18n('label.permissions.unblock', 'Unblock')]]</paper-button>
                 </div>
                 <div>
                     <p class="emptyResult"></p>
@@ -97,8 +95,7 @@
         </template>
 
         <popup-confirm id="confirmation">
-            <h2>The following permission will be deleted</h2>
-            <p>METTRE LA LIGNE DU TABLEAU</p>
+            <h2>[[i18n('label.permissions.deleteConfirmation', 'The following permission will be deleted')]]</h2>
         </popup-confirm>
 
         <nx-operation id="rmPermission" op="Document.RemovePermission" input="{{doc.uid}}" on-response="refresh"></nx-operation>
@@ -259,14 +256,11 @@
         },
 
         _sortAces: function(a, b) {
-            // -1 => a before b
-            // 1 -> a after b
             if (a.begin === null) {
                 return -1;
             } else if (b.begin === null) {
                 return 1;
             } else {
-                // compare begin dates
                 var aBegin = moment(a.begin);
                 var bBegin = moment(b.begin);
                 return aBegin.isBefore(bBegin) ? -1 : 1;

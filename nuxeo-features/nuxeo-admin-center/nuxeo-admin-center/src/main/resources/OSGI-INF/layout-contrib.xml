@@ -1646,7 +1646,7 @@
       </rows>
       <widget name="username" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">label.permissions.search.username</label>
+          <label mode="any">label.permissions.userGroup</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1655,7 +1655,7 @@
       </widget>
       <widget name="creator" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">label.permissions.search.creator</label>
+          <label mode="any">label.permissions.grantedBy</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1679,7 +1679,7 @@
       </widget>
       <widget name="permission" type="selectManyListbox">
         <labels>
-          <label mode="any">label.ace.permission</label>
+          <label mode="any">label.permissions.right</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1692,7 +1692,7 @@
       </widget>
       <widget name="date_range" type="datetimeRange">
         <labels>
-          <label mode="any">label.permissions.search.time.frame</label>
+          <label mode="any">label.permissions.timeFrame</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1731,7 +1731,7 @@
       </rows>
       <widget name="username" type="multipleUsersSuggestion">
         <labels>
-          <label mode="any">label.permissions.search.username</label>
+          <label mode="any">label.permissions.userGroup</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1822,7 +1822,7 @@
       </widget>
       <widget name="ace_permission" type="text">
         <labels>
-          <label mode="any">label.ace.permission</label>
+          <label mode="any">label.permissions.right</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1831,7 +1831,7 @@
       </widget>
       <widget name="ace_username" type="text">
         <labels>
-          <label mode="any">label.ace.username</label>
+          <label mode="any">label.permissions.userGroup</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1840,7 +1840,7 @@
       </widget>
       <widget name="ace_creator" type="text">
         <labels>
-          <label mode="any">label.ace.creator</label>
+          <label mode="any">label.ace.grantedBy</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1849,7 +1849,7 @@
       </widget>
       <widget name="ace_begin" type="datetime">
         <labels>
-          <label mode="any">label.ace.begin</label>
+          <label mode="any">label.permissions.from</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -1865,7 +1865,7 @@
       </widget>
       <widget name="ace_end" type="datetime">
         <labels>
-          <label mode="any">label.ace.end</label>
+          <label mode="any">label.permissions.to</label>
         </labels>
         <translated>true</translated>
         <fields>

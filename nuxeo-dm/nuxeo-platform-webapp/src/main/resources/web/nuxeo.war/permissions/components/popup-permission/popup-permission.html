@@ -18,7 +18,7 @@
         <nx-operation id="updateOp" op="Document.UpdatePermission" input={{docId}} params={{params}} on-response="handleResponse"></nx-operation>
 
         <template is="dom-if" if="{{!updatingACE}}">
-            <paper-button raised="true" on-click="togglePopup">New Permission</paper-button>
+            <paper-button raised="true" on-click="togglePopup">[[i18n('label.permissions.newPermission', 'New Permission')]]</paper-button>
         </template>
         <template is="dom-if" if="{{updatingACE}}">
             <paper-icon-button raised="true" on-click="togglePopup" icon="editor:mode-edit"></paper-button>
@@ -26,16 +26,16 @@
 
         <paper-dialog id="popupRight" modal>
             <template is="dom-if" if="{{!updatingACE}}">
-                <h2>Add a Permission</h2>
+                <h2>[[i18n('label.permissions.addPermission', 'Add a Permission')]]</h2>
             </template>
             <template is="dom-if" if="{{updatingACE}}">
-                <h2>Update Permission</h2>
+                <h2>[[i18n('label.permissions.updatePermission', 'Update Permission')]]</h2>
             </template>
 
             <!-- Give acces to row -->
             <paper-dialog-scrollable>
                 <div>
-                    <div>User / Group</div>
+                    <div>[[i18n('label.permissions.userGroup', 'User / Group')]]</div>
                     <div>
                         <paper-input
                             id="user"
@@ -54,13 +54,13 @@
                     </select>
                 </div>
                 <div>
-                    <div>From</div>
+                    <div>[[i18n('label.permissions.from', 'From')]]</div>
                     <div>
                         <paper-input id="begin" type="date" value="{{params.begin}}" />
                     </div>
                 </div>
                 <div>
-                    <div>To</div>
+                    <div>[[i18n('label.permissions.to', 'To')]]</div>
                     <div>
                         <paper-input id="end" type="date" value="{{params.end}}" />
                     </div>
@@ -69,31 +69,21 @@
                 <div id="notification">
                     <template is="dom-if" if="{{showNotificationFields}}">
                         <div layout horizontal>
-                            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">Send an email to notify user</paper-checkbox>
+                            <paper-checkbox checked="{{params.notify}}" on-change="toggleCommentText">[[i18n('label.permissions.notify', 'Send an email to notify user')]]</paper-checkbox>
                         </div>
                         <div layout horizontal>
-                            <iron-autogrow-textarea placeholder="Hi! Could you comment this document and..." id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
+                            <iron-autogrow-textarea placeholder="[[i18n('label.permissions.notifyPlaceholder', 'Hi! Could you comment this document and...')]]" id="commentText" bind-value="{{params.comment}}"></iron-autogrow-textarea>
                         </div>
                     </template>
                 </div>
             </paper-dialog-scrollable>
 
             <div class="buttons">
-                <paper-button dialog-dismiss>Cancel</paper-button>
+                <paper-button dialog-dismiss>[[i18n('label.permissions.cancel', 'Cancel')]]</paper-button>
                 <template is="dom-if" if="{{!updatingACE}}">
-                    <paper-button on-tap="doSend">
-                        Create and add another
-                    </paper-button>
+                    <paper-button on-tap="doSend">[[i18n('label.permissions.createAndAdd', 'Create and add another')]]</paper-button>
                 </template>
-                <paper-button class="colorful" dialog-confirm on-tap="doSend">
-                    <template is="dom-if" if="{{!updatingACE}}">
-                        Create
-                    </template>
-                    <template is="dom-if" if="{{updatingACE}}">
-                        Update
-                    </template>
-                </paper-button>
-
+                <paper-button class="colorful" dialog-confirm on-tap="doSend"><template is="dom-if" if="{{!updatingACE}}">[[i18n('label.permissions.create', 'Create')]]</template><template is="dom-if" if="{{updatingACE}}">[[i18n('label.permissions.update', 'Update')]]</template></paper-button>
             </div>
         </paper-dialog>
     </template>
