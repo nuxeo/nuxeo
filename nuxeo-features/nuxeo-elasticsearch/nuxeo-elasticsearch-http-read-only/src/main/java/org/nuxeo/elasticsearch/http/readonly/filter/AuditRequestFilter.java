@@ -24,6 +24,11 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.elasticsearch.audit.ESAuditBackend;
 import org.nuxeo.elasticsearch.http.readonly.AbstractSearchRequestFilterImpl;
 
+/**
+ * Define a elasticsearch passthrough filter for audit index. Only administrator can access the audit index.
+ *
+ * @since 7.4
+ */
 public class AuditRequestFilter extends AbstractSearchRequestFilterImpl {
 
     public void init(CoreSession session, String indices, String types, String rawQuery, String payload) {
