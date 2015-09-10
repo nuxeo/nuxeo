@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.admin.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that disables checks on package version when
+      updating the Studio package from the admin tab.
+    </documentation>
+    <property name="studio.snapshot.disablePkgValidation">false</property>
+  </extension>
+
+</component>
