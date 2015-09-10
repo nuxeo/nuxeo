@@ -32,7 +32,7 @@
     <documentation>
       Property that defines what characters that are escaped in core queries.
     </documentation>
-    <property name="org.nuxeo.query.builder.ignored.chars">!#$%&'()+,./\\\\:-@{|}`^~</property>
+    <property name="org.nuxeo.query.builder.ignored.chars">!#$%&amp;'()+,./\\\\:-@{|}`^~</property>
   </extension>
 
 </component>
