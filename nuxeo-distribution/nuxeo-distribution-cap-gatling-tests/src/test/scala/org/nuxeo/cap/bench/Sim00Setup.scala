@@ -23,28 +23,32 @@ import io.gatling.http.Predef._
 
 import scala.io.Source
 
-class Sim00Setup extends Simulation {
+object ScnSetup {
 
-  def run = (userCount: Integer) => {
-    feed(Feeders.admins)
-      .exec(NuxeoRest.createGroupIfNotExists(Constants.GAT_GROUP_NAME))
-      .exec(NuxeoRest.createDocumentIfNotExistsAsAdmin(Constants.ROOT_WORKSPACE_PATH, Constants.GAT_WS_NAME, "Workspace"))
-      .exec(NuxeoRest.grantReadWritePermission(Constants.GAT_WS_PATH, Constants.GAT_GROUP_NAME))
-      .exec(NuxeoRest.createDocumentIfNotExistsAsAdmin(Constants.GAT_WS_PATH, Constants.GAT_FOLDER_NAME, "Folder"))
-      .repeat(userCount.intValue(), "count") {
-      feed(Feeders.usersCircular)
-        .exec(NuxeoRest.createUserIfNotExists(Constants.GAT_GROUP_NAME))
-      //.exec(Actions.createDocumentIfNotExists(Constants.GAT_WS_PATH, Constants.GAT_USER_FOLDER_NAME, "Folder"))
-    }
+  def get = (userCount: Integer) => {
+    scenario("Setup").exec(
+      feed(Feeders.admins)
+        .exec(NuxeoRest.createGroupIfNotExists(Constants.GAT_GROUP_NAME))
+        .exec(NuxeoRest.createDocumentIfNotExistsAsAdmin(Constants.ROOT_WORKSPACE_PATH, Constants.GAT_WS_NAME, "Workspace"))
+        .exec(NuxeoRest.grantReadWritePermission(Constants.GAT_WS_PATH, Constants.GAT_GROUP_NAME))
+        .exec(NuxeoRest.createDocumentIfNotExistsAsAdmin(Constants.GAT_WS_PATH, Constants.GAT_FOLDER_NAME, "Folder"))
+        .repeat(userCount.intValue(), "count") {
+        feed(Feeders.usersCircular)
+          .exec(NuxeoRest.createUserIfNotExists(Constants.GAT_GROUP_NAME))
+        //.exec(Actions.createDocumentIfNotExists(Constants.GAT_WS_PATH, Constants.GAT_USER_FOLDER_NAME, "Folder"))
+      }
+    )
   }
 
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
+}
+
+class Sim00Setup extends Simulation {
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val userCount = Source.fromFile(GatlingFiles.dataDirectory + "/users.csv").getLines.size - 1
-  val scn = scenario("00-Setup").exec(run(userCount))
+  val scn = ScnSetup.get(userCount)
   setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
 }

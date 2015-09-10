@@ -20,28 +20,35 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
-class Sim20CreateDocuments extends Simulation {
+import scala.concurrent.duration.Duration
 
-  def run = (documents: Iterator[Map[String, String]]) => {
-    asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
-      feed(documents)
-        .feed(Feeders.usersCircular)
-        .exec(NuxeoRest.createDocument())
-        .doIf(session => Redis.markDocumentCreated(session)) {
-        exec()
+object ScnCreateDocuments {
+
+  def get = (documents: Iterator[Map[String, String]], pause: Duration) => {
+    scenario("CreateDocuments").exec(
+      asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
+        feed(documents)
+          .feed(Feeders.usersCircular)
+          .exec(NuxeoRest.createDocument())
+          .doIf(session => Redis.markDocumentCreated(session)) {
+          exec()
+        }.pause(pause)
       }
-    }
+    )
   }
 
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
-  val nbUsers = Integer.getInteger("users", 8)
+}
+
+
+class Sim20CreateDocuments extends Simulation {
+
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createDocFeeder()
-  val scn = scenario("20-CreateDocuments").exec(run(documents))
-
-  setUp(scn.inject(atOnceUsers(nbUsers))).protocols(httpProtocol)
+  val scn = ScnCreateDocuments.get(documents, Parameters.getPause())
+  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
+    .protocols(httpProtocol).exponentialPauses
 }

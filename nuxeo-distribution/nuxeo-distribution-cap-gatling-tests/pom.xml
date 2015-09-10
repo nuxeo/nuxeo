@@ -151,16 +151,26 @@
                   <simulationClass>org.nuxeo.cap.bench.Sim30Navigation</simulationClass>
                 </configuration>
               </execution>
-              <!-- <execution> -->
-              <!-- <id>cleanup</id> -->
-              <!-- <phase>integration-test</phase> -->
-              <!-- <goals> -->
-              <!-- <goal>execute</goal> -->
-              <!-- </goals> -->
-              <!-- <configuration> -->
-              <!-- <simulationClass>org.nuxeo.cap.bench.Sim90Cleanup</simulationClass> -->
-              <!-- </configuration> -->
-              <!-- </execution> -->
+              <execution>
+                <id>navigation-jsf</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim30NavigationJsf</simulationClass>
+                </configuration>
+              </execution>
+              <execution>
+                <id>navigation-jsf</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <simulationClass>org.nuxeo.cap.bench.Sim50Bench</simulationClass>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
           <plugin>

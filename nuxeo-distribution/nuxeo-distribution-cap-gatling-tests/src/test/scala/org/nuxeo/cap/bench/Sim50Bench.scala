@@ -1,4 +1,5 @@
 package org.nuxeo.cap.bench
+
 /*
  * (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
@@ -19,35 +20,31 @@ package org.nuxeo.cap.bench
 
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
-import io.gatling.redis.util.RedisHelper
+
 class Sim50Bench extends Simulation {
-RedisHelper.generateRedisProtocol("foo")
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
-  val nbUsers = Integer.getInteger("users", 100)
-  val nbWriter = Integer.getInteger("writers", 10)
-  val myRamp = java.lang.Long.getLong("ramp", 10L)
-  val myDuration = java.lang.Long.getLong("duration", 60L)
-  val pollInterval = Integer.getInteger("pollInterval", 30)
-  val feederInterval = Integer.getInteger("feederInterval", 10)
+
+  val documents = Feeders.createRandomDocFeeder()
+  val scnNav = ScnNavigation.get(documents, Parameters.getSimulationDuration(),
+    Parameters.getPause(500, prefix = "nav."))
+  val scnNavJsf = ScnNavigationJsf.get(documents, Parameters.getSimulationDuration(),
+    Parameters.getPause(1000, prefix = "navjsf."))
+  val scnUpdate = ScnUpdateDocuments.get(documents, Parameters.getSimulationDuration(),
+    Parameters.getPause(2000, prefix = "upd."))
 
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .acceptEncodingHeader("identity")
     .connection("keep-alive")
-    .disableCaching // disabling Etag cache since If-None-Modified on GetChangeSummary fails
-/*
-  val poll = scenario("Poll").during(myDuration) {
-    exec(PollChanges.run(pollInterval))
-  }
 
-  val serverFeeder = scenario("Server Feeder").during(myDuration) {
-    exec(ServerFeeder.run(feederInterval))
-  }
-*/
   setUp(
-    //serverFeeder.inject(rampUsers(nbWriter).over(myRamp)).exponentialPauses
+    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "nav."))
+      .over(Parameters.getRampDuration(prefix = "nav."))).exponentialPauses,
+    scnNavJsf.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "navjsf."))
+      .over(Parameters.getRampDuration(prefix = "navjsf."))).exponentialPauses,
+    scnUpdate.inject(rampUsers(Parameters.getConcurrentUsers(5, prefix = "upd."))
+      .over(Parameters.getRampDuration(prefix = "upd."))).exponentialPauses
   ).protocols(httpProtocol)
 
 }

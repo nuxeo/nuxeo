@@ -20,27 +20,31 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
-class Sim30UpdateDocuments extends Simulation {
+import scala.concurrent.duration.Duration
 
-  def run = (duration: Int, documents: Iterator[Map[String, String]]) => {
-    during(duration, "counterName") {
-      feed(documents)
-        .feed(Feeders.usersCircular)
-        .exec(NuxeoRest.updateDocument())
-    }
+object ScnUpdateDocuments {
+
+  def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
+    scenario("UpdateDocuments").exec(
+      during(duration, "counterName") {
+        feed(documents)
+          .feed(Feeders.usersCircular)
+          .exec(NuxeoRest.updateDocument())
+      }
+    )
   }
 
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
-  val nbUsers = Integer.getInteger("users", 8)
-  val duration = Integer.getInteger("duration", 30)
+}
+
+
+class Sim30UpdateDocuments extends Simulation {
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
-  val scn = scenario("30-UpdateDocuments").exec(run(duration, documents))
-
-  //serverFeeder.inject(rampUsers(nbWriter).over(myRamp))
-  setUp(scn.inject(atOnceUsers(nbUsers))).protocols(httpProtocol)
+  val scn = ScnUpdateDocuments.get(documents, Parameters.getRampDuration(), Parameters.getPause())
+  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
+    .protocols(httpProtocol).exponentialPauses
 }

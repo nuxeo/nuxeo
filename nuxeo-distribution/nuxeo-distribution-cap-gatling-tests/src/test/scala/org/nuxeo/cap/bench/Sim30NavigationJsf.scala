@@ -22,33 +22,57 @@ import io.gatling.http.Predef._
 
 import scala.concurrent.duration.Duration
 
-object ScnNavigation {
+
+object ScnNavigationJsf {
 
   def get = (documents: Iterator[Map[String, String]], duration: Duration, pause: Duration) => {
-    scenario("NavigationRest").exec(
+    val tabPause = pause / 4
+    scenario("NavigationJsf").exec(
       during(duration, "counterName") {
-        feed(Feeders.usersCircular).repeat(5) {
+        feed(Feeders.usersCircular)
+          .exec(NuxeoJsf.loginAndGoToWorkspaceRoot())
+          .pause(pause)
+          .feed(documents)
+          .exec(NuxeoJsf.viewParentFolderOfCurrentDocument())
+          .pause(pause)
+          .exec(NuxeoJsf.viewCurrentDocument())
+          .pause(pause)
+          .exec(NuxeoJsf.viewCurrentDocumentEditTab())
+          .pause(tabPause)
+          .exec(NuxeoJsf.viewCurrentDocumentFilesTab())
+          .pause(tabPause)
+          .exec(NuxeoJsf.viewCurrentDocumentPermissionTab())
+          .pause(tabPause)
+          .exec(NuxeoJsf.viewCurrentDocumentPublishTab())
+          .pause(tabPause)
+          .exec(NuxeoJsf.viewCurrentDocumentRelationTab())
+          .pause(tabPause)
+          .exec(NuxeoJsf.viewCurrentDocumentCommentsTab())
+          .pause(tabPause)
+          .exec(NuxeoJsf.viewCurrentDocumentHistoryTab())
+          .pause(tabPause)
+          .repeat(5) {
           feed(documents)
-            .exec(NuxeoRest.getDocument())
+            .exec(NuxeoJsf.viewParentFolderOfCurrentDocument())
             .pause(pause)
-            .exec(NuxeoRest.getParentFolderOfCurrentDocument())
+            .exec(NuxeoJsf.viewCurrentDocument())
             .pause(pause)
-        }
+        }.exec(NuxeoJsf.logout())
       }
     )
   }
 
 }
 
-class Sim30Navigation extends Simulation {
 
+class Sim30NavigationJsf extends Simulation {
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val documents = Feeders.createRandomDocFeeder()
-  val scn = ScnNavigation.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
+  val scn = ScnNavigationJsf.get(documents, Parameters.getSimulationDuration(), Parameters.getPause())
   setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers()).over(Parameters.getRampDuration())))
     .protocols(httpProtocol).exponentialPauses
 }

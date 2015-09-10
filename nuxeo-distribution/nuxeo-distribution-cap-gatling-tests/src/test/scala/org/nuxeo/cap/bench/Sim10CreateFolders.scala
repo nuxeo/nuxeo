@@ -20,28 +20,34 @@ package org.nuxeo.cap.bench
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
-class Sim10CreateFolders extends Simulation {
+import scala.concurrent.duration.Duration
 
-  def run = (folders: Iterator[Map[String, String]]) => {
-    asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
-      feed(folders)
-        .feed(Feeders.usersCircular)
-        .exec(NuxeoRest.createDocument())
-        .doIf(session => Redis.markFolderCreated(session)) {
-        exec()
+object ScnCreateFolders {
+
+  def get = (folders: Iterator[Map[String, String]], pause: Duration) => {
+    scenario("CreateFolders").exec(
+      asLongAs(session => Feeders.notEmpty(session), exitASAP = true) {
+        feed(folders)
+          .feed(Feeders.usersCircular)
+          .exec(NuxeoRest.createDocument())
+          .pause(pause)
+          .doIf(session => Redis.markFolderCreated(session)) {
+          exec()
+        }
       }
-    }
+    )
   }
 
-  val url = System.getProperty("url", "http://localhost:8080/nuxeo")
-  val nbUsers = Integer.getInteger("users", 1)
+}
+
+class Sim10CreateFolders extends Simulation {
   val httpProtocol = http
-    .baseURL(url)
+    .baseURL(Parameters.getBaseUrl())
     .disableWarmUp
     .acceptEncodingHeader("gzip, deflate")
     .connection("keep-alive")
   val folders = Feeders.createFolderFeeder()
-  val scn = scenario("10-CreateFolders").exec(run(folders))
-
-  setUp(scn.inject(atOnceUsers(nbUsers))).protocols(httpProtocol)
+  val scn = ScnCreateFolders.get(folders, Parameters.getPause())
+  setUp(scn.inject(rampUsers(Parameters.getConcurrentUsers(1)).over(Parameters.getRampDuration())))
+    .protocols(httpProtocol).exponentialPauses
 }

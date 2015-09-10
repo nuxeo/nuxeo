@@ -50,6 +50,25 @@ object NuxeoRest {
       .check(status.in(200))
   }
 
+  def getDocument() = {
+    http("Get ${type}")
+      .get(Constants.GAT_API_PATH + "/${url}")
+      .headers(Headers.base)
+      .header("Content-Type", "application/json")
+      .basicAuth("${user}", "${password}")
+      .check(status.in(200))
+  }
+
+  def getParentFolderOfCurrentDocument() = {
+    http("Get Parent Folder")
+      .get(Constants.GAT_API_PATH + "/${parentPath}")
+      .headers(Headers.base)
+      .header("Content-Type", "application/json")
+      .basicAuth("${user}", "${password}")
+      .check(status.in(200))
+  }
+
+
   def createDocumentIfNotExists = (parent: String, name: String, docType: String) => {
     exitBlockOnFail {
       exec(

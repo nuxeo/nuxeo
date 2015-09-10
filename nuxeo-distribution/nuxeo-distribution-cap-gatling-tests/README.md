@@ -107,7 +107,7 @@ Some useful `redit-cli` commands:
 
 # Simulations
 
-## Setup Simulation
+## Sim00Setup: Setup Simulation
 
 This simulation initialize the environnement and need to be run first, it is idempotent.
 
@@ -117,54 +117,39 @@ This simulation initialize the environnement and need to be run first, it is ide
 - create all users in this group
 - grant write access on bench workspace to the group
 
-## Create folder layout
+## Sim10CreateFolders: Create folder layout
 
 Create the folder layout, using the rest API as listed in Redis `imp:folder`.
 
 
-## Create documents
+## Sim20CreateDocuments: Create documents
 
 Create the documents, using the rest API as listed in Redis `imp:doc`
 
-Options:
 
-    # number of concurrent users creating documents
-    -Dusers=8
-
-## Update documents
+## Sim30UpdateDocuments: Update documents
 
 Update description of a document take document from `imp:temp:doc:created`
 
-Options:
 
-    # number of concurrent users creating documents
-    -Dusers=8
-    # duration in second of the bench
-    -Dduration=30
-    # user thinktime in second between update
-    -DthinkTime=0
+## Sim30Navigation: Rest navigation
 
-## Navigation
+Get a random folder and document using the REST API (taken from `imp:temp:doc:created`)
 
-View random folder and document tabs, taken from `imp:temp:doc:created`
+## Sim30NavigationJsf: JSF Navigation
 
-Options:
+View a random folder and a document in it, view all document tabs (doc taken from `imp:temp:doc:created`)
 
-    # number of concurrent users
-    -Dusers=8
-    # duration in second of the bench
-    -Dduration=30
-    # user thinktime in second between update
-    -DthinkTime=0
 
-## Bench (mixing Navigation and Update)
+## Sim50Bench: mixing JSF, Rest Navigation and Document update
 
-10% UpdateDocument
-90% Navigation
+To setup the proportion you need to prefix the options with:
+`nav.` for Rest Navigation
+`navjsf.` for JSF Navigation
+`upd.`  for Document update
 
-## Cleanup simulation
+For instance: `-Dnav.users=30 -Dnavjsf=10 -Dupd.user=5 -Dnavjsf.pause_ms=5000`
 
-This simulation remove all documents, users and group from the Nuxeo instance, also delete the data in redis.
 
 # Executing bench
 
@@ -194,9 +179,7 @@ Default options: see below
      [2] org.nuxeo.cap.bench.Sim20CreateDocuments
      [3] org.nuxeo.cap.bench.Sim30Navigation
      [4] org.nuxeo.cap.bench.Sim30UpdateDocuments
-     [5] org.nuxeo.cap.bench.Sim50Bench
-     [6] org.nuxeo.cap.bench.Sim90Cleanup
-
+     ...
 
 Common options with default values:
 
@@ -204,6 +187,14 @@ Common options with default values:
     -Durl=http://localhost:8080/nuxeo
     # Redis access
     -DredisHost=localhost -DredisPort=6379 -DredisDb=7 -DredisNamespace=imp
+    # Number of concurrent users, default depends on simulation
+    -Dusers=8
+    # Time in second to reach the target number of concurrent users
+    -Dramp=0
+    # Average pause in millisecond between action, follow an exponential distribution
+    -Dpause_ms=0
+    # Duration in second of the simulation
+    -Dduration=60
 
 Note that you may need to edit the administrator account if it is not the default one:
 
@@ -212,3 +203,20 @@ Note that you may need to edit the administrator account if it is not the defaul
 You can also bypass the interactive mode and execute a simulation
 
     mvn -nsu test gatling:execute -Dgatling.simulationClass=org.nuxeo.cap.bench.Sim00Setup -Pbench
+
+# Resources
+
+## Reporting issues
+
+https://jira.nuxeo.com/browse/NXP-17739
+https://jira.nuxeo.com/secure/CreateIssue!default.jspa?project=NXP
+
+# Licensing
+
+[GNU Lesser General Public License (LGPL) v2.1](http://www.gnu.org/licenses/lgpl-2.1.html)
+
+# About Nuxeo
+
+Nuxeo dramatically improves how content-based applications are built, managed and deployed, making customers more agile, innovative and successful. Nuxeo provides a next generation, enterprise ready platform for building traditional and cutting-edge content oriented applications. Combining a powerful application development environment with
+SaaS-based tools and a modular architecture, the Nuxeo Platform and Products provide clear business value to some of the most recognizable brands including Verizon, Electronic Arts, Netflix, Sharp, FICO, the U.S. Navy, and Boeing. Nuxeo is headquartered in New York and Paris.
+More information is available at [www.nuxeo.com](http://www.nuxeo.com).
