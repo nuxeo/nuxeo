@@ -30,9 +30,21 @@
 
   <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
     <documentation>
-      Property that defines what characters that are escaped in core queries.
+      Properties for core queries behaviors:
+      <ul>
+        <li>org.nuxeo.query.builder.ignored.chars: defines what characters that
+          are escaped in core queries.</li>
+        <li>
+          org.nuxeo.ecm.platform.query.nxql.defaultNavigationResults:
+          <a href="https://doc.nuxeo.com/x/FQ4z#ContentViews-maxresults"
+            target="_blank">
+            Maximum number of results for page providers.
+          </a>
+        </li>
+      </ul>
     </documentation>
     <property name="org.nuxeo.query.builder.ignored.chars">!#$%&amp;'()+,./\\\\:-@{|}`^~</property>
+    <property name="org.nuxeo.ecm.platform.query.nxql.defaultNavigationResults">200</property>
   </extension>
 
 </component>

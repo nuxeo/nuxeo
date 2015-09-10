@@ -35,6 +35,7 @@ import org.nuxeo.ecm.platform.query.api.AbstractPageProvider;
 import org.nuxeo.ecm.platform.query.api.PageProviderDefinition;
 import org.nuxeo.ecm.platform.query.api.PageSelections;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Page provider performing a query on a core session.
@@ -276,7 +277,8 @@ public class CoreQueryDocumentPageProvider extends AbstractPageProvider<Document
             String maxResultsStr = (String) getProperties().get(MAX_RESULTS_PROPERTY);
             if (maxResultsStr != null) {
                 if (DEFAULT_NAVIGATION_RESULTS_KEY.equals(maxResultsStr)) {
-                    maxResultsStr = Framework.getProperty(DEFAULT_NAVIGATION_RESULTS_PROPERTY,
+                    ConfigurationService cs = Framework.getService(ConfigurationService.class);
+                    maxResultsStr = cs.getProperty(DEFAULT_NAVIGATION_RESULTS_PROPERTY,
                             DEFAULT_NAVIGATION_RESULTS_VALUE);
                 } else if (PAGE_SIZE_RESULTS_KEY.equals(maxResultsStr)) {
                     maxResultsStr = Long.valueOf(getPageSize()).toString();
