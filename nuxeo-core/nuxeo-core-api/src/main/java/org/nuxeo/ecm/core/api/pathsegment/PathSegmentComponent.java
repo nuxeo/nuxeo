@@ -136,4 +136,13 @@ public class PathSegmentComponent extends DefaultComponent implements
         }
         return service.generatePathSegment(s);
     }
+
+    @Override
+    public int getMaxSize() {
+        if (recompute) {
+            recompute();
+            recompute = false;
+        }
+        return service.getMaxSize();
+    }
 }

@@ -22,8 +22,12 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface PathSegmentService {
 
     /**
-     * Generate the path segment to use for a {@link DocumentModel} that's about
-     * to be created.
+     * @since 7.4
+     */
+    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
+
+    /**
+     * Generate the path segment to use for a {@link DocumentModel} that's about to be created.
      *
      * @param doc the document
      * @return the path segment, which must not contain any {@code /} character
@@ -39,4 +43,10 @@ public interface PathSegmentService {
      */
     String generatePathSegment(String s) throws ClientException;
 
+    /**
+     * Return the path segment max size
+     *
+     * @since 7.4
+     */
+    int getMaxSize();
 }

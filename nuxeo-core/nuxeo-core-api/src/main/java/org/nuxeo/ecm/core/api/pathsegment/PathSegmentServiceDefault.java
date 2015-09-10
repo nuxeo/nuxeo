@@ -26,10 +26,13 @@ public class PathSegmentServiceDefault implements PathSegmentService {
 
     public Pattern stupidRegexp = Pattern.compile("^[- .,;?!:/\\\\'\"]*$");
 
-    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
+    /**
+     * @deprecated since 7.4, use {@link PathSegmentService#NUXEO_MAX_SEGMENT_SIZE_PROPERTY} instead
+     */
+    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY;
 
-    public int maxSize = Integer.parseInt(Framework.getProperty(
-            NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
+    protected int maxSize = Integer.parseInt(
+            Framework.getProperty(PathSegmentService.NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
     public String generatePathSegment(DocumentModel doc) throws ClientException {
@@ -42,8 +45,8 @@ public class PathSegmentServiceDefault implements PathSegmentService {
             s = "";
         }
         s = s.trim();
-        if (s.length() > maxSize) {
-            s = s.substring(0, maxSize).trim();
+        if (s.length() > getMaxSize()) {
+            s = s.substring(0, getMaxSize()).trim();
         }
         s = s.replace('/', '-');
         s = s.replace('\\', '-');
@@ -51,5 +54,10 @@ public class PathSegmentServiceDefault implements PathSegmentService {
             return IdUtils.generateStringId();
         }
         return s;
+    }
+
+    @Override
+    public int getMaxSize() {
+        return maxSize;
     }
 }

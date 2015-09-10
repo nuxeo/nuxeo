@@ -29,13 +29,13 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.platform.mail.action.ExecutionContext;
 import org.nuxeo.ecm.platform.mail.listener.action.AbstractMailAction;
 import org.nuxeo.runtime.api.Framework;
@@ -71,27 +71,9 @@ public class CreateDocumentsFromAutomationChainAction extends
         return chainName;
     }
 
-    protected final int maxSize = Integer.parseInt(Framework.getProperty(
-            "nuxeo.path.segment.maxsize", "24"));
-
-    protected String generatePathSegment(String s) {
-        if (s == null) {
-            s = "";
-        }
-        s = s.trim();
-        if (s.length() > maxSize) {
-            s = s.substring(0, maxSize).trim();
-        }
-        s = s.replace('/', '-');
-        s = s.replace('\\', '-');
-        if (stupidRegexp.matcher(s).matches()) {
-            return IdUtils.generateStringId();
-        }
-        return s;
-    }
-
     protected String generateMailName(String subject) {
-        return generatePathSegment(subject + System.currentTimeMillis() % 10000);
+        PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+        return pss.generatePathSegment(subject + System.currentTimeMillis() % 10000);
     }
 
     @Override

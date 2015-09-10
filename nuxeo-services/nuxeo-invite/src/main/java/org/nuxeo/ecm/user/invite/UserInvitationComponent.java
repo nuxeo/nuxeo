@@ -42,7 +42,6 @@ import javax.naming.InitialContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.ClientRuntimeException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,6 +55,7 @@ import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -219,7 +219,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                     + userRegistrationModel.getPropertyValue(UserRegistrationInfo.USERNAME_FIELD) + " ("
                     + userRegistrationModel.getPropertyValue(UserRegistrationInfo.EMAIL_FIELD) + " "
                     + userRegistrationModel.getPropertyValue(UserRegistrationInfo.COMPANY_FIELD) + ") ";
-            String name = IdUtils.generateId(title + "-" + System.currentTimeMillis());
+            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            String name = pss.generatePathSegment(title + "-" + System.currentTimeMillis());
 
             String targetPath = getOrCreateRootDocument(session, configuration.getName()).getPathAsString();
 
