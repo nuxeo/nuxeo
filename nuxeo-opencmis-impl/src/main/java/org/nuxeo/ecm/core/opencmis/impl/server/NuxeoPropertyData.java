@@ -267,7 +267,7 @@ public abstract class NuxeoPropertyData<T> extends NuxeoPropertyDataBase<T> {
         }
         GregorianCalendar lastModified = (GregorianCalendar) doc.getPropertyValue("dc:modified");
         DownloadService downloadService = Framework.getService(DownloadService.class);
-        downloadService.logDownload(doc, "blobholder:0", blob.getFilename(), "cmis", null);
+        downloadService.logDownload(doc, DownloadService.BLOBHOLDER_0, blob.getFilename(), "cmis", null);
         return new NuxeoContentStream(blob, lastModified);
     }
 
