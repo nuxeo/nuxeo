@@ -54,8 +54,8 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
-import org.nuxeo.ecm.platform.ui.web.tag.fn.DocumentModelFunctions;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.tokenauth.service.TokenAuthenticationService;
 import org.nuxeo.ecm.user.center.UserCenterViewManager;
@@ -221,8 +221,9 @@ public class NuxeoDriveActions extends InputController implements Serializable {
         sb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
         if (Boolean.valueOf(Framework.getProperty(NEW_DRIVE_EDIT_URL_PROP_KEY))) {
             sb.append("/downloadUrl/");
-            String bigFileUrl = DocumentModelFunctions.bigFileUrl(currentDocument, "blobholder:0", "");
-            sb.append(bigFileUrl.substring(bigFileUrl.indexOf("nxbigfile/")));
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            String downloadUrl = downloadService.getDownloadUrl(currentDocument, DownloadService.BLOBHOLDER_0, "");
+            sb.append(downloadUrl);
         }
         return sb.toString();
     }

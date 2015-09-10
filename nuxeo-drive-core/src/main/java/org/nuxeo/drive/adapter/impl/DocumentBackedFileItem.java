@@ -17,7 +17,6 @@
 package org.nuxeo.drive.adapter.impl;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.drive.adapter.FileItem;
 import org.nuxeo.drive.adapter.FolderItem;
 import org.nuxeo.drive.service.NuxeoDriveManager;
@@ -28,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -203,18 +203,10 @@ public class DocumentBackedFileItem extends AbstractDocumentBackedFileSystemItem
     }
 
     protected void updateDownloadURL() {
-        StringBuilder downloadURLSb = new StringBuilder();
-        downloadURLSb.append("nxbigfile/");
-        downloadURLSb.append(repositoryName);
-        downloadURLSb.append("/");
-        downloadURLSb.append(docId);
-        downloadURLSb.append("/");
-        downloadURLSb.append("blobholder:0");
-        downloadURLSb.append("/");
+        DownloadService downloadService = Framework.getService(DownloadService.class);
         // Remove chars that are invalid in filesystem names
         String escapedFilename = name.replaceAll("(/|\\\\|\\*|<|>|\\?|\"|:|\\|)", "-");
-        downloadURLSb.append(URIUtils.quoteURIPathComponent(escapedFilename, true));
-        downloadURL = downloadURLSb.toString();
+        downloadURL = downloadService.getDownloadUrl(repositoryName, docId, DownloadService.BLOBHOLDER_0, escapedFilename);
     }
 
     protected void updateDigest(Blob blob) {
