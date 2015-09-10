@@ -408,6 +408,7 @@ public class MongoDBRepository extends DBSRepositoryBase {
     protected void initRepository() {
         // create required indexes
         // code does explicit queries on those
+        coll.createIndex(new BasicDBObject(KEY_ID, ONE));
         coll.createIndex(new BasicDBObject(KEY_PARENT_ID, ONE));
         coll.createIndex(new BasicDBObject(KEY_ANCESTOR_IDS, ONE));
         coll.createIndex(new BasicDBObject(KEY_VERSION_SERIES_ID, ONE));
