@@ -28,4 +28,11 @@
       class="org.nuxeo.ecm.platform.query.core.PageProviderClassReplacerDescriptor" />
   </extension-point>
 
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that defines what characters that are escaped in core queries.
+    </documentation>
+    <property name="org.nuxeo.query.builder.ignored.chars">!#$%&'()+,./\\\\:-@{|}`^~</property>
+  </extension>
+
 </component>
