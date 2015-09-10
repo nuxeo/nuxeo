@@ -40,14 +40,13 @@ import com.google.inject.Inject;
 
 /**
  * Tests the {@link NuxeoDriveSetActiveFactories} operation.
- * 
+ *
  * @author Antoine Taillefer
  */
 @RunWith(FeaturesRunner.class)
 @Features({ TransactionalFeature.class, EmbeddedAutomationServerFeature.class })
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload",
-        "org.nuxeo.runtime.datasource" })
-@LocalDeploy("org.nuxeo.drive.core:drive-repo-ds.xml")
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload"})
+@LocalDeploy("org.nuxeo.drive.operations:drive-repo-ds.xml")
 @Jetty(port = 18080)
 public class TestActivateFactories {
 
