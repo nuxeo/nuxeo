@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
-import java.util.List;
 
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
@@ -39,13 +38,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.platform.annotations.api.Annotation;
 import org.nuxeo.ecm.platform.annotations.api.AnnotationsService;
 import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.url.api.DocumentViewCodecManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Handles Annotations related web actions.
@@ -89,7 +88,12 @@ public class AnnotationsActions implements Serializable {
             return false;
         }
 
-        return Framework.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY) || blob.getMimeType().startsWith("image");
+        return blob.getMimeType().startsWith("image") || isTextAnnotationsEnabled();
+    }
+
+    protected boolean isTextAnnotationsEnabled() {
+        ConfigurationService cs = Framework.getService(ConfigurationService.class);
+        return cs.isBooleanPropertyTrue(TEXT_ANNOTATIONS_KEY);
     }
 
 }
