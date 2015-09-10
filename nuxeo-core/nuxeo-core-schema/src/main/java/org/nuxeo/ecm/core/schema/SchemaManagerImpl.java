@@ -41,7 +41,6 @@ import org.nuxeo.ecm.core.schema.types.QName;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.schema.types.TypeException;
-import org.nuxeo.runtime.api.Framework;
 import org.xml.sax.SAXException;
 
 /**
@@ -111,7 +110,7 @@ public class SchemaManagerImpl implements SchemaManager {
     public static final String SCHEMAS_DIR_NAME = "schemas";
 
     public SchemaManagerImpl() {
-        schemaDir = new File(Framework.getRuntime().getHome(), SCHEMAS_DIR_NAME);
+        schemaDir = new File(System.getProperty("java.io.tmpdir"), SCHEMAS_DIR_NAME);
         if (!schemaDir.isDirectory()) {
             schemaDir.mkdirs();
         }
