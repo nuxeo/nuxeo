@@ -162,7 +162,7 @@
                 </configuration>
               </execution>
               <execution>
-                <id>navigation-jsf</id>
+                <id>bench-mix</id>
                 <phase>integration-test</phase>
                 <goals>
                   <goal>execute</goal>
