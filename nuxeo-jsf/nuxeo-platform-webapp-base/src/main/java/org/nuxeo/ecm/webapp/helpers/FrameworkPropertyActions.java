@@ -19,10 +19,12 @@ package org.nuxeo.ecm.webapp.helpers;
 import static org.jboss.seam.annotations.Install.FRAMEWORK;
 
 import org.jboss.seam.ScopeType;
+import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Seam component that exposes getters for all properties managements by the runtime {@link Framework}
@@ -34,22 +36,25 @@ import org.nuxeo.runtime.api.Framework;
 @Install(precedence = FRAMEWORK)
 public class FrameworkPropertyActions {
 
+    @In(create = true)
+    protected transient ConfigurationService configurationService;
+
     public String getProperty(String propertyName) {
-        return Framework.getProperty(propertyName);
+        return configurationService.getProperty(propertyName);
     }
 
     public String getProperty(String propertyName, String defaultValue) {
-        return Framework.getProperty(propertyName, defaultValue);
+        return configurationService.getProperty(propertyName, defaultValue);
     }
 
     /**
      * Returns true if given property has been setup to true (defaults to false if not set).
      *
      * @since 5.8
-     * @see {@link Framework#isBooleanPropertyTrue(String)}
+     * @see {@link ConfigurationService#isBooleanPropertyTrue(String)}
      */
     public boolean isBooleanPropertyTrue(String propertyName) {
-        return Framework.isBooleanPropertyTrue(propertyName);
+        return configurationService.isBooleanPropertyTrue(propertyName);
     }
 
 }
