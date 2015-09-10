@@ -781,38 +781,50 @@ public class DialectPostgreSQL extends Dialect {
 
     @Override
     public String getInTreeSql(String idColumnName, String id) {
+        String cast;
+        try {
+            cast = getCastForId(id);
+        } catch (IllegalArgumentException e) {
+            // discard query with invalid id
+            return null;
+        }
         if (pathOptimizationsEnabled) {
-            String cast;
-            switch (idType) {
+            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
+                    idColumnName, getCastForArray(cast));
+        }
+        return String.format("%s IN (SELECT * FROM nx_children(?%s))", idColumnName, cast);
+    }
+
+    protected String getCastForArray(String cast) {
+        if (cast.isEmpty()) {
+            return cast;
+        }
+        return cast + "[]";
+    }
+
+    protected String getCastForId(String id) {
+        String ret;
+        switch (idType) {
             case VARCHAR:
-                cast = "";
-                break;
+                return "";
             case UUID:
                 // check that it's really a uuid
                 if (id != null) {
-                    try {
-                        UUID.fromString(id);
-                    } catch (IllegalArgumentException e) {
-                        return null;
-                    }
+                    UUID.fromString(id);
                 }
-                cast = "::uuid[]";
+                ret = "::uuid";
                 break;
             case SEQUENCE:
                 // check that it's really an integer
                 if (id != null && !org.apache.commons.lang.StringUtils.isNumeric(id)) {
-                    return null;
+                    throw new IllegalArgumentException("Invalid sequence id: " + id);
                 }
-                cast = "::bigint[]";
+                ret = "::bigint";
                 break;
             default:
                 throw new AssertionError("Unknown id type: " + idType);
-            }
-            return String.format("EXISTS(SELECT 1 FROM ancestors WHERE id = %s AND ARRAY[?]%s <@ ancestors)",
-                    idColumnName, cast);
-        } else {
-            return String.format("%s IN (SELECT * FROM nx_children(?))", idColumnName);
         }
+        return ret;
     }
 
     @Override
