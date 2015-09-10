@@ -30,7 +30,7 @@ object ScnNavigationJsf {
     scenario("NavigationJsf").exec(
       during(duration, "counterName") {
         feed(Feeders.usersCircular)
-          .exec(NuxeoJsf.loginAndGoToWorkspaceRoot())
+          .exec(NuxeoJsf.loginAndGoToGatlingWorkspace())
           .pause(pause)
           .feed(documents)
           .exec(NuxeoJsf.viewParentFolderOfCurrentDocument())

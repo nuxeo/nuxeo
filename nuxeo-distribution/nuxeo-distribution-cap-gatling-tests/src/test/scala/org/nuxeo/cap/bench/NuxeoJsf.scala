@@ -52,9 +52,10 @@ object NuxeoJsf {
     loginAndGoTo("login", "")
   }
 
-  /** login with the current user, redirected to the ws root */
-  def loginAndGoToWorkspaceRoot() = {
-    loginAndGoTo("Login redirect to workspaces", "nxpath/default/default-domain/workspaces@view_documents?tabIds=%3A")
+  /** login with the current user, redirected to Gatling WS */
+  def loginAndGoToGatlingWorkspace() = {
+    loginAndGoTo("Login redirect to workspace", "nxpath/default" + Constants.GAT_WS_PATH +
+      "@view_documents?tabIds=%3A").check(currentLocationRegex(".*" + Constants.GAT_WS_PATH + ".*").exists)
   }
 
   def logout() = {
