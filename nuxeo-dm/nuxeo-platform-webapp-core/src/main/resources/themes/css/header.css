@@ -22,9 +22,9 @@ author: lkemen@nuxeo.com
 .nxHeader .logo {
   float: left;
   line-height: 2.8em;
-  text-align: center;
+  padding-left: 1.6em;
   vertical-align: middle;
-  width: 18% }
+  width: 19% }
 
 .nxHeader .logo img {
   max-height: 8em;
@@ -34,10 +34,9 @@ author: lkemen@nuxeo.com
   float: right;
   font-size: 12px;
   font-family: Arial;
-  padding: .85em 0;
   text-transform: uppercase;
   vertical-align: middle;
-  width: 82% }
+  width: 81% }
 
 .nxHeader .includes {
   width: 0 }
@@ -66,7 +65,7 @@ author: lkemen@nuxeo.com
 .userSearchBlock {
   float: right;
   line-height: 200%;
-  margin: 0 1em 0 .5em;
+  margin: 1em 1em 0 .5em;
   text-transform: none;
   -moz-transition: all 0.3s ease 0.1s;
   -webkit-transition: all 0.3s ease 0.1s;
@@ -124,7 +123,8 @@ author: lkemen@nuxeo.com
 
 /* =UserServices */
 .userServicesBlock {
-  float: left; }
+  float: left;
+  line-height: 44px; }
 
 .userServicesBlock a:hover {
   text-decoration: none }
@@ -136,10 +136,9 @@ author: lkemen@nuxeo.com
   font-weight: normal }
 
 .mainTabs li {
-  border-radius: .2em;
+  border-top: 3px solid transparent;
   display: inline;
   float: left;
-  line-height: 2em;
   margin: 0 .05em }
 
 .mainTabs a:link,
@@ -147,19 +146,17 @@ author: lkemen@nuxeo.com
   color: "link.header (__FLAVOR__ color)";
   display: inline-block;
   font-size: 1.1em;
-  padding: .15em .4em }
+  padding: 0 .4em }
 
 .mainTabs li:hover,
 .mainTabs li.selected {
-  background-color: "header.tabs.selected (__FLAVOR__ background)"; }
+  border-top: 3px solid "header.tabs.selected (__FLAVOR__ border)"; }
 
 .mainTabs li.selected a {
-  font-weight: bold;
-  color: #fff; }
+  font-weight: bold; }
 
 .nxHeader .userActions {
   float: left;
-  line-height: 2.1em;
   padding: 0 .5em;
   text-transform: none }
 
@@ -169,7 +166,6 @@ author: lkemen@nuxeo.com
   padding: 0 }
 
 .nxHeader .userMenuActions a {
-  background-color: #fff;
   font-size: 1.1em;
   display: block }
 

@@ -13,7 +13,6 @@ author: lkemen@nuxeo.com
   border-width: 1px; border-style: solid;
   border-color: "neutral.lighter (__FLAVOR__ border)";
   border-radius: 3px;
-  box-sizing: border-box;
   display: inline-block;
   font-family: arial,sans-serif;
   font-size: 1em;
@@ -46,7 +45,7 @@ author: lkemen@nuxeo.com
   border-top: 4px solid transparent;
   color: "gray.dark (__FLAVOR__ color)";
   display: inline-block;
-  padding: .3em .5em .6em;
+  padding: .5em .6em .7em;
   text-decoration: none }
 
 .column .tabsBar li a,
@@ -59,6 +58,7 @@ author: lkemen@nuxeo.com
 .modularTabs li a:hover,
 .modularTabs li.selected a,
 .modularTabs li.selected a:visited {
+  background-color: #fff;
   border-color: "color.major.strong (__FLAVOR__ border)";
   color: "tabs.selected (__FLAVOR__ color)" }
 
@@ -67,9 +67,9 @@ author: lkemen@nuxeo.com
   border-radius: 3px 0 0 }
 
 .column .tabsBar {
-  background-color: #eee;
-  border-radius: 0;
-  border-style: none }
+  border-radius: 2px 2px 0 0;
+  border-style: none none solid;
+  margin-bottom: -5px; }
 
 .column .tabsBar li:first-child a,
 .tabsBar.vertical li:first-child a {
@@ -77,12 +77,6 @@ author: lkemen@nuxeo.com
 
 .tabsBar li.selected a {
   font-weight: bold }
-
-.column .tabsbar li:hover a,
-.column .tabsbar li a:hover,
-.column .tabsBar li.selected a {
-  background-color: #fff;
-  border-top: 3px solid transparent }
 
 .subtabsBar {
   background: none transparent;
@@ -131,7 +125,7 @@ author: lkemen@nuxeo.com
   border: none; }
 
 .tabsBar.vertical ul {
-  margin: 0 0 0 .6rem;
+  margin: 0;
   padding: 0; }
 
 .tabsBar.vertical li {
@@ -146,18 +140,15 @@ author: lkemen@nuxeo.com
   font-size: 1.2em;
   border-top: none;
   border-left: 3px solid transparent;
-  padding: .7em 0 .7em .6em;
+  padding: .7em 0 .7em 1.5em;
   text-decoration: none;
-  transition: none }
-
-.tabsBar.vertical li a img {
-  margin: 0 .4em -0.15em 0 }
+  transition: none; }
 
 .tabsBar.vertical li:hover,
 .tabsBar.vertical li.selected,
 .tabsBar.vertical li.selected:hover {
-  margin-left: .2em;
-  transition: margin 0.1s ease-in 0.1s }
+  margin: 0 0 .15em .2em;
+  transition: margin 100ms ease-in 0s; }
 
 .tabsBar.vertical li:hover a,
 .tabsBar.vertical li.selected a {
