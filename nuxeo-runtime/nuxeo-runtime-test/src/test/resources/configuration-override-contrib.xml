@@ -1,0 +1,11 @@
+<component name="org.nuxeo.runtime.ConfigurationService.test.override">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="nuxeo.test.dummyBooleanProperty">false</property>
+    <property name="nuxeo.test.dummyStringProperty">dummyStringValueOverridden</property>
+    <property name="nuxeo.test.overrideContribDummyProperty">overrideContrib</property>
+
+  </extension>
+
+</component>

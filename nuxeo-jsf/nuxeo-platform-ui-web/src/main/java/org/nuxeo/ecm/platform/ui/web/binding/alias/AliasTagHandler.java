@@ -39,8 +39,8 @@ import javax.faces.view.facelets.FaceletHandler;
 import javax.faces.view.facelets.TagAttribute;
 import javax.faces.view.facelets.TagException;
 
-import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.facelets.tag.jsf.ComponentSupport;
 
@@ -132,7 +132,7 @@ public class AliasTagHandler extends ComponentHandler {
 
     protected void apply(FaceletContext ctx, UIComponent parent, AliasVariableMapper alias, FaceletHandler nextHandler)
             throws IOException, FacesException, FaceletException, ELException {
-        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         if (configurationService.isBooleanPropertyTrue("nuxeo.jsf.removeAliasOptims")) {
             applyCompat(ctx, parent, alias, nextHandler);
             return;

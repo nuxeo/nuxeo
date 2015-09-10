@@ -16,6 +16,9 @@
  */
 package org.nuxeo.ecm.platform.ui.web.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,22 +29,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.RuntimeContext;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeHarness;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
 /**
  * @author arussel
  */
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
-@LocalDeploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-framework.xml",
-        "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-default.xml" })
+@LocalDeploy({ "org.nuxeo.ecm.platform.ui:OSGI-INF/jsfconfiguration-properties.xml" })
 public class TestFunctions {
 
     @Inject
@@ -75,6 +75,10 @@ public class TestFunctions {
                 ctx.undeploy(url);
             }
         }
+
+        // override via framework properties
+        Framework.getProperties().setProperty("nuxeo.jsf.defaultBytePrefixFormat", "JEDEC");
+        assertEquals("120 KB", Functions.printFileSize("123456"));
     }
 
     @Test

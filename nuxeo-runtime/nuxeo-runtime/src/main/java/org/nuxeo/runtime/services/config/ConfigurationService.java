@@ -13,15 +13,19 @@
  *
  * Contributors:
  *      Andre Justo
+ *      Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.ui.web.runtime;
+package org.nuxeo.runtime.services.config;
 
 /**
- * Service to hold JSF runtime configuration properties.
+ * Service holding runtime configuration properties.
+ * <p>
+ * If a property is defined in the nuxeo.conf file, it will take precedence over properties defined via the runtime
+ * extension point.
  *
  * @since 7.4
  */
-public interface JSFConfigurationService {
+public interface ConfigurationService {
 
     /**
      * Returns the given property value if any, otherwise null.
@@ -47,4 +51,5 @@ public interface JSFConfigurationService {
      * Returns true if given property is false when compared to a boolean value.
      */
     boolean isBooleanPropertyFalse(String key);
+
 }

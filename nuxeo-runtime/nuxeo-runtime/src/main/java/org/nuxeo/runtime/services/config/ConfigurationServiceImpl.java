@@ -13,25 +13,27 @@
  *
  * Contributors:
  *      Andre Justo
+ *      Anahide Tchertchian
  */
-package org.nuxeo.ecm.platform.ui.web.runtime;
+package org.nuxeo.runtime.services.config;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
  * @since 7.4
  */
-public class JSFConfigurationServiceImpl extends DefaultComponent implements JSFConfigurationService {
+public class ConfigurationServiceImpl extends DefaultComponent implements ConfigurationService {
 
-    protected static final Log log = LogFactory.getLog(JSFConfigurationServiceImpl.class);
+    protected static final Log log = LogFactory.getLog(ConfigurationServiceImpl.class);
 
     public static final String CONFIGURATION_EP = "configuration";
 
-    protected JSFConfigurationDescriptorRegistry registry = new JSFConfigurationDescriptorRegistry();
+    protected ConfigurationPropertyRegistry registry = new ConfigurationPropertyRegistry();
 
     @Override
     public String getProperty(String key) {
@@ -40,6 +42,9 @@ public class JSFConfigurationServiceImpl extends DefaultComponent implements JSF
 
     @Override
     public String getProperty(String key, String defaultValue) {
+        if (Framework.getProperties().containsKey(key)) {
+            return Framework.getProperty(key, defaultValue);
+        }
         if (registry.hasProperty(key)) {
             return registry.getProperty(key);
         }
@@ -48,12 +53,18 @@ public class JSFConfigurationServiceImpl extends DefaultComponent implements JSF
 
     @Override
     public boolean isBooleanPropertyTrue(String key) {
+        if (Framework.getProperties().containsKey(key)) {
+            return Framework.isBooleanPropertyTrue(key);
+        }
         String value = getProperty(key);
         return Boolean.parseBoolean(value);
     }
 
     @Override
     public boolean isBooleanPropertyFalse(String key) {
+        if (Framework.getProperties().containsKey(key)) {
+            return Framework.isBooleanPropertyFalse(key);
+        }
         String value = getProperty(key);
         if (StringUtils.isBlank(value)) {
             return false;
@@ -64,14 +75,14 @@ public class JSFConfigurationServiceImpl extends DefaultComponent implements JSF
     @Override
     public void registerContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            registry.addContribution((JSFConfigurationDescriptor) contribution);
+            registry.addContribution((ConfigurationPropertyDescriptor) contribution);
         }
     }
 
     @Override
     public void unregisterContribution(Object contribution, String extensionPoint, ComponentInstance contributor) {
         if (CONFIGURATION_EP.equals(extensionPoint)) {
-            registry.removeContribution((JSFConfigurationDescriptor) contribution);
+            registry.removeContribution((ConfigurationPropertyDescriptor) contribution);
         }
     }
 

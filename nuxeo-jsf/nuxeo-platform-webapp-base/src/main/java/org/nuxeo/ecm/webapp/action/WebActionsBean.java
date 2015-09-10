@@ -19,6 +19,9 @@
 
 package org.nuxeo.ecm.webapp.action;
 
+import static org.jboss.seam.ScopeType.CONVERSATION;
+import static org.jboss.seam.ScopeType.EVENT;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +54,9 @@ import org.nuxeo.ecm.platform.actions.ejb.ActionManager;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.TabActionsSelection;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
-import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.runtime.api.Framework;
-
-import static org.jboss.seam.ScopeType.CONVERSATION;
-import static org.jboss.seam.ScopeType.EVENT;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Component that handles actions retrieval as well as current tab(s) selection.
@@ -465,7 +465,7 @@ public class WebActionsBean implements WebActions, Serializable {
 
     @Factory(value = "useAjaxTabs", scope = ScopeType.SESSION)
     public boolean useAjaxTabs() {
-        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         if (configurationService.isBooleanPropertyTrue(AJAX_TAB_PROPERTY)) {
             return canUseAjaxTabs();
         }

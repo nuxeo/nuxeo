@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.nuxeo.runtime.ConfigurationService">
+
+  <documentation>
+    The ConfigurationService service holds application configuration properties that are used at runtime. This
+    service should not include properties that are needed at startup.
+
+    @since 7.4
+  </documentation>
+
+  <implementation
+    class="org.nuxeo.runtime.services.config.ConfigurationServiceImpl" />
+
+  <service>
+    <provide interface="org.nuxeo.runtime.services.config.ConfigurationService" />
+  </service>
+
+  <extension-point name="configuration">
+    <documentation>
+      The configuration extension point allows to define named properties.
+      If a property with the same name is defined in the nuxeo.conf file, it will
+      take precedence over properties defined on this extension point.
+
+      Example:
+
+      <code>
+        <property name="nuxeo.jsf.enableDoubleClickShield">true</property>
+        <property name="nuxeo.jsf.useAjaxTabs">false</property>
+      </code>
+    </documentation>
+    <object class="org.nuxeo.runtime.services.config.ConfigurationPropertyDescriptor" />
+  </extension-point>
+
+</component>

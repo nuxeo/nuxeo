@@ -1,0 +1,11 @@
+<component name="org.nuxeo.runtime.ConfigurationService.test">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+
+    <property name="nuxeo.test.dummyBooleanProperty">true</property>
+    <property name="nuxeo.test.anotherDummyBooleanProperty">false</property>
+    <property name="nuxeo.test.dummyStringProperty">dummyValue</property>
+
+  </extension>
+
+</component>

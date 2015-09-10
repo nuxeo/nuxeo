@@ -7,15 +7,10 @@
       This contribution is the default contribution for JSF
       configurations.
 
-      Default values are expressions of the form
-      "#{propertyName:=defaultValue}"
-      so that a property
-      with the given name can be defined in a nuxeo.conf file,
-      but static
-      values can also be set for these properties.
+      If a property with the same name is defined in the nuxeo.conf file, it will
+      take precedence over properties defined on this extension point.
 
-      Here are more
-      details about some of them:
+      Here are more details about some of them:
       <ul>
         <li>
           <strong>nuxeo.jsf.enableDoubleClickShield</strong>
@@ -56,23 +51,10 @@
       @since 7.4
     </documentation>
 
-    <configuration>
-      <property name="nuxeo.jsf.enableDoubleClickShield">
-        ${nuxeo.jsf.enableDoubleClickShield:=true}
-      </property>
-      <property name="nuxeo.jsf.useAjaxTabs">
-        ${nuxeo.jsf.useAjaxTabs:=false}
-      </property>
-      <property name="nuxeo.jsf.defaultBytePrefixFormat">
-        ${nuxeo.jsf.defaultBytePrefixFormat:=SI}
-      </property>
-      <property name="nuxeo.jsf.listWidget.compatEnabled">
-        ${nuxeo.jsf.listWidget.compatEnabled:=false}
-      </property>
-      <property name="nuxeo.jsf.removeAliasOptims">
-        ${nuxeo.jsf.removeAliasOptims:=false}
-      </property>
-    </configuration>
+    <property name="nuxeo.jsf.enableDoubleClickShield">true</property>
+    <property name="nuxeo.jsf.useAjaxTabs">false</property>
+    <property name="nuxeo.jsf.defaultBytePrefixFormat">SI</property>
+    <property name="nuxeo.jsf.removeAliasOptims">false</property>
 
   </extension>
 

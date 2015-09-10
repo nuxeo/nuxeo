@@ -45,7 +45,6 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.platform.ui.web.rest.api.URLPolicyService;
-import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentRenderUtils;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -53,6 +52,7 @@ import org.nuxeo.ecm.platform.url.DocumentViewImpl;
 import org.nuxeo.ecm.platform.url.api.DocumentView;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Util functions.
@@ -442,9 +442,9 @@ public final class Functions {
      * @since 7.4
      */
     public static BytePrefix getDefaultBytePrefix() {
-        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
-        return BytePrefix.valueOf(configurationService.getProperty(BYTE_PREFIX_FORMAT_PROPERTY,
-                DEFAULT_BYTE_PREFIX_FORMAT));
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
+        return BytePrefix.valueOf(
+                configurationService.getProperty(BYTE_PREFIX_FORMAT_PROPERTY, DEFAULT_BYTE_PREFIX_FORMAT));
     }
 
     public static String printFileSize(String size) {

@@ -23,8 +23,8 @@ import javax.faces.component.html.HtmlForm;
 import javax.faces.context.FacesContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.nuxeo.ecm.platform.ui.web.runtime.JSFConfigurationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import com.sun.faces.renderkit.html_basic.FormRenderer;
 
@@ -42,7 +42,7 @@ public class NxFormRenderer extends FormRenderer {
     public static final String DOUBLE_CLICK_SHIELD_CSS_CLASS_FLAG = "doubleClickShielded";
 
     protected static boolean isDoubleShieldEnabled() {
-        JSFConfigurationService configurationService = Framework.getService(JSFConfigurationService.class);
+        ConfigurationService configurationService = Framework.getService(ConfigurationService.class);
         return !configurationService.isBooleanPropertyFalse(ENABLE_DOUBLE_CLICK_SHIELD);
     }
 
