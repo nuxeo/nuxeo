@@ -33,11 +33,11 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -55,13 +55,13 @@ public class JsonEncodeDecodeUtils {
             return;
         }
         jg.writeStartObject();
-        String v = blob.getFilename();
-        if (v == null) {
+        String filename = blob.getFilename();
+        if (filename == null) {
             jg.writeNullField("name");
         } else {
-            jg.writeStringField("name", v);
+            jg.writeStringField("name", filename);
         }
-        v = blob.getMimeType();
+        String v = blob.getMimeType();
         if (v == null) {
             jg.writeNullField("mime-type");
         } else {
@@ -81,11 +81,6 @@ public class JsonEncodeDecodeUtils {
         }
         jg.writeStringField("length", Long.toString(blob.getLength()));
 
-        String blobUrlPrefix = null;
-        StringBuilder sb = new StringBuilder(VirtualHostHelper.getBaseURL(request));
-        sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(doc.getId()).append("/");
-        blobUrlPrefix = sb.toString();
-
         String facet = null;
         try {
             facet = (String) doc.getPropertyValue(propVariableFacet);
@@ -97,14 +92,10 @@ public class JsonEncodeDecodeUtils {
         }
         CompositeType type = Framework.getLocalService(SchemaManager.class).getFacet(facet);
 
-        StringBuilder blobUrlBuilder = new StringBuilder(blobUrlPrefix);
-        blobUrlBuilder.append(type.getField(variableName).getName());
-        blobUrlBuilder.append("/");
-        String filename = blob.getFilename();
-        if (filename != null) {
-            blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
-        }
-        jg.writeStringField("url", blobUrlBuilder.toString());
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        String xpath = type.getField(variableName).getName().getPrefixedName();
+        String blobUrl = VirtualHostHelper.getBaseURL(request) + downloadService.getDownloadUrl(doc, xpath, filename);
+        jg.writeStringField("url", blobUrl);
 
         jg.writeEndObject();
     }
