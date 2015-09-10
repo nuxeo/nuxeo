@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.query.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that defines the default maxPageSize to use when no
+      value is defined on the page provider contribution.
+      Value '0' means no limit.
+    </documentation>
+    <property name="nuxeo.pageprovider.default-max-page-size">1000</property>
+  </extension>
+
+</component>

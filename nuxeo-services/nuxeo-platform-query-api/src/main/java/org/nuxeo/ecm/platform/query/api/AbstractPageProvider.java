@@ -34,6 +34,7 @@ import org.nuxeo.ecm.core.api.SortInfo;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryAndFetchPageProvider;
 import org.nuxeo.ecm.platform.query.nxql.CoreQueryDocumentPageProvider;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Basic implementation for a {@link PageProvider}.
@@ -839,7 +840,8 @@ public abstract class AbstractPageProvider<T> implements PageProvider<T> {
     protected long getDefaultMaxPageSize() {
         long res = DEFAULT_MAX_PAGE_SIZE;
         if (Framework.isInitialized()) {
-            String maxPageSize = Framework.getProperty(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP);
+            ConfigurationService cs = Framework.getService(ConfigurationService.class);
+            String maxPageSize = cs.getProperty(DEFAULT_MAX_PAGE_SIZE_RUNTIME_PROP);
             if (!StringUtils.isBlank(maxPageSize)) {
                 try {
                     res = Long.parseLong(maxPageSize.trim());
