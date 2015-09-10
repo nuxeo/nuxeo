@@ -30,6 +30,7 @@ object ScnUpdateDocuments {
         feed(documents)
           .feed(Feeders.usersCircular)
           .exec(NuxeoRest.updateDocument())
+          .pause(pause)
       }
     )
   }

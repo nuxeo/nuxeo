@@ -25,11 +25,11 @@ class Sim50Bench extends Simulation {
 
   val documents = Feeders.createRandomDocFeeder()
   val scnNav = ScnNavigation.get(documents, Parameters.getSimulationDuration(),
-    Parameters.getPause(500, prefix = "nav."))
+    Parameters.getPause(1000, prefix = "nav."))
   val scnNavJsf = ScnNavigationJsf.get(documents, Parameters.getSimulationDuration(),
     Parameters.getPause(1000, prefix = "navjsf."))
   val scnUpdate = ScnUpdateDocuments.get(documents, Parameters.getSimulationDuration(),
-    Parameters.getPause(2000, prefix = "upd."))
+    Parameters.getPause(500, prefix = "upd."))
 
   val httpProtocol = http
     .baseURL(Parameters.getBaseUrl())
@@ -39,7 +39,7 @@ class Sim50Bench extends Simulation {
     .connection("keep-alive")
 
   setUp(
-    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "nav."))
+    scnNav.inject(rampUsers(Parameters.getConcurrentUsers(20, prefix = "nav."))
       .over(Parameters.getRampDuration(prefix = "nav."))).exponentialPauses,
     scnNavJsf.inject(rampUsers(Parameters.getConcurrentUsers(10, prefix = "navjsf."))
       .over(Parameters.getRampDuration(prefix = "navjsf."))).exponentialPauses,

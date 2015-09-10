@@ -30,10 +30,9 @@ object ScnCreateFolders {
         feed(folders)
           .feed(Feeders.usersCircular)
           .exec(NuxeoRest.createDocument())
-          .pause(pause)
           .doIf(session => Redis.markFolderCreated(session)) {
           exec()
-        }
+        }.pause(pause)
       }
     )
   }
