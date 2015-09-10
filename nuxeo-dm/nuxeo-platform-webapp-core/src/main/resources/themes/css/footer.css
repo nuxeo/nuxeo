@@ -13,11 +13,15 @@ author: lkemen@nuxeo.com
   width: 100% }
 
 .footerDefaultLinks {
-  padding: 1.4em }
+  padding: 1.4em 2em;
+  color: transparent; }
 
 .nx-page .nxFooter a,
 .nx-page .nxFooter a:hover {
   color: "link.footer (__FLAVOR__ color)" }
+
+.nx-page .nxFooter a:hover {
+  text-decoration: underline }
 
 .nxFooter .actionsWidgetPanel {
   padding: 0 }
@@ -38,15 +42,14 @@ author: lkemen@nuxeo.com
 
 a.twitt,
 a.linkedin {
-  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top;
+  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat left top / 32px;
   display: inline-block;
   height: 16px;
-  margin: 0 .4em;
   transition: none;
   width: 16px }
 
 a.linkedin {
-  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top }
+  background: transparent url("${basePath}/icons/icones-metanav.png") no-repeat -16px top / 32px; }
 
 a.twitt:hover {
   background-position: left bottom }
