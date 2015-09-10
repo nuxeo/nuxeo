@@ -116,7 +116,7 @@ public class ShibboInviteObject extends ModuleRoot {
             // in authentication-contrib 
             return getView("UserCreated").arg("data", registrationData)
                                          .arg("logout", 
-                                                 "/nuxeo/site/shibboleth")
+                                                 "/nuxeo/site/shibboleth?requestedUrl=")
                                          .arg("isShibbo", isShibbo);
         }
         return getView("UserCreated").arg("data", registrationData).arg("logout", logoutUrl).arg("isShibbo", isShibbo);
