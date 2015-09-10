@@ -20,7 +20,9 @@ Basically, it uses an index with a single entry where the revision number is use
 ## Using it
 
     UIDGeneratorService service = Framework.getService(UIDGeneratorService.class);
-    UIDSequencer seq = service.getSequencer("esSequencer");
+    UIDSequencer seq = service.getSequencer();
+    // The previous call assumes the `esSequencer` contribution is the default one, else you need to specify the sequencer name explicitely:
+    // UIDSequencer seq = service.getSequencer("esSequencer");
     int number = seq.getNext(key);
 
 ## Building
