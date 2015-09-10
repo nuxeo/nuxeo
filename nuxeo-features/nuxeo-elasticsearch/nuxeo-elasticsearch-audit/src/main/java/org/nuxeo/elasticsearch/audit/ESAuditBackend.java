@@ -120,7 +120,7 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
             log.info("Activate Elasticsearch backend for Audit");
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esClient = esa.getClient();
-            ensureUIDSequencer();
+            ensureUIDSequencer(esClient);
         }
         return esClient;
     }
@@ -598,7 +598,12 @@ public class ESAuditBackend extends AbstractAuditBackend implements AuditBackend
     /**
      * Ensures the audit sequence returns an UID greater or equal than the maximum log entry id.
      */
-    protected void ensureUIDSequencer() {
+    protected void ensureUIDSequencer(Client esClient) {
+        boolean auditIndexExists = esClient.admin().indices().prepareExists(IDX_NAME).execute().actionGet().isExists();
+        if (!auditIndexExists) {
+            return;
+        }
+
         // Get max log entry id
         SearchRequestBuilder builder = getSearchRequestBuilder();
         builder.setQuery(QueryBuilders.matchAllQuery()).addAggregation(AggregationBuilders.max("maxAgg").field("id"));
