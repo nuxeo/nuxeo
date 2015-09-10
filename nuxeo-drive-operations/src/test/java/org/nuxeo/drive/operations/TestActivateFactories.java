@@ -43,9 +43,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
  */
 @RunWith(FeaturesRunner.class)
 @Features(EmbeddedAutomationServerFeature.class)
-@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload",
-        "org.nuxeo.runtime.datasource" })
-@LocalDeploy("org.nuxeo.drive.core:drive-repo-ds.xml")
+@Deploy({ "org.nuxeo.drive.core", "org.nuxeo.drive.operations", "org.nuxeo.runtime.reload" })
 @Jetty(port = 18080)
 public class TestActivateFactories {
 
