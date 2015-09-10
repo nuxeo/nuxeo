@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.platform.usermanager.UserConfig;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 /**
  * Group fields and methods used at initialization and runtime for select2 feature.
@@ -129,7 +130,8 @@ public class Select2Common {
 
     private static boolean isForceDisplayEmailInSuggestion() {
         if (forceDisplayEmailInSuggestion == null) {
-            forceDisplayEmailInSuggestion = Framework.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
+            ConfigurationService cs = Framework.getService(ConfigurationService.class);
+            forceDisplayEmailInSuggestion = cs.isBooleanPropertyTrue(FORCE_DISPLAY_EMAIL_IN_SUGGESTION);
         }
         return forceDisplayEmailInSuggestion;
     }

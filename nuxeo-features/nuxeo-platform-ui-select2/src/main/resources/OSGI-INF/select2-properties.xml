@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.select2.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that allows displaying emails in user suggestion
+      widgets. This parameter replace the nuxeo-email-suggestion addon provided
+      in Nuxeo 5.5 and 5.6.
+    </documentation>
+    <property name="nuxeo.ui.displayEmailInUserSuggestion">false</property>
+  </extension>
+
+</component>
