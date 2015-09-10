@@ -17,7 +17,6 @@
 
 package org.nuxeo.ecm.platform.shibboleth.service;
 
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.UnsupportedEncodingException;
@@ -26,7 +25,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
@@ -76,6 +74,8 @@ public class ShibbolethAuthenticationServiceImpl extends DefaultComponent implem
         String redirectURL = VirtualHostHelper.getBaseURL(request);
         if (request.getAttribute(NXAuthConstants.REQUESTED_URL) != null) {
             redirectURL += request.getAttribute(NXAuthConstants.REQUESTED_URL);
+        } else if (request.getParameter(NXAuthConstants.REQUESTED_URL) != null) {
+            redirectURL += request.getParameter(NXAuthConstants.REQUESTED_URL);
         } else {
             redirectURL = request.getRequestURL().toString();
             String queryString = request.getQueryString();
