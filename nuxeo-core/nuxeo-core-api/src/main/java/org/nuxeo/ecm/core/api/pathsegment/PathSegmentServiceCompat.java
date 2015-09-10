@@ -13,11 +13,16 @@ package org.nuxeo.ecm.core.api.pathsegment;
 
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Service generating a path segment from the title by simplifying it to lowercase and dash-separated words.
  */
 public class PathSegmentServiceCompat implements PathSegmentService {
+
+    public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
+
+    protected int maxSize = Integer.parseInt(Framework.getProperty(NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
     public String generatePathSegment(DocumentModel doc) {
@@ -26,6 +31,11 @@ public class PathSegmentServiceCompat implements PathSegmentService {
 
     @Override
     public String generatePathSegment(String s) {
-        return IdUtils.generateId(s, "-", true, 24);
+        return IdUtils.generateId(s, "-", true, getMaxSize());
+    }
+
+    @Override
+    public int getMaxSize() {
+        return maxSize;
     }
 }

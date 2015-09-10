@@ -37,6 +37,8 @@ import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.event.CoreEventConstants;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentServiceDefault;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventProducer;
@@ -77,7 +79,8 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
     }
 
     protected String getUserWorkspaceNameForUser(String userName) {
-        return IdUtils.generateId(userName, "-", false, 30);
+        PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+        return IdUtils.generateId(userName, "-", false, pss.getMaxSize());
     }
 
     protected String computePathUserWorkspaceRoot(CoreSession userCoreSession, String usedUsername,
@@ -96,6 +99,14 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         String rootPath = computePathUserWorkspaceRoot(userCoreSession, userName, currentDocument);
         Path path = new Path(rootPath);
         path = path.append(getUserWorkspaceNameForUser(userName));
+        return path.toString();
+    }
+
+    protected String computePathForUserWorkspaceCompat(CoreSession userCoreSession, String userName,
+            DocumentModel currentDocument) {
+        String rootPath = computePathUserWorkspaceRoot(userCoreSession, userName, currentDocument);
+        Path path = new Path(rootPath);
+        path = path.append(IdUtils.generateId(userName, "-", false, 30));
         return path.toString();
     }
 
@@ -133,10 +144,11 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
             usedUsername = userName;
         }
 
-        PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(userCoreSession, usedUsername, context));
+        PathRef uwsDocRef = getExistingUserWorkspacePathRef(userCoreSession, usedUsername, context);
 
-        if (!userCoreSession.exists(uwsDocRef)) {
+        if (uwsDocRef == null) {
             // do the creation
+            uwsDocRef = new PathRef(computePathForUserWorkspace(userCoreSession, usedUsername, context));
             PathRef rootRef = new PathRef(computePathUserWorkspaceRoot(userCoreSession, usedUsername, context));
             uwsDocRef = createUserWorkspace(rootRef, uwsDocRef, userCoreSession, principal, usedUsername);
         }
@@ -147,6 +159,20 @@ public abstract class AbstractUserWorkspaceImpl implements UserWorkspaceService 
         }
 
         return userCoreSession.getDocument(uwsDocRef);
+    }
+
+    private PathRef getExistingUserWorkspacePathRef(CoreSession userCoreSession, String usedUsername,
+            DocumentModel context) {
+        PathRef uwsDocRef = new PathRef(computePathForUserWorkspace(userCoreSession, usedUsername, context));
+        if (userCoreSession.exists(uwsDocRef)) {
+            return uwsDocRef;
+        }
+        // The document does not exist, try with the previous max size (30)
+        uwsDocRef = new PathRef(computePathForUserWorkspaceCompat(userCoreSession, usedUsername, context));
+        if (userCoreSession.exists(uwsDocRef)) {
+            return uwsDocRef;
+        }
+        return null;
     }
 
     protected synchronized PathRef createUserWorkspace(PathRef rootRef, PathRef userWSRef, CoreSession userCoreSession,

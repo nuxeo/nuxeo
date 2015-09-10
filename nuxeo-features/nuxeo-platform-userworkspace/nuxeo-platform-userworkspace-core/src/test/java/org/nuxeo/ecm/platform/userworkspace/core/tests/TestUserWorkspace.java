@@ -236,6 +236,40 @@ public class TestUserWorkspace {
     }
 
     @Test
+    public void testUserWorkspaceFinderCompat() {
+        DocumentModel context = session.getRootDocument();
+
+        // Manually create the user workspace as if the old max size still stands
+        DocumentModel user1W = uwm.getCurrentUserPersonalWorkspace("user1", context);
+        String parentPath = user1W.getPathAsString().replace("/user1", "");
+        DocumentModel uw = session.createDocumentModel(parentPath, "John-Von-Verylonglastname", "Workspace");
+        uw = session.createDocument(uw);
+        session.save();
+
+        assertNotNull(uw);
+        String johnWorkspacePath = uw.getPathAsString();
+        assertTrue(johnWorkspacePath.endsWith("/John-Von-Verylonglastname"));
+
+        session.save();
+
+        uw = uwm.getUserPersonalWorkspace("John Von Verylonglastname", context);
+        assertNotNull(uw);
+        // Check the user workspace with the old name format is retrieved
+        assertTrue(uw.getPathAsString().endsWith("/John-Von-Verylonglastname"));
+        assertEquals(johnWorkspacePath, uw.getPathAsString());
+        assertNull("Document is correctly detached", uw.getSessionId());
+
+        // Automatically create the user workspace
+        uw = uwm.getUserPersonalWorkspace("Jack Von Verylonglastname", context);
+        session.save();
+
+        assertNotNull(uw);
+        String jackWorkspacePath = uw.getPathAsString();
+        // Check the document name was truncated to 24 characters
+        assertTrue(jackWorkspacePath.endsWith("/Jack-Von-Verylonglastnam"));
+    }
+
+    @Test
     public void testUnrestrictedFinderCorrectlyCreateWorkspace() {
         DocumentModel context = session.getRootDocument();
         DocumentModel uw = uwm.getUserPersonalWorkspace("user1", context);

@@ -36,4 +36,10 @@ public interface PathSegmentService {
      */
     String generatePathSegment(String s);
 
+    /**
+     * Return the path segment max size
+     *
+     * @since 7.4
+     */
+    int getMaxSize();
 }

@@ -26,7 +26,7 @@ public class PathSegmentServiceDefault implements PathSegmentService {
 
     public static final String NUXEO_MAX_SEGMENT_SIZE_PROPERTY = "nuxeo.path.segment.maxsize";
 
-    public int maxSize = Integer.parseInt(Framework.getProperty(NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
+    protected int maxSize = Integer.parseInt(Framework.getProperty(NUXEO_MAX_SEGMENT_SIZE_PROPERTY, "24"));
 
     @Override
     public String generatePathSegment(DocumentModel doc) {
@@ -48,5 +48,10 @@ public class PathSegmentServiceDefault implements PathSegmentService {
             return IdUtils.generateStringId();
         }
         return s;
+    }
+
+    @Override
+    public int getMaxSize() {
+        return maxSize;
     }
 }

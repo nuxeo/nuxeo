@@ -61,6 +61,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.pathsegment.PathSegmentService;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
@@ -216,7 +217,8 @@ public class UserInvitationComponent extends DefaultComponent implements UserInv
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoUsernameField()) + " ("
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoEmailField()) + " "
                     + userRegistrationModel.getPropertyValue(configuration.getUserInfoCompanyField()) + ") ";
-            String name = IdUtils.generateId(title + "-" + System.currentTimeMillis(), "-", true, 24);
+            PathSegmentService pss = Framework.getLocalService(PathSegmentService.class);
+            String name = pss.generatePathSegment(title + "-" + System.currentTimeMillis());
 
             String targetPath = getOrCreateRootDocument(session, configuration.getName()).getPathAsString();
 
