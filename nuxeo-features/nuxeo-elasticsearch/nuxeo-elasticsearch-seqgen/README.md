@@ -21,8 +21,8 @@ Basically, it uses an index with a single entry where the revision number is use
 
     UIDGeneratorService service = Framework.getService(UIDGeneratorService.class);
     UIDSequencer seq = service.getSequencer();
-    // The previous call assumes the `esSequencer` contribution is the default one, else you need to specify the sequencer name explicitely:
-    // UIDSequencer seq = service.getSequencer("esSequencer");
+    // The previous call assumes the `uidgen` contribution is the default one, else you need to specify the sequencer name explicitely:
+    // UIDSequencer seq = service.getSequencer("uidgen");
     int number = seq.getNext(key);
 
 ## Building

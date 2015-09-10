@@ -18,6 +18,7 @@ package org.nuxeo.elasticsearch.seqgen;
 
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.uidgen.AbstractUIDSequencer;
 import org.nuxeo.ecm.platform.uidgen.UIDSequencer;
 import org.nuxeo.elasticsearch.api.ElasticSearchAdmin;
@@ -35,8 +36,6 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ESUIDSequencer extends AbstractUIDSequencer {
 
-    public static final String IDX_NAME = "uidgen";
-
     public static final String IDX_TYPE = "seqId";
 
     protected Client esClient = null;
@@ -45,6 +44,12 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
         if (esClient == null) {
             ElasticSearchAdmin esa = Framework.getService(ElasticSearchAdmin.class);
             esClient = esa.getClient();
+            try {
+                ensureESIndex(esClient);
+            } catch (NuxeoException e) {
+                esClient = null;
+                throw e;
+            }
         }
         return esClient;
     }
@@ -59,13 +64,22 @@ public class ESUIDSequencer extends AbstractUIDSequencer {
     @Override
     public int getNext(String sequenceName) {
         String source = "{ \"ts\" : " + System.currentTimeMillis() + "}";
-        IndexResponse res = getClient().prepareIndex(IDX_NAME, IDX_TYPE, sequenceName).setSource(source).execute().actionGet();
+        String indexName = getName();
+        IndexResponse res = getClient().prepareIndex(indexName, IDX_TYPE, sequenceName).setSource(source).execute().actionGet();
         return (int) res.getVersion();
     }
 
     @Override
     public void init() {
         getClient();
+    }
+
+    protected void ensureESIndex(Client esClient) {
+        boolean indexExists = esClient.admin().indices().prepareExists(getName()).execute().actionGet().isExists();
+        if (!indexExists) {
+            throw new NuxeoException(String.format("Sequencer %s needs an elasticSearchIndex contribution named %s",
+                    getName(), getName()));
+        }
     }
 
 }

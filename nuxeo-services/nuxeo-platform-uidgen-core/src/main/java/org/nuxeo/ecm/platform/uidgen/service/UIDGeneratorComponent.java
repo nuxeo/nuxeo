@@ -142,6 +142,9 @@ public class UIDGeneratorComponent extends DefaultComponent implements UIDGenera
 
             try {
                 UIDSequencer seq = seqDescriptor.getSequencer();
+                if (seq != null) {
+                    seq.setName(name);
+                }
                 sequencers.put(name, seq);
                 sequencerContribs.put(name, seqDescriptor);
             } catch (Exception e) {

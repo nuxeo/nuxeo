@@ -21,6 +21,8 @@ package org.nuxeo.ecm.platform.uidgen;
  */
 public abstract class AbstractUIDSequencer implements UIDSequencer {
 
+    protected String name;
+
     @Override
     public abstract void init();
 
@@ -29,6 +31,16 @@ public abstract class AbstractUIDSequencer implements UIDSequencer {
 
     @Override
     public abstract void dispose();
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @Override
     public void initSequence(String key, int id) {

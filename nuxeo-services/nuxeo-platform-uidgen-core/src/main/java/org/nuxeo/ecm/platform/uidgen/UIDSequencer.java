@@ -26,6 +26,20 @@ package org.nuxeo.ecm.platform.uidgen;
 public interface UIDSequencer {
 
     /**
+     * Gets the sequencer name.
+     *
+     * @since 7.4
+     */
+    String getName();
+
+    /**
+     * Sets the sequencer name.
+     *
+     * @since 7.4
+     */
+    void setName(String name);
+
+    /**
      * Init Sequencer
      *
      * @since 7.3
