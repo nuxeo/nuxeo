@@ -27,9 +27,9 @@ import javax.resource.cci.ResultSetInfo;
 
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.Mapper;
 import org.nuxeo.ecm.core.storage.sql.Model;
@@ -367,18 +367,8 @@ public class ConnectionImpl implements Session {
     }
 
     @Override
-    public Lock getLock(Serializable id) {
-        return getSession().getLock(id);
-    }
-
-    @Override
-    public Lock setLock(Serializable id, Lock lock) {
-        return getSession().setLock(id, lock);
-    }
-
-    @Override
-    public Lock removeLock(Serializable id, String owner, boolean force) {
-        return getSession().removeLock(id, owner, force);
+    public LockManager getLockManager() {
+        return getSession().getLockManager();
     }
 
     @Override

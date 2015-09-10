@@ -25,10 +25,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.redis.RedisAdmin;
 import org.nuxeo.ecm.core.redis.RedisCallable;
 import org.nuxeo.ecm.core.redis.RedisExecutor;
-import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.runtime.api.Framework;
 
 import redis.clients.jedis.Jedis;
@@ -38,7 +38,7 @@ import redis.clients.jedis.Jedis;
  *
  * @since 6.0
  */
-public class RedisLockManager extends AbstractLockManager {
+public class RedisLockManager implements LockManager {
 
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(RedisLockManager.class);
@@ -155,11 +155,16 @@ public class RedisLockManager extends AbstractLockManager {
     }
 
     @Override
-    public void close() {
+    public void closeLockManager() {
     }
 
     @Override
-    public void clearCaches() {
+    public void clearLockManagerCaches() {
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + '(' + repositoryName + ')';
     }
 
 }

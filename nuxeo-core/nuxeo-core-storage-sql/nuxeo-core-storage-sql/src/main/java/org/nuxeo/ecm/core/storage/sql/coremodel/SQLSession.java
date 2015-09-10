@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.VersionModel;
 import org.nuxeo.ecm.core.api.security.ACE;
@@ -48,6 +47,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryFilter;
@@ -645,16 +645,9 @@ public class SQLSession implements Session {
         return session.getNodeById(id);
     }
 
-    protected Lock getLock(Node node) {
-        return session.getLock(node.getId());
-    }
-
-    protected Lock setLock(Node node, Lock lock) {
-        return session.setLock(node.getId(), lock);
-    }
-
-    protected Lock removeLock(Node node, String owner) {
-        return session.removeLock(node.getId(), owner, false);
+    @Override
+    public LockManager getLockManager() {
+        return session.getLockManager();
     }
 
     @Override

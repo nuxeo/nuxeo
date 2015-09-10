@@ -36,7 +36,6 @@ import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -58,7 +57,6 @@ import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.core.storage.BaseDocument;
 import org.nuxeo.ecm.core.storage.State;
-import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLDocumentVersion.VersionNotModifiableException;
 import org.nuxeo.runtime.api.Framework;
 
@@ -616,41 +614,6 @@ public class DBSDocument extends BaseDocument<State> {
         } else {
             return this;
         }
-    }
-
-    @Override
-    public Lock setLock(Lock lock) {
-        Lock oldLock = getLock();
-        if (oldLock == null) {
-            docState.put(KEY_LOCK_OWNER, lock.getOwner());
-            docState.put(KEY_LOCK_CREATED, lock.getCreated());
-        }
-        return oldLock;
-    }
-
-    @Override
-    public Lock removeLock(String owner) {
-        Lock oldLock = getLock();
-        if (owner != null) {
-            if (oldLock != null && !AbstractLockManager.canLockBeRemovedStatic(oldLock, owner)) {
-                // existing mismatched lock, flag failure
-                return new Lock(oldLock, true);
-            }
-        } else if (oldLock != null) {
-            docState.put(KEY_LOCK_OWNER, null);
-            docState.put(KEY_LOCK_CREATED, null);
-        }
-        return oldLock;
-    }
-
-    @Override
-    public Lock getLock() {
-        String owner = (String) docState.get(KEY_LOCK_OWNER);
-        if (owner == null) {
-            return null;
-        }
-        Calendar created = (Calendar) docState.get(KEY_LOCK_CREATED);
-        return new Lock(owner, created);
     }
 
     @Override

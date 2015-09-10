@@ -96,6 +96,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
@@ -1766,6 +1767,11 @@ public class DBSSession implements Session {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public LockManager getLockManager() {
+        return repository.getLockManager();
     }
 
 }

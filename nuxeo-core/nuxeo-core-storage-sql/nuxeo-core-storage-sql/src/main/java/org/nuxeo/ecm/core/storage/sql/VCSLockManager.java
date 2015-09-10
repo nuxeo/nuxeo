@@ -26,7 +26,7 @@ import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.storage.lock.AbstractLockManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.sql.coremodel.SQLRepositoryService;
 import org.nuxeo.runtime.api.Framework;
 
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  * Transaction management can be done by hand because we're dealing with a low-level {@link Mapper} and not something
  * wrapped by a JCA pool.
  */
-public class VCSLockManager extends AbstractLockManager {
+public class VCSLockManager implements LockManager {
 
     private static final Log log = LogFactory.getLog(VCSLockManager.class);
 
@@ -129,7 +129,7 @@ public class VCSLockManager extends AbstractLockManager {
     }
 
     @Override
-    public void close() {
+    public void closeLockManager() {
         serializationLock.lock();
         try {
             getMapper().close();
@@ -264,7 +264,7 @@ public class VCSLockManager extends AbstractLockManager {
             if (caching && (oldLock = lockCache.get(id)) == NULL_LOCK) {
                 return null;
             }
-            if (oldLock != null && !canLockBeRemoved(oldLock, owner)) {
+            if (oldLock != null && !LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
                 // existing mismatched lock, flag failure
                 oldLock = new Lock(oldLock, true);
             } else {
@@ -291,7 +291,7 @@ public class VCSLockManager extends AbstractLockManager {
     }
 
     @Override
-    public void clearCaches() {
+    public void clearLockManagerCaches() {
         serializationLock.lock();
         try {
             if (caching) {

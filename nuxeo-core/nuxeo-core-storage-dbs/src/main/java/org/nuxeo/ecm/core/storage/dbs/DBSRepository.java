@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -29,7 +30,7 @@ import org.nuxeo.ecm.core.storage.State.StateDiff;
  *
  * @since 5.9.4
  */
-public interface DBSRepository extends Repository {
+public interface DBSRepository extends Repository, LockManager {
 
     /**
      * Gets the blob manager.
@@ -182,5 +183,13 @@ public interface DBSRepository extends Repository {
      */
     PartialList<State> queryAndFetch(Expression expression, SelectClause selectClause, OrderByClause orderByClause,
             int limit, int offset, int countUpTo, DBSExpressionEvaluator evaluator, boolean deepCopy);
+
+    /**
+     * Gets the lock manager for this repository.
+     *
+     * @return the lock manager
+     * @since 7.4
+     */
+    LockManager getLockManager();
 
 }

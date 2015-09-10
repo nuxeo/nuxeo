@@ -28,9 +28,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.DefaultFulltextParser;
 import org.nuxeo.ecm.core.storage.FulltextParser;
-import org.nuxeo.ecm.core.storage.lock.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.storage.sql.Session.PathResolver;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCBackend;
@@ -396,7 +396,7 @@ public class RepositoryImpl implements Repository {
         sessions.clear();
         sessionCount.dec(sessionCount.getCount());
         if (lockManager != null) {
-            lockManager.close();
+            lockManager.closeLockManager();
         }
     }
 
@@ -421,7 +421,7 @@ public class RepositoryImpl implements Repository {
             n += session.clearCaches();
         }
         if (lockManager != null) {
-            lockManager.clearCaches();
+            lockManager.clearLockManagerCaches();
         }
         return n;
     }

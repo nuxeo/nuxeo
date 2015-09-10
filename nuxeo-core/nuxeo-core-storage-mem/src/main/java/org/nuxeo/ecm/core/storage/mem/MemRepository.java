@@ -16,6 +16,8 @@ import static org.nuxeo.ecm.core.storage.State.NOP;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_BLOB_DATA;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_IDS;
@@ -24,6 +26,7 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PROXY_TARGET_ID;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +40,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -390,6 +396,74 @@ public class MemRepository extends DBSRepositoryBase {
         } else {
             return list.isEmpty() ? null : (Serializable) list;
         }
+    }
+
+    /* synchronized */
+    @Override
+    public synchronized Lock getLock(String id) {
+        State state = states.get(id);
+        if (state == null) {
+            // no such document, return no lock
+            return null;
+        }
+        String owner = (String) state.get(KEY_LOCK_OWNER);
+        if (owner == null) {
+            return null;
+        }
+        Calendar created = (Calendar) state.get(KEY_LOCK_CREATED);
+        return new Lock(owner, created);
+    }
+
+    /* synchronized */
+    @Override
+    public synchronized Lock setLock(String id, Lock lock) {
+        State state = states.get(id);
+        if (state == null) {
+            // no such document, make this an error
+            throw new LockException("Cannot lock non-existing document: " + id);
+        }
+        String owner = (String) state.get(KEY_LOCK_OWNER);
+        if (owner != null) {
+            // return old lock
+            Calendar created = (Calendar) state.get(KEY_LOCK_CREATED);
+            return new Lock(owner, created);
+        }
+        state.put(KEY_LOCK_OWNER, lock.getOwner());
+        state.put(KEY_LOCK_CREATED, lock.getCreated());
+        return null;
+    }
+
+    /* synchronized */
+    @Override
+    public synchronized Lock removeLock(String id, String owner) {
+        State state = states.get(id);
+        if (state == null) {
+            // no such document, no previous lock
+            return null;
+        }
+        String oldOwner = (String) state.get(KEY_LOCK_OWNER);
+        if (oldOwner == null) {
+            // no previous lock
+            return null;
+        }
+        Calendar oldCreated = (Calendar) state.get(KEY_LOCK_CREATED);
+        if (!LockManager.canLockBeRemoved(oldOwner, owner)) {
+            // existing mismatched lock, flag failure
+            return new Lock(oldOwner, oldCreated, true);
+        }
+        // remove lock
+        state.put(KEY_LOCK_OWNER, null);
+        state.put(KEY_LOCK_CREATED, null);
+        // return old lock
+        return new Lock(oldOwner, oldCreated);
+    }
+
+    @Override
+    public void closeLockManager() {
+    }
+
+    @Override
+    public void clearLockManagerCaches() {
     }
 
     protected List<List<String>> binaryPaths;

@@ -76,6 +76,7 @@ import org.nuxeo.ecm.core.blob.binary.BinaryManager;
 import org.nuxeo.ecm.core.blob.binary.BinaryManagerStatus;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.QueryParseException;
 import org.nuxeo.ecm.core.query.sql.model.SQLQuery;
@@ -2865,34 +2866,36 @@ public class TestSQLBackend extends SQLBackendTestCase {
     @Test
     public void testLocking() throws Exception {
         Session session = repository.getConnection();
+        LockManager lockManager = session.getLockManager();
         Node root = session.getRootNode();
         Node node = session.addChildNode(root, "foo", null, "TestDoc", false);
         Serializable nodeId = node.getId();
-        assertNull(session.getLock(nodeId));
+        String id = nodeId.toString();
+        assertNull(lockManager.getLock(id));
         session.save();
 
         session.close();
         session = repository.getConnection();
         node = session.getNodeById(nodeId);
 
-        Lock lock = session.setLock(nodeId, new Lock("bob", null));
+        Lock lock = lockManager.setLock(id, new Lock("bob", null));
         assertNull(lock);
-        assertNotNull(session.getLock(nodeId));
+        assertNotNull(lockManager.getLock(id));
 
-        lock = session.setLock(nodeId, new Lock("john", null));
+        lock = lockManager.setLock(id, new Lock("john", null));
         assertEquals("bob", lock.getOwner());
 
-        lock = session.removeLock(nodeId, "steve", false);
+        lock = lockManager.removeLock(id, "steve");
         assertEquals("bob", lock.getOwner());
         assertTrue(lock.getFailed());
-        assertNotNull(session.getLock(nodeId));
+        assertNotNull(lockManager.getLock(id));
 
-        lock = session.removeLock(nodeId, null, false);
+        lock = lockManager.removeLock(id, null);
         assertEquals("bob", lock.getOwner());
         assertFalse(lock.getFailed());
-        assertNull(session.getLock(nodeId));
+        assertNull(lockManager.getLock(id));
 
-        lock = session.removeLock(nodeId, null, false);
+        lock = lockManager.removeLock(id, null);
         assertNull(lock);
     }
 
@@ -3022,6 +3025,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
         protected void doHeavyLockingJob() throws Exception {
             Session session = repository.getConnection();
+            LockManager lockManager = session.getLockManager();
             if (ready != null) {
                 ready.countDown();
                 ready = null;
@@ -3035,7 +3039,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
 
                 // lock
                 while (true) {
-                    Lock lock = session.setLock(nodeId, new Lock(name, null));
+                    Lock lock = lockManager.setLock(nodeId.toString(), new Lock(name, null));
                     if (lock == null) {
                         break;
                     }
@@ -3045,7 +3049,7 @@ public class TestSQLBackend extends SQLBackendTestCase {
                 // System.err.println(name + " locked");
 
                 // unlock
-                Lock lock = session.removeLock(nodeId, null, false);
+                Lock lock = lockManager.removeLock(nodeId.toString(), null);
                 assertNotNull("got no lock, expected " + name, lock);
                 assertEquals(name, lock.getOwner());
                 // System.err.println(name + " unlocked");

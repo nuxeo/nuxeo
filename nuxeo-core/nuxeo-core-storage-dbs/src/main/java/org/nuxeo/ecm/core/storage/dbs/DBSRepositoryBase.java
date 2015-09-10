@@ -43,6 +43,7 @@ import org.nuxeo.ecm.core.api.security.impl.ACLImpl;
 import org.nuxeo.ecm.core.api.security.impl.ACPImpl;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Session;
 import org.nuxeo.ecm.core.schema.DocumentType;
 import org.nuxeo.ecm.core.schema.SchemaManager;
@@ -53,6 +54,7 @@ import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.ecm.core.schema.types.Type;
+import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.transaction.TransactionHelper;
 
@@ -80,11 +82,14 @@ public abstract class DBSRepositoryBase implements DBSRepository {
 
     protected final BlobManager blobManager;
 
+    protected LockManager lockManager;
+
     public DBSRepositoryBase(String repositoryName, boolean fulltextDisabled) {
         this.repositoryName = repositoryName;
         this.fulltextDisabled = fulltextDisabled;
         blobManager = Framework.getService(BlobManager.class);
         initBlobsPaths();
+        initLockManager();
     }
 
     @Override
@@ -94,6 +99,24 @@ public abstract class DBSRepositoryBase implements DBSRepository {
     @Override
     public String getName() {
         return repositoryName;
+    }
+
+    protected void initLockManager() {
+        String lockManagerName = repositoryName; // TODO configure in repo descriptor
+        LockManagerService lockManagerService = Framework.getService(LockManagerService.class);
+        lockManager = lockManagerService.getLockManager(lockManagerName);
+        if (lockManager == null) {
+            // no descriptor, use DBS repository intrinsic lock manager
+            lockManager = this;
+            log.info("Repository " + repositoryName + " using own lock manager");
+        } else {
+            log.info("Repository " + repositoryName + " using lock manager " + lockManager);
+        }
+    }
+
+    @Override
+    public LockManager getLockManager() {
+        return lockManager;
     }
 
     protected abstract void initBlobsPaths();

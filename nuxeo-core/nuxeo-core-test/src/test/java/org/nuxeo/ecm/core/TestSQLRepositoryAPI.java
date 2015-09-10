@@ -63,6 +63,8 @@ import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.ListDiff;
+import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersionModel;
@@ -3901,6 +3903,73 @@ public class TestSQLRepositoryAPI {
         status = runBinariesGC(true, false);
         assertEquals(2, status.numBinaries); // ABC, DEF
         assertEquals(0, status.numBinariesGC);
+    }
+
+    @Test
+    public void testLocking() throws Exception {
+        DocumentModel doc = session.createDocumentModel("/", "doc", "File");
+        doc = session.createDocument(doc);
+        DocumentRef docRef = doc.getRef();
+        ACP acp = new ACPImpl();
+        ACL acl = new ACLImpl();
+        acl.add(new ACE("pete", "WriteProperties"));
+        acp.addACL(acl);
+        session.setACP(docRef, acp, true);
+        session.save();
+
+        Lock lock = session.getLockInfo(docRef);
+        assertNull(lock);
+
+        lock = session.setLock(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+        assertNotNull(lock.getCreated());
+
+        lock = session.getLockInfo(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+
+        // nobody can re-lock without unlock, even Administrator
+        try {
+            session.setLock(docRef);
+            fail();
+        } catch (LockException e) {
+            assertTrue(e.getMessage(), e.getMessage().contains("Document already locked"));
+        }
+
+        // cannot remove lock as pete
+        try (CoreSession peteSession = openSessionAs("pete")) {
+            // try to remove lock as pete
+            try {
+                peteSession.removeLock(docRef);
+                fail();
+            } catch (LockException e) {
+                assertTrue(e.getMessage(), e.getMessage().contains("Document already locked"));
+            }
+        }
+
+        lock = session.removeLock(docRef);
+        assertNotNull(lock);
+        assertEquals("Administrator", lock.getOwner());
+
+        lock = session.getLockInfo(docRef);
+        assertNull(lock);
+
+        // removing lock on non-locked doesn't fail
+        lock = session.removeLock(docRef);
+        assertNull(lock);
+
+        // as pete
+        try (CoreSession peteSession = openSessionAs("pete")) {
+            // set lock as pete
+            lock = peteSession.setLock(docRef);
+            assertNotNull(lock);
+            assertEquals("pete", lock.getOwner());
+
+            // remove as pete
+            lock = peteSession.removeLock(docRef);
+            assertNotNull(lock);
+        }
     }
 
 }

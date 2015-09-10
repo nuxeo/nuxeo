@@ -52,6 +52,14 @@ public interface Session {
     IterableQueryResult queryAndFetch(String query, String queryType, QueryFilter queryFilter, Object[] params);
 
     /**
+     * Gets the lock manager for this session.
+     *
+     * @return the lock manager
+     * @since 7.4
+     */
+    LockManager getLockManager();
+
+    /**
      * Saves this session.
      */
     void save();

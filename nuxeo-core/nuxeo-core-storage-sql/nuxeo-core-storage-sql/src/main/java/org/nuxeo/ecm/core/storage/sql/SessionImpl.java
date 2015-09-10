@@ -41,12 +41,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.storage.FulltextParser;
@@ -1015,6 +1015,9 @@ public class SessionImpl implements Session, XAResource {
     public void removeNode(Node node) {
         checkLive();
         flush();
+        // remove the lock using the lock manager
+        // TODO children locks?
+        getLockManager().removeLock(model.idToString(node.getId()), null);
         context.removeNode(node.getHierFragment());
     }
 
@@ -1200,21 +1203,8 @@ public class SessionImpl implements Session, XAResource {
     }
 
     @Override
-    public Lock getLock(Serializable id) {
-        return repository.getLockManager().getLock(model.idToString(id));
-    }
-
-    @Override
-    public Lock setLock(Serializable id, Lock lock) {
-        if (lock == null) {
-            throw new NullPointerException("Attempt to use null lock on: " + id);
-        }
-        return repository.getLockManager().setLock(model.idToString(id), lock);
-    }
-
-    @Override
-    public Lock removeLock(Serializable id, String owner, boolean force) {
-        return repository.getLockManager().removeLock(model.idToString(id), owner);
+    public LockManager getLockManager() {
+        return repository.getLockManager();
     }
 
     @Override

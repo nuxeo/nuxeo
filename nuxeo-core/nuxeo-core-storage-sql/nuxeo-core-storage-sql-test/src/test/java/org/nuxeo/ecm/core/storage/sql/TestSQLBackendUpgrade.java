@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.sql.jdbc.JDBCMapper;
 
 public class TestSQLBackendUpgrade extends SQLBackendTestCase {
@@ -202,12 +203,13 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
         setUpTestProp(JDBCMapper.TEST_UPGRADE_LOCKS);
 
         Session session = repository.getConnection();
+        LockManager lockManager = session.getLockManager();
         String id;
         Lock lock;
 
         // check lock has been upgraded from 'bob:Jan 26, 2011'
         id = "dddddddd-dddd-dddd-dddd-dddddddddddd";
-        lock = session.getLock(id);
+        lock = lockManager.getLock(id);
         assertNotNull(lock);
         assertEquals("bob", lock.getOwner());
         Calendar expected = new GregorianCalendar(2011, Calendar.JANUARY, 26, 0, 0, 0);
@@ -215,7 +217,7 @@ public class TestSQLBackendUpgrade extends SQLBackendTestCase {
 
         // old lock was nulled after unlock
         id = "11111111-2222-3333-4444-555555555555";
-        lock = session.getLock(id);
+        lock = lockManager.getLock(id);
         assertNull(lock);
     }
 

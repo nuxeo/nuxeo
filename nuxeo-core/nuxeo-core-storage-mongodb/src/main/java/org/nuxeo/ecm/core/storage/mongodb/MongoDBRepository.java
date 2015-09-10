@@ -20,6 +20,8 @@ import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_FULLTEXT_SIMPLE;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_IS_PROXY;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LIFECYCLE_STATE;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_CREATED;
+import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_LOCK_OWNER;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_NAME;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PARENT_ID;
 import static org.nuxeo.ecm.core.storage.dbs.DBSDocument.KEY_PRIMARY_TYPE;
@@ -45,10 +47,14 @@ import java.util.UUID;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.ConcurrentUpdateException;
+import org.nuxeo.ecm.core.api.Lock;
+import org.nuxeo.ecm.core.api.LockException;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.model.Repository;
 import org.nuxeo.ecm.core.query.sql.model.Expression;
 import org.nuxeo.ecm.core.query.sql.model.OrderByClause;
@@ -750,6 +756,118 @@ public class MongoDBRepository extends DBSRepositoryBase {
         }
         String key = (String) value;
         blobManager.markReferencedBinary(key, repositoryName);
+    }
+
+    protected static final DBObject LOCK_FIELDS;
+
+    static {
+        LOCK_FIELDS = new BasicDBObject();
+        LOCK_FIELDS.put(KEY_LOCK_OWNER, ONE);
+        LOCK_FIELDS.put(KEY_LOCK_CREATED, ONE);
+    }
+
+    protected static final DBObject UNSET_LOCK_UPDATE = new BasicDBObject(MONGODB_UNSET, LOCK_FIELDS);
+
+    @Override
+    public Lock getLock(String id) {
+        DBObject res = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
+        if (res == null) {
+            // doc not found
+            throw new LockException("Cannot get lock for non-existing document: " + id);
+        }
+        String owner = (String) res.get(KEY_LOCK_OWNER);
+        if (owner == null) {
+            // not locked
+            return null;
+        }
+        Calendar created = (Calendar) scalarToSerializable(res.get(KEY_LOCK_CREATED));
+        return new Lock(owner, created);
+    }
+
+    @Override
+    public Lock setLock(String id, Lock lock) {
+        DBObject query = new BasicDBObject(KEY_ID, id);
+        query.put(KEY_LOCK_OWNER, null); // select doc if no lock is set
+        DBObject setLock = new BasicDBObject();
+        setLock.put(KEY_LOCK_OWNER, lock.getOwner());
+        setLock.put(KEY_LOCK_CREATED, serializableToBson(lock.getCreated()));
+        DBObject setLockUpdate = new BasicDBObject(MONGODB_SET, setLock);
+        DBObject res = coll.findAndModify(query, null, null, false, setLockUpdate, false, false);
+        if (res != null) {
+            // found a doc to lock
+            return null;
+        } else {
+            // doc not found, or lock owner already set
+            // get the old lock
+            DBObject old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
+            if (old == null) {
+                // doc not found
+                throw new LockException("Cannot lock non-existing document: " + id);
+            }
+            String oldOwner = (String) old.get(KEY_LOCK_OWNER);
+            Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
+            if (oldOwner != null) {
+                return new Lock(oldOwner, oldCreated);
+            }
+            // no lock -- there was a race condition
+            // TODO do better
+            throw new ConcurrentUpdateException("Lock " + id);
+        }
+    }
+
+    @Override
+    public Lock removeLock(String id, String owner) {
+        DBObject query = new BasicDBObject(KEY_ID, id);
+        if (owner != null) {
+            // remove if owner matches or null
+            // implements LockManager.canLockBeRemoved inside MongoDB
+            Object ownerOrNull = Arrays.asList(owner, null);
+            query.put(KEY_LOCK_OWNER, new BasicDBObject(QueryOperators.IN, ownerOrNull));
+        } // else unconditional remove
+        // remove the lock
+        DBObject old = coll.findAndModify(query, null, null, false, UNSET_LOCK_UPDATE, false, false);
+        if (old != null) {
+            // found a doc and removed the lock, return previous lock
+            String oldOwner = (String) old.get(KEY_LOCK_OWNER);
+            if (oldOwner == null) {
+                // was not locked
+                return null;
+            } else {
+                // return previous lock
+                Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
+                return new Lock(oldOwner, oldCreated);
+            }
+        } else {
+            // doc not found, or lock owner didn't match
+            // get the old lock
+            old = coll.findOne(new BasicDBObject(KEY_ID, id), LOCK_FIELDS);
+            if (old == null) {
+                // doc not found
+                throw new LockException("Cannot unlock non-existing document: " + id);
+            }
+            String oldOwner = (String) old.get(KEY_LOCK_OWNER);
+            Calendar oldCreated = (Calendar) scalarToSerializable(old.get(KEY_LOCK_CREATED));
+            if (oldOwner != null) {
+                if (!LockManager.canLockBeRemoved(oldOwner, owner)) {
+                    // existing mismatched lock, flag failure
+                    return new Lock(oldOwner, oldCreated, true);
+                }
+                // old owner should have matched -- there was a race condition
+                // TODO do better
+                throw new ConcurrentUpdateException("Unlock " + id);
+            }
+            // old owner null, should have matched -- there was a race condition
+            // TODO do better
+            throw new ConcurrentUpdateException("Unlock " + id);
+        }
+    }
+
+    @Override
+    public void closeLockManager() {
+    }
+
+    @Override
+    public void clearLockManagerCaches() {
     }
 
 }

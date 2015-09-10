@@ -842,10 +842,7 @@ public class PersistenceContext {
      * Assumes a full flush was done.
      */
     public void removeNode(SimpleFragment hierFragment) {
-        // remove the lock using the lock manager
-        // TODO children locks?
         Serializable rootId = hierFragment.getId();
-        session.removeLock(rootId, null, true);
 
         // get root info before deletion. may be a version or proxy
         SimpleFragment versionFragment;

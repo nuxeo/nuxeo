@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PartialList;
 import org.nuxeo.ecm.core.blob.BlobManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.query.QueryFilter;
 import org.nuxeo.ecm.core.storage.sql.ClusterInvalidator;
 import org.nuxeo.ecm.core.storage.sql.ColumnType;
@@ -1171,7 +1172,7 @@ public class JDBCMapper extends JDBCRowMapper implements Mapper {
                     // not locked, nothing to do
                     return null;
                 }
-                if (!repository.getLockManager().canLockBeRemoved(oldLock, owner)) {
+                if (!LockManager.canLockBeRemoved(oldLock.getOwner(), owner)) {
                     // existing mismatched lock, flag failure
                     return new Lock(oldLock, true);
                 }

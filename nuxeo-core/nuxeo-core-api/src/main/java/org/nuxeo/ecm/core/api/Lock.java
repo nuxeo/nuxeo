@@ -29,16 +29,18 @@ public class Lock implements Serializable {
 
     private final boolean failed;
 
-    public Lock(String owner, Calendar created) {
+    public Lock(String owner, Calendar created, boolean failed) {
         this.owner = owner;
         this.created = created;
-        this.failed = false;
+        this.failed = failed;
+    }
+
+    public Lock(String owner, Calendar created) {
+        this(owner, created, false);
     }
 
     public Lock(Lock lock, boolean failed) {
-        this.owner = lock.owner;
-        this.created = lock.created;
-        this.failed = failed;
+        this(lock.owner, lock.created, failed);
     }
 
     /**

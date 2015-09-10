@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.cache.CacheFeature;
-import org.nuxeo.ecm.core.storage.lock.LockManager;
+import org.nuxeo.ecm.core.model.LockManager;
 import org.nuxeo.ecm.core.storage.lock.LockManagerService;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.api.Framework;

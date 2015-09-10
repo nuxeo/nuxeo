@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import org.nuxeo.ecm.core.NXCore;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.LifeCycleException;
-import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
@@ -362,25 +361,6 @@ public class SQLDocumentLive extends BaseDocument<Node>implements SQLDocument {
             return Collections.emptyList();
         }
         return lifeCycle.getAllowedStateTransitionsFrom(getLifeCycleState());
-    }
-
-    /*
-     * ----- org.nuxeo.ecm.core.model.Lockable -----
-     */
-
-    @Override
-    public Lock getLock() {
-        return session.getLock(getNode());
-    }
-
-    @Override
-    public Lock setLock(Lock lock) {
-        return session.setLock(getNode(), lock);
-    }
-
-    @Override
-    public Lock removeLock(String owner) {
-        return session.removeLock(getNode(), owner);
     }
 
     /*

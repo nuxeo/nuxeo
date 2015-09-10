@@ -39,6 +39,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.Lock;
 import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.Delta;
 import org.nuxeo.ecm.core.api.model.Property;
@@ -1046,6 +1047,24 @@ public abstract class BaseDocument<T extends StateAccessor> implements Document 
                 }
             }
         }
+    }
+
+    @Override
+    public Lock getLock() {
+        return getSession().getLockManager().getLock(getUUID());
+    }
+
+    @Override
+    public Lock setLock(Lock lock) {
+        if (lock == null) {
+            throw new NullPointerException("Attempt to use null lock on: " + getUUID());
+        }
+        return getSession().getLockManager().setLock(getUUID(), lock);
+    }
+
+    @Override
+    public Lock removeLock(String owner) {
+        return getSession().getLockManager().removeLock(getUUID(), owner);
     }
 
 }

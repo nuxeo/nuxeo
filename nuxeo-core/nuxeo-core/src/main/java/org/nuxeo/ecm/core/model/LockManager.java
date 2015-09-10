@@ -9,7 +9,7 @@
  * Contributors:
  *     Florent Guillaume
  */
-package org.nuxeo.ecm.core.storage.lock;
+package org.nuxeo.ecm.core.model;
 
 import org.nuxeo.ecm.core.api.Lock;
 
@@ -64,20 +64,22 @@ public interface LockManager {
     /**
      * Checks if a given lock can be removed by the given owner.
      *
-     * @param lock the lock
+     * @param oldOwner the existing lock's owner
      * @param owner the owner (may be {@code null})
      * @return {@code true} if the lock can be removed
      */
-    boolean canLockBeRemoved(Lock lock, String owner);
+    static boolean canLockBeRemoved(String oldOwner, String owner) {
+        return owner == null || owner.equals(oldOwner);
+    }
 
     /**
      * Closes the lock manager and releases resources.
      */
-    void close();
+    void closeLockManager();
 
     /**
      * Clears any cache held by the lock manager.
      */
-    void clearCaches();
+    void clearLockManagerCaches();
 
 }
