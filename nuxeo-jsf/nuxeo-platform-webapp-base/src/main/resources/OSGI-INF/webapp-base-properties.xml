@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.platform.webapp.base.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Properties controlling Drag&amp;Drop behaviors:
+      <ul>
+        <li>org.nuxeo.dnd.upload.timeout: maximum time for uploading a file via
+          Drag&amp;Drop to the server.</li>
+        <li>org.nuxeo.dnd.exec.timeout: maximum time for executing import of
+          files uploaded via Drag&amp;and Drop</li>
+        <li>org.nuxeo.dnd.extendedmode.timeout: mouse over time before switching
+          to extended mode UI (setting to -1 disables the extended mode)</li>
+      </ul>
+    </documentation>
+    <property name="org.nuxeo.dnd.upload.timeout">30000</property>
+    <property name="org.nuxeo.dnd.exec.timeout">30000</property>
+    <property name="org.nuxeo.dnd.extendedmode.timeout">2000</property>
+  </extension>
+
+</component>
