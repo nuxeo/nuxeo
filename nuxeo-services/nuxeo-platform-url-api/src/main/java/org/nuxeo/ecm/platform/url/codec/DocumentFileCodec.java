@@ -21,9 +21,7 @@ package org.nuxeo.ecm.platform.url.codec;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -81,14 +79,17 @@ public class DocumentFileCodec extends AbstractDocumentViewCodec {
         String filepath = docView.getParameter(FILE_PROPERTY_PATH_KEY);
         String filename = docView.getParameter(FILENAME_KEY);
         if (docLoc != null && filepath != null && filename != null) {
-            List<String> items = new ArrayList<String>();
-            items.add(getPrefix());
-            items.add(docLoc.getServerName());
-            items.add(docLoc.getDocRef().toString());
-            items.add(filepath);
-            items.add(URIUtils.quoteURIPathToken(filename));
-            String uri = StringUtils.join(items, "/");
-
+            StringBuilder buf = new StringBuilder();
+            buf.append(getPrefix());
+            buf.append("/");
+            buf.append(docLoc.getServerName());
+            buf.append("/");
+            buf.append(docLoc.getDocRef().toString());
+            buf.append("/");
+            buf.append(filepath);
+            buf.append("/");
+            buf.append(URIUtils.quoteURIPathToken(filename));
+            String uri = buf.toString();
             Map<String, String> requestParams = new HashMap<String, String>(docView.getParameters());
             requestParams.remove(FILE_PROPERTY_PATH_KEY);
             requestParams.remove(FILENAME_KEY);

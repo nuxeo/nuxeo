@@ -53,6 +53,7 @@ import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.lifecycle.LifeCycle;
 import org.nuxeo.ecm.core.lifecycle.LifeCycleService;
 import org.nuxeo.ecm.core.schema.FacetNames;
@@ -495,13 +496,8 @@ public final class DocumentModelFunctions implements LiveEditConstants {
         if (doc == null) {
             return null;
         }
-        String bigDownloadURL = BaseURL.getBaseURL();
-        bigDownloadURL += "nxbigfile" + "/";
-        bigDownloadURL += doc.getRepositoryName() + "/";
-        bigDownloadURL += doc.getRef().toString() + "/";
-        bigDownloadURL += blobPropertyName + "/";
-        bigDownloadURL += filename;
-        return bigDownloadURL;
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        return BaseURL.getBaseURL() + downloadService.getDownloadUrl(doc, blobPropertyName, filename);
     }
 
     public static String fileDescription(DocumentModel document, String blobPropertyName, String filePropertyName,

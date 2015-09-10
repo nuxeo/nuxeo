@@ -54,6 +54,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.LifeCycleConstants;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.platform.actions.Action;
@@ -62,7 +63,6 @@ import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.api.WebActions;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.cache.SeamCacheHelper;
-import org.nuxeo.ecm.platform.ui.web.download.DownloadServlet;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
 import org.nuxeo.ecm.platform.ui.web.util.ComponentUtils;
@@ -885,7 +885,7 @@ public class ClipboardActionsBean implements ClipboardActions, Serializable {
                     HttpServletRequest request = (HttpServletRequest) context.getExternalContext().getRequest();
                     request.setAttribute(NXAuthConstants.DISABLE_REDIRECT_REQUEST_KEY, true);
                     String zipDownloadURL = BaseURL.getBaseURL(request);
-                    zipDownloadURL += DownloadServlet.NXBIGZIPFILE_PREFIX + "/";
+                    zipDownloadURL += DownloadService.NXBIGZIPFILE + "/";
                     zipDownloadURL += tmpFile.getName();
                     try {
                         context.getExternalContext().redirect(zipDownloadURL);

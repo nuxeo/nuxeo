@@ -17,6 +17,11 @@
  */
 package org.nuxeo.ecm.platform.ui.web.download;
 
+import static org.nuxeo.ecm.core.io.download.DownloadService.NXBIGBLOB;
+import static org.nuxeo.ecm.core.io.download.DownloadService.NXBIGFILE;
+import static org.nuxeo.ecm.core.io.download.DownloadService.NXBIGZIPFILE;
+import static org.nuxeo.ecm.core.io.download.DownloadService.NXDOWNLOADINFO;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -57,13 +62,17 @@ public class DownloadServlet extends HttpServlet {
 
     private static final Log log = LogFactory.getLog(DownloadServlet.class);
 
-    public static final String NXBIGFILE_PREFIX = DownloadService.NXBIGFILE;
+    // compat constant
+    public static final String NXBIGFILE_PREFIX = NXBIGFILE;
 
-    public static final String NXDOWNLOADINFO_PREFIX = DownloadService.NXDOWNLOADINFO;
+    // compat constant
+    public static final String NXDOWNLOADINFO_PREFIX = NXDOWNLOADINFO;
 
-    public static final String NXBIGBLOB_PREFIX = DownloadService.NXBIGBLOB;
+    // compat constant
+    public static final String NXBIGBLOB_PREFIX = NXBIGBLOB;
 
-    public static final String NXBIGZIPFILE_PREFIX = DownloadService.NXBIGZIPFILE;
+    // compat constant
+    public static final String NXBIGZIPFILE_PREFIX = NXBIGZIPFILE;
 
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -81,15 +90,15 @@ public class DownloadServlet extends HttpServlet {
         } catch (URISyntaxException e) {
             requestURI = req.getRequestURI();
         }
-        if (requestURI.contains("/" + NXBIGFILE_PREFIX + "/")) {
+        if (requestURI.contains("/" + NXBIGFILE + "/")) {
             handleDownloadBlob(req, resp, requestURI);
-        } else if (requestURI.contains("/" + NXDOWNLOADINFO_PREFIX + "/")) {
+        } else if (requestURI.contains("/" + NXDOWNLOADINFO + "/")) {
             handleGetDownloadInfo(req, resp, requestURI);
-        } else if (requestURI.contains("/" + NXBIGZIPFILE_PREFIX + "/")) {
+        } else if (requestURI.contains("/" + NXBIGZIPFILE + "/")) {
             // handle the download for a big zip created in the tmp directory;
             // the name of this zip is sent in the request
             handleDownloadTemporaryZip(req, resp, requestURI);
-        } else if (requestURI.contains("/" + NXBIGBLOB_PREFIX + "/")) {
+        } else if (requestURI.contains("/" + NXBIGBLOB + "/")) {
             // handle the download of a Blob referenced in HTTP Request or Session
             handleDownloadSessionBlob(req, resp, requestURI);
         }
@@ -98,7 +107,7 @@ public class DownloadServlet extends HttpServlet {
     // used by nxdropout.js
     protected void handleGetDownloadInfo(HttpServletRequest req, HttpServletResponse resp, String requestURI)
             throws IOException {
-        String downloadUrl = requestURI.replace(NXDOWNLOADINFO_PREFIX, NXBIGFILE_PREFIX);
+        String downloadUrl = requestURI.replace(NXDOWNLOADINFO, NXBIGFILE);
         downloadBlob(req, resp, downloadUrl, true);
     }
 
@@ -110,7 +119,7 @@ public class DownloadServlet extends HttpServlet {
 
     protected void downloadBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI, boolean info)
             throws IOException {
-        String urlPath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGFILE_PREFIX + "/", "");
+        String urlPath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGFILE + "/", "");
         String[] parts = urlPath.split("/");
         if (parts.length < 2) {
             resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid URL syntax");
@@ -187,7 +196,7 @@ public class DownloadServlet extends HttpServlet {
     // used by DownloadFile operation
     protected void handleDownloadSessionBlob(HttpServletRequest req, HttpServletResponse resp, String requestURI)
             throws IOException {
-        String blobId = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGBLOB_PREFIX + "/", "");
+        String blobId = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGBLOB + "/", "");
         Blob blob = (Blob) req.getAttribute(blobId);
         if (blob != null) {
             req.removeAttribute(blobId);
@@ -210,7 +219,7 @@ public class DownloadServlet extends HttpServlet {
     // used by ClipboardActionsBean
     protected void handleDownloadTemporaryZip(HttpServletRequest req, HttpServletResponse resp, String requestURI)
             throws IOException {
-        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGZIPFILE_PREFIX + "/",
+        String filePath = requestURI.replace(VirtualHostHelper.getContextPath(req) + "/" + NXBIGZIPFILE + "/",
                 "");
         String[] pathParts = filePath.split("/");
         String tmpFileName = pathParts[0];

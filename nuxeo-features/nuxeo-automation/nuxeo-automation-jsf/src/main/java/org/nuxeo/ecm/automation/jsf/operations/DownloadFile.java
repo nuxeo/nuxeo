@@ -28,6 +28,7 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ui.web.auth.NXAuthConstants;
 import org.nuxeo.ecm.platform.ui.web.tag.fn.Functions;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -63,7 +64,7 @@ public class DownloadFile {
             request.getSession(true).setAttribute(sid, blob);
 
             String bigDownloadURL = BaseURL.getBaseURL(request);
-            bigDownloadURL += "nxbigblob" + "/" + sid;
+            bigDownloadURL += DownloadService.NXBIGBLOB + "/" + sid;
 
             try {
                 // Operation was probably triggered by a POST

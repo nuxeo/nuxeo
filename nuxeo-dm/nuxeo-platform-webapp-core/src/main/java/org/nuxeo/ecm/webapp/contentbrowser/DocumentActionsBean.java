@@ -261,9 +261,7 @@ public class DocumentActionsBean extends InputController implements DocumentActi
         }
 
         if (blob.getLength() > Functions.getBigFileSizeLimit()) {
-            String bigDownloadURL = BaseURL.getBaseURL(request)
-                    + downloadService.getDownloadUrl(doc.getRepositoryName(), doc.getId(),
-                            docView.getParameter(DocumentFileCodec.FILE_PROPERTY_PATH_KEY), filename);
+            String bigDownloadURL = BaseURL.getBaseURL(request) + downloadService.getDownloadUrl(doc, xpath, filename);
             try {
                 response.sendRedirect(bigDownloadURL);
             } catch (IOException e) {

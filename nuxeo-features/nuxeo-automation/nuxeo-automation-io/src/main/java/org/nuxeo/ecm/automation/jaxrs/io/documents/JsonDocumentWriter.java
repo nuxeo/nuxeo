@@ -50,6 +50,7 @@ import org.nuxeo.ecm.core.api.PropertyException;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.io.marshallers.json.document.DocumentModelJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
 import org.nuxeo.ecm.core.io.registry.MarshallerRegistry;
@@ -235,9 +236,9 @@ public class JsonDocumentWriter implements MessageBodyWriter<DocumentModel> {
 
         String blobUrlPrefix = null;
         if (request != null) {
-            StringBuilder sb = new StringBuilder(VirtualHostHelper.getBaseURL(request));
-            sb.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(doc.getId()).append("/");
-            blobUrlPrefix = sb.toString();
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            blobUrlPrefix = VirtualHostHelper.getBaseURL(request) + downloadService.getDownloadUrl(doc, null, null)
+                    + "/";
         }
 
         for (Property p : part.getChildren()) {

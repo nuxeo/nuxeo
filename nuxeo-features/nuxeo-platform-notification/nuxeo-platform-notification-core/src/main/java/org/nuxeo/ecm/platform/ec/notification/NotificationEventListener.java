@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.PostCommitFilteringEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.event.impl.ShallowDocumentModel;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.platform.ec.notification.email.EmailHelper;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationService;
 import org.nuxeo.ecm.platform.ec.notification.service.NotificationServiceHelper;
@@ -254,10 +255,11 @@ public class NotificationEventListener implements PostCommitFilteringEventListen
         // Main file link for downloading
         BlobHolder bh = doc.getAdapter(BlobHolder.class);
         if (bh != null && bh.getBlob() != null) {
-            StringBuilder docMainFile = new StringBuilder();
-            docMainFile.append(notificationService.getServerUrlPrefix()).append("nxfile/default/").append(doc.getId()).append(
-                    "/blobholder:0/").append(bh.getBlob().getFilename());
-            eventInfo.put(NotificationConstants.DOCUMENT_MAIN_FILE, docMainFile.toString());
+            DownloadService downloadService = Framework.getService(DownloadService.class);
+            String filename = bh.getBlob().getFilename();
+            String docMainFile = notificationService.getServerUrlPrefix()
+                    + downloadService.getDownloadUrl(doc, DownloadService.BLOBHOLDER_0, filename);
+            eventInfo.put(NotificationConstants.DOCUMENT_MAIN_FILE, docMainFile);
         }
 
         if (!isDeleteEvent(event.getName())) {

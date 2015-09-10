@@ -69,6 +69,11 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
     private static final String FORCE_NO_CACHE_ON_MSIE = "org.nuxeo.download.force.nocache.msie";
 
     @Override
+    public String getDownloadUrl(DocumentModel doc, String xpath, String filename) {
+        return getDownloadUrl(doc.getRepositoryName(), doc.getId(), xpath, filename);
+    }
+
+    @Override
     public String getDownloadUrl(String repositoryName, String docId, String xpath, String filename) {
         StringBuilder sb = new StringBuilder();
         sb.append(NXBIGFILE);
@@ -76,10 +81,14 @@ public class DownloadServiceImpl extends DefaultComponent implements DownloadSer
         sb.append(repositoryName);
         sb.append("/");
         sb.append(docId);
-        sb.append("/");
-        sb.append(xpath);
-        sb.append("/");
-        sb.append(URIUtils.quoteURIPathComponent(filename, true));
+        if (xpath != null) {
+            sb.append("/");
+            sb.append(xpath);
+            if (filename != null) {
+                sb.append("/");
+                sb.append(URIUtils.quoteURIPathComponent(filename, true));
+            }
+        }
         return sb.toString();
     }
 

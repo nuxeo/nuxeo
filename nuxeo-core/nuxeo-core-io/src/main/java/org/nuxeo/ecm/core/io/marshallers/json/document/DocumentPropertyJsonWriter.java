@@ -28,13 +28,13 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
-import org.nuxeo.common.utils.URIUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.ArrayProperty;
 import org.nuxeo.ecm.core.api.model.impl.ListProperty;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
+import org.nuxeo.ecm.core.io.download.DownloadService;
 import org.nuxeo.ecm.core.io.marshallers.json.AbstractJsonWriter;
 import org.nuxeo.ecm.core.io.registry.MarshallingException;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -48,6 +48,7 @@ import org.nuxeo.ecm.core.schema.types.primitives.DoubleType;
 import org.nuxeo.ecm.core.schema.types.primitives.IntegerType;
 import org.nuxeo.ecm.core.schema.types.primitives.LongType;
 import org.nuxeo.ecm.core.schema.types.resolver.ObjectResolver;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Convert {@link Property} to Json.
@@ -252,18 +253,10 @@ public class DocumentPropertyJsonWriter extends AbstractJsonWriter<Property> {
         if (doc == null) {
             return "";
         }
-        StringBuilder blobUrlBuilder = new StringBuilder(ctx.getBaseUrl());
-        blobUrlBuilder.append("nxbigfile/").append(doc.getRepositoryName()).append("/").append(doc.getId()).append("/");
-        blobUrlBuilder.append(prop.getSchema().getName());
-        blobUrlBuilder.append(":");
-        String canonicalXPath = ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
-        blobUrlBuilder.append(canonicalXPath);
-        blobUrlBuilder.append("/");
+        DownloadService downloadService = Framework.getService(DownloadService.class);
+        String xpath = prop.getSchema().getName() + ":" + ComplexTypeImpl.canonicalXPath(prop.getPath().substring(1));
         String filename = ((Blob) prop.getValue()).getFilename();
-        if (filename != null) {
-            blobUrlBuilder.append(URIUtils.quoteURIPathComponent(filename, true));
-        }
-        return blobUrlBuilder.toString();
+        return ctx.getBaseUrl() + downloadService.getDownloadUrl(doc, xpath, filename);
     }
 
 }
