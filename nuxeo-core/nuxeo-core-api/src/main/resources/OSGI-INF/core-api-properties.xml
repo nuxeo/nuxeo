@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<component name="org.nuxeo.ecm.core.api.properties">
+
+  <extension target="org.nuxeo.runtime.ConfigurationService" point="configuration">
+    <documentation>
+      Property that defines the max length of the document name,
+      which is mainly used to build the document path.
+    </documentation>
+    <property name="nuxeo.path.segment.maxsize">24</property>
+  </extension>
+
+</component>
